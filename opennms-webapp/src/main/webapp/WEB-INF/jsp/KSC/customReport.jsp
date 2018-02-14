@@ -48,8 +48,9 @@
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="location" value="KSC Reports" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom Report" />
+  <jsp:param name="renderGraphs" value="true" />
 </jsp:include>
 
 <%-- A script to Save the file --%>
@@ -83,7 +84,7 @@
   function cancelReport()
   {
     if (confirm("Do you really want to cancel configuration changes?")) {
-        setLocation("KSC/index.htm");
+        setLocation("KSC/index.jsp");
     }
   }
 </script>
@@ -102,18 +103,18 @@
           <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
         </div>
       </div>
-      <table class="table">
+      <table class="table table-condensed">
         <c:if test="${fn:length(resultSets) > 0}">
           <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
             <c:set var="resultSet" value="${resultSets[graphNum]}"/>
             <tr>
-              <td>
+              <td class="col-md-1">
                 <div class="btn-group-vertical" role="group">
                   <button class="btn btn-default" onclick="modifyGraph(${graphNum})">Modify</button>
                   <button class="btn btn-default" onclick="deleteGraph(${graphNum})">Delete</button>
                 </div>
               </td>
-              <td align="right">
+              <td align="right" class="col-md-3">
                 ${resultSet.title}
                 <br/>
                 <c:if test="${!empty resultSet.resource.parent}">
@@ -143,15 +144,8 @@
                 <br/>
                 To: ${resultSet.end}
               </td>
-              <td align="left">
-                <c:url var="graphUrl" value="${baseHref}graph/graph.png">
-                  <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                  <c:param name="report" value="${resultSet.prefabGraph.name}"/>
-                  <c:param name="start" value="${resultSet.start.time}"/>
-                  <c:param name="end" value="${resultSet.end.time}"/>
-                  <c:param name="zoom" value="true"/>
-                </c:url>
-                <img src="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title}" />
+              <td align="left" style="col-md-8">
+                <div class="graph-container" data-graph-zoomable="false" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
               </td>
             </tr>
           </c:forEach>

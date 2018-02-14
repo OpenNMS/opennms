@@ -1,0 +1,93 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== SSLCertMonitor
+
+This monitor is used to test if a SSL certificate presented by a remote network server are
+valid. A certificate is invalid if its initial time is prior to the current time, or if the current time
+is prior to 7 days (configurable) before the expiration time. The monitor only supports SSL on
+the socket and does not support a higher level protocol above it.
+
+You can simulate the behavior by running a command like this:
+
+ echo | openssl s_client -connect <site>:<port> 2>/dev/null | openssl x509 -noout -dates
+
+The output shows you the time range a certificate is valid:
+
+ notBefore=Dec 24 14:11:34 2013 GMT
+ notAfter=Dec 25 10:37:40 2014 GMT
+
+You can configure a threshold in days applied on the `notAfter` date.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.SSLCertMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the SSLCertMonitor
+[options="header, autowidth"]
+|===
+| Parameter     | Description                                                                       | Required | Default value
+| `port`        | TCP port for the service with SSL certificate.                                    | required | `-1`
+| `retry`       | Number of attempts to get the certificate state                                   | optional | `0`
+| `days`        | Number of days before the certificate expires that we mark the service as failed. | optional | `7`
+| `server-name` | This is the DNS hostname to send as part of the _TLS_ negotiation, known as
+                  server name indication (_SNI_)
+                  (See: link:https://www.ietf.org/rfc/rfc3546.txt[RFC3546] section 3.1)             | optional | `-`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Variables which can be passed in the configuration for `server-name`
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${ipaddr}`     | The node's IP-Address
+| `${nodeid}`     | The node ID
+| `${nodelabel}`  | Label of the node the monitor is associated to.
+| `${svcname}`    | The service name
+|===
+
+WARNING: The monitor has no support for communicating on other protocol layers above the SSL session layer. It
+is not able to send a Host header for HTTPS, or issue a STARTTLS command for IMAP, POP3, SMTP, FTP, XMPP, LDAP,
+or NNTP.
+
+===== Examples
+
+The following example shows how to monitor SSL certificates on services like IMAPS, SMTPS and HTTPS.
+If the certificates expire within 30 days the service goes down and indicates this issue in the reason of the monitor.
+In this example the monitoring interval is reduced to test the certificate every 2 hours (7,200,000 ms).
+Configuration in `poller-configuration.xml` is as the following:
+
+[source, xml]
+----
+<service name="SSL-Cert-IMAPS-993" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="port" value="993"/>
+    <parameter key="days" value="30"/>
+</service>
+<service name="SSL-Cert-SMTPS-465" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="2000"/>
+    <parameter key="port" value="465"/>
+    <parameter key="days" value="30"/>
+</service>
+<service name="SSL-Cert-HTTPS-443" interval="7200000" user-defined="false" status="on">
+    <parameter key="retry" value="2"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="port" value="443"/>
+    <parameter key="days" value="30"/>
+    <parameter key="server-name" value="${nodelabel}.example.com"/>
+</service>
+
+<monitor service="SSL-Cert-IMAPS-993" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+<monitor service="SSL-Cert-SMTPS-465" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+<monitor service="SSL-Cert-HTTPS-443" class-name="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+----

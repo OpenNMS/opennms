@@ -1,0 +1,12 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0">
+
+  <!-- register product information with product registry -->
+  <reference id="productRegister" interface="org.opennms.karaf.productpub.ProductRegister" timeout="10000" />
+
+  <bean id="localBundleProductDescription" class="org.opennms.karaf.productpub.BundleProductSpecImpl" init-method="registerSpec" destroy-method="unregisterSpec">
+    <property name="bundleContext" ref="blueprintBundleContext"></property>
+    <property name="productPublisher" ref="productRegister"></property>
+    <property name="productMetadataUri" value="/productSpec.xml"></property>
+  </bean>
+
+</blueprint>

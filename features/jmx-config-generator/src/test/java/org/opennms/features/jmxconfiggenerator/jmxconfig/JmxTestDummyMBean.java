@@ -34,15 +34,15 @@ package org.opennms.features.jmxconfiggenerator.jmxconfig;
  */
 public interface JmxTestDummyMBean {
 
-    public String getName();
+    String getName();
 
-    public int getX();
+    int getX();
 
-    public Integer getInteger();
+    Integer getInteger();
 
-    public Long getLong();
+    Long getLong();
 
-    public void setWritableY(int writable);
+    void setWritableY(int writable);
 
-    public int getWritableY();
+    int getWritableY();
 }

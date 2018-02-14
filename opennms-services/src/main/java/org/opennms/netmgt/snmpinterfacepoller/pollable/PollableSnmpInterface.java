@@ -35,8 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.core.logging.Logging;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
@@ -190,8 +189,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
      *
      * @param parent a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface} object.
      */
-    public PollableSnmpInterface(
-            PollableInterface parent) {
+    public PollableSnmpInterface(PollableInterface parent) {
         m_parent = parent;
         m_snmpinterfaces = new HashMap<Integer,OnmsSnmpInterface>();
 
@@ -396,23 +394,23 @@ public class PollableSnmpInterface implements ReadyRunnable {
     
     private void sendAdminUpEvent(OnmsSnmpInterface iface) {
         getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_ADMIN_UP_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getDate(), iface));       
+                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
     }
     
     private void sendAdminDownEvent(OnmsSnmpInterface iface) {
         getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_ADMIN_DOWN_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getDate(), iface));
+                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
     }
     
     private void sendOperUpEvent(OnmsSnmpInterface iface) {
         getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_OPER_UP_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getDate(), iface));
+                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
         
     }
     
     private void sendOperDownEvent(OnmsSnmpInterface iface) {
         getContext().sendEvent(getContext().createEvent(EventConstants.SNMP_INTERFACE_OPER_DOWN_EVENT_UEI, 
-                                                        getParent().getNodeid(), getParent().getIpaddress(), getDate(), iface));
+                                                        getParent().getNodeid(), getParent().getIpaddress(), getParent().getNetMask(), getDate(), iface));
     }
     
     private Date getDate() {
@@ -438,7 +436,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
     
     private List<SnmpMinimalPollInterface> getSnmpMinimalPollInterface() {
         
-        List<SnmpMinimalPollInterface> mifaces = new ArrayList<SnmpMinimalPollInterface>();
+        List<SnmpMinimalPollInterface> mifaces = new ArrayList<>();
         
         for (OnmsSnmpInterface iface: getSnmpinterfaces()) {
             mifaces.add(getMinimalFromOnmsSnmpInterface(iface));

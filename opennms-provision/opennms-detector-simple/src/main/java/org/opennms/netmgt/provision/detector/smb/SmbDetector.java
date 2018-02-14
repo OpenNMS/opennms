@@ -34,9 +34,6 @@ import org.opennms.netmgt.provision.detector.smb.response.NbtAddressResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 /**
  * <p>SmbDetector class.</p>
  *
@@ -44,8 +41,6 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 
-@Component
-@Scope("prototype")
 public class SmbDetector extends BasicDetector<LineOrientedRequest, NbtAddressResponse> {
 
     private static final String DEFAULT_SERVICE_NAME = "SMB";

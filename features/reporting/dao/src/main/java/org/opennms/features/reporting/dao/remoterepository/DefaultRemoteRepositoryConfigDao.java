@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,22 +28,19 @@
 
 package org.opennms.features.reporting.dao.remoterepository;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryConfig;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
-
-import javax.xml.bind.JAXB;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>DefaultRemoteRepositoryConfigDao class.</p>
@@ -55,7 +52,6 @@ import java.util.List;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
     /**
@@ -100,9 +96,6 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public void loadConfiguration() throws Exception {
-        InputStream stream = null;
-        long lastModified;
-
         File file = null;
         try {
             file = m_configResource.getFile();
@@ -111,14 +104,7 @@ public class DefaultRemoteRepositoryConfigDao implements
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        if (file != null) {
-            lastModified = file.lastModified();
-            stream = new FileInputStream(file);
-        } else {
-            lastModified = System.currentTimeMillis();
-            stream = m_configResource.getInputStream();
-        }
-        setRemoteRepositoryConfig(JAXB.unmarshal(file, RemoteRepositoryConfig.class));
+        setRemoteRepositoryConfig(JaxbUtils.unmarshal(RemoteRepositoryConfig.class, file));
         Assert.notNull(m_remoteRepositoryConfig, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
         logger.debug("Remote repository configuration assigned: '{}'", m_remoteRepositoryConfig.toString());
@@ -212,7 +198,7 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public List<RemoteRepositoryDefinition> getAllRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<>();
         resultList.addAll(this.m_remoteRepositoryConfig.getRepositoryList());
         return resultList;
     }
@@ -222,7 +208,7 @@ public class DefaultRemoteRepositoryConfigDao implements
      */
     @Override
     public List<RemoteRepositoryDefinition> getActiveRepositories() {
-        List<RemoteRepositoryDefinition> resultList = new ArrayList<RemoteRepositoryDefinition>();
+        List<RemoteRepositoryDefinition> resultList = new ArrayList<>();
         for (RemoteRepositoryDefinition repository : this.m_remoteRepositoryConfig.getRepositoryList()) {
             if (repository.isRepositoryActive()) {
                 resultList.add(repository);

@@ -1,0 +1,9 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+In _{opennms-product-name}_ collection of performance data is done by the _Collectd_ daemon.
+_Management Agents_ and protocols to access performance data is implemented in _Collectors_.
+These _Collectors_ are scheduled and run in parallel in a global defined _Thread Pool_ in _Collectd_.
+
+This section describes how to configure _Collectd_ for performance data collection with all available _Collectors_ coming with _{opennms-product-name}_.

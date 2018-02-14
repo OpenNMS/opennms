@@ -28,17 +28,17 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import static org.opennms.core.utils.InetAddressUtils.str;
-
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
-import org.opennms.netmgt.snmp.SnmpUtils;
-import org.opennms.netmgt.snmp.SnmpWalker;
+import org.opennms.netmgt.model.LldpLink;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
      * @param LinkableNode node
      * 
      */
-    public NodeDiscoveryLldp(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscoveryLldp(final EnhancedLinkd linkd, final Node node) {
     	super(linkd, node);
     }
 
@@ -74,84 +74,91 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
 
     	final Date now = new Date(); 
 
-    	String trackerName = "lldpLocalGroup";
         final LldpLocalGroupTracker lldpLocalGroup = new LldpLocalGroupTracker();
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
-        SnmpWalker walker =  SnmpUtils.createWalker(getPeer(), trackerName, lldpLocalGroup);
-        walker.start();
+        SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());
 
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting Lldp Linkd node scan : Agent timed out while scanning the {} table", trackerName);
-            	return;
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting Lldp Linkd node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            	return;
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                          lldpLocalGroup)
+                          .withDescription("lldpLocalGroup")
+                          .withLocation(getLocation())
+                          .execute()
+                          .get();
+        } catch (ExecutionException e) {
+            LOG.info("run: node [{}]: ExecutionException: lldpLocalGroup: {}", 
+                     getNodeId(), e.getMessage());
+                return;
         } catch (final InterruptedException e) {
-            LOG.error("run: Lldp Linkd node collection interrupted, exiting", e);
-            return;
+            LOG.info("run: node [{}]: InterruptedException: lldpLocalGroup: {}", 
+                     getNodeId(), e.getMessage());
+                return;
         }
         
         if (lldpLocalGroup.getLldpLocChassisid() == null ) {
-            LOG.info( "lldp mib not supported on: {}", str(getPeer().getAddress()));
+    		LOG.info( "run: node[{}]: LLDP_MIB not supported",
+    				getNodeId());
             return;
         } else {
-            LOG.info( "found lldp identifier : {}", lldpLocalGroup.getLldpElement());
+    		LOG.info( "run: node[{}]: lldp identifier : {}",
+    				getNodeId(),
+    				lldpLocalGroup.getLldpElement());
         }
-        
-        m_linkd.getQueryManager().store(getNodeId(), lldpLocalGroup.getLldpElement());
+
+        m_linkd.getQueryManager().store(getNodeId(),
+                lldpLocalGroup.getLldpElement());
 
         if (getSysoid() == null || getSysoid().equals(DW_SYSOID) ) {
             if (lldpLocalGroup.getLldpLocChassisid().toHexString().equals(DW_NULL_CHASSIS_ID) &&
                     lldpLocalGroup.getLldpLocChassisidSubType() == LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT.getValue()) {
-                LOG.info( "lldp not active for Dragon Wave Device identifier : {}", lldpLocalGroup.getLldpElement());
+        		LOG.info( "run: node[{}]: address {}. lldp identifier : {}. lldp not active for Dragon Wave Device.",
+        				getNodeId(),
+        				getPrimaryIpAddressString(),
+        				lldpLocalGroup.getLldpElement());
                 return;
             }
     
             if (lldpLocalGroup.getLldpLocSysname().equals(DW_NULL_SYSOID_ID) ) {
-                LOG.info( "lldp not active for Dragon Wave Device identifier : {}", lldpLocalGroup.getLldpElement());
+        		LOG.info( "run: node[{}]: lldp identifier : {}. lldp not active for Dragon Wave Device.",
+        				getNodeId(),
+        				lldpLocalGroup.getLldpElement());
                 return;
             }
         }
 
-        final LldpLocPortGetter lldpLocPort = new LldpLocPortGetter(getPeer());
-        trackerName = "lldpRemTable";
+        List<LldpLink> links = new ArrayList<>();
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
         	public void processLldpRemRow(final LldpRemRow row) {
-        	    m_linkd.getQueryManager().store(getNodeId(),row.getLldpLink(lldpLocPort));
+        	    links.add(row.getLldpLink());
         	}
         };
-
-		LOG.info( "run: collecting {} on: {}",trackerName, str(getTarget()));
-        walker = SnmpUtils.createWalker(getPeer(), trackerName, lldpRemTable);
-        walker.start();
-        
         try {
-            walker.waitFor();
-            if (walker.timedOut()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent timed out while scanning the {} table", trackerName);
-            }  else if (walker.failed()) {
-            	LOG.info(
-                        "run:Aborting node scan : Agent failed while scanning the {} table: {}", trackerName,walker.getErrorMessage());
-            }
+            m_linkd.getLocationAwareSnmpClient().walk(peer,
+                                      lldpRemTable)
+                                  .withDescription("lldpRemTable")
+                                  .withLocation(getLocation())
+                                  .execute()
+                                  .get();
+        } catch (ExecutionException e) {
+            LOG.info("run: node [{}]: ExecutionException: lldpRemTable: {}", 
+                     getNodeId(), e.getMessage());
+            return;
         } catch (final InterruptedException e) {
-            LOG.error("run: collection interrupted, exiting",e);
+            LOG.info("run: node [{}]: InterruptedException: lldpRemTable: {}", 
+                     getNodeId(), e.getMessage());
             return;
         }
+        
+        
+        final LldpLocPortGetter lldpLocPort = 
+                new LldpLocPortGetter(peer,
+                                m_linkd.getLocationAwareSnmpClient(),
+                                getLocation(),getNodeId());
+        for (LldpLink link: links)
+            m_linkd.getQueryManager().store(getNodeId(),lldpLocPort.getLldpLink(link));
+
         m_linkd.getQueryManager().reconcileLldp(getNodeId(),now);
     }
-
-	@Override
-	public String getInfo() {
-        return "ReadyRunnable:LldpLinkNodeDiscovery node: "+ getNodeId() + " ip:" + str(getTarget())
-                + " package:" + getPackageName();
-	}
 
 	@Override
 	public String getName() {

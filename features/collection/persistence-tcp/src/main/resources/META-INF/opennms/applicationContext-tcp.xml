@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+    <bean id="useQueue" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usequeue:true}" />
+    </bean>
+
+    <bean id="simpleTcpOutputStrategy" class="org.opennms.netmgt.collection.persistence.tcp.SimpleTcpOutputStrategy" lazy-init="true">
+        <property name="host" value="${org.opennms.rrd.tcp.host:}" />
+        <property name="port" value="${org.opennms.rrd.tcp.port:0}" />
+    </bean>
+
+    <bean id="queuingTcpOutputStrategy" class="org.opennms.netmgt.collection.persistence.tcp.QueuingTcpOutputStrategy" lazy-init="true">
+        <constructor-arg ref="simpleTcpOutputStrategy" />
+        <constructor-arg value="${org.opennms.rrd.queuing.queueSize:50000}" />
+    </bean>
+
+    <bean id="tcpOutputStrategyFactory" class="org.opennms.netmgt.collection.persistence.tcp.TcpOutputStrategyFactory" />
+
+    <bean id="tcpOutputStrategy" primary="true" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="tcpOutputStrategyFactory"/>
+        <property name="targetMethod" value="getStrategy"/>
+    </bean>
+
+    <onmsgi:service ref="tcpOutputStrategy" interface="org.opennms.netmgt.collection.persistence.tcp.TcpOutputStrategy" />
+
+    <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.api.EmptyResourceStorageDao" />
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
+    <!-- Some beans still require an RrdStrategy -->
+    <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+    <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+    <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.tcp.TcpPersisterFactory">
+        <property name="tcpStrategy" ref="tcpOutputStrategy" />
+    </bean>
+
+</beans>

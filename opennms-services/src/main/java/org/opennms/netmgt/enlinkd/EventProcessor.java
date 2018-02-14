@@ -28,12 +28,9 @@
 
 package org.opennms.netmgt.enlinkd;
 
-import org.opennms.netmgt.EventConstants;
-
-import org.opennms.netmgt.linkd.EventUtils;
-import org.opennms.netmgt.linkd.InsufficientInformationException;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 /**

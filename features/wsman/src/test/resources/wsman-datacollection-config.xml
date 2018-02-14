@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config rrd-repository="${install.share.dir}/rrd/snmp/">
+    <collection name="default">
+        <rrd step="30">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        </rrd>
+
+        <include-all-system-definitions/>
+    </collection>
+
+    <group name="drac-power-supply"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/DCIM_ComputerSystem/DCIM_PowerSupplyView"
+           resource-type="node">
+        <attrib name="TotalOutputPower" alias="dracOutputPower" type="gauge"/>
+        <attrib name="InputVoltage" alias="dracInputVoltage" type="gauge"/>
+        <attrib name="OtherIdentifyingInfo" alias="serviceTag" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" type="string"/>
+    </group>
+
+    <group name="filtered-drac-power-supply"
+           resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select Range1MaxInputPower from DCIM_PowerSupplyView where DetailedState != 'Absent' and PrimaryStatus != 0"
+           resource-type="node">
+        <attrib name="Range1MaxInputPower" alias="dracRangeInputPower" type="gauge"/>
+    </group>
+
+    <system-definition name="Dell iDRAC 6">
+        <rule>productVendor matches '^Dell.*' and productVersion matches '^6.*'</rule>
+        <include-group>drac-power-supply</include-group>
+        <include-group>filtered-drac-power-supply</include-group>
+    </system-definition>
+</wsman-datacollection-config>

@@ -36,6 +36,8 @@ import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.themes.BaseTheme;
 import org.apache.commons.lang.ArrayUtils;
 import org.opennms.features.topology.api.HasExtraComponents;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
+import org.opennms.features.topology.api.browsers.SelectionAwareTable;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContext;
@@ -174,13 +176,13 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
-	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
+	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<>();
 
 	/**
-	 *  Leave OnmsDaoContainer without generics; the Aries blueprint code cannot match up
+	 *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up
 	 *  the arguments if you put the generic types in.
 	 */
-	public AlarmTable(final String caption, final OnmsDaoContainer container, final AlarmRepository alarmRepo) {
+	public AlarmTable(final String caption, final OnmsVaadinContainer container, final AlarmRepository alarmRepo) {
 		super(caption, container);
 		m_alarmRepo = alarmRepo;
 

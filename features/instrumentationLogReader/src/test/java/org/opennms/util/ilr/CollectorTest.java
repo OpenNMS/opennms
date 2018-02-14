@@ -563,7 +563,7 @@ public class CollectorTest {
     }
 
     private String fromFile(String fileName) throws IOException {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         File logFile = new File(fileName);
         BufferedReader r = new BufferedReader(new FileReader(logFile));	
         String line = r.readLine();

@@ -43,13 +43,16 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.service.InvokeAtType;
 import org.opennms.netmgt.config.service.Service;
-import org.opennms.netmgt.config.service.types.InvokeAtType;
 import org.opennms.test.OpenNMSConfigurationExecutionListener;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
+/**
+ * TODO: Convert this test to use {@link TestDaemon} instead of MX4J beans.
+ */
 @RunWith(SpringJUnit4ClassRunner.class)
 @TestExecutionListeners({
     OpenNMSConfigurationExecutionListener.class,
@@ -129,7 +132,7 @@ public class InvokerTest {
     }
 
     private static Service[] getServiceList() throws Exception {
-        List<Service> serviceList = new ArrayList<Service>();
+        List<Service> serviceList = new ArrayList<>();
 
         serviceList.add(JaxbUtils.unmarshal(Service.class, new StringReader("  <service>\n" + 
         		"    <name>:Name=XSLTProcessor</name>\n" + 
@@ -201,8 +204,8 @@ public class InvokerTest {
         return new ToStringBuilder(service)
             .append("name", service.getName())
             .append("class", service.getClassName())
-            .append("attributes", service.getAttributeCollection())
-            .append("invoke", service.getInvokeCollection())
+            .append("attributes", service.getAttributes())
+            .append("invoke", service.getInvokes())
             .toString();
     }
 

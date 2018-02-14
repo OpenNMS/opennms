@@ -28,14 +28,11 @@
 
 package org.opennms.core.db;
 
-import java.beans.PropertyVetoException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +46,10 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
     /**
      * @param stream A configuration file as an {@link InputStream}.
      * @param dsName The data source's name.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.beans.PropertyVetoException if any.
      * @throws java.sql.SQLException if any.
      */
-    protected BaseConnectionFactory(final JdbcDataSource ds) throws MarshalException, ValidationException, PropertyVetoException, SQLException {
+    protected BaseConnectionFactory(final JdbcDataSource ds) throws SQLException {
         initializePool(ds);
     }
 
@@ -106,8 +101,6 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
 
     /**
      * <p>close</p>
-     *
-     * @throws java.sql.SQLException if any.
      */
     @Override
     public void close() {
@@ -119,10 +112,9 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      * @param iface a {@link java.lang.Class} object.
      * @param <T> a T object.
      * @return a T object.
-     * @throws java.sql.SQLException if any.
      */
     @Override
-    public <T> T unwrap(final Class<T> iface) throws SQLException {
+    public <T> T unwrap(final Class<T> iface) {
         return null;  //TODO
     }
 
@@ -131,11 +123,10 @@ public abstract class BaseConnectionFactory implements ClosableDataSource {
      *
      * @param iface a {@link java.lang.Class} object.
      * @return a boolean.
-     * @throws java.sql.SQLException if any.
      */
     @Override
-    public boolean isWrapperFor(final Class<?> iface) throws SQLException {
-        return false;  //TODO
+    public boolean isWrapperFor(final Class<?> iface) {
+        return false; //TODO
     }
 
     protected static void validateJdbcUrl(String url) {

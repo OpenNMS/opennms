@@ -1,0 +1,72 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== HostResourceSwRunMonitor
+
+This monitor test the running state of one or more processes.
+It does this via SNMP by inspecting the _hrSwRunTable_ of the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB].
+The test is done by matching a given process as _hrSwRunName_ against the numeric value of the _hrSwRunState_.
+
+This monitor uses _SNMP_ to accomplish its work.
+Therefore systems against which it is to be used must have an SNMP agent installed and configured.
+Furthermore, the _SNMP agent_ on the system must support the _HOST-RESOURCES-MIB_.
+Most modern _SNMP agents_, including most distributions of the _Net-SNMP agent_ and the _SNMP service_ that ships with _Microsoft Windows_, support this _MIB_.
+Out-of-box support for _HOST-RESOURCES-MIB_ among commercial _Unix_ operating systems may be somewhat spotty.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the HostResourceSwRunMonitor
+[options="header, autowidth"]
+|===
+| Parameter            | Description                                                                                    | Required | Default value
+| `port`               | The port of the _SNMP agent_ of the server to test.                                            | optional | `from snmp-config.xml`
+| `service-name`       | The name of the process to be monitored. This parameter's value is case-sensitive and is
+                         evaluated as an exact match.                                                                   | required | `-`
+| `match-all`          | If the process name appears multiple times in the _hrSwRunTable_, and this parameter is set to
+                         `true`, then all instances of the named process must match the value specified for
+                         `run-level`.                                                                                   | optional | `false`
+| `run-level`          | The maximum allowable value of _hrSWRunStatus_ among +
+                         _running(1)_, +
+                         _runnable(2)_ = waiting for resource +
+                         _notRunnable(3)_ = loaded but waiting for event +
+                         _invalid(4)_ = not loaded                                                                      | optional | `2`
+| `service-name-oid`   | The numeric object identifier (OID) from which process names are queried. Defaults to
+                         _hrSwRunName_ and should never be changed under normal
+                         circumstances. That said, changing it to _hrSwRunParameters_ (`.1.3.6.1.2.1.25.4.2.1.5`) is
+                         often helpful when dealing with processes running under _Java Virtual Machines_ which all have
+                         the same process name _java_.                                                                  | optional | `.1.3.6.1.2.1.25.4.2.1.2`
+| `service-status-oid` | The numeric object identifier (OID) from which run status is queried. Defaults to
+                         _hrSwRunStatus_ and should never be changed under normal circumstances.                        | optional | `.1.3.6.1.2.1.25.4.2.1.7`
+
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The following example shows how to monitor the process called _httpd_ running on a server using this monitor.
+The configuration in `poller-configuration.xml` has to be defined as the following:
+[source, xml]
+----
+<service name="Process-httpd" interval="300000" user-defined="false" status="on">
+    <parameter key="retry" value="3"/>
+    <parameter key="timeout" value="3000"/>
+    <parameter key="service-name" value="httpd"/><1>
+    <parameter key="run-level" value="3"/><2>
+    <parameter key="match-all" value="true"/><3>
+</service>
+
+<monitor service="Process-httpd" class-name="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor"/>
+----
+<1> Name of the process on the system
+<2> Test the state if the process is in a valid state, i.e. have a `run-level` no higher than _notRunnable(3)_
+<3> If the _httpd_ process runs multiple times the test is done for each instance of the process.

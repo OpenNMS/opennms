@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,7 @@
 
 package org.opennms.netmgt.xml.eventconf;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,14 +36,11 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
+import org.opennms.core.xml.NullStringAdapter;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * The operator action to be taken when this event occurs
@@ -54,17 +48,18 @@ import org.xml.sax.ContentHandler;
  * displayed in the UI.
  */
 @XmlRootElement(name="operaction")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("eventconf.xsd")
 @XmlType(propOrder={"m_state", "m_menutext", "m_content"})
 public class Operaction implements Serializable {
-    private static final long serialVersionUID = -576703485771037486L;
+    private static final long serialVersionUID = 2L;
 
     @XmlValue
-    private String m_content = "";
+    @XmlJavaTypeAdapter(NullStringAdapter.class)
+    private String m_content;
 
     @XmlAttribute(name="state")
-    private String m_state;
+    private StateType m_state;
 
     // @NotNull
     @XmlAttribute(name="menutext", required=true)
@@ -74,52 +69,25 @@ public class Operaction implements Serializable {
         return m_content;
     }
 
+    public void setContent(final String content) {
+        m_content = ConfigUtils.normalizeString(content);
+        if (m_content != null) m_content = m_content.intern();
+    }
+
+    public StateType getState() {
+        return m_state == null? StateType.ON : m_state; // Default state is "on" according to the XSD
+    }
+
+    public void setState(final StateType state) {
+        m_state = state;
+    }
+
     public String getMenutext() {
         return m_menutext;
     }
 
-    public String getState() {
-        return m_state == null? "on" : m_state; // Default state is "on" according to the XSD
-    }
-
-    /**
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (final ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    public void setContent(final String content) {
-        m_content = content.intern();
-    }
-
     public void setMenutext(final String menutext) {
-        m_menutext = menutext.intern();
-    }
-
-    public void setState(final String state) {
-        m_state = state.intern();
-    }
-
-    public static Operaction unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Operaction) Unmarshaller.unmarshal(Operaction.class, reader);
-    }
-
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
+        m_menutext = ConfigUtils.assertNotEmpty(menutext, "menutext").intern();
     }
 
     @Override

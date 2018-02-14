@@ -37,7 +37,8 @@ import org.opennms.netmgt.xml.event.Event;
  * @version $Id: $
  */
 public class PossibleCause extends Cause {
-    
+    private static final long serialVersionUID = 6081288061834584980L;
+
     /**
      * <p>Constructor for PossibleCause.</p>
      *

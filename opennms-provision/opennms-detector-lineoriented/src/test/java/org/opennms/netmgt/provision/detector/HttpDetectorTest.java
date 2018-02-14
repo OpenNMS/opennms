@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -40,20 +39,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.provision.DetectFuture;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.HttpDetector;
+import org.opennms.netmgt.provision.detector.simple.HttpDetectorFactory;
 import org.opennms.netmgt.provision.server.SimpleServer;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
-public class HttpDetectorTest implements ApplicationContextAware {
+public class HttpDetectorTest {
 
-    private ApplicationContext m_applicationContext;
+    
+    @Autowired
+    private HttpDetectorFactory m_detectorFactory;
     private HttpDetector m_detector;
     private SimpleServer m_server;
 
@@ -102,7 +101,7 @@ public class HttpDetectorTest implements ApplicationContextAware {
         MockLogAppender.setupLogging();
 
         /* make sure defaults are initialized */
-        m_detector = getDetector(HttpDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setPort(80);
         m_detector.setUrl("/");
         m_detector.setMaxRetCode(399);
@@ -207,7 +206,6 @@ public class HttpDetectorTest implements ApplicationContextAware {
         return serverOKResponse;
     }
 
-
     private SimpleServer createServer(final String httpResponse) throws Exception {
         SimpleServer server = new SimpleServer() {
 
@@ -221,23 +219,9 @@ public class HttpDetectorTest implements ApplicationContextAware {
 
         return server;
     }
+
     private boolean doCheck(DetectFuture future) throws InterruptedException {
         future.awaitFor();
         return future.isServiceDetected();
-    }
-
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-
-    private HttpDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (HttpDetector)bean;
     }
 }

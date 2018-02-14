@@ -32,8 +32,8 @@ import java.awt.Dimension;
 import java.util.Collection;
 
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
@@ -47,27 +47,25 @@ import edu.uci.ics.jung.graph.SparseGraph;
 public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
-	public void updateLayout(GraphContainer graphContainer) {
+	public void updateLayout(Graph graph) {
 
-		Graph g = graphContainer.getGraph();
-
-		final Layout graphLayout = g.getLayout();
+		final Layout graphLayout = graph.getLayout();
 
 		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-		Collection<? extends Vertex> vertices = g.getDisplayVertices();
+		Collection<? extends Vertex> vertices = graph.getDisplayVertices();
 
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
 
-		Collection<? extends Edge> edges = g.getDisplayEdges();
+		Collection<? extends Edge> edges = graph.getDisplayEdges();
 
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
 		}
 
-		Dimension size = selectLayoutSize(graphContainer);
+		Dimension size = selectLayoutSize(graph);
 		Dimension paddedSize = new Dimension((int)(size.getWidth()*.75), (int)(size.getHeight()*.75));
 
 		doISOMLayout(graphLayout, jungGraph, size);
@@ -90,7 +88,7 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		for(VertexRef v : jungGraph.getVertices()) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, new Point(layout.getX(v), layout.getY(v)));
 		}
 	}
 
@@ -104,7 +102,7 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		for(VertexRef v : jungGraph.getVertices()) {
-			graphLayout.setLocation(v, (int)layout.getX(v)+xOffset, (int)layout.getY(v)+yOffset);
+			graphLayout.setLocation(v, new Point(layout.getX(v)+xOffset, layout.getY(v)+yOffset));
 		}
 
 	}
@@ -119,7 +117,7 @@ public class RealUltimateLayoutAlgorithm extends AbstractLayoutAlgorithm {
 		}
 
 		for(VertexRef v : jungGraph.getVertices()) {
-			graphLayout.setLocation(v, (int)layout.getX(v), (int)layout.getY(v));
+			graphLayout.setLocation(v, new Point(layout.getX(v), layout.getY(v)));
 		}
 
 	}

@@ -37,6 +37,8 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.PopupView;
+
+import org.opennms.netmgt.vaadin.core.UIHelper;
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
 
 /**
@@ -102,7 +104,7 @@ public class HeaderPanel extends Panel implements View {
 		final String selected = "<a href=\"#!%s\">%d. %s</a>";
 		final String notSelected = "%d. %s";
 
-		StringBuilder labelString = new StringBuilder(100);
+		final StringBuilder labelString = new StringBuilder(100);
 		int i = 1;
 		for (UiState eachState : UiState.values()) {
 			if (eachState.hasUi()) {

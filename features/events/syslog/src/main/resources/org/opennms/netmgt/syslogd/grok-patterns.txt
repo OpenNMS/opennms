@@ -1,0 +1,80 @@
+# RFC 3164 with messageId, time
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164 with time
+<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}
+
+
+# RFC 3164/ISO8601 date with time, secondFraction, timezone
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date with time, timezone
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date with time
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}> %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}
+
+
+# RFC 3164/ISO8601 date with messageId, time, secondFraction, timezone
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date with messageId, time, timezone
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date with messageId, time
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second} %{STRING:hostname} %{STRING:message}
+
+# RFC 3164/ISO8601 date with messageId
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}[%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} [%{INT:processId}]: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{NOSPACE:processName}: %{STRING:message}
+<%{INT:facilityPriority}>%{NOSPACE:messageId}: %{INT:year}-%{INT:month}-%{INT:day} %{STRING:hostname} %{STRING:message}
+
+
+# RFC 5424 with secondFraction
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} - %{STRING:message}
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:message}
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}.%{INT:secondFraction}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+# RFC 5424
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} - %{STRING:message}
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:processName} %{STRING:processId} %{STRING:messageId} %{STRING:message}
+<%{INT:facilityPriority}>%{INT:version} %{INT:year}-%{INT:month}-%{INT:day}T%{INT:hour}:%{INT:minute}:%{INT:second}%{STRING:timezone} %{STRING:hostname} %{STRING:message}
+
+
+# Cisco variant of RFC 3164 with year and colon after time
+<%{INT:facilityPriority}> %{MONTH:month} %{INT:day} %{INT:year} %{INT:hour}:%{INT:minute}:%{INT:second}: %{STRING:message}
+
+
+# Netgear variant of RFC 3164 with day of week and no hostname or process info
+<%{INT:facilityPriority}> %{STRING:dayofweek}, %{INT:year}-%{INT:month}-%{INT:day} %{INT:hour}:%{INT:minute}:%{INT:second} - %{STRING:message}

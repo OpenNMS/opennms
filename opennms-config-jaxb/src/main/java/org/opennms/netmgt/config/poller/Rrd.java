@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
@@ -65,7 +58,7 @@ public class Rrd implements Serializable {
      * Round Robin Archive definitions
      */
     @XmlElement(name="rra")
-    private List<String> m_rras = new ArrayList<String>();
+    private List<String> m_rras = new ArrayList<>();
 
     public Rrd() {
         super();

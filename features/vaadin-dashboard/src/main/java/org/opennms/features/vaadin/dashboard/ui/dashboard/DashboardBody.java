@@ -139,7 +139,7 @@ public class DashboardBody extends DDGridLayout {
 
         int c = 0;
 
-        List<DashletSpec> dashboardSuitableDashlets = new LinkedList<DashletSpec>();
+        List<DashletSpec> dashboardSuitableDashlets = new LinkedList<>();
 
         if (dashletSpecs.size() == 0) {
             return;
@@ -213,6 +213,7 @@ public class DashboardBody extends DDGridLayout {
         panel.setSizeFull();
         panel.setCaption(caption);
         panel.setContent(content);
+        panel.addStyleName("novscroll");
 
         return panel;
     }

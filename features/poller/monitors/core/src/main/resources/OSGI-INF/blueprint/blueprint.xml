@@ -1,0 +1,407 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+	<bean id="availabilityMonitor" class="org.opennms.netmgt.poller.monitors.AvailabilityMonitor" />
+	<service ref="availabilityMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.AvailabilityMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="bgpSessionMonitor" class="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
+	<service ref="bgpSessionMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.BgpSessionMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="bsfMonitor" class="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+	<service ref="bsfMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.BSFMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="ciscoIpSlaMonitor" class="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+	<service ref="ciscoIpSlaMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="ciscoPingMibMonitor" class="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+	<service ref="ciscoPingMibMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.CiscoPingMibMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="citrixMonitor" class="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+	<service ref="citrixMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.CitrixMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="diskUsageMonitor" class="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+	<service ref="diskUsageMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="dnsMonitor" class="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+	<service ref="dnsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="dnsResolutionMonitor" class="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+	<service ref="dnsResolutionMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.DNSResolutionMonitor" />
+		</service-properties>
+	</service>
+
+
+	<bean id="dominoIIOPMonitor" class="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
+	<service ref="dominoIIOPMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.DominoIIOPMonitor" />
+		</service-properties>
+	</service>
+
+
+	<bean id="dskTableMonitor" class="org.opennms.netmgt.poller.monitors.DskTableMonitor" />
+	<service ref="dskTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.DskTableMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="ftpMonitor" class="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+	<service ref="ftpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="hostResourceSwRunMonitor"
+		class="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor" />
+	<service ref="hostResourceSwRunMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.HostResourceSwRunMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="httpMonitor" class="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+	<service ref="httpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="httpPostMonitor" class="org.opennms.netmgt.poller.monitors.HttpPostMonitor" />
+	<service ref="httpPostMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.HttpPostMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="httpsMonitor" class="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+	<service ref="httpsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+		</service-properties>
+	</service>
+
+	<!-- PingerFactory service -->
+	<reference id="pingerFactory" interface="org.opennms.netmgt.icmp.PingerFactory" />
+
+	<bean id="icmpMonitor" class="org.opennms.netmgt.poller.monitors.IcmpMonitor">
+		<property name="pingerFactory" ref="pingerFactory" />
+	</bean>
+	<service ref="icmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="imapMonitor" class="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+	<service ref="imapMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="imapsMonitor" class="org.opennms.netmgt.poller.monitors.ImapsMonitor" />
+	<service ref="imapsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.ImapsMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="jdbcMonitor" class="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
+	<service ref="jdbcMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.JDBCMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="jdbcQueryMonitor" class="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+	<service ref="jdbcQueryMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.JDBCQueryMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="jdbcStoredProcedureMonitor"
+		class="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
+	<service ref="jdbcStoredProcedureMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="jolokiaBeanMonitor" class="org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor" />
+	<service ref="jolokiaBeanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="jsr160Monitor" class="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+	<service ref="jsr160Monitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+		</service-properties>
+	</service>
+
+	<bean id="laTableMonitor" class="org.opennms.netmgt.poller.monitors.LaTableMonitor" />
+	<service ref="laTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.LaTableMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="ldapMonitor" class="org.opennms.netmgt.poller.monitors.LdapMonitor" />
+	<service ref="ldapMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.LdapMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="ldapsMonitor" class="org.opennms.netmgt.poller.monitors.LdapsMonitor" />
+	<service ref="ldapsMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.LdapsMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="logMatchTableMonitor" class="org.opennms.netmgt.poller.monitors.LogMatchTableMonitor" />
+	<service ref="logMatchTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.LogMatchTableMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="loopMonitor" class="org.opennms.netmgt.poller.monitors.LoopMonitor" />
+	<service ref="loopMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.LoopMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="mailTransportMonitor" class="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
+	<service ref="mailTransportMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.MailTransportMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="memcachedMonitor" class="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
+	<service ref="memcachedMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.MemcachedMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="netScalerGroupHealthMonitor"
+		class="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
+	<service ref="netScalerGroupHealthMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="nrpeMonitor" class="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+	<service ref="nrpeMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+		</service-properties>
+	</service>
+
+
+	<bean id="ntpMonitor" class="org.opennms.netmgt.poller.monitors.NtpMonitor" />
+	<service ref="ntpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.NtpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="omsaStorageMonitor" class="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor" />
+	<service ref="omsaStorageMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="openManageChassisMonitor"
+		class="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" />
+	<service ref="openManageChassisMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="pageSequenceMonitor" class="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
+	<service ref="pageSequenceMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="percMonitor" class="org.opennms.netmgt.poller.monitors.PercMonitor" />
+	<service ref="percMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.PercMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="pop3Monitor" class="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
+	<service ref="pop3Monitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
+		</service-properties>
+	</service>
+
+	<bean id="prTableMonitor" class="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
+	<service ref="prTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="smbMonitor" class="org.opennms.netmgt.poller.monitors.SmbMonitor" />
+	<service ref="smbMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.SmbMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="smtpMonitor" class="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
+	<service ref="smtpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="snmpMonitor" class="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+	<service ref="snmpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+		</service-properties>
+	</service>
+
+
+	<bean id="sshMonitor" class="org.opennms.netmgt.poller.monitors.SshMonitor" />
+	<service ref="sshMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.SshMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="sslCertMonitor" class="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+	<service ref="sslCertMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.SSLCertMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="strafePingMonitor" class="org.opennms.netmgt.poller.monitors.StrafePingMonitor" >
+		<property name="pingerFactory" ref="pingerFactory" />
+	</bean>
+	<service ref="strafePingMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.StrafePingMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="systemExecuteMonitor" class="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor" />
+	<service ref="systemExecuteMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.SystemExecuteMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="tcpMonitor" class="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+	<service ref="tcpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="trivialTimeMonitor" class="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor" />
+	<service ref="trivialTimeMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.TrivialTimeMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="webMonitor" class="org.opennms.netmgt.poller.monitors.WebMonitor" />
+	<service ref="webMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.WebMonitor" />
+		</service-properties>
+	</service>
+
+	<bean id="win32ServiceMonitor" class="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+	<service ref="win32ServiceMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type"
+				value="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+		</service-properties>
+	</service>
+
+</blueprint>

@@ -276,7 +276,7 @@ public class D3 extends JavaScriptObject {
 		
     }-*/;
 
-    public final native <T extends JavaScriptObject> D3 data() /*-{
+    public final native <T extends JavaScriptObject> JsArray<T> data() /*-{
         return this.data();
     }-*/;
 
@@ -296,12 +296,16 @@ public class D3 extends JavaScriptObject {
 	
     }-*/;
 	
-	public final native void each(Handler<?> handler) /*-{
+	public final native D3 each(Handler<?> handler) /*-{
 	    var f = function(d, i){
 	        return handler.@org.opennms.features.topology.app.internal.gwt.client.d3.D3Events.Handler::call(Ljava/lang/Object;I)(d,i);
 	    }
 	    return this.each(f);
 	}-*/;
+
+    public final native D3 each(JavaScriptObject f) /*-{
+        return this.each(f);
+    }-*/;
 	
 	/**
 	 * Only used for transitions
@@ -342,6 +346,15 @@ public class D3 extends JavaScriptObject {
     
     public static final native void eventPreventDefault() /*-{
         $wnd.d3.event.preventDefault();
+    }-*/;
+
+    public static final native boolean eventDefaultPrevented() /*-{
+        console.log("d3.event:" + $wnd.d3.event);
+        if ($wnd.d3.event != undefined && $wnd.d3.event.defaultPrevented != undefined) {
+            console.log("d3.event:" + $wnd.d3.event.defaultPrevented);
+            return $wnd.d3.event.defaultPrevented;
+        }
+        return false;
     }-*/;
     
     public static final native D3 d3() /*-{
@@ -444,6 +457,11 @@ public class D3 extends JavaScriptObject {
         return this.style(style);
     }-*/;
 
+    /**
+     * HTTP GET the provided file and append it to the dom element "defs".
+     *
+     * @param file the file to GET
+     */
     public final native void injectSVGDef(String file) /*-{
          $wnd.d3.xml(file, function(svg){
 

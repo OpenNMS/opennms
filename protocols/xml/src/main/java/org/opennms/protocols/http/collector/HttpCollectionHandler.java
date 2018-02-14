@@ -44,15 +44,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.select.Elements;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
-import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -70,12 +66,8 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(HttpCollectionHandler.class);
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
-     */
     @Override
-    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
-        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, CollectionSetBuilder builder, XmlSource source) throws Exception {
         Document doc = getJsoupDocument(urlString, request);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using selector {}", group.getName(), group.getResourceXpath());
@@ -84,30 +76,21 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
             LOG.debug("fillCollectionSet: {} => {}", group.getResourceXpath(), elements);
             String resourceName = getResourceName(elements, group);
             LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-            XmlCollectionResource collectionResource;
-            if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
-                collectionResource = nodeResource;
-            } else {
-                collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
-            }
+            final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
             LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
-            AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
             for (XmlObject object : group.getXmlObjects()) {
                 Elements el = elements.select(object.getXpath());
-                XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
-                collectionResource.setAttributeValue(attribType, el == null ? null : el.html());
+                if (el == null) {
+                    LOG.info("No value found for object named '{}'. Skipping.", object.getName());
+                }
+                builder.withAttribute(collectionResource, group.getName(), object.getName(), el.html(), object.getDataType());
             }
-            processXmlResource(collectionResource, attribGroupType);
-            collectionSet.getCollectionResources().add(collectionResource);
+            processXmlResource(builder, collectionResource, resourceName, group.getName());
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
     @Override
-    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {
-    }
+    protected void processXmlResource(CollectionSetBuilder builder, Resource collectionResource, String resourceTypeName, String group) { };
 
     /**
      * Gets the resource name.
@@ -119,7 +102,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
     private String getResourceName(Elements elements, XmlGroup group) {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using selector {}", key);
                 Elements el = elements.select(key);

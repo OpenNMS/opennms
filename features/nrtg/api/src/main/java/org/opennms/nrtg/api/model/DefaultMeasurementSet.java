@@ -38,7 +38,7 @@ import java.util.List;
 public class DefaultMeasurementSet implements MeasurementSet {
 
     private static final long serialVersionUID = 7536809905120941525L;
-    private List<Measurement> m_measurements = new ArrayList<Measurement>();
+    private List<Measurement> m_measurements = new ArrayList<>();
 
     public void addMeasurement(Measurement measurement) {
         m_measurements.add(measurement);
@@ -46,7 +46,7 @@ public class DefaultMeasurementSet implements MeasurementSet {
 
     @Override
     public String getJson() {
-        StringBuilder buf = new StringBuilder("[");
+        final StringBuilder buf = new StringBuilder("[");
 
         boolean first = true;
         for (Measurement m : getMeasurements()) {

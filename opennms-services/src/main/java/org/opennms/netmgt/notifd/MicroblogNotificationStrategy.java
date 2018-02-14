@@ -35,7 +35,7 @@ import java.util.List;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.slf4j.Logger;

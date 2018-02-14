@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,8 +54,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.hibernate.annotations.Type;
-import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
 import org.slf4j.Logger;
@@ -71,13 +68,10 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name = "snmpInterface")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-    private static final long serialVersionUID = -963873273243372864L;
+    private static final long serialVersionUID = 4688655131862954563L;
     private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
 
     private Integer m_id;
-
-    /** identifier field */
-    private InetAddress m_netMask;
 
     /** identifier field */
     private String m_physAddr;
@@ -116,7 +110,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<>();
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
@@ -169,27 +163,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_id = id;
     }
 
-    /**
-     * <p>getNetMask</p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name = "snmpIpAdEntNetMask")
-    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getNetMask() {
-        return m_netMask;
-    }
-
-    /**
-     * <p>setNetMask</p>
-     * 
-     * @param snmpipadentnetmask a {@link java.lang.String} object.
-     */
-    public void setNetMask(InetAddress snmpipadentnetmask) {
-        m_netMask = snmpipadentnetmask;
-    }
-    
     /**
      * <p>getPhysAddr</p>
      *
@@ -507,6 +480,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @XmlElement(name="nodeId")
     //@XmlIDREF
     @XmlJavaTypeAdapter(NodeIdAdapter.class)
+    @JsonIgnore
     public OnmsNode getNode() {
         return m_node;
     }
@@ -522,7 +496,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     @Transient
     @XmlTransient
-    @JsonIgnore
     public Integer getNodeId() {
         if (m_node != null) {
             return m_node.getId();
@@ -538,7 +511,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
-            .append("snmpipadentnetmask", getNetMask())
             .append("snmpphysaddr", getPhysAddr())
             .append("snmpifindex", getIfIndex())
             .append("snmpifdescr", getIfDescr())
@@ -571,6 +543,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @OneToMany(mappedBy = "snmpInterface", fetch = FetchType.LAZY)
     //@XmlIDREF
     @XmlJavaTypeAdapter(SnmpInterfaceIdAdapter.class)
+    @JsonIgnore
     public Set<OnmsIpInterface> getIpInterfaces() {
         return m_ipInterfaces;
     }
@@ -604,6 +577,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
      */
     @Transient
     @XmlTransient
+    @JsonIgnore
     public OnmsIpInterface getPrimaryIpInterface() {
         return getNode().getPrimaryInterface();
     }
@@ -650,12 +624,15 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
          * underscores to ensure that the resuling string will make a decent
          * file name and that RRD won't have any problems using it
          */
+	String firstChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfDescr() : getIfName();
+	String secondChoice = RrdLabelUtils.PREFER_IFDESCR ? getIfName() : getIfDescr();
         String label = null;
-        if (getIfName() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfName(), '_');
-        } else if (getIfDescr() != null) {
-            label = AlphaNumeric.parseAndReplace(getIfDescr(), '_');
+        if (firstChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? firstChoice : AlphaNumeric.parseAndReplace(firstChoice, '_');
+        } else if (secondChoice != null) {
+            label = RrdLabelUtils.DONT_SANITIZE_IFNAME ? secondChoice : AlphaNumeric.parseAndReplace(secondChoice, '_');
         } else {
+            // TODO: Use IfLabel.NO_IFLABEL instead of "no_ifLabel"
             LOG.info("Interface ({}) has no ifName and no ifDescr...setting to label to 'no_ifLabel'.", this);
             label = "no_ifLabel";
         }
@@ -714,10 +691,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         
         if (hasNewValue(scannedSnmpIface.getIfType(), getIfType())) {
             setIfType(scannedSnmpIface.getIfType());
-        }
-        
-        if (hasNewValue(scannedSnmpIface.getNetMask(), getNetMask())) {
-            setNetMask(scannedSnmpIface.getNetMask());
         }
         
         if (hasNewValue(scannedSnmpIface.getPhysAddr(), getPhysAddr())) {

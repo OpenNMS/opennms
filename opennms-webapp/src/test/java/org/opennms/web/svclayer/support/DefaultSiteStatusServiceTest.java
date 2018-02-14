@@ -45,7 +45,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.config.siteStatusViews.Category;
 import org.opennms.netmgt.config.siteStatusViews.RowDef;
-import org.opennms.netmgt.config.siteStatusViews.Rows;
 import org.opennms.netmgt.config.siteStatusViews.View;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -54,7 +53,7 @@ import org.opennms.netmgt.model.AggregateStatusDefinition;
 import org.opennms.netmgt.model.AggregateStatusView;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.web.svclayer.AggregateStatus;
+import org.opennms.web.svclayer.model.AggregateStatus;
 
 public class DefaultSiteStatusServiceTest {
     
@@ -72,7 +71,7 @@ public class DefaultSiteStatusServiceTest {
     @Test
     public void testCreateAggregateStatusUsingNodeId() {
         Collection<AggregateStatus> aggrStati;
-        Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
+        Collection<AggregateStatusDefinition> defs = new HashSet<>();
         
         OnmsCategory catRouters = new OnmsCategory("routers");
         OnmsCategory catSwitches = new OnmsCategory("switches");
@@ -95,7 +94,7 @@ public class DefaultSiteStatusServiceTest {
         OnmsNode node = new OnmsNode();
         node.setId(1);
         node.getAssetRecord().setBuilding("HQ");
-        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<>();
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {
@@ -111,12 +110,12 @@ public class DefaultSiteStatusServiceTest {
         expect(m_categoryDao.findByName("servers")).andReturn(catServers);
         replay(m_categoryDao);
         
-        Rows rows = new Rows();
+        List<RowDef> rows = new ArrayList<>();
         RowDef rowDef = new RowDef();
         Category category = new Category();
         category.setName("servers");
         rowDef.addCategory(category);
-        rows.addRowDef(rowDef);
+        rows.add(rowDef);
         
         rowDef = new RowDef();
         category = new Category();
@@ -125,7 +124,7 @@ public class DefaultSiteStatusServiceTest {
         category = new Category();
         category.setName("routers");
         rowDef.addCategory(category);
-        rows.addRowDef(rowDef);
+        rows.add(rowDef);
 
         View view = new View();
         view.setRows(rows);
@@ -145,7 +144,7 @@ public class DefaultSiteStatusServiceTest {
     public void testCreateAggregateStatusUsingBuilding() {
         
         Collection<AggregateStatus> aggrStati;
-        Collection<AggregateStatusDefinition> defs = new HashSet<AggregateStatusDefinition>();
+        Collection<AggregateStatusDefinition> defs = new HashSet<>();
         
         AggregateStatusDefinition definition = 
             new AggregateStatusDefinition("Routers/Switches", new HashSet<OnmsCategory>(Arrays.asList(new OnmsCategory[]{ new OnmsCategory("routers"), new OnmsCategory("switches") })));
@@ -160,7 +159,7 @@ public class DefaultSiteStatusServiceTest {
         aggregateSvc.setNodeDao(m_nodeDao);
         
         OnmsNode node = new OnmsNode();
-        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<>();
         nodes.add(node);
         
         for (AggregateStatusDefinition def : defs) {

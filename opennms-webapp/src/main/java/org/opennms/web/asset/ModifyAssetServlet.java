@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.capsd.EventUtils;
+import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
 import org.opennms.web.servlet.MissingParameterException;
@@ -70,7 +70,7 @@ public class ModifyAssetServlet extends HttpServlet {
     }
     
     private void initAllowHtmlFields() {
-        s_allowHtmlFields = new HashSet<String>();
+        s_allowHtmlFields = new HashSet<>();
         String allowHtmlFieldNames = System.getProperty("opennms.assets.allowHtmlFields");
         if (allowHtmlFieldNames == null)
             return;

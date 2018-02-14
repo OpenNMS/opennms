@@ -42,14 +42,10 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler;
 import org.opennms.protocols.xml.collector.UrlFactory;
-import org.opennms.protocols.xml.collector.XmlCollectionAttributeType;
-import org.opennms.protocols.xml.collector.XmlCollectionResource;
-import org.opennms.protocols.xml.collector.XmlCollectionSet;
-import org.opennms.protocols.xml.collector.XmlSingleInstanceCollectionResource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlGroup;
 import org.opennms.protocols.xml.config.XmlObject;
@@ -86,7 +82,7 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
     private String getResourceName(VTDNav resource, XmlGroup group) throws XPathParseException {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 resource.push();
@@ -127,8 +123,7 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
      * @throws XPathEvalException the x-path evaluation exception
      * @throws NavException the navigation exception
      */
-    protected void fillCollectionSet(CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source, VTDNav document) throws ParseException, XPathParseException, XPathEvalException, NavException {
-        XmlCollectionResource nodeResource = new XmlSingleInstanceCollectionResource(agent);
+    protected void fillCollectionSet(CollectionAgent agent, CollectionSetBuilder builder, XmlSource source, VTDNav document) throws ParseException, XPathParseException, XPathEvalException, NavException {
         AutoPilot resAP = new AutoPilot(document);
         for (XmlGroup group : source.getXmlGroups()) {
             LOG.debug("fillCollectionSet: getting resources for XML group {} using XPATH {}", group.getName(), group.getResourceXpath());
@@ -137,26 +132,19 @@ public abstract class AbstractVTDXmlCollectionHandler extends AbstractXmlCollect
             while(resAP.evalXPath() != -1) {
                 String resourceName = getResourceName(document, group);
                 LOG.debug("fillCollectionSet: processing XML resource {}", resourceName);
-                XmlCollectionResource collectionResource;
-                if (group.getResourceType().equalsIgnoreCase(CollectionResource.RESOURCE_TYPE_NODE)) {
-                    collectionResource = nodeResource;
-                } else {
-                    collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
-                }
+                final Resource collectionResource = getCollectionResource(agent, resourceName, group.getResourceType(), timestamp);
                 LOG.debug("fillCollectionSet: processing resource {}", collectionResource);
-                AttributeGroupType attribGroupType = new AttributeGroupType(group.getName(), group.getIfType());
                 for (XmlObject object : group.getXmlObjects()) {
-                    XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(object, attribGroupType);
                     document.push();
                     AutoPilot ap = new AutoPilot();
                     ap.bind(document);
                     ap.selectXPath(object.getXpath());
                     String value = ap.evalXPathToString();
                     document.pop();
-                    collectionResource.setAttributeValue(attribType, value);
+
+                    builder.withAttribute(collectionResource, group.getName(), object.getName(), value, object.getDataType());
                 }
-                processXmlResource(collectionResource, attribGroupType);
-                collectionSet.getCollectionResources().add(collectionResource);
+                processXmlResource(builder, collectionResource, resourceName, group.getName());
             }
         }
     }

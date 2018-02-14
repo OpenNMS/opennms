@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,34 +28,14 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.config.surveillanceViews.View;
-import org.opennms.netmgt.config.surveillanceViews.Views;
+import java.util.List;
 
-/**
- * <p>SurveillanceViewConfigDao interface.</p>
- */
+import org.opennms.netmgt.config.surveillanceViews.View;
+
 public interface SurveillanceViewConfigDao {
     
-    /**
-     * <p>getViews</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.surveillanceViews.Views} object.
-     */
-    Views getViews();
-    
-    /**
-     * <p>getView</p>
-     *
-     * @param viewName a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.surveillanceViews.View} object.
-     */
+    List<View> getViews();
     View getView(String viewName);
-
-    /**
-     * <p>getDefaultView</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.surveillanceViews.View} object.
-     */
     View getDefaultView();
 
 }

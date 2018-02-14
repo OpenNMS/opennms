@@ -37,8 +37,8 @@ package org.opennms.web.graph;
 
 import java.util.Date;
 
-import org.opennms.netmgt.model.PrefabGraph;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.PrefabGraph;
 public class KscResultSet {
     private final String m_title;
     private final Date m_start;

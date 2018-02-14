@@ -49,10 +49,11 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsMonitoredService svc) {
+    public Integer save(final OnmsMonitoredService svc) {
         updateParent(svc);
-        super.save(svc);
+        Integer retval = super.save(svc);
         updateSubObjects(svc);
+        return retval;
     }
 
     @Override
@@ -135,7 +136,7 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
 
     @Override
     public List<OnmsMonitoredService> findByType(final String typeName) {
-        final List<OnmsMonitoredService> services = new ArrayList<OnmsMonitoredService>();
+        final List<OnmsMonitoredService> services = new ArrayList<>();
         for (final OnmsMonitoredService svc : findAll()) {
             if (typeName.equals(svc.getServiceType().getName())) {
                 services.add(svc);
@@ -150,8 +151,13 @@ public class MockMonitoredServiceDao extends AbstractMockDao<OnmsMonitoredServic
     }
 
     @Override
+    public List<OnmsMonitoredService> findAllServices() {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
     public Set<OnmsMonitoredService> findByApplication(final OnmsApplication application) {
-        final Set<OnmsMonitoredService> services = new HashSet<OnmsMonitoredService>();
+        final Set<OnmsMonitoredService> services = new HashSet<>();
         for (final OnmsMonitoredService svc : findAll()) {
             if (svc.getApplications().contains(application)) {
                 services.add(svc);

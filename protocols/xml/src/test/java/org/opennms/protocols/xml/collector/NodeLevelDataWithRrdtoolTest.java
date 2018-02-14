@@ -36,7 +36,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.opennms.netmgt.rrd.RrdUtils;
+import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.model.Row;
 import org.opennms.netmgt.rrd.model.RrdConvertUtils;
 import org.opennms.netmgt.rrd.model.v3.RRDv3;
@@ -47,13 +47,13 @@ import org.opennms.netmgt.rrd.rrdtool.JniRrdStrategy;
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class NodeLevelDataWithRrdtoolTest extends AbstractXmlCollectorTest {
+public class NodeLevelDataWithRrdtoolTest extends XmlCollectorITCase {
 
     /* (non-Javadoc)
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlConfigFileName()
      */
     @Override
-    public String getXmlConfigFileName() {
+    public String getConfigFileName() {
         return "src/test/resources/node-level-datacollection-config.xml";
     }
 
@@ -61,7 +61,7 @@ public class NodeLevelDataWithRrdtoolTest extends AbstractXmlCollectorTest {
      * @see org.opennms.protocols.xml.collector.AbcstractXmlCollectorTest#getXmlSampleFileName()
      */
     @Override
-    public String getXmlSampleFileName() {
+    public String getSampleFileName() {
         return "src/test/resources/node-level.xml";
     }
 
@@ -69,18 +69,10 @@ public class NodeLevelDataWithRrdtoolTest extends AbstractXmlCollectorTest {
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectorTest#initializeRrdStrategy()
      */
     @Override
-    protected void initializeRrdStrategy() throws Exception {
+    protected RrdStrategy<?, ?> getRrdStrategy() throws Exception {
         setRrdBinary();
         setJniRrdLibrary();
-        RrdUtils.setStrategy(new JniRrdStrategy());
-    }
-
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectorTest#getRrdExtension()
-     */
-    @Override
-    protected String getRrdExtension() {
-        return "rrd";
+        return new JniRrdStrategy();
     }
 
     /**

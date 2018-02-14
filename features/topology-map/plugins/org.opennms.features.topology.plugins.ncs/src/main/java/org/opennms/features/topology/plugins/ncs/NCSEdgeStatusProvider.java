@@ -28,21 +28,32 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.features.topology.api.topo.*;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.EdgeProvider;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.EdgeStatusProvider;
+import org.opennms.features.topology.api.topo.Status;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEventParameter;
 
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Maps;
 
 public class NCSEdgeStatusProvider implements EdgeStatusProvider{
 
-    public class NCSLinkStatus implements Status{
+    public class NCSLinkStatus implements Status {
 
         private final String m_status;
 
@@ -60,19 +71,20 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
             return null;
         }
 
+        @Override
+        public Map<String, String> getStyleProperties() {
+            return Maps.newHashMap();
+        }
+
     }
 
     private AlarmDao m_alarmDao;
-    private final Pattern m_foreignSourcePattern;
-    private final Pattern m_foreignIdPattern;
 
     public NCSEdgeStatusProvider() {
-        m_foreignSourcePattern = Pattern.compile("foreignSource=(.*?)\\(.*?\\)");
-        m_foreignIdPattern = Pattern.compile("foreignId=(.*?)\\(.*?\\)");
     }
 
     @Override
-    public String getNameSpace() {
+    public String getNamespace() {
         return NCSPathEdgeProvider.PATH_NAMESPACE + "::NCS";
     }
 
@@ -108,37 +120,19 @@ public class NCSEdgeStatusProvider implements EdgeStatusProvider{
         List<OnmsAlarm> alarms = getAlarmDao().findMatching(criteria);
 
 
-        Set<String> alarmsSet = new HashSet<String>();
+        Set<String> alarmsSet = new HashSet<>();
 
         for (OnmsAlarm alarm : alarms) {
+            final Optional<String> foreignSource = alarm.findEventParameter("foreignSource").map(OnmsEventParameter::getValue);
+            final Optional<String> foreignId = alarm.findEventParameter("foreignId").map(OnmsEventParameter::getValue);
 
-            String eventParms = alarm.getEventParms();
-            Matcher foreignSourceMatcher = m_foreignSourcePattern.matcher(eventParms);
-            Matcher foreignIdMatcher = m_foreignIdPattern.matcher(eventParms);
-
-            String foreignSource = null;
-            while (foreignSourceMatcher.find()) {
-                foreignSource = foreignSourceMatcher.group(1);
-            }
-
-            String foreignId = null;
-            while (foreignIdMatcher.find()) {
-                foreignId = foreignIdMatcher.group(1);
-            }
-
-
-            if (foreignSource != null && foreignId != null) {
-                alarmsSet.add(foreignSource + "::" + foreignId);
+            if (foreignSource.isPresent() && foreignId.isPresent()) {
+                alarmsSet.add(foreignSource.get() + "::" + foreignId.get());
             }
 
         }
 
         return alarmsSet;
-    }
-
-    private void getParms(String eventParms) {
-        String[] parms = eventParms.split(";");
-
     }
 
     @Override

@@ -81,7 +81,7 @@ public class DefaultThresholdsDao implements ThresholdsDao, InitializingBean {
         newGroup.setIfResourceType(ifType);
 
         for (Basethresholddef thresh : getThresholdingConfigFactory().getThresholds(name)) {
-            String id = thresh.getDsType();
+            final String id = thresh.getDsType();
             if (!(id.equals("if") || id.equals("node") || newGroup.getGenericResourceTypeMap().containsKey(id))) {
                 ThresholdResourceType genericType = getThresholdResourceType(name, id, merge ? group.getGenericResourceTypeMap().get(id) : null);
                 if (genericType.getThresholdMap().size() > 0) {

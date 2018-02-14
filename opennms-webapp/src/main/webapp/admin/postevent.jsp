@@ -34,8 +34,7 @@
 	session="true"
 	import="
 		java.util.*,
-                org.opennms.web.api.Util,
-                org.opennms.netmgt.EventConstants,
+                org.opennms.web.api.Util,org.opennms.netmgt.events.api.EventConstants,
                 org.opennms.netmgt.xml.event.Event,
                 org.opennms.netmgt.xml.event.Parm,
                 org.opennms.netmgt.xml.event.Value,
@@ -54,7 +53,7 @@
     Event event = new Event();
     event.setSource("Web UI");
     event.setUei(uei);
-    event.setTime(EventConstants.formatToString(new java.util.Date()));
+    event.setTime(new java.util.Date());
 
     String nodeID = StringUtils.trimToEmpty(request.getParameter("nodeid"));
     if (StringUtils.isNotBlank(nodeID)) {
@@ -72,7 +71,7 @@
     }
 
     String intface = StringUtils.trimToEmpty(request.getParameter("interface"));
-    if (StringUtils.isNotBlank(host)) {
+    if (StringUtils.isNotBlank(intface)) {
         event.setInterface(intface);
     }
 

@@ -98,23 +98,23 @@ public class AcknowledgeNotificationController extends AbstractController implem
      */
     @Override
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        String[] required = { "notices", "curUser" };
+        String[] required = { "notices" };
 
         String[] noticeIdStrings = request.getParameterValues("notices");
-        String currentUser = request.getParameter("curUser");
-
         if (noticeIdStrings == null) {
             throw new MissingParameterException("notices", required);
         }
+
+        String currentUser = request.getParameter("curUser");
         if (currentUser == null) {
-            throw new MissingParameterException("curUser", required);
+            currentUser = request.getRemoteUser();
         }
 
-        List<Integer> noticeIds = new ArrayList<Integer>();
+        List<Integer> noticeIds = new ArrayList<>();
         for (String noticeIdString : noticeIdStrings) {
             noticeIds.add(WebSecurityUtils.safeParseInt(noticeIdString));
         }
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         filters.add(new NotificationIdListFilter(noticeIds.toArray(new Integer[0])));
         NotificationCriteria criteria = new NotificationCriteria(filters.toArray(new Filter[0]));
         m_webNotificationRepository.acknowledgeMatchingNotification(currentUser, new Date(), criteria);

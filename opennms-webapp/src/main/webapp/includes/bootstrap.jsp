@@ -1,9 +1,9 @@
-<%--
+<!doctype html><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
  *******************************************************************************/
 
 --%>
-
 <%--
   This page is included by other JSPs to create a uniform header. 
   It expects that a <base> tag has been set in the including page
@@ -45,6 +44,7 @@
 	contentType="text/html"
 	session="true"
 	import="
+		org.opennms.core.utils.TimeSeries,
 		org.opennms.web.api.Util,
 		org.opennms.netmgt.config.NotifdConfigFactory
 	"%>
@@ -55,11 +55,10 @@
 <%
 	final String baseHref = Util.calculateUrlBase( request );
 %>
-<!DOCTYPE html>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
-<%= "<html xmlns='http://www.w3.org/1999/xhtml' xml:lang='en' lang='en' xmlns:opennms='xsds/coreweb.xsd'>" %>
+<%= "<html lang=\"en\">" %>
 <head>
   <title>
     <c:forEach var="headTitle" items="${paramValues.headTitle}">
@@ -72,6 +71,7 @@
   <meta http-equiv="Content-Script-Type" content="text/javascript"/>
   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
   <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <meta name="apple-itunes-app" content="app-id=968875097">
 
   <!-- Set GWT property to get browsers locale -->
   <meta name="gwt:property" content="locale=<%=request.getLocale()%>">
@@ -82,40 +82,99 @@
   <c:if test="${param.nobase != 'true' }">
     <base href="<%= baseHref %>" />
   </c:if>
+
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="manifest" />
+    <jsp:param name="asset-type" value="js" />
+  </jsp:include>
+
   <!--  ${nostyles} -->
   <c:if test="${param.nostyles != 'true' }">
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/bootstrap.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/opennms-theme.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/font-awesome-4.3.0/css/font-awesome.min.css" />
-    <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="bootstrap" />
+      <jsp:param name="asset-media" value="screen" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="opennms-theme" />
+      <jsp:param name="asset-media" value="screen" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+      <jsp:param name="asset" value="font-awesome" />
+      <jsp:param name="asset-type" value="css" />
+    </jsp:include>
+    <!-- we used to include the "print.css" here but it turns out it looks like crap -->
   </c:if>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
 
-    <script type="text/javascript" src="lib/jquery/dist/jquery.js"></script>
-    <script type="text/javascript" src="lib/bootstrap/dist/js/bootstrap.js"></script>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="vendor" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="jquery-js" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="jquery-ui-js" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="bootstrap-js" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="global" />
+  </jsp:include>
 
-    <c:if test="${!empty pageContext.request.remoteUser && !param.disableCoreWeb}">
-        <script type="text/javascript" src="<%= baseHref %>coreweb/coreweb.nocache.js"></script>
-    </c:if>
     <c:if test="${param.storageAdmin == 'true'}">
-      <script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
+      <jsp:include page="/assets/load-assets.jsp" flush="false">
+        <jsp:param name="asset" value="rws-storage" />
+      </jsp:include>
     </c:if>
 
-    <c:if test="${param.enableSpringDojo == 'true'}">	
-      <script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
-      <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-      <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
-    </c:if>
+    <c:if test="${param.renderGraphs == 'true'}">
+      <!-- Graphing -->
+      <script type="text/javascript">
+        // Global scope
+        window.onmsGraphContainers = {
+          'engine': '<%= TimeSeries.getGraphEngine() %>',
+          'baseHref': '<%= baseHref %>'
+        };
+      </script>
+	  <jsp:include page="/assets/load-assets.jsp" flush="false">
+	    <jsp:param name="asset" value="onms-graph" />
+	  </jsp:include>
+	</c:if>
 
+<c:if test="${param.usebackshift == 'true'}">
+  <%-- This allows pages to explicitly use Backshift instead of relying on graph.js (which may not use Backshift) --%>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="d3-js" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="flot-js" />
+  </jsp:include>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="backshift-js" />
+  </jsp:include>
+</c:if>
+
+<c:if test="${param.useionicons == 'true'}">
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ionicons-css" />
+  </jsp:include>
+</c:if>
+
+<c:if test="${not empty param.script}">
+</c:if>
 <c:forEach var="script" items="${paramValues.script}">
+    <!-- WARNING: "script" parameters are deprecated. Remove the next line from your JSP. -->
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
 
 <c:forEach var="extras" items="${paramValues.extras}">
+    <!-- WARNING: "extras" parameters are deprecated. Remove the next line from your JSP. -->
   <c:out value="${extras}" escapeXml="false" />
 </c:forEach>
 
@@ -133,6 +192,9 @@
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain. --%>
 <%= "<body role=\"document\" " %>
+<c:if test="${param.ngapp != null}">
+  ng-app="${param.ngapp}"
+</c:if>
 <c:if test="${param.scrollSpy != null}">
   data-spy="scroll" data-target="${param.scrollSpy}"
 </c:if>

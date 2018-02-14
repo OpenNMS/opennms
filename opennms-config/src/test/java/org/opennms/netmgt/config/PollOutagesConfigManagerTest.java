@@ -34,14 +34,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,7 +86,7 @@ public class PollOutagesConfigManagerTest {
                 "       <interface address=\"192.168.0.1\"/>\n" + 
                 "   </outage>\n";
         
-        StringBuffer sb = new StringBuffer(xml);
+        final StringBuilder sb = new StringBuilder(xml);
 
         // Fake a really big poll-outages.xml
         for (int i = 1; i <= 10000; i++) {
@@ -102,7 +99,7 @@ public class PollOutagesConfigManagerTest {
 
         m_manager = new PollOutagesConfigManager() {
             @Override
-            public void update() throws IOException, MarshalException, ValidationException {}
+            public void update() {}
         };
 
         FileWriter w = new FileWriter(m_configFile);
@@ -110,7 +107,7 @@ public class PollOutagesConfigManagerTest {
         w.close();
         m_manager.setConfigResource(new FileSystemResource(m_configFile));
         m_manager.afterPropertiesSet();
-        assertEquals(10003, m_manager.getOutages().length);
+        assertEquals(10003, m_manager.getOutages().size());
     }
 
     @After

@@ -30,29 +30,29 @@ package org.opennms.features.reporting.model.basicreport;
 
 public interface BasicReportDefinition {
     
-    public abstract String getDescription();
+    String getDescription();
 
-    public abstract String getDisplayName();
+    String getDisplayName();
 
-    public abstract String getId();
+    String getId();
     
-    public abstract String getRepositoryId();
+    String getRepositoryId();
 
-    public abstract boolean getOnline();
+    boolean getOnline();
 
-    public abstract String getReportService();
+    String getReportService();
 
-    public abstract void setId(String id);
+    void setId(String id);
 
-    public abstract void setDisplayName(String displayName);
+    void setDisplayName(String displayName);
 
-    public abstract void setReportService(String reportService);
+    void setReportService(String reportService);
 
-    public abstract void setDescription(String description);
+    void setDescription(String description);
 
-    public abstract void setOnline(boolean online);
+    void setOnline(boolean online);
 
-    public abstract boolean getAllowAccess ();
+    boolean getAllowAccess ();
 
-    public abstract void setAllowAccess(boolean allowAccess);
+    void setAllowAccess(boolean allowAccess);
 }

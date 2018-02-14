@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.opennms.core.tasks.BatchTask;
-import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.TaskCoordinator;
 
 /**
  * <p>DefaultLifeCycleRepository class.</p>
@@ -45,14 +45,14 @@ public class DefaultLifeCycleRepository implements LifeCycleRepository {
     
     private final Map<String, LifeCycle> m_lifeCycles = new HashMap<String, LifeCycle>();
     
-    private final DefaultTaskCoordinator m_coordinator;
+    private final TaskCoordinator m_coordinator;
     
     /**
      * <p>Constructor for DefaultLifeCycleRepository.</p>
      *
-     * @param coordinator a {@link org.opennms.core.tasks.DefaultTaskCoordinator} object.
+     * @param coordinator a {@link org.opennms.core.tasks.TaskCoordinator} object.
      */
-    public DefaultLifeCycleRepository(DefaultTaskCoordinator coordinator) {
+    public DefaultLifeCycleRepository(TaskCoordinator coordinator) {
         m_coordinator = coordinator;
     }
 

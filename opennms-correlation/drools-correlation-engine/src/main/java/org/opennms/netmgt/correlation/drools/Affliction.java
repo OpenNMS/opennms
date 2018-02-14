@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,9 @@ import java.util.List;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class Affliction {
+public class Affliction implements Serializable {
+    private static final long serialVersionUID = -6417353487212711644L;
+
     Long m_nodeid;
     String m_ipAddr;
     String m_svcName;
@@ -48,7 +51,7 @@ public class Affliction {
         WIDE_SPREAD
     }
     
-    private List<Integer> m_reporters = new ArrayList<Integer>();
+    private List<Integer> m_reporters = new ArrayList<>();
     private Type m_type  = Type.UNDECIDED;
     
     /**

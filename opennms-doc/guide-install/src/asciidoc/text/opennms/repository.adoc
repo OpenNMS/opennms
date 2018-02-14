@@ -1,0 +1,57 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-opennms-repo-releases]]
+== Yum/APT Package Repositories
+
+Installation packages are available for different releases of _OpenNMS_.
+You need to choose which release you would like to run and then configure your package repository to point to that release.
+Configuring a package repository will enable you to install and update the software by using standard Linux software update tools like _yum_ and _apt_.
+
+The following package repositories are available:
+
+._OpenNMS_ package repositories
+[options="header, autowidth"]
+|===
+| Release                   | Description
+| `stable`                  | Latest stable release. This version is recommended for all users.
+| `testing`                 | Release candidate for the next stable release.
+| `snapshot`                | Latest successful development build, the "nightly" build.
+| `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
+                              Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
+|===
+
+To install a different release the repository files have to be installed and manually modified.
+
+=== RHEL Yum Repository
+
+.Install the configuration for a package repository
+[source, shell]
+----
+rpm -Uvh https://yum.opennms.org/repofiles/opennms-repo-${RELEASE}-rhel7.noarch.rpm <1>
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+<1> Replace `${RELEASE}` with a release name like `stable` (recommended), `testing`, or `snapshot`.
+
+=== Debian APT Repository
+
+Create a new apt source file (eg: `/etc/apt/sources.list.d/opennms.list`), and add the following 2 lines:
+
+.Package repository configuration for Debian-based systems
+[source, shell]
+----
+deb https://debian.opennms.org ${RELEASE} main <1>
+deb-src https://debian.opennms.org ${RELEASE} main <1>
+----
+
+<1> Replace `${RELEASE}` with a release name like `stable` (recommended), `testing`, or `snapshot`.
+
+Import the packages' authentication key with the following command:
+
+.GPG key import for Debian-based systems
+[source, shell]
+----
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+----

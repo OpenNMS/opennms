@@ -34,9 +34,8 @@
 	session="true"
 	import="java.util.*,
 		org.opennms.web.element.*,
-		org.opennms.web.asset.*
-		"
-%>
+		org.opennms.web.asset.*,
+		org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation"%>
 
 <%!
     protected AssetModel model;
@@ -52,6 +51,8 @@
     Map<String,Integer> serviceNameMap = new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap());
     List<String> serviceNameList = new ArrayList<String>(serviceNameMap.keySet());
     Collections.sort(serviceNameList);
+
+    List<OnmsMonitoringLocation> monitoringLocations = NetworkElementFactory.getInstance(getServletContext()).getMonitoringLocations();
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -97,7 +98,7 @@
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <div class="form-group">
                     <label for="byip_iplike">TCP/IP Address like:</label>
-                    <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.*" />
+                    <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*" />
                   </div>
                   <button type="submit" class="btn btn-default">Search</button>
                 </form>
@@ -150,16 +151,16 @@
               </div> <!-- column -->
             </div> <!-- row -->
 
-            <%-- search by service --%>
+            <%-- search by location --%>
             <div class="row top-buffer">
               <div class="col-md-12">
                 <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
                   <input type="hidden" name="listInterfaces" value="false"/>
                   <div class="form-group">
-                    <label for="byservice_service">Providing service:</label>
-                    <select class="form-control" id="byservice_service" name="service">
-                      <% for (String name : serviceNameList) { %>
-                        <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+                    <label for="bymonitoringLocation_monitoringLocation">Location:</label>
+                    <select class="form-control" id="bymonitoringLocation_monitoringLocation" name="monitoringLocation">
+                      <% for (OnmsMonitoringLocation monitoringLocation : monitoringLocations) { %>
+                        <option value="<%=monitoringLocation.getLocationName()%>"><%=monitoringLocation.getLocationName()%></option>
                       <% } %>
                     </select>
                   </div>
@@ -167,6 +168,24 @@
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
+
+              <%-- search by service --%>
+              <div class="row top-buffer">
+                <div class="col-md-12">
+                  <form role="form" class="form-inline pull-right" action="element/nodeList.htm" method="get">
+                    <input type="hidden" name="listInterfaces" value="false"/>
+                    <div class="form-group">
+                      <label for="byservice_service">Providing service:</label>
+                      <select class="form-control" id="byservice_service" name="service">
+                        <% for (String name : serviceNameList) { %>
+                        <option value="<%=serviceNameMap.get(name)%>"><%=name%></option>
+                        <% } %>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-default">Search</button>
+                  </form>
+                </div> <!-- column -->
+              </div> <!-- row -->
 
             <%-- search by MAC --%>
             <div class="row top-buffer">
@@ -272,8 +291,8 @@
           </p>
 
           <p>Searching by TCP/IP address uses a very flexible search format, allowing you
-            to separate the four octets (fields) of a TCP/IP address into specific
-            searches.  An asterisk (*) in place of any octet matches any value for that
+            to separate the four or eight (in case of IPv6) fields of a TCP/IP address into
+            specific searches. An asterisk (*) in place of any octet matches any value for that
             octet. Ranges are indicated by two numbers separated by a dash (-), and
             commas are used for list demarcation.
           </p>
@@ -287,6 +306,8 @@
                 <li>192.168.*.*
                 <li>192.168.0-255.0-255
                 <li>192.168.0,1,2,3-255.*
+                <li>2001:6a8:3c80:8000-8fff:*:*:*:*
+                <li>fc00,fe80:*:*:*:*:*:*:*
             </ul>
 
           <p>A search for ifAlias, ifName, or ifDescr "contains" will find nodes with interfaces

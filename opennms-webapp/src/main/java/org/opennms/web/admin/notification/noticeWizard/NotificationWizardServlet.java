@@ -45,16 +45,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.DBUtils;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.netmgt.config.NotificationFactory;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Parameter;
 import org.opennms.netmgt.config.notifications.Varbind;
-import org.opennms.netmgt.filter.FilterDao;
 import org.opennms.netmgt.filter.FilterDaoFactory;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.web.api.Util;
 
 /**
@@ -75,14 +75,14 @@ public class NotificationWizardServlet extends HttpServlet {
     /** Constant <code>SOURCE_PAGE_OTHER_WEBUI="eventslist"</code> */
     public static final String SOURCE_PAGE_OTHER_WEBUI = "eventslist";
 
-    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.jsp"</code> */
-    public static final String SOURCE_PAGE_NOTICES = "eventNotices.jsp";
+    /** Constant <code>SOURCE_PAGE_NOTICES="eventNotices.htm"</code> */
+    public static final String SOURCE_PAGE_NOTICES = "eventNotices.htm";
 
     /** Constant <code>SOURCE_PAGE_NOTIFS_FOR_UEI="notifsForUEI.jsp"</code> */
     public static final String SOURCE_PAGE_NOTIFS_FOR_UEI = "notifsForUEI.jsp";
 
-    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.jsp"</code> */
-    public static final String SOURCE_PAGE_UEIS = "chooseUeis.jsp";
+    /** Constant <code>SOURCE_PAGE_UEIS="chooseUeis.htm"</code> */
+    public static final String SOURCE_PAGE_UEIS = "chooseUeis.htm";
 
     /** Constant <code>SOURCE_PAGE_RULE="buildRule.jsp"</code> */
     public static final String SOURCE_PAGE_RULE = "buildRule.jsp";
@@ -216,7 +216,7 @@ public class NotificationWizardServlet extends HttpServlet {
         ruleString = stripServices(ruleString);
         ruleString = checkParens(ruleString);
 
-        final StringBuffer rule = new StringBuffer(ruleString);
+        final StringBuilder rule = new StringBuilder(ruleString);
 
         final String[] services = request.getParameterValues("services");
         if (services != null) {
@@ -492,18 +492,18 @@ public class NotificationWizardServlet extends HttpServlet {
 
         newNotice.setName(oldNotice.getName());
         newNotice.setWriteable(oldNotice.getWriteable());
-        newNotice.setDescription(oldNotice.getDescription());
+        newNotice.setDescription(oldNotice.getDescription().orElse(null));
         newNotice.setUei(oldNotice.getUei());
         newNotice.setRule(oldNotice.getRule());
         newNotice.setDestinationPath(oldNotice.getDestinationPath());
-        newNotice.setNoticeQueue(oldNotice.getNoticeQueue());
+        newNotice.setNoticeQueue(oldNotice.getNoticeQueue().orElse(null));
         newNotice.setTextMessage(oldNotice.getTextMessage());
-        newNotice.setSubject(oldNotice.getSubject());
-        newNotice.setNumericMessage(oldNotice.getNumericMessage());
+        newNotice.setSubject(oldNotice.getSubject().orElse(null));
+        newNotice.setNumericMessage(oldNotice.getNumericMessage().orElse(null));
         newNotice.setStatus(oldNotice.getStatus());
         newNotice.setVarbind(oldNotice.getVarbind());
 
-        for (final Parameter parameter : oldNotice.getParameter()) {
+        for (final Parameter parameter : oldNotice.getParameters()) {
             final Parameter newParam = new Parameter();
             newParam.setName(parameter.getName());
             newParam.setValue(parameter.getValue());
@@ -515,7 +515,7 @@ public class NotificationWizardServlet extends HttpServlet {
 
     // FIXME: Is this a duplicate of a similar method elsewhere?
     private String makeQueryString(final Map<String, Object> map) {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         String separator = "?";
 
         for (final Map.Entry<String, Object> entry : map.entrySet()) {
@@ -537,7 +537,7 @@ public class NotificationWizardServlet extends HttpServlet {
     }
 
     private static String toSingleQuote(final String rule) {
-        final StringBuffer buffer = new StringBuffer(rule);
+        final StringBuilder buffer = new StringBuilder(rule);
 
         for (int i = 0; (i < buffer.length()); i++) {
             if ((i < buffer.length() - 5) && (buffer.substring(i, i + 6).equals("&quot;"))) {

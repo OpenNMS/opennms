@@ -40,7 +40,7 @@ import org.opennms.features.poller.remote.gwt.client.StatusDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationDetails;
 import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 /**
  * <p>LocationDataService interface.</p>
@@ -63,7 +63,7 @@ public interface LocationDataService {
      * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationInfo} object.
      */
-    LocationInfo getLocationInfo(final OnmsMonitoringLocationDefinition def);
+    LocationInfo getLocationInfo(final OnmsMonitoringLocation def);
     /**
      * <p>getApplicationInfo</p>
      *
@@ -99,7 +99,7 @@ public interface LocationDataService {
      * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.location.LocationDetails} object.
      */
-    LocationDetails getLocationDetails(final OnmsMonitoringLocationDefinition def);
+    LocationDetails getLocationDetails(final OnmsMonitoringLocation def);
     /**
      * <p>getApplicationDetails</p>
      *
@@ -129,7 +129,7 @@ public interface LocationDataService {
      * @param geocode a boolean.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.GWTLatLng} object.
      */
-    GWTLatLng getLatLng(final OnmsMonitoringLocationDefinition def, boolean geocode);
+    GWTLatLng getLatLng(final OnmsMonitoringLocation def, boolean geocode);
     /**
      * <p>handleAllMonitoringLocationDefinitions</p>
      *
@@ -179,10 +179,10 @@ public interface LocationDataService {
     /**
      * <p>getStatusDetailsForLocation</p>
      *
-     * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+     * @param def a {@link OnmsMonitoringLocation} object.
      * @return a {@link org.opennms.features.poller.remote.gwt.client.StatusDetails} object.
      */
-    StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocationDefinition def);
+    StatusDetails getStatusDetailsForLocation(OnmsMonitoringLocation def);
     /**
      * <p>getStatusDetailsForApplication</p>
      *

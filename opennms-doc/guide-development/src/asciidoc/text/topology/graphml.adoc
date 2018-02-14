@@ -1,0 +1,226 @@
+// Allow image rendering
+:imagesdir: ../../images
+
+=== GraphML
+
+In {opennms-product-name} the `GraphMLTopoloyProvider` uses http://graphml.graphdrawing.org/[GraphML] formatted files to visualize graphs.
+
+[quote, , http://graphml.graphdrawing.org]
+____
+GraphML is a comprehensive and easy-to-use file format for graphs.
+It consists of a language core to describe the structural properties of a graph and a flexible extension mechanism to add application-specific data.
+ [...]
+Unlike many other file formats for graphs, GraphML does not use a custom syntax.
+Instead, it is based on XML and hence ideally suited as a common denominator for all kinds of services generating, archiving, or processing graphs.
+____
+
+{opennms-product-name} does not support the full feature set of GraphML.
+The following features are not supported: Nested graphs, Hyperedges, Ports and Extensions.
+For more information about GraphML refer to the http://graphml.graphdrawing.org/primer/graphml-primer.html[Official Documentation].
+
+A basic graph definition using GraphML usually consists of the following GraphML elements:
+
+ * Graph element to describe the graph
+ * Key elements to define custom properties, each element in the GraphML document can define as data elements
+ * Node and Edge elements
+ * Data elements to define custom properties, which {opennms-product-name} will then interpret.
+
+A very minimalistic example is given below:
+
+[source, xml]
+----
+include::examples/minimalistic.xml[]
+----
+<1> The optional label of the menu entry.
+<2> The graph definition.
+<3> Each graph must have a namespace, otherwise {opennms-product-name} refuses to load the graph.
+<4> Node definitions.
+
+==== Create/Update/Delete GraphML Topology
+
+In order to create a GraphML Topology, a valid GraphML xml file must exist.
+Afterwards this is send to the {opennms-product-name} REST API to create it:
+
+[source, shell]
+----
+curl -X POST -H "Content-Type: application/xml" -u admin:admin -d@graph.xml 'http://localhost:8980/opennms/rest/graphml/topology-name'
+----
+
+The `topology-name` is a unique identifier for the Topology.
+If a `label` property is defined for the Graphml element this is used to be displayed in the Topology UI, otherwise the `topology-name` defined here is used as a fallback.
+
+To delete an already existing Topology a HTTP DELETE request must be send:
+
+[source, shell]
+----
+curl -X DELETE -u admin:admin 'http://localhost:8980/opennms/rest/graphml/topology-name'
+----
+
+There is no PUT method available.
+In order to update an existing GraphML Topology one must first delete and afterwards re-create it.
+
+NOTE: Even if the HTTP Request was successful, it does not mean, that the Topology is actually loaded properly.
+The HTTP Request states that the Graph was successfully received, persisted and is in a valid GraphML format.
+However, the underlying `GraphMLTopologyProvider` may perform additional checks or encounters problems while parsing the file.
+If the Topology does not show up, the `karaf.log` should be checked for any clues what went wrong.
+In addition it may take a while before the Topology is actually selectable from the Topology UI.
+
+==== Supported Attributes
+
+A various set of GraphML attributes are supported and interpreted by {opennms-product-name} while reading the GraphML file.
+The following table explains the supported attributes and for which GraphML elements they may be used.
+
+[quote, , http://graphml.graphdrawing.org/primer/graphml-primer.html#Attributes]
+____
+The type of the GraphML-Attribute can be either boolean, int, long, float, double, or string.
+These types are defined like the corresponding types in the Java(TM)-Programming language.
+____
+
+.Supported GraphML Attributes
+[options="header, autowidth"]
+|=======================
+| Property                  | Required | For element  | Type      | Default   | Description
+| `namespace`               | yes      | Graph        | `string`  | -         | The namespace must be unique overall existing Topologies.
+| `description`             | no       | Graph        | `string`  | -         | A description, which is shown in the Info Panel.
+| `preferred-layout`        | no       | Graph        | `string`  | `D3`      | Defines a preferred layout.
+| `focus-strategy`          | no       | Graph        | `string`  | `FIRST`   | Defines a focus strategy. See <<gd-topology-graphml-focus-strategy>> for more information.
+| `focus-ids`               | no       | Graph        | `string`  | -         | Refers to nodes ids in the graph.
+                                                                                This is required if `focus-strategy` is `SPECIFIC`.
+                                                                                If multiple ids should be add to focus, they are separated by `,`.
+                                                                                Example: `node1,node2`
+| `semantic-zoom-level`     | no       | Graph        | `int`     | `1`       | Defines the default SZL.
+| `vertex-status-provider`  | no       | Graph        | `string`  | -         | Defines which <<gd-topology-graphml-vertex-status-provider>> should be used, e.g. `default`, `script` or `propagate`
+| `iconKey`                 | no       | Node         | `string`  | `generic` | Defines the icon. See <<gd-topology-graphml-icons>> for more information.
+| `label`                   | no       | Graph, Node  | `string`  | -         | Defines a custom label. If not defined, the `id` is used instead.
+| `nodeID`                  | no       | Node         | `int`     | -         | Allows referencing the Vertex to an OpenNMS node.
+| `foreignSource`           | no       | Node         | `string`  | -         | Allows referencing the Vertex to an OpenNMS node identified by foreign source and foreign id.
+                                                                                Can only be used in combination with `foreignID`. Please note that this attribute will not be
+                                                                                used when the attribute `nodeID` is set.
+| `foreignID`               | no       | Node         | `string`  | -         | Allows referencing the Vertex to an OpenNMS node identified by foreign source and foreign id.
+                                                                                Can only be used in combination with `foreignSource`. Please note that this attribute will not be
+                                                                                used when the attribute `nodeID` is set.
+| `tooltipText`             | no       | Node, Edge   | `string`  |           | Defines a custom tooltip. If not defined, the `id` attribute is used instead.
+| `level`                   | no       | Node         | `int`     | `0`       | Sets the level of the Vertex which is used by certain layout algorithms i.e. `Hierarchical Layout` and `Grid Layout`.
+| `edge-path-offset`        | no       | Graph, Node  | `int`     | `20`      | Controls the spacing between the paths drawn for the edges when there are multiple edges connecting two vertices.
+| `breadcrumb-strategy`     | no       | GraphML      | `string`  | `NONE`    | Defines the breadcrumb strategy to use. See <<gd-topology-graphml-breadcrumbs>> for more information.
+|=======================
+
+[[gd-topology-graphml-focus-strategy]]
+==== Focus Strategies
+
+A `Focus Strategy` defines which Vertices should be added to focus when selecting the Topology.
+The following strategies are available:
+
+* *EMPTY* No Vertex is add to focus.
+* *ALL* All Vertices are add to focus.
+* *FIRST* The first Vertex is add to focus.
+* *SPECIFIC* Only Vertices which id match the graph's property `focus-ids` are added to focus.
+
+[[gd-topology-graphml-icons]]
+==== Icons
+
+With the _GraphMLTopoloygProvider_ it is not possible to change the icon from the Topology UI.
+Instead if a custom icon should be used, each node must contain a `iconKey` property referencing an SVG element.
+
+[[gd-topology-graphml-vertex-status-provider]]
+==== Vertex Status Provider
+
+The _Vertex Status Provider_ calculates the status of the Vertex.
+There are multiple implementations available which can be configured for each graph: `default`, `script` and `propagate`.
+If none is specified, there is no status provided at all.
+
+===== Default Vertex Status Provider
+The `default` status provider calculates the status based on the worst unacknowledged alarm associated with the Vertex's node.
+In order to have a status calculated a ({opennms-product-name}) node must be associated with the Vertex.
+This can be achieved by setting the GraphML attribute `nodeID` on the GraphML node accordingly.
+
+===== Script Vertex Status Provider
+The `script` status provider uses scripts similar to the <<gd-topology-graphml-edge-status-provider>>.
+Just place Groovy scripts (with file extension .groovy) in the directory `$OPENNMS_HOME/etc/graphml-vertex-status`.
+All of the scripts will be evaluated and the most severe status will be used for the vertex in the topology's visualization.
+
+If the script shouldn't contribute any status to a vertex just return `null`.
+
+===== Propagate Vertex Status Provider
+The `propagate` status provider follows all links from a node to its connected nodes.
+It uses the status of these nodes to calculate the status by determining the worst one.
+
+[[gd-topology-graphml-edge-status-provider]]
+==== Edge Status Provider
+
+It is also possible to compute a status for each edge in a given graph.
+Just place Groovy scripts (with file extension .groovy) in the directory `$OPENNMS_HOME/etc/graphml-edge-status`.
+All of the scripts will be evaluated and the most severe status will be used for the edge in the topology's visualization.
+
+The following simple Groovy script example will apply a different style and severity if the edge's associated source node is down.
+
+.Scriptable edge status
+[source, groovy]
+----
+import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.features.topology.plugins.topo.graphml.GraphMLEdgeStatus;
+
+if ( sourceNode != null && sourceNode.isDown() ) {
+    return new GraphMLEdgeStatus(OnmsSeverity.WARNING, [ 'stroke-dasharray' : '5,5', 'stroke' : 'yellow', 'stroke-width' : '6' ]);
+} else {
+    return new GraphMLEdgeStatus(OnmsSeverity.NORMAL, []);
+}
+----
+
+If the script shouldn't contribute any status to an edge just return `null`.
+
+[[gd-topology-graphml-layers]]
+==== Layers
+
+The _GraphMLTopologyProvider_ can handle GraphML files with multiple graphs.
+Each Graph is represented as a Layer in the Topology UI.
+If a vertex from one graph has an edge pointing to another graph, one can navigate to that layer.
+
+.GraphML example defining multiple layers
+[source, xml]
+----
+include::examples/layers.xml[]
+----
+
+[[gd-topology-graphml-breadcrumbs]]
+==== Breadcrumbs
+
+When multiple Layers are used it is possible to navigate between them (`navigate to` option from vertex' context menu).
+To give the user some orientation breadcrumbs can be enabled with the `breadcrumb-strategy` property.
+
+The following strategies are supported:
+
+ * *NONE* No breadcrumbs are shown.
+ * *SHORTEST_PATH_TO_ROOT* generates breadcrumbs from all visible vertices to the root layer (TopologyProvider).
+    The algorithms assumes a hierarchical graph. Be aware, that all vertices MUST share the same root layer, otherwise the algorithm to determine the path to root does not work.
+
+The following figure visualizes a graphml defining multiple layers (see below for the graphml definition).
+
+image::topology/layers-example.jpg[]
+
+From the given example, the user can select the `Breadcrumb Example` Topology Provider from the menu.
+The user can switch between `Layer 1`, `Layer 2` and `Layer 3`.
+In addition for each vertex which has connections to another layer, the user can select the `navigate to` option from the context menu of that vertex to navigate to the according layer.
+The user can also search for all vertices and add it to focus.
+
+The following behaviour is implemented:
+
+ * If a user navigates from one vertex to a vertex in another layer, the view is switched to that layer and adds all vertices to focus, the `source vertex` pointed to. The Breadcrumb is `<parent layer name> > <source vertex>`.
+ For example, if a user navigates from `Layer1:A2` to `Layer2:B1` the view switches to `Layer 2` and adds `B1` and `B2` to focus. In addition `Layer 1 > A2` is shown as Breadcrumbs.
+ * If a user directly switches to another layer, the default focus strategy is applied, which may result in multiple vertices with no unique parent.
+  The calculated breadcrumb is: `<parent layer name> > Multiple <target layer name>`.
+  For example, if a user switches to `Layer 3`, all vertices of that layer are added to focus (`focus-strategy=ALL`). No unique path to root is found, the following breadcrumb is shown instead: `Layer 1 > Multiple Layer 1` > `Multiple Layer 2`
+ * If a user adds a vertex to focus, which is not in the current selected layer, the view switches to that layer and only the "new" vertex is added to focus.
+ The generated breadcrumb shows the path to root through all layers.
+  For example, the user adds `C3` to focus, and the current layer is `Layer 1`, than the generated breadcrumb is as follows: `Layer 1 > A1 > B3`.
+ * Only elements between layers are shown in the breadcrumb. Connections on the same layer are ignored.
+ For example, a user adds `C5` to focus, the generated breadcrumb is as follows: `Layer 1 > A2 > B2`
+
+
+The following graphml file defines the above shown graph.
+Be aware, that the root vertex shown above is generated to help calculating the path to root.
+It must not be defined in the graphml document.
+[source, xml]
+----
+include::examples/layers-path.xml[]
+----

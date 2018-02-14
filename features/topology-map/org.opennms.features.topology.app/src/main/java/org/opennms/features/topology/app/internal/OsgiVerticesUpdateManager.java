@@ -28,17 +28,18 @@
 
 package org.opennms.features.topology.app.internal;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.SelectionContext;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.osgi.OnmsServiceManager;
-import org.opennms.osgi.VaadinApplicationContext;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.SelectionContext;
+import org.opennms.features.topology.api.TopologyServiceClient;
+import org.opennms.features.topology.api.VerticesUpdateManager;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.osgi.OnmsServiceManager;
+import org.opennms.osgi.VaadinApplicationContext;
 
 /**
  * A OSGI-variant of the {@link VerticesUpdateManager}
@@ -81,7 +82,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
             }
         }
 
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), graphContainer.getTopologyServiceClient());
 
     }
 
@@ -95,7 +96,7 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
                 m_selectedVertices.addAll(selectedVertexRefs);
             }
         }
-        fireVertexRefsUpdated(getVerticesInFocus());
+        fireVertexRefsUpdated(getVerticesInFocus(), selectionContext.getGraphContainer().getTopologyServiceClient());
 
     }
 
@@ -119,18 +120,14 @@ public class OsgiVerticesUpdateManager implements VerticesUpdateManager {
      * Notifies all listeners that the focus of the vertices has changed.
      * @param newVertexRefs
      */
-    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs) {
+    private synchronized void fireVertexRefsUpdated(Collection<VertexRef> newVertexRefs, TopologyServiceClient source) {
         if (!hasChanged(newVertexRefs, m_verticesInFocus)) {
             return;
         }
         m_verticesInFocus.clear();
         m_verticesInFocus.addAll(newVertexRefs);
-        boolean displayedSelected = false;
-        if (m_displayableVertexRefs.size() == m_verticesInFocus.size()) {
-            displayedSelected = true;
-        }
-
-        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), displayedSelected);
+        final boolean displayedSelected = m_displayableVertexRefs.size() == m_verticesInFocus.size();
+        final VerticesUpdateEvent updateEvent = new VerticesUpdateEvent(Collections.unmodifiableSet(m_verticesInFocus), source, displayedSelected);
         m_applicationContext.getEventProxy(m_serviceManager).fireEvent(updateEvent);
     }
 }

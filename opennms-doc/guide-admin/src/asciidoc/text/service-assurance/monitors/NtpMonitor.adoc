@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== NtpMonitor
+
+The NTP monitor tests for NTP service availability.
+During the poll an NTP request query packet is generated.
+If a response is received, it is parsed and validated.
+If the response is a valid NTP response, the service is considered available.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.NtpMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the NtpMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                | Required | Default value
+| `port`    | The destination port where the NTP request shall be sent.  | optional | `123`
+| `retry`   | Number of attempts to get a response.                      | optional | `0`
+| `timeout` | Time in milliseconds to wait for a response.               | optional | `5000`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+[source, xml]
+----
+<--! Fast NTP server -->
+<service name="NTP" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="2"/>
+  <parameter key="timeout" value="1000"/>
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response"/>
+  <parameter key="rrd-base-name" value="ntp"/>
+  <parameter key="ds-name" value="ntp"/>
+</service>
+<monitor service="NTP" class-name="org.opennms.netmgt.poller.monitors.NtpMonitor"/>
+----

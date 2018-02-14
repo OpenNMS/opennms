@@ -1,9 +1,10 @@
+<%@page language="java" contentType="text/html" session="true"  %>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,12 +28,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
---%>
-
-<%@page language="java" contentType="text/html" session="true"  %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
+--%><jsp:include page="/includes/bootstrap.jsp" flush="false">
 	<jsp:param name="title" value="Web Console" />
+	<jsp:param name="useionicons" value="true" />
 </jsp:include>
 
 <div class="row">
@@ -48,24 +46,45 @@
            if (Boolean.parseBoolean(showNodesWithOutages)) { %>
 		<jsp:include page="/outage/servicesdown-box.htm" flush="false" />
         <% } %>
+		<!-- Business Services box -->
+		<% String showBusinessServicesProblems = System.getProperty("opennms.businessServicesWithProblems.show", "true");
+			if (Boolean.parseBoolean(showBusinessServicesProblems)) { %>
+		<jsp:include page="/bsm/summary-box.htm" flush="false" />
+		<% } %>
+		<!-- Applications box -->
+		<% String showApplicationsProblems = System.getProperty("opennms.applicationsWithProblems.show", "true");
+			if (Boolean.parseBoolean(showApplicationsProblems)) { %>
+		<jsp:include page="/application/summary-box.htm" flush="false" />
+		<% } %>
 	</div>
 
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
-		<% String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp"); %>
-		<jsp:include page="<%=centerUrl%>" flush="false" />
+		<%
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl",  "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp");
+			String[] centerUrlArr = centerUrl.split(",");
+			for(String centerUrlItem : centerUrlArr) {
+		%>
+		<jsp:include page="<%=centerUrlItem%>" flush="false" />
+		<%
+			}
+		%>
 	</div>
 
 	<!-- Right Column -->
 	<div class="col-md-3" id="index-contentright">
-		<!-- notification box -->    
+		<!-- notification box -->
 		<jsp:include page="/includes/notification-box.jsp" flush="false" />
 
-		<!-- Performance box -->    
-		<jsp:include page="/includes/resourceGraphs-box.jsp" flush="false" />
+		<!-- Search box -->
+		<jsp:include page="/includes/search-box.jsp" flush="false" />
 
-		<!-- KSC Reports box -->    
-		<jsp:include page="/KSC/include-box.htm" flush="false" />
+		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
+			if (Boolean.parseBoolean(showGrafanaBox)) { %>
+		<jsp:include page="/includes/grafana-box.jsp" flush="false">
+                    <jsp:param name="useLimit" value="true" />
+                </jsp:include>
+		<% } %>
 
 		<!-- Quick Search box -->
 		<jsp:include page="/includes/quicksearch-box.jsp" flush="false" />

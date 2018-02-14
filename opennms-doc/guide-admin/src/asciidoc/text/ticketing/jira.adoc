@@ -1,0 +1,252 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-ticketing-jira]]
+=== JIRA Ticketing Plugin
+
+The _JIRA Ticketing Plugin_ is used to create JIRA Issues in response to _{opennms-product-name}_ alarms.
+
+[[ga-ticketing-jira-setup]]
+==== Setup
+
+First, you'll need to install the `{opennms-package-base-name}-plugin-ticketer-jira` package for your system.
+The JIRA ticketing plugin and it's dependencies are not part of the core packages.
+
+Now, in order to enable the plugin start by setting following property in `${OPENNMS_HOME}/etc/opennms.properties`:
+
+[source]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
+----
+
+Configure the plugin options by setting the following properties in `${OPENNMS_HOME}/etc/jira.properties`:
+
+[options="header, autowidth"]
+|===
+| Name                    | Description
+| `jira.host`             | JIRA Server Url
+| `jira.username`         | Username
+| `jira.password`         | Password
+| `jira.project`          | The key of the project to use. Use `jira:list-projects` command to determine the project key.
+| `jira.type`             | The Issue Type Id to use when opening new issues. Use `jira:list-issue-types` command to determine the issue type id.
+| `jira.resolve`          | Name of the transition to use when resolving issues
+| `jira.reopen`           | Name of the transition to use when re-opening issues
+| `jira.status.open`      | Comma-separated list of JIRA status names for which the ticket should be considered 'Open'
+| `jira.status.closed`    | Comma-separated list of JIRA status names for which the ticket should be considered 'Closed'
+| `jira.status.cancelled` | Comma-separated list of JIRA status names for which the ticket should be considered 'Cancelled'
+| `jira.cache.reloadTime` | The time in milliseconds it takes to reload the _fields cache_.
+                            This is required to prevent the plugin to read the issue type's meta data every time an issue is created.
+                            A value of 0 disables the cache.
+                            Default value is `300000` (5 minutes).
+|===
+
+NOTE: The transition names for `resolve` and `reopen` are typically found on buttons when looking at the ticket in JIRA
+
+NOTE: Either use `jira:list-issue-types` _OSGI Command_ or https://confluence.atlassian.com/display/JIRA050/Finding+the+Id+for+Issue+Types for determining the appropriate issue type id.
+
+Next, add `jira-troubleticketer` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
+
+Restart _{opennms-product-name}_.
+
+When _{opennms-product-name}_ has started again, login to the _Karaf Shell_ and install the feature:
+
+[source]
+----
+feature:install jira-troubleticketer
+----
+
+The plugin should be ready to use.
+
+==== Jira Commands
+
+The _JIRA Ticketing Plugin_ provides various _OSGI Commands_ which can be used on the _Karaf Shell_ to help set up the plugin.
+
+There are OSGI Commands to list all available projects, versions, components, groups, issue types and even more.
+
+To list all available commands simply type `help | grep jira` in the _Karaf Shell_.
+
+Afterwards you can type for example `jira:list-projects --help` to determine the usage of a command.
+
+
+==== Custom fields
+
+The _{opennms-product-name}_ Ticketer model is limited to the most common fields provided by all ticketing systems.
+
+Besides the common fields creator, create date, description or subject, ticket system proprietary fields usually need to be set.
+
+In some cases, even additional - so called - custom fields are defined.
+
+In order to set these fields, the _JIRA Ticketing Plugin_ provides the possibility to define those in the OpenNMS Ticket attributes which can be overwritten with the Usage of Drools.
+
+To enable the Drools Ticketing integration, the following property in `${OPENNMS_HOME}/etc/opennms.properties` must be set:
+
+[source]
+----
+opennms.ticketer.servicelayer=org.opennms.netmgt.ticketd.DroolsTicketerServiceLayer
+----
+
+In addition the property in `${OPENNMS_HOME/etc/drools-ticketer.properties` must point to a `drools-ticketer-rules.drl` file:
+
+[source]
+----
+drools-ticketer.rules-file=${OPENNMS_HOME/etc/drools-ticketer-rules.drl
+----
+
+Finally a Drools Rule file named `drools-ticketer-rules.drl` must be placed in `${OPENNMS_HOME}/etc`.
+
+
+The following drools example snippet defines attributes to set custom fields:
+[source, drools]
+----
+// Set ticket defaults
+rule "TicketDefaults"
+salience 100
+ when
+  $alarm : OnmsAlarm()
+ then
+  ticket.setSummary($alarm.logMsg);
+  ticket.setDetails($alarm.description);
+  ticket.addAttribute("customfield_10111", "custom-value");
+  ticket.addAttribute("customfield_10112", "my-location");
+  ticket.addAttribute("customfield_10113", "some classification");
+end
+----
+
+Fields must be referenced by their `id`.
+To identify the `id` of a field, the `jira:list-fields` command can be used.
+By default only custom fields are shown.
+The `-s` options allows to show all fields.
+This may be necessary if JIRA default values need to be set as well, e.g. the Component, the Reporter, the Asignee, etc.
+Even the project key or issue type can be defined differently than originally in the `jira.properties`.
+
+The _OpenNMS Ticketer Attribute_ model only allows to set a String value.
+However the JIRA model is slightly different.
+Therefore each String value must be converted to a JIRA field type.
+The following table describes valid values for an OpenNMS attribute.
+
+[options="header, autowidth"]
+|===
+| Type                    | Description
+| `any`                   | Any string.
+| `date`                  | Any date in the format of `YYYY-MM-DD`.
+| `datetime`              | Any datetime in ISO 8601 format: `YYYY-MM-DDThh:mm:ss.sTZD`.
+| `group`                 | The name of the group.
+| `user`                  | The name of the user.
+| `project`               | The key of the project (e.g. `NMS`)
+| `version`               | The name of the version. To list all available versions, use `jira:list-versions`.
+| `string`                | Any string.
+| `option`                | The name of the option.
+| `issuetype`             | The name of the issuetpye, e.g. `Bug`. To list all issue types, use `jira:list-issue-types`.
+| `priority`              | The name of the priority, e.g. `Major`. To list all priorites, use `jira:list-priorities`.
+| `option-with-child`     | Either the name of the option, or a comma separated list (e.g. `parent,child`).
+| `number`                | Any valid number (e.g. `1000`)
+| `array`                 | If the type is `array` the value must be of the containing type.
+                            E.g. to set a custom field which defines multiple groups, the value `jira-users,jira-administrators` is mapped properly.
+                            The same is valid for versions: `18.0.3,19.0.0`.
+|===
+
+As described above the values are usually identified by their name instead of their id (projects are identified by their key).
+This is easier to read, but may break the mapping code, if for example the name of a component changes in the future.
+To change the mapping from `name` (or `key`) to `id` an entry in `jira.properties` must be made:
+
+    jira.attributes.customfield_10113.resolution=id
+
+To learn more about the Jira REST API please consult the following pages:
+
+ * https://developer.atlassian.com/jiradev/jira-apis/jira-rest-apis/jira-rest-api-tutorials/jira-rest-api-example-create-issue#JIRARESTAPIExample-CreateIssue-MultiSelect
+ * https://docs.atlassian.com/jira/REST/cloud/
+
+The following jira (custom) fields have been tested with jira version `6.3.15`:
+
+ * Checkboxes
+ * Date Picker
+ * Date Time Picker
+ * Group Picker (multiple groups)
+ * Group Picker (single group)
+ * Labels
+ * Number Field
+ * Project Picker (single project)
+ * Radio Buttons
+ * Select List (cascading)
+ * Select List (multiple choices)
+ * Select List (single choice)
+ * Text Field (multi-line)
+ * Text Field (read only)
+ * Text Field (single line)
+ * URL Field
+ * User Picker (multiple user)
+ * User Picker (single user)
+ * Version Picker (multiple versions)
+ * Version Picker (single version)
+
+NOTE: All other field types are mapped as is and therefore may not work.
+
+===== Examples
+The following output is the result of the command `jira:list-fields -h http://localhost:8080 -u admin -p testtest -k DUM -i Bug -s` and lists all available fields for project with key `DUM` and issue type `Bug`:
+
+[source]
+----
+Name                           Id                   Custom     Type
+Affects Version/s              versions             false      array
+Assignee                       assignee             false      user
+Attachment                     attachment           false      array
+Component/s                    components           false      array  <1>
+Description                    description          false      string
+Environment                    environment          false      string
+Epic Link                      customfield_10002    true       any
+Fix Version/s                  fixVersions          false      array <2>
+Issue Type                     issuetype            false      issuetype <3>
+Labels                         labels               false      array
+Linked Issues                  issuelinks           false      array
+Priority                       priority             false      priority <4>
+Project                        project              false      project <5>
+Reporter                       reporter             false      user
+Sprint                         customfield_10001    true       array
+Summary                        summary              false      string
+custom checkbox                customfield_10100    true       array <6>
+custom datepicker              customfield_10101    true       date
+----
+
+<1> Defined Components are `core`, `service`, `web`
+<2> Defined versions are `1.0.0` and `1.0.1`
+<3> Defined issue types are `Bug` and `Task`
+<4> Defined priorities are `Major` and `Minor`
+<5> Defined projects are `NMS` and `HZN`
+<6> Defined options are `yes`, `no` and `sometimes`
+
+The following snipped shows how to set the various custom fields:
+
+[source]
+----
+ticket.addAttribute("components", "core,web"); <1>
+ticket.addAttribute("assignee", "ulf"); <2>
+ticket.addAttribute("fixVersions", "1.0.1"); <3>
+ticket.addAttribte("issueType", "Task"); <4>
+ticket.addAttribute("priority", "Minor"); <5>
+ticket.addAttribute("project", "HZN"); <6>
+ticket.addAttribute("summary", "Custom Summary"); <7>
+ticket.addAttribute("customfield_10100", "yes,no"); <8>
+ticket.addAttribute("customfield_10101", "2016-12-06"); <9>
+----
+
+<1> Sets the components of the created issue to `core` and `web`.
+<2> Sets the Asignee of the issue to the user with login `ulf`.
+<3> Sets the fix version of the issue to `1.0.1`
+<4> Sets the issue type to `Task`, overwriting the value of `jira.type`.
+<5> Sets the priority of the created issue to `Minor`.
+<6> Sets the project to `HZN`, overwriting the value of `jira.project`.
+<7> Sets the summary to `Custom Summary`, overwriting any previous summary.
+<8> Checks the checkboxes `yes` and `no`.
+<9> Sets the value to `2016-12-06`.
+
+
+[[ga-ticketing-jira-troubleshooting]]
+==== Troubleshooting
+
+When troubleshooting, consult the following log files:
+
+* ${OPENNMS_HOME}/data/log/karaf.log
+* ${OPENNMS_HOME}/logs/trouble-ticketer.log
+
+You can also try the `jira:verify` _OSGI Command_ to help identifying problems in your configuration.

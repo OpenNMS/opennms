@@ -30,6 +30,8 @@ package org.opennms.core.criteria.restrictions;
 
 import java.util.Collection;
 
+import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
+
 public abstract class Restrictions {
 
     private static final Restriction[] EMPTY_RESTRICTION_ARRAY = new Restriction[0];
@@ -48,6 +50,10 @@ public abstract class Restrictions {
 
     public static EqRestriction eq(final String attribute, final Object comparator) {
         return new EqRestriction(attribute, comparator);
+    }
+
+    public static EqPropertyRestriction eqProperty(final String attribute, final Object comparator) {
+        return new EqPropertyRestriction(attribute, comparator);
     }
 
     public static Restriction ne(final String attribute, final Object comparator) {
@@ -94,12 +100,12 @@ public abstract class Restrictions {
         return new NotRestriction(restriction);
     }
 
-    public static AllRestriction and(final Restriction lhs, final Restriction rhs) {
-        return new AllRestriction(lhs, rhs);
+    public static AllRestriction and(final Restriction... restrictions) {
+        return new AllRestriction(restrictions);
     }
 
-    public static AnyRestriction or(final Restriction lhs, final Restriction rhs) {
-        return new AnyRestriction(lhs, rhs);
+    public static AnyRestriction or(final Restriction... restrictions) {
+        return new AnyRestriction(restrictions);
     }
 
     public static AllRestriction all(final Restriction... restrictions) {
@@ -122,4 +128,11 @@ public abstract class Restrictions {
         return new SqlRestriction(sql);
     }
 
+    public static AttributeRestriction sql(final String sql, Object parameter, Type type) {
+        return new SqlRestriction(sql, parameter, type);
+    }
+
+    public static AttributeRestriction sql(final String sql, Object[] parameters, Type[] types) {
+        return new SqlRestriction(sql, parameters, types);
+    }
 }

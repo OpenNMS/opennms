@@ -33,12 +33,16 @@ import static org.springframework.util.Assert.notNull;
 import java.lang.reflect.Field;
 
 import javax.annotation.Resource;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.access.BeanFactoryLocator;
 import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
@@ -47,9 +51,20 @@ import org.springframework.context.access.DefaultLocatorFactory;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-public abstract class BeanUtils {
-	
-	public static final Logger LOG = LoggerFactory.getLogger(BeanUtils.class);
+public class BeanUtils implements ApplicationContextAware {
+
+    public static final Logger LOG = LoggerFactory.getLogger(BeanUtils.class);
+
+    private static ApplicationContext m_context;
+
+    @Override
+    public void setApplicationContext(ApplicationContext context) {
+        setStaticApplicationContext(context);
+    }
+
+    public static void setStaticApplicationContext(ApplicationContext context) {
+        m_context = context;
+    }
 
     /**
      * Get a Spring BeanFactory by context ID.
@@ -58,8 +73,22 @@ public abstract class BeanUtils {
      * @return the BeanFactory
      */
     public static BeanFactoryReference getBeanFactory(String contextId) {
-        BeanFactoryLocator beanFactoryLoader = DefaultLocatorFactory.getInstance();
-        return beanFactoryLoader.useBeanFactory(contextId);
+        // If no ApplicationContext has been injected by an existing Spring
+        // context, then use DefaultLocatorFactory to find or create the context
+        if (m_context == null) {
+            BeanFactoryLocator beanFactoryLoader = DefaultLocatorFactory.getInstance();
+            return beanFactoryLoader.useBeanFactory(contextId);
+        } else {
+            return new BeanFactoryReference() {
+                @Override
+                public BeanFactory getFactory() {
+                    return m_context;
+                }
+
+                @Override
+                public void release() {}
+            };
+        }
     }
 
     /**
@@ -99,22 +128,28 @@ public abstract class BeanUtils {
      * @param clazz class representing the type for the returned factory
      * @return the factory casted to &lt;T&gt;
      */
-    @SuppressWarnings("unchecked")
     public static <T> T getFactory(String contextId, Class<T> clazz) {
-        return (T) getBeanFactory(contextId).getFactory();
+        return clazz.cast(getBeanFactory(contextId).getFactory());
     }
 
     /**
      * Check that all fields that are marked with @Autowired are not null.
+     * This will identify classes that have been loaded by Spring but have
+     * not been autowired via {@code <context:annotation-config />}.
      */
     public static <T> void assertAutowiring(T instance) {
         for (Field field : instance.getClass().getDeclaredFields()) {
             Autowired autowired = field.getAnnotation(Autowired.class);
+            Inject inject = field.getAnnotation(Inject.class);
             Resource resource = field.getAnnotation(Resource.class);
-            if ((autowired != null && autowired.required()) || (resource != null)) {
+            if (
+                (autowired != null && autowired.required()) ||
+                (inject != null) ||
+                (resource != null)
+            ) {
                 try {
                     field.setAccessible(true);
-                    notNull(field.get(instance), "@Autowired/@Resource field " + field.getName() + " cannot be null");
+                    notNull(field.get(instance), "@Autowired/@Inject/@Resource field " + field.getName() + " cannot be null");
                     LOG.debug("{} is not null", field.getName());
                 } catch (IllegalAccessException e) {
                     throw new IllegalArgumentException("Illegal access to @Autowired/@Resource field " + field.getName());

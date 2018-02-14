@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
@@ -151,12 +150,11 @@ public class TcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefinition,
     /**
      * <p>createFile</p>
      *
-     * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
+     * @param rrdDef a {@link RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-	public void createFile(RrdDefinition rrdDef,
-			Map<String, String> attributeMappings) throws Exception {
+	public void createFile(RrdDefinition rrdDef) throws Exception {
         // Do nothing
     }
 

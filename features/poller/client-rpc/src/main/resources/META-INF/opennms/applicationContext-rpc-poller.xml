@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+	<context:annotation-config />
+
+    <bean id="pollerClientRpcModule" class="org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule" />
+
+    <bean id="locationAwarePollerClient" class="org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl" />
+    <onmsgi:service interface="org.opennms.netmgt.poller.LocationAwarePollerClient" ref="locationAwarePollerClient"/>
+
+    <!-- This executor pool is implicitly limited by the size of the pollerd's scheduler pool.
+         When a poll is triggered, pollerd will use a thread to a hold the tree lock, and wait
+         while the monitor is executed in this pool. -->
+    <bean id="pollerExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+
+</beans>

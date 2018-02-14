@@ -1,78 +1,67 @@
-<?xml version="1.0"?>
-<datacollection-group name="Isilon">
-
-  <resourceType name="isiProtocolName" label="Isilon Node Traffic by Protocol" resourceLabel="${protocolName} Stats">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="isiDiskPerfBay" label="Isilon Node Disk Bays" resourceLabel="Disk ${deviceName}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="isiFanNumber" label="Isilon Node Fans" resourceLabel="${fanDescription}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <resourceType name="isiTempSensorNum" label="Isilon Node Temp Sensors" resourceLabel="${tempSensorDesc}">
-    <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-    <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-  </resourceType>
-
-  <group name="isilon-cluster" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12124.1.1.4" instance="0" alias="nodeCount" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.2.1.1" instance="0" alias="ifsInBytes" type="Counter64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.2.1.3" instance="0" alias="ifsOutBytes" type="Counter64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.2.2.1" instance="0" alias="networkInBytes" type="Counter64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.2.2.3" instance="0" alias="networkOutBytes" type="Counter64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.3.1" instance="0" alias="ifsTotalBytes" type="Gauge64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.3.2" instance="0" alias="ifsUsedBytes" type="Gauge64" />
-    <mibObj oid=".1.3.6.1.4.1.12124.1.3.3" instance="0" alias="ifsAvailableBytes" type="Gauge64" />
-  </group>
-
-  <group name="isilon-node-network-protocol" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.1" instance="isiProtocolName" alias="protocolName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.2" instance="isiProtocolName" alias="protocolOpCount" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.4" instance="isiProtocolName" alias="inMinBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.5" instance="isiProtocolName" alias="inMaxBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.6" instance="isiProtocolName" alias="inAvgBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.7" instance="isiProtocolName" alias="inStdDevBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.9" instance="isiProtocolName" alias="outMinBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.10" instance="isiProtocolName" alias="outMaxBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.11" instance="isiProtocolName" alias="outAvgBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.12" instance="isiProtocolName" alias="outStdDevBytes" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.14" instance="isiProtocolName" alias="latencyMin" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.15" instance="isiProtocolName" alias="latencyMax" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.16" instance="isiProtocolName" alias="latencyAverage" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.17" instance="isiProtocolName" alias="latencyStdDev" type="Gauge32" />
-  </group>
-
-  <group name="isilon-node-disk-perfbay" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.1" instance="isiDiskPerfBay" alias="bay" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.2" instance="isiDiskPerfBay" alias="deviceName" type="String" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.3" instance="isiDiskPerfBay" alias="opsPerSec" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.4" instance="isiDiskPerfBay" alias="inBitsPerSec" type="Gauge32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.5" instance="isiDiskPerfBay" alias="outBitsPerSec" type="Gauge32" />
-  </group>
-
-  <group name="isilon-node-fan" ifType="ignore">
-    <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.1" instance="isiFanNumber" alias="fanNumber" type="Integer32" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.2" instance="isiFanNumber" alias="fanName" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.3" instance="isiFanNumber" alias="fanDescription" type="string" />
-    <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.4" instance="isiFanNumber" alias="fanSpeed" type="Gauge32" />
-  </group>
-
-  <systemDef name="Isilon Storage">
-    <sysoid>.1.3.6.1.4.1.12124.1</sysoid>
-    <collect>
-      <includeGroup>isilon-cluster</includeGroup>
-      <includeGroup>isilon-node-network-protocol</includeGroup>
-      <includeGroup>isilon-node-disk-perfbay</includeGroup>
-      <includeGroup>isilon-node-fan</includeGroup>
-      <includeGroup>isilon-node-tempsensor</includeGroup>
-    </collect>
-  </systemDef>
-
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Isilon">
+   <resourceType name="isiProtocolName" label="Isilon Node Traffic by Protocol" resourceLabel="${protocolName} Stats">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="isiDiskPerfBay" label="Isilon Node Disk Bays" resourceLabel="Disk ${deviceName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="isiFanNumber" label="Isilon Node Fans" resourceLabel="${fanDescription}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="isiTempSensorNum" label="Isilon Node Temp Sensors" resourceLabel="${tempSensorDesc}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="isilon-cluster" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12124.1.1.4" instance="0" alias="nodeCount" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.2.1.1" instance="0" alias="ifsInBytes" type="Counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.2.1.3" instance="0" alias="ifsOutBytes" type="Counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.2.2.1" instance="0" alias="networkInBytes" type="Counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.2.2.3" instance="0" alias="networkOutBytes" type="Counter64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.3.1" instance="0" alias="ifsTotalBytes" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.3.2" instance="0" alias="ifsUsedBytes" type="Gauge64"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.1.3.3" instance="0" alias="ifsAvailableBytes" type="Gauge64"/>
+   </group>
+   <group name="isilon-node-network-protocol" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.1" instance="isiProtocolName" alias="protocolName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.2" instance="isiProtocolName" alias="protocolOpCount" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.4" instance="isiProtocolName" alias="inMinBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.5" instance="isiProtocolName" alias="inMaxBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.6" instance="isiProtocolName" alias="inAvgBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.7" instance="isiProtocolName" alias="inStdDevBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.9" instance="isiProtocolName" alias="outMinBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.10" instance="isiProtocolName" alias="outMaxBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.11" instance="isiProtocolName" alias="outAvgBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.12" instance="isiProtocolName" alias="outStdDevBytes" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.14" instance="isiProtocolName" alias="latencyMin" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.15" instance="isiProtocolName" alias="latencyMax" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.16" instance="isiProtocolName" alias="latencyAverage" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.10.1.17" instance="isiProtocolName" alias="latencyStdDev" type="Gauge32"/>
+   </group>
+   <group name="isilon-node-disk-perfbay" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.1" instance="isiDiskPerfBay" alias="bay" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.2" instance="isiDiskPerfBay" alias="deviceName" type="String"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.3" instance="isiDiskPerfBay" alias="opsPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.4" instance="isiDiskPerfBay" alias="inBitsPerSec" type="Gauge32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.2.52.1.5" instance="isiDiskPerfBay" alias="outBitsPerSec" type="Gauge32"/>
+   </group>
+   <group name="isilon-node-fan" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.1" instance="isiFanNumber" alias="fanNumber" type="Integer32"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.2" instance="isiFanNumber" alias="fanName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.3" instance="isiFanNumber" alias="fanDescription" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.12124.2.53.1.4" instance="isiFanNumber" alias="fanSpeed" type="Gauge32"/>
+   </group>
+   <systemDef name="Isilon Storage">
+      <sysoid>.1.3.6.1.4.1.12124.1</sysoid>
+      <collect>
+         <includeGroup>isilon-cluster</includeGroup>
+         <includeGroup>isilon-node-network-protocol</includeGroup>
+         <includeGroup>isilon-node-disk-perfbay</includeGroup>
+         <includeGroup>isilon-node-fan</includeGroup>
+         <includeGroup>isilon-node-tempsensor</includeGroup>
+      </collect>
+   </systemDef>
 </datacollection-group>

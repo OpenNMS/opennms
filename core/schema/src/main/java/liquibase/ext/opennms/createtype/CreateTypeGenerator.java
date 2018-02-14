@@ -50,7 +50,7 @@ public class CreateTypeGenerator extends AbstractSqlGenerator<CreateTypeStatemen
 	// example: CREATE TYPE daily_series AS (ds timestamp without time zone, de timestamp without time zone, dow integer);
         @Override
     public Sql[] generateSql(final CreateTypeStatement statement, final Database database, final SqlGeneratorChain sqlGeneratorChain) {
-    	final StringBuffer sb = new StringBuffer();
+    	final StringBuilder sb = new StringBuilder();
 
     	sb.append("CREATE TYPE " + database.escapeColumnName(null, null, statement.getName()))
     			.append(" AS (");

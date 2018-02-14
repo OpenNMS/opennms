@@ -118,7 +118,6 @@ public class AppConfig {
     @Bean(name = "snmpCollector")
     public SnmpProtocolCollector snmpCollector() {
     	SnmpProtocolCollector snmpCollector = new SnmpProtocolCollector();
-    	snmpCollector.setSnmpStrategy(snmpStrategy());
     	return snmpCollector;
     }
 

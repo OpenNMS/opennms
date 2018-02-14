@@ -4,7 +4,6 @@
 	<inherits name="com.google.gwt.resources.Resources" />
     <inherits name="com.vaadin.DefaultWidgetSet" />
     <inherits name="org.discotools.gwt.leaflet.Core" />
-    <inherits name="org.opennms.features.geocoder.API" />
     <inherits name="com.github.wolfie.refresher.RefresherWidgetset" />
     <inherits name="org.vaadin.peter.contextmenu.ContextmenuWidgetset" />
 

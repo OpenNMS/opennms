@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.provision.service;
 
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -41,13 +40,16 @@ public abstract class Main {
      * @param args an array of {@link java.lang.String} objects.
      */
     public static void main(String[] args) {
+        ClassPathXmlApplicationContext appContext = null;
         try {
-            ApplicationContext appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
+            appContext = new ClassPathXmlApplicationContext("/META-INF/modelImport-appContext.xml");
             Provisioner importer = (Provisioner)appContext.getBean("modelImporter");
             Resource resource = new FileSystemResource(args[0]);
             importer.importModelFromResource(resource, Boolean.TRUE.toString());
         } catch (Throwable e) {
             e.printStackTrace();
+        } finally {
+            if (appContext != null) appContext.close();
         }
     }
 

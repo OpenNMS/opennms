@@ -31,20 +31,14 @@ package org.opennms.netmgt.provision.support;
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.CloseFuture;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.future.IoFutureListener;
 import org.apache.mina.core.service.IoHandler;
-import org.apache.mina.core.service.IoProcessor;
-import org.apache.mina.core.service.SimpleIoProcessorPool;
 import org.apache.mina.core.session.IoSessionInitializer;
 import org.apache.mina.transport.socket.SocketConnector;
-import org.apache.mina.transport.socket.nio.NioProcessor;
-import org.apache.mina.transport.socket.nio.NioSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +59,7 @@ public class ConnectionFactoryNewConnectorImpl extends ConnectionFactory {
     
     //private static final Executor m_executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
     //private static final IoProcessor<NioSession> m_processor = new SimpleIoProcessorPool<NioSession>(NioProcessor.class, m_executor);
-    private ThreadLocal<Integer> m_port = new ThreadLocal<Integer>();
+    private ThreadLocal<Integer> m_port = new ThreadLocal<>();
     private final Object m_portMutex = new Object();
 
     /**

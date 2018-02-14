@@ -1,26 +1,20 @@
-<?xml version="1.0"?>
-<datacollection-group name="Brocade">
-
-    <!-- Brocade Resource Types -->
-	 <resourceType name="swFCPortIndex" label="Brocade Fibre Channel Port" resourceLabel="FC port ${swFCPortSpecifier}: ${swFCPortName}">
-      <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-      <storageStrategy class="org.opennms.netmgt.dao.support.IndexStorageStrategy"/>
-    </resourceType>
-
-      <group name="brocade-switch-fctable" ifType="all">
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11" instance="swFCPortIndex" alias="swFCPortTxWords"   type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.12" instance="swFCPortIndex" alias="swFCPortRxWords"   type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.13" instance="swFCPortIndex" alias="swFCPortTxFrames"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.14" instance="swFCPortIndex" alias="swFCPortRxFrames"  type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="swFCPortIndex" alias="swFCPortName"      type="string" />
-        <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.37" instance="swFCPortIndex" alias="swFCPortSpecifier" type="string" />
-      </group>
-
-      <systemDef name="Brocade FC Switches">
-        <sysoidMask>.1.3.6.1.4.1.1588.</sysoidMask>
-        <collect>
-          <includeGroup>brocade-switch-fctable</includeGroup>
-        </collect>
-      </systemDef>
-
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Brocade">
+   <resourceType name="swFCPortIndex" label="Brocade Fibre Channel Port" resourceLabel="FC port ${swFCPortSpecifier}: ${swFCPortName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="brocade-switch-fctable" ifType="all">
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.11" instance="swFCPortIndex" alias="swFCPortTxWords" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.12" instance="swFCPortIndex" alias="swFCPortRxWords" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.13" instance="swFCPortIndex" alias="swFCPortTxFrames" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.14" instance="swFCPortIndex" alias="swFCPortRxFrames" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.36" instance="swFCPortIndex" alias="swFCPortName" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.1588.2.1.1.1.6.2.1.37" instance="swFCPortIndex" alias="swFCPortSpecifier" type="string"/>
+   </group>
+   <systemDef name="Brocade FC Switches">
+      <sysoidMask>.1.3.6.1.4.1.1588.</sysoidMask>
+      <collect>
+         <includeGroup>brocade-switch-fctable</includeGroup>
+      </collect>
+   </systemDef>
 </datacollection-group>

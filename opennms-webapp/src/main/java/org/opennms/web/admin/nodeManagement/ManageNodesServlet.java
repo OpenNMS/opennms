@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -53,8 +54,8 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.utils.DBUtils;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.NotificationFactory;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.web.api.Util;
@@ -73,12 +74,9 @@ public class ManageNodesServlet extends HttpServlet {
      */
     private static final long serialVersionUID = -4938417809629844445L;
 
-    // FIXME: Should this be removed?
-    //private static final String UPDATE_INTERFACE = "UPDATE ipinterface SET isManaged = ? WHERE ipaddr IN (?)";
+    private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? FROM ipInterface INNER JOIN node ON ipInterface.nodeId = node.nodeId WHERE ifServices.ipInterfaceId = ipInterface.id AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?";
 
-    private static final String UPDATE_SERVICE = "UPDATE ifservices SET status = ? WHERE ipaddr = ? AND nodeID = ? AND serviceid = ?";
-
-    private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ipaddr = ? AND nodeID = ? AND serviceid = ? AND ifregainedservice IS NULL";
+    private static final String DELETE_SERVICE_OUTAGES = "DELETE FROM outages WHERE ifregainedservice IS NULL AND ifserviceid IN (SELECT ifServices.id FROM ifServices, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeId = ? AND ipInterface.ipAddr = ? AND ifServices.serviceId = ?)"; 
 
     private static final String INCLUDE_FILE_NAME = "include";
 
@@ -104,8 +102,8 @@ public class ManageNodesServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession userSession = request.getSession(false);
         List<ManagedInterface> allNodes = getManagedInterfacesFromSession(userSession);
-        List<String> interfaceList = new ArrayList<String>();
-        List<String> serviceList = new ArrayList<String>();
+        List<String> interfaceList = new ArrayList<>();
+        List<String> serviceList = new ArrayList<>();
 
         // the list of all interfaces marked as managed
         if(request.getParameterValues("interfaceCheck") != null) {
@@ -118,10 +116,10 @@ public class ManageNodesServlet extends HttpServlet {
         }
 
         // the list of interfaces that need to be put into the URL file
-        List<String> addToURL = new ArrayList<String>();
+        List<String> addToURL = new ArrayList<>();
 
-        List<String> unmanageInterfacesList = new ArrayList<String>();
-        List<String> manageInterfacesList = new ArrayList<String>();
+        List<String> unmanageInterfacesList = new ArrayList<>();
+        List<String> manageInterfacesList = new ArrayList<>();
 
         final DBUtils d = new DBUtils(getClass());
         try {
@@ -184,8 +182,8 @@ public class ManageNodesServlet extends HttpServlet {
                             // newEvent.setTime(curDate);
 
                             stmt.setString(1, "R");
-                            stmt.setString(2, curInterface.getAddress());
-                            stmt.setInt(3, curInterface.getNodeid());
+                            stmt.setInt(2, curInterface.getNodeid());
+                            stmt.setString(3, curInterface.getAddress());
                             stmt.setInt(4, curService.getId());
                             this.log("DEBUG: executing manage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
@@ -198,12 +196,14 @@ public class ManageNodesServlet extends HttpServlet {
                             sendEvent(bldr.getEvent());
 
                             stmt.setString(1, "S");
-                            stmt.setString(2, curInterface.getAddress());
-                            stmt.setInt(3, curInterface.getNodeid());
+                            stmt.setInt(2, curInterface.getNodeid());
+                            stmt.setString(3, curInterface.getAddress());
                             stmt.setInt(4, curService.getId());
-                            outagesstmt.setString(1, curInterface.getAddress());
-                            outagesstmt.setInt(2, curInterface.getNodeid());
+
+                            outagesstmt.setInt(1, curInterface.getNodeid());
+                            outagesstmt.setString(2, curInterface.getAddress());
                             outagesstmt.setInt(3, curService.getId());
+
                             this.log("DEBUG: executing unmanage service update for " + curInterface.getAddress() + " " + curService.getName());
                             stmt.executeUpdate();
                             outagesstmt.executeUpdate();
@@ -249,7 +249,7 @@ public class ManageNodesServlet extends HttpServlet {
     /**
      */
     private void manageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
-        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        final StringBuilder query = new StringBuilder("UPDATE ipinterface SET isManaged = ");
         query.append("'M'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
@@ -269,7 +269,7 @@ public class ManageNodesServlet extends HttpServlet {
     /**
      */
     private void unmanageInterfaces(List<String> interfaces, Connection connection) throws SQLException {
-        StringBuffer query = new StringBuffer("UPDATE ipinterface SET isManaged = ");
+        final StringBuilder query = new StringBuilder("UPDATE ipinterface SET isManaged = ");
         query.append("'F'").append(" WHERE ipaddr IN (");
 
         for (int i = 0; i < interfaces.size(); i++) {
@@ -307,7 +307,7 @@ public class ManageNodesServlet extends HttpServlet {
         FileOutputStream fos = null;
         try {
         	fos = new FileOutputStream(fileName);
-        	fileWriter = new OutputStreamWriter(fos, "UTF-8");
+        	fileWriter = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
 
             for (int i = 0; i < interfaceList.size(); i++) {
                 fileWriter.write((String) interfaceList.get(i) + System.getProperty("line.separator"));

@@ -43,8 +43,8 @@ import org.slf4j.LoggerFactory;
 public class WidgetManager {
     private static final Logger LOG = LoggerFactory.getLogger(WidgetManager.class);
 
-    private List<IViewContribution> m_viewContributors = new CopyOnWriteArrayList<IViewContribution>();
-    private List<WidgetUpdateListener> m_listeners = new CopyOnWriteArrayList<WidgetUpdateListener>();
+    private List<IViewContribution> m_viewContributors = new CopyOnWriteArrayList<>();
+    private List<WidgetUpdateListener> m_listeners = new CopyOnWriteArrayList<>();
     
     private Comparator<IViewContribution> TITLE_COMPARATOR = new Comparator<IViewContribution>() {
         @Override
@@ -56,15 +56,14 @@ public class WidgetManager {
     public WidgetManager() {}
     
     public void addUpdateListener(final WidgetUpdateListener listener) {
-        LOG.info("Adding WidgetUpdateListener {} to WidgetManager {}", listener, this);
+        LOG.debug("Adding WidgetUpdateListener {} to WidgetManager {}", listener, this);
         synchronized (m_listeners) {
             m_listeners.add(listener);
-            updateWidgetListeners();
         }
     }
 
     public void removeUpdateListener(final WidgetUpdateListener listener) {
-        LOG.info("Removing WidgetUpdateListener {} from WidgetManager {}", listener, this);
+        LOG.debug("Removing WidgetUpdateListener {} from WidgetManager {}", listener, this);
         synchronized (m_listeners) {
             m_listeners.remove(listener);
         }
@@ -80,7 +79,7 @@ public class WidgetManager {
      * @return List<IViewContribution>
      */
     public List<IViewContribution> getWidgets(){
-        final List<IViewContribution> widgets = new ArrayList<IViewContribution>();
+        final List<IViewContribution> widgets = new ArrayList<>();
         widgets.addAll(m_viewContributors);
         // Sort the widgets by their title
         Collections.sort(widgets, TITLE_COMPARATOR);

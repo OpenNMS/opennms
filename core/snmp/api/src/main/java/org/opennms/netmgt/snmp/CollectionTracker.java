@@ -28,8 +28,10 @@
 
 package org.opennms.netmgt.snmp;
 
+import org.opennms.netmgt.snmp.proxy.ProxiableTracker;
 
-public abstract class CollectionTracker implements Collectable {
+public abstract class CollectionTracker implements Collectable, ProxiableTracker {
+    
     private CollectionTracker m_parent;
     private boolean m_failed = false;
     private boolean m_timedOut = false;
@@ -82,7 +84,7 @@ public abstract class CollectionTracker implements Collectable {
         m_finished = finished;
     }
 
-    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
+    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException;
 
     protected void reportTooBigErr(String msg) {
         if (m_parent != null) {
@@ -118,6 +120,4 @@ public abstract class CollectionTracker implements Collectable {
     public CollectionTracker getCollectionTracker() {
         return this;
     }
-
-
 }

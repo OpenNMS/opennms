@@ -29,10 +29,10 @@
 package org.opennms.core.tasks;
 
 /**
- * TaskMonitor
+ * This listener interface defines methods that are fired
+ * during lifecycle events of a {@link Task}.
  *
  * @author brozow
- * @version $Id: $
  */
 public interface TaskMonitor {
     

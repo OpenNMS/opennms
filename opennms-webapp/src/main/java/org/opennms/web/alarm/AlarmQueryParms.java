@@ -39,11 +39,8 @@ import java.util.List;
  *
  * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @author <A HREF="mailto:larry@opennms.org">Lawrence Karnowski </A>
- * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
- * @version $Id: $
- * @since 1.8.1
- * @Deprecated use {@link QueryParameters} instead.
+ * 
+ * @deprecated use {@link QueryParameters} instead.
  */
 @Deprecated
 public class AlarmQueryParms implements QueryParameters {

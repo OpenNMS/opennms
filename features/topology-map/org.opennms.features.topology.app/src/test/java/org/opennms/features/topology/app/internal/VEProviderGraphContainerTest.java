@@ -28,8 +28,9 @@
 
 package org.opennms.features.topology.app.internal;
 
+import static junit.framework.TestCase.assertNotNull;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,50 +42,50 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.topology.api.Graph;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.GraphVisitor;
+import org.opennms.features.topology.api.support.SemanticZoomLevelCriteria;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractEdgeRef;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.CollapsibleCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.Edge;
-import org.opennms.features.topology.api.topo.EdgeProvider;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.MetaTopologyProvider;
 import org.opennms.features.topology.api.topo.SimpleEdgeProvider;
+import org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
+import org.opennms.features.topology.app.internal.service.DefaultTopologyService;
+import org.opennms.features.topology.app.internal.service.SimpleServiceLocator;
 
 public class VEProviderGraphContainerTest {
 
 	private GraphProvider m_graphProvider;
-	private EdgeProvider m_edgeProvider;
 	private GraphContainer m_graphContainer;
-	private Set<VertexRef> m_expectedVertices = new HashSet<VertexRef>();
-	private Map<VertexRef, String> m_expectedVertexStyles = new HashMap<VertexRef, String>();
-	private Set<EdgeRef> m_expectedEdges = new HashSet<EdgeRef>();
-	private Map<EdgeRef, String> m_expectedEdgeStyles = new HashMap<EdgeRef, String>();
+	private Set<VertexRef> m_expectedVertices = new HashSet<>();
+	private Map<VertexRef, String> m_expectedVertexStyles = new HashMap<>();
+	private Set<EdgeRef> m_expectedEdges = new HashSet<>();
+	private Map<EdgeRef, String> m_expectedEdgeStyles = new HashMap<>();
 
-	private static abstract class TestCollapsibleCriteria extends VertexHopCriteria implements CollapsibleCriteria {
+	private static abstract class TestCollapsibleCriteria extends VertexHopGraphProvider.VertexHopCriteria implements CollapsibleCriteria {
 
 		public TestCollapsibleCriteria() {
 			super("Collapsed vertex");
 		}
-		
+
 		public TestCollapsibleCriteria(String label) {
 			super(label);
 		}
-		
+
 		@Override
 		public boolean isCollapsed() {
 			return true;
@@ -129,7 +130,7 @@ public class VEProviderGraphContainerTest {
 		}
 
 		public Set<VertexRef> getVertices() {
-			Set<VertexRef> retval = new HashSet<VertexRef>();
+			Set<VertexRef> retval = new HashSet<>();
 			retval.add(new DefaultVertexRef("nodes", "v2", "vertex2"));
 			retval.add(new DefaultVertexRef("nodes", "v4", "vertex4"));
 			return retval;
@@ -143,7 +144,7 @@ public class VEProviderGraphContainerTest {
 		}
 
 		public Set<VertexRef> getVertices() {
-			Set<VertexRef> retval = new HashSet<VertexRef>();
+			Set<VertexRef> retval = new HashSet<>();
 			retval.add(new DefaultVertexRef("nodes", "v3", "vertex3"));
 			return retval;
 		}
@@ -168,31 +169,30 @@ public class VEProviderGraphContainerTest {
 			.edge("e4", "v4", "v1").eStyleName("edge")
 			.get();
 
-		m_edgeProvider = new SimpleEdgeBuilder("ncs", "nodes")
-			.edge("ncs1", "nodes", "v1", "nodes", "v3").label("ncsedge1").styleName("ncs edge")
-			.edge("ncs2", "nodes", "v2", "nodes", "v4").label("ncsedge2").styleName("ncs edge")
-			.edge("ncs3", "nodes", "v1", "nodes", "v2").label("ncsedge3").styleName("ncs edge")
-			.get();
-		
-		ProviderManager providerManager = new ProviderManager();
-		providerManager.onEdgeProviderBind(m_edgeProvider);
 
-		GraphContainer graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
+		MetaTopologyProvider metaTopologyProvider = new SimpleMetaTopologyProvider(m_graphProvider);
+		DefaultTopologyService topologyService = new DefaultTopologyService();
+		topologyService.setServiceLocator(new SimpleServiceLocator(metaTopologyProvider));
+
+        VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
 		graphContainer.setSemanticZoomLevel(0);
-		
+		graphContainer.setTopologyService(topologyService);
+		graphContainer.setSelectedNamespace(m_graphProvider.getNamespace());
+		graphContainer.setMetaTopologyId(m_graphProvider.getNamespace());
+
 		m_graphContainer = graphContainer;
 	}
-	
+
 	@Test
 	public void testGraphProvider() {
 		List<? extends Vertex> roots = m_graphProvider.getRootGroup();
 		assertEquals(1, roots.size());
 		Vertex root = roots.get(0);
 		assertNotNull(root);
-		
+
 		assertEquals("nodes", root.getNamespace());
 		assertEquals("g0", root.getId());
-		
+
 		List<? extends Vertex> children = m_graphProvider.getChildren(root);
 		assertEquals(2, children.size());
 		assertEquals(root, m_graphProvider.getParent(children.get(0)));
@@ -200,11 +200,18 @@ public class VEProviderGraphContainerTest {
 
 	@Test
 	public void testContainerWithHopProvider() throws Exception {
+        VertexHopGraphProvider vertexHopGraphProvider = new VertexHopGraphProvider(m_graphProvider);
+
+        DefaultTopologyService topologyService = new DefaultTopologyService();
+        SimpleMetaTopologyProvider simpleMetaTopologyProvider = new SimpleMetaTopologyProvider(vertexHopGraphProvider);
+		topologyService.setServiceLocator(new SimpleServiceLocator(simpleMetaTopologyProvider));
+
 		// Wrap the test GraphProvider in a VertexHopGraphProvider
-		ProviderManager providerManager = new ProviderManager();
-		providerManager.onEdgeProviderBind(m_edgeProvider);
-		GraphContainer graphContainer = new VEProviderGraphContainer(new VertexHopGraphProvider(m_graphProvider), providerManager);
+		VEProviderGraphContainer graphContainer = new VEProviderGraphContainer();
 		graphContainer.setSemanticZoomLevel(0);
+		graphContainer.setTopologyService(topologyService);
+		graphContainer.setMetaTopologyId(simpleMetaTopologyProvider.getId());
+		graphContainer.setSelectedNamespace(vertexHopGraphProvider.getNamespace());
 
 		m_graphContainer = graphContainer;
 
@@ -214,9 +221,8 @@ public class VEProviderGraphContainerTest {
 		assertEquals(0, graph.getDisplayEdges().size());
 
 		// Add one focus vertex
-		FocusNodeHopCriteria focusNodes = new FocusNodeHopCriteria("vertex");
-		focusNodes.add(new DefaultVertexRef("nodes", "v1"));
-		m_graphContainer.addCriteria(focusNodes);
+		VertexHopGraphProvider.DefaultVertexHopCriteria hopCriteria = new VertexHopGraphProvider.DefaultVertexHopCriteria(new DefaultVertexRef("nodes", "v1"));
+		m_graphContainer.addCriteria(hopCriteria);
 		// This needs to be 2 because there is a SemanticZoomLevelCriteria in there also
 		assertEquals(2, m_graphContainer.getCriteria().length);
 
@@ -238,7 +244,6 @@ public class VEProviderGraphContainerTest {
 
 		// Focus vertex
 		expectVertex("nodes", "v1", "vertex");
-
 		expectVertex("nodes", "v2", "vertex");
 		/*
 			This is a problem with the VEProviderGraphContainer... it wraps a delegate GraphProvider
@@ -258,20 +263,17 @@ public class VEProviderGraphContainerTest {
 		*/
 		//expectVertex("nodes", "v3", "vertex");
 		expectVertex("nodes", "v4", "vertex");
-		
+
 		expectEdge("nodes", "e1", "edge");
 		//expectEdge("nodes", "e2", "edge");
 		//expectEdge("nodes", "e3", "edge");
 		expectEdge("nodes", "e4", "edge");
-		//expectEdge("ncs", "ncs1", "ncs edge");
-		expectEdge("ncs", "ncs2", "ncs edge");
-		expectEdge("ncs", "ncs3", "ncs edge");
-		
+
 		graph = m_graphContainer.getGraph();
 		//assertEquals(4, graph.getDisplayVertices().size());
 		//assertEquals(5, graph.getDisplayEdges().size());
 		assertEquals(3, graph.getDisplayVertices().size());
-		assertEquals(4, graph.getDisplayEdges().size());
+		assertEquals(2, graph.getDisplayEdges().size());
 
 		graph.visit(verifier());
 		verify();
@@ -294,14 +296,14 @@ public class VEProviderGraphContainerTest {
 		assertTrue(collapsed.get(new DefaultVertexRef("nodes", "v4")).equals(Collections.singleton(new DefaultVertexRef("nodes", "test"))));
 
 		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayVertices()), 
-			3, 
+            m_graphContainer.getGraph().getDisplayVertices().toString(),
+			3,
 			m_graphContainer.getGraph().getDisplayVertices().size()
 		);
 		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getBaseTopology().getVertices(new TestCriteria1())), 
+			m_graphContainer.getTopologyServiceClient().getGraphProviderBy("nodes").getVertices(new TestCriteria1()).toString(),
 			3,
-			m_graphContainer.getBaseTopology().getVertices(new TestCriteria1()).size()
+			m_graphContainer.getTopologyServiceClient().getGraphProviderBy("nodes").getVertices(new TestCriteria1()).size()
 		);
 
 		expectVertex("nodes", "v1", "vertex");
@@ -309,7 +311,6 @@ public class VEProviderGraphContainerTest {
 		// Collapsed vertex that contains v2 and v4
 		expectVertex("nodes", "test", "test");
 
-		expectEdge("ncs", "ncs1", "ncs edge");
 		expectEdge("nodes", "collapsedTarget-e1", "edge");
 		expectEdge("nodes", "collapsedSource-e2", "edge");
 		expectEdge("nodes", "collapsedTarget-e3", "edge");
@@ -318,7 +319,7 @@ public class VEProviderGraphContainerTest {
 		graph = m_graphContainer.getGraph();
 
 		assertEquals(3, graph.getDisplayVertices().size());
-		assertEquals(5, graph.getDisplayEdges().size());
+		assertEquals(4, graph.getDisplayEdges().size());
 
 		for (Edge edge : graph.getDisplayEdges()) {
 			if (edge.getId().equals("collapsedTarget-e1")) {
@@ -353,7 +354,7 @@ public class VEProviderGraphContainerTest {
 		//assertEquals(4, graph.getDisplayVertices().size());
 		//assertEquals(5, graph.getDisplayEdges().size());
 		assertEquals(3, graph.getDisplayVertices().size());
-		assertEquals(4, graph.getDisplayEdges().size());
+		assertEquals(2, graph.getDisplayEdges().size());
 
 		collapsibleCriteria = new TestCriteria1();
 		m_graphContainer.addCriteria(collapsibleCriteria);
@@ -363,24 +364,16 @@ public class VEProviderGraphContainerTest {
 
 		graph = m_graphContainer.getGraph();
 
-		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayVertices()), 
-			3, 
-			m_graphContainer.getGraph().getDisplayVertices().size()
-		);
+		assertEquals(3, m_graphContainer.getGraph().getDisplayVertices().size());
 		/*
 		 * One edge is missing because of the VertexHopGraphProvider issue mentioned above.
 		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayEdges()), 
-			5, 
+			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayEdges()),
+			5,
 			m_graphContainer.getGraph().getDisplayEdges().size()
 		);
 		 */
-		assertEquals(
-			ArrayUtils.toString(m_graphContainer.getGraph().getDisplayEdges()), 
-			4, 
-			m_graphContainer.getGraph().getDisplayEdges().size()
-		);
+		assertEquals(4, m_graphContainer.getGraph().getDisplayEdges().size());
 
 		for (Edge edge : graph.getDisplayEdges()) {
 			if (edge.getId().equals("collapsedTarget-e1")) {
@@ -409,96 +402,129 @@ public class VEProviderGraphContainerTest {
 
 	@Test
 	public void testContainer() throws Exception {
-			
+
 		Graph graph = m_graphContainer.getGraph();
-	
+
 		expectVertex("nodes", "g0", "vertex");
-		
+
 		graph.visit(verifier());
-		
+
 		verify();
 		verifyConnectedness(graph);
-		
+
 		reset();
-		
+
 		m_graphContainer.setSemanticZoomLevel(1);
-		
+
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");
-		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
-		expectEdge("pseudo-ncs", "<nodes:g1>-<nodes:g2>", "ncs edge");
-		
+
 		graph = m_graphContainer.getGraph();
-		
+
 		graph.visit(verifier());
-		
+
 		verify();
 		verifyConnectedness(graph);
-		
+
 		reset();
-		
+
 		m_graphContainer.addCriteria(SimpleEdgeProvider.labelMatches("ncs", "ncsedge."));
-		
+
 		expectVertex("nodes", "g1", "vertex");
 		expectVertex("nodes", "g2", "vertex");
-		expectEdge("pseudo-nodes", "<nodes:g1>-<nodes:g2>", "edge");
-		expectEdge("pseudo-ncs", "<nodes:g1>-<nodes:g2>", "ncs edge");
 
 		graph = m_graphContainer.getGraph();
-		
+
 		graph.visit(verifier());
-		
+
 		verify();
 		verifyConnectedness(graph);
-		
+
 		reset();
 
+	}
+
+	@Test
+	public void testFindCriteria() {
+		// The easiest test
+		Set<Criteria> criteria = m_graphContainer.findCriteria(Criteria.class);
+		assertNotNull(criteria);
+		assertEquals(criteria.size(), m_graphContainer.getCriteria().length);
+
+		// verify that subclasses also match
+		Set<TestCriteria1> testCriteria = m_graphContainer.findCriteria(TestCriteria1.class);
+		assertNotNull(testCriteria);
+		assertEquals(0, testCriteria.size());
+
+		m_graphContainer.addCriteria(new TestCriteria1());
+		m_graphContainer.addCriteria(new TestCriteria2());
+
+		testCriteria = m_graphContainer.findCriteria(TestCriteria1.class);
+		assertNotNull(testCriteria);
+		assertEquals(1, testCriteria.size());
+	}
+
+	@Test
+	public void testFindSingleCriteria() {
+		assertEquals(m_graphContainer.getCriteria()[0], m_graphContainer.findSingleCriteria(SemanticZoomLevelCriteria.class));
+		assertEquals(m_graphContainer.getCriteria()[0], m_graphContainer.findSingleCriteria(Criteria.class));
+		assertNull(m_graphContainer.findSingleCriteria(TestCriteria1.class));
 	}
 
 	private void verify() {
 		if (!m_expectedVertices.isEmpty()) {
 			fail("Expected Vertices not seen: " + m_expectedVertices);
 		}
-		
+
 		if (!m_expectedEdges.isEmpty()) {
 			fail("Expected Edges not seen: " + m_expectedEdges);
 		}
 	}
-	
+
 	private GraphVisitor verifier() {
-		return new BaseGraphVisitor() {
-			
-			@Override
+		return new GraphVisitor() {
+
+            @Override
+            public void visitGraph(Graph graph) throws Exception {
+
+            }
+
+            @Override
+            public void completeGraph(Graph graph) throws Exception {
+
+            }
+
+            @Override
 			public void visitVertex(Vertex vertex) {
 				assertTrue("Unexpected vertex " + vertex + " encountered!", m_expectedVertices.contains(vertex));
 				m_expectedVertices.remove(vertex);
 				assertEquals("Unexpected style for vertex " + vertex, m_expectedVertexStyles.get(vertex), vertex.getStyleName());
 			}
-			
+
 			@Override
 			public void visitEdge(Edge edge) {
 				assertTrue("Unexpected edge " + edge + " encountered!", m_expectedEdges.contains(edge));
 				m_expectedEdges.remove(edge);
 				assertEquals("Unexpected style for edge " + edge, m_expectedEdgeStyles.get(edge), edge.getStyleName());
 			}
-			
+
 		};
 	}
-	
-	
+
+
 
 	private void expectVertex(String namespace, String vertexId, String styles) {
 		DefaultVertexRef vertexRef = new DefaultVertexRef(namespace, vertexId);
 		m_expectedVertices.add(vertexRef);
 		m_expectedVertexStyles.put(vertexRef, styles);
 	}
-	
+
 	private void expectEdge(String namespace, String edgeId, String styles) {
 		AbstractEdgeRef edgeRef = new AbstractEdgeRef(namespace, edgeId);
 		m_expectedEdges.add(edgeRef);
 		m_expectedEdgeStyles.put(edgeRef, styles);
 	}
-	
+
 	private static void verifyConnectedness(Graph graph) {
 		Collection<Vertex> vertices = graph.getDisplayVertices();
 		for (Edge edge : graph.getDisplayEdges()) {
@@ -506,7 +532,7 @@ public class VEProviderGraphContainerTest {
 			assertTrue(vertices.contains(edge.getTarget().getVertex()));
 		}
 	}
-	
+
 	private void reset() {
 		m_expectedVertices.clear();
 		m_expectedEdges.clear();

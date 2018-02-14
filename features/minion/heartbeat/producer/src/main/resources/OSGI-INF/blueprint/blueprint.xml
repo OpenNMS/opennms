@@ -1,0 +1,18 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+    <reference id="minion" interface="org.opennms.minion.core.api.MinionIdentity" />
+
+    <reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+
+    <bean id="heartbeatProducer" class="org.opennms.minion.heartbeat.producer.HeartbeatProducer" destroy-method="cancel">
+        <argument ref="minion"/>
+        <argument ref="messageDispatcherFactory"/>
+    </bean>
+
+</blueprint>

@@ -147,7 +147,7 @@ public final class Jni6PingResponse implements ResponseWithId<Jni6PingRequestId>
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append(super.toString());
         buf.append('[');
         buf.append("Address = ").append(getAddress());

@@ -1,0 +1,83 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== RadiusAuthMonitor
+
+This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
+The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
+If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
+
+IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {opennms-product-name}.
+
+[source, bash]
+----
+{apt-get,yum} install {opennms-package-base-name}-plugin-protocol-radius
+----
+
+The test is similar to test the behavior of a _RADIUS_ server by evaluating the result with the command line tool `radtest`.
+
+[source, bash]
+----
+root@vagrant:~# radtest "John Doe" hello 127.0.0.1 1812 radiuspassword
+Sending Access-Request of id 49 to 127.0.0.1 port 1812
+	User-Name = "John Doe"
+	User-Password = "hello"
+	NAS-IP-Address = 127.0.0.1
+	NAS-Port = 1812
+	Message-Authenticator = 0x00000000000000000000000000000000
+rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <1>
+	Reply-Message = "Hello, John Doe"
+----
+<1> The `Access-Accept` message which is evaluated by the monitor.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.protocols.radius.monitor.RadiusAuthMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the RadiusAuthMonitor
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                       | Required | Default value
+| `timeout`        | Time in milliseconds to wait for the _RADIUS_ service.                                            | optional | `5000`
+| `retry`          | This is a placeholder for the second optional monitor parameter description.                      | optional | `0`
+| `authport`       | _RADIUS_ authentication port.                                                                     | optional | `1812`
+| `acctport`       | _RADIUS_ accounting port.                                                                         | optional | `1813`
+| `user`           | Username to test the authentication                                                               | optional | `OpenNMS`
+| `password`       | Password to test the authentication                                                               | optional | `OpenNMS`
+| `secret`         | The _RADIUS_ shared secret used for communication between the _client/NAS_
+                     and the _RADIUS_ server.                                                                          | optional | `secret`
+| `authtype`       | _RADIUS_ authentication type. The following authentication types are supported:
+                     `chap`, `pap`, `mschapv1`, `mschapv2`, `eapmd5`, `eapmschapv2`, `eapttls`                         | optional | `pap`
+| `nasid`          | The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier]
+                     originating the _Access-Request_.                                                                 | optional | `opennms`
+| `inner-protocol` | When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
+                     Only `pap` is currently supported.                                                                | optional | `pap`
+| `inner-user`     | Username for the tunnelled `pap` authentication when using EAP-TTLS.                              | optional | `Inner-OpenNMS`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+Example configuration how to configure the monitor in the `poller-configuration.xml`.
+
+[source, xml]
+----
+<service name="Radius-Authentication" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="3" />
+  <parameter key="timeout" value="3000" />
+  <parameter key="user" value="John Doe" />
+  <parameter key="password" value="hello" />
+  <parameter key="secret" value="radiuspassword" />
+  <parameter key="rrd-repository" value="/var/lib/opennms/rrd/response" />
+  <parameter key="ds-name" value="radiusauth" />
+</service>
+
+<monitor service="Radius-Authentication" class-name="org.opennms.protocols.radius.monitor.RadiusAuthMonitor" />
+----

@@ -34,17 +34,14 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.protocols.dhcp.detector.client.DhcpClient;
 import org.opennms.protocols.dhcp.detector.request.DhcpRequest;
 import org.opennms.protocols.dhcp.detector.response.DhcpResponse;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>DhcpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class DhcpDetector extends BasicDetector<DhcpRequest, DhcpResponse> {
     
     private static final int DEFAULT_RETRY = 0;

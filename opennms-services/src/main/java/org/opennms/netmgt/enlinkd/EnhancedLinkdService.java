@@ -45,82 +45,113 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
+import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
- * <p>QueryManager interface.</p>
+ * <p>
+ * QueryManager interface.
+ * </p>
  *
  * @author antonio
  * @version $Id: $
  */
 public interface EnhancedLinkdService {
 
+    void delete(BroadcastDomain domain);
     /**
-     * <p>getSnmpNodeList</p>
+     * <p>
+     * getSnmpNodeList
+     * </p>
      *
      * @return a {@link java.util.List} object.
-     * @throws java.sql.SQLException if any.
      */
-    List<LinkableSnmpNode> getSnmpNodeList();
+    List<Node> getSnmpNodeList();
 
     /**
-     * <p>getSnmpNode</p>
+     * <p>
+     * getSnmpNode
+     * </p>
      *
-     * @param nodeid a int.
+     * @param nodeid
+     *            a int.
      * @return a {@link org.opennms.netmgt.enlinkd.LinkableNode} object.
-     * @throws java.sql.SQLException if any.
      */
-    LinkableSnmpNode getSnmpNode(int nodeid);
-        
+    Node getSnmpNode(int nodeid);
+
+    void loadBridgeTopology();
+
     /**
-     * <p>delete</p>
+     * <p>
+     * delete
+     * </p>
      *
-     * @param nodeid a int.
-     * 
-     * <p>Remove any reference in topology
-     *    for nodeid
-     * </p>   
-     *     
+     * @param nodeid
+     *            a int.
+     *            <p>
+     *            Remove any reference in topology for nodeid
+     *            </p>
      */
     void delete(int nodeid);
+
+    void reconcileLldp(int nodeId, Date now);
+
+    void reconcileCdp(int nodeId, Date now);
+
+    void reconcileOspf(int nodeId, Date now);
+
+    void reconcileIsis(int nodeId, Date now);
+
+    void reconcileIpNetToMedia(int nodeId, Date now);
+
+    void reconcileBridge(int nodeId, Date now);
+
+    void reconcileBridgeTopology(BroadcastDomain domain, Date now);
+
+    void store(int nodeId, LldpLink link);
+
+    void store(int nodeId, LldpElement element);
+
+    void store(int nodeId, OspfLink link);
+
+    void store(int nodeId, OspfElement element);
+
+    void store(int nodeId, IsIsLink link);
+
+    void store(int nodeId, IsIsElement element);
+
+    void store(int nodeId, CdpElement cdp);
+
+    void store(int nodeId, CdpLink link);
+
+    void store(int nodeId, IpNetToMedia link);
+
+    void store(int nodeId, BridgeElement bridge);
+
+    void store(int nodeId, BridgeStpLink link);
+
+    void store(BroadcastDomain domain);
+
+
+    void updateBft(int nodeId, List<BridgeMacLink> link);
+        
+    void save(BroadcastDomain domain);
+
+    void cleanBroadcastDomains();
+
+    Set<BroadcastDomain> getAllBroadcastDomains();
     
-	void reconcileLldp(int nodeId, Date now);
+    Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
+    
+    BroadcastDomain getBroadcastDomain(int nodeId);
 
-	void reconcileCdp(int nodeId, Date now);
+    List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
 
-	void reconcileOspf(int nodeId, Date now);
+    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
 
-	void reconcileIsis(int nodeId, Date now);
+    boolean hasUpdatedBft(int nodeid);
+        
+    List<BridgeElement> getBridgeElements(Set<Integer> nodeids);
+    
+    void persistForwarders();
 
-	void reconcileIpNetToMedia(int nodeId, Date now);
-
-	void reconcileBridge(int nodeId, Date now);
-
-	void store(int nodeId, LldpLink link);
-
-	void store(int nodeId, LldpElement element);
-
-	void store(int nodeId, OspfLink link);
-
-	void store(int nodeId, OspfElement element);
-
-	void store(int nodeId, IsIsLink link);
-	
-	void store(int nodeId, IsIsElement element);
-
-	void store(int nodeId, CdpElement cdp);
-	
-	void store(int nodeId, CdpLink link);
-	
-	void store(int nodeId, IpNetToMedia link);
-
-	void store(int nodeId, BridgeElement bridge);
-
-	void store(int nodeId, BridgeStpLink link);
-
-	void store(int nodeId, BridgeMacLink link);
-
-	void storeBridgeToIfIndexMap(int nodeId, Map<Integer,Integer> bridgeifindex);
-
-	void storeBridgetoVlanMap(int nodeId, Set<Integer> bridgeports, Integer vlanid);
 }

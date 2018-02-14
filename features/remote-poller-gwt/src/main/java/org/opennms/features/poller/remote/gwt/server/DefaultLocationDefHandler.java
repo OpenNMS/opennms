@@ -32,7 +32,7 @@
 package org.opennms.features.poller.remote.gwt.server;
 
 import org.opennms.features.poller.remote.gwt.client.remoteevents.LocationUpdatedRemoteEvent;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import de.novanic.eventservice.client.event.Event;
 import de.novanic.eventservice.service.EventExecutorService;
@@ -61,10 +61,10 @@ class DefaultLocationDefHandler implements LocationDefHandler {
 	/**
 	 * <p>handle</p>
 	 *
-	 * @param def a {@link org.opennms.netmgt.model.OnmsMonitoringLocationDefinition} object.
+	 * @param def a {@link org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation} object.
 	 */
         @Override
-	public void handle(final OnmsMonitoringLocationDefinition def) {
+	public void handle(final OnmsMonitoringLocation def) {
 		final LocationUpdatedRemoteEvent event = new LocationUpdatedRemoteEvent(m_locationDataService.getLocationInfo(def));
 		getEventService().addEventUserSpecific(event);
 	}

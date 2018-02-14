@@ -38,10 +38,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.collection.api.AttributeGroupType;
-import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.protocols.sftp.Sftp3gppUrlConnection;
-import org.opennms.protocols.xml.config.XmlObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,12 +74,12 @@ public abstract class Sftp3gppUtils {
      * @return the last filename
      * @throws Exception the exception
      */
-    public static String getLastFilename(String serviceName, File resourceDir, String targetPath) throws Exception {
+    public static String getLastFilename(ResourceStorageDao resourceStorageDao, String serviceName, ResourcePath path, String targetPath) throws Exception {
         String filename = null;
         try {
-            filename = ResourceTypeUtils.getStringProperty(resourceDir, getCacheId(serviceName, targetPath));
-        } catch (Exception e) {
-            LOG.info("getLastFilename: creating a new filename tracker on {}", resourceDir);
+            filename = resourceStorageDao.getStringAttribute(path,  getCacheId(serviceName, targetPath));
+        } catch (Throwable e) {
+            LOG.info("getLastFilename: creating a new filename tracker on {}", path);
         }
         return filename;
     }
@@ -92,8 +93,8 @@ public abstract class Sftp3gppUtils {
      * @param filename the filename
      * @throws Exception the exception
      */
-    public static void setLastFilename(String serviceName, File resourceDir, String targetPath, String filename) throws Exception {
-        ResourceTypeUtils.updateStringProperty(resourceDir, filename, getCacheId(serviceName, targetPath));
+    public static void setLastFilename(ResourceStorageDao resourceStorageDao, String serviceName, ResourcePath path, String targetPath, String filename) throws Exception {
+        resourceStorageDao.setStringAttribute(path, getCacheId(serviceName, targetPath), filename);
     }
 
     /**
@@ -127,11 +128,10 @@ public abstract class Sftp3gppUtils {
      * @param resource the resource
      * @param attribGroupType the attrib group type
      */
-    public static void processXmlResource(XmlCollectionResource resource, AttributeGroupType attribGroupType) {
-        Map<String,String> properties = get3gppProperties(get3gppFormat(resource.getResourceTypeName()), resource.getInstance());
+    public static void processXmlResource(CollectionSetBuilder builder, Resource resource, String resourceTypeName, String group) {
+        Map<String,String> properties = get3gppProperties(get3gppFormat(resourceTypeName), resource.getInstance());
         for (Entry<String,String> entry : properties.entrySet()) {
-            XmlCollectionAttributeType attribType = new XmlCollectionAttributeType(new XmlObject(entry.getKey(), "string"), attribGroupType);
-            resource.setAttributeValue(attribType, entry.getValue());
+            builder.withStringAttribute(resource, group, entry.getKey(), entry.getValue());
         }
     }
 

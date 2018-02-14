@@ -1,0 +1,44 @@
+    <div class="jumbotron" ng-show="snmpInterfaces.length == 0">
+      <div class="container">
+        <p>There are no SNMP interfaces for this node</p>
+      </div>
+    </div>
+    <div class="table-responsive" ng-show="snmpInterfaces.length > 0">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-search"></span>
+        </span>
+        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface"></input>
+      </div>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th sort order="'ifIndex'" by="snmpOrder" reverse="snmpReverse">SNMP ifIndex</th>
+            <th sort order="'ifType'"  by="snmpOrder" reverse="snmpReverse">SNMP ifType</th>
+            <th sort order="'ifDescr'" by="snmpOrder" reverse="snmpReverse">SNMP ifDescr</th>
+            <th sort order="'ifName'"  by="snmpOrder" reverse="snmpReverse">SNMP ifName</th>
+            <th sort order="'ifAlias'" by="snmpOrder" reverse="snmpReverse">SNMP ifAlias</th>
+            <th>Collect</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-class="intf.backgroundClass" ng-dblclick="openSnmpPage(intf)" ng-repeat="intf in filteredSnmpInterfaces | orderBy:snmpOrder:snmpReverse | startFrom:(snmpInterfacesCurrentPage-1)*snmpInterfacesPageSize | limitTo:snmpInterfacesPageSize">
+            <td>{{ intf.ifIndex }}</td>
+            <td>{{ intf.ifType  || 'N/A' }}</td>
+            <td>{{ intf.ifDescr || 'N/A' }}</td>
+            <td>{{ intf.ifName  || 'N/A' }}</td>
+            <td>{{ intf.ifAlias || 'N/A' }}</td>
+            <td>
+              <input type="checkbox" ng-checked="isCollectionEnabled(intf)" ng-click="updateCollection($event, intf)" uib-tooltip="Check to enable collection, or uncheck to disable collection"></input>
+            </td>
+          </tr>
+       </tbody>
+      </table>
+    </div>
+    <ul uib-pagination class="pagination-sm"
+      total-items="snmpInterfacesTotalItems"
+      num-pages="snmpInterfacesNumPages"
+      ng-model="snmpInterfacesCurrentPage"
+      max-size="snmpInterfacesMaxSize"
+      boundary-links="true"
+      ng-show="filteredSnmpInterfaces.length > snmpInterfacesPageSize"></ul>

@@ -1,0 +1,54 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Alarm Northbounder
+
+The alarm northbounder listens for _all_ northbound alarms.
+Alarms are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
+
+The alarm northbounder exposes the following properties via the `org.opennms.features.amqp.alarmnorthbounder` pid:
+
+[options="header"]
+|===
+| Property        | Default                                  | Description
+| connectionUrl   | amqp://localhost:5672                    | Used by the JmsConnectionFactory. See http://camel.apache.org/amqp.html[AMQP] for details.
+| username        | guest                                    | Username
+| password        | guest                                    | Password
+| destination     | amqp:topic:opennms-alarms                | Target queue or topic. See http://camel.apache.org/amqp.html[AMQP] for details.
+| processorName   | default-alarm-northbounder-processor     | Named `org.apache.camel.Processor` implementation used to filter and/or format the alarms.
+|===
+
+The default processor, the `default-alarm-northbounder-processor`, converts the alarms to a string and does not perform any filtering.
+This means that when enabled, all alarms will be forwarded to the AMQP destination with strings as the message body.
+
+==== Setup
+
+Start by logging into a Karaf shell.
+
+Update the properties with your deployment specific values:
+
+[source]
+----
+config:edit org.opennms.features.amqp.alarmnorthbounder
+config:property-set connectionUrl amqp://localhost:5672
+config:property-set destination amqp:topic:opennms-alarms
+config:property-set processorName default-alarm-northbounder-processor
+config:update
+----
+
+Install the feature:
+
+[source]
+----
+feature:install opennms-amqp-alarm-northbounder
+----
+
+==== Debugging
+
+You can get detailed information on the Camel route using:
+
+[source]
+----
+camel:route-info forwardAlarm
+----

@@ -40,7 +40,7 @@ public final class ConsoleLogger
     @SuppressWarnings("rawtypes") // Because of OSGi API
     public void log(ServiceReference ref, int level, String message, Throwable cause)
     {
-        StringBuffer str = new StringBuffer();
+        final StringBuilder str = new StringBuilder();
         switch (level) {
             case LOG_DEBUG:
                 str.append("[DEBUG] ");

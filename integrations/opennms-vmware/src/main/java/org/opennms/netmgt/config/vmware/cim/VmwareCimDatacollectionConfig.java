@@ -55,7 +55,7 @@ public class VmwareCimDatacollectionConfig implements java.io.Serializable {
 
     public VmwareCimDatacollectionConfig() {
         super();
-        this._vmwareCimCollectionList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.cim.VmwareCimCollection>();
+        this._vmwareCimCollectionList = new java.util.ArrayList<>();
     }
 
     /**

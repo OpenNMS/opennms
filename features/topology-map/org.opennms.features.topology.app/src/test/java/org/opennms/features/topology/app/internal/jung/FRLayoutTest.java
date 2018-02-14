@@ -28,33 +28,38 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
-import edu.uci.ics.jung.graph.SparseGraph;
-import org.apache.commons.collections15.Transformer;
-import org.junit.Before;
-import org.junit.Test;
-import org.opennms.features.topology.api.*;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.features.topology.app.internal.ProviderManager;
-import org.opennms.features.topology.app.internal.VEProviderGraphContainer;
-import org.opennms.features.topology.plugins.topo.simple.SimpleGraphBuilder;
-
-import java.awt.*;
-import java.awt.Point;
+import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class FRLayoutTest {
+import org.apache.commons.collections15.Transformer;
+import org.junit.Test;
+import org.opennms.features.topology.api.Graph;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.Point;
+import org.opennms.features.topology.api.support.SimpleGraphBuilder;
+import org.opennms.features.topology.api.topo.Edge;
+import org.opennms.features.topology.api.topo.EdgeRef;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import edu.uci.ics.jung.graph.SparseGraph;
+
+public class FRLayoutTest extends AbstractLayoutTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(FRLayoutTest.class);
+    
     private static final double ELBOW_ROOM = 50.0;
-    GraphContainer m_graphContainer;
-    GraphProvider m_graphProvider;
 
-    @Before
-    public void setUp(){
-
-        m_graphProvider = new SimpleGraphBuilder("nodes")
+    @Override
+    protected GraphProvider getGraphProvider() {
+        return new SimpleGraphBuilder("nodes")
                 .vertex("v1").vLabel("vertex1").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
                 .vertex("v2").vLabel("vertex2").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
                 .vertex("v3").vLabel("vertex3").vIconKey("server").vTooltip("tooltip").vStyleName("vertex")
@@ -79,16 +84,13 @@ public class FRLayoutTest {
                 .edge("e13", "v6", "v8").eStyleName("edge")
                 .edge("e14", "v7", "v8").eStyleName("edge")
                 .get();
-
-        ProviderManager providerManager = new ProviderManager();
-        m_graphContainer = new VEProviderGraphContainer(m_graphProvider, providerManager);
     }
 
     @Test
     public void testFRLayout() {
         Graph g = m_graphContainer.getGraph();
 
-        List<Vertex> vertices = new ArrayList<Vertex>(g.getDisplayVertices());
+        List<Vertex> vertices = new ArrayList<>(g.getDisplayVertices());
 
         TopoFRLayout<VertexRef, EdgeRef> layout = runFRLayout(g, g.getLayout(), vertices);
 
@@ -99,9 +101,9 @@ public class FRLayoutTest {
         double distance = calcDistance(layout, v1, v2);
         double distance2 = calcDistance(layout, v2, v3);
         double distance3 = calcDistance(layout, v1, v3);
-        System.out.println("distance: " + distance);
-        System.out.println("distance2: " + distance2);
-        System.out.println("distance3: " + distance3);
+        LOG.info("distance: " + distance);
+        LOG.info("distance2: " + distance2);
+        LOG.info("distance3: " + distance3);
 
 
 
@@ -111,56 +113,40 @@ public class FRLayoutTest {
         distance = calcDistance(layout2, v1, v2);
         distance2 = calcDistance(layout2, v2, v3);
         distance3 = calcDistance(layout2, v1, v3);
-        System.out.println("distance: " + distance);
-        System.out.println("distance2: " + distance2);
-        System.out.println("distance3: " + distance3);
+        LOG.info("distance: " + distance);
+        LOG.info("distance2: " + distance2);
+        LOG.info("distance3: " + distance3);
 
         TopoFRLayout<VertexRef, EdgeRef> layout3 = runFRLayout(g, g.getLayout(), vertices);
 
         distance = calcDistance(layout3, v1, v2);
         distance2 = calcDistance(layout3, v2, v3);
         distance3 = calcDistance(layout3, v1, v3);
-        System.out.println("distance: " + distance);
-        System.out.println("distance2: " + distance2);
-        System.out.println("distance3: " + distance3);
+        LOG.info("distance: " + distance);
+        LOG.info("distance2: " + distance2);
+        LOG.info("distance3: " + distance3);
 
     }
 
     private TopoFRLayout<VertexRef, EdgeRef> runFRLayout(Graph g, Layout graphLayout, List<Vertex> vertices) {
-        TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<VertexRef, EdgeRef>(createJungGraph(g));
+        TopoFRLayout<VertexRef, EdgeRef> layout = new TopoFRLayout<>(createJungGraph(g));
         Dimension size = selectLayoutSize(m_graphContainer);
         //layout.setRepulsionMultiplier(3/8.0);
         //layout.setAttractionMultiplier(3/8.0);
         layout.setInitializer(initializer(graphLayout, size));
         layout.setSize(size);
 
-        int count = 0;
-//        System.out.println("[");
         while (!layout.done()) {
-//            System.out.println("[");
-
-            for(int i = 0; i < vertices.size(); i++) {
-                Vertex v = vertices.get(i);
-                if(i + 1 == vertices.size()){
-//                    System.out.println("{ x:" + layout.getX(v) + ", y: " + layout.getY(v) + " }");
-                } else{
-//                    System.out.println("{ x:" + layout.getX(v) + ", y: " + layout.getY(v) + " },");
-                }
-
-            }
-
             layout.step();
-//            System.out.println("],");
         }
-//        System.out.println("]");
 
-        System.out.println("/******** FRLayout Run **********/");
+        LOG.info("/******** FRLayout Run **********/");
 
         for(Vertex v : vertices) {
-            graphLayout.setLocation(v, layout.getX(v) - size.getWidth()/2.0, layout.getY(v) - size.getHeight()/2.0 );
-            System.out.println("layout.getX(): " + layout.getX(v) + " layout.getY(): " + layout.getY(v));
+            graphLayout.setLocation(v, new Point(layout.getX(v) - size.getWidth()/2.0, layout.getY(v) - size.getHeight()/2.0) );
+            LOG.info("layout.getX(): " + layout.getX(v) + " layout.getY(): " + layout.getY(v));
         }
-        System.out.println("/******** End FRLayout Run **********/");
+        LOG.info("/******** End FRLayout Run **********/");
 
         return layout;
     }
@@ -173,7 +159,7 @@ public class FRLayoutTest {
     }
 
     private SparseGraph<VertexRef, EdgeRef> createJungGraph(Graph g) {
-        SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
+        SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<>();
 
         Collection<Vertex> vertices = g.getDisplayVertices();
 
@@ -193,8 +179,8 @@ public class FRLayoutTest {
             @Override
             public Point2D transform(VertexRef v) {
                 if (v == null) {
-                    System.out.println("Algorithm tried to layout a null vertex");
-                    return new Point(0,0);
+                    LOG.info("Algorithm tried to layout a null vertex");
+                    return new java.awt.Point(0,0);
                 }
                 org.opennms.features.topology.api.Point location = graphLayout.getLocation(v);
                 return new Point2D.Double(location.getX() + dim.getWidth()/2.0 , location.getY() + dim.getHeight()/2.0 );
@@ -209,9 +195,7 @@ public class FRLayoutTest {
         double width = height*16.0/9.0;
 
         Dimension dim = new Dimension((int)width, (int)height);
-
-        System.out.printf("selectLayoutSize: vertexCount=%s, returm dim=%s \n", vertexCount, dim);
-
+        LOG.info("selectLayoutSize: vertexCount={}, return dim={}", vertexCount, dim);
         return dim;
     }
 }

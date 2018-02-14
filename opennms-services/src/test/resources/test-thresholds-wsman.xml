@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<thresholding-config>
+
+   <!-- Ws-Man Windows Services -->
+   <group name="generic-snmp" rrdRepository="${install.share.dir}/rrd/snmp/">
+        <threshold
+            description="Trigger an alarm when free space on a Windows Ws-Man volume is less than 10GB"
+            type="low" ds-type="wmiLogicalDisk" value="10240.0"
+            rearm="12288.0" trigger="2" ds-label="wmiLDName"
+            triggeredUEI="uei.opennms.org/threshold/lowThresholdExceededWSManLogStorage"
+            rearmedUEI="uei.opennms.org/threshold/lowThresholdRearmedWSManLogStorage"
+            filterOperator="or" ds-name="wmiLDPctFreeMBytes"/>
+        <threshold
+            description="Trigger an alarm when free space on a Windows Ws-Man volume is less than 2%"
+            type="low" ds-type="wmiLogicalDisk" value="2.0" rearm="3.0"
+            trigger="2" ds-label="wmiLDName"
+            triggeredUEI="uei.opennms.org/threshold/lowThresholdExceededWSManLogStorage"
+            rearmedUEI="uei.opennms.org/threshold/lowThresholdRearmedWSManLogStorage"
+            filterOperator="or" ds-name="wmiLDPctFreeSpace"/>
+    </group>
+
+</thresholding-config>

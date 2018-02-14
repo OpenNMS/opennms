@@ -158,13 +158,6 @@ public abstract class ConfigFileConstants {
      */
     public static final int VACUUMD_CONFIG_FILE_NAME;
 
-    //
-
-    /**
-     * The opennms xmlrpcd config file
-     */
-    public static final int XMLRPCD_CONFIG_FILE_NAME;
-
     /**
      * The config file specifying the rrd config (ie JRobin vs JNI)
      */
@@ -203,6 +196,11 @@ public abstract class ConfigFileConstants {
      */
     public static final int SYSLOGD_CONFIG_FILE_NAME;
 
+    /**
+     * The grok pattern file for Syslogd's {@link RadixTreeSyslogParser}
+     */
+    public static final int SYSLOGD_GROK_PATTERNS_FILE_NAME;
+
     //
     // End services config files
     //
@@ -215,16 +213,6 @@ public abstract class ConfigFileConstants {
      * The administrator pitXML file for the Swing GUI
      */
     public static final int ADMIN_PITXML_FILE_NAME;
-
-    /**
-     * The "magic" users config file
-     */
-    public static final int MAGIC_USERS_CONF_FILE_NAME;
-
-    /**
-     * The "poller-config" config file
-     */
-    public static final int POLLER_CONF_FILE_NAME;
 
     /**
      * The properties file that contains a list of event uies to exclude from
@@ -364,11 +352,6 @@ public abstract class ConfigFileConstants {
     public static final int NOTIFY_REPORT;
 
     /**
-     * The Linkd discovery configuration file
-     */
-    public static final int LINKD_CONFIG_FILE_NAME;
-    
-    /**
      * The ENHANCED Linkd discovery configuration file
      */
     public static final int ENLINKD_CONFIG_FILE_NAME;
@@ -377,11 +360,6 @@ public abstract class ConfigFileConstants {
      * The OpenNMS DataSourceConfiguration file
      */
     public static final int OPENNMS_DATASOURCE_CONFIG_FILE_NAME;
-    
-    /**
-     * The map properties config file
-     */
-    public static final int MAP_PROPERTIES_FILE_NAME;
 
     //
     // End XSL files used by reports
@@ -501,8 +479,6 @@ public abstract class ConfigFileConstants {
         SERVICE_CONF_FILE_NAME = 13;
 
         ADMIN_PITXML_FILE_NAME = 15;
-        MAGIC_USERS_CONF_FILE_NAME = 16;
-        POLLER_CONF_FILE_NAME = 17;
         EXCLUDE_UEI_FILE_NAME = 18;
         USERS_CONF_FILE_NAME = 19;
 
@@ -542,7 +518,6 @@ public abstract class ConfigFileConstants {
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
         OPENNMS_SERVER_CONFIG_FILE_NAME = 48;
-        XMLRPCD_CONFIG_FILE_NAME = 49;
 
         DHCPD_CONFIG_FILE_NAME = 50;
 
@@ -560,11 +535,9 @@ public abstract class ConfigFileConstants {
         TRANSLATOR_CONFIG_FILE_NAME = 57;
 
         SYSLOGD_CONFIG_FILE_NAME = 58;
-        
-        LINKD_CONFIG_FILE_NAME = 59;
-        
-        MAP_PROPERTIES_FILE_NAME = 60;
-        
+
+        SYSLOGD_GROK_PATTERNS_FILE_NAME = 59;
+
         SURVEILLANCE_VIEWS_FILE_NAME = 61;
         
         SITE_STATUS_VIEWS_FILE_NAME = 62;
@@ -626,8 +599,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";
 
         FILE_ID_TO_NAME[ADMIN_PITXML_FILE_NAME] = "pitXML.xml";
-        FILE_ID_TO_NAME[MAGIC_USERS_CONF_FILE_NAME] = "magic-users.properties";
-        FILE_ID_TO_NAME[POLLER_CONF_FILE_NAME] = "poller-config.properties";
         FILE_ID_TO_NAME[EXCLUDE_UEI_FILE_NAME] = "exclude-ueis.properties";
         FILE_ID_TO_NAME[USERS_CONF_FILE_NAME] = "users.xml";
 
@@ -670,7 +641,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
         FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME] = "opennms-server.xml";
-        FILE_ID_TO_NAME[XMLRPCD_CONFIG_FILE_NAME] = "xmlrpcd-configuration.xml";
         FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
@@ -680,9 +650,8 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
         FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
         FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
-        FILE_ID_TO_NAME[LINKD_CONFIG_FILE_NAME] = "linkd-configuration.xml";
+        FILE_ID_TO_NAME[SYSLOGD_GROK_PATTERNS_FILE_NAME] = "syslogd-grok-patterns.txt";
         FILE_ID_TO_NAME[ENLINKD_CONFIG_FILE_NAME] = "enlinkd-configuration.xml";
-        FILE_ID_TO_NAME[MAP_PROPERTIES_FILE_NAME] = "map.properties";
         FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
         FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
         FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";

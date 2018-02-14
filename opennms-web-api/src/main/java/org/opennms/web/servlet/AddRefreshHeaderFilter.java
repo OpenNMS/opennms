@@ -60,7 +60,7 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
      * This is a strange implementation, because intuitively, you would add the
      * header after the content has been produced (in other words, after you had
      * already called {@link FilterChain#doFilter FilterChain.doFilter}.
-     * However, the Servlet 2.3 spec (proposed final draft) states (albeitly in
+     * However, the Servlet 2.3 spec (proposed final draft) states (albeit in
      * an off-handed fashion) that you can only "examine" the response headers
      * after the <code>doFilter</code> call. Evidently this means that you
      * cannot change the headers after the <code>doFilter</code>. If you call
@@ -81,9 +81,7 @@ public class AddRefreshHeaderFilter extends Object implements Filter {
         // read the seconds value from the config or use the default if not
         // found
         String seconds = this.filterConfig.getInitParameter("seconds");
-        if (seconds != null)
-            ;
-        {
+        if (seconds != null) {
             this.seconds = seconds;
         }
     }

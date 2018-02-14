@@ -48,11 +48,10 @@ import java.util.zip.ZipOutputStream;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.io.IOUtils;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.db.install.SimpleDataSource;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 import org.slf4j.Logger;
@@ -308,14 +307,8 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
         }
         try {
             final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.OPENNMS_DATASOURCE_CONFIG_FILE_NAME);
-            DataSourceConfiguration dsc = null;
-            FileInputStream fileInputStream = null;
-            try {
-                fileInputStream = new FileInputStream(cfgFile);
-                dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
-            } finally {
-                IOUtils.closeQuietly(fileInputStream);
-            }
+            final DataSourceConfiguration dsc = JaxbUtils.unmarshal(DataSourceConfiguration.class, cfgFile);
+
             for (JdbcDataSource jds : dsc.getJdbcDataSourceCollection()) {
                 if (jds.getName().equals("opennms")) {
                     dataSource = new SimpleDataSource(jds);
@@ -353,7 +346,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param filesToCompress the list of files to compress
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    private void zipFiles(File zipFile, File sourceFolder, List<File> filesToCompress) throws OnmsUpgradeException {
+    private File zipFiles(File zipFile, File sourceFolder, List<File> filesToCompress) throws OnmsUpgradeException {
         try {
             FileOutputStream fos = new FileOutputStream(zipFile);
             ZipOutputStream zos = new ZipOutputStream(fos);
@@ -374,6 +367,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
             zos.flush();
             zos.close();
             fos.close();
+            return zipFile;
         } catch (Exception e) {
             throw new OnmsUpgradeException("Cannot ZIP files because " + e.getMessage(), e);
         }
@@ -387,7 +381,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected void zipDir(File zipFile, File sourceFolder) throws OnmsUpgradeException {
-        List<File> filesToCompress = new ArrayList<File>();
+        List<File> filesToCompress = new ArrayList<>();
         try {
             populateFilesList(sourceFolder, filesToCompress);
         } catch (IOException e) {
@@ -403,8 +397,8 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param sourceFile the source file
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
-    protected void zipFile(File sourceFile) throws OnmsUpgradeException {
-        zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
+    protected File zipFile(File sourceFile) throws OnmsUpgradeException {
+        return zipFiles(new File(sourceFile.getAbsolutePath() + ZIP_EXT), sourceFile.getParentFile(), Collections.singletonList(sourceFile));
     }
 
     /**
@@ -522,6 +516,36 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
         return getOpennmsProductName().equals(MERIDIAN);
     }
 
+    public static enum VersionOperator {
+       LT,
+       LE,
+       EQ,
+       GE,
+       GT
+    }
+
+    protected boolean isInstalledVersion(VersionOperator op, int mayor, int minor, int release) throws OnmsUpgradeException {
+        int[] installedVersion = getInstalledVersion();
+
+        int supplied  = versionToInteger(mayor, minor, release);
+        int installed = versionToInteger(installedVersion[0], installedVersion[1], installedVersion[2]);
+
+        switch(op) {
+        case LT:
+            return installed < supplied;
+        case LE:
+            return installed <= supplied;
+        case EQ:
+            return installed == supplied;
+        case GE:
+            return installed >= supplied;
+        case GT:
+            return installed > supplied;
+        }
+
+        throw new OnmsUpgradeException("Should never happen.");
+    }
+
     /**
      * Checks if the installed version of OpenNMS is greater or equals than the supplied version.
      *
@@ -532,18 +556,20 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected boolean isInstalledVersionGreaterOrEqual(int mayor, int minor, int release) throws OnmsUpgradeException {
+        return isInstalledVersion(VersionOperator.GE, mayor, minor, release);
+    }
+
+    protected int[] getInstalledVersion() throws OnmsUpgradeException {
         String version = getOpennmsVersion();
         String[] a = version.split("\\.");
         int c_major = isMeridian() ? Integer.parseInt(a[0]) + 13 :  Integer.parseInt(a[0]); // Meridian ~ 14.0.4
         int c_minor = isMeridian() ? Integer.parseInt(a[1]) + 1 :Integer.parseInt(a[1]); // Be sure it's greater than 14.0.3
         int c_release = Integer.parseInt(a[2]);
-        try {
-            int supplied  = mayor * 100 + minor * 10 + release;
-            int installed = c_major * 100 + c_minor * 10 + c_release;
-            return installed >= supplied;
-        } catch (Exception e) {
-            throw new OnmsUpgradeException("Can't process the OpenNMS version");
-        }
+        return new int[] { c_major, c_minor, c_release };
+    }
+
+    protected static int versionToInteger(int mayor, int minor, int release) throws OnmsUpgradeException {
+        return (mayor * 100 + minor * 10 + release);
     }
 
     /**
@@ -579,7 +605,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param properties the properties
      */
     private void printProperties(String title, Properties properties) {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (Object k : properties.keySet()) {
             keys.add((String) k);
         }

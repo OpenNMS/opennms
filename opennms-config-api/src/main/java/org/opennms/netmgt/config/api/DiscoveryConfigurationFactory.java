@@ -31,8 +31,8 @@ package org.opennms.netmgt.config.api;
 import java.net.InetAddress;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
+import org.opennms.netmgt.config.discovery.DiscoveryConfiguration;
 import org.opennms.netmgt.model.discovery.IPPollAddress;
 import org.opennms.netmgt.model.discovery.IPPollRange;
 
@@ -42,6 +42,8 @@ import org.opennms.netmgt.model.discovery.IPPollRange;
  * @author <a href="ryan@mail1.opennms.com"> Ryan Lambeth </a>
  */
 public interface DiscoveryConfigurationFactory {
+
+	DiscoveryConfiguration getConfiguration();
 
 	/**
 	 * <p>getURLSpecifics</p>
@@ -83,9 +85,16 @@ public interface DiscoveryConfigurationFactory {
 	/**
 	 * <p>getIntraPacketDelay</p>
 	 * 
-	 * @return an int
+	 * @return a long
 	 */
-	int getIntraPacketDelay();
+	long getIntraPacketDelay();
+	
+	/**
+	 * <p>getPacketsPerSecond</p>
+	 * 
+	 * @return a double
+	 */
+	double getPacketsPerSecond();
 	
 	/**
 	 * <p>getExcludingInterator</p>

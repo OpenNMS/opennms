@@ -26,10 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/**
- * This class was original generated with Castor, but is no longer.
- */
-
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
@@ -71,7 +67,7 @@ public class Monitor implements Serializable {
      * to the service monitor.
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Monitor() {
         super();

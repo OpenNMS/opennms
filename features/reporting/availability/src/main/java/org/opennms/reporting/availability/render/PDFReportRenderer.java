@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
 import javax.xml.transform.OutputKeys;
@@ -121,9 +122,9 @@ public class PDFReportRenderer implements ReportRenderer {
                         LOG.debug("Rendering {} with XSL File {} to OutputStream", inputFileName, xsltResource.getDescription());
     
                         in = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(in, "UTF-8");
+                        xsl = new InputStreamReader(in, StandardCharsets.UTF_8);
                         xslt = new FileInputStream(inputFileName);
-                        xml = new InputStreamReader(xslt, "UTF-8");
+                        xml = new InputStreamReader(xslt, StandardCharsets.UTF_8);
             
                         render(xml, outputStream, xsl);
                         return null;
@@ -153,8 +154,8 @@ public class PDFReportRenderer implements ReportRenderer {
                     Reader xsl = null, xml = null;
                     try {
                         xslt = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(xslt, "UTF-8");
-                        xml = new InputStreamReader(inputStream, "UTF-8");
+                        xsl = new InputStreamReader(xslt, StandardCharsets.UTF_8);
+                        xml = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             
                         render(xml, outputStream, xsl);
                         return null;
@@ -184,9 +185,9 @@ public class PDFReportRenderer implements ReportRenderer {
                     try {
             
                         xslt = new FileInputStream(xsltResource.getFile());
-                        xsl = new InputStreamReader(xslt, "UTF-8");
+                        xsl = new InputStreamReader(xslt, StandardCharsets.UTF_8);
                         in = new FileInputStream(m_baseDir + "/" + inputFileName);
-                        xml = new InputStreamReader(in, "UTF-8");
+                        xml = new InputStreamReader(in, StandardCharsets.UTF_8);
             
                         out = new FileOutputStream(new File(m_baseDir + "/" + outputFileName));
                         
@@ -223,7 +224,7 @@ public class PDFReportRenderer implements ReportRenderer {
 
             final TransformerFactory tfact = TransformerFactory.newInstance();
             final Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
             final StreamSource streamSource = new StreamSource(in);
             transformer.transform(streamSource, new SAXResult(fop.getDefaultHandler()));
         } catch (final Exception e) {

@@ -78,7 +78,7 @@ public abstract class AclUtils {
         
         ApplicationContext ctx = WebApplicationContextUtils.getRequiredWebApplicationContext(sc);
         
-        NodeDao dao = (NodeDao) ctx.getBean("nodeDao", NodeDao.class);
+        NodeDao dao = ctx.getBean("nodeDao", NodeDao.class);
         
         return new SetBasedNodeAccessChecker(dao.getNodeIds());
         

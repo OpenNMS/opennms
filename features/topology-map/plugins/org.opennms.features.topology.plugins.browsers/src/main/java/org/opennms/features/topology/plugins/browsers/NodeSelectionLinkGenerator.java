@@ -28,6 +28,10 @@
 
 package org.opennms.features.topology.plugins.browsers;
 
+import org.opennms.features.topology.api.browsers.AbstractSelectionLinkGenerator;
+import org.opennms.features.topology.api.topo.DefaultVertexRef;
+import org.opennms.features.topology.api.topo.VertexRef;
+
 import com.vaadin.data.Property;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -36,28 +40,13 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.Table.ColumnGenerator;
 import com.vaadin.ui.themes.BaseTheme;
 
-import org.opennms.features.topology.api.SelectionListener;
-import org.opennms.features.topology.api.VerticesUpdateManager;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
-import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.osgi.EventProxy;
-import org.opennms.osgi.EventProxyAware;
-
-import java.util.*;
-
-public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAware {
+public class NodeSelectionLinkGenerator extends AbstractSelectionLinkGenerator {
 
 	private static final long serialVersionUID = -1072007643387089006L;
 
 	private final String m_nodeIdProperty;
     private final String m_nodeLabelProperty;
 	private final ColumnGenerator m_generator;
-
-	/**
-	 * TODO: Fix concurrent access to this field
-	 */
-	private Collection<SelectionListener> m_selectionListeners = new HashSet<SelectionListener>();
-    private EventProxy m_eventProxy;
 
     public NodeSelectionLinkGenerator(String nodeIdProperty, String nodeLabelProperty) {
 		this(nodeIdProperty, nodeLabelProperty, new ToStringColumnGenerator());
@@ -87,26 +76,12 @@ public class NodeSelectionLinkGenerator implements ColumnGenerator, EventProxyAw
 					public void buttonClick(ClickEvent event) {
                         Integer nodeId = nodeIdProperty.getValue();
                         String nodeLabel = (String)source.getContainerProperty(itemId, m_nodeLabelProperty).getValue();
-                        fireVertexUpdatedEvent(nodeId, nodeLabel);
+						VertexRef vertexRef = new DefaultVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
+                        fireVertexUpdatedEvent(vertexRef);
                     }
                 });
 				return button;
 			}
 		}
 	}
-
-    protected void fireVertexUpdatedEvent(Integer nodeId, String nodeLabel) {
-        Set<VertexRef> vertexRefs = new HashSet<VertexRef>();
-        VertexRef vRef = new DefaultVertexRef("nodes", String.valueOf(nodeId), nodeLabel);
-        vertexRefs.add(vRef);
-        getEventProxy().fireEvent(new VerticesUpdateManager.VerticesUpdateEvent(vertexRefs));
-    }
-
-    public void setEventProxy(EventProxy eventProxy) {
-        this.m_eventProxy = eventProxy;
-    }
-
-    public EventProxy getEventProxy() {
-        return m_eventProxy;
-    }
 }

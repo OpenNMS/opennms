@@ -1,0 +1,73 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Installed Plugins
+
+Under plugin settings, the Installed Plugins tab lists which plugins are currently installed in the _Karaf_ instance selected in the _Karaf_ instance data panel.
+System Plugins cannot be uninstalled through the UI.
+(The _Plugin Manager_ is itself a system plugin).
+Non-system plugins can be reinstalled or removed from the system.
+Each plugin has metadata associated with it which is used to identify and describe the plugin.
+
+.Plugin Metadata Fields
+[width="100%",options="header,footer"]
+|===
+| Plugin Metadata        | Description
+| Product ID             | The unique key used to identify the name and version of the feature.
+                             (Same as _Karaf_ Feature Name/Version)
+| Licence Key Required   | If true (ticked), this plugin needs a licence key to start
+| Licence Validated      | If a licence key is required, a green text label will indicate if the licence has been installed and validated. Otherwise a red text label will indicate an invalid licence
+| System Plugin          | If true (ticked) this is a system plugin and cannot be removed.
+| Packaging Descriptor   | This describes the packaging mechanism by which the feature was delivered. This will refer to a Kar if the feature was manually installed as a Kar/RPM on the host server.
+| Feature Repository URL | The URL identifying the feature repository (Same as _Karaf_ Feature Repository URL)
+| Product Description    | A textual description of the functionality provided by the plugin.
+| Product URL            | A URL to point to the plugin's documentation / web site
+| licence Type           | A description of the licence applied to the plugin (May be GPL if the plugin is not subject to an ELUA)
+| Organisation           | The organisation issuing the plugin and/or licence.
+|===
+
+image::plugin-manager/05_installedPlugins.png[]
+
+NOTE: The installed plugins tab shows the data retrieved the last time the `Reload Karaf Instance` data button was pressed. (This allow us to maintain a record of offline 
+_Karaf_ instances). However it also means that the localhost data may not be up to date with the local _Karaf_ instance. You should always reload to get the accurate picture of what is currently installed.
+
+=== Available Plugins Server
+
+The _Plugin Manager_ obtains a list of available plugins from the _Available Plugin's server_.
+
+_Available Plugin's server_ can be part of an externally hosted plugin shopping cart or it can simply be a url serving the
+internal list of available plugins as described in the section on Internal Plugins.
+ 
+In order for externally downloaded plugins to be installed, the _Available Plugin's server_ must have a related maven repository from which
+_Karaf_ can download the feature. By default feature download is not enabled in _{opennms-product-name}_. To enable _Karaf_ external
+feature download, the address of the maven repository should be entered in the org.ops4j.pax.url.mvn.cfg file in the 
+_{opennms-product-name}_ /etc directory.
+
+Alternatively the _Plugin Manager_ can list the available plugins which have been installed on the local machine as bundled Plugin Kar's 
+(using the _Karaf_ Kar deploy mechanism) along with any internal plugins bundled with _{opennms-product-name}_.
+In this case, the _Plugin Server URL_ should be pointed at http:\\localhost:8980\opennms.
+
+The admin username and passwords are used to access the _Available Plugins Server_.
+If a shopping cart is provided for obtaining licences, the URL of the shopping cart should be filled in.
+
+image::plugin-manager/06_availablePluginsServer.png[]
+
+=== Installing Available Plugins
+
+The Available Plugins panel list the plugins which are available and listed by the Available Plugins server.
+These can be directly installed into the selected _Karaf_ instance or can be posted to a manifest for later installation.
+If a plugin is installed, the system will try and start it.
+However if a corresponding licence is required and not installed, the features will be loaded but not started.
+You must restart the feature if you later install a licence key.
+
+image::plugin-manager/07_availablePlugins.png[]
+
+=== Plugins Manifest
+
+The Plugins Manifest for a given _Karaf_ instance lists the target plugins which the _Karaf_ instance should install when it next contacts the licence manager.
+If the _Plugin Manager_ can communicate with the remote server, then a manifest can be selected for installation.
+A manual manifest entry can also be created for a feature.
+This can be used to install features which are not listed in the Available Features list.
+
+image::plugin-manager/08_pluginManifest.png[]

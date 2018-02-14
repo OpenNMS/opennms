@@ -60,7 +60,7 @@ public class ResourceGraphsWindow extends Window {
 	 * @param nodeURL Node URL
 	 * @throws MalformedURLException
 	 */
-	public ResourceGraphsWindow(final Node node, final URL nodeURL) throws MalformedURLException{
+	public ResourceGraphsWindow(final Node node, final URL nodeURL) {
 		
 		rgBrowser = new Embedded("", new ExternalResource(nodeURL));
 		

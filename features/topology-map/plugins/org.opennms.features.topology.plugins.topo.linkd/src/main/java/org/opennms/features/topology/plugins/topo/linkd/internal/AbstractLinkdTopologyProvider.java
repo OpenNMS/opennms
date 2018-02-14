@@ -28,45 +28,36 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
+import java.text.DecimalFormat;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
+import org.opennms.features.topology.api.topo.AbstractVertex;
+import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.GraphProvider;
+import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.TopologyDao;
+import org.opennms.netmgt.model.FilterManager;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.springframework.transaction.support.TransactionOperations;
+
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.topo.*;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.DataLinkInterface;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.FilterManager;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
-
-import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
 public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
-
-    private static Logger LOG = LoggerFactory.getLogger(AbstractLinkdTopologyProvider.class);
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
@@ -81,14 +72,10 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
      */
     protected static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
 
-    /**
-     * Do not use directly. Call {@link #getNodeStatusString(org.opennms.netmgt.model.OnmsNode.NodeType)}
-     * getInterfaceStatusMap} instead.
-     */
     protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
 
     static {
-        m_nodeStatusMap = new EnumMap<OnmsNode.NodeType, String>(OnmsNode.NodeType.class);
+        m_nodeStatusMap = new EnumMap<>(OnmsNode.NodeType.class);
         m_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");
         m_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
         m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
@@ -106,7 +93,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
      };
 
     protected final boolean m_aclEnabled;
-    protected String m_configurationFile;
     protected TransactionOperations m_transactionOperations;
     protected NodeDao m_nodeDao;
     protected SnmpInterfaceDao m_snmpInterfaceDao;
@@ -125,7 +111,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     /**
      * Method used to convert an integer bits-per-second value to a more
      * readable vale using commonly recognized abbreviation for network
-     * interface speeds. Feel free to expand it as necessary to accomodate
+     * interface speeds. Feel free to expand it as necessary to accommodate
      * different values.
      *
      * @param ifSpeed
@@ -172,67 +158,45 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return formatter.format(displaySpeed) + " " + units;
     }
 
-    protected static WrappedGraph getGraphFromFile(File file) throws JAXBException, MalformedURLException {
-        JAXBContext jc = JAXBContext.newInstance(WrappedGraph.class);
-        Unmarshaller u = jc.createUnmarshaller();
-        return (WrappedGraph) u.unmarshal(file.toURI().toURL());
-    }
-
     public static String getIconName(String nodeSysObjectId) {
-        return nodeSysObjectId == null ? "linkd:system" : "linkd:system:snmp:"+nodeSysObjectId;
-    }
-
-    /**
-     * Return the human-readable name for a interface status character, may be
-     * null.
-     *
-     * @param c a char.
-     * @return a {@link String} object.
-     */
-    protected static String getNodeStatusString(OnmsNode.NodeType c) {
-        return m_nodeStatusMap.get(c);
+        if (nodeSysObjectId == null) {
+            return "linkd.system";
+        }
+        if (nodeSysObjectId.startsWith(".")) {
+            return "linkd.system.snmp" + nodeSysObjectId;
+        }
+        return "linkd.system.snmp." + nodeSysObjectId;
     }
 
     protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
-        StringBuffer statusText = new StringBuffer();
-        Map<String,String> nodeProperties = new HashMap<String, String>();
-        statusText.append(getNodeStatusString(nodeType));
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(label);
+        tooltipText.append(": ");
+        if (ip != null) {
+            tooltipText.append("(");
+            tooltipText.append(ip);
+            tooltipText.append(")");
+        }
+        tooltipText.append("(");
+        tooltipText.append(m_nodeStatusMap.get(nodeType));
         if (ip != null) {
             if (isManaged) {
-                statusText.append( " / Managed");
+                tooltipText.append( "/Managed");
             } else {
-                statusText.append( " / Unmanaged");
+                tooltipText.append( "/Unmanaged");
             }
         }
-        nodeProperties.put( "Management IP and Name", ip + " (" + label + ")");
-        if (location != null)
-               nodeProperties.put("Location", location);
-        nodeProperties.put("Status", statusText.toString());
-        return getNodeTooltipText(nodeProperties);
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
         
-    }
-
-    protected static String getNodeTooltipText(Map<String,String> nodeMapProperties) {
-        StringBuffer tooltipText = new StringBuffer();
-
-        for (String key: nodeMapProperties.keySet()) {
-            if (key != null && nodeMapProperties.get(key) != null && nodeMapProperties.get(key).length() >0) {
+        if (location != null && location.length() > 0) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(key+": " + nodeMapProperties.get(key));
+                tooltipText.append(location);
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
         }
-
         return tooltipText.toString();
 
-    }
-
-    public String getConfigurationFile() {
-        return m_configurationFile;
-    }
-
-    public void setConfigurationFile(String configurationFile) {
-        m_configurationFile = configurationFile;
     }
 
     public TransactionOperations getTransactionOperations() {
@@ -334,27 +298,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return m_ipInterfaceDao;
     }
 
-    @Override
-    public void save() {
-        List<WrappedVertex> vertices = new ArrayList<WrappedVertex>();
-        for (Vertex vertex : getVertices()) {
-            if (vertex.isGroup()) {
-                vertices.add(new WrappedGroup(vertex));
-            } else {
-                vertices.add(new WrappedLeafVertex(vertex));
-            }
-        }
-        List<WrappedEdge> edges = new ArrayList<WrappedEdge>();
-        for (Edge edge : getEdges()) {
-            WrappedEdge newEdge = new WrappedEdge(edge, new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getSource().getVertex())), new WrappedLeafVertex(m_vertexProvider.getVertex(edge.getTarget().getVertex())));
-            edges.add(newEdge);
-        }
-
-        WrappedGraph graph = new WrappedGraph(getEdgeNamespace(), vertices, edges);
-
-        JAXB.marshal(graph, new File(getConfigurationFile()));
-    }
-
     public LinkdHopCriteriaFactory getLinkdHopCriteriaFactory() {
         return m_criteriaHopFactory;
     }
@@ -376,14 +319,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return ip;
     }
 
-    protected AbstractVertex getDefaultVertex(Integer nodeId, String sysobjectId, String nodeLabel, String location, NodeType nodeType) {
-        String ip = null;
-        boolean isManaged = false;
-        OnmsIpInterface ipInterface = getAddress(nodeId);
-        if (ipInterface != null && ipInterface.getIpAddress() != null) {
-            ip = ipInterface.getIpAddress().getHostAddress();
-            isManaged = ipInterface.isManaged();
-        }
+    protected AbstractVertex getDefaultVertex(Integer nodeId, String sysobjectId, String nodeLabel, String location, NodeType nodeType, boolean isManaged, String ip) {
         return getVertex(nodeId,
                            ip,
                            sysobjectId,
@@ -405,101 +341,33 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return vertex;
     }
 
-    protected String getEdgeTooltipText(DataLinkInterface link,
-                                        Vertex source, Vertex target) {
-        StringBuffer tooltipText = new StringBuffer();
+    @Override
+    public Defaults getDefaults() {
+        return new Defaults()
+                .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
+                .withPreferredLayout("D3 Layout") // D3 Layout
+                .withCriteria(() -> {
+                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
 
-        OnmsSnmpInterface sourceInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(source.getId()), link.getIfIndex());
-        OnmsSnmpInterface targetInterface = getSnmpInterfaceDao().findByNodeIdAndIfIndex(Integer.parseInt(target.getId()), link.getParentIfIndex());
+                    if (node != null) {
+                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
+                        if (defaultVertex != null) {
+                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
+                        }
+                    }
 
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        if (sourceInterface != null && targetInterface != null
-         && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-         && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append("Type of Link: Layer3/Layer2");
-        } else {
-            tooltipText.append("Type of Link: Layer2");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "Name: &lt;endpoint1 " + source.getLabel());
-        if (sourceInterface != null )
-            tooltipText.append( ":"+sourceInterface.getIfName());
-        tooltipText.append( " ---- endpoint2 " + target.getLabel());
-        if (targetInterface != null)
-            tooltipText.append( ":"+targetInterface.getIfName());
-        tooltipText.append("&gt;");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        LinkStateMachine stateMachine = new LinkStateMachine();
-        stateMachine.setParentInterfaces(sourceInterface, targetInterface);
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Link status: " + stateMachine.getLinkStatus());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-
-        if ( targetInterface != null) {
-            if (targetInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        } else if (sourceInterface != null) {
-            if (sourceInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append( "Bandwidth: " + getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        }
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 1: " + source.getLabel() + ", " + source.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( "End Point 2: " + target.getLabel() + ", " + target.getIpAddress());
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        return tooltipText.toString();
+                    return Lists.newArrayList();
+                });
     }
 
-    @Override
-    public abstract void load(String filename) throws MalformedURLException, JAXBException;
-
-    @Override
-    public VertexHopGraphProvider.VertexHopCriteria getDefaultCriteria() {
-        final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
-
-        VertexHopGraphProvider.VertexHopCriteria criterion = null;
-
-        if (node != null) {
-            String ip = null;
-            boolean isManaged= false;
-            final OnmsIpInterface ipInterface = getAddress(node.getId());
-            if (ipInterface != null && ipInterface.getIpAddress() != null) {
-                ip = ipInterface.getIpAddress().getHostAddress();
-                isManaged = ipInterface.isManaged();
-            }
-            final Vertex defaultVertex = getVertex(node.getId(),ip,node.getSysObjectId(),node.getLabel(),getNodeTooltipDefaultText(ip,node.getLabel(),isManaged,node.getSysLocation(),node.getType()));
-            if (defaultVertex != null) {
-                criterion = new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao);
-            }
+    protected Vertex createVertexFor(OnmsNode node, OnmsIpInterface ipInterface) {
+        String ip = null;
+        boolean isManaged= false;
+        if (ipInterface != null && ipInterface.getIpAddress() != null) {
+            ip = ipInterface.getIpAddress().getHostAddress();
+            isManaged = ipInterface.isManaged();
         }
-
-        return criterion;
-    }
-
-    protected void addNodesWithoutLinks() {
-        Map<Integer, String> nodeLabelsById = getAllNodesNoACL();
-        for (Entry<Integer, String> nodeIdAndLabel: nodeLabelsById.entrySet()) {
-            Integer nodeId = nodeIdAndLabel.getKey();
-            String nodeLabel = nodeIdAndLabel.getValue();
-            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
-                LOG.debug("Adding link-less node: " + nodeLabel);
-                addVertices(new DeferedNodeLeafVertex(TOPOLOGY_NAMESPACE_LINKD, nodeId, nodeLabel, this));
-            }
-        }
+        return getVertex(node.getId(),ip,node.getSysObjectId(),node.getLabel(),getNodeTooltipDefaultText(ip,node.getLabel(),isManaged,node.getSysLocation(),node.getType()));
     }
 
     private interface LinkState {

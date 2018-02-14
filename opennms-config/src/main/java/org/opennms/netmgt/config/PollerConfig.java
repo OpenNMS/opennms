@@ -44,6 +44,7 @@ import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
+import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 /**
  * <p>PollerConfig interface.</p>
@@ -51,14 +52,6 @@ import org.opennms.netmgt.poller.ServiceMonitorLocator;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  */
 public interface PollerConfig {
-
-    /**
-     * This method returns the boolean flag xmlrpc to indicate if notification
-     * to external xmlrpc server is needed.
-     *
-     * @return true if need to notify an external xmlrpc server
-     */
-    boolean shouldNotifyXmlrpc();
 
     /**
      * This method returns the configured critical service name.
@@ -351,11 +344,6 @@ public interface PollerConfig {
      * @return a {@link java.util.Map} object.
      */
     public Map<String, ServiceMonitor> getServiceMonitors();
-    
-    /**
-     * <p>releaseAllServiceMonitors</p>
-     */
-    public void releaseAllServiceMonitors();
 
     /**
      * <p>getServiceMonitor</p>
@@ -409,6 +397,8 @@ public interface PollerConfig {
      * @return a {@link java.util.Collection} object.
      */
     Collection<ServiceMonitorLocator> getServiceMonitorLocators(DistributionContext context);
+
+    ServiceMonitorRegistry getServiceMonitorRegistry();
 
     /**
      * <p>getReadLock</p>

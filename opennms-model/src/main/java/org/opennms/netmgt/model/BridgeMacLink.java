@@ -268,7 +268,10 @@ public class BridgeMacLink {
 		setBridgePortIfIndex(element.getBridgePortIfIndex());
 		setBridgePortIfName(element.getBridgePortIfName());
 		setVlan(element.getVlan());
-		setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
+		if (element.getBridgeMacLinkLastPollTime() == null)
+		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
+		else 
+		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkLastPollTime());
 	}
 
 
@@ -283,5 +286,24 @@ public class BridgeMacLink {
 	}
 
 
+    @Transient
+    public String printTopology() {
+        final StringBuilder strbfr = new StringBuilder();
+
+        strbfr.append("mac link:[");
+        strbfr.append(getMacAddress());
+        strbfr.append(", bridge:[");
+        strbfr.append(getNode().getId());
+        strbfr.append("], bridgeport:");
+        strbfr.append(getBridgePort());
+        if (getBridgeDot1qTpFdbStatus() != null) {
+        	strbfr.append(", status:");
+        	strbfr.append(BridgeDot1qTpFdbStatus.getTypeString(getBridgeDot1qTpFdbStatus().getValue()));
+        }
+        strbfr.append(", ifindex:");
+        strbfr.append(getBridgePortIfIndex());
+        strbfr.append("]\n");	        
+        return strbfr.toString();
+	}
 	
 }

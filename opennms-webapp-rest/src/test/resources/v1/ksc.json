@@ -1,0 +1,20 @@
+{
+    "graphs_per_line": 0, 
+    "id": 0, 
+    "label": "Test", 
+    "kscGraph": [
+        {
+            "domain": null, 
+            "extlink": null, 
+            "graphtype": "ssh", 
+            "interfaceId": null, 
+            "nodeId": null, 
+            "nodeSource": null, 
+            "resourceId": "node[8].responseTime[216.216.217.254]", 
+            "timespan": "7_day", 
+            "title": "blah"
+        }
+    ], 
+    "show_graphtype_button": false, 
+    "show_timespan_button": false
+}

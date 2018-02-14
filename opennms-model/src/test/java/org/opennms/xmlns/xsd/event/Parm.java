@@ -36,6 +36,8 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -72,8 +74,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Parm {
 
     @XmlElement(required = true)
+    @NotNull
     protected String parmName;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event", required = true)
+    @NotNull
+    @Valid
     protected Value value;
 
     /**

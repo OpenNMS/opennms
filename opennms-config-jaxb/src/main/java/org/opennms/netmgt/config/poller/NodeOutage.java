@@ -26,10 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was converted to JAXB from Castor.
- */
-
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;

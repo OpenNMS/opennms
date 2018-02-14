@@ -31,38 +31,32 @@ package org.opennms.netmgt.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.syslogd.HideMatch;
-import org.opennms.netmgt.config.syslogd.HideMessage;
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.syslogd.SyslogdConfigurationGroup;
-import org.opennms.netmgt.config.syslogd.UeiList;
 import org.opennms.netmgt.config.syslogd.UeiMatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.FileSystemResource;
 
 /**
- * This is the singleton class used to load the configuration for the OpenNMS
- * Syslogd from syslogd-configuration.xml. <strong>Note: </strong>Users of
- * this class should make sure the <em>init()</em> is called before calling
- * any other method to ensure the config is loaded before accessing other
- * convenience methods.
+ * This is the class used to load the configuration for the OpenNMS
+ * Syslogd from syslogd-configuration.xml.
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  * @author <a href="mailto:tarus@opennms.org">Tarus Balog </a>
  * @author <a href="http://www.opennms.org/">OpenNMS </a>
  */
 public final class SyslogdConfigFactory implements SyslogdConfig {
+
     private static final Logger LOG = LoggerFactory.getLogger(SyslogdConfigFactory.class);
-    /**
-     * The singleton instance of this factory
-     */
-    private static SyslogdConfig m_singleton = null;
 
     /**
      * The config class loaded from the config file
@@ -70,21 +64,13 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
     private SyslogdConfiguration m_config;
 
     /**
-     * This member is set to true if the configuration file has been loaded.
-     */
-    private static boolean m_loaded = false;
-
-    /**
      * Private constructor
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be read
-     * @throws org.exolab.castor.xml.MarshalException
-     *                             Thrown if the file does not conform to the schema.
-     * @throws org.exolab.castor.xml.ValidationException
-     *                             Thrown if the contents do not match the required schema.
      */
-    private SyslogdConfigFactory(String configFile) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
+    public SyslogdConfigFactory() throws IOException {
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
+        m_config = JaxbUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
         parseIncludedFiles();
     }
 
@@ -92,36 +78,12 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * <p>Constructor for SyslogdConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public SyslogdConfigFactory(InputStream stream) throws IOException, MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(SyslogdConfiguration.class, stream);
-        parseIncludedFiles();
-    }
-
-    /**
-     * Load the config from the default config file and create the singleton
-     * instance of this factory.
-     *
-     * @throws java.io.IOException Thrown if the specified config file cannot be read
-     * @throws org.exolab.castor.xml.MarshalException
-     *                             Thrown if the file does not conform to the schema.
-     * @throws org.exolab.castor.xml.ValidationException
-     *                             Thrown if the contents do not match the required schema.
-     */
-    public static synchronized void init() throws IOException,
-            MarshalException, ValidationException {
-        if (m_loaded) {
-            // init already called - return
-            // to reload, reload() will need to be called
-            return;
+    public SyslogdConfigFactory(InputStream stream) throws IOException {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            m_config = JaxbUtils.unmarshal(SyslogdConfiguration.class, reader);
         }
-        File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
-
-        m_singleton = new SyslogdConfigFactory(cfgFile.getPath());
-
-        m_loaded = true;
+        parseIncludedFiles();
     }
 
     /**
@@ -129,42 +91,11 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      *
      * @throws java.io.IOException Thrown if the specified config file cannot be
      *                             read/loaded
-     * @throws org.exolab.castor.xml.MarshalException
-     *                             Thrown if the file does not conform to the schema.
-     * @throws org.exolab.castor.xml.ValidationException
-     *                             Thrown if the contents do not match the required schema.
      */
-    public static synchronized void reload() throws IOException,
-            MarshalException, ValidationException {
-        m_singleton = null;
-        m_loaded = false;
-
-        init();
-    }
-
-    /**
-     * Return the singleton instance of this factory.
-     *
-     * @return The current factory instance.
-     * @throws java.lang.IllegalStateException
-     *          Thrown if the factory has not yet been initialized.
-     */
-    public static synchronized SyslogdConfig getInstance() {
-        if (!m_loaded)
-            throw new IllegalStateException(
-                    "The factory has not been initialized");
-
-        return m_singleton;
-    }
-
-    /**
-     * <p>setInstance</p>
-     *
-     * @param config a {@link org.opennms.netmgt.config.SyslogdConfig} object.
-     */
-    public static synchronized void setInstance(SyslogdConfig config) {
-        m_singleton = config;
-        m_loaded = true;
+    public synchronized void reload() throws IOException {
+        File configFile = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME);
+        m_config = JaxbUtils.unmarshal(SyslogdConfiguration.class, new FileSystemResource(configFile));
+        parseIncludedFiles();
     }
 
     /**
@@ -185,7 +116,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     @Override
     public synchronized String getListenAddress() {
-        return m_config.getConfiguration().getListenAddress();
+        return m_config.getConfiguration().getListenAddress().orElse(null);
     }
     
     /**
@@ -206,7 +137,7 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      */
     @Override
     public synchronized String getForwardingRegexp() {
-        return m_config.getConfiguration().getForwardingRegexp();
+        return m_config.getConfiguration().getForwardingRegexp().orElse(null);
     }
 
     /**
@@ -215,8 +146,8 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @return a int.
      */
     @Override
-    public synchronized int getMatchingGroupHost() {
-        return m_config.getConfiguration().getMatchingGroupHost();
+    public synchronized Integer getMatchingGroupHost() {
+        return m_config.getConfiguration().getMatchingGroupHost().orElse(null);
 
     }
 
@@ -226,8 +157,8 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
      * @return a int.
      */
     @Override
-    public synchronized int getMatchingGroupMessage() {
-        return m_config.getConfiguration().getMatchingGroupMessage();
+    public synchronized Integer getMatchingGroupMessage() {
+        return m_config.getConfiguration().getMatchingGroupMessage().orElse(null);
 
     }
 
@@ -241,24 +172,14 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getParser();
     }
 
-    /**
-     * <p>getUeiList</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.syslogd.UeiList} object.
-     */
     @Override
-    public synchronized UeiList getUeiList() {
-        return m_config.getUeiList();
+    public synchronized List<UeiMatch> getUeiList() {
+        return m_config.getUeiMatches();
     }
 
-    /**
-     * <p>getHideMessages</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.syslogd.HideMessage} object.
-     */
     @Override
-    public synchronized HideMessage getHideMessages() {
-        return m_config.getHideMessage();
+    public synchronized List<HideMatch> getHideMessages() {
+        return m_config.getHideMatches();
     }
     
     /**
@@ -271,14 +192,36 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
         return m_config.getConfiguration().getDiscardUei();
     }
 
+    @Override
+    public int getNumThreads() {
+        if (m_config.getConfiguration().getThreads().isPresent()) {
+            return m_config.getConfiguration().getThreads().get();
+        } else {
+            return Runtime.getRuntime().availableProcessors() * 2;
+        }
+    }
+
+    @Override
+    public int getQueueSize() {
+        return m_config.getConfiguration().getQueueSize();
+    }
+
+    @Override
+    public int getBatchSize() {
+        return m_config.getConfiguration().getBatchSize();
+    }
+
+    @Override
+    public int getBatchIntervalMs() {
+        return m_config.getConfiguration().getBatchInterval();
+    }
+
     /**
      * Parse import-file tags and add all uei-matchs and hide-messages.
      * 
      * @throws IOException
-     * @throws MarshalException
-     * @throws ValidationException
      */
-    private void parseIncludedFiles() throws IOException, MarshalException, ValidationException {
+    private void parseIncludedFiles() throws IOException {
         final File configDir;
         try {
             configDir = ConfigFileConstants.getFile(ConfigFileConstants.SYSLOGD_CONFIG_FILE_NAME).getParentFile();
@@ -286,21 +229,23 @@ public final class SyslogdConfigFactory implements SyslogdConfig {
             LOG.warn("Error getting default syslogd configuration location. <import-file> directives will be ignored.  This should really only happen in unit tests.");
             return;
         }
-        for (final String fileName : m_config.getImportFileCollection()) {
+        for (final String fileName : m_config.getImportFiles()) {
             final File configFile = new File(configDir, fileName);
-            final SyslogdConfigurationGroup includeCfg = CastorUtils.unmarshal(SyslogdConfigurationGroup.class, new FileSystemResource(configFile));
-            if (includeCfg.getUeiList() != null) {
-                for (final UeiMatch ueiMatch : includeCfg.getUeiList().getUeiMatchCollection())  {
-                    if (m_config.getUeiList() == null)
-                        m_config.setUeiList(new UeiList());
-                    m_config.getUeiList().addUeiMatch(ueiMatch);
+            final SyslogdConfigurationGroup includeCfg = JaxbUtils.unmarshal(SyslogdConfigurationGroup.class, new FileSystemResource(configFile));
+            if (includeCfg.getUeiMatches() != null) {
+                for (final UeiMatch ueiMatch : includeCfg.getUeiMatches())  {
+                    if (m_config.getUeiMatches() == null) {
+                        m_config.setUeiMatches(new ArrayList<>());
+                    }
+                    m_config.addUeiMatch(ueiMatch);
                 }
             }
-            if (includeCfg.getHideMessage() != null) {
-                for (final HideMatch hideMatch : includeCfg.getHideMessage().getHideMatchCollection()) {
-                    if (m_config.getHideMessage() == null)
-                        m_config.setHideMessage(new HideMessage());
-                    m_config.getHideMessage().addHideMatch(hideMatch);
+            if (includeCfg.getHideMatches() != null) {
+                for (final HideMatch hideMatch : includeCfg.getHideMatches()) {
+                    if (m_config.getHideMatches() == null) {
+                        m_config.setHideMatches(new ArrayList<>());
+                    }
+                    m_config.addHideMatch(hideMatch);
                 }
             }
         }

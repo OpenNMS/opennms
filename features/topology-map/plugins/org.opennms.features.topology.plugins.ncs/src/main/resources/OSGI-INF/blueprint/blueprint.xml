@@ -1,8 +1,9 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
     xsi:schemaLocation="
-    http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0 https://svn.apache.org/repos/asf/aries/tags/blueprint-0.3.1/blueprint-cm/src/main/resources/org/apache/aries/blueprint/compendium/cm/blueprint-cm-1.1.0.xsd
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+    http://camel.apache.org/schema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
 ">
     
    <cm:property-placeholder id="ncsPlugin" persistent-id="org.opennms.features.topology.plugin.ncs" update-strategy="reload">
@@ -42,8 +43,8 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	<reference id="ncsComponentRepository" interface="org.opennms.netmgt.model.ncs.NCSComponentRepository" availability="mandatory" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
 
-	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-		<command name="ncs/listcomponents">
+	<command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+		<command>
 			<action class="org.opennms.features.topology.plugins.ncs.ComponentCommand" />
 		</command>
 	</command-bundle>
@@ -75,25 +76,13 @@ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
 	
 	<bean id="ncsPathEdgeProvider" class="org.opennms.features.topology.plugins.ncs.NCSPathEdgeProvider"/>
 
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsEdgeProvider"/>
-	<service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="ncsPathEdgeProvider" />
-
     <!--NCS Edge Status Provider-->
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
 
     <bean id="ncsEdgeStatusProvider" class="org.opennms.features.topology.plugins.ncs.NCSEdgeStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
-
-    <service interface="org.opennms.features.topology.api.CheckedOperation">
-        <service-properties>
-            <entry key="operation.menuLocation" value="View"/>
-            <entry key="operation.label" value="NCS Link Status"/>
-        </service-properties>
-        <bean class="org.opennms.features.topology.plugins.ncs.NCSStatusToggleOperation">
-            <property name="ncsEdgeStatusProvider" ref="ncsEdgeStatusProvider"/>
-        </bean>
-    </service>
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="ncsEdgeStatusProvider" />
 
 	<bean id="ncsPathProviderService" class="org.opennms.features.topology.plugins.ncs.NCSPathProviderService">
 	   <argument ref="camel1" />

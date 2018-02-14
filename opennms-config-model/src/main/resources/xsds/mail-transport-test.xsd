@@ -62,7 +62,7 @@
         <element ref="this:sendmail-host" minOccurs="1" maxOccurs="1" />
         <element ref="this:sendmail-protocol" minOccurs="1" maxOccurs="1" />
         <element ref="this:sendmail-message" minOccurs="1" maxOccurs="1" />
-        <element ref="this:user-auth" minOccurs="1" maxOccurs="1" />
+        <element ref="this:user-auth" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="debug" type="boolean" use="optional" default="true" />
       <attribute name="use-authentication" type="boolean" use="optional" default="false" />
@@ -130,7 +130,7 @@
       <sequence>
         <element ref="this:javamail-property" minOccurs="0" maxOccurs="unbounded" />
         <element ref="this:readmail-host" minOccurs="1" maxOccurs="1" />
-        <element ref="this:user-auth" minOccurs="1" maxOccurs="1" />
+        <element ref="this:user-auth" minOccurs="0" maxOccurs="1" />
       </sequence>
       <attribute name="debug" type="boolean" use="optional" default="true" />
       <attribute name="mail-folder" type="string" use="optional" default="INBOX" />

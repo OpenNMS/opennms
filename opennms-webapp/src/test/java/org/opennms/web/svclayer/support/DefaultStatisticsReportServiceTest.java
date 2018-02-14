@@ -40,13 +40,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.StatisticsReportDao;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
-import org.opennms.web.command.StatisticsReportCommand;
-import org.opennms.web.svclayer.support.StatisticsReportModel.Datum;
+import org.opennms.web.svclayer.model.StatisticsReportCommand;
+import org.opennms.web.svclayer.model.StatisticsReportModel;
+import org.opennms.web.svclayer.model.StatisticsReportModel.Datum;
 import org.springframework.validation.BindException;
 
 /**
@@ -114,7 +116,7 @@ public class DefaultStatisticsReportServiceTest {
         expect(m_statisticsReportDao.load(report.getId())).andReturn(report);
         m_statisticsReportDao.initialize(report);
         m_statisticsReportDao.initialize(report.getData());
-        expect(m_resourceDao.getResourceById(resourceRef.getResourceId())).andReturn(null);
+        expect(m_resourceDao.getResourceById(ResourceId.fromString(resourceRef.getResourceId()))).andReturn(null);
         
         m_mocks.replayAll();
         StatisticsReportModel model = m_service.getReport(command, errors);

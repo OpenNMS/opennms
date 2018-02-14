@@ -28,8 +28,7 @@
 
 package org.opennms.netmgt.collection.support;
 
-import java.io.File;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.collection.api.AttributeGroup;
@@ -40,7 +39,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
-import org.opennms.netmgt.rrd.RrdRepository;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +55,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
     protected final CollectionAgent m_agent;
-    private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new HashMap<AttributeGroupType, AttributeGroup>();
+    private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new LinkedHashMap<AttributeGroupType, AttributeGroup>();
     
     /**
      * <p>Constructor for AbstractCollectionResource.</p>
@@ -79,8 +78,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public File getResourceDir(RrdRepository repository) {
-        return new File(repository.getRrdBaseDir(), m_agent.getStorageDir().toString());
+    public ResourcePath getPath() {
+        return m_agent.getStorageResourcePath();
     }
 
     /**
@@ -88,7 +87,7 @@ public abstract class AbstractCollectionResource implements CollectionResource {
      *
      * @param attr The Attribute to add
      */
-    protected final void addAttribute(CollectionAttribute attr) {
+    public final void addAttribute(CollectionAttribute attr) {
         AttributeGroup group = getGroup(attr.getAttributeType().getGroupType());
         LOG.debug("Adding attribute {}: {} to group {}", attr.getClass().getName(), attr, group);
         group.addAttribute(attr);
@@ -120,8 +119,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     }
 
     @Override
-    public final String getParent() {
-        return m_agent.getStorageDir().toString();
+    public final ResourcePath getParent() {
+        return m_agent.getStorageResourcePath();
     }
 
     /**

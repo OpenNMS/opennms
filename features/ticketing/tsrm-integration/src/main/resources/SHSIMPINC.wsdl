@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:mx="http://www.ibm.com/maximo" xmlns:mxws="http://www.ibm.com/maximo/wsdl/SHSIMPINC" targetNamespace="http://www.ibm.com/maximo/wsdl/SHSIMPINC" name="SHSIMPINC">
+  <types>
+    <xsd:schema>
+      <xsd:import namespace="http://www.ibm.com/maximo" schemaLocation="SHSIMPINCService.xsd"/>
+    </xsd:schema>
+  </types>
+  <message name="QuerySHSIMPINCRequest">
+    <part name="parameters" element="mx:QuerySHSIMPINC"/>
+  </message>
+  <message name="QuerySHSIMPINCResponse">
+    <part name="parameters" element="mx:QuerySHSIMPINCResponse"/>
+  </message>
+  <message name="SyncSHSIMPINCRequest">
+    <part name="parameters" element="mx:SyncSHSIMPINC"/>
+  </message>
+  <message name="SyncSHSIMPINCResponse">
+    <part name="parameters" element="mx:SyncSHSIMPINCResponse"/>
+  </message>
+  <message name="UpdateSHSIMPINCRequest">
+    <part name="parameters" element="mx:UpdateSHSIMPINC"/>
+  </message>
+  <message name="UpdateSHSIMPINCResponse">
+    <part name="parameters" element="mx:UpdateSHSIMPINCResponse"/>
+  </message>
+  <message name="CreateSHSIMPINCRequest">
+    <part name="parameters" element="mx:CreateSHSIMPINC"/>
+  </message>
+  <message name="CreateSHSIMPINCResponse">
+    <part name="parameters" element="mx:CreateSHSIMPINCResponse"/>
+  </message>
+  <message name="DeleteSHSIMPINCRequest">
+    <part name="parameters" element="mx:DeleteSHSIMPINC"/>
+  </message>
+  <message name="DeleteSHSIMPINCResponse">
+    <part name="parameters" element="mx:DeleteSHSIMPINCResponse"/>
+  </message>
+  <portType name="SHSIMPINCPortType">
+    <operation name="QuerySHSIMPINC">
+      <input message="mxws:QuerySHSIMPINCRequest"/>
+      <output message="mxws:QuerySHSIMPINCResponse"/>
+    </operation>
+    <operation name="SyncSHSIMPINC">
+      <input message="mxws:SyncSHSIMPINCRequest"/>
+      <output message="mxws:SyncSHSIMPINCResponse"/>
+    </operation>
+    <operation name="UpdateSHSIMPINC">
+      <input message="mxws:UpdateSHSIMPINCRequest"/>
+      <output message="mxws:UpdateSHSIMPINCResponse"/>
+    </operation>
+    <operation name="CreateSHSIMPINC">
+      <input message="mxws:CreateSHSIMPINCRequest"/>
+      <output message="mxws:CreateSHSIMPINCResponse"/>
+    </operation>
+    <operation name="DeleteSHSIMPINC">
+      <input message="mxws:DeleteSHSIMPINCRequest"/>
+      <output message="mxws:DeleteSHSIMPINCResponse"/>
+    </operation>
+  </portType>
+  <binding name="SHSIMPINCSOAP11Binding" type="mxws:SHSIMPINCPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="QuerySHSIMPINC">
+      <soap:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="SyncSHSIMPINC">
+      <soap:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="UpdateSHSIMPINC">
+      <soap:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="CreateSHSIMPINC">
+      <soap:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="DeleteSHSIMPINC">
+      <soap:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap:body use="literal"/>
+      </input>
+      <output>
+        <soap:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <binding name="SHSIMPINCSOAP12Binding" type="mxws:SHSIMPINCPortType">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <operation name="QuerySHSIMPINC">
+      <soap12:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="SyncSHSIMPINC">
+      <soap12:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="UpdateSHSIMPINC">
+      <soap12:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="CreateSHSIMPINC">
+      <soap12:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+    <operation name="DeleteSHSIMPINC">
+      <soap12:operation soapAction="urn:processDocument" style="document"/>
+      <input>
+        <soap12:body use="literal"/>
+      </input>
+      <output>
+        <soap12:body use="literal"/>
+      </output>
+    </operation>
+  </binding>
+  <service name="SHSIMPINC">
+    <port name="SHSIMPINCSOAP11Port" binding="mxws:SHSIMPINCSOAP11Binding">
+      <soap:address location="http://host/meaweb/services/SHSIMPINC"/>
+    </port>
+    <port name="SHSIMPINCSOAP12Port" binding="mxws:SHSIMPINCSOAP12Binding">
+      <soap12:address location="http://host/meaweb/services/SHSIMPINC"/>
+    </port>
+  </service>
+</definitions>

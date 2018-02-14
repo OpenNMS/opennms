@@ -1,0 +1,185 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/TN3270/traps/tn3270eRtExceeded</uei>
+      <event-label>TN3270E-RT-MIB defined trap event: tn3270eRtExceeded</event-label>
+      <descr>&lt;p>This notification is generated when the average response
+            time, tn3270eRtDataAvgRt, exceeds
+            tn3270eRtCollCtlThresholdHigh at the end of a collection
+            interval specified by tn3270eCollCtlSPeriod
+            times tn3270eCollCtlSPMult. Note that the corresponding
+            tn3270eCollCtlType must have traps(5) and average(3) set
+            for this notification to be generated. In addition,
+            tn3270eRtDataAvgCountTrans, tn3270eRtCollCtlThreshHigh, and
+            tn3270eRtDataAvgRt are algorithmically compared to
+            tn3270eRtCollCtlIdleCount for determination if this
+            notification will be suppressed.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>
+            none(0) responses(1) timingMark(2)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>TN3270 Event: Average Response Time Exceeds Threshold.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/TN3270/traps/tn3270eRtOkay</uei>
+      <event-label>TN3270E-RT-MIB defined trap event: tn3270eRtOkay</event-label>
+      <descr>&lt;p>This notification is generated when the average response
+            time, tn3270eRtDataAvgRt, falls below
+            tn3270eRtCollCtlThresholdLow at the end of a collection
+            interval specified by tn3270eCollCtlSPeriod times
+            tn3270eCollCtlSPMult, after a tn3270eRtExceeded
+            notification was generated. Note that the corresponding
+            tn3270eCollCtlType must have traps(5) and average(3)
+            set for this notification to be generated.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>
+            none(0) responses(1) timingMark(2)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>TN3270 Event: Average Response Time Now Below Threshold.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/TN3270/traps/tn3270eRtCollStart</uei>
+      <event-label>TN3270E-RT-MIB defined trap event: tn3270eRtCollStart</event-label>
+      <descr>&lt;p>This notification is generated when response time data
+            collection is enabled for a member of a client group.
+            In order for this notification to occur the corresponding
+            tn3270eRtCollCtlType must have traps(5) selected.
+            &lt;/p>&lt;p>
+            tn3270eResMapElementType contains a valid value only if
+            tn3270eRtDataClientAddress contains a valid address
+            (rather than a zero-length octet string).&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>
+            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eResMapElementType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>
+            other(1) terminal(2) printer(3) terminalOrPrinter(4)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>TN3270 Event: Response Time Data Collection Enabled.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/TN3270/traps/tn3270eRtCollEnd</uei>
+      <event-label>TN3270E-RT-MIB defined trap event: tn3270eRtCollEnd</event-label>
+      <descr>&lt;p>This notification is generated when an tn3270eRtDataEntry
+            is deleted after being active (actual data collected), in
+            order to enable a management application monitoring an
+            tn3270eRtDataEntry to get the entry's final values. Note
+            that the corresponding tn3270eCollCtlType must have traps(5)
+            set for this notification to be generated.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataDiscontinuityTime&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgRt&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgIpRt&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataAvgCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataIntTimeStamp&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataTotalRts&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataTotalIpRts&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataCountTrans&lt;/b>&lt;/td>&lt;td>%parm[#8]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataCountDrs&lt;/b>&lt;/td>&lt;td>%parm[#9]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataElapsRndTrpSq&lt;/b>&lt;/td>&lt;td>%parm[#10]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataElapsIpRtSq&lt;/b>&lt;/td>&lt;td>%parm[#11]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataBucket1Rts&lt;/b>&lt;/td>&lt;td>%parm[#12]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataBucket2Rts&lt;/b>&lt;/td>&lt;td>%parm[#13]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataBucket3Rts&lt;/b>&lt;/td>&lt;td>%parm[#14]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataBucket4Rts&lt;/b>&lt;/td>&lt;td>%parm[#15]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataBucket5Rts&lt;/b>&lt;/td>&lt;td>%parm[#16]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            tn3270eRtDataRtMethod&lt;/b>&lt;/td>&lt;td>%parm[#17]%
+            &lt;/td>&lt;td>&lt;p;>
+            none(0) responses(1) timingMark(2)&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>TN3270 Event: Response Time Data Collection Ended.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+</events>

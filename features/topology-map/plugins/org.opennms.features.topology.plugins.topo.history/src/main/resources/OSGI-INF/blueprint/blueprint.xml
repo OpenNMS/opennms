@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
 
     <!--
-    <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.MemoryHistoryManager"/>
-    -->
+     Usually the availability should be mandatory.
+     However the bundle "app" requires the HistoryManager created here, but it exports the ServiceLocator implementation.
+     Therefore both bundles would not start because of a circle dependency.
+     If availability is optional the references can be resolved and both bundles will start up.
+     -->
+    <reference id="serviceLocator" interface="org.opennms.features.topology.api.support.ServiceLocator" availability="optional"/>
 
     <bean id="historyManager" class="org.opennms.features.topology.plugins.topo.BundleContextHistoryManager">
       <argument ref="blueprintBundleContext"/>
+      <argument ref="serviceLocator"/>
     </bean>
-
     <service interface="org.opennms.features.topology.api.HistoryManager" ref="historyManager"/>
 
     <reference-list interface="org.opennms.features.topology.api.HistoryOperation" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager"/>
     </reference-list>
 
-    <!-- All CheckedOperation classes are HistoryOperation instances -->
+    <!--
+        Even if CheckedOperation inherits HistoryOperation, OSGi only recognizes them, if they are exposed explicitly.
+        As we do not do that reluctantly, we manually pull in CheckedOperations
+    -->
     <reference-list interface="org.opennms.features.topology.api.CheckedOperation" availability="optional">
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="historyManager"/>
     </reference-list>

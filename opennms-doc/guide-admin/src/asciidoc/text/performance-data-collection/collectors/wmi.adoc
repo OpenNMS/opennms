@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== WmiCollector
+
+The _WmiCollector_ collects peformance metrics from _Windows_ systems using Windows Management Instrumentation (WMI).
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.WmiCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the WmiCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the _WMI Collection_ to use  | required |
+|===

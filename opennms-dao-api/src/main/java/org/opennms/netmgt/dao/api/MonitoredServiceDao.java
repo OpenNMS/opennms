@@ -92,6 +92,17 @@ public interface MonitoredServiceDao extends LegacyOnmsDao<OnmsMonitoredService,
     List<OnmsMonitoredService> findMatchingServices(ServiceSelector serviceSelector);
 
     /**
+     * <p>findAllServices</p>
+     *
+     * Use HQL to get OnmsMonitoredService
+     * joined with IpInterface and Node
+     * No lazy initialization 
+     * 
+     * @return a {@link java.util.Collection} object.
+     */
+    List<OnmsMonitoredService> findAllServices();
+
+    /**
      * <p>findByApplication</p>
      *
      * @param application a {@link org.opennms.netmgt.model.OnmsApplication} object.

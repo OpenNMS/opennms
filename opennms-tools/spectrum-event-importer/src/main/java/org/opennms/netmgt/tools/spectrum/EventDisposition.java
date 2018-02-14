@@ -64,11 +64,11 @@ public class EventDisposition {
         m_uniqueAlarm = false;
         m_userClearable = true;
         m_persistent = true;
-        m_discriminators = new ArrayList<Integer>();
+        m_discriminators = new ArrayList<>();
     }
     
     public String toString() {
-        StringBuilder bldr = new StringBuilder("EventDisposition [");
+        final StringBuilder bldr = new StringBuilder("EventDisposition [");
         bldr.append("eventCode: ").append(m_eventCode).append("; ");
         bldr.append("logEvent: ").append(m_logEvent).append("; ");
         bldr.append("eventSeverity: ").append(m_eventSeverity).append("; ");

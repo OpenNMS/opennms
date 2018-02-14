@@ -28,18 +28,19 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.data.Item;
-import com.vaadin.server.FontAwesome;
-import org.opennms.features.vaadin.jmxconfiggenerator.Config;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.Reflections;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.Reflections;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.StringRenderer;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+
+import com.vaadin.data.Item;
+import com.vaadin.server.FontAwesome;
 
 /**
  *

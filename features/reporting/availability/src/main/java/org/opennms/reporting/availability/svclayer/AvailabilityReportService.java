@@ -37,7 +37,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -185,7 +184,7 @@ public class AvailabilityReportService implements ReportService {
     @Override
     public List<ReportFormat> getFormats(String id) {
 
-        List<ReportFormat> formats = new ArrayList<ReportFormat>();
+        List<ReportFormat> formats = new ArrayList<>();
 
         if (m_configDao.getHtmlStylesheetLocation(id) != null)
             formats.add(ReportFormat.HTML);

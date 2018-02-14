@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.config.WmiPeerFactory;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.protocols.wmi.IWmiClient;
 import org.opennms.protocols.wmi.WmiClient;
@@ -60,22 +59,16 @@ public class WmiAgentState {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(WmiAgentState.class);
 
-    private WmiManager m_manager;
+    private final WmiManager m_manager;
     private IWmiClient m_wmiClient;
 
-    private WmiAgentConfig m_agentConfig;
-    private String m_address;
+    private final WmiAgentConfig m_agentConfig;
+    private final String m_address;
     private Map<String, WmiGroupState> m_groupStates = new HashMap<String, WmiGroupState>();
 
-    /**
-     * <p>Constructor for WmiAgentState.</p>
-     *
-     * @param address a {@link java.net.InetAddress} object.
-     * @param parameters a {@link java.util.Map} object.
-     */
-    public WmiAgentState(final InetAddress address, final Map<?,?> parameters) {
+    public WmiAgentState(final InetAddress address, final WmiAgentConfig agentConfig, final Map<?,?> parameters) {
         m_address = InetAddressUtils.str(address);
-        m_agentConfig = WmiPeerFactory.getInstance().getAgentConfig(address);
+        m_agentConfig = agentConfig;
         m_manager = new WmiManager(m_address, m_agentConfig.getUsername(), m_agentConfig.getPassword(), m_agentConfig.getDomain());
 
         try {

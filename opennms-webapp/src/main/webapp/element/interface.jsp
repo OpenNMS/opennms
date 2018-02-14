@@ -36,22 +36,20 @@
             org.opennms.netmgt.config.PollerConfig,
             org.opennms.netmgt.config.poller.Package,
             java.util.*,
+            java.util.stream.Collectors,
             org.opennms.netmgt.model.OnmsNode,
             org.opennms.netmgt.model.OnmsResource,
             org.opennms.web.api.Authentication,
             org.opennms.web.element.*,
-            org.opennms.web.svclayer.ResourceService,
-            org.opennms.netmgt.utils.IfLabel,
-            org.springframework.web.context.WebApplicationContext,
-            org.springframework.web.context.support.WebApplicationContextUtils"
+            org.opennms.core.utils.InetAddressUtils,
+            org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"
 %>
+<%@ page import="org.opennms.netmgt.model.ResourceId" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 
 <%!protected int telnetServiceId;
   protected int httpServiceId;
-  private WebApplicationContext m_webAppContext;
-  private ResourceService m_resourceService;
   
   public void init() throws ServletException {
     try {
@@ -66,8 +64,6 @@
     catch( Exception e ) {
       throw new ServletException( "Could not determine the HTTP service ID", e );
     }
-    m_webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-    m_resourceService = (ResourceService) m_webAppContext.getBean("resourceService", ResourceService.class);
   }%>
 
 <%
@@ -100,12 +96,12 @@
   pollerCfgFactory.rebuildPackageIpListMap();    
 %>
 <c:url var="eventUrl1" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="interface=" + ipAddr%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="interface=" + ipAddr%>'/>
 </c:url>
 <c:url var="eventUrl2" value="event/list.htm">
-    <c:param name="filter" value="<%="node=" + nodeId%>"/>
-    <c:param name="filter" value="<%="ifindex=" + ifIndex%>"/>
+    <c:param name="filter" value='<%="node=" + nodeId%>'/>
+    <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
 </c:url>
 
 <%
@@ -177,25 +173,29 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
   <%
     String ifLabel;
     if (ifIndex != -1) {
-      ifLabel = IfLabel.getIfLabelfromIfIndex(nodeId, ipAddr, ifIndex);
+      ifLabel = IfLabelDaoImpl.getInstance().getIfLabelfromIfIndex(nodeId, InetAddressUtils.addr(ipAddr), ifIndex);
     } else {
-      ifLabel = IfLabel.getIfLabel(nodeId, ipAddr);
+      ifLabel = IfLabelDaoImpl.getInstance().getIfLabel(nodeId, InetAddressUtils.addr(ipAddr));
     }
-    List<OnmsResource> resources = m_resourceService.findNodeChildResources(node);
-    for (OnmsResource resource : resources) {
-      if (resource.getName().equals(ipAddr) || resource.getName().equals(ifLabel)) {
-        %>
-          <c:url var="graphLink" value="graph/results.htm">
-            <c:param name="reports" value="all"/>
-            <c:param name="resourceId" value="<%=resource.getId()%>"/>
-          </c:url>
-          <li>
-            <a href="<c:out value="${graphLink}"/>"><c:out value="<%=resource.getResourceType().getLabel()%>"/> Graphs</a>
-          </li>
-        <% 
-      }
-    }
+    // TODO In order to show the following links only when there are metrics, an inexpensive
+    //      method has to be implemented on either ResourceService or ResourceDao
+    ResourceId ipaddrResourceId = ResourceId.get("node", Integer.toString(nodeId)).resolve("responseTime", ipAddr);
+    ResourceId snmpintfResourceId = ResourceId.get("node", Integer.toString(nodeId)).resolve("interfaceSnmp", ifLabel);
   %>
+    <c:url var="ipaddrGraphLink" value="graph/results.htm">
+      <c:param name="reports" value="all"/>
+      <c:param name="resourceId" value="<%=ipaddrResourceId.toString()%>"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${ipaddrGraphLink}"/>">Response Time Graphs</a>
+    </li>
+    <c:url var="snmpintfGraphLink" value="graph/results.htm">
+      <c:param name="reports" value="all"/>
+      <c:param name="resourceId" value="<%=snmpintfResourceId.toString()%>"/>
+    </c:url>
+    <li>
+      <a href="<c:out value="${snmpintfGraphLink}"/>">SNMP Interface Data Graphs</a>
+    </li>
   <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
     <li>
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
@@ -249,14 +249,14 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
           Collections.sort(inPkgs);
           for (String pkgName : inPkgs) {
             Package pkg = pollerCfgFactory.getPackage(pkgName);
-            boolean found = false;
+            List<String> svcs = new ArrayList<>();
             for (Service svc : services) {
               if (pollerCfgFactory.isServiceInPackageAndEnabled(svc.getServiceName(), pkg)) {
-                found = true;
+                svcs.add(svc.getServiceName());
                 continue;
               }
             }
-            String pkgInfo = pkgName + (found ? " (*)" : ""); %>
+            String pkgInfo = pkgName + (svcs.isEmpty() ? "" : (": " + svcs.stream().collect(Collectors.joining(", ")))); %>
             <tr>
               <th>Polling Package</th>
               <td><%= pkgInfo%></td>
@@ -280,15 +280,6 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       </table>
     </div> <!-- panel -->
           
-    <% if (ifIndex > 0 ) { %>
-    
-    <!-- Node Link box -->
-    <jsp:include page="/includes/interfaceLink-box.jsp" flush="false">
-      <jsp:param name="node" value="<%=nodeId%>" />
-      <jsp:param name="ifindex" value="<%=ifIndex%>" />
-    </jsp:include>
-    <% } %>
-
     <!-- Availability box -->
     <jsp:include page="/includes/interfaceAvailability-box.jsp" flush="false">
       <jsp:param name="node" value="<%=nodeId%>" />

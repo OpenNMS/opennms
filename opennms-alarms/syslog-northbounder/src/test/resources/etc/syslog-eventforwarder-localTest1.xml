@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<destination>
+	<destination-name>localTest1</destination-name>
+	<host>127.0.0.1</host>
+	<port>8514</port>
+	<ip-protocol>UDP</ip-protocol>
+	<facility>LOCAL0</facility>
+	<max-message-length>1024</max-message-length>
+	<send-local-name>true</send-local-name>
+	<send-local-time>true</send-local-time>
+	<truncate-message>false</truncate-message>
+	<filter>
+		<rule>getParm('forwardEventToActivitySyslog')?.value.content == 'true'</rule>
+		<message-format>EVENT ${dbid} FOR NODE ${#node.label} IN ${#node.foreignSource}: ${logmsg.content}</message-format>
+	</filter>
+</destination>

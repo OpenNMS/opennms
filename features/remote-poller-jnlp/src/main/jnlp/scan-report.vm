@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="6.0+" codebase="$$codebase" href="$$name" version="${project.version}">
+  <information>
+    <title>OpenNMS Remote Poller Scan Report</title>
+    <vendor>The OpenNMS Group</vendor>
+    <homepage href="http://www.opennms.org/"/>
+    <shortcut online="false">
+      <desktop/>
+      <menu submenu="OpenNMS"/>
+    </shortcut>
+  </information>
+  <security>
+      <all-permissions/>
+  </security>
+  <resources>
+    <java version="1.8+" max-heap-size="384m" />
+    $dependencies
+  </resources>
+  <application-desc main-class="$mainClass">
+    <argument>--scan-report</argument>
+    <argument>--url</argument>
+    <argument>$$context</argument>
+  </application-desc>
+</jnlp> 

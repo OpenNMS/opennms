@@ -55,8 +55,6 @@ import org.jrobin.graph.RrdGraphDef;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdGraphDetails;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -159,7 +157,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
         File f = new File(directory);
         f.mkdirs();
 
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + getDefaultFileExtension();
 
         if (new File(fileName).exists()) {
             LOG.debug("createDefinition: filename [{}] already exists returning null as definition", fileName);
@@ -177,7 +175,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
             String dsMax = dataSource.getMax();
             double min = (dsMin == null || "U".equals(dsMin) ? Double.NaN : Double.parseDouble(dsMin));
             double max = (dsMax == null || "U".equals(dsMax) ? Double.NaN : Double.parseDouble(dsMax));
-            def.addDatasource(dataSource.getName(), dataSource.getType(), dataSource.getHeartBeat(), min, max);
+            def.addDatasource(dataSource.getName(), dataSource.getType().toString(), dataSource.getHeartBeat(), min, max);
         }
 
         for (String rra : rraList) {
@@ -192,11 +190,11 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
      * Creates the JRobin RrdDb from the def by opening the file and then
      * closing.
      *
-     * @param rrdDef a {@link org.jrobin.core.RrdDef} object.
+     * @param rrdDef a {@link RrdDef} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void createFile(final RrdDef rrdDef,  Map<String, String> attributeMappings) throws Exception {
+    public void createFile(final RrdDef rrdDef) throws Exception {
         if (rrdDef == null) {
             LOG.debug("createRRD: skipping RRD file");
             return;
@@ -205,15 +203,6 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
 
         RrdDb rrd = new RrdDb(rrdDef);
         rrd.close();
-
-        String filenameWithoutExtension = rrdDef.getPath().replace(RrdUtils.getExtension(), "");
-        int lastIndexOfSeparator = filenameWithoutExtension.lastIndexOf(File.separator);
-
-        RrdUtils.createMetaDataFile(
-            filenameWithoutExtension.substring(0, lastIndexOfSeparator),
-            filenameWithoutExtension.substring(lastIndexOfSeparator),
-            attributeMappings
-        );
     }
 
     /**
@@ -588,7 +577,7 @@ public class JRobinRrdStrategy implements RrdStrategy<RrdDef,RrdDb> {
                 String[] def = splitDef(definition);
                 String[] ds = def[0].split("=");
                 // LOG.debug("ds = {}", Arrays.toString(ds));
-                final String replaced = ds[1].replaceAll("\\\\(.)", "$1");
+                final String replaced = ds[1].replaceAll("\\\\(.)", "$1").replaceAll("\"", ""); // Removing double quotes because of NMS-6331 and changes on RrdFileConstants
                 // LOG.debug("replaced = {}", replaced);
 
                 final File dsFile;

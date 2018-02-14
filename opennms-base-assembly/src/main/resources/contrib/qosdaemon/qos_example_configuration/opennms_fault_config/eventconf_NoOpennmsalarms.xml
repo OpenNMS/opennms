@@ -118,19 +118,6 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/capsd/snmpConflictsWithDb</uei>
-		<event-label>OpenNMS-defined capsd event: snmpConflictsWithDb</event-label>
-		<descr>
-			&lt;p&gt;During a rescan the ip interfaces as determined by snmp
-			conflict with the ip interfaces listed in the database for this node.
-			&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			IP interfaces as determined by SNMP disagree with the database.
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-	<event>
 		<uei>uei.opennms.org/internal/capsd/forceRescan</uei>
 		<event-label>OpenNMS-defined internal event: capsd forceRescan</event-label>
 		<descr>
@@ -160,75 +147,6 @@
 		<severity>Normal</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/capsd/interfaceSupportsSNMP</uei>
-		<event-label>OpenNMS-defined internal event: capsd interfaceSupportsSNMP</event-label>
-		<descr>
-			&lt;p&gt;A services scan has verified that this interface
-			supports the SNMP protocol.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logonly'>
-			&lt;p&gt;A services scan has verified that this interface
-			supports the SNMP protocol.&lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/internal/capsd/duplicateIPAddress</uei>
-		<event-label>OpenNMS-defined internal event: capsd duplicateIPAddress</event-label>
-		<descr>
-			&lt;p&gt;A services scan has discovered an IP address on 
-		        more than one device: IP Address: %interface%. The address
-			has been added to the database under all nodes that have it.
-			If this address is in error, please take steps to correct it.
-			&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A services scan has discovered a duplicate IP address:
-			%interface%.&lt;/p&gt;
-		</logmsg>
-		<severity>Minor</severity>
-        <!--
-	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" />
-	-->
-	</event>
-	<event>
-		<uei>uei.opennms.org/internal/capsd/updateServer</uei>
-		<event-label>OpenNMS-defined internal event: capsd updateServer</event-label>
-		<descr>
-			&lt;p&gt;This event is an external command to add an
-                        interface/server mapping to the database. The required 
-                        paramater is the IP address of the interface: %interface%, 
-                        the NMS host server name: %host%, and the optional parameter 
-                        of a node label: %nodelabel%. This event will cause an 
-                        addInterface event. &lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A request has been made to add an interface/server
-                        mapping as well as the interface to the database. The interface:
-			%interface%, the NMS host: %host%,  and node label: %nodelabel%
-                        are specified. &lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/internal/capsd/updateService</uei>
-		<event-label>OpenNMS-defined internal event: capsd updateService</event-label>
-		<descr>
-			&lt;p&gt;This event is an external command to add or remove 
-                        an interface/service mapping into the database. The required 
-                        paramater is the IP address of the interface: %interface%, 
-                        the service name: %service%, and the optional parameter 
-                        action: %action%. This event will cause a changeService
-                        event with the specified action. &lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A request has been made to add or remove an 
-                        interface/service mapping, as well as add or remove a service:
-                        %service% from the specified interface: %interface%. &lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
-	<event>
 		<uei>uei.opennms.org/internal/capsd/addNode</uei>
 		<event-label>OpenNMS-defined internal event: capsd addNode</event-label>
 		<descr>
@@ -253,20 +171,6 @@
 		</descr>
 		<logmsg dest='logndisplay'>
 			&lt;p&gt;A request has been made to delete a node with interface:
-			%interface%.&lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/internal/capsd/addInterface</uei>
-		<event-label>OpenNMS-defined internal event: capsd addInterface</event-label>
-		<descr>
-			&lt;p&gt;This event is an external command to add an interface
-			to the database. The required paramater is the IP
-			address for the main interface: %interface%.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A request has been made to add an interface 
 			%interface%.&lt;/p&gt;
 		</logmsg>
 		<severity>Normal</severity>
@@ -351,36 +255,6 @@
       <severity>Warning</severity>
     </event>
 <!-- New Importer Service Events -->
-        <event>
-                <uei>uei.opennms.org/nodes/restartPollingInterface</uei>
-                <event-label>OpeNMS-defined node event: restartPollingInterface</event-label>
-                <descr> 
-                        &lt;p&gt;This event is an external command to restart polling 
-                        all active services on a specified interface. The requeried 
-                        parameter is the IP address of the interface. (%parm [ipaddr]%). 
-                        &lt;/p&gt; 
-                </descr>
-                <logmsg dest='logndisplay'>
-                        Reschedule polling to services on a specified interface(%parm[ipaddr]%).                
-                </logmsg>
-                <severity>Normal</severity>
-        </event>
-	<event>
-		<uei>uei.opennms.org/internal/capsd/xmlrpcNotification</uei>
-		<event-label>OpenNMS-defined internal event: capsd xmlrpcNotification</event-label>
-		<descr>
-			&lt;p&gt;This event will be produced by capsd to carry the process status
-                        information, so that the xmlrpcd could catch it, and reports to the external
-                        XMLRPC server. The paramters include transaction number, %parm [txNo]%, 
-                        source event uei, %parm [srcUei]%, message, %parm [message]%, and process
-                        status, %parm [status]%.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;A request has been made to xmlrpcd to report status for 
-			%parm [srcUei]%.&lt;/p&gt;
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
 	<event>
 		<uei>uei.opennms.org/internal/discovery/newSuspect</uei>
 		<event-label>OpenNMS-defined internal event: discovery newSuspect</event-label>
@@ -569,19 +443,6 @@
 		<severity>Warning</severity>
 	</event>
 	<event>
-		<uei>uei.opennms.org/internal/unknownServiceStatus</uei>
-		<event-label>OpenNMS-defined internal event: unknownServiceStatus</event-label>
-		<descr>
-			&lt;p&gt;The Scheduler has received an unrecognized service
-			status from a scheduler.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logonly'>
-			The Scheduler has received an unrecognized service status
-			from a scheduler.
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-	<event>
 		<uei>uei.opennms.org/nodes/dataCollectionFailed</uei>
 		<event-label>OpenNMS-defined node event: dataCollectionFailed</event-label>
 		<descr>
@@ -688,38 +549,6 @@
         <!--
 	<alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" />
 	-->
-	</event>
-	<event>
-		<uei>uei.opennms.org/nodes/interfaceIPHostNameChanged</uei>
-		<event-label>OpenNMS-defined node event: interfaceIPHostNameChanged</event-label>
-		<descr>
-			&lt;p&gt;The hostname for this node changed.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			The hostname for this node changed.
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/nodes/interfaceIndexChanged</uei>
-		<event-label>OpenNMS-defined node event: interfaceIndexChanged</event-label>
-		<descr>
-			&lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
-			to %parm[newIfIndex]% on %interface%&lt;/p&gt; &lt;p&gt;The
-			ifIndex, or unique numeric identifier of an SNMP device's
-			interfaces, can be reordered by the SNMP agent. Usually this
-			happens if interfaces are added or removed, or by a change
-			in administrative or operational status.&lt;/p&gt;
-			&lt;p&gt;This is typically not a reason for concern, but you
-			should be aware that the active configuration on this SNMP
-			device has changed, and the hardware configuration may have
-			been impacted as well.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			&lt;p&gt;SNMP Interface Index %parm[oldIfIndex]% has changed
-			to %parm[newIfIndex]% on %interface%&lt;/p&gt;
-		</logmsg>
-		<severity>Warning</severity>
 	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/interfaceReparented</uei>
@@ -1151,31 +980,6 @@
                 </logmsg>
                 <severity>Normal</severity>
         </event>
-	<event>
-		<uei>uei.opennms.org/nodes/thresholdingFailed</uei>
-		<event-label>OpenNMS-defined threshold event: thresholdingFailed</event-label>
-		<descr>
-			&lt;p&gt;%service% thresholding on interface %interface%
-			failed.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			%service% thresholding on interface %interface% failed.
-		</logmsg>
-		<severity>Warning</severity>
-	</event>
-	<event>
-		<uei>uei.opennms.org/nodes/thresholdingSucceeded</uei>
-		<event-label>OpenNMS-defined threshold event: thresholdingSucceeded</event-label>
-		<descr>
-			&lt;p&gt;%service% thresholding on interface %interface%
-			previously failed and has been restored.&lt;/p&gt;
-		</descr>
-		<logmsg dest='logndisplay'>
-			%service% thresholding on interface %interface% prevously
-			failed and has been restored.
-		</logmsg>
-		<severity>Normal</severity>
-	</event>
 	<event>
 		<uei>uei.opennms.org/nodes/assetInfoChanged</uei>
 		<event-label>OpenNMS-defined node event: assetInfoChanged</event-label>

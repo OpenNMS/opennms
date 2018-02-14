@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,18 +31,22 @@ package org.opennms.netmgt.poller.remote.support;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.opennms.netmgt.config.poller.Package;
-import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.ScanReport;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.remote.PollerBackEnd;
 import org.opennms.netmgt.poller.remote.PollerConfiguration;
+import org.opennms.netmgt.poller.remote.PollerTheme;
+import org.opennms.netmgt.poller.remote.metadata.MetadataField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.remoting.RemoteAccessException;
 
 /**
@@ -94,7 +98,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public String getMonitorName(int locationMonitorId) {
+    public String getMonitorName(String locationMonitorId) {
         try {
             return m_delegate.getMonitorName(locationMonitorId);
         } catch (Throwable t) {
@@ -109,7 +113,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
      * @return a {@link java.util.Collection} object.
      */
     @Override
-    public Collection<OnmsMonitoringLocationDefinition> getMonitoringLocations() {
+    public Collection<OnmsMonitoringLocation> getMonitoringLocations() {
         try {
             return m_delegate.getMonitoringLocations();
         } catch (Throwable t) {
@@ -120,9 +124,31 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public PollerConfiguration getPollerConfiguration(int locationMonitorId) {
+    public PollerConfiguration getPollerConfiguration(String locationMonitorId) {
         try {
             return m_delegate.getPollerConfiguration(locationMonitorId);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PollerConfiguration getPollerConfigurationForLocation(String location) {
+        try {
+            return m_delegate.getPollerConfigurationForLocation(location);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Set<String> getApplicationsForLocation(final String location) {
+        try {
+            return m_delegate.getApplicationsForLocation(location);
         } catch (Throwable t) {
             LOG.error("Unexpected exception thrown in remote poller backend.", t);
             throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
@@ -142,7 +168,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public MonitorStatus pollerCheckingIn(int locationMonitorId, Date currentConfigurationVersion) {
+    public MonitorStatus pollerCheckingIn(String locationMonitorId, Date currentConfigurationVersion) {
         try {
             return m_delegate.pollerCheckingIn(locationMonitorId, currentConfigurationVersion);
         } catch (Throwable t) {
@@ -153,7 +179,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public boolean pollerStarting(int locationMonitorId, Map<String, String> pollerDetails) {
+    public boolean pollerStarting(String locationMonitorId, Map<String, String> pollerDetails) {
         try {
             return m_delegate.pollerStarting(locationMonitorId, pollerDetails);
         } catch (Throwable t) {
@@ -164,7 +190,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public void pollerStopping(int locationMonitorId) {
+    public void pollerStopping(String locationMonitorId) {
         try {
             m_delegate.pollerStopping(locationMonitorId);
         } catch (Throwable t) {
@@ -175,7 +201,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public int registerLocationMonitor(String monitoringLocationId) {
+    public String registerLocationMonitor(String monitoringLocationId) {
         try {
             return m_delegate.registerLocationMonitor(monitoringLocationId);
         } catch (Throwable t) {
@@ -186,7 +212,7 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
 
     /** {@inheritDoc} */
     @Override
-    public void reportResult(int locationMonitorID, int serviceId,
+    public void reportResult(String locationMonitorID, int serviceId,
             PollStatus status) {
         try {
             m_delegate.reportResult(locationMonitorID, serviceId, status);
@@ -206,4 +232,33 @@ public class ExceptionProtectedPollerBackEnd implements PollerBackEnd {
         }
     }
 
+    @Override
+    public void reportSingleScan(final ScanReport report) {
+        try {
+            m_delegate.reportSingleScan(report);
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public Set<MetadataField> getMetadataFields() {
+        try {
+            return m_delegate.getMetadataFields();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
+
+    @Override
+    public PollerTheme getTheme() {
+        try {
+            return m_delegate.getTheme();
+        } catch (Throwable t) {
+            LOG.error("Unexpected exception thrown in remote poller backend.", t);
+            throw new RemoteAccessException("Unexpected Exception Occurred on the server.", t);
+        }
+    }
 }

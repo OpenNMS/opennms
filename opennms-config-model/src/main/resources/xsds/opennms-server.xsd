@@ -33,19 +33,13 @@
 						</simpleType>
 					</attribute>
 
-					<attribute default="false" name="verify-server" use="optional">
+					<attribute type="boolean" default="false" name="verify-server" use="optional">
 						<annotation>
 							<documentation>
 								A flag to indicate if poller has to identify the
 								nms server to restrict services to poll.
 							</documentation>
 						</annotation>
-
-						<simpleType>
-							<restriction base="string">
-								<pattern value="(true|false)" />
-							</restriction>
-						</simpleType>
 					</attribute>
 				</extension>
 			</simpleContent>

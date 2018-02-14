@@ -38,11 +38,16 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
      */
 
     private int[] m_ids;
-    
+
+    protected  SnmpObjId() {
+        // No-arg constructor for JAXB
+        m_ids = new int[0];
+    }
+
     /**
      * These constructors are private.  The get method should be called to create a new oid
      */ 
-    protected SnmpObjId(int[] ids, boolean clone) {
+    public SnmpObjId(int[] ids, boolean clone) {
         m_ids = (clone ? cloneIds(ids) : ids);
     }
     
@@ -103,8 +108,8 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
         return newIds;
     }
     
-    private static int[] convertStringToInts(String oid) {
-    	oid = oid.trim();
+    public static int[] convertStringToInts(String oid) {
+        oid = oid.trim();
         if (oid.startsWith(".")) {
             oid = oid.substring(1);
         }
@@ -148,7 +153,7 @@ public class SnmpObjId implements Comparable<SnmpObjId> {
 
     @Override
     public String toString() {
-        StringBuffer buf = new StringBuffer(length()*2+10); // a guess at the str len
+        final StringBuilder buf = new StringBuilder(length()*2+10); // a guess at the str len
         for(int i = 0; i < length(); i++) {
             if (i > 0 || addPrefixDotInToString()) {
                 buf.append('.');  

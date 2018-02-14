@@ -26,10 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was converted to JAXB from Castor.
- */
-
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
@@ -40,8 +36,6 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.opennms.core.xml.JaxbClassObjectAdapter;
 
 
 /**
@@ -71,7 +65,7 @@ public class Parameter implements Serializable {
      * Field m_contents.
      */
     @XmlAnyElement(lax=false)
-    @XmlJavaTypeAdapter(JaxbClassObjectAdapter.class)
+    @XmlJavaTypeAdapter(PollerClassObjectAdapter.class)
     private Object m_contents;
 
 

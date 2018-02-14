@@ -84,9 +84,8 @@ public class PercDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 

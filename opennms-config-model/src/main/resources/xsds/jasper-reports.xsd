@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://xmlns.opennms.org/xsd/config/jasper-reports"
+	xmlns:this="http://xmlns.opennms.org/xsd/config/jasper-reports"
+	elementFormDefault="qualified">
+
+	<element name="jasper-reports">
+		<annotation>
+			<documentation>
+				Report Configuration for Jasper Reporting API
+				implementation
+			</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element maxOccurs="unbounded" minOccurs="0" ref="this:report">
+					<annotation>
+						<documentation>report definition for jasper reports
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+
+	<element name="report">
+		<complexType>
+			<attribute name="id" type="string" use="required">
+				<annotation>
+					<documentation>the name of this report</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="template" type="string" use="required">
+				<annotation>
+					<documentation>jxrml report template</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="engine" use="required" >
+				<simpleType>
+					<restriction base="string">
+						<pattern value="(jdbc|opennms|null)" />
+					</restriction>
+				</simpleType>
+			</attribute>
+		</complexType>
+	</element>
+
+</schema>

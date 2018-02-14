@@ -33,18 +33,17 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
-import org.opennms.netmgt.config.nsclient.NsclientCollection;
-import org.opennms.netmgt.config.nsclient.NsclientDatacollectionConfig;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.datacollction.nsclient.NsclientCollection;
+import org.opennms.netmgt.config.datacollction.nsclient.NsclientDatacollectionConfig;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,11 +75,9 @@ public class NSClientDataCollectionConfigFactory {
       * <p>Constructor for NSClientDataCollectionConfigFactory.</p>
       *
       * @param configFile a {@link java.lang.String} object.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       * @throws java.io.IOException if any.
       */
-     public NSClientDataCollectionConfigFactory(final String configFile) throws MarshalException, ValidationException, IOException {
+     public NSClientDataCollectionConfigFactory(final String configFile) throws IOException {
          InputStream is = null;
          
          try {
@@ -99,9 +96,11 @@ public class NSClientDataCollectionConfigFactory {
          return m_writeLock;
      }
 
-     private void initialize(final InputStream stream) throws MarshalException, ValidationException {
+     private void initialize(final InputStream stream) throws IOException {
          LOG.debug("initialize: initializing NSCLient collection config factory.");
-         m_config = CastorUtils.unmarshal(NsclientDatacollectionConfig.class, stream);
+         try (InputStreamReader isr = new InputStreamReader(stream)) {
+             m_config = JaxbUtils.unmarshal(NsclientDatacollectionConfig.class, isr);
+         }
      }
 
      /**
@@ -109,10 +108,8 @@ public class NSClientDataCollectionConfigFactory {
       *
       * @throws java.io.IOException if any.
       * @throws java.io.FileNotFoundException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+     public static synchronized void init() throws IOException, FileNotFoundException {
          if (m_instance == null) {
              final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.NSCLIENT_COLLECTION_CONFIG_FILE_NAME);
              m_instance = new NSClientDataCollectionConfigFactory(cfgFile.getPath());
@@ -150,10 +147,8 @@ public class NSClientDataCollectionConfigFactory {
       *
       * @throws java.io.IOException if any.
       * @throws java.io.FileNotFoundException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     public synchronized void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+     public synchronized void reload() throws IOException, FileNotFoundException {
          m_instance = null;
          init();
      }
@@ -236,7 +231,7 @@ public class NSClientDataCollectionConfigFactory {
              getReadLock().lock();
              final NsclientCollection collection = getNSClientCollection(cName);
              if (collection != null) {
-                 return collection.getRrd().getRraCollection();
+                 return collection.getRrd().getRra();
              } else {
                  return null;
              }
@@ -277,10 +272,8 @@ public class NSClientDataCollectionConfigFactory {
       * read it.
       *
       * @throws java.io.IOException if any.
-      * @throws org.exolab.castor.xml.MarshalException if any.
-      * @throws org.exolab.castor.xml.ValidationException if any.
       */
-     protected void updateFromFile() throws IOException, MarshalException, ValidationException {
+     protected void updateFromFile() throws IOException {
          if (m_loadedFromFile) {
              try {
                  getWriteLock().lock();

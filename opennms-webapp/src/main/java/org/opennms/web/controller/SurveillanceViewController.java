@@ -1,4 +1,3 @@
-
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -34,10 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.web.svclayer.ProgressMonitor;
-import org.opennms.web.svclayer.SimpleWebTable;
 import org.opennms.web.svclayer.SurveillanceService;
-import org.opennms.web.svclayer.SurveillanceViewError;
+import org.opennms.web.svclayer.model.ProgressMonitor;
+import org.opennms.web.svclayer.model.SimpleWebTable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -93,7 +91,7 @@ public class SurveillanceViewController extends AbstractController implements In
         }
 
         HttpSession session = req.getSession();
-        resp.setHeader("Refresh", m_service.getHeaderRefreshSeconds(WebSecurityUtils.sanitizeString(req.getParameter(VIEW_NAME_PARAMETER))));
+        resp.setHeader("Refresh", String.valueOf(m_service.getHeaderRefreshSeconds(WebSecurityUtils.sanitizeString(req.getParameter(VIEW_NAME_PARAMETER)))));
         ProgressMonitor progressMonitor = (ProgressMonitor) session.getAttribute(PROGRESS_MONITOR_KEY);
 
         if (progressMonitor == null) {

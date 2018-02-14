@@ -31,6 +31,10 @@ package org.opennms.netmgt.snmp;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * @deprecated Use {@link InetAddressUtils} instead.
+ */
+@Deprecated
 public abstract class InetAddrUtils {
 
 	public static String str(InetAddress address) {

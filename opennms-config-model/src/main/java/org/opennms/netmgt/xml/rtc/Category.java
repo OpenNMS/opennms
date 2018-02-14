@@ -147,7 +147,7 @@ public class Category {
      */
     public List<Node> getNode() {
         if (node == null) {
-            node = new ArrayList<Node>();
+            node = new ArrayList<>();
         }
         return this.node;
     }

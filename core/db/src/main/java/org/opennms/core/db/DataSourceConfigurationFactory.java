@@ -29,19 +29,14 @@
 package org.opennms.core.db;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.DataSourceConfiguration;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -52,23 +47,13 @@ import org.slf4j.LoggerFactory;
  */
 public final class DataSourceConfigurationFactory {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DataSourceConfigurationFactory.class);
-
 	private final DataSourceConfiguration m_dsc;
 
 	public DataSourceConfigurationFactory(File fileName) {
-		InputStream is = null;
 		try {
-			is = new FileInputStream(fileName);
-			m_dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, is);
-		} catch (MarshalException e) {
+			m_dsc = JaxbUtils.unmarshal(DataSourceConfiguration.class, fileName);
+		} catch (Exception e) {
 			throw new IllegalArgumentException("Could not unmarshal " + DataSourceConfiguration.class.getName(), e);
-		} catch (ValidationException e) {
-			throw new IllegalArgumentException("Could not unmarshal " + DataSourceConfiguration.class.getName(), e);
-		} catch (FileNotFoundException e) {
-			throw new IllegalArgumentException("Could not unmarshal " + DataSourceConfiguration.class.getName(), e);
-		} finally {
-			IOUtils.closeQuietly(is);
 		}
 	}
 
@@ -77,11 +62,9 @@ public final class DataSourceConfigurationFactory {
 	}
 
 	public DataSourceConfigurationFactory(InputStream fileInputStream) {
-		try {
-			m_dsc = CastorUtils.unmarshal(DataSourceConfiguration.class, fileInputStream);
-		} catch (MarshalException e) {
-			throw new IllegalArgumentException("Could not unmarshal " + DataSourceConfiguration.class.getName(), e);
-		} catch (ValidationException e) {
+		try (Reader reader = new InputStreamReader(fileInputStream)) {
+		    m_dsc = JaxbUtils.unmarshal(DataSourceConfiguration.class, reader);
+		} catch (Exception e) {
 			throw new IllegalArgumentException("Could not unmarshal " + DataSourceConfiguration.class.getName(), e);
 		}
 	}

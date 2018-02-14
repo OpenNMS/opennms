@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<syslogd-configuration>
+    <configuration
+            syslog-port="10514"
+            new-suspect-on-message="false"
+            parser="org.opennms.netmgt.syslogd.CustomSyslogParser"
+            forwarding-regexp="^((.+?) (.*))\r?\n?$"
+            matching-group-host="2"
+            matching-group-message="3"
+            discard-uei="DISCARD-MATCHING-MESSAGES"
+            />
+
+    <ueiList>
+        <ueiMatch>
+            <match type="regex" expression="%SEC-6-IPACCESSLOGP:\s+list\s+(\w+)\s+denied\s+(\w+)\s+([0-9a-fA-F.:]{3,})\((\d+)\)\s+-&gt;\s+([0-9a-fA-F.:]{3,})\((\d+)\),\s+(\d+)\s+packets?" />
+            <uei>uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic</uei>
+            <parameter-assignment matching-group="1" parameter-name="aclName" />
+            <parameter-assignment matching-group="2" parameter-name="ipProto" />
+            <parameter-assignment matching-group="3" parameter-name="srcAddress" />
+            <parameter-assignment matching-group="4" parameter-name="srcPort" />
+            <parameter-assignment matching-group="5" parameter-name="dstAddress" />
+            <parameter-assignment matching-group="6" parameter-name="dstPort" />
+            <parameter-assignment matching-group="7" parameter-name="packetCount" />
+        </ueiMatch>
+    </ueiList>
+
+</syslogd-configuration>

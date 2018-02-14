@@ -55,8 +55,12 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Markus Neumann
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml", "classpath:TcaProtocolCollectorTestContext.xml"})
-@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:juniperTcaSample.properties")
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-proxy-snmp.xml",
+        "classpath:/TcaProtocolCollectorTestContext.xml"
+})
+@JUnitSnmpAgent(port = 9161, host = "127.0.0.1", resource = "classpath:/juniperTcaSample.properties")
 public class TcaProtocolCollectorTest implements InitializingBean {
 
     @Autowired
@@ -82,7 +86,7 @@ public class TcaProtocolCollectorTest implements InitializingBean {
         snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(localhost);
         collectionJob = new DefaultCollectionJob();
         collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
-        destinations = new HashSet<String>();
+        destinations = new HashSet<>();
         destinations.add("test");
     }
     

@@ -238,10 +238,29 @@ public class BridgeBridgeLink {
 		setDesignatedPortIfIndex(element.getDesignatedPortIfIndex());
 		setDesignatedPortIfName(element.getDesignatedPortIfName());
 		setDesignatedVlan(element.getDesignatedVlan());
-		
-		setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
+		if (element.getBridgeBridgeLinkLastPollTime() == null)
+		    setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
+		else
+		   setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
 	}
 
+	@Transient
+	public String printTopology() {
+    	final StringBuilder strbfr = new StringBuilder();
+
+    	strbfr.append("bridge link:[nodeid:["); 
+    	strbfr.append(getNode().getId());
+    	strbfr.append("], bridgeport:");
+    	strbfr.append(getBridgePort());
+    	strbfr.append(", designatednodeid:[");
+    	strbfr.append(getDesignatedNode().getId());
+    	strbfr.append("], designatedbridgeport: ");
+    	strbfr.append(getDesignatedPort());
+        strbfr.append("]\n");
+
+    	return strbfr.toString();
+	}
+	
 	@Transient
 	public BridgeBridgeLink getReverseBridgeBridgeLink() {
 		

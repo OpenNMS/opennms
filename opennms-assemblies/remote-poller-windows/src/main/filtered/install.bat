@@ -15,11 +15,7 @@ OpenNMSRemotePoller install ^
   --JvmOptions="-Dopennms.home=%OPENNMS_HOME%" ^
   ++JvmOptions="-Djava.rmi.activation.port=1099" ^
   ++JvmOptions=-Xmx384m ^
-  ++JvmOptions=-XX:MaxPermSize=256M ^
-  ++JvmOptions="-Xdebug" ^
-  ++JvmOptions="-Xnoagent" ^
-  ++JvmOptions="-Djava.compiler=none" ^
-  ++JvmOptions="-Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n" ^
+  ++JvmOptions="-agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n" ^
   --Classpath="%OPENNMS_HOME%\remote-poller-${project.version}.jar" ^
   --StartMode=jvm ^
   --StartClass=com.simontuffs.onejar.Boot ^
@@ -36,8 +32,5 @@ OpenNMSRemotePoller install ^
   --StopMethod stop
 
 :: Add these options to enable remote debugging
-::  ++JvmOptions="-Xdebug" ^
-::  ++JvmOptions="-Xnoagent" ^
-::  ++JvmOptions="-Djava.compiler=none" ^
-::  ++JvmOptions="-Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n" ^
+::  ++JvmOptions="-agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n" ^
 

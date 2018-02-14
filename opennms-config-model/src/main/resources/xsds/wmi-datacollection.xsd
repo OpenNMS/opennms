@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:ns="http://xmlns.opennms.org/xsd/config/wmi-datacollection"
+		  targetNamespace="http://xmlns.opennms.org/xsd/config/wmi-datacollection"
+		  elementFormDefault="qualified">
+
+	<annotation>
+		<documentation>
+			XML Schema for the wmi-datacollection configuration file
+		</documentation>
+	</annotation>
+
+  <element name="rrd">
+    <annotation>
+      <documentation>RRD parms</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="rra">
+          <annotation>
+            <documentation>Round Robin Archive definitions</documentation>
+          </annotation>
+
+          <simpleType>
+            <restriction base="string">
+              <pattern value="RRA:(AVERAGE|MIN|MAX|LAST):.*"/>
+            </restriction>
+          </simpleType>
+        </element>
+      </sequence>
+
+      <attribute name="step" type="int" use="required">
+        <annotation>
+          <documentation>step size for the RRD</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+	<element name="wmi-datacollection-config">
+		<complexType>
+			<sequence>
+				<!-- Nsclient data collection element -->
+				<element ref="ns:wmi-collection" maxOccurs="unbounded"/>
+			</sequence>
+			<attribute name="rrdRepository" type="string" use="required"/>
+			<!-- full path to the RRD repository for collected Nsclient data -->
+		</complexType>
+	</element>
+	<element name="wmi-collection">
+		<annotation>
+			<documentation>A grouping of WMI related RRD parms and WMI object groups</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:rrd"/>
+				<element ref="ns:wpms"/>
+			</sequence>
+			<attribute name="name" type="string" use="required"/>
+			<!-- collector name -->
+		</complexType>
+	</element>
+	<element name="wpms">
+		<annotation>
+			<documentation>WMI object groups</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:wpm" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							A WMI Object Group
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+		</complexType>
+	</element>
+	<element name="wpm">
+		<annotation>
+			<documentation>An WMI Object Group</documentation>
+		</annotation>
+		<complexType>
+			<sequence>
+				<element ref="ns:attrib" minOccurs="0" maxOccurs="unbounded">
+					<annotation>
+						<documentation>
+							An WMI Object
+						</documentation>
+					</annotation>
+				</element>
+			</sequence>
+			<attribute name="name" type="string" use="required">
+				<annotation>
+					<documentation>
+						The name of this group, for user id purposes
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="wmiClass" type="string" use="required">
+				<annotation>
+					<documentation>
+						This is the WMI object class that we'll be checking.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="keyvalue" type="string" use="required">
+				<annotation>
+					<documentation>
+						The Key value which, if present, indicates that the rest of this group should be collected
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="recheckInterval" type="int" use="required">
+				<annotation>
+					<documentation>
+						Specifies how often the key value of this group
+						should be rechecked for existence.  In milliseconds
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="ifType" type="string" use="required">
+				<annotation>
+					<documentation>
+						Specifies the interface collection type.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="resourceType" type="string" use="required">
+				<annotation>
+					<documentation>
+						Specifies the name of the resource type that pertains to the attributes
+						in this group. For scalar attributes (those occurring once per node,
+						such as available system memory) this should be "node".  For
+						multi-instanced attributes, this should be the name of a custom
+						resource type declared in datacollection-config.xml.
+					</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="wmiNamespace" type="string" use="optional" default="root/cimv2">
+				<annotation>
+					<documentation>
+						This is the WMI namespace in which the class that we'll be checking
+						resides. The default is "root/cimv2".
+					</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+	<element name="attrib">
+		<annotation>
+			<documentation>An Attribute Object</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="name" type="string" use="required"/>
+			<attribute name="alias" type="string" use="required"/>			
+			<attribute name="wmiObject" type="string" use="required"/>
+			<attribute name="type" use="required">
+				<simpleType>
+					<restriction base="string">
+						<pattern value="([Cc](ounter|OUNTER)|[Gg](auge|AUGE)|[Ss](tring|TRING))"/>
+					</restriction>
+				</simpleType>
+			</attribute>
+			<attribute name="maxval" type="string" use="optional"/>
+			<attribute name="minval" type="string" use="optional"/>
+		</complexType>
+	</element>
+</schema>

@@ -35,7 +35,7 @@ import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.web.svclayer.KscReportService;
+import org.opennms.web.svclayer.api.KscReportService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -98,7 +98,7 @@ public class FormProcGraphController extends AbstractController implements Initi
             modelAndView.addObject("graphtype", graph.getGraphtype());
             return modelAndView;
         } else if (action.equals("ChooseResource")) {
-            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseResource.htm");
+            ModelAndView modelAndView = new ModelAndView("redirect:/KSC/customGraphChooseResource.jsp"); // TODO We need to tune the initialization
             modelAndView.addObject("resourceId", resource.getId());
             modelAndView.addObject("selectedResourceId", resource.getId());
             return modelAndView;
@@ -129,7 +129,7 @@ public class FormProcGraphController extends AbstractController implements Initi
     /**
      * <p>getKscReportService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @return a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public KscReportService getKscReportService() {
         return m_kscReportService;
@@ -138,7 +138,7 @@ public class FormProcGraphController extends AbstractController implements Initi
     /**
      * <p>setKscReportService</p>
      *
-     * @param kscReportService a {@link org.opennms.web.svclayer.KscReportService} object.
+     * @param kscReportService a {@link org.opennms.web.svclayer.api.KscReportService} object.
      */
     public void setKscReportService(KscReportService kscReportService) {
         m_kscReportService = kscReportService;

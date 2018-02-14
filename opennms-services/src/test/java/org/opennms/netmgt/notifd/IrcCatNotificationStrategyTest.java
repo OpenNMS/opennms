@@ -52,7 +52,7 @@ public class IrcCatNotificationStrategyTest {
     //@Test
     public void testSend() throws UnknownHostException {
         IrcCatNotificationStrategy strategy = new IrcCatNotificationStrategy();
-        List<Argument> arguments = new ArrayList<Argument>();
+        List<Argument> arguments = new ArrayList<>();
         arguments.add(new Argument(NotificationManager.PARAM_EMAIL, null, "#opennms-test", false));
         arguments.add(new Argument(NotificationManager.PARAM_TEXT_MSG, null, "Test notification from " + getClass() + " from " + InetAddress.getLocalHost(), false));
         strategy.send(arguments);

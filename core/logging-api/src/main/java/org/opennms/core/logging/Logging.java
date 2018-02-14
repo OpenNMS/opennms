@@ -28,6 +28,7 @@
 
 package org.opennms.core.logging;
 
+import java.io.Closeable;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -71,6 +72,34 @@ public abstract class Logging {
         } finally {
             Logging.setContextMap(mdc);
         }
+    }
+
+    /**
+     * An adapter to restore the MDC context when done.
+     */
+    public static class MDCCloseable implements Closeable {
+        private final Map<String, String> mdc;
+
+        private MDCCloseable(Map<String, String> mdc) {
+            this.mdc = mdc;
+        }
+
+        @Override
+        public void close() {
+            Logging.setContextMap(mdc);
+        }
+    }
+
+    public static MDCCloseable withPrefixCloseable(final String prefix) {
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
+        Logging.putPrefix(prefix);
+        return new MDCCloseable(mdc);
+    }
+
+    public static MDCCloseable withContextMapCloseable(final Map<String, String> contextMap) {
+        final Map<String, String> mdc = Logging.getCopyOfContextMap();
+        Logging.setContextMap(contextMap);
+        return new MDCCloseable(mdc);
     }
 
     public static Runnable preserve(final Runnable runnable) {

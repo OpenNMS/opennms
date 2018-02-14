@@ -29,7 +29,6 @@
 package org.opennms.netmgt.provision.detector;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
@@ -40,11 +39,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.detector.simple.NrpeDetector;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
+import org.opennms.netmgt.provision.detector.simple.NrpeDetectorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -56,15 +53,17 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 @Ignore
-public class NrpeDetectorTest implements ApplicationContextAware {
+public class NrpeDetectorTest {
 
+    @Autowired
+    private NrpeDetectorFactory m_detectorFactory;
+    
     private NrpeDetector m_detector;
-    private ApplicationContext m_applicationContext;
 
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_detector = getDetector(NrpeDetector.class);
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setPort(5666);
         m_detector.init();
     }
@@ -87,18 +86,4 @@ public class NrpeDetectorTest implements ApplicationContextAware {
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr("192.168.1.103")));
     }
 
-    /* (non-Javadoc)
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        m_applicationContext = applicationContext;
-    }
-
-    private NrpeDetector getDetector(Class<? extends ServiceDetector> detectorClass) {
-        Object bean = m_applicationContext.getBean(detectorClass.getName());
-        assertNotNull(bean);
-        assertTrue(detectorClass.isInstance(bean));
-        return (NrpeDetector)bean;
-    }
 }

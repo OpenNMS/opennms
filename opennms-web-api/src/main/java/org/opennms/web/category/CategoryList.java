@@ -29,12 +29,8 @@
 package org.opennms.web.category;
 
 import java.io.IOException;
-import java.io.Writer;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -44,10 +40,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletResponse;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.ViewsDisplayFactory;
 import org.opennms.netmgt.config.viewsdisplay.Section;
 import org.opennms.netmgt.config.viewsdisplay.View;
@@ -65,15 +58,15 @@ public class CategoryList {
 	private static final Logger LOG = LoggerFactory.getLogger(CategoryList.class);
 
 
-    protected CategoryModel m_model;
+    protected final CategoryModel m_model;
 
     /**
      * Display rules from viewsdisplay.xml. If null, then just show all known
      * categories under the header "Category". (See the getSections method.)
      */
-    protected Section[] m_sections;
+    protected final List<Section> m_sections;
 
-    private int m_disconnectTimeout;
+    protected final int m_disconnectTimeout;
 
     /**
      * <p>Constructor for CategoryList.</p>
@@ -88,6 +81,8 @@ public class CategoryList {
             throw new ServletException("failed to instantiate the category model: " + e, e);
         }
 
+        List<Section> sections = Collections.emptyList();
+        int disconnectTimeout = 130000;
         try {
             ViewsDisplayFactory.init();
             ViewsDisplayFactory viewsDisplayFactory = ViewsDisplayFactory.getInstance();
@@ -95,8 +90,8 @@ public class CategoryList {
             View view = viewsDisplayFactory.getDefaultView();
 
             if (view != null) {
-                m_sections = view.getSection();
-                m_disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
+                sections = view.getSections();
+                disconnectTimeout  = viewsDisplayFactory.getDisconnectTimeout();
                 LOG.debug("found display rules from viewsdisplay.xml");
             } else {
                 LOG.debug("did not find display rules from viewsdisplay.xml");
@@ -104,6 +99,9 @@ public class CategoryList {
         } catch (Throwable e) {
             LOG.error("Couldn't open viewsdisplay factory on categories box: {}", e, e);
         }
+
+        m_sections = sections;
+        m_disconnectTimeout = disconnectTimeout;
     }
 
 
@@ -121,10 +119,10 @@ public class CategoryList {
      * @return a {@link java.util.List} object.
      * @throws java.io.IOException if any.
      */
-    public List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
+    private List<Section> getSections(Map<String, Category> categoryMap) throws IOException {
         if (m_sections != null) {
             // Just return the display rules as a list.
-            return Arrays.asList(m_sections);
+            return m_sections;
         }
 
         List<Section> sectionList = null;
@@ -155,10 +153,8 @@ public class CategoryList {
      *
      * @return a {@link java.util.Map} object.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public Map<String, List<Category>> getCategoryData() throws IOException, MarshalException, ValidationException {
+    public Map<String, List<Category>> getCategoryData() throws IOException {
 
         Map<String, Category> categoryMap = m_model.getCategoryMap();
         List<Section> sectionList = getSections(categoryMap);
@@ -168,11 +164,8 @@ public class CategoryList {
         for (Section section : sectionList) {
             List<Category> categories = new LinkedList<Category>();
 
-            String[] categoryNames = section.getCategory();
-
-            for (int j = 0; j < categoryNames.length; j++) {
-                String categoryName = categoryNames[j];
-                Category category = (Category) categoryMap.get(categoryName);
+            for (final String categoryName : section.getCategories()) {
+                final Category category = (Category) categoryMap.get(categoryName);
 
                 if (category == null) {
                     categories.add(new Category(categoryName));
@@ -197,7 +190,7 @@ public class CategoryList {
      *          is returned.
      * @return a long.
      */
-    public long getEarliestUpdate(Map<String,List<Category>> categoryData) {
+    public static long getEarliestUpdate(Map<String,List<Category>> categoryData) {
         long earliestUpdate = 0;
 
         for (final Entry<String, List<Category>> entry : categoryData.entrySet()) {
@@ -220,10 +213,8 @@ public class CategoryList {
      *
      * @return a boolean.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public boolean isDisconnected() throws IOException, MarshalException, ValidationException {
+    public boolean isDisconnected() throws IOException {
         return isDisconnected(getEarliestUpdate(getCategoryData()));
     }
 

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans" 
+<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd">
 
   <tx:annotation-driven />
-  
+
   <context:annotation-config />
 
   <bean id="noAuthBean" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
     <property name="serviceUrl" value="http://localhost:9162/simpleBackEnd"/>
     <property name="serviceInterface" value="org.opennms.poller.remote.SimpleBackEnd"/>
   </bean>
-  
+
   <bean id="authBean" class="org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean">
     <property name="serviceUrl" value="http://localhost:9162/simpleBackEnd"/>
     <property name="serviceInterface" value="org.opennms.poller.remote.SimpleBackEnd"/>
@@ -23,5 +23,5 @@
       <bean class="org.springframework.security.remoting.httpinvoker.AuthenticationSimpleHttpInvokerRequestExecutor"/>
     </property>
   </bean>
-  
+
 </beans>

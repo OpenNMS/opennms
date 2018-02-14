@@ -29,9 +29,10 @@
 package org.opennms.netmgt.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -42,16 +43,14 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.core.xml.CastorUtils;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Column;
 import org.opennms.netmgt.config.filter.DatabaseSchema;
 import org.opennms.netmgt.config.filter.Join;
 import org.opennms.netmgt.config.filter.Table;
+import org.opennms.netmgt.filter.api.FilterParseException;
 
 /**
  * This is the singleton class used to load the configuration for the OpenNMS
@@ -63,7 +62,7 @@ import org.opennms.netmgt.config.filter.Table;
  *
  * @author <a href="mailto:sowmya@opennms.org">Sowmya Nataraj </a>
  */
-public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
+public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
     private final ReadWriteLock m_globalLock = new ReentrantReadWriteLock();
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
@@ -98,36 +97,25 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
 
     /**
      * Private constructor
-     * @throws ValidationException 
-     * @throws MarshalException 
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
-    private DatabaseSchemaConfigFactory(final String configFile) throws IOException, MarshalException, ValidationException {
-        InputStream cfgStream = null;
-        try {
-            cfgStream = new FileInputStream(configFile);
-            m_config = CastorUtils.unmarshal(DatabaseSchema.class, cfgStream);
-            finishConstruction();
-        } finally {
-            IOUtils.closeQuietly(cfgStream);
-        }
+    private DatabaseSchemaConfigFactory(final String configFile) throws IOException {
+        m_config = JaxbUtils.unmarshal(DatabaseSchema.class, new File(configFile));
+        finishConstruction();
     }
 
     /**
      * <p>Constructor for DatabaseSchemaConfigFactory.</p>
      *
      * @param is a {@link java.io.InputStream} object.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
+     * @throws IOException 
      */
-    public DatabaseSchemaConfigFactory(final InputStream is) throws MarshalException, ValidationException {
-        m_config = CastorUtils.unmarshal(DatabaseSchema.class, is);
+    public DatabaseSchemaConfigFactory(final InputStream is) throws IOException {
+        try (final Reader reader = new InputStreamReader(is)) {
+            m_config = JaxbUtils.unmarshal(DatabaseSchema.class, reader);
+        }
         finishConstruction();
     }
 
@@ -145,15 +133,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return
             // to reload, reload() will need to be called
@@ -170,15 +152,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void reload() throws IOException, MarshalException, ValidationException {
+    public static synchronized void reload() throws IOException {
         m_singleton = null;
         m_loaded = false;
 
@@ -234,7 +210,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
     public Table getPrimaryTable() {
         getReadLock().lock();
         try {
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
                     if (t.getKey() != null && t.getKey().equals("primary")) {
                         return t;
@@ -251,7 +227,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
      * Construct m_primaryJoins
      */
     private void finishConstruction() {
-        Set<String> joinableSet = new HashSet<String>();
+        Set<String> joinableSet = new HashSet<>();
         final Map<String, Join> primaryJoins = new ConcurrentHashMap<String, Join>();
         joinableSet.add(getPrimaryTable().getName());
         // loop until we stop adding entries to the set
@@ -259,9 +235,9 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
         while (joinableCount < joinableSet.size()) {
             joinableCount = joinableSet.size();
             final Set<String> newSet = new HashSet<String>(joinableSet);
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (!joinableSet.contains(t.getName()) && (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true"))) {
-                    for (final Join j : t.getJoinCollection()) {
+                    for (final Join j : t.getJoins()) {
                         if (joinableSet.contains(j.getTable())) {
                             newSet.add(t.getName());
                             primaryJoins.put(t.getName(), j);
@@ -284,7 +260,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
     public Table getTableByName(final String name) {
         getReadLock().lock();
         try {
-            for (final Table t : getDatabaseSchema().getTableCollection()) {
+            for (final Table t : getDatabaseSchema().getTables()) {
                 if (t.getVisible() == null || t.getVisible().equalsIgnoreCase("true")) {
                     if (t.getName() != null && t.getName().equals(name)) {
                         return t;
@@ -308,8 +284,8 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
         Table table = null;
         getReadLock().lock();
         try {
-            OUTER: for (final Table t : getDatabaseSchema().getTableCollection()) {
-                for (final Column col : t.getColumnCollection()) {
+            OUTER: for (final Table t : getDatabaseSchema().getTables()) {
+                for (final Column col : t.getColumns()) {
                     if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
                         if (col.getName().equalsIgnoreCase(colName)) {
                             table = t;
@@ -333,7 +309,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
         final Lock lock = getReadLock();
 		lock.lock();
         try {
-            return getDatabaseSchema().getTableCount();
+            return getDatabaseSchema().getTables().size();
         } finally {
             lock.unlock();
         }
@@ -350,7 +326,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
      *         exists or only the primary table was specified
      */
     public List<String> getJoinTables(final List<Table> tables) {
-        final List<String> joinedTables = new ArrayList<String>();
+        final List<String> joinedTables = new ArrayList<>();
 
         getReadLock().lock();
         try {
@@ -382,7 +358,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
      * @return an SQL FROM clause or "" if no expression is found
      */
     public String constructJoinExprForTables(final List<Table> tables) {
-        StringBuffer joinExpr = new StringBuffer();
+        final StringBuilder joinExpr = new StringBuilder();
 
         getReadLock().lock();
         try {
@@ -404,4 +380,37 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig{
             getReadLock().unlock();
         }
     }
+
+
+    /**
+     * Validate that a column is in the schema, add it's table to a list of tables,
+     * and return the full table.column name of the column.
+     *
+     * @param tables
+     *            a list of tables to add the column's table to
+     * @param column
+     *            the column to add
+     *
+     * @return table.column string
+     *
+     * @exception FilterParseException
+     *                if the column is not found in the schema
+     */
+    public String addColumn(final List<Table> tables, final String column) throws FilterParseException {
+        getReadLock().lock();
+        try {
+            final Table table = findTableByVisibleColumn(column);
+            if(table == null) {
+                final String message = "Could not find the column '" + column +"' in filter rule";
+                throw new FilterParseException(message);
+            }
+            if (!tables.contains(table)) {
+                tables.add(table);
+            }
+            return table.getName() + "." + column;
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
 }

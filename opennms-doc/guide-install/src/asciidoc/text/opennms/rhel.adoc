@@ -1,0 +1,212 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-opennms]]
+== OpenNMS
+
+After configuring the package repository, you are ready to install the _{opennms-product-name}_ packages, configure the database, and initialize the _{opennms-product-name}_ platform.
+
+[[gi-install-opennms-rhel]]
+=== RHEL
+
+This section describes how to install the _OpenNMS_ platform on _CentOS 7.1_.
+The setup process is described in the following steps:
+
+. Installation of the _opennms_ meta package which handles all dependencies
+. Initialize _PostgreSQL_ database and configure access
+. Initialize _OpenNMS_ and first start of the application
+
+[[gi-install-opennms-rhel-package]]
+==== Install OpenNMS
+
+.Installation of the full application with all dependencies like PostgreSQL and Java
+[source, shell]
+----
+yum -y install opennms
+----
+
+The following packages will be automatically installed:
+
+* _opennms_: The platform meta package which handles all dependencies from _OpenNMS_ repository.
+* _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _OpenNMS_ repository.
+* _opennms-core_: _OpenNMS_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _OpenNMS_ repository.
+* _opennms-webapp-jetty_: _OpenNMS_ web application from _OpenNMS_ repository
+* _jdk1.8_: _Oracle Java SE Development Kit 8_ environment from _OpenNMS_ respository
+* _postgresql_: _PostgreSQL_ database server from distribution repository
+* _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+TIP: Verify the version of the _OpenNMS_ packages that was installed with `yum info opennms`.
+
+With the successful installed packages the _OpenNMS_ platform is installed in the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/opennms]# tree -L 2
+.
+└── opennms
+   ├── bin
+   ├── contrib
+   ├── data
+   ├── deploy
+   ├── etc
+   ├── jetty-webapps
+   ├── lib
+   ├── logs -> /var/log/opennms
+   ├── share -> /var/opennms
+   └── system
+----
+
+[[gi-install-opennms-rhel-disable-yum-repo]]
+==== Disable Automatic Updates (Optional)
+
+We recommend you disable the {opennms-product-name} Yum repository to avoid upgrades while it is running.
+
+{opennms-product-name} requires some manual steps upon upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
+For this reason, it is recommended to exclude the {opennms-product-name} packages from yum except when you are planning on performing an upgrade.
+
+To do so, edit the `/etc/yum.repos.d/opennms-*.repo` file and change `enabled=1` to `enabled=0` in each section.
+
+When you are ready to upgrade {opennms-product-name}, call yum with the `--enablerepo` option to turn the 2 repositories defined in this file back on.
+For example, if you installed the stable repository _RPM_ on a _CentOS_ or _RHEL 7_ system, you would run:
+
+[source, shell]
+----
+yum -y --enablerepo=opennms-repo-stable-common \
+  --enablerepo=opennms-repo-stable-rhel7 \
+  upgrade opennms
+----
+
+[[gi-install-opennms-rhel-prepare-pg]]
+==== Prepare PostgreSQL
+
+The _CentOS_ package installs but doesn't initialize the _PostgreSQL_ database directory.
+Additionally _OpenNMS_ requires authentication to access the database and are described in this section.
+Initialize the database directory with
+
+.Initialization of the _PostgreSQL_ database
+[source, shell]
+----
+postgresql-setup initdb
+----
+
+.System startup configuration for PostgreSQL
+[source, shell]
+----
+systemctl enable postgresql
+----
+
+.Startup PostgreSQL database
+[source, shell]
+----
+systemctl start postgresql
+----
+
+The next step is setting the _postgres_ super user password and creating an _opennms_ database user with password.
+Additionally it is required to configure the authentication method to allow authentication from the local network.
+
+.Accounting and database management for _OpenNMS_
+[source, shell]
+----
+su - postgres
+createuser -P opennms
+createdb -O opennms opennms
+exit
+----
+
+.Set password for Postgres super user
+[source, shell]
+----
+su - postgres
+psql -c "ALTER USER postgres WITH PASSWORD 'YOUR-POSTGRES-PASSWORD';"
+exit
+----
+
+NOTE: The super user is required to be able to initialize and change the database schema for installation and updates.
+
+To allow _OpenNMS_ access to the database over the local network _PostgreSQL_ has to be configured.
+
+[source, shell]
+----
+vi /var/lib/pgsql/data/pg_hba.conf
+----
+
+.Configuration of network access for _PostgreSQL_
+[source, shell]
+----
+host    all             all             127.0.0.1/32            md5<1>
+host    all             all             ::1/128                 md5<1>
+----
+
+<1> Change method from `ident` to `md5` for _IPv4_ and _IPv6_ on localhost.
+
+.Apply configuration changes for _PostgreSQL_
+[source, shell]
+----
+systemctl reload postgresql
+----
+
+In the next step configure the _OpenNMS_ database configuration.
+
+[source, shell]
+----
+vi ${OPENNMS_HOME}/etc/opennms-datasources.xml
+----
+
+.Configuration for database authentication in _OpenNMS_
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<1>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><2>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
+----
+
+<1> Set the user name to access the _OpenNMS_ database table
+<2> Set the password to access the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
+<4> Set the password for administrative access to PostgreSQL
+
+[[gi-install-opennms-rhel-init]]
+==== Initialize OpenNMS
+
+_OpenNMS_ is now configured to access the database.
+It is required to set the _Java_ environment running _OpenNMS_ and initialize the database schema.
+
+.Configuration of _Java_ environment for _OpenNMS_
+[source, shell]
+----
+${OPENNMS_HOME}/bin/runjava -s
+----
+
+.Initialization of database and system libraries
+[source, shell]
+----
+${OPENNMS_HOME}/bin/install -dis
+----
+
+.System startup configuration for _OpenNMS_
+[source, shell]
+----
+systemctl enable opennms
+----
+
+.Startup _OpenNMS_
+[source, shell]
+----
+systemctl start opennms
+----
+
+After starting _OpenNMS_ the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+IMPORTANT: Change the default admin password to a secure password immediately.

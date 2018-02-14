@@ -28,17 +28,12 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.net.MalformedURLException;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.JAXBException;
+import org.opennms.features.topology.api.browsers.SelectionAware;
 
-public interface GraphProvider extends VertexProvider, EdgeProvider {
-
-	void save();
-
-	void load(String filename) throws MalformedURLException, JAXBException;
+public interface GraphProvider extends VertexProvider, EdgeProvider, SelectionAware {
 
 	void refresh();
 
@@ -52,12 +47,6 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 	 * @deprecated Convert calls to this to addVertices
 	 */
 	Vertex addVertex(int x, int y);
-
-	/**
-	 * This function indicates support for (mostly legacy) grouping operations.
-	 * If true then addGroup() should work as expected.
-	 */
-	boolean groupingSupported();
 
 	Vertex addGroup(String label, String iconKey);
 
@@ -75,5 +64,7 @@ public interface GraphProvider extends VertexProvider, EdgeProvider {
 
 	Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId);
 
-    Criteria getDefaultCriteria();
+	Defaults getDefaults();
+
+	TopologyProviderInfo getTopologyProviderInfo();
 }

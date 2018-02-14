@@ -33,7 +33,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 
 /**
  * <pre>
@@ -176,35 +176,29 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
 
         m_hashCode = 1;
 
-        org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
-        if ((mask == null) || mask.getMaskelementCount() == 0) {
+        final org.opennms.netmgt.xml.eventconf.Mask mask = event.getMask();
+        if ((mask == null) || mask.getMaskelements().size() == 0) {
             String uei = event.getUei();
             if (uei != null) {
                 put(TAG_UEI, new EventMaskValueList(uei));
             }
         } else {
-            for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelementCollection()) {
+            for (org.opennms.netmgt.xml.eventconf.Maskelement maskelement : mask.getMaskelements()) {
                 String name = maskelement.getMename();
 
                 EventMaskValueList value = new EventMaskValueList();
-                String[] mevalues = maskelement.getMevalue();
-                for (int index = 0; index < mevalues.length; index++) {
-                    value.add(mevalues[index]);
+                for (final String mevalue : maskelement.getMevalues()) {
+                    value.add(mevalue);
                 }
 
                 put(name, value);
             }
-            if (mask != null && mask.getVarbindCount() != 0) {
-                for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbindCollection()) {
-                    EventMaskValueList vbvalues = new EventMaskValueList();
-                    int vbint = varbind.getVbnumber();
-                    String vbnumber = Integer.toString(vbint);
-                    String[] vbvaluelist = varbind.getVbvalue();
-                    for (int index = 0; index < vbvaluelist.length; index++) {
-                        vbvalues.add(vbvaluelist[index]);
-                    }
+            if (mask != null && mask.getVarbinds().size() != 0) {
+                for (org.opennms.netmgt.xml.eventconf.Varbind varbind : mask.getVarbinds()) {
+                    final EventMaskValueList vbvalues = new EventMaskValueList();
+                    vbvalues.addAll(varbind.getVbvalues());
 
-                    put(vbnumber, vbvalues);
+                    put(varbind.getVbnumber().toString(), vbvalues);
                 }
             }
         }
@@ -360,7 +354,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
      */
     @Override
     public String toString() {
-        StringBuffer s = new StringBuffer("EventKey\n[\n\t");
+        final StringBuilder s = new StringBuilder("EventKey\n[\n\t");
 
         for (Map.Entry<String, Object> e : entrySet()) {
             s.append(e.getKey() + "    = " + e.getValue().toString() + "\n\t");
@@ -427,7 +421,7 @@ public class EventKey extends LinkedHashMap<String, Object> implements Serializa
                 retParmVal = eventSnmpInfo.getCommunity();
             }
         } else if (event.getParmCollection().size() > 0) {
-            ArrayList<String> eventparms = new ArrayList<String>();
+            ArrayList<String> eventparms = new ArrayList<>();
             for (org.opennms.netmgt.xml.event.Parm evParm : event.getParmCollection()) {
                 eventparms.add(EventConstants.getValueAsString(evParm.getValue()));
             }

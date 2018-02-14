@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,7 +53,7 @@
 <%
 	String uei=request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
-	List<Notification> notifsForUEI=new ArrayList<Notification>();
+	List<Notification> notifsForUEI=new ArrayList<>();
 	for(String key : allNotifications.keySet()) {
 	    Notification notif=allNotifications.get(key);
 		if(notif.getUei().equals(uei)) {
@@ -68,7 +68,7 @@
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.jsp'>Event Notifications</a>" />
+  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/eventNotices.htm'>Event Notifications</a>" />
   <jsp:param name="breadcrumb" value="Existing notifications for UEI" />
 </jsp:include>
 
@@ -119,7 +119,7 @@
       		%>
 	        <tr>
 	        	<td><%=notif.getName()%></td>
-	        	<td><%=notif.getDescription()!=null?notif.getDescription():""%></td>
+	        	<td><%=notif.getDescription().orElse("")%></td>
 	        	<td><%=notif.getRule()%></td>
 	        	<td><%=notif.getDestinationPath()%></td>
 	        	<td><%=varbindDescription%></td>

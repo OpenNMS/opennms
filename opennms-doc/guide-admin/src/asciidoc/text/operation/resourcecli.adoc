@@ -1,0 +1,124 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== resourcecli: simple resource management tool
+
+Sometimes a user want to list or manually delete collected data (resources) of an _{opennms-product-name}_ instance.
+When using _RRDTool-_ or _JRobin_-based storage this can easily be achieved by traversing the `share/rrd` directory and its subdirectories.
+The several `.rrd` or `.jrb` files can be listed or deleted for individual nodes.
+When _Newts_-based storage is used the data is stored and indexed remotely on a _Cassandra_ cluster.
+In this case the cluster must be queried for available resources.
+For the deletion of resources the data and all generated indexes must be gathered and removed.
+The _resourcecli_ tool simplifies this process and works with _Newts_-based storage as well as with _RRDTool_ and _JRobin_ files.
+
+==== Usage
+The utility is installed by default and its wrapper script is located in the `${OPENNMS_HOME}/bin` directory.
+
+[source, shell]
+----
+$ cd /path/to/opennms/bin
+$ ./resourcecli
+----
+
+TIP: When invoked without parameters the usage and help information is printed.
+
+The _resourcecli_ tool uses sub-commands for the different tasks.
+Each of these sub-commands provide different options and parameters.
+The command line tool accepts the following sub-commands.
+
+[options="header, autowidth"]
+|===
+| Sub-command     | Description
+| `list`          | Queries an _{opennms-product-name}_ server for available resources.
+| `show`          | Displays details for a given resource.
+| `delete`        | Deletes a given resource and all of its child resources.
+|===
+
+The following global options are available in each of the sub-commands of the tool:
+
+[options="header, autowidth"]
+|===
+| Option/Argument    | Description                                                 | Default
+| `--help`           | Displays help and exit                                      | false
+| `--username VALUE` | Username for connecting to _{opennms-product-name}_         | admin
+| `--password VALUE` | Password for connecting to _{opennms-product-name}_         | admin
+| `--url VALUE`      | URL of the _{opennms-product-name}_ instance to connect to  | http://localhost:8980/opennms
+|===
+
+==== Sub-command: list
+
+This sub-command is used to query an _{opennms-product-name}_ instance for its available resources.
+The following example queries the local _{opennms-product-name}_ instance with the credentials `admin/secret`.
+
+[source, shell]
+----
+$ ./resourcecli --username admin --password secret list
+node[72]
+  node[72].nodeSnmp[]
+  node[72].responseTime[192.168.0.2]
+node[70]
+  node[70].nodeSnmp[]
+  node[70].interfaceSnmp[bridge0]
+  node[70].interfaceSnmp[bridge1]
+  node[70].interfaceSnmp[vlan0-002500fe1bf3]
+	node[70].responseTime[50.16.15.18]
+  node[70].responseTime[192.168.0.1]
+
+<output omitted>
+----
+
+==== Sub-command: show
+
+This sub-command can be used to show details for a given resource.
+The following example display details for the resource identified by resourceId `node[70]`.
+
+[source, shell]
+----
+$ ./resourcecli --username admin --password secret show node\[70\]
+ID:         node[70]
+Name:       70
+Label:      MyRouter
+Type:       Node
+Link:       element/node.jsp?node=70
+Parent ID:  null
+Children:
+  node[70].nodeSnmp[]
+  node[70].interfaceSnmp[bridge0]
+  node[70].interfaceSnmp[bridge1]
+  node[70].interfaceSnmp[vlan0-002500fe1bf3]
+	node[70].responseTime[50.16.15.18]
+  node[70].responseTime[192.168.0.1]
+Attributes:
+  External:
+  Graphs:
+  Strings:
+----
+
+The following options are available for the _show_ sub-command.
+
+[options="header, autowidth"]
+|===
+| Option/Argument         | Description                                                                             | Default
+| `<resource>`            | The resourceId of the resource to display.    | -
+|===
+
+==== Sub-command: delete
+
+This sub-command can be used to delete a given resource and its child resources.
+The following example deletes the resource identified by resourceId `node[70]`.
+When successful, this command does not generate any output.
+
+[source, shell]
+----
+$ ./resourcecli --username admin --password secret delete node\[70\]
+$
+----
+
+The following options are available for the _delete_ sub-command.
+
+[options="header, autowidth"]
+|===
+| Option/Argument         | Description                                                                             | Default
+| `<resource>`            | The resourceId of the resource to be deleted.    | -
+|===

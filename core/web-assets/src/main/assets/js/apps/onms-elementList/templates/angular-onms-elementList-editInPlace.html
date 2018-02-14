@@ -1,0 +1,15 @@
+<form class="form-inline" ng-submit="submit()" style="margin: 0;">
+	<!-- Editing input -->
+	<input ng-show="editing" ng-keyup="onKeyup($event)" type="{{valueType}}" step="{{step}}" ng-model="value"/>
+
+	<!-- Text label -->
+	<span style="line-height:24px;" ng-hide="editing" ng-click="edit()">{{value}}&nbsp;</span>
+
+	<!-- Edit button -->
+	<a style="text-decoration: none;" ng-click="edit()" ng-hide="editing"><i class="fa fa-edit fa-lg"/></a>
+	<a style="text-decoration: none;" ng-click="submit()" ng-show="editing"><i class="fa fa-check fa-lg"/></a>
+	<a style="text-decoration: none;" ng-click="cancel()" ng-show="editing"><i class="fa fa-close fa-lg"/></a>
+
+	<!-- Transclude any content inside the tag -->
+	<span ng-transclude/>
+</form>

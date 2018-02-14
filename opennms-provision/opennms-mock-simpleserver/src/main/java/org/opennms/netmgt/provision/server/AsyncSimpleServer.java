@@ -29,7 +29,7 @@
 package org.opennms.netmgt.provision.server;
 
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoHandler;
@@ -47,8 +47,7 @@ import org.opennms.netmgt.provision.server.exchange.LineConversation;
  * @version $Id: $
  */
 public class AsyncSimpleServer {
-    
-    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
+
     private LineConversation m_lineConversation;
     private IoAcceptor m_acceptor;
     private IoHandler m_ioHandler;
@@ -82,7 +81,7 @@ public class AsyncSimpleServer {
         
         m_acceptor = new NioSocketAcceptor();
         m_acceptor.getFilterChain().addLast("logger", new LoggingFilter());
-        m_acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(CHARSET_UTF8)));
+        m_acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new TextLineCodecFactory(StandardCharsets.UTF_8)));
         
         m_acceptor.setHandler(getServerHandler());
         m_acceptor.getSessionConfig().setReadBufferSize(getBufferSize());

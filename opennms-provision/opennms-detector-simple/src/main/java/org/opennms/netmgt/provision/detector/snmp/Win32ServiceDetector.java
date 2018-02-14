@@ -30,17 +30,15 @@ package org.opennms.netmgt.provision.detector.snmp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>Win32ServiceDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class Win32ServiceDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(Win32ServiceDetector.class);
@@ -67,7 +65,7 @@ public class Win32ServiceDetector extends SnmpDetector {
         LOG.debug("setWin32ServiceName: setting service name to {}", serviceName);
         int snLength = serviceName.length();
         
-        StringBuffer serviceOidBuf = new StringBuffer(SV_SVC_OPERATING_STATE_OID);
+        final StringBuilder serviceOidBuf = new StringBuilder(SV_SVC_OPERATING_STATE_OID);
         serviceOidBuf.append(".").append(Integer.toString(snLength));
         for (byte thisByte : serviceName.getBytes()) {
             serviceOidBuf.append(".").append(Byte.toString(thisByte));

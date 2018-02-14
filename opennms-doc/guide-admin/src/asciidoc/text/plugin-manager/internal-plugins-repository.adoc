@@ -1,0 +1,19 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Installing Internal Plugins
+
+_{opennms-product-name}_ is packaged with an internal repository of plugins which are shipped with the _{opennms-product-name}_ distribution. 
+These plugins can be installed in the local _{opennms-product-name}_  _Karaf_ instance and activated by a user using the _Plugin Manager_ 
+in the same way it could be used to download and install external plugins.
+
+The _internal-plugin-descriptor_ feature maintains a list of internal plugins which are packaged with _{opennms-product-name}_. This list of internal
+ plugins can be accessed by the _Plugin Manager_ by setting the `Available Plugins Server` to point to the local _{opennms-product-name}_ instance. To do this set
+ `Plugin Server URL` to the address of the local _{opennms-product-name}_ (i.e. http:\\localhost:8980\opennms) and set the `Plugin Server Username` and `Plugin Server Password` to match the
+_{opennms-product-name}_ ReST or admin username and password. 
+  
+Clicking `Reload available plugins` will then add the list of available internal plugins to the Available Plugins Tab where they
+can be installed and started by the user as described previously. 
+
+The internal plugins included with this _{opennms-product-name}_ release are documented in the next section.

@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="/opt/opennms/share/rrd/snmp/">
+    
+    <jmx-collection name="collectSingleMbeanWithSingleAttribute">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+  <!-- JVM COMPILATION -->
+            <mbean name="java.lang.Compilation" objectname="java.lang:type=Compilation">
+                <attrib name="TotalCompilationTime" alias="JvmTotalCompilTime" type="counter"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+    <jmx-collection name="collectSingleMbeanWithOneNotAvailableAttribute">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+  <!-- JVM COMPILATION -->
+            <mbean name="java.lang.Compilation" objectname="java.lang:type=Compilation">
+                <attrib name="MissingAttribute" alias="MissingAttribute" type="gauge"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+    <jmx-collection name="collectSingleMbeanWithOneNotAvailableAttributesAndOneAvailableAttributes">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+  <!-- JVM COMPILATION -->
+            <mbean name="java.lang.Compilation" objectname="java.lang:type=Compilation">
+                <attrib name="MissingAttribute" alias="MissingAttribute" type="gauge"/>
+                <attrib name="TotalCompilationTime" alias="JvmTotalCompilTime" type="counter"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection> 
+
+    <jmx-collection name="collectSingleMbeanWithManyNotAvailableAttributesAndManyAvailableAttributes">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+  <!-- JVM Operating System -->
+            <mbean name="OperatingSystem by JVM" objectname="java.lang:type=OperatingSystem">
+                <attrib name="FreePhysicalMemorySize" alias="OsFreeMemory" type="gauge"/>
+                
+                <attrib name="Foo0" alias="Foo0" type="gauge"/>
+                
+                <attrib name="TotalPhysicalMemorySize" alias="OsTotalMemory" type="gauge"/>
+                <attrib name="FreeSwapSpaceSize" alias="OsFreeSwapSpace" type="gauge"/>
+                
+                <attrib name="Foo1" alias="Foo1" type="gauge"/>
+                
+                <attrib name="TotalSwapSpaceSize" alias="OsTotalSwapSpace" type="gauge"/>
+                <!-- <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/> -->
+                
+                <attrib name="Foo2" alias="Foo2" type="gauge"/>
+                
+                <!-- <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/> -->
+                <attrib name="CommittedVirtualMemorySize" alias="OsCommittVMemSize" type="gauge"/>
+                
+                <attrib name="Foo3" alias="Foo3" type="gauge"/>
+                
+                <attrib name="ProcessCpuTime" alias="OsProcessCpuTime" type="gauge"/>
+                <attrib name="AvailableProcessors" alias="OsAvailableCpus" type="gauge"/>
+                
+                <attrib name="Foo4" alias="Foo4" type="gauge"/>
+                
+                <attrib name="SystemLoadAverage" alias="OsSysLoadAverage" type="gauge"/>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+    <jmx-collection name="collectSingleMbeanWithOneCompAttribWithAllItsCompMembers">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+        <jmx-collection name="collectSingleMbeanWithOneCompAttribWithOneIgnoredCompMembers">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">>
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <!-- ignored comp-member
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                    -->
+                </comp-attrib>
+            </mbean>
+        </mbeans>
+    </jmx-collection>
+    
+    <jmx-collection name="collectBasicJvmValues">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+  <!-- JVM Operating System -->
+            <mbean name="OperatingSystem by JVM" objectname="java.lang:type=OperatingSystem">
+                <attrib name="FreePhysicalMemorySize" alias="OsFreeMemory" type="gauge"/>
+                <attrib name="TotalPhysicalMemorySize" alias="OsTotalMemory" type="gauge"/>
+                <attrib name="FreeSwapSpaceSize" alias="OsFreeSwapSpace" type="gauge"/>
+                <attrib name="TotalSwapSpaceSize" alias="OsTotalSwapSpace" type="gauge"/>
+                <!-- <attrib name="MaxFileDescriptorCount" alias="OsMaxFileDescCo" type="gauge"/> -->
+                <!-- <attrib name="OpenFileDescriptorCount" alias="OsOpenFileDescCo" type="gauge"/> -->
+                <attrib name="CommittedVirtualMemorySize" alias="OsCommittVMemSize" type="gauge"/>
+                <attrib name="ProcessCpuTime" alias="OsProcessCpuTime" type="gauge"/>
+                <attrib name="AvailableProcessors" alias="OsAvailableCpus" type="gauge"/>
+                <attrib name="SystemLoadAverage" alias="OsSysLoadAverage" type="gauge"/>
+            </mbean>
+  <!-- JVM COMPILATION -->
+            <mbean name="java.lang.Compilation" objectname="java.lang:type=Compilation">
+                <attrib name="TotalCompilationTime" alias="JvmTotalCompilTime" type="counter"/>
+            </mbean>
+  <!-- JVM HEAP / NON HEAP -->
+            <mbean name="JVM Memory" objectname="java.lang:type=Memory">
+                <attrib name="ObjectPendingFinalizationCount" alias="ObjPendFinalCount" type="gauge"/>
+                <comp-attrib name="HeapMemoryUsage" alias="HeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="HeapCommitted" type="gauge"/>
+                    <comp-member name="init" alias="HeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="HeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="HeapMemUsed" type="gauge"/>
+                </comp-attrib>
+                <comp-attrib name="NonHeapMemoryUsage" alias="NonHeapMemoryUsage" type="Composite">
+                    <comp-member name="committed" alias="NonCommitted" type="gauge"/>
+                    <comp-member name="init" alias="NonHeapMemInit" type="gauge"/>
+                    <comp-member name="max" alias="NonHeapMemMax" type="gauge"/>
+                    <comp-member name="used" alias="NonHeapMemUsed" type="gauge"/>
+                </comp-attrib>
+            </mbean>
+
+         <mbean name="JVM GarbageCollector" resource-type="jvm" objectname="java.lang:type=GarbageCollector,name=*">
+            <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
+            <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
+         </mbean>
+
+        </mbeans>
+    </jmx-collection>
+</jmx-datacollection-config>

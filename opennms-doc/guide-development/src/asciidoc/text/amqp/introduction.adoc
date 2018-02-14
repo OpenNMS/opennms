@@ -1,0 +1,18 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+The AMQP Integration allows external systems to communicate with the event bus of {opennms-product-name} and receive alarms via the AMQP protocol.
+
+NOTE: _AMQP_ is standard messaging protocol supported by a number of brokers including _ActiveMQ_ and _QPID_.
+
+The integration is written using Camel + OSGi and has the following components:
+
+* Event Forwarder
+* Event Receiver
+* Alarm Northbounder
+
+Custom filtering (i.e. which events to forward) and transformations (i.e. how the events are represented in the messages) can be used in each of the components.
+Generic implementations
+
+NOTE: Each componenent can be configured and setup independently, i.e. you can choose to only forward alarms.

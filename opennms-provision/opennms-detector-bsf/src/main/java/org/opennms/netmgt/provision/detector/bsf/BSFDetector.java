@@ -34,17 +34,15 @@ import org.opennms.netmgt.provision.detector.bsf.response.BSFResponse;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>BSFDetector class.</p>
  *
  * @author Alejandro Galue <agalue@opennms.org>
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class BSFDetector extends BasicDetector<BSFRequest, BSFResponse> {
 
     private String m_fileName;
@@ -56,7 +54,7 @@ public class BSFDetector extends BasicDetector<BSFRequest, BSFResponse> {
     /**
      * <p>Constructor for BsfDetector.</p>
      */
-    protected BSFDetector() {
+    public BSFDetector() {
         super("BSF", 0);
     }
 

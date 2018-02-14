@@ -193,7 +193,7 @@ public class InstanceStrategy implements AccessPointPoller {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             int val = Integer.parseInt(elm[i]);
             if (val < 16) {
@@ -216,7 +216,7 @@ public class InstanceStrategy implements AccessPointPoller {
             return null;
         }
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 6; i++) {
             sb.append(".");
             sb.append(Integer.parseInt(elm[i], 16));

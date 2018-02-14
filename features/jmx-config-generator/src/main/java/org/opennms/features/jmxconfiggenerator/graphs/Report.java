@@ -41,7 +41,7 @@ public class Report {
     private String name;
     private String title;
     private String verticalLabel;
-    private List<Graph> graphs = new ArrayList<Graph>();
+    private List<Graph> graphs = new ArrayList<>();
 
     public Report(String id, String name, String title, String verticalLabel) {
         this.id = id;

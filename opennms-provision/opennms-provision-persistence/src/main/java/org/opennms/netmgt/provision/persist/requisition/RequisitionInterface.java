@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -65,10 +66,10 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
 
     //TODO Change these to be sets so that we don't have to verify duplicates in the lists
     @XmlElement(name="monitored-service")
-    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+    protected List<RequisitionMonitoredService> m_monitoredServices = new ArrayList<>();
 
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
 
     @XmlAttribute(name="descr")
     protected String m_description;
@@ -113,7 +114,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionMonitoredService> getMonitoredServices() {
         if (m_monitoredServices == null) {
-            m_monitoredServices = new ArrayList<RequisitionMonitoredService>();
+            m_monitoredServices = new ArrayList<>();
         }
         return m_monitoredServices;
     }
@@ -211,7 +212,7 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public List<RequisitionCategory> getCategories() {
         if (m_categories == null) {
-            m_categories = new ArrayList<RequisitionCategory>();
+            m_categories = new ArrayList<>();
         }
         return m_categories;
     }
@@ -379,6 +380,17 @@ public class RequisitionInterface implements Comparable<RequisitionInterface> {
      */
     public void setStatus(Integer value) {
         m_status = value;
+    }
+
+    public void validate() throws ValidationException {
+        if (m_ipAddress == null) {
+            throw new ValidationException("Requisition interface 'ip-addr' is a required attribute!");
+        }
+        if (m_monitoredServices != null) {
+            for (final RequisitionMonitoredService svc : m_monitoredServices) {
+                svc.validate();
+            }
+        }
     }
 
     @Override

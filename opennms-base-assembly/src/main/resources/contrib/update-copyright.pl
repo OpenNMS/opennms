@@ -144,7 +144,6 @@ sub process_file {
 	return unless (-f $name);
 	return unless ($name =~ /\.(jsp|java|properties|groovy)$/);
 	return if ($name =~ /\/test\/.*\.properties$/);
-	return if ($name =~ /\/castor.properties$/);
 	return if ($name =~ /opennms-base-assembly\/src\/main\/filtered\/etc/);
 
 	print "* $name\n";

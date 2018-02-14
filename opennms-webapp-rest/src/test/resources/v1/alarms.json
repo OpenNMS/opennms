@@ -1,0 +1,60 @@
+{
+    "alarm": [
+        {
+            "ackId": 1, 
+            "count": 1, 
+            "description": "This is a test alarm", 
+            "firstEventTime": 1436881548292, 
+            "id": 1, 
+            "ifIndex": null, 
+            "ipAddress": "192.168.1.1", 
+            "lastEvent": {
+                "createTime": 1436881548292, 
+                "description": "This is the description of a test event.", 
+                "display": "Y", 
+                "host": "127.0.0.1", 
+                "id": 1, 
+                "ifIndex": null, 
+                "ipAddress": "192.168.1.1", 
+                "log": "Y", 
+                "logMessage": "Test Event Log Message", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1, 
+                    "name": "ICMP"
+                }, 
+                "severity": "INDETERMINATE", 
+                "source": "test", 
+                "time": 1436881548292, 
+                "uei": "uei.opennms.org/test"
+            }, 
+            "lastEventTime": 1436881548292, 
+            "logMessage": "this is a test alarm log message", 
+            "managedObjectInstance": null, 
+            "managedObjectType": null, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "ossPrimaryKey": null, 
+            "parameters": [
+                {"name": "testParm", "value": "HelloWorld", "type":"string" }
+            ],
+            "qosAlarmState": null, 
+            "serviceType": {
+                "id": 1, 
+                "name": "ICMP"
+            }, 
+            "severity": "NORMAL", 
+            "type": 1, 
+            "uei": "uei.opennms.org/test", 
+            "x733AlarmType": null, 
+            "x733ProbableCause": 0
+        }
+    ], 
+    "count": 1, 
+    "offset": 0, 
+    "totalCount": 1
+}

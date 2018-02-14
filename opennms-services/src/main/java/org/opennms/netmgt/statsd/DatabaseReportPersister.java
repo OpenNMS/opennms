@@ -65,7 +65,7 @@ public class DatabaseReportPersister implements ReportPersister, InitializingBea
         dbReport.setPurgeDate(new Date(report.getJobCompletedDate().getTime() + report.getRetainInterval()));
 
         for (AttributeStatistic stat : report.getResults()) {
-            ResourceReference resource = getResourceReference(stat.getAttribute().getResource().getId());
+            ResourceReference resource = getResourceReference(stat.getAttribute().getResource().getId().toString());
 
             StatisticsReportData data = new StatisticsReportData();
             data.setResource(resource);

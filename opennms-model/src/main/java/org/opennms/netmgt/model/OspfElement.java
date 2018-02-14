@@ -311,8 +311,10 @@ public final class OspfElement implements Serializable {
 			return;
 		setOspfRouterId(element.getOspfRouterId());
 		setOspfRouterIdIfindex(element.getOspfRouterIdIfindex());
-		setOspfRouterId(element.getOspfRouterIdNetmask());
-		
+		setOspfRouterIdNetmask(element.getOspfRouterIdNetmask());
+		setOspfAdminStat(element.getOspfAdminStat());
+		setOspfASBdrRtrStatus(element.getOspfASBdrRtrStatus());
+		setOspfBdrRtrStatus(element.getOspfASBdrRtrStatus());
 		setOspfNodeLastPollTime(element.getOspfNodeCreateTime());
 	}
 

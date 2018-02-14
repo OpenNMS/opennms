@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,18 +31,25 @@ package org.opennms.core.xml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import javax.xml.bind.JAXBContext;
@@ -82,9 +89,9 @@ public abstract class JaxbUtils {
     private static final Class<?>[] EMPTY_CLASS_LIST = new Class<?>[0];
     private static final Source[] EMPTY_SOURCE_LIST = new Source[0];
 
-    private static final class LoggingValidationEventHandler implements ValidationEventHandler {
+    protected static final class LoggingValidationEventHandler implements ValidationEventHandler {
 
-        private LoggingValidationEventHandler() {
+        protected LoggingValidationEventHandler() {
         }
 
         @Override
@@ -111,13 +118,29 @@ public abstract class JaxbUtils {
         return jaxbWriter.toString();
     }
 
+    public static void marshal(final Object obj, final File file) throws IOException {
+        /*
+         * Marshal to a string first, then write the string to the file.
+         * This way the original configuration isn't lost if the XML from the
+         * marshal is hosed.
+         */
+        String xmlString = marshal(obj);
+
+        if (xmlString != null) {
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+            fileWriter.write(xmlString);
+            fileWriter.flush();
+            fileWriter.close();
+        }
+    }
+
     public static Class<?> getClassForElement(final String elementName) {
         if (elementName == null) return null;
 
         final Class<?> existing = m_elementClasses.get(elementName);
         if (existing != null) return existing;
 
-        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(true);
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AnnotationTypeFilter(XmlRootElement.class));
         for (final BeanDefinition bd : scanner.findCandidateComponents("org.opennms")) {
             final String className = bd.getBeanClassName();
@@ -141,7 +164,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> List<String> getNamespacesForClass(final Class<T> clazz) {
-        final List<String> namespaces = new ArrayList<String>();
+        final List<String> namespaces = new ArrayList<>();
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -184,6 +207,22 @@ public abstract class JaxbUtils {
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader, final boolean validate) {
         return unmarshal(clazz, new InputSource(reader), null, validate);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, reader, VALIDATE_IF_POSSIBLE);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final boolean validate) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, new InputSource(reader), null, validate);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml) {
@@ -243,7 +282,7 @@ public abstract class JaxbUtils {
         }
     }
 
-    public static <T> String getNamespaceForClass(final Class<T> clazz) throws SAXException {
+    public static <T> String getNamespaceForClass(final Class<T> clazz) {
         final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
         if (schema != null) {
             final String namespace = schema.namespace();
@@ -290,7 +329,7 @@ public abstract class JaxbUtils {
                 context = jaxbContext;
             }
             final Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, StandardCharsets.UTF_8.name());
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.setProperty(Marshaller.JAXB_FRAGMENT, true);
             if (context.getClass().getName().startsWith("org.eclipse.persistence.jaxb")) {
@@ -310,7 +349,7 @@ public abstract class JaxbUtils {
     /**
      * Get a JAXB unmarshaller for the given object.  If no JAXBContext is provided,
      * JAXBUtils will create and cache a context for the given object.
-     * @param obj The object type to be unmarshaled.
+     * @param obj The object type to be unmarshalled.
      * @param jaxbContext An optional JAXB context to create the unmarshaller from.
      * @param validate TODO
      * @return an Unmarshaller
@@ -334,13 +373,11 @@ public abstract class JaxbUtils {
 
         if (unmarshaller == null) {
             try {
-                final JAXBContext context;
                 if (jaxbContext == null) {
-                    context = getContextFor(clazz);
+                    unmarshaller = getContextFor(clazz).createUnmarshaller();
                 } else {
-                    context = jaxbContext;
+                    unmarshaller = jaxbContext.createUnmarshaller();
                 }
-                unmarshaller = context.createUnmarshaller();
             } catch (final JAXBException e) {
                 throw EXCEPTION_TRANSLATOR.translate("creating XML marshaller", e);
             }
@@ -360,10 +397,11 @@ public abstract class JaxbUtils {
         return unmarshaller;
     }
 
-    private static List<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
-        final List<Class<?>> classes = new ArrayList<Class<?>>();
+    private static Collection<Class<?>> getAllRelatedClasses(final Class<?> clazz) {
+        final Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(clazz);
 
+        // Get any XmlSeeAlsos on the class
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null && seeAlso.value() != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -381,7 +419,7 @@ public abstract class JaxbUtils {
         if (m_contexts.containsKey(clazz)) {
             context = m_contexts.get(clazz);
         } else {
-            final List<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
+            final Collection<Class<?>> allRelatedClasses = getAllRelatedClasses(clazz);
             LOG.trace("Creating new context for classes: {}", allRelatedClasses);
             context = org.eclipse.persistence.jaxb.JAXBContextFactory.createContext(allRelatedClasses.toArray(EMPTY_CLASS_LIST), null);
             LOG.trace("Context for {}: {}", allRelatedClasses, context);
@@ -391,7 +429,7 @@ public abstract class JaxbUtils {
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {
-        final List<String> schemaFiles = new ArrayList<String>();
+        final List<String> schemaFiles = new ArrayList<>();
         for (final Class<?> c : getAllRelatedClasses(clazz)) {
             final ValidateUsing annotation = c.getAnnotation(ValidateUsing.class);
             if (annotation == null || annotation.value() == null) {
@@ -411,7 +449,7 @@ public abstract class JaxbUtils {
             return m_schemas.get(clazz);
         }
 
-        final List<Source> sources = new ArrayList<Source>();
+        final List<Source> sources = new ArrayList<>();
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
         for (final String schemaFileName : getSchemaFilesFor(clazz)) {
@@ -432,7 +470,10 @@ public abstract class JaxbUtils {
                     };
                 }
                 if (schemaInputStream == null) {
-                    final URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
+                    URL schemaResource = Thread.currentThread().getContextClassLoader().getResource("xsds/" + schemaFileName);
+                    if (schemaResource == null) {
+                        schemaResource = clazz.getClassLoader().getResource("xsds/" + schemaFileName);
+                    }
                     if (schemaResource == null) {
                         LOG.debug("Unable to load resource xsds/{} from the classpath.", schemaFileName);
                     } else {
@@ -467,5 +508,9 @@ public abstract class JaxbUtils {
             LOG.warn("an error occurred while attempting to load schema validation files for class {}", clazz, e);
             return null;
         }
+    }
+
+    public static <T> T duplicateObject(T obj, final Class<T> clazz) {
+        return unmarshal(clazz, marshal(obj));
     }
 }

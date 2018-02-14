@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" 
+	xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+	">
+
+  <context:annotation-config />
+  <tx:annotation-driven />
+
+  <bean id="businessServiceDao" class="org.opennms.netmgt.bsm.persistence.impl.BusinessServiceDaoImpl">
+  	<property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao" ref="businessServiceDao" />
+
+  <bean id="reductionFunctionDao" class="org.opennms.netmgt.bsm.persistence.impl.functions.reduce.ReductionFunctionDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.functions.reduce.ReductionFunctionDao" ref="reductionFunctionDao" />
+
+  <bean id="mapFunctionDao" class="org.opennms.netmgt.bsm.persistence.impl.functions.map.MapFunctionDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.functions.map.MapFunctionDao" ref="mapFunctionDao" />
+
+  <bean id="businessServiceEdgeDao" class="org.opennms.netmgt.bsm.persistence.impl.BusinessServiceEdgeDaoImpl">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao" ref="businessServiceEdgeDao" />
+
+</beans>

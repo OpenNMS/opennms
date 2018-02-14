@@ -38,11 +38,12 @@
         org.opennms.web.servlet.MissingParameterException,
         org.opennms.web.api.Util,
         org.opennms.netmgt.model.OnmsResource,
-        org.opennms.web.svclayer.ResourceService,
+        org.opennms.web.svclayer.api.ResourceService,
         org.springframework.web.context.WebApplicationContext,
         org.springframework.web.context.support.WebApplicationContextUtils,
         org.opennms.web.servlet.XssRequestWrapper"
 %>
+<%@ page import="org.opennms.netmgt.model.ResourceId" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
@@ -61,7 +62,7 @@
     
     public void init() throws ServletException {
 	    WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        m_resourceService = (ResourceService) webAppContext.getBean("resourceService", ResourceService.class);
+        m_resourceService = webAppContext.getBean("resourceService", ResourceService.class);
     }%>
  
 <%
@@ -80,7 +81,7 @@
     if (req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
-        String resourceId = req.getParameter("resourceId");
+        ResourceId resourceId = ResourceId.fromString(req.getParameter("resourceId"));
         OnmsResource resource = m_resourceService.getResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);
@@ -174,7 +175,7 @@
               
               <br/>
 
-              <select name="ds" size="6">
+              <select class="multi-select" name="ds" size="6">
                 <c:forEach var="attribute" items="${resource.attributes}">
                   <c:choose>
                     <c:when test="${! anythingSelected}">

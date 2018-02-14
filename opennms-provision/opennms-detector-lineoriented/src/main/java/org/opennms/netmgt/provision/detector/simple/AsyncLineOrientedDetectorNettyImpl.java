@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
 import org.jboss.netty.handler.codec.frame.Delimiters;
@@ -52,8 +50,6 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
  * @version $Id: $
  */
 public abstract class AsyncLineOrientedDetectorNettyImpl extends AsyncBasicDetectorNettyImpl<LineOrientedRequest, LineOrientedResponse> {
-
-    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
 
     /**
      * <p>Constructor for AsyncLineOrientedDetectorNettyImpl.</p>

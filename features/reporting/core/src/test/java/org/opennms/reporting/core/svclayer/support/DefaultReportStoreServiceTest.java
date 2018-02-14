@@ -55,7 +55,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
     DependencyInjectionTestExecutionListener.class
 })
 @ContextConfiguration(locations={
-        "classpath:org/opennms/reporting/core/svclayer/support/DefaultReportStoreServiceTest.xml"
+        "classpath:/org/opennms/reporting/core/svclayer/support/DefaultReportStoreServiceTest.xml"
 })
 public class DefaultReportStoreServiceTest implements InitializingBean {
 

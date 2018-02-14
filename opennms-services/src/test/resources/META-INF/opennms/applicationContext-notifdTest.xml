@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+    <context:annotation-config />
+    <tx:annotation-driven/>
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+
+    <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="notifdConfigFactory" class="org.opennms.netmgt.config.NotifdConfigFactory" depends-on="notifdConfigFactory-init" factory-method="getInstance"/>
+
+    <bean id="notificationFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationFactory" class="org.opennms.netmgt.config.NotificationFactory" depends-on="notificationFactory-init" factory-method="getInstance"/>
+
+    <bean id="groupFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.GroupFactory.init</value></property>
+    </bean>
+
+    <bean id="groupFactory" class="org.opennms.netmgt.config.GroupFactory" depends-on="groupFactory-init" factory-method="getInstance"/>
+
+    <bean id="userFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.UserFactory.init</value></property>
+    </bean>
+
+    <bean id="userFactory" class="org.opennms.netmgt.config.UserFactory" depends-on="userFactory-init" factory-method="getInstance"/>
+
+    <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.DestinationPathFactory.init</value></property>
+    </bean>
+
+    <bean id="destinationPathFactory" class="org.opennms.netmgt.config.DestinationPathFactory" depends-on="destinationPathFactory-init" factory-method="getInstance"/>
+
+    <bean id="notificationCommandFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.NotificationCommandFactory.init</value></property>
+    </bean>
+
+    <bean id="notificationCommandFactory" class="org.opennms.netmgt.config.NotificationCommandFactory" depends-on="notificationCommandFactory-init" factory-method="getInstance"/>
+
+    <bean id="pollOutagesConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+    </bean>
+
+    <bean id="pollOutagesConfigFactory" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="pollOutagesConfigFactory-init" factory-method="getInstance"/>
+    
+    <bean id="eventUtil" class="org.opennms.netmgt.eventd.EventUtilDaoImpl" />
+
+    <bean id="eventConfResourceLocation" class="java.lang.String">
+      <constructor-arg value="file:src/test/resources/org/opennms/netmgt/notifd/eventconf.xml" />
+	</bean>
+
+    <bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
+      <property name="configResource" ref="eventConfResourceLocation" />
+    </bean>
+
+    <bean id="broadcastEventProcessor" class="org.opennms.netmgt.notifd.BroadcastEventProcessor">
+      <property name="notifdConfigManager" ref="notifdConfigFactory" />
+      <property name="notificationManager" ref="notificationFactory" />
+      <property name="groupManager" ref="groupFactory" />
+      <property name="userManager" ref="userFactory" />
+      <property name="destinationPathManager" ref="destinationPathFactory" />
+      <property name="notificationCommandManager" ref="notificationCommandFactory" />
+      <property name="pollOutagesConfigManager" ref="pollOutagesConfigFactory" />
+      <property name="eventConfDao" ref="eventConfDao" />
+    </bean>
+
+    <bean name="daemon" class="org.opennms.netmgt.notifd.Notifd" />
+
+</beans>

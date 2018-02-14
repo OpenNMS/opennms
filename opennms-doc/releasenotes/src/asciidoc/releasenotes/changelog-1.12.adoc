@@ -1,8 +1,11 @@
-[releasenotes-1.12]
-=== Release 1.12
 
+[[releasenotes-1.12]]
+== Release 1.12
 
-[releasenotes-changelog-1.12.9]
+[[release-1.12-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-1.12.9]]
 ==== Release 1.12.9
 Release 1.12.9 is the 10th in the stable 1.12 series of OpenNMS. It contains a number of important
 fixes including handling jetty.xml upgrades better, and a fix for a bug in the rescanExisting flag when
@@ -36,7 +39,7 @@ starts (Issue http://issues.opennms.org/browse/NMS-6757[NMS-6757])
 
 
 
-[releasenotes-changelog-1.12.8]
+[[releasenotes-changelog-1.12.8]]
 ==== Release 1.12.8
 Release 1.12.8 is the 9th in the stable 1.12 series of OpenNMS.
 It contains an important fix for a security issue that can expose files outside of the OpenNMS directory through the web interface.
@@ -49,7 +52,7 @@ The codename for 1.12.8 is _John Petrucci_
 * Security: downloadReport allow download and view any file in filesystem (Issue http://issues.opennms.org/browse/NMS-6580[NMS-6580])
 
 
-[releasenotes-changelog-1.12.7]
+[[releasenotes-changelog-1.12.7]]
 ==== Release 1.12.7
 Release 1.12.7 is the eighth in the stable 1.12 series of OpenNMS.
 It contains a number of important fixes including a XSS vulnerability, and also introduces a potentially incompatible change to the way the web UI is configured.
@@ -82,7 +85,7 @@ The codename for 1.12.7 is _Bob Marley_
 * there appears to be no way to restrict access to the ajp port (Issue http://issues.opennms.org/browse/NMS-3499[NMS-3499])
 * Debian packages need updating to support postgresql-9.2 and postgresql-9.3 (Issue http://issues.opennms.org/browse/NMS-6517[NMS-6517])
 
-[releasenotes-changelog-1.12.6]
+[[releasenotes-changelog-1.12.6]]
 ==== Release 1.12.6
 Release 1.12.6 is the seventh in the stable 1.12 series of OpenNMS.
 It contains a number of important fixes including a potential security leak in the ReST interface.
@@ -113,7 +116,7 @@ The codename for 1.12.6 is _Sascha Konietzko_
 * Expose poller thread pool stats via JMX (Issue http://issues.opennms.org/browse/NMS-6466[NMS-6466])
 * Provide a user configuration file for provision.pl (Issue http://issues.opennms.org/browse/NMS-6467[NMS-6467])
 
-[releasenotes-changelog-1.12.5]
+[[releasenotes-changelog-1.12.5]]
 ==== Release 1.12.5
 Release 1.12.5 is the sixth in the stable 1.12 series of OpenNMS.
 It contains a fix for upgrades when using storeByForeignSource, plus a few other small changes.
@@ -136,7 +139,7 @@ The codename for 1.12.5 is _John Lee Hooker_
 * Remove the reset button on the login prompt. (Issue http://issues.opennms.org/browse/NMS-5738[NMS-5738])
 * Surveillance-Category-Names can be longer then 64 chars (Issue http://issues.opennms.org/browse/NMS-6406[NMS-6406])
 
-[releasenotes-changelog-1.12.4]
+[[releasenotes-changelog-1.12.4]]
 ==== Release 1.12.4
 Release 1.12.4 is the fifth in the stable 1.12 series of OpenNMS.
 It contains more upgrade tool bugfixes, as well as a number of small bug fixes and enhancements.
@@ -174,7 +177,7 @@ The codename for 1.12.4 is _Iggy Pop_
 * Include remote user and host in parameters of notificationsTurnedOff and ~On events (Issue http://issues.opennms.org/browse/NMS-6384[NMS-6384])
 * Enhance DnsMonitor to evaluate size of answer section (Issue http://issues.opennms.org/browse/NMS-6398[NMS-6398])
 
-[releasenotes-changelog-1.12.3]
+[[releasenotes-changelog-1.12.3]]
 ==== Release 1.12.3
 Release 1.12.3 is the fourth in the stable 1.12 series of OpenNMS.
 It contains a critical bugfix to the upgrade tools added in 1.12.2, as well as a few small config updates.
@@ -191,7 +194,7 @@ The codename for 1.12.3 is _Charles Mingus_
 
 * Add 64-bit SNMP ifXTable packet counters for unicast, multicast, broadcast (Issue http://issues.opennms.org/browse/NMS-6305[NMS-6305])
 
-[releasenotes-changelog-1.12.2]
+[[releasenotes-changelog-1.12.2]]
 ==== Release 1.12.2
 Release 1.12.2 is the third in the stable 1.12 series of OpenNMS.
 It contains quite a few bug fixes and enhancements since the 1.12.1 release.
@@ -276,7 +279,7 @@ The codename for 1.12.2 is _Liberace_
 * Add alarm-data to some APC and Powerware trap events (Issue http://issues.opennms.org/browse/NMS-6247[NMS-6247])
 * CISCO-IF-EXTENSION-MIB trap event definitions (Issue http://issues.opennms.org/browse/NMS-6296[NMS-6296])
 
-[releasenotes-changelog-1.12.1]
+[[releasenotes-changelog-1.12.1]]
 ==== Release 1.12.1
 Release 1.12.1 is the second in the stable 1.12 series of OpenNMS.
 It contains a number of bug fixes and small enhancements since the 1.12.0 release.
@@ -319,7 +322,7 @@ The codename for 1.12.1 is _Patrick Murphy_
 * PostgreSQL / JDBC data collection config (Issue http://issues.opennms.org/browse/NMS-6062[NMS-6062])
 * SNMP support for Clavister security devices (Issue http://issues.opennms.org/browse/NMS-6107[NMS-6107])
 
-[releasenotes-changelog-1.12.0]
+[[releasenotes-changelog-1.12.0]]
 ==== Release 1.12.0
 Release 1.12.0 is the first in the stable 1.12 series of OpenNMS.
 It contains a number of bug fixes since the 1.11.94 release.
@@ -350,4 +353,3 @@ The codename for 1.12.0 is _Barry Privett_
 * NRTG Realtime link does not show up for Storage (MIB-2 Host Resources) (Issue http://issues.opennms.org/browse/NMS-6021[NMS-6021])
 * Statistic Reports shows an empty page (Issue http://issues.opennms.org/browse/NMS-6028[NMS-6028])
 * Can't log in after creating a new user (Issue http://issues.opennms.org/browse/NMS-6030[NMS-6030])
-

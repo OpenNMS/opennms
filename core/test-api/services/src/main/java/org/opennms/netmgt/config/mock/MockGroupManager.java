@@ -31,10 +31,8 @@ package org.opennms.netmgt.config.mock;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.GroupManager;
 
 public class MockGroupManager extends GroupManager {
@@ -42,23 +40,19 @@ public class MockGroupManager extends GroupManager {
     String m_xmlString;
     boolean updateNeeded = false;
     
-    public MockGroupManager(String xmlString) throws MarshalException, ValidationException {
+    public MockGroupManager(String xmlString) throws IOException {
         m_xmlString = xmlString;
         parseXML();
     }
 
-    private void parseXML() throws MarshalException, ValidationException {
-        try {
-            InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes("UTF-8"));
-            parseXml(reader);
-            updateNeeded = false;
-        } catch (UnsupportedEncodingException e) {
-            // Can't happen with UTF-8
-        }
+    private void parseXML() throws IOException {
+        InputStream reader = new ByteArrayInputStream(m_xmlString.getBytes(StandardCharsets.UTF_8));
+        parseXml(reader);
+        updateNeeded = false;
     }
 
     @Override
-    public void update() throws IOException, MarshalException, ValidationException {
+    public void update() throws IOException {
         if (updateNeeded) {
             parseXML();
         }

@@ -32,9 +32,11 @@ import jcifs.smb.NtlmPasswordAuthentication;
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
+
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
+import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -66,13 +66,13 @@ public class CollectdConfiguration implements Serializable {
      * from them.
      */
     @XmlElement(name="package")
-    private List<Package> m_packages = new ArrayList<Package>();
+    private List<Package> m_packages = new ArrayList<>();
 
     /**
      * Service collectors
      */
     @XmlElement(name="collector")
-    private List<Collector> m_collectors = new ArrayList<Collector>();
+    private List<Collector> m_collectors = new ArrayList<>();
 
     public CollectdConfiguration() {
         super();
@@ -143,7 +143,7 @@ public class CollectdConfiguration implements Serializable {
     }
 
     public Filter getFilter(final String filterName) {
-        final List<Filter> filters = new ArrayList<Filter>();
+        final List<Filter> filters = new ArrayList<>();
         for (final Package p : getPackages()) {
             final Filter filter = p.getFilter();
             if (filterName.equals(filter.getName())) {
@@ -163,19 +163,27 @@ public class CollectdConfiguration implements Serializable {
         }
     }
 
-    public CollectdConfiguration getCollectdConfigurationForPackage(String collectionPackageName) {
-        if (collectionPackageName == null) return null;
-        final Package pkg = getPackage(collectionPackageName);
-        if (pkg == null) return null;
+    public CollectdConfiguration getCollectdConfigurationForPackages(List<String> collectionPackageNames) {
+        if (collectionPackageNames == null || collectionPackageNames.size() < 1) return null;
 
-        final Set<String> seenCollectors = new HashSet<String>();
+        final Set<String> seenCollectors = new HashSet<>();
         final CollectdConfiguration newConfig = new CollectdConfiguration();
         newConfig.setThreads(getThreads());
-        newConfig.addPackage(pkg);
 
-        for (final Service service : pkg.getServices()) {
-            seenCollectors.add(service.getName());
+        // Add all requested polling packages to the config
+        boolean foundPackage = false;
+        for (String packageName : collectionPackageNames) {
+            final Package pkg = getPackage(packageName);
+            if (pkg != null) {
+                newConfig.addPackage(pkg);
+                foundPackage = true;
+                for (final Service service : pkg.getServices()) {
+                    seenCollectors.add(service.getName());
+                }
+            }
         }
+        // If the list of polling packages doesn't match anything, then return null
+        if (!foundPackage) return null;
 
         for (final Collector collector : getCollectors()) {
             if (seenCollectors.contains(collector.getService())) {

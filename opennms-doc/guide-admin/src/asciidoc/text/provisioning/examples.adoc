@@ -1,0 +1,400 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Provisioning Examples
+
+Here are a few practical examples of enhanced directed discovery to help with your understanding of this feature.
+
+==== Basic Provisioning
+
+This example adds three nodes and requires no {opennms-product-name} configuration other than specifying the node entities to be provisioned and managed in {opennms-product-name}.
+
+===== Defining the Nodes via the Web-UI
+
+Using the Provisioning Groups Web-UI, three nodes are created given a single IP address.
+Navigate to the Admin Menu and click Provisioning Groups Menu from the list of Admin options and create the group _Bronze_.
+
+.Creating a new Provisioning Group
+image:../images/provisioning/00006.jpeg[]
+
+Clicking the _Add New Group_ button will create the group and will redisplay the page including this new group among the list of any group(s) that have already been created.
+
+image:../images/provisioning/00028.jpeg[]
+
+NOTE: At this point, the XML structure for holding the new provisioning group (a.k.a. an import requisition) has been persisted to the '$OPENNMS_ETC/imports/pending' directory.
+
+Clicking the _Edit_ link will bring you to the screen where you can begin the process of defining node entities that will be imported into {opennms-product-name}.
+Click the Add Node button will begin the node entity creation process fill in the node label and click the _Save_ button.
+
+.Creating a new Node definition in the Provisioning Group
+image:../images/provisioning/00026.jpeg[]
+
+At this point, the provisioning group contains the basic structure of a node entity but it is not complete until the interface(s) and interface service(s) have been defined.
+After having clicked the _Save_ button, as we did above presents, in the Web-UI, the options _Add Interface_, _Add Node Category_, and _Add Node Asset_.
+Click the _Add Interface_ link to add an interface entity to the node.
+
+.Adding an Interface to the node definition
+image:../images/provisioning/00009.jpeg[]
+
+Enter the IP address for this interface entity, a description, and specify the Primary attribute as `P` (Primary), `S` (Secondary), `N` (Not collected), or `C` (Collected) and click the save button.
+Now the node entity has an interface for which services can be defined for which the Web-UI now presents the _Add Service_ link.
+Add two services (ICMP, SNMP) via this link.
+
+.A complete node definition with all _required_ elements defined.
+image:../images/provisioning/00007.jpeg[]
+
+Now the node entity definition contains all the _required_ elements necessary for importing this requisition into {opennms-product-name}.
+At this point, all the interfaces that are required for the node should be added.
+For example, NAT interfaces should be specified there are services that they provide because they will not be discovered during the Scan Phase.
+
+Two more node definitions will be added for the benefit of this example.
+
+.The completed requisition for the example Bronze Provisioning Group
+image:../images/provisioning/00021.jpeg[]
+
+This set of nodes represents an import requisition for the _Bronze_ provisioning group.
+As this requisition is being edited via the WebUI, changes are being persisted into the {opennms-product-name} configuration directory '$OPENNMS_etc/imports/' pending as an XML file having the name `bronze.xml`.
+
+NOTE: The name of the XML file containing the import requisition is the same as the provisioning group name.
+Therefore naming your provisioning group without the use of spaces makes them easier to manage on the file system.
+
+Click the _Done_ button to return to the _Provisioning Groups_ list screen.
+The details of the “Bronze” group now indicates that there are 3 nodes in the requisition and that there are no nodes in the DB from this group (a.k.a. foreign source).
+Additionally, you can see that time the requisition was last modified and the time it last imported are given (the time stamps are stored as attributes inside the requisition and are not the file system time stamps).
+These details are indicative of how well the DB represents what is in the requisition.
+
+image:../images/provisioning/00013.jpeg[]
+
+NOTE: You can tell that this is a pending requisition for 2 reasons: 1) there are 3 nodes defined and 0 nodes in the DB, 2) the requisition has been modified since the last import (in this case _never_).
+
+===== Import the Nodes
+
+In this example, you see that there are 3 nodes in the pending requisition and 0 in the DB.
+Click the _Import_ button to submit the requisition to the provisioning system (what actually happens is that the Web-UI sends an event to the Provisioner telling it to begin the Import Phase for this group).
+
+NOTE: Do not refresh this page to check the values of these details.
+To refresh the details to verify the import, click the _Provisioning Groups_ bread crumb item.
+
+You should be able to immediately verify the importation of this provisioning group because the import happens very quickly.
+Provisiond has several threads ready for processing the import operations of the nodes defined in this requisition.
+
+A few SNMP packets are sent and received to get the SNMP details of the node and the interfaces defined in the requisition.
+Upon receipt of these packets (or not) each node is inserted as a DB transaction.
+
+.The nodes are now added to {opennms-product-name} and are under management.
+image:../images/provisioning/000014.png[]
+
+Following the import of a node with thousands of interfaces, you will be able to refresh the Interface table browser on the Node page and see that interfaces and services are being discovered and added in the background.
+This is the discovery component of directed discovery.
+
+.Adding a Node
+
+To direct that another node be added from a foreign source (in this example the Bronze Provisioning Group) simply add a new node definition and re-import.
+It is important to remember that all the node definitions will be re-imported and the existing managed nodes will be updated, if necessary.
+
+===== Changing a Node
+
+To direct changes to an existing node, simply add, change, or delete elements or attributes of the node definition and re- import.
+This is a great feature of having directed specific elements of a node in the requisition because that attributes will simply be changed.
+For example, to change the IP address of the Primary SNMP interface for the node, _barbrady.opennms.org_, just change the requisition and re-import.
+
+Each element in the Web-UI has an associated Edit icon
+Click this icon to change the IP address for barbrady.opennms.org, click save, and then Click the Done button.
+
+.Changing the IP address of _barbrady.opennms.org_ from 10.1.1.2 to 192.168.1.1
+image:../images/provisioning/00027.jpeg[]
+
+The Web-UI will return you to the _Provisioning Groups_ screen where you will see that there are the time stamp showing that the requisition’s last modification is more recent that the last import time.
+
+.The Provisioning Group must be re-imported
+image:../images/provisioning/000012.png[]
+
+This provides an indication that the group must be re-imported for the changes made to the requisition to take effect.
+The IP Interface will be simply updated and all the required events (messages) will be sent to communicate this change within {opennms-product-name}.
+
+.The IP interface for barbrady.opennms.org is immediately updated
+image:../images/provisioning/000008.png[]
+
+===== Deleting a Node
+
+_Barbrady_ has not been behaving, as one might expect, so it is time to remove him from the system.
+Edit the provisioning group, click the delete button next to the node _barbrady.opennms.org_, click the _Done_ button.
+
+.Bronze Provisioning Group definition indicates a node has been removed and requires an import to delete the node entity from the {opennms-product-name} system
+image:../images/provisioning/000010.png[]
+
+Click the Import button for the Bronze group and the Barbrady node and its interfaces, services, and any other related data will be immediately deleted from the {opennms-product-name} system.
+All the required Events (messages) will be sent by Provisiond to provide indication to the {opennms-product-name} system that the node Barbrady has been deleted.
+
+.Barbrady has been deleted
+image:../images/provisioning/000011.png[]
+
+===== Deleting all the Nodes
+
+There is a convenient way to delete all the nodes that have been provided from a specific foreign source.
+From the main _Admin/Provisioning Groups_ screen in the Web-UI, click the _Delete Nodes_ button.
+This button deletes all the nodes defined in the Bronze requisition.
+It is very important to note that once this is done, it cannot be undone!
+Well it can’t be undone from the Web-UI and can only be undone if you’ve been good about keeping a backup copy of your '$OPENMS_ETC/' directory tree.
+If you’ve made a mistake, before you re-import the requisition, restore the `Bronze.xml` requisition from your backup copy to the '$OPENNMS_ETC/imports' directory.
+
+.All node definitions have been removed from the Bronze requisition. The Web-UI indicates an import is now required to remove them from {opennms-product-name}.
+image:../images/provisioning/000019.png[]
+
+Clicking the _Import_ button will cause the _Audit Phase_ of _Provisiond_ to determine that all the nodes from the _Bronze_ group (foreign source) should be deleted from the DB and will create _Delete_ operations.
+At this point, if you are satisfied that the nodes have been deleted and that you will no longer require nodes to be defined in this Group, you will see that the _Delete Nodes_ button has now changed to the _Delete Group_ button.
+The _Delete Group_ button is displayed when there are no nodes entities from that group (foreign source) in {opennms-product-name}.
+
+When no node entities from the group exist in {opennms-product-name}, then the _Delete Group_ button is displayed.
+
+==== Advanced Provisioning Example
+
+In the previous example, we provisioned 3 nodes and let _Provisiond_ complete all of its import phases using a default foreign source definition.
+Each Provisioning Group can have a separate foreign source definition that controls:
+
+* The rescan interval
+* The services to be detected
+* The policies to be applied
+
+This example will demonstrate how to create a foreign source definition and how it is used to control the behavior of Provisiond when importing a _Provisioning Group/foreign source requisition_.
+
+First let’s simply provision the node and let the default foreign source definition apply.
+
+.The node definition used for the Advanced Provisioning Example
+image:../images/provisioning/00025.jpeg[]
+
+Following the import, All the IP and SNMP interfaces, in addition to the interface specified in the requisition, have been discovered and added to the node entity.
+The default foreign source definition has no polices for controlling which interfaces that are discovered either get persisted or managed by {opennms-product-name}.
+
+image:../images/provisioning/000005.png[]
+
+.Logical and Physical interface and Service entities directed and discovered by Provisiond.
+image:../images/provisioning/000002.png[]
+
+image:../images/provisioning/000018.png[]
+
+===== Service Detection
+
+As IP interfaces are found during the node scan process, service detection tasks are scheduled for each IP interface.
+The service detections defined in the foreign source determines which services are to be detected and how (i.e. the values of the parameters that parameters control how the service is detected, port, timeout, etc.).
+
+====== Applying a New Foreign Source Definition
+
+This example node has been provisioned using the Default foreign source definition.
+By navigating to the Provisioning Groups screen in the {opennms-product-name} Web-UI and clicking the Edit Foreign Source link of a group, you can create a new foreign source definition that defines service detection and policies.
+The policies determine entity persistence and/or set attributes on the discovered entities that control {opennms-product-name} management behaviors.
+
+.When creating a new foreign source definition, the default definition is used as a template.
+image:../images/provisioning/000017.png[]
+
+In this UI, new Detectors can be added, changed, and removed.
+For this example, we will remove detection of all services accept ICMP and DNS, change the timeout of ICMP detection, and a new Service detection for {opennms-product-name} Web-UI.
+
+.Custom foreign source definition created for NMS Provisioning Group (foreign source).
+image:../images/provisioning/00022.jpeg[]
+
+Click the Done button and re-import the NMS Provisioning Group.
+During this and any subsequent re-imports or re- scans, the {opennms-product-name} detector will be active, and the detectors that have been removed will no longer test for the related services for the interfaces on nodes managed in the provisioning group (requisition), however, the currently detected services will not be removed.
+There are 2 ways to delete the previously detected services:
+
+. Delete the node in the provisioning group, re-import, define it again, and finally re-import again
+. Use the ReST API to delete unwanted services. Use this command to remove each unwanted service from each interface, iteratively:
+
+ curl -X DELETE -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/nodes/6/ipinterfaces/172.16.1.1/services/DNS
+
+TIP: There is a sneaky way to do #1.
+Edit the provisioning group and just change the foreign ID.
+That will make Provisiond think that a node was deleted and a new node was added in the same requisition!
+Use this hint with caution and an full understanding of the impact of deleting an existing node.
+
+====== Provisioning with Policies
+
+The Policy API in Provisiond allow you to control the persistence of discovered IP and SNMP Interface entities and Node Categories during the Scan phase.
+
+.Matching IP Interface Policy
+
+The Matching IP Interface policy controls whether discovered interfaces are to be persisted and if they are to be persisted, whether or not they will be forced to be Managed or Unmanaged.
+
+Continuing with this example Provisioning Group, we are going to define a few policies that:
+
+a. Prevent discovered 10 network addresses from being persisted
+b. Force 192.168 network addresses to be unmanaged
+
+From the foreign source definition screen, click the Add Policy button and the definition of a new policy will begin with a field for naming the policy and a drop down list of the currently installed policies.
+Name the policy _no10s_, make sure that the _Match IP Interface policy_ is specified in the class list and click the Save button.
+This action will automatically add all the parameters required for the policy.
+
+The two required parameters for this policy are action and matchBehavior.
+
+.The action parameter can be set to _DO_NOT_PERSIST_, _Manage_, or _UnManage_.
+image:../images/provisioning/00001.jpeg[]
+
+.Creating a policy to prevent persistence of 10 network IP interfaces.
+
+The _DO_NOT_PERSIST_ action does just what it indicates, it prevents discovered IP interface entities from being added to {opennms-product-name} when the _matchBehavior_ is satisfied.
+The Manage and UnManage values for this action allow the IP interface entity to be persisted by control whether or not that interface should be managed by {opennms-product-name}.
+
+The matchBehavior action is a boolean control that determines how the optional parameters will be evaluated.
+Setting this parameter’s value to _ALL_PARAMETERS_ causes _Provisiond_ to evaluate each optional parameter with boolean _AND_ logic and the value _ANY_PARAMETERS_ will cause _OR_ logic to be applied.
+
+Now we will add one of the optional parameters to filter the 10 network addresses.
+The Matching IP Interface policy supports two additional parameters, _hostName_ and _ipAddress_.
+Click the _Add Parameter_ link and choose _ipAddress_ as the _key_.
+The _value_ for either of the optional parameters can be an exact or regular expression match.
+As in most configurations in {opennms-product-name} where regular expression matching can be optionally applied, prefix the value with the `~` character.
+
+.Example Matching IP Interface Policy to not Persist 10 Network addresses
+image:../images/provisioning/00023.jpeg[]
+
+Any subsequent scan of the node or re-imports of NMS provisioning group will force this policy to be applied.
+IP Interface entities that already exist that match this policy will not be deleted.
+Existing interfaces can be deleted by recreating the node in the _Provisioning Groups_ screen (simply change the foreign ID and re-import the group) or by using the ReST API:
+
+ curl -X DELETE -H "Content-Type: application/xml" -u admin:admin http://localhost:8980/opennms/rest/nodes/6/ipinterfaces/10.1.1.1
+
+The next step in this example is to define a policy that sets discovered 192.168 network addresses to be unmanaged (not managed) in {opennms-product-name}.
+Again, click the Add Policy button and let’s call this policy _noMgt192168s_.
+Again, choose the Mach IP Interface policy and this time set the action to _UNMANAGE_.
+
+.Policy to not manage IP interfaces from 192.168 networks
+image:../images/provisioning/00015.jpeg[]
+
+NOTE: The _UNMANAGE_ behavior will be applied to existing interfaces.
+
+.Matching SNMP Interface Policy
+
+Like the Matching IP Interface Policy, this policy controls the whether discovered SNMP interface entities are to be persisted and whether or not {opennms-product-name} should collect performance metrics from the SNMP agent for Interface’s index (MIB2 IfIndex).
+
+In this example, we are going to create a policy that doesn’t persist interfaces that are _AAL5_ over _ATM_ or type _49_ (_ifType_).
+Following the same steps as when creating an IP Management Policy, edit the foreign source definition and create a new policy.
+Let’s call it: _noAAL5s_.
+We’ll use Match SNMP Interface class for each policy and add a parameter with _ifType_ as the key and _49_ as the value.
+
+.Matching SNMP Interface Policy example for Persistence and Data Collection
+image:../images/provisioning/00003.jpeg[]
+
+NOTE: At the appropriate time during the scanning phase, Provisiond will
+evaluate the policies in the foreign source definition and take
+appropriate action. If during the policy evaluation process any policy
+matches for a “DO_NOT_PERSIST” action, no further policy evaluations
+will happen for that particular entity (IP Interface, SNMP Interface).
+
+.Node Categorization Policy
+
+With this policy, nodes entities will automatically be assigned categories.
+The policy is defined in the same manner as the IP and SNMP interface polices.
+Click the Add Policy button and give the policy name, `cisco` and choose the _Set Node Category_ class.
+Edit the required _category_ key and set the value to `Cisco`.
+Add a policy parameter and choose the _sysObjectId_ key with a value `~^\.1\.3\.6\.1\.4\.1\.9\..*`.
+
+.Example: Node Category setting policy
+image:../images/provisioning/00020.jpeg[]
+
+===== New Import Capabilities
+
+Several new XML entities have been added to the import requisition since the introduction of the OpenNMS Importer service in version 1.6.
+So, in addition to provisioning the basic node, interface, service, and node categories, you can now also provision asset data.
+
+====== Provisiond Configuration
+
+The configuration of the Provisioning system has moved from a properties file (`model-importer.properties`) to an XML based configuration container.
+The configuration is now extensible to allow the definition of 0 or more import requisitions each with their own _Cron_ based schedule for automatic importing from various sources (intended for integration with external URL such as HTTP and this new DNS protocol handler.
+
+A default configuration is provided in the {opennms-product-name} `etc/` directory and is called: `provisiond-configuration.xml`.
+This default configuration has an example for scheduling an import from a DNS server running on the localhost requesting nodes from the zone, localhost and will be imported once per day at the stroke of midnight. Not very practical but is a good example.
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+    <provisiond-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/provisiond-configuration"
+        foreign-source-dir="/opt/opennms/etc/foreign-sources"
+        requistion-dir="/opt/opennms/etc/imports"
+        importThreads="8"
+        scanThreads="10"
+        rescanThreads="10"
+        writeThreads="8" >
+    <!--
+        http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger[http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger]
+        Field Name Allowed Values Allowed Special Characters
+        Seconds 0-59 , - * / Minutes 0-59 , - * / Hours 0-23 , - * /
+        Day-of-month1-31, - * ? / L W C Month1-12 or JAN-DEC, - * /
+        Day-of-Week1-7 or SUN-SAT, - * ? / L C # Year (Opt)empty, 1970-2099, - * /
+    -->
+
+    <requisition-def import-name="NMS"
+                     import-url-resource="file://opt/opennms/etc/imports/NMS.xml">
+        <cron-schedule>0 0 0 * * ? *</cron-schedule> <!-- daily, at midnight -->
+    </requisition-def>
+</provisiond-configuration>
+----
+
+.Configuration Reload
+
+Like many of the daemon configurations in the 1.7 branch, _Provisiond’s_ configuration is re-loadable without having to restart OpenNMS.
+Use the reloadDaemonConfig uei:
+
+ /opt/opennms/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig --parm 'daemonName Provisiond'
+
+This means that you don't have to restart {opennms-product-name} every time you update the configuration!
+
+====== Provisioning Asset Data
+
+The Provisioning Groups Web-UI had been updated to expose the ability to add Node Asset data in an import requisition.
+Click the _Add Node Asset_ link and you can select from a drop down list all the possible node asset attributes that can be defined.
+
+image:../images/provisioning/00024.jpeg[]
+
+After an import, you can navigate to the _Node Page_ and click the _Asset Info_ link and see the asset data that was just provided in the requisition.
+
+image:../images/provisioning/000004.png[]
+
+===== External Requisition Sources
+
+Because Provisiond takes a _URL_ as the location service for import requisitions, {opennms-product-name} can be easily extended to support sources in addition to the native URL handling provided by Java: _file://_, _http://_, and _https://_.
+When you configure _Provisiond_ to import requisitions on a schedule you specify using a _URL_ Resource.
+For requisitions created by the _Provisioning Groups_ WebUI, you can specify a file based URL.
+
+CAUTION: <need further documentation>
+
+====== Provisioning Nodes from DNS
+
+The new Provisioning service in {opennms-product-name} is continuously improving and adapting to the needs of the community.
+One of the most recent enhancements to the system is built upon the very flexible and extensible API of referencing an import requisition's location via a URL.
+Most commmonly, these URLs are files on the file system (i.e. `file:/opt/opennms/etc/imports/<my-provisioning-group.xml>`) as requisitions created by the Provisioning Groups UI. However, these same requistions for adding, updating, and deleting nodes (based on the original model importer) can also come from URLs specifying the HTTP protocol: http://myinventory.server.org/nodes.cgi)
+
+Now, using Java's extensible protocol handling specification, a new protocol handler was created so that a URL can be specified for requesting a Zone Transfer (_AXFR_) request from a DNS server.
+The _A records_ are recorded and used to build an import requisition.
+This is handy for organizations that use DNS (possibly coupled with an IP management tool) as the data base of record for nodes in the network.
+So, rather than ping sweeping the network or entering the nodes manually into {opennms-product-name} Provisioning UI, nodes can be managed via 1 or more DNS servers.
+The format of the URL for this new protocol handler is:
+
+ dns://<host>[:port]/<zone>[/<foreign-source>/][?expression=<regex>]
+
+.Simple Example
+
+ dns://my-dns-server/myzone.com
+
+This will import all _A records_ from the host _my-dns-server_ on port 53 (default port) from zone _myzone.com_ and since the foreign source (a.k.a. the provisioning group) is not specified it will default to the specified zone.
+
+.Using a Regular Expression Filter
+
+You can also specify a subset of the _A records_ from the zone transfer using a regular expression:
+
+ dns://my-dns-server/myzone.com/portland/?expression=^por-.*
+
+This will import all nodes from the same server and zone but will only manage the nodes in the zone matching the regular expression `^port-.*` and will and they will be assigned a unique foreign source (provisioning group) for managing these nodes as a subset of nodes from within the specified zone.
+
+.URL Encoding
+
+If your expression requires URL encoding (for example you need to use a `?` in the expression) it must be properly encoded.
+
+ dns://my-dns-server/myzone.com/portland/?expression=^por[0-9]%3F
+
+.DNS Setup
+
+Currently, the DNS server requires to be setup to allow a zone transfer from the {opennms-product-name} server.
+It is recommended that a secondary DNS server is running on {opennms-product-name} and that the {opennms-product-name} server be allowed to request a zone transfer.
+A quick way to test if zone transfers are working is:
+
+ dig -t AXFR @<dn5Server> <zone>

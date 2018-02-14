@@ -38,6 +38,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,14 +62,16 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
 
     private static final long serialVersionUID = 4307231598310473690L;
 
-    @XmlAttribute(name="name")
+    @XmlAttribute(name="name", required=true)
+    @NotNull
     private String m_name;
 
-    @XmlAttribute(name="class")
+    @XmlAttribute(name="class", required=true)
+    @NotNull
     private String m_pluginClass;
 
     @XmlElement(name="parameter")
-    private Set<PluginParameter> m_parameters = new LinkedHashSet<PluginParameter>();
+    private Set<PluginParameter> m_parameters = new LinkedHashSet<>();
 
     /**
      * Creates an empty plugin configuration.
@@ -219,7 +222,7 @@ public class PluginConfig implements Serializable, Comparable<PluginConfig> {
      * @return a {@link java.util.Set} object.
      */
     public Set<String> getAvailableParameterKeys() {
-        Set<String> keys = new TreeSet<String>();
+        Set<String> keys = new TreeSet<>();
         try {
             PluginWrapper pw = new PluginWrapper(m_pluginClass);
             keys = pw.getOptionalKeys();

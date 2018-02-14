@@ -37,9 +37,9 @@ import javax.sql.DataSource;
 /**
  * <p>Updater class.</p>
  *
- * @author brozow
- *
  * @deprecated Use DAO functions instead of raw JDBC calls
+ *
+ * @author brozow
  */
 public class Updater extends JDBCTemplate {
     

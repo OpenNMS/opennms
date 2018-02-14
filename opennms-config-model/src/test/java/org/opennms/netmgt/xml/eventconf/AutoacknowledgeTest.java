@@ -46,7 +46,7 @@ public class AutoacknowledgeTest extends XmlTestNoCastor<Autoacknowledge> {
 		Autoacknowledge autoacknowledge0 = new Autoacknowledge();
 		Autoacknowledge autoacknowledge1 = new Autoacknowledge();
 		autoacknowledge1.setContent("These are important data");
-		autoacknowledge1.setState("on");
+		autoacknowledge1.setState(StateType.ON);
 		return Arrays.asList(new Object[][] {
 				{autoacknowledge0,
 				"<autoacknowledge/>",

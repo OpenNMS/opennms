@@ -1,0 +1,54 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Event Forwarder
+
+The event forwarder listens for _all_ events on the internal event bus of {opennms-product-name}.
+Events from the bus are sent to a Camel processor, which can filter or transform these, before being sent to the AMQP endpoint.
+
+The event forwarder exposes the following properties via the `org.opennms.features.amqp.eventforwarder` pid:
+
+[options="header"]
+|===
+| Property      | Default                           | Description
+| connectionUrl | amqp://localhost:5672             | Used by the JmsConnectionFactory. See http://camel.apache.org/amqp.html[AMQP] for details.
+| username      | guest                             | Username
+| password      | guest                             | Password
+| destination   | amqp:topic:opennms-events         | Target queue or topic. See http://camel.apache.org/amqp.html[AMQP] for details.
+| processorName | default-event-forwarder-processor | Named `org.apache.camel.Processor` implementation used to filter and/or format the events.
+|===
+
+The default processor, the `default-event-forwarder-processor`, marshalls events to XML and does not perform any filtering.
+This means that when enabled, all events will be forwarded to the AMQP destination with XML strings as the message body.
+
+==== Setup
+
+Start by logging into a Karaf shell.
+
+Update the properties with your deployment specific values:
+
+[source]
+----
+config:edit org.opennms.features.amqp.eventforwarder
+config:property-set connectionUrl amqp://localhost:5672
+config:property-set destination amqp:topic:opennms-events
+config:property-set processorName default-event-forwarder-processor
+config:update
+----
+
+Install the feature:
+
+[source]
+----
+feature:install opennms-amqp-event-forwarder
+----
+
+==== Debugging
+
+You can get detailed information on the Camel route using:
+
+[source]
+----
+camel:route-info forwardEvent
+----

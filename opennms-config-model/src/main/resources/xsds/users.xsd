@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/users"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/users"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the users.xml configuration file. Version:
+    $Id$</documentation>
+  </annotation>
+
+  <element name="header">
+    <annotation>
+      <documentation>Header containing information about this configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="rev" type="string">
+          <annotation>
+            <documentation>Revision of this file.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="created" type="string">
+          <annotation>
+            <documentation>Creation time in the 'dow mon dd hh:mm:ss zzz yyyy'
+            format.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="1" minOccurs="1" name="mstation" type="string">
+          <annotation>
+            <documentation>Monitoring station? This is seemingly
+            unused.</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+  
+  <element name="userinfo">
+    <annotation>
+      <documentation>The top-level element of the users.xml configuration
+      file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0" ref="this:header"/>
+
+        <element maxOccurs="1" minOccurs="0" ref="this:users"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="users">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:user"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="password">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="salt" type="boolean" use="optional" default="false" />
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="user">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="user-id" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="full-name" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="user-comments" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" ref="this:password"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:contact"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="duty-schedule" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="role" type="string"/>
+
+        <element maxOccurs="1" minOccurs="0" name="tui-pin">
+          <simpleType>
+            <restriction base="string">
+              <pattern value="[0-9]+"/>
+            </restriction>
+          </simpleType>
+        </element>
+
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="contact">
+    <complexType>
+      <attribute name="type" use="required">
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(xmppAddress|email|pagerEmail|textPage|numericPage|snmpTrap|workPhone|homePhone|mobilePhone|microblog)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+
+      <attribute name="info" type="string"/>
+
+      <attribute name="serviceProvider" type="string"/>
+    </complexType>
+  </element>
+</schema>

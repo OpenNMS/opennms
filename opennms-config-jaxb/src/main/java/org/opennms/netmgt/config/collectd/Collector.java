@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.collectd;
 
 import java.io.Serializable;
@@ -71,7 +64,7 @@ public class Collector implements Serializable {
      * The parameters for performing data collection via this service
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Collector() {
         super();

@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
 public class InsServerListener extends InsServerAbstractListener {
 	private static final Logger LOG = LoggerFactory.getLogger(InsServerListener.class);
 	private ServerSocket m_listener;
-	private final Set<InsSession> m_activeSessions = new HashSet<InsSession>();
+	private final Set<InsSession> m_activeSessions = new HashSet<>();
 
 	/**
 	 * listens for incoming connection on defined port (default is 8154)

@@ -1,0 +1,234 @@
+#!/bin/sh -
+#
+# chkconfig:   345 99 01
+# description: Starts and stops the OpenNMS Minion distributed client
+# processname: java
+#
+### BEGIN INIT INFO
+# Provides:          minion
+# Required-Start:    $network $remote_fs
+# Required-Stop:     $network $remote_fs
+# Should-Start:      $local_fs
+# Should-Stop:       $local_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: OpenNMS Minion
+# Description:       Distributed client for OpenNMS
+### END INIT INFO
+
+ME="$0"
+
+NAME="minion"
+DESC="Minion"
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+MINION_HOME="@INSTPREFIX@"
+SYSCONFDIR="@SYSCONFDIR@"
+RUNAS=root
+STOP_RETRIES=10
+STOP_WAIT=5
+
+export NAME DESC PATH
+
+if [ -f /lib/lsb/init-functions ]; then
+	# shellcheck disable=SC1090,SC1091
+	. /lib/lsb/init-functions
+fi
+
+if [ -f /etc/rc.d/init.d/functions ]; then
+	# shellcheck disable=SC1090,SC1091
+	. /etc/rc.d/init.d/functions
+fi
+
+if [ -z "$JAVA_HOME" ]; then
+	JAVA_HOME="$("${MINION_HOME}/bin/find-java.sh" 1.8.0 1.8.9999)"
+fi
+
+if [ -r "${SYSCONFDIR}/minion" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "${SYSCONFDIR}/minion"
+fi
+
+if [ -r "${MINION_HOME}/minion.conf" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "${MINION_HOME}/minion.conf"
+fi
+
+if [ -r "${MINION_HOME}/etc/minion.conf" ]; then
+	# shellcheck disable=SC1090,SC1091
+	. "${MINION_HOME}/etc/minion.conf"
+fi
+
+validate_icmp() {
+	if [ "$RUNAS" != "root" ]; then
+		if [ "$(uname -s)" = "Linux" ]; then
+			# validate that we have permissions to ping as non-root
+			_group_range="$(sysctl net.ipv4.ping_group_range 2>/dev/null | cut -d= -f2 | sed -e 's,^ *,,' -e 's, *$,,' -e 's,\t, ,g')"
+			if [ -n "${_group_range}" ]; then
+				_group_range_start="$(echo "${_group_range}" | cut -d' ' -f1)"
+				_group_range_end="$(echo "${_group_range}" | cut -d' ' -f2)"
+				_minion_group="$(id -g minion)"
+				if [ -z "${_minion_group}" ]; then
+					>&2 printf 'ERROR: minion group does not exist!'
+					exit 6 # program is not configured
+				fi
+				if [ "${_minion_group}" -lt "${_group_range_start}" ]; then
+					>&2 printf 'ERROR: minion gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_minion_group}" "${_group_range_start}" "${_group_range_end}"
+					exit 4 # insufficient privilege
+				elif [ "${_minion_group}" -gt "${_group_range_end}" ]; then
+					>&2 printf 'ERROR: minion gid %d is not in the range of valid groups for ping (%d-%d)\n' "${_minion_group}" "${_group_range_start}" "${_group_range_end}"
+					exit 4 # insufficient privilege
+				fi
+			else
+				# shellcheck disable=SC2016
+				>&2 printf 'ERROR: `sysctl net.ipv4.ping_group_range` gave no output! Unable to validate non-root ping support.\n'
+			fi
+		fi
+	fi
+}
+
+# always dump heap if we OOM
+JAVA_OPTS="$JAVA_OPTS -XX:+HeapDumpOnOutOfMemoryError"
+
+# export any default configurable variables from sysconf
+export JAVA_HOME JAVA_MIN_MEM JAVA_MAX_MEM MAX_FD JAVA JAVA_DEBUG_OPTS JAVA_DEBUG_PORT JAVA_OPTS CLASSPATH KARAF_DEBUG LD_LIBRARY_PATH
+
+get_root_pid() {
+	ROOT_INSTANCE_PID=0
+	if [ -f "${MINION_HOME}/instances/instance.properties" ];
+	then
+		ROOT_INSTANCE_PID=$(sed -n -e '/item.0.pid/ s/.*\= *//p' "${MINION_HOME}/instances/instance.properties")
+	fi
+	echo "$ROOT_INSTANCE_PID"
+}
+
+is_running() {
+  PID=$(get_root_pid)
+  if [ "${PID}" -ne "0" ] && ps p "$PID" > /dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+stop_minion() {
+	"$MINION_HOME"/bin/stop >/dev/null
+}
+
+kill_minion() {
+	SIGNAL="$1"
+	if [ -z "$SIGNAL" ]; then
+		SIGNAL="-15"
+	fi
+	PID=$(get_root_pid)
+	if [ "$PID" -gt 0 ]; then
+		kill $SIGNAL "$PID"
+	fi
+}
+
+
+COMMAND="$1"
+
+if [ "$(id -n -u)" "!=" "${RUNAS}" ]; then
+	RUNUSER="$(which runuser 2>/dev/null)"
+	if [ -n "${RUNUSER}" ] && [ -x "${RUNUSER}" ]; then
+		exec "${RUNUSER}" -u "${RUNAS}" "${ME}" "$@"
+	else
+		exec /usr/bin/sudo -u "${RUNAS}" "${ME}" "$@"
+	fi
+fi
+
+case "$COMMAND" in
+
+	start)
+		if is_running; then
+			echo "$DESC is running."
+			exit 0
+		fi
+
+		validate_icmp
+		if [ ! -d "${MINION_HOME}/data/tmp" ]; then
+			mkdir -p "${MINION_HOME}/data/tmp"
+		fi
+		"$MINION_HOME"/bin/start
+		exit $?
+		;;
+
+	stop)
+		if is_running; then
+			printf "Stopping %s: " "$DESC"
+			STOP_ATTEMPTS=0
+			while [ $STOP_ATTEMPTS -lt $STOP_RETRIES ]; do
+				stop_minion
+				if is_running; then
+					STOP_ATTEMPTS="$((STOP_ATTEMPTS + 1))"
+					sleep $STOP_WAIT
+				else
+					echo "OK"
+					exit 0
+				fi
+			done
+			echo "FAILED"
+
+			printf "Killing %s: " "$DESC"
+			kill_minion
+			if is_running; then
+				echo "FAILED"
+			else
+				echo "OK"
+				exit 0
+			fi
+
+			printf "Force-killing %s: " "$DESC"
+			kill_minion -9
+			if is_running; then
+				echo "FAILED"
+				exit 1
+			fi
+			echo "OK"
+			exit 0
+		else
+			echo "$DESC is not running."
+			exit 0 # LSB specifies calling "stop" on a stopped service is still a success
+		fi
+		;;
+
+	restart)
+		$0 stop >/dev/null 2>&1
+		sleep 2
+		$0 start
+		exit $?
+		;;
+
+	try-restart)
+		if is_running; then
+			echo "$DESC is not running."
+			exit 0
+		else
+			$0 restart
+			exit $?
+		fi
+		;;
+
+
+	force-reload)
+		$0 try-restart
+		exit $?
+		;;
+
+	status)
+		"$MINION_HOME"/bin/status >/dev/null
+		RETVAL="$?"
+		if [ $RETVAL -eq 0 ]; then
+			echo "$DESC is running."
+			exit 0
+		else
+			echo "$DESC is stopped."
+			exit 3
+		fi
+		;;
+
+	*)
+		echo "Usage: $0 {start|stop|restart|try-restart|force-reload|status}" >&2
+		exit 1
+		;;
+esac

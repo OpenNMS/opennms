@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<jmx-datacollection-config rrdRepository="${install.share.dir}/rrd/snmp/">
+    <jmx-collection name="jmx-kafka">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <mbeans>
+
+            <mbean name="JVM Memory" objectname="java.lang:type=OperatingSystem">
+                <attrib name="FreePhysicalMemorySize" alias="FreeMemory" type="gauge"/>
+                <attrib name="TotalPhysicalMemorySize" alias="TotalMemory" type="gauge"/>
+                <attrib name="FreeSwapSpaceSize" alias="FreeSwapSpace" type="gauge"/>
+                <attrib name="TotalSwapSpaceSize" alias="TotalSwapSpace" type="gauge"/>
+            </mbean>
+            <mbean name="JVM Threading" objectname="java.lang:type=Threading">
+                <attrib name="ThreadCount" alias="ThreadCount" type="gauge"/>
+                <attrib name="PeakThreadCount" alias="PeakThreadCount" type="gauge"/>
+                <attrib name="DaemonThreadCount" alias="DaemonThreadCount" type="gauge"/>
+                <attrib name="CurrentThreadCpuTime" alias="CurThreadCpuTime" type="gauge"/>
+            </mbean>
+            <mbean name="JVM GarbageCollector:MarkSweepCompact" objectname="java.lang:type=GarbageCollector,name=MarkSweepCompact">
+                <attrib name="CollectionCount" alias="MSCCollCnt" type="counter"/>
+                <attrib name="CollectionTime" alias="MSCCollTime" type="counter"/>
+                <comp-attrib name="LastGcInfo" type="Composite" alias="MSCLastGcInfo">
+                    <comp-member name="GcThreadCount" type="gauge" alias="MSCGcThreadCnt"/>
+                    <comp-member name="duration" type="gauge" alias="MSCDuration"/>
+                    <comp-member name="endTime" type="gauge" alias="MSCEndTime"/>
+                </comp-attrib>
+            </mbean>
+
+
+            <!-- ================== -->
+            <!-- BrokerTopicMetrics -->
+            <!-- ================== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+
+            <mbean name="Messages In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec">
+                <attrib name="Count" alias="msgInPerSec" type="gauge"/>
+            </mbean>
+
+            <mbean name="Bytes In Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec">
+                <attrib name="Count" alias="bytesInPerSec" type="gauge"/>
+            </mbean>
+
+            <mbean name="Bytes Out Per Second" objectname="kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec">
+                <attrib name="Count" alias="bytesOutPerSec" type="gauge"/>
+            </mbean>
+
+
+            <!-- ============== -->
+            <!-- ReplicaManager -->
+            <!-- ============== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+            <mbean name="Under-Replicated Partitions" objectname="kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions">
+                <attrib name="Value" alias="underReplPart" type="gauge"/>
+            </mbean>
+
+            <mbean name="Partitions" objectname="kafka.server:type=ReplicaManager,name=PartitionCount">
+                <attrib name="Value" alias="partitions" type="gauge"/>
+            </mbean>
+
+            <mbean name="Leaders" objectname="kafka.server:type=ReplicaManager,name=LeaderCount">
+                <attrib name="Value" alias="leaders" type="gauge"/>
+            </mbean>
+
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+            <mbean name="In-Sync Replica Shrinks Per Second" objectname="kafka.server:type=ReplicaManager,name=IsrShrinksPerSec">
+                <attrib name="Count" alias="isrShrinksPerSec" type="gauge"/>
+            </mbean>
+
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+            <mbean name="In-Sync Replica Expands Per Second" objectname="kafka.server:type=ReplicaManager,name=IsrExpandsPerSec">
+                <attrib name="Count" alias="isrExpandsPerSec" type="gauge"/>
+            </mbean>
+
+
+            <!-- ===================== -->
+            <!-- ReplicaFetcherManager -->
+            <!-- ===================== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+
+            <mbean name="Maximum Lag Between Replicas" objectname="kafka.server:type=ReplicaFetcherManager,name=MaxLag,clientId=Replica">
+                <attrib name="Value" alias="replicaMaxLag" type="gauge"/>
+            </mbean>
+
+
+            <!-- =============== -->
+            <!-- KafkaController -->
+            <!-- =============== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+
+            <mbean name="Active Controllers" objectname="kafka.controller:type=KafkaController,name=ActiveControllerCount">
+                <attrib name="Value" alias="activeControllers" type="gauge"/>
+            </mbean>
+
+            <mbean name="Offline Partitions" objectname="kafka.controller:type=KafkaController,name=OfflinePartitionsCount">
+                <attrib name="Value" alias="offlinePartitions" type="gauge"/>
+            </mbean>
+
+
+            <!-- =============== -->
+            <!-- ControllerStats -->
+            <!-- =============== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+
+            <mbean name="Leader Election Rate and Time (ms)" objectname="kafka.controller:type=ControllerStats,name=LeaderElectionRateAndTimeMs">
+                <attrib name="Count" alias="leaderEps" type="gauge"/>
+            </mbean>
+
+            <mbean name="Unclean Leader Elections Per Second" objectname="kafka.controller:type=ControllerStats,name=UncleanLeaderElectionsPerSec">
+                <attrib name="Count" alias="uncleanLeaderEps" type="gauge"/>
+            </mbean>
+
+
+            <!-- ========================= -->
+            <!-- DelayedOperationPurgatory -->
+            <!-- ========================= -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+
+            <mbean name="Purgatory Size: Produce" objectname="kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Produce">
+                <attrib name="Value" alias="purgatoryProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Purgatory Size: Fetch" objectname="kafka.server:type=DelayedOperationPurgatory,name=PurgatorySize,delayedOperation=Fetch">
+                <attrib name="Value" alias="purgatoryFetch" type="gauge"/>
+            </mbean>
+
+
+            <!-- ============ -->
+            <!-- SocketServer -->
+            <!-- ============ -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+
+            <mbean name="Network Processor Average Idle Percentage" objectname="kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent">
+                <attrib name="Value" alias="netProcAvgIdle" type="gauge"/>
+            </mbean>
+
+
+            <!-- ======================= -->
+            <!-- KafkaRequestHandlerPool -->
+            <!-- ======================= -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+
+            <mbean name="Request Handler Average Idle Percentage" objectname="kafka.server:type=KafkaRequestHandlerPool,name=RequestHandlerAvgIdlePercent">
+                <attrib name="Value" alias="reqHandAvgIdle" type="gauge"/>
+            </mbean>
+
+
+            <!-- ============== -->
+            <!-- RequestMetrics -->
+            <!-- ============== -->
+            <!-- https://kafka.apache.org/090/ops.html -->
+            <!-- https://www.datadoghq.com/blog/monitoring-kafka-performance-metrics/ -->
+
+            <mbean name="Requests Per Second: Produce" objectname="kafka.network:type=RequestMetrics,name=RequestsPerSec,request=Produce">
+                <attrib name="Count" alias="reqSecProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Requests Per Second: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=RequestsPerSec,request=FetchConsumer">
+                <attrib name="Count" alias="reqSecConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Requests Per Second: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=RequestsPerSec,request=FetchFollower">
+                <attrib name="Count" alias="reqSecFollower" type="gauge"/>
+            </mbean>
+
+            <mbean name="Total Time: Produce" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce">
+                <attrib name="Count" alias="totalTimeProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Total Time: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchConsumer">
+                <attrib name="Count" alias="totalTimeConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Total Time: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=TotalTimeMs,request=FetchFollower">
+                <attrib name="Count" alias="totalTimeFollower" type="gauge"/>
+            </mbean>
+
+            <mbean name="Queue Time: Produce" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce">
+                <attrib name="Count" alias="queueTimeProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Queue Time: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchConsumer">
+                <attrib name="Count" alias="queueTimeConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Queue Time: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=FetchFollower">
+                <attrib name="Count" alias="queueTimeFollower" type="gauge"/>
+            </mbean>
+
+            <mbean name="Local Time: Produce" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=Produce">
+                <attrib name="Count" alias="localTimeProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Local Time: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchConsumer">
+                <attrib name="Count" alias="localTimeConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Local Time: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=LocalTimeMs,request=FetchFollower">
+                <attrib name="Count" alias="localTimeFollower" type="gauge"/>
+            </mbean>
+
+            <mbean name="Remote Time: Produce" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=Produce">
+                <attrib name="Count" alias="remoteTimeProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Remote Time: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchConsumer">
+                <attrib name="Count" alias="remoteTimeConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Remote Time: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=RemoteTimeMs,request=FetchFollower">
+                <attrib name="Count" alias="remoteTimeFollower" type="gauge"/>
+            </mbean>
+
+            <mbean name="Response Send Time: Produce" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=Produce">
+                <attrib name="Count" alias="sendTimeProduce" type="gauge"/>
+            </mbean>
+
+            <mbean name="Response Send Time: FetchConsumer" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchConsumer">
+                <attrib name="Count" alias="sendTimeConsumer" type="gauge"/>
+            </mbean>
+
+            <mbean name="Response Send Time: FetchFollower" objectname="kafka.network:type=RequestMetrics,name=ResponseSendTimeMs,request=FetchFollower">
+                <attrib name="Count" alias="sendTimeFollower" type="gauge"/>
+            </mbean>
+
+        </mbeans>
+
+    </jmx-collection>
+</jmx-datacollection-config>

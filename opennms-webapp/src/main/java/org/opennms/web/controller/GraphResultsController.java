@@ -35,10 +35,11 @@ import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.PrefabGraph;
-import org.opennms.web.graph.GraphResults;
-import org.opennms.web.graph.RelativeTimePeriod;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;
-import org.opennms.web.svclayer.GraphResultsService;
+import org.opennms.web.svclayer.api.GraphResultsService;
+import org.opennms.web.svclayer.model.GraphResults;
+import org.opennms.web.svclayer.model.RelativeTimePeriod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -62,7 +64,7 @@ import java.util.List;
  * @since 1.8.1
  */
 public class GraphResultsController extends AbstractController implements InitializingBean {
-    private static Logger logger = LoggerFactory.getLogger(GraphResultsController.class);
+    private static Logger LOG = LoggerFactory.getLogger(GraphResultsController.class);
     
     private GraphResultsService m_graphResultsService;
     
@@ -83,7 +85,7 @@ public class GraphResultsController extends AbstractController implements Initia
             }
         }
 
-        String[] resourceIds = request.getParameterValues("resourceId");
+        ResourceId[] resourceIds = Arrays.stream(request.getParameterValues("resourceId")).map(ResourceId::fromString).toArray(ResourceId[]::new);
         String[] reports = request.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
@@ -227,10 +229,14 @@ public class GraphResultsController extends AbstractController implements Initia
             reports = getSuggestedReports(resourceIds[0], matching);
         }
 
-        GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
-        
-        ModelAndView modelAndView = new ModelAndView("/graph/results", "results", model);
-
+        ModelAndView modelAndView = null;
+        try {
+            GraphResults model = m_graphResultsService.findResults(resourceIds, reports, startLong, endLong, relativeTime);
+            modelAndView = new ModelAndView("/graph/results", "results", model);
+        } catch (Exception e) {
+            LOG.warn("Can't get graph results", e);
+            modelAndView = new ModelAndView("/graph/results-error");
+        }
         modelAndView.addObject("loggedIn", request.getRemoteUser() != null);
 
         return modelAndView;
@@ -241,8 +247,8 @@ public class GraphResultsController extends AbstractController implements Initia
      *
      * @return an array of {@link java.lang.String} objects.
      */
-	public String[] getSuggestedReports(String resourceId, String matching) {
-		List<String> metricList = new ArrayList<String>();
+	public String[] getSuggestedReports(ResourceId resourceId, String matching) {
+		List<String> metricList = new ArrayList<>();
 		JexlEngine expressionParser = new JexlEngine();
 		try {
 		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
@@ -259,7 +265,7 @@ public class GraphResultsController extends AbstractController implements Initia
 		} catch (Exception e) {
 		}
 		if (!metricList.isEmpty()) {
-		    List<String> templates = new ArrayList<String>();
+		    List<String> templates = new ArrayList<>();
 		    for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceId)) {
 		        boolean found = false;
 		        for (String c : graph.getColumns()) {
@@ -282,7 +288,7 @@ public class GraphResultsController extends AbstractController implements Initia
     /**
      * <p>getGraphResultsService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     * @return a {@link org.opennms.web.svclayer.api.GraphResultsService} object.
      */
     public GraphResultsService getGraphResultsService() {
         return m_graphResultsService;
@@ -291,7 +297,7 @@ public class GraphResultsController extends AbstractController implements Initia
     /**
      * <p>setGraphResultsService</p>
      *
-     * @param graphResultsService a {@link org.opennms.web.svclayer.GraphResultsService} object.
+     * @param graphResultsService a {@link org.opennms.web.svclayer.api.GraphResultsService} object.
      */
     public void setGraphResultsService(GraphResultsService graphResultsService) {
         m_graphResultsService = graphResultsService;

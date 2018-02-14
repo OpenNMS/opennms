@@ -64,7 +64,9 @@ public class MockProxy implements CommandResponder {
     private MockAgent m_agent;
 
     public MockProxy(int port) throws IOException {
-        m_transport = new DefaultUdpTransportMapping(new UdpAddress(InetAddress.getLocalHost(), port));
+        // Set socket option SO_REUSEADDR so that we can bind to the port even if it
+        // has recently been closed by passing 'true' as the second argument here.
+        m_transport = new DefaultUdpTransportMapping(new UdpAddress(InetAddress.getLocalHost(), port), true);
         
         m_snmp = new Snmp(m_transport);
         

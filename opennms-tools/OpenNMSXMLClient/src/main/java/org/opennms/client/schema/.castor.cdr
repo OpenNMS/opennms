@@ -1,0 +1,7 @@
+#Mon Mar 20 15:33:46 EDT 2017
+org.opennms.client.schema.ModelImport=org.opennms.client.schema.descriptors.ModelImportDescriptor
+org.opennms.client.schema.MonitoredService=org.opennms.client.schema.descriptors.MonitoredServiceDescriptor
+org.opennms.client.schema.Category=org.opennms.client.schema.descriptors.CategoryDescriptor
+org.opennms.client.schema.Interface=org.opennms.client.schema.descriptors.InterfaceDescriptor
+org.opennms.client.schema.Asset=org.opennms.client.schema.descriptors.AssetDescriptor
+org.opennms.client.schema.Node=org.opennms.client.schema.descriptors.NodeDescriptor

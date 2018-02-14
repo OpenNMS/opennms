@@ -50,11 +50,18 @@ import org.opennms.netmgt.rrd.model.AbstractRRD;
 public class RRDv1 extends AbstractRRD {
 
     /** The RRAs. */
-    public List<RRA> rras = new ArrayList<RRA>();
+    public List<RRA> rras = new ArrayList<>();
 
     /** The data sources. */
-    public List<DS> dataSources = new ArrayList<DS>();
+    public List<DS> dataSources = new ArrayList<>();
 
+    /**
+     * Instantiates a new RRDv1.
+     */
+    public RRDv1() {
+        super();
+        setVersion("0001");
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.rrd.model.AbstractRRD#getRras()

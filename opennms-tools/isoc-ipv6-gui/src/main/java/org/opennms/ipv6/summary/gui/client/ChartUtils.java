@@ -102,7 +102,7 @@ public abstract class ChartUtils {
     }
 
     public static List<String> convertJSONToLocationList(String jsonString) {
-        List<String> locs = new ArrayList<String>();
+        List<String> locs = new ArrayList<>();
         JSONObject locationList = JSONParser.parseStrict(jsonString).isObject();
          
         if(locationList.get("locations").isArray() != null) {
@@ -123,7 +123,7 @@ public abstract class ChartUtils {
     }
 
     public static List<String> convertJSONToParticipants(String jsonString) {
-        List<String> locs = new ArrayList<String>();
+        List<String> locs = new ArrayList<>();
         
         JSONObject participantList = JSONParser.parseStrict(jsonString).isObject();
          
@@ -146,7 +146,7 @@ public abstract class ChartUtils {
 
     private static List<String> parseJSONArrayToList(JSONArray participants) {
         if(participants != null) {
-            List<String> locs = new ArrayList<String>();
+            List<String> locs = new ArrayList<>();
             for(int i = 0; i < participants.size(); i++) {
                 String value = participants.get(i).isObject().get("value").isString().stringValue();
                 locs.add(value);

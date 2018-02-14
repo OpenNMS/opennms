@@ -54,8 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockEventd.xml"
+        "classpath:/META-INF/opennms/applicationContext-mockDao.xml"
 })
 @JUnitConfigurationEnvironment
 public class InterfacePolicyTest implements InitializingBean {
@@ -94,8 +93,8 @@ public class InterfacePolicyTest implements InitializingBean {
         p.setMatchBehavior("NO_PARAMETERS");
         p.setIpAddress("~^10\\..*$");
 
-        final List<OnmsIpInterface> populatedInterfaces = new ArrayList<OnmsIpInterface>();
-        final List<OnmsIpInterface> matchedInterfaces = new ArrayList<OnmsIpInterface>();
+        final List<OnmsIpInterface> populatedInterfaces = new ArrayList<>();
+        final List<OnmsIpInterface> matchedInterfaces = new ArrayList<>();
         
         for (final OnmsIpInterface iface : m_interfaces) {
             System.err.println(iface);

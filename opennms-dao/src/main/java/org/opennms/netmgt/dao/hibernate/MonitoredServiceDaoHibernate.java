@@ -36,17 +36,21 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.filter.FilterDaoFactory;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.springframework.beans.factory.annotation.Autowired;
 /**
  * <p>MonitoredServiceDaoHibernate class.</p>
  *
  * @author david
  */
 public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonitoredService, Integer>  implements MonitoredServiceDao {
+
+    @Autowired
+    private FilterDao m_filterDao;
 
     /**
      * <p>Constructor for MonitoredServiceDaoHibernate.</p>
@@ -96,11 +100,11 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     /** {@inheritDoc} */
     @Override
     public List<OnmsMonitoredService> findMatchingServices(ServiceSelector selector) {
-        FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
-        Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(FilterDaoFactory.getInstance().getActiveIPAddressList(selector.getFilterRule()));
+        m_filterDao.flushActiveIpAddressListCache();
+        Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getActiveIPAddressList(selector.getFilterRule()));
         Set<String> matchingSvcs = new HashSet<String>(selector.getServiceNames());
         
-        List<OnmsMonitoredService> matchingServices = new LinkedList<OnmsMonitoredService>();
+        List<OnmsMonitoredService> matchingServices = new LinkedList<>();
         Collection<OnmsMonitoredService> services = findActive();
         for (OnmsMonitoredService svc : services) {
             if ((matchingSvcs.contains(svc.getServiceName()) || matchingSvcs.isEmpty()) &&
@@ -128,6 +132,15 @@ public class MonitoredServiceDaoHibernate extends AbstractDaoHibernate<OnmsMonit
     @Override
     public Set<OnmsMonitoredService> findByApplication(OnmsApplication application) {
         return application.getMonitoredServices();
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsMonitoredService> findAllServices() {
+        return find("select distinct svc from OnmsMonitoredService as svc " +
+                "left join fetch svc.serviceType " +
+                "left join fetch svc.ipInterface as ip " +
+                "left join fetch ip.node as node");
     }
 
 }

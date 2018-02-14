@@ -67,12 +67,6 @@
         catch( java.io.IOException e ) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
         }
-        catch( org.exolab.castor.xml.MarshalException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }
-        catch( org.exolab.castor.xml.ValidationException e ) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        }        
     }
 %>
 
@@ -106,7 +100,7 @@
     String timelineHeaderUrl = "/opennms/rest/timeline/header/" + timelineStart + "/" + timelineEnd + "/";
     String timelineEmptyUrl = "/opennms/rest/timeline/empty/" + timelineStart + "/" + timelineEnd + "/";
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
 <div id="availability-box" class="panel panel-default">
@@ -147,7 +141,7 @@
       String serviceClass;
 
       if( service.isManaged() ) {
-        svcValue = this.model.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
+        svcValue = CategoryModel.getServiceAvailability(nodeId, ipAddr, service.getServiceId());
         serviceClass = CategoryUtil.getCategoryClass(this.normalThreshold, this.warningThreshold, svcValue);
       } else {
         serviceClass = "Indeterminate";
@@ -173,4 +167,6 @@
 </table>
 </div>
 
-<script type="text/javascript" src="js/timeline-resize.js"></script>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="timeline-resize" />
+</jsp:include>

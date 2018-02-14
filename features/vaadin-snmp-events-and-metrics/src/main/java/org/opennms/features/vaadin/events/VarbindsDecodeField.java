@@ -79,10 +79,10 @@ public class VarbindsDecodeField extends CustomField<List<Varbindsdecode>> imple
     public VarbindsDecodeField(String caption) {
         setCaption(caption);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"parmid", "decodeCollection"});
+        table.setVisibleColumns(new Object[]{"parmid", "decodes"});
         table.setColumnHeader("parmid", "Parameter ID");
-        table.setColumnHeader("decodeCollection", "Decode Values");
-        table.setColumnExpandRatio("decodeCollection", 1);
+        table.setColumnHeader("decodes", "Decode Values");
+        table.setColumnExpandRatio("decodes", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
@@ -90,7 +90,7 @@ public class VarbindsDecodeField extends CustomField<List<Varbindsdecode>> imple
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("decodeCollection")) {
+                if (propertyId.equals("decodes")) {
                     final TextField field = new TextField();
                     field.setConverter(new DecodeListConverter());
                     return field;

@@ -29,16 +29,16 @@
 
 --%>
 
+<%@page language="java"
+    contentType="text/html"
+    session="true"
+%>
 <%@page import="java.util.Collection"%>
 <%@page import="org.opennms.web.navigate.PageNavEntry"%>
 <%@page import="org.springframework.web.context.support.WebApplicationContextUtils"%>
 <%@page import="org.opennms.core.soa.ServiceRegistry"%>
 <%@page import="org.springframework.web.context.WebApplicationContext"%>
-<%@page language="java"
-        contentType="text/html"
-        session="true"
-        import="org.opennms.netmgt.config.NotifdConfigFactory"
-        %>
+<%@page import="org.opennms.netmgt.config.NotifdConfigFactory"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
     <jsp:param name="title" value="Admin" />
@@ -131,33 +131,42 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
+            <li><a href="admin/sysconfig.jsp">System Configuration</a></li>
             <li><a href="admin/userGroupView/index.jsp">Configure Users, Groups and On-Call Roles</a></li>
-            <li><a href="admin/sysconfig.jsp">System Information</a></li>
-            <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Operations</h3>
+        <h3 class="panel-title">Provisioning</h3>
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-            <li><a href="admin/discovery/modifyDiscoveryConfig">Configure Discovery</a></li>
-            <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP</a></li>
-            <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
-            <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
-            <li><a href="admin/thresholds/index.htm">Manage Thresholds</a></li>
+            <li><a href="admin/ng-requisitions/index.jsp">Manage Provisioning Requisitions</a></li>
+            <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
+            <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
+            <li><a href="admin/discovery/edit-config.jsp">Configure Discovery</a></li>
+            <li><a href="admin/discovery/edit-scan.jsp">Run Single Discovery Scan</a></li>
+            <li><a href="javascript:snmpConfigPost()">Configure SNMP Community Names by IP Address</a></li>
+            <li><a href="javascript:addInterfacePost()">Manually Add an Interface</a></li>
+            <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+        </ul>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Event Management</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+            <li><a href="admin/sendevent.htm">Manually Send an Event</a></li>
             <!-- Secret function 
                     <a href="admin/eventconf/list.jsp">Configure Events</a> 
             -->
-            <li><a href="admin/sendevent.jsp">Send Event</a></li>
             <li><a href="admin/notification/index.jsp">Configure Notifications</a></li>
-            <li><a href="admin/sched-outages/index.jsp">Scheduled Outages</a></li>
-            <li><a href="admin/manageEvents.jsp">Manage Events Configuration</a></li>
-            <li><a href="admin/manageSnmpCollections.jsp">Manage SNMP Collections and Data Collection Groups</a></li>
-            <%=getAdminPageNavEntries("operations")%>
+            <li><a href="admin/manageEvents.jsp">Customize Event Configurations</a></li>
         </ul>
       </div> <!-- panel-body -->
       <div class="panel-footer text-right">
@@ -180,15 +189,26 @@
 
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Node Provisioning</h3>
+        <h3 class="panel-title">Service Monitoring</h3>
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
-            <li><a href="javascript:addInterfacePost()">Add Interface for Scanning</a></li>
-            <li><a href="admin/provisioningGroups.htm">Manage Provisioning Requisitions</a></li>
-            <li><a href="admin/asset/index.jsp">Import and Export Asset Information</a></li>
-            <li><a href="admin/categories.htm">Manage Surveillance Categories</a></li>
-            <li><a href="javascript:deletePost()">Delete Nodes</a></li>
+            <li><a href="admin/sched-outages/index.jsp">Configure Scheduled Outages</a></li>
+            <li><a href="javascript:submitPost()">Manage and Unmanage Interfaces and Services</a></li>
+            <%=getAdminPageNavEntries("service-monitoring")%>
+        </ul>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Performance Measurement</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+            <li><a href="admin/manageSnmpCollections.jsp">Configure SNMP Collections and Data Collection Groups</a></li>
+            <li><a href="javascript:snmpManagePost()">Configure SNMP Data Collection per Interface</a></li>
+            <li><a href="admin/thresholds/index.htm">Configure Thresholds</a></li>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
@@ -199,11 +219,26 @@
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
+            <li><a href="locations/index.jsp">Manage Monitoring Locations</a></li>
             <li><a href="admin/applications.htm">Manage Applications</a></li>
             <li><a href="distributed/locationMonitorList.htm">Manage Remote Pollers</a></li>
+            <li><a href="minion/index.jsp">Manage Minions</a></li>
         </ul>
       </div> <!-- panel-body -->
     </div> <!-- panel -->
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Additional Tools</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+            <li><a href="admin/nodemanagement/instrumentationLogReader.jsp">Instrumentation Log Reader</a></li>
+            <%=getAdminPageNavEntries("operations")%>
+        </ul>
+      </div> <!-- panel-body -->
+    </div> <!-- panel -->
+
   </div> <!-- column -->
 
   <div class="col-md-6">
@@ -214,30 +249,74 @@
       <div class="panel-body">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
+
         <p><b>Configure Users, Groups and On-Call Roles</b>: Add, modify or delete
             existing users. Groups contain users. Roles are built from groups and provide
             a mechanism to implement calendar-based on-call staff rotations.
             (User: A person, Group: Administrators, Role: On Duty Staff)
         </p>
 
-        <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.
-            This is a system-wide setting. As long as this is <em>Off</em> OpenNMS will create no notifications.
-            The current status of notifications is also reflected in the upper right-hand
-            corner of every OpenNMS screen with a banner denoting either <em>Notices On</em> or <em>Notices
-                Off</em>.
+
+        <p><b>Manage Provisioning Requisitions</b>: Add nodes, interfaces and services to
+            OpenNMS based partly or completely on the contents of a Requisition rather than 
+            strictly by having OpenNMS discover the network.
+        </p>
+
+        <p><b>Import and Export Asset Information</b>: Export and import data into OpenNMS's asset inventory.             
+            The comma-delimited file format is supported by most spreadsheet and
+            database applications.
+        </p>
+
+        <p><b>Manage Surveillance Categories</b>: Manage surveillance categories (also known
+            as node categories) and edit the list of nodes belonging to each category.
         </p>
 
         <p><b>Configure Discovery</b>: Set up the IP addresses (individual addresses and/or ranges) that you want OpenNMS
-            to ping periodically in order to detect new nodes.
+            to scan periodically in order to detect new nodes.
         </p>
 
-        <P><B>Configure SNMP Community Names by IP</b>:Configure the Community String used in SNMP Data Collection and other SNMP operations. OpenNMS is shipped with a community string of "public".
+        <p><b>Manually Add an Interface</b>: Trigger a scan of an IPv4 or IPv6 interface. If the 
+            IP address of the interface is contained in the IP address tables of an existing node, 
+            the interface will be added into the node. Otherwise, a new node will be created.
+        </p>
+
+        <p><b>Delete Nodes</b>: Permanently delete nodes from the database.
+        </p>
+
+
+        <p><b>Manually Send an Event</b>: Allows you to build a specific event and send it to the system.</p>
+
+        <p><b>Configure Notifications</b>: Create and manage notification escalation
+            plans, called <em>destination paths</em>. A destination path is associated to
+            an OpenNMS event.  Each path can have any arbitrary number of escalations or 
+            targets (users, groups, on-call roles) and can send notices through email, pagers, et cetera.  
+            Each destination path can be triggered by any number of OpenNMS events and may 
+            further be associated with specific interfaces or services.
+        </p>
+
+        <p><b>Customize Event Configurations</b>: Add and edit configuration files for events definitions.</p>
+
+        <p><b>Notification Status</b>: Notifications will be sent out only if this setting is switched to <em>On</em>.
+            This is a system-wide setting. As long as this is <em>Off</em>, OpenNMS will not create notifications.
+            The current status of notifications is reflected by the bell icon in the upper right-hand
+            corner of every OpenNMS screen.
+        </p>
+
+
+        <!--
+                <p><b>Configure Pollers</b> provides an easy way to modify the polling status of 
+                    standard services.  It also enables the user to add and delete custom services.
+                </p>
+        -->        
+
+        <p><b>Configure Scheduled Outages</b>: Add and edit scheduled 
+            outages. You can pause notifications, polling, thresholding and data collection 
+            (or any combination of the four) for any interface/node for any time.  
+        </p>
+
+        <P><B>Configure SNMP Community Names by IP Address</b>: Configure the Community String used in SNMP Data Collection and other SNMP operations. OpenNMS is shipped with a community string of "public".
             If you have set a different <em>read</em> community on your devices you must put it here to be able to collect data from
             these devices.
-        </P>           
-
-        <P><B>Configure SNMP Data Collection per Interface</b>: This interface will allow you
-            to configure which IP and non-IP interfaces are used in SNMP Data Collection.
         </P>
 
         <p><b>Manage and Unmanage Interfaces and Services</b>: <em>Managing</em> an interface or service means that
@@ -248,64 +327,30 @@
         </p>
 
 
-        <p><b>Manage thresholds</b>: Allows you to configure (add/remove/modify) thresholds.</p>
-
-        <p><b>Send Event</b>: Allows you to build a specific event and send it to the system.</p>
-
-        <p><b>Configure Notifications</b>: Create and manage notification escalation
-            plans, called <em>destination paths</em>. A destination path is associated to
-            an OpenNMS event.  Each path can have any arbitrary number of escalations or 
-            targets (users, groups, on-call roles) and can send notices through email, pagers, et cetera.  
-            Each destination path can be triggered by any number of OpenNMS events and may 
-            further be associated with specific interfaces or services.   
-        </p>
-
-
-        <p><b>Scheduled Outages</b>: Add and edit scheduled 
-            outages. You can pause notifications, polling, thresholding and data collection 
-            (or any combination of the four) for any interface/node for any time.  
-        </p>
-
-        <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
-            data collection groups for performance metrics.</p>
-
-        <p><b>Manage Events Configuration</b>: Add and edit configuration files for events definitions.</p>
-
         <p><b>Manage SNMP Collections and Data Collection Groups</b>: Manage SNMP Collections and the content
             of the files for data collection groups.</p>
 
-        <p><b>Add Interface for Scanning</b>: Trigger a scan of an IPv4 or IPv6 interface. If the 
-            IP address of the interface is contained in the IP address tables of an existing node, 
-            the interface will be added into the node. Otherwise, a new node will be created.
-        </p>
+        <P><B>Configure SNMP Data Collection per Interface</b>: This interface will allow you
+            to configure which IP and non-IP interfaces are used in SNMP Data Collection.
+        </P>
 
-        <p><b>Manage Provisioning Requisitions</b>: Add nodes, interfaces and services to
-            OpenNMS based partly or completely on the contents of a Requisition (formerly known
-            as a Provisioning Group) rather than strictly by having OpenNMS discover the network.
-        </p>
+        <p><b>Configure thresholds</b>: Allows you to add, remove, or modify thresholds.</p>
 
-        <p><b>Import and Export Asset Information</b>: Export and import data into OpenNMS's asset inventory.             
-            The comma-delimited file format is supported by most spreadsheet and
-            database applications. Details for using the Import and Export
-            functionalities can be found through this link as well.
-        </p>
-
-        <p><b>Manage Surveillance Categories</b>: Manage surveillance categories (also known
-            as node categories) and edit the list of nodes belonging to each category.
-        </p>
-
-        <p><b>Delete Nodes</b>: Permanently delete nodes from the database.
-        </p>
-        <!--
-                <p><b>Configure Pollers</b> provides an easy way to modify the polling status of 
-                    standard services.  It also enables the user to add and delete custom services.
-                </p>
-        -->        
 
         <p><b>Manage Applications</b> and <b>Manage Remote Pollers</b>: Configure and administer 
         the operation of remote pollers that report back to this OpenNMS server to provide distributed
         status information.
         </p>
+
+        <p><b>Manage Minions</b>: Configure and administer OpenNMS Minion servers that provide distributed 
+        data collection for this OpenNMS server.
+        </p>
+
+        <p><b>SNMP MIB Compiler</b>: Compile MIBs in order to generate events definitions from traps or
+            data collection groups for performance metrics.</p>
+            
+        <p><b>OpenNMS Plugin Manager</b>: Manage optional OpenNMS OSGi plugins installed in local and remote Karaf Containers.</p>
+
       </div> <!-- panel-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

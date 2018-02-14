@@ -93,14 +93,15 @@ public class IsisCircTableTracker extends TableTracker {
 	    }
 	    
 	    public IsIsLink getIsisLink() {
-            LOG.info( "getIsisLink: row count: {}", getColumnCount());
-            IsIsLink link = new IsIsLink();
+	        LOG.debug( "getIsisLink: row count: {}", getColumnCount());
+                IsIsLink link = new IsIsLink();
     		link.setIsisCircIndex(getIsisCircIndex());
-            LOG.info( "getIsisLink: IS-IS Circ Index: {}",  link.getIsisCircIndex());
-    		link.setIsisCircIfIndex(getIsisCircIfIndex());
-            LOG.info( "getIsisLink: IS-IS Circ If Index: {}",  link.getIsisCircIfIndex());
-    		link.setIsisCircAdminState(IsisAdminState.get(getIsisCircAdminState()));
-            LOG.info( "getIsisLink: IS-IS Circ Admin State: {}",  IsisAdminState.getTypeString(getIsisCircAdminState()));
+                link.setIsisCircIfIndex(getIsisCircIfIndex());
+                link.setIsisCircAdminState(IsisAdminState.get(getIsisCircAdminState()));
+                LOG.debug( "getIsisLink:Circ Index: {}, IS-IS Circ If Index: {}, Circ Admin State: {}",
+                       link.getIsisCircIndex(),
+                       link.getIsisCircIfIndex(),
+                       IsisAdminState.getTypeString(getIsisCircAdminState()));
 	    	return link;
 	    }
     }        

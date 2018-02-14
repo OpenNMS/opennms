@@ -28,24 +28,32 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.jobs;
 
-import org.opennms.features.jmxconfiggenerator.Starter;
-import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UIHelper;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbeans;
-
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXServiceURL;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.management.JMException;
+
+import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxDatacollectionConfiggenerator;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
+import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
+import org.opennms.features.jmxconfiggenerator.log.Slf4jLogAdapter;
+import org.opennms.features.vaadin.jmxconfiggenerator.JmxConfigGeneratorUI;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.ServiceConfig;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfig;
+import org.opennms.netmgt.jmx.connection.JmxConnectionConfigBuilder;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
+import org.opennms.netmgt.jmx.connection.JmxServerConnectionWrapper;
+import org.opennms.netmgt.jmx.impl.connection.connectors.DefaultJmxConnector;
+import org.opennms.netmgt.vaadin.core.UIHelper;
 
 /**
  * Runnable to query the MBean server.
@@ -89,29 +97,41 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
     }
 
     @Override
-	public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
-        try {
-            JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator();
-            JMXServiceURL jmxServiceURL = jmxConfigGenerator.getJmxServiceURL(config.isJmxmp(), config.getHost(), config.getPort());
+    public JmxDatacollectionConfig execute() throws JobManager.TaskRunException {
+        final JmxConnectionConfig connectionConfig = new JmxConnectionConfigBuilder()
+                .withUrl(config.getConnection())
+                .withUsername(config.getUser())
+                .withPassword(config.getPassword())
+                .build();
 
-            try (JMXConnector connector = jmxConfigGenerator.getJmxConnector(config.getUser(), config.getPassword(), jmxServiceURL)) {
-                final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(connector.getMBeanServerConnection(), "anyservice", !config.isSkipDefaultVM(), config.isRunWritableMBeans(), Starter.loadInternalDictionary());
+
+        try (JmxServerConnectionWrapper connector = new DefaultJmxConnector().createConnection(connectionConfig)) {
+                final JmxDatacollectionConfiggenerator jmxConfigGenerator = new JmxDatacollectionConfiggenerator(new Slf4jLogAdapter(JmxDatacollectionConfiggenerator.class));
+                final JmxDatacollectionConfig generatedJmxConfigModel = jmxConfigGenerator.generateJmxConfigModel(
+                        connector.getMBeanServerConnection(),
+                        "anyservice",
+                        !config.isSkipDefaultVM(),
+                        config.isSkipNonNumber(),
+                        JmxHelper.loadInternalDictionary());
                 applyFilters(generatedJmxConfigModel);
                 return generatedJmxConfigModel;
-            } catch (IOException e) {
-                throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
+        } catch (IOException | MBeanServerQueryException | JMException | JmxServerConnectionException e) {
+            if (e instanceof UnknownHostException || e.getCause() instanceof UnknownHostException) {
+                throw new JobManager.TaskRunException(String.format("Unknown host: %s", config.getConnection()), e);
             }
-        } catch (MalformedURLException e) {
-            throw new JobManager.TaskRunException(
-                    String.format("Cannot create valid JMX Connection URL. Host = '%s', Port = '%s', use jmxmp = %s", config.getHost(), config.getPort(), config.isJmxmp()),
-                    e);
+            if (e instanceof MalformedURLException || e.getCause() instanceof MalformedURLException) {
+                throw new JobManager.TaskRunException(
+                        String.format("Cannot create valid JMX Connection URL. Connection: '%s'", config.getConnection()),
+                        e);
+            }
+            throw new JobManager.TaskRunException("Error while retrieving MBeans from server.", e);
         }
-	}
+    }
 
     @Override
     public void onSuccess(JmxDatacollectionConfig generatedJmxConfigModel) {
-        UIHelper.getCurrent().setRawModel(generatedJmxConfigModel);
-        UIHelper.getCurrent().updateView(UiState.MbeansView);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).setRawModel(generatedJmxConfigModel);
+        UIHelper.getCurrent(JmxConfigGeneratorUI.class).updateView(UiState.MbeansView);
     }
 
     @Override
@@ -135,15 +155,14 @@ public class DetectMBeansJob implements JobManager.Task<JmxDatacollectionConfig>
      * @param config The {@link JmxDatacollectionConfig} retrieved from the {@link javax.management.MBeanServerConnection}.
      */
     private void applyFilters(JmxDatacollectionConfig config) {
-        final Mbeans mbeans = config.getJmxCollection().get(0).getMbeans();
-        for (Mbean eachMbean : mbeans.getMbean()) {
+        for (Mbean eachMbean : config.getJmxCollectionList().get(0).getMbeans()) {
             applyFilters(eachMbean);
-            for (Attrib eachAttrib : eachMbean.getAttrib()) {
+            for (Attrib eachAttrib : eachMbean.getAttribList()) {
                 applyFilters(eachAttrib);
             }
-            for (CompAttrib eachCompAttrib : eachMbean.getCompAttrib()) {
+            for (CompAttrib eachCompAttrib : eachMbean.getCompAttribList()) {
                 applyFilters(eachCompAttrib);
-                for (CompMember eachCompMember : eachCompAttrib.getCompMember()) {
+                for (CompMember eachCompMember : eachCompAttrib.getCompMemberList()) {
                     applyFilters(eachCompMember);
                 }
             }

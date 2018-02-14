@@ -31,11 +31,15 @@
 
 <%@page language="java" contentType="text/html" session="true"
 	import="
+		java.net.InetAddress,
 		java.util.List,
-		org.opennms.netmgt.config.OpennmsServerConfigFactory,
-		org.opennms.netmgt.poller.PathOutageManagerJdbcImpl
-	"
+		org.opennms.core.utils.InetAddressUtils,
+		org.opennms.features.topology.link.Layout,
+		org.opennms.features.topology.link.TopologyLinkBuilder"
 %>
+<%@ page import="org.opennms.features.topology.link.TopologyProvider" %>
+<%@ page import="org.opennms.netmgt.config.OpennmsServerConfigFactory" %>
+<%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Path Outages" />
@@ -47,12 +51,13 @@
 <% OpennmsServerConfigFactory.init(); %>
 
 <%
-        List<String[]> testPaths = PathOutageManagerJdbcImpl.getInstance().getAllCriticalPaths();
-        String dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
-        String[] pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(dcpip, "ICMP");
+        List<String[]> testPaths = PathOutageManagerDaoImpl.getInstance().getAllCriticalPaths();
+        InetAddress dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+        String dcpipString = dcpip != null ? InetAddressUtils.toIpAddrString(dcpip) : null;
+        String[] pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(dcpipString, "ICMP");
 %>
-<% if (dcpip != null && !"".equals(dcpip)) { %>
-	<p>The default critical path is service ICMP on interface <%= dcpip %>.</p>
+<% if (dcpip != null) { %>
+	<p>The default critical path is service ICMP on interface <%= dcpipString %>.</p>
 <% } %>
 
 <div class="panel panel-default fix-subpixel">
@@ -66,22 +71,31 @@
 				<th>Critical Path IP</th>
 				<th>Critical Path Service</th>
 				<th>Number of Nodes</th>
+				<th>Actions</th>
 			</tr>
 		</thead>
 		<% for (String[] pth : testPaths) {
-			pthData = PathOutageManagerJdbcImpl.getInstance().getCriticalPathData(pth[0], pth[1]); %>
+			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
 		<tr>
 			<% if((pthData[0] == null) || (pthData[0].equals(""))) { %>
 			<td>(Interface not in database)</td>
 			<% } else if (pthData[0].indexOf("nodes have this IP") > -1) { %>
-			<td><a href="element/nodeList.htm?iplike=<%= pth[0] %>"><%= pthData[0] %></a></td>
+			<td><a href="element/nodeList.htm?iplike=<%= pth[1] %>"><%= pthData[0] %></a></td>
 			<% } else { %>
 			<td><a href="element/node.jsp?node=<%= pthData[1] %>"><%= pthData[0] %></a></td>
 			<% } %>
-			<td><%= pth[0] %></td>
-			<td class="severity-<%= pthData[3] %> bright"><%= pth[1] %></td>
-			<td><a
-				href="pathOutage/showNodes.jsp?critIp=<%= pth[0] %>&critSvc=<%= pth[1] %>"><%= pthData[2] %></a></td>
+			<td><%= pth[1] %></td>
+			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
+			<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
+			<%
+				final String topologyLink = new TopologyLinkBuilder()
+						.focus(pthData[1])
+						.szl(0)
+						.layout(Layout.HIERARCHY)
+						.provider(TopologyProvider.PATH_OUTAGE)
+						.getLink();
+			%>
+			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i>View in Topology</a></td>
 		</tr>
 		<% } %>
 	</table>

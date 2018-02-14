@@ -121,7 +121,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     /**
-     * <p>getInterfacesForNodes</p>
+     * TODO: This function should filter out deleted interfaces
      *
      * @return a {@link java.util.Map} object.
      */
@@ -131,7 +131,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all primary addresses first
         @SuppressWarnings("unchecked")
-        List<Object[]> l = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
+        List<Object[]> l = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary = 'P'");
         for (Object[] tuple : l) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];
@@ -140,7 +140,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
 
         // Add all non-primary addresses only if those addresses doesn't exist on the map.
         @SuppressWarnings("unchecked")
-        List<Object[]> s = getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
+        List<Object[]> s = (List<Object[]>)getHibernateTemplate().find("select distinct ipInterface.ipAddress, ipInterface.node.id from OnmsIpInterface as ipInterface where ipInterface.isSnmpPrimary != 'P'");
         for (Object[] tuple : s) {
             InetAddress ip = (InetAddress) tuple[0];
             Integer nodeId = (Integer) tuple[1];

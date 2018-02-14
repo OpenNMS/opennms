@@ -32,7 +32,7 @@ import java.io.IOException;
 
 import junit.framework.TestCase;
 
-import org.opennms.netmgt.dao.castor.InvocationAnticipator;
+import org.opennms.netmgt.dao.jaxb.InvocationAnticipator;
 import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigFile;
 import org.opennms.netmgt.dao.jaxb.collector.CollectdConfigVisitor;
 import org.springframework.core.io.ClassPathResource;
@@ -61,8 +61,8 @@ public class CollectdConfigFileTest extends TestCase {
         
         m_invocationAnticipator.anticipateCalls(1, "visitCollectdConfiguration");
         m_invocationAnticipator.anticipateCalls(1, "completeCollectdConfiguration");
-        m_invocationAnticipator.anticipateCalls(4, "visitCollectorCollection");
-        m_invocationAnticipator.anticipateCalls(4, "completeCollectorCollection");
+        m_invocationAnticipator.anticipateCalls(2, "visitCollectorCollection");
+        m_invocationAnticipator.anticipateCalls(2, "completeCollectorCollection");
         
         configFile.visit(m_visitor);
         

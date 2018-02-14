@@ -39,7 +39,6 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.IOUtils;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.api.reporting.ReportException;
 import org.opennms.api.reporting.ReportFormat;
 import org.opennms.api.reporting.ReportMode;
@@ -58,12 +57,6 @@ import org.opennms.reporting.core.svclayer.ReportWrapperService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * <p>DefaultReportWrapperService class.</p>
- *
- * @author ranger
- * @version $Id: $
- */
 public class DefaultReportWrapperService implements ReportWrapperService {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultReportWrapperService.class);
 
@@ -73,10 +66,10 @@ public class DefaultReportWrapperService implements ReportWrapperService {
 
     private static final String LOG4J_CATEGORY = "reports";
 
-    /**
-     * <p>Constructor for DefaultReportWrapperService.</p>
-     */
-    public DefaultReportWrapperService() {
+    /** {@inheritDoc} */
+    @Override
+    public List<ReportFormat> getFormats(String reportId) {
+        return getReportService(reportId).getFormats(reportId);
     }
 
     /** {@inheritDoc} */
@@ -97,10 +90,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                     if (emailAddress != null && !emailAddress.isEmpty()) {
                         options.setMailTo(emailAddress);
                     }
-                } catch (final ValidationException e) {
-                    LOG.error("validation exception trying to set destination email address", e);
-                } catch (final NullPointerException e) { // See NMS-5111 for more details.
-                    LOG.warn("the user {} does not have any email configured.", userId);
                 } catch (final Exception e) {
                     LOG.error("An error occurred while attempting to determine and set the destination email address for user {}", userId, e);
                 }
@@ -112,11 +101,6 @@ public class DefaultReportWrapperService implements ReportWrapperService {
         return options;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public List<ReportFormat> getFormats(String reportId) {
-        return getReportService(reportId).getFormats(reportId);
-    }
 
     /** {@inheritDoc} */
     @Override
@@ -156,7 +140,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 try {
                     getReportService(reportId).render(reportId, location, format, outputStream);
                 } catch (final ReportException e) {
-                    LOG.error("failed to render report", e);
+                    LOG.error("Failed to render report", e);
                 }
             }
         });
@@ -177,7 +161,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         try {
                             getReportService(reportId).runAndRender(parameters.getReportParms(mode), reportId, deliveryOptions.getFormat(), bout);
                         } catch (final ReportException reportException) {
-                            LOG.error("failed to run or render report: {}", reportId, reportException);
+                            logError(reportId, reportException);
                         }
                         mailReport(deliveryOptions, out);
                     } else {
@@ -194,7 +178,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                         }
                     }
                 } catch (final Exception e) {
-                    LOG.error("failed to run or render report: {}", reportId, e);
+                    logError(reportId, e);
                 } finally {
                     IOUtils.closeQuietly(bout);
                     IOUtils.closeQuietly(out);
@@ -219,15 +203,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
             jm.setInputStream(inputStream);
 
             switch (deliveryOptions.getFormat()) {
-
-            case HTML:
-                jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");
-                jm.setInputStreamContentType("text/html");
-                break;
             case PDF:
-                jm.setInputStreamName(deliveryOptions.getInstanceId() + ".pdf");
-                jm.setInputStreamContentType("application/pdf");
-                break;
             case SVG:
                 jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".pdf");
                 jm.setInputStreamContentType("application/pdf");
@@ -236,6 +212,7 @@ public class DefaultReportWrapperService implements ReportWrapperService {
                 jm.setInputStreamName(deliveryOptions.getInstanceId()+ ".csv");
                 jm.setInputStreamContentType("text/csv");
                 break;
+            case HTML:
             default:
                 jm.setInputStreamName(deliveryOptions.getInstanceId() + ".htm");
                 jm.setInputStreamContentType("text/html");
@@ -280,27 +257,22 @@ public class DefaultReportWrapperService implements ReportWrapperService {
     /** {@inheritDoc} */
 
     @Override
-    public void runAndRender(final ReportParameters parameters, final ReportMode mode, final OutputStream outputStream) {
-        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
-            @Override public void run() {
-                if (LOG.isDebugEnabled()) {
-                    // TODO remove this debug code
-                    final Map<String, Object> reportParms = parameters.getReportParms(mode);
-                    for (final Entry<String,Object> entry : reportParms.entrySet()) {
-                        final String key = entry.getKey();
-                        final Object value = entry.getValue();
-                        LOG.debug("param {} set {}", key, value == null? "NULL" : value);
-                    }
-                }
-
-                try {
-                    getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(mode), parameters.getReportId(), parameters.getFormat(), outputStream);
-                } catch (final ReportException e) {
-                    LOG.error("failed to run or render report: ", parameters.getReportId(), e);
-                }
-
+    public void runAndRender(final ReportParameters parameters, final ReportMode mode, final OutputStream outputStream) throws ReportException {
+        if (LOG.isDebugEnabled()) {
+            final Map<String, Object> reportParms = parameters.getReportParms(mode);
+            for (final Entry<String,Object> entry : reportParms.entrySet()) {
+                final String key = entry.getKey();
+                final Object value = entry.getValue();
+                LOG.debug("param {} set {}", key, value == null? "NULL" : value);
             }
-        });
+        }
+
+        try {
+            getReportService(parameters.getReportId()).runAndRender(parameters.getReportParms(mode), parameters.getReportId(), parameters.getFormat(), outputStream);
+        } catch (ReportException reportException) {
+            logError(parameters.getReportId(), reportException);
+            throw reportException;
+        }
     }
 
 }

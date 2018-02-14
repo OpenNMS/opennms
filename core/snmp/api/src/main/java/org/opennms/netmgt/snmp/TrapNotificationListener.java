@@ -30,7 +30,7 @@ package org.opennms.netmgt.snmp;
 
 public interface TrapNotificationListener {
 
-    void trapReceived(TrapNotification trapNotification);
+    void trapReceived(TrapInformation trapInformation);
 
     void trapError(int error, String msg);
 }

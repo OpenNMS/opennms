@@ -31,7 +31,7 @@ package org.opennms.netmgt.dao.support;
 import java.util.SortedMap;
 
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.filter.FilterDao;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.EntityVisitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.beans.factory.InitializingBean;
@@ -109,7 +109,7 @@ public class FilterWalker implements InitializingBean {
     /**
      * <p>getFilterDao</p>
      *
-     * @return a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @return a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public FilterDao getFilterDao() {
         return m_filterDao;
@@ -118,7 +118,7 @@ public class FilterWalker implements InitializingBean {
     /**
      * <p>setFilterDao</p>
      *
-     * @param filterDao a {@link org.opennms.netmgt.filter.FilterDao} object.
+     * @param filterDao a {@link org.opennms.netmgt.filter.api.FilterDao} object.
      */
     public void setFilterDao(FilterDao filterDao) {
         m_filterDao = filterDao;

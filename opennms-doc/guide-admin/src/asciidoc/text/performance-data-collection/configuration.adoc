@@ -1,0 +1,197 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-collectd-configuration]]
+=== Collectd Configuration
+
+.Configuration and log files related to Collectd
+[options="header, autowidth"]
+|===
+| File                                           | Description
+| `$OPENNMS_HOME/etc/collectd-configuration.xml` | Configuration file for global _Collectd_ daemon and _Collectors_ configuration
+| `$OPENNMS_HOME/logs/collectd.log`              | Log file for all _Collectors_ and the global _Collectd_ daemon
+| `$OPENNMS_HOME/etc/snmp-graph.properties`      | _RRD_ graph definitions to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/snmp-graph.properties.d`    | Directory with _RRD_ graph definitions for devices and applications to render performance data measurements in the _Web UI_
+| `$OPENNMS_HOME/etc/events/opennms.events.xml`  | Event definitions for _Collectd_, i.e. _dataCollectionSucceeded_, and _dataCollectionFailed_
+| `$OPENNMS_HOME/etc/resource-types.d`           | Directory to store generic resource type definitions.
+|===
+
+To change the behavior for performance data collection, the `collectd-configuration.xml` file can be modified.
+The configuration file is structured in the following parts:
+
+* _Global daemon config_: Define the size of the used _Thread Pool_ to run _Collectors_ in parallel.
+* _Collection packages_: Packages to allow the grouping of configuration parameters for _Collectors_.
+* _Collection service association_: Based on the name of the collection service, the implementation for application or network management protocols are assigned.
+
+[[ga-performance-management-collectd-overview]]
+.Collectd overview for associated files and configuration
+image::performance-management/01_collectd-overview.png[]
+
+The global behavior, especially the size of the _Thread Pool_ for _Collectd_, is configured in the `collectd-configuration.xml`.
+
+.Global configuration parameters for Collectd
+[source, xml]
+----
+<collectd-configuration
+        threads="50"> <1>
+----
+
+<1> Size of the _Thread Pool_ to run _Collectors_ in parallel
+
+[[ga-performance-management-collectd-resource-types]]
+==== Resource Types
+.Resource Types
+
+Resource Types are used to group sets of performance data measurements for persisting, indexing, and display in the _Web UI_.
+Each resource type has a unique name, label definitions for display in the _Web UI_, and strategy definitions for archiving the measurements for long term analysis.
+
+There are two labels for a resource type.
+The first, `label`, defines a string to display in the _Web UI_.
+The second, `resourceLabel`, defines the template used when displaying each unique group of measurements name for the resource type.
+
+There are two types of strategy definitions for resource types, persistence selector and storage strategies.
+The persistence selector strategy filters the group indexes down to a subset for storage on disk.
+The storage strategy is used to convert an index into a resource path label for persistence.
+There are two special resource types that do not have a resource-type definition.
+They are `node` and `ifIndex`.
+
+Resource Types can be defined inside files in either `$OPENNMS_HOME/etc/resource-types.d` or `$OPENNMS_HOME/etc/datacollection`, with the latter being specific for SNMP.
+
+
+Here is the diskIOIndex resource type definition from `$OPENNMS_HOME/etc/datacollection/netsnmp.xml`:
+
+[source, xml]
+----
+<resourceType name="diskIOIndex" label="Disk IO (UCD-SNMP MIB)" resourceLabel="${diskIODevice} (index ${index})">
+  <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistRegexSelectorStrategy">
+    <parameter key="match-expression" value="not(#diskIODevice matches '^(loop|ram).*')" />
+  </persistenceSelectorStrategy>
+  <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+    <parameter key="sibling-column-name" value="diskIODevice" />
+    <parameter key="replace-all" value="s/^-//" />
+    <parameter key="replace-all" value="s/\s//" />
+    <parameter key="replace-all" value="s/:\\.*//" />
+  </storageStrategy>
+</resourceType>
+----
+
+===== Persistence Selector Strategies
+.Persistence Selector Strategies
+[options="header, autowidth"]
+|===
+| Class                                                    | Description
+| org.opennms.netmgt.collectd.PersistAllSelectorStrategy   | Persist All indexes
+| org.opennms.netmgt.collectd.PersistRegexSelectorStrategy | Persist indexes based on JEXL evaluation
+|===
+
+====== PersistRegexSelectorStrategy
+
+The PersistRegexSelectorStrategy class takes a single parameter, `match-expression`, which defines a JEXL expressions.
+On evaulation, this expression should return either true, persist index to storage, or false, discard data.
+
+
+===== Storage Strategies
+.Storage Strategies
+[options="header, autowidth"]
+|===
+| Class                                                           | Storage Path Value
+| org.opennms.netmgt.collection.support.IndexStorageStrategy      | Index
+| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy  | Value after JexlExpression evaluation
+| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy | Value after JexlExpression evaluation
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy        | interface label + '.' + dlci
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.
+|===
+
+====== IndexStorageStrategy
+
+The IndexStorageStrategy takes no parameters.
+
+====== JexlIndexStorageStrategy
+
+The JexlIndexStorageStrategy takes two parameters, `index-format` which is required, and `clean-output` which is optional.
+
+[options="header, autowidth"]
+|===
+| Parameter    | Description
+| index-format | The JexlExpression to evaluate
+| clean-output | Boolean to indicate whether the index value is cleaned up.
+|===
+
+If the index value will be cleaned up, then it will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores. All equal signs are removed.
+
+This class can be extended to create custom storage strategies by overriding the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
+[source, java]
+----
+public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExampleStorageStrategy.class);
+    public ExampleStorageStrategy() {
+        super();
+    }
+
+    @Override
+    public void updateContext(JexlContext context, CollectionResource resource) {
+        context.set("Example", resource.getInstance());
+    }
+}
+----
+
+====== ObjectNameStorageStrategy
+
+The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext which can then be used in the `index-format` template.
+The original index string is converted to an ObjectName and can be referenced as `${ObjectName}`. The _domain_ from the ObjectName can be referenced as `${domain}`. All _key properties_
+from the ObjectName can also be referenced by `${key}`.
+
+This storage strategy is meant to be used with JMX MBean datacollections where multiple MBeans can return the same set of attributes. As of OpenNMS Horizon 20, this is only supported using a HTTP to JMX proxy and using the XmlCollector as the JmxCollector does not yet support indexed groups.
+
+Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a storage strategy like this:
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
+  <parameter key="index-format" value="${domain}_${type}_${name}" />
+  <parameter key="clean-output" value="true" />
+</storageStrategy>
+----
+Then the index value would be `java_lang_MemoryPool_Survivor_Space`.
+
+====== FrameRelayStorageStrategy
+
+The FrameRelayStorageStrategy takes no parameters.
+
+====== HostFileSystemStorageStrategy
+
+The HostFileSystemStorageStrategy takes no parameters.
+This class is marked as deprecated, and can be replaced with:
+
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+  <parameter key="sibling-column-name" value="hrStorageDescr" />
+  <parameter key="replace-first" value="s/^-$/_root_fs/" />
+  <parameter key="replace-all" value="s/^-//" />
+  <parameter key="replace-all" value="s/\\s//" />
+  <parameter key="replace-all" value="s/:\\\\.*//" />
+</storageStrategy>
+----
+
+====== SiblingColumnStorageStrategy
+
+[options="header, autowidth"]
+|===
+| Parameter           | Description
+| sibling-column-name | Alternate string value to use for index
+| replace-first       | Regex Pattern, replaces only the first match
+| replace-all         | Regex Pattern, replaces all matches
+|===
+
+Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
+
+====== XmlStorageStrategy
+
+This XmlStorageStrategy takes no parameters.
+The index value will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores.
+All equal signs are removed.

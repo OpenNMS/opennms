@@ -4,8 +4,8 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
        >
 
   <tx:annotation-driven />
@@ -22,7 +22,7 @@
     <property name="eventForwarder" ref="eventForwarder" />
   </bean>
 
- <bean id="daemonListener" class="org.opennms.netmgt.model.events.AnnotationBasedEventListenerAdapter">
+ <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
@@ -39,7 +39,7 @@
     <property name="javamailConfigDao" ref="javamailConfigDao" />
   </bean>
 
-  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.castor.DefaultReportdConfigurationDao">
+  <bean id="reportdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
     <property name="configResource" ref="reportdConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>
@@ -66,7 +66,7 @@
     <constructor-arg value="file:${opennms.home}/etc/javamail-configuration.xml" />
   </bean>
 
-  <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.castor.DefaultJavamailConfigurationDao">
+  <bean id="javamailConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultJavamailConfigurationDao">
     <property name="configResource" ref="javamailConfigResourceLocation" />
     <property name="reloadCheckInterval" value="-1" />
   </bean>

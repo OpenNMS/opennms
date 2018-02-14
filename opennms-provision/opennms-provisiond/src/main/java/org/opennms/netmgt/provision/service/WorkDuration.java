@@ -111,7 +111,7 @@ public class WorkDuration {
 		long secs = duration / 1000L;
 		long millis = duration % 1000L;
 
-		StringBuffer elapsed = new StringBuffer();
+		final StringBuilder elapsed = new StringBuilder();
 		if (hours > 0)
 			elapsed.append(hours).append("h ");
 		if (mins > 0)

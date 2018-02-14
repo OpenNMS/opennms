@@ -77,15 +77,11 @@ public class UpdateUserServlet extends HttpServlet {
             // get the rest of the user information from the form
             newUser.setFullName(request.getParameter("fullName"));
             newUser.setUserComments(request.getParameter("userComments"));
-            newUser.setReadOnly(false);
-            if (request.getParameter("readOnly") != null && (request.getParameter("readOnly").equalsIgnoreCase("true") || request.getParameter("readOnly").equalsIgnoreCase("on"))) {
-                newUser.setReadOnly(true);
-            }
 
             String password = request.getParameter("password");
             if (password != null && !password.trim().equals("")) {
                 final Password pass = new Password();
-                pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
+                pass.setEncryptedPassword(UserFactory.getInstance().encryptedPassword(password, true));
                 pass.setSalt(true);
                 newUser.setPassword(pass);
             }
@@ -107,7 +103,7 @@ public class UpdateUserServlet extends HttpServlet {
             String mobilePhone = request.getParameter(ContactType.mobilePhone.toString());
             String homePhone = request.getParameter(ContactType.homePhone.toString());
 
-            newUser.removeAllContact();
+            newUser.clearContacts();
 
             Contact tmpContact = new Contact();
             tmpContact.setInfo(email);
@@ -182,6 +178,17 @@ public class UpdateUserServlet extends HttpServlet {
                 }
             }
 
+            // The new list of roles will override the existing one.
+            // If the new list is empty or null, that means the user should not have roles, and the existing ones should be removed.
+            newUser.getRoles().clear();
+            String[] configuredRoles = request.getParameterValues("configuredRoles");
+            if (configuredRoles != null && configuredRoles.length > 0) {
+                newUser.getRoles().clear();
+                for (String role : configuredRoles) {
+                    newUser.addRole(role);
+                }
+            }
+
             userSession.setAttribute("user.modifyUser.jsp", newUser);
         }
 
@@ -191,7 +198,7 @@ public class UpdateUserServlet extends HttpServlet {
     }
 
     private List<String> getDutySchedulesForUser(User newUser) {
-        return newUser.getDutyScheduleCollection();
+        return newUser.getDutySchedules();
     }
     
 }

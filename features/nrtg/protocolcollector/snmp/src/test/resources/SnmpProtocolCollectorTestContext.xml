@@ -4,12 +4,11 @@
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd"
        >
 
   <bean class="org.opennms.nrtg.protocolcollector.snmp.internal.SnmpProtocolCollector" id="snmpProtocolCollector">
-    <property name="snmpStrategy" ref="snmpStrategy"/>
+    <property name="locationAwareSnmpClient" ref="locationAwareSnmpClient"/>
   </bean>
-  <bean class="org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy" id="snmpStrategy"></bean>
 </beans>

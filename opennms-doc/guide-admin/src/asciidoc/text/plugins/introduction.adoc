@@ -1,0 +1,31 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Internal Plugins supplied with _{opennms-product-name}_
+_{opennms-product-name}_ includes a number of plugins which can be installed by the Plugin Manager 
+UI or directly from the _Karaf_ consol. Plugins are simply _Karaf_ features which have additional 
+metadata describing the Plugin and possibly defining that the Plugin also needs a licence installed to run.
+
+Once installed, the plugins will always start when OpenNMS is restarted. If the plugins appear not to be working properly, you should check the /data/log/karaf.log file for problems.
+
+Each internal plugin supplied with _{opennms-product-name}_ is described in its own section below.
+
+=== Installing Plugins with the Karaf Consol
+The easiest way to install a plugin is to use the Plugin Manager UI described in the Plugin Manager section. However plugins can also be installed using the _Karaf_ consol. To use the _Karaf_ consol, you need to open the karaf command prompt using
+----
+ssh -p 8101 admin@localhost
+(or ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no if no host checking is wanted)
+----
+To install or remove a feature in _Karaf_ use
+----
+karaf@root> feature:install <feature name>
+karaf@root> feature:uninstall <feature name>
+----
+You can see which plugins are installed using
+----
+karaf@root> product-reg:list
+----
+
+
+

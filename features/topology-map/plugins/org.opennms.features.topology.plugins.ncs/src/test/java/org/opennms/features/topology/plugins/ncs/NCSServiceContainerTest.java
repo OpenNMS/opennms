@@ -36,19 +36,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.vaadin.data.util.BeanItem;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsCriteria;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
 
-import com.vaadin.data.util.BeanItem;
-
 public class NCSServiceContainerTest {
     
     private class TestRepository implements NCSComponentRepository{
         
-        List<NCSComponent> m_componentList = new ArrayList<NCSComponent>();
+        List<NCSComponent> m_componentList = new ArrayList<>();
         public TestRepository() {
             m_componentList.add(createNCSComponent(1537, "MplsLSP", "ServiceElementComponent", "space_TransportActivate"));
             m_componentList.add(createNCSComponent(1538, "RpdLSP", "ServiceElementComponent", "space_TransportActivate"));
@@ -130,12 +130,11 @@ public class NCSServiceContainerTest {
 
         @Override
         public NCSComponent load(Long id) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
-        public void save(NCSComponent component) {}
+        public Long save(NCSComponent component) { return null; }
 
         @Override
         public void saveOrUpdate(NCSComponent component) {}
@@ -145,7 +144,7 @@ public class NCSServiceContainerTest {
 
         @Override
         public List<NCSComponent> findByType(String type) {
-            List<NCSComponent> retVal = new ArrayList<NCSComponent>();
+            List<NCSComponent> retVal = new ArrayList<>();
             for(NCSComponent component : m_componentList) {
                 if(component.getType().equals(type)) {
                     retVal.add(component);
@@ -156,13 +155,11 @@ public class NCSServiceContainerTest {
 
         @Override
         public NCSComponent findByTypeAndForeignIdentity(String type, String foreignSource, String foreignId) {
-            // TODO Auto-generated method stub
             return null;
         }
 
         @Override
         public List<NCSComponent> findComponentsThatDependOn( NCSComponent component) {
-            // TODO Auto-generated method stub
             return null;
         }
 
@@ -197,12 +194,10 @@ public class NCSServiceContainerTest {
     public void testGetChildrenForItemId() {
         Collection<Long> rootItemIds = m_container.rootItemIds();
         Long parentId = rootItemIds.iterator().next();
-        System.out.println(parentId);
         Collection<Long> children = m_container.getChildren(parentId);
         for(Long id : children) {
             assertFalse(parentId == id);
         }
-        System.out.println(children);
     }
     
     @Test

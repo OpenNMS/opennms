@@ -38,9 +38,9 @@ import java.util.Date;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-abstract public class PollEvent {
+public abstract class PollEvent {
     
-    Scope m_scope;
+    private final Scope m_scope;
     
     /**
      * <p>Constructor for PollEvent.</p>
@@ -56,7 +56,7 @@ abstract public class PollEvent {
      *
      * @return a {@link org.opennms.netmgt.poller.pollables.Scope} object.
      */
-    public Scope getScope() {
+    public final Scope getScope() {
         return m_scope;
     }
 

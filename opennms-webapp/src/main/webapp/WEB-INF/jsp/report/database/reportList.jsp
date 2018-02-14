@@ -87,7 +87,7 @@
                                                 <c:when test="${report.isOnline}">
                                                     <td class="o-report-online"><a
                                                             href="report/database/onlineReport.htm?reportId=${report.id}"
-                                                            title="Execute this report instantly"/></td>
+                                                            title="Execute this report instantly" id="online-${report.id}"/></td>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <td>&nbsp;</td>
@@ -95,10 +95,10 @@
                                             </c:choose>
                                             <td class="o-report-deliver"><a
                                                     href="report/database/batchReport.htm?reportId=${report.id}&schedule=false"
-                                                    title="Deliver report to file system or via e-mail"/></td>
+                                                    title="Deliver report to file system or via e-mail" id="deliver-${report.id}"/></td>
                                             <td class="o-report-schedule"><a
                                                     href="report/database/batchReport.htm?reportId=${report.id}&schedule=true"
-                                                    title="Create a schedule for this report"/></td>
+                                                    title="Create a schedule for this report" id="schedule-${report.id}"/></td>
                                         </c:when>
                                         <c:otherwise>
                                             <td colspan="3" class="o-report-subscribe"><a href="${mapEntry.key.managementUrl}"

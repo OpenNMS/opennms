@@ -1,0 +1,66 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== NetScalerGroupHealthMonitor
+
+This monitor is designed for _Citrix(R) NetScaler(R)_ loadbalancing checks.
+It checks if more than x percent of the servers assigned to a specific group on a loadbalanced service are active.
+The required data is gathered via SNMP from the _NetScaler(R)_.
+The status of the servers is determined by the _NetScaler(R)_.
+The provided service it self is not part of the check.
+The basis of this monitor is the _SnmpMonitorStrategy_.
+A valid SNMP configuration in _{opennms-product-name}_ for the _NetScaler(R)_ is required.
+
+NOTE: A _NetScaler(R)_ can manage several groups of servers per application.
+      This monitor just covers one group at a time.
+      If there are multiple groups to check, define one monitor per group.
+
+CAUTION: This monitor is not checking the loadbalanced service it self.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the NetScalerGroupHealthMonitor
+[options="header, autowidth"]
+|===
+| Parameter     | Description                                                                  | Required | Default value
+| `group-name`  | The name of the server group to check                                        | required | `-`
+| `group-health`| The percentage of active servers vs total server of the group as an integer  | optional | `60`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The following example checks a server group called _central_webfront_http_.
+If at least 70% of the servers are active, the service is up.
+If less then 70% of the servers are active the service is down.
+A configuration like the following can be used for the example in the `poller-configuration.xml`.
+
+[source, xml]
+----
+<service name="NetScaler_Health" interval="300000" user-defined="false" status="on">
+   <parameter key="group-name" value="central_webfront_http" />
+   <parameter key="group-health" value="70" />
+</service>
+
+<monitor service="NetScaler_Health" class-name="org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor” />
+----
+
+===== Details about the used SNMP checks
+
+The monitor checks the status of the server group based on the _NS-ROOT-MIB_ using the _svcGrpMemberState_.
+_svcGrpMemberState_ is part of the _serviceGroupMemberTable_.
+The _serviceGroupMemberTable_ is indexed by _svcGrpMemberGroupName_ and _svcGrpMemberName_.
+A initial lookup for the `group-name` is performed.
+Based on the lookup the _serviceGroupMemberTable_ is walked with the numeric representation of the server group.
+The monitor interprets just the server status code _7-up_ as active server.
+Other status codes like _2-unknown_ or _3-busy_ are counted for total amount of servers.

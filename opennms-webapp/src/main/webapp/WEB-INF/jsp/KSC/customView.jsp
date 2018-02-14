@@ -47,8 +47,9 @@
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="headTitle" value="KSC" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.htm'>KSC Reports</a>" />
+  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
   <jsp:param name="breadcrumb" value="Custom View" />
+  <jsp:param name="renderGraphs" value="true" />
 </jsp:include>
 
 <%-- A script to Save the file --%>
@@ -155,23 +156,7 @@
                           </th>
                         </tr>
                       </table>
-                      <c:url var="zoomUrl" value="${baseHref}graph/results.htm">
-                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                        <c:param name="reports" value="${resultSet.prefabGraph.name}"/>
-                        <c:param name="start" value="${resultSet.start.time}"/>
-                        <c:param name="end" value="${resultSet.end.time}"/>
-                        <c:param name="zoom" value="true"/>
-                      </c:url>
-                      <c:url var="graphUrl" value="${baseHref}graph/graph.png">
-                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
-                        <c:param name="report" value="${resultSet.prefabGraph.name}"/>
-                        <c:param name="start" value="${resultSet.start.time}"/>
-                        <c:param name="end" value="${resultSet.end.time}"/>
-                        <c:param name="zoom" value="true"/>
-                      </c:url>
-                      <a href="${zoomUrl}">
-                        <img src="#" data-imgsrc="${graphUrl}" alt="Resource graph: ${resultSet.prefabGraph.title} (click to zoom)"/>
-                      </a>
+                      <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${resultSet.prefabGraph.name}" data-graph-title="${resultSet.prefabGraph.title}" data-graph-start="${resultSet.start.time}" data-graph-end="${resultSet.end.time}"></div>
                     </td>
                     <c:set var="graphNum" value="${graphNum + 1}"/>
                   </c:if>
@@ -194,7 +179,7 @@
                         <c:set var="selected" value=""/>
                       </c:otherwise>
                     </c:choose>
-                    <option value="${option.key}" ${selected}>${option.value}</option>
+                    <option value="${option.key}" ${selected}>${option.value.replaceAll("_", " ")}</option>
                   </c:forEach>
                 </select>
                 <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
@@ -224,7 +209,7 @@
             </div>
           </c:if>
           <!-- Button bar -->
-          <div clas="btn-group">
+          <div class="btn-group">
             <button class="btn btn-default" type="button" onclick="exitReport()">Exit Report Viewer</button>
             <c:if test="${!empty timeSpan || !empty graphType}">
               <button class="btn btn-default" type="button" onclick="updateReport()">Update Report View</button>
@@ -238,23 +223,6 @@
     </div> <!-- panel -->
   </c:otherwise>
 </c:choose>
-
-<%-- A script to auto-resize the images --%>
-<script type="text/javascript">
-var e = $('#graph-results');
-var imgs = e.find('img');
-for (var i=0; i < imgs.length; i++) {
-  var img = $(imgs[i]);
-  var container = img.closest('td');
-  var w = Math.round(container.width() * 0.75);
-  var h = Math.round(w * 0.25);
-  var imgsrc = img.data('imgsrc');
-  if (!(imgsrc.indexOf("width=") > -1 || imgsrc.indexOf("height=") > -1)) {
-    imgsrc += "&width=" + w + "&height=" + h;
-  }
-  img.attr('src', imgsrc);
-}
-</script>
 
 <c:if test="${showFootnote1 == true}">
   <jsp:include page="/includes/footnote1.jsp" flush="false" />

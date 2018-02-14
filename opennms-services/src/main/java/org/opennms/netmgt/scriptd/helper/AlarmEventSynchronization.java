@@ -28,15 +28,12 @@
 
 package org.opennms.netmgt.scriptd.helper;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 import org.opennms.core.spring.BeanUtils;
-
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.xml.event.AlarmData;
@@ -49,7 +46,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class AlarmEventSynchronization implements EventSynchronization {
 
-	List<EventForwarder> m_forwarders = new ArrayList<EventForwarder>();
+	List<EventForwarder> m_forwarders = new ArrayList<>();
 
 	public AlarmEventSynchronization() {
 		super();
@@ -97,16 +94,15 @@ public class AlarmEventSynchronization implements EventSynchronization {
 
         // alarm creation time
         if (alarm.getFirstEventTime() != null) {
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-        	event.setCreationTime(dateFormat.format(alarm.getFirstEventTime()));
+        	// TODO: This is incorrect. The creation time represents
+        	// the time that the event was stored in the database, not
+        	// the original timestamp of the event.
+        	event.setCreationTime(alarm.getFirstEventTime());
         }
 
         // last event timestamp
         if (alarm.getLastEventTime() != null) {
-            DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.FULL, DateFormat.FULL);
-            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-            event.setTime(dateFormat.format(alarm.getLastEventTime()));
+            event.setTime(alarm.getLastEventTime());
         }
         
         // host
@@ -159,7 +155,7 @@ public class AlarmEventSynchronization implements EventSynchronization {
 	public List<Event> getEvents() {
         BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
         final AlarmDao alarmDao = BeanUtils.getBean(bf,"alarmDao", AlarmDao.class);
-        final List<Event> xmlevents = new ArrayList<Event>();
+        final List<Event> xmlevents = new ArrayList<>();
         TransactionTemplate transTemplate = BeanUtils.getBean(bf, "transactionTemplate",TransactionTemplate.class);
         try {
                 transTemplate.execute(new TransactionCallbackWithoutResult() {

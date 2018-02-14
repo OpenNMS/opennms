@@ -28,12 +28,11 @@
 
 package org.opennms.features.vaadin.nodemaps.internal;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.opennms.features.geolocation.api.GeolocationConfiguration;
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.Option;
 
 import com.google.common.base.Strings;
@@ -43,60 +42,28 @@ import com.google.common.base.Strings;
  */
 public class NodeMapConfiguration {
 
-    private static final String URL_KEY = "gwt.openlayers.url";
+    private final GeolocationConfiguration geolocationConfiguration;
 
-    private static final String OPTIONS_KEY_PREFIX = "gwt.openlayers.options";
-
-    public static String getTileServerUrl() {
-        final String url = System.getProperty(URL_KEY);
-        return sanitizeForVaadin(url);
+    public NodeMapConfiguration(GeolocationConfiguration geolocationConfiguration) {
+        this.geolocationConfiguration = geolocationConfiguration;
     }
 
-    /**
-     * Returns the layer options for the tile layer defined in opennms.properties.
-     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
-     *
-     * @return the layer options for the tile layer defined in opennms.properties.
-     */
-    public static List<Option> getTileLayerOptions() {
-        final Properties properties = System.getProperties();
-        final Map<String, String> options = new HashMap<>();
-        for (Object objectKey : properties.keySet()) {
-            String key = (String) objectKey;
-            if (key.startsWith(OPTIONS_KEY_PREFIX)) {
-                final String optionsKey = key.substring(OPTIONS_KEY_PREFIX.length() + 1);
-                final String optionsValue = properties.getProperty(key);
-                options.put(optionsKey, sanitizeForVaadin(optionsValue));
-            }
-        }
-        final List<Option> optionsList = new ArrayList<>();
-        for (Map.Entry<String, String> eachEntry : options.entrySet()) {
-            optionsList.add(new Option(eachEntry.getKey(), eachEntry.getValue()));
-        }
-        return optionsList;
+    public boolean isValid() {
+        return !Strings.isNullOrEmpty(geolocationConfiguration.getTileServerUrl())
+                && !Strings.isNullOrEmpty(geolocationConfiguration.getOptions().get("attribution"));
     }
 
-    private static String sanitizeForVaadin(String input) {
-        if (Strings.isNullOrEmpty(input)) {
-            return input;
-        }
-        // The input may contain ${variable} statements, which must be converted to {variable} in order to work
-        // with the vaadin gwt abstraction.
-        return input.replaceAll("\\$\\{", "{");
+    public List<Option> getOptions() {
+        return geolocationConfiguration.getOptions().entrySet().stream()
+            .map(e -> new Option(e.getKey(), e.getValue()))
+            .collect(Collectors.toList());
     }
 
-    public static boolean isValid() {
-        return !Strings.isNullOrEmpty(getTileServerUrl()) && !Strings.isNullOrEmpty(getTileLayerAttribution());
-
+    public String getTileServerUrl() {
+        return geolocationConfiguration.getTileServerUrl();
     }
 
-    /**
-     * Returns the 'attribution' tile layer option.
-     * See http://leafletjs.com/reference.html#tilelayer-options for more details.
-     *
-     * @return the 'attribution' tile layer option.
-     */
-    static String getTileLayerAttribution() {
-        return System.getProperty(OPTIONS_KEY_PREFIX + ".attribution");
+    public String getTileLayerAttribution() {
+        return geolocationConfiguration.getOptions().get("attribution");
     }
 }

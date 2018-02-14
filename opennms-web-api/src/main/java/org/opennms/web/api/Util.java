@@ -35,25 +35,23 @@ import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.SortedMap;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.resource.Vault;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.TcpEventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.support.TcpEventProxy;
 
 /**
  * Provides convenience functions for web-based interfaces.
@@ -64,7 +62,7 @@ import org.opennms.netmgt.model.events.TcpEventProxy;
 public abstract class Util extends Object {
 
     private static final String[] EMPTY_STRING_ARRAY = new String[0];
-	private static final Map<String, Object> EMPTY_HASH_MAP = new HashMap<String,Object>();
+    private static final Map<String, Object> EMPTY_MAP = Collections.emptyMap();
 
 	/**
      * Return a string that represents the fully qualified URL for our servlet
@@ -134,9 +132,9 @@ public abstract class Util extends Object {
             request.getContextPath()                    // %c
         };
 
-    	final StringBuffer out = new StringBuffer(48);
+        final StringBuilder out = new StringBuilder(48);
         for (int i = 0; i < tmpl.length();) {
-        	final char c = tmpl.charAt(i++);
+            final char c = tmpl.charAt(i++);
             if (c == '%' && i < tmpl.length()) {
                 final char d = tmpl.charAt(i++);
                 for (int key = 0; key < substKeywords.length; ++key) {
@@ -167,9 +165,13 @@ public abstract class Util extends Object {
      */
     public static String getHostHeader(final HttpServletRequest request) {
         for (int i = 0; i < hostHeaders.length; ++i) {
-        	final String ret = request.getHeader(hostHeaders[i]);
-            if (ret != null) {
-                return ret;
+            // Get the first value in the header (support for proxy-chaining)
+            final String header = request.getHeader(hostHeaders[i]);
+            if (header != null) {
+                final String[] values = header.split(", *");
+                if (values.length >= 1) {
+                    return values[0];
+                }
             }
         }
         return request.getServerName() + ":" + Integer.toString(request.getServerPort());
@@ -184,7 +186,7 @@ public abstract class Util extends Object {
      */
     public static String encode(final String string) {
         try {
-            return URLEncoder.encode(string, "UTF-8");
+            return URLEncoder.encode(string, StandardCharsets.UTF_8.name());
         } catch (final UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
@@ -200,7 +202,7 @@ public abstract class Util extends Object {
      */
     public static String decode(final String string) {
         try {
-            return URLDecoder.decode(string, "UTF-8");
+            return URLDecoder.decode(string, StandardCharsets.UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             // UTF-8 should *never* throw this
             throw new UndeclaredThrowableException(e);
@@ -218,7 +220,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(final HttpServletRequest request) {
-        return (makeHiddenTags(request, EMPTY_HASH_MAP, EMPTY_STRING_ARRAY));
+        return (makeHiddenTags(request, EMPTY_MAP, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -250,7 +252,7 @@ public abstract class Util extends Object {
      *         /&gt; tag for each parameter.
      */
     public static String makeHiddenTags(final HttpServletRequest request, final String[] ignores) {
-        return (makeHiddenTags(request, EMPTY_HASH_MAP, ignores));
+        return (makeHiddenTags(request, EMPTY_MAP, ignores));
     }
 
     /**
@@ -296,11 +298,10 @@ public abstract class Util extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         final List<String> ignoreList = Arrays.asList(ignores);
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
@@ -349,7 +350,7 @@ public abstract class Util extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(final HttpServletRequest request) {
-        return (makeQueryString(request, EMPTY_HASH_MAP, EMPTY_STRING_ARRAY));
+        return (makeQueryString(request, EMPTY_MAP, EMPTY_STRING_ARRAY));
     }
 
     /**
@@ -377,7 +378,7 @@ public abstract class Util extends Object {
      * @return a {@link java.lang.String} object.
      */
     public static String makeQueryString(final HttpServletRequest request, final String[] ignores) {
-        return (makeQueryString(request, EMPTY_HASH_MAP, ignores));
+        return (makeQueryString(request, EMPTY_MAP, ignores));
     }
 
     /**
@@ -422,11 +423,10 @@ public abstract class Util extends Object {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         final List<String> ignoreList = Arrays.asList(ignores);
 
-        @SuppressWarnings("unchecked")
         final Enumeration<String> names = request.getParameterNames();
 
         while (names.hasMoreElements()) {
@@ -481,22 +481,6 @@ public abstract class Util extends Object {
     }
 
     /**
-     * <p>getOrderedMap</p>
-     *
-     * @param names an array of {@link java.lang.String} objects.
-     * @return a {@link java.util.Map} object.
-     */
-    public static SortedMap<String, String> getOrderedMap(final String[][] names) {
-    	final TreeMap<String, String> orderedMap = new TreeMap<String, String>();
-
-        for (int i = 0; i < names.length; i++) {
-            orderedMap.put(names[i][1], names[i][0]);
-        }
-
-        return Collections.unmodifiableSortedMap(orderedMap);
-    }
-
-    /**
      * <p>htmlify</p>
      *
      * @param input a {@link java.lang.String} object.
@@ -508,8 +492,10 @@ public abstract class Util extends Object {
     
     /**
      * <p>createEventProxy</p>
+     * 
+     * @deprecated Use dependency injection to wire in an instance of the {@link EventProxy} instead
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventProxy} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventProxy} object.
      */
     public static EventProxy createEventProxy() {
         /*
@@ -574,6 +560,19 @@ public abstract class Util extends Object {
         .replace("\r", "\\r")
         .replace("\n", "\\n")
         .replace("\b", "\\b");
+    }
+
+    public static String getParameter(HttpServletRequest request, String name) {
+        return getParameter(request, name, null);
+    }
+
+    // Returns request parameter or default if the parameter does not exist
+    public static String getParameter(HttpServletRequest request, String name, String defaultValue) {
+        String value = request.getParameter(name);
+        if (value == null || value.isEmpty() && defaultValue != null && !defaultValue.isEmpty()) {
+            return defaultValue;
+        }
+        return value;
     }
 
 }

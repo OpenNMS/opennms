@@ -2,8 +2,8 @@
 <beans:beans xmlns="http://www.springframework.org/schema/security"
 	xmlns:beans="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd"> 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd"> 
 
 
 	<!-- this is a pidgin version of the context from opennms-webapps, start there if you haven't already -->
@@ -33,12 +33,8 @@
 
 	<!-- ===================== USER DAO AUTHENTICATION ==================== -->
 	<beans:bean id="userDao" class="org.opennms.web.springframework.security.SpringSecurityUserDaoImpl">
-		<beans:property name="magicUsersConfigurationFile" value="${opennms.home}/etc/magic-users.properties" />
 		<beans:property name="usersConfigurationFile" value="${opennms.home}/etc/users.xml" />
-		<beans:property name="groupsConfigurationFile" value="${opennms.home}/etc/groups.xml" />
-		<beans:property name="useGroups" value="false" />
 		<beans:property name="userManager" ref="userManager" />
-		<beans:property name="groupManager" ref="groupManager" />
 	</beans:bean>
 
 	<beans:bean id="openNMSUserDetailsService" class="org.opennms.web.springframework.security.OpenNMSUserDetailsService">

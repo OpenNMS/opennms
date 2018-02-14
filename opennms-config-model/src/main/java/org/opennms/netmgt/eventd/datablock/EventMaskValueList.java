@@ -255,7 +255,7 @@ public class EventMaskValueList extends ArrayList<String> {
         int length = value.length();
         if (value.startsWith(".1.")) {
             // eid?
-            StringBuffer newValue = new StringBuffer();
+            final StringBuilder newValue = new StringBuilder();
             for (int i = 0; i < length; i++) {
                 char tc = value.charAt(i);
                 if (tc != '.') {

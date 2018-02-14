@@ -30,7 +30,7 @@ package org.opennms.netmgt.mock;
 
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
@@ -46,6 +46,7 @@ import org.opennms.netmgt.xml.event.Event;
 public class MockNode extends MockContainer<MockNetwork, MockElement> {
 
     String m_label;
+    String m_location;
 
     int m_nodeid;
     int m_nextIfIndex = 1;
@@ -59,6 +60,8 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
      */
     public MockNode(MockNetwork network, int nodeid, String label) {
         super(network);
+        // org.opennms.netmgt.dao.api.MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID
+        m_location = "Default";
         m_nodeid = nodeid;
         m_label = label;
     }
@@ -108,6 +111,24 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
      */
     public void setLabel(String label) {
         m_label = label;
+    }
+
+    /**
+     * <p>getLocation</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getLocation() {
+        return m_location;
+    }
+
+    /**
+     * <p>setLocation</p>
+     *
+     * @param label a {@link java.lang.String} object.
+     */
+    public void setLocation(String location) {
+        m_location = location;
     }
 
     // model
@@ -161,6 +182,7 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
     	return new ToStringBuilder(this)
     		.append("id", m_nodeid)
     		.append("label", m_label)
+    		.append("location", m_location)
     		.append("members", getMembers()).toString();
     }
 

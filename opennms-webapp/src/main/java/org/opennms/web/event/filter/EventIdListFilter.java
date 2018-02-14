@@ -82,7 +82,7 @@ public class EventIdListFilter extends InFilter<Integer> {
      */
     @Override
     public String getTextDescription() {
-        StringBuilder buf = new StringBuilder("eventId in ");
+        final StringBuilder buf = new StringBuilder("eventId in ");
         buf.append("(");
         buf.append(getValueString());
         buf.append(")");

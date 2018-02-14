@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <javamail-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/javamail-configuration" 
                         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-                        xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/javamail-configuration "
                         default-read-config-name="default" default-send-config-name="default" >
 
   <sendmail-config name="default" 

@@ -1,42 +1,43 @@
-<?xml version="1.0"?>
-<datacollection-group name="Acme Packet">
-      <!-- Acme Packet Resource Types -->
-      <resourceType name="apSipSAStatIdx" label="Acme Packet SIP Session Agent" resourceLabel="${apSipSAStatSAHost}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-          <parameter key="sibling-column-name" value="apSipSAStatSAHost" />
-        </storageStrategy>
-      </resourceType>
-      <resourceType name="apH323SAStatIdx" label="Acme Packet H323 Session Agent" resourceLabel="${apH323SAStatSAHost}">
-        <persistenceSelectorStrategy class="org.opennms.netmgt.collectd.PersistAllSelectorStrategy"/>
-        <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
-          <parameter key="sibling-column-name" value="apH323SAStatSAHost" />
-        </storageStrategy>
-      </resourceType>
-
-      <group name="acmepacket" ifType="ignore">
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.1" instance="0" alias="apSysCPUUtil" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.2" instance="0" alias="apSysMemoryUtil" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.3" instance="0" alias="apSysHealthScore" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.5" instance="0" alias="apSysGlobalConSess" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.6" instance="0" alias="apSysGlobalCPS" type="gauge" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.2" instance="apSipSAStatIdx" alias="apSipSAStatSAHost" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.8" instance="apSipSAStatIdx" alias="apSipSAStatTotIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.9" instance="apSipSAStatIdx" alias="apSipSAStatTotNAIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.12" instance="apSipSAStatIdx" alias="apSipSAStatTotOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.13" instance="apSipSAStatIdx" alias="apSipSAStatTotNAOt" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.2" instance="apH323SAStatIdx" alias="apH323SAStatSAHost" type="string" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.8" instance="apH323SAStatIdx" alias="apH323SAStatTotIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.9" instance="apH323SAStatIdx" alias="apH323SAStatTotNAIn" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.12" instance="apH323SAStatIdx" alias="apH323SAStatTotOut" type="counter" />
-        <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.13" instance="apH323SAStatIdx" alias="apH32SAStatTotNAOt" type="counter" />
-      </group>
-
-      <systemDef name="Acme Packet">
-	<sysoidMask>.1.3.6.1.4.1.9148.1.1.</sysoidMask>
-        <collect>
-          <includeGroup>acmepacket</includeGroup>
-        </collect>
-      </systemDef>
-
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Acme Packet">
+   <resourceType name="apSipSAStatIdx" label="Acme Packet SIP Session Agent" resourceLabel="${apSipSAStatSAHost}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="apSipSAStatSAHost"/>
+      </storageStrategy>
+   </resourceType>
+   <resourceType name="apH323SAStatIdx" label="Acme Packet H323 Session Agent" resourceLabel="${apH323SAStatSAHost}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+         <parameter key="sibling-column-name" value="apH323SAStatSAHost"/>
+      </storageStrategy>
+   </resourceType>
+   <group name="acmepacket-sys" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.1" instance="0" alias="apSysCPUUtil" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.2" instance="0" alias="apSysMemoryUtil" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.3" instance="0" alias="apSysHealthScore" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.5" instance="0" alias="apSysGlobalConSess" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.1.6" instance="0" alias="apSysGlobalCPS" type="gauge"/>
+   </group>
+   <group name="acmepacket-sip" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.2" instance="apSipSAStatIdx" alias="apSipSAStatSAHost" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.8" instance="apSipSAStatIdx" alias="apSipSAStatTotIn" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.9" instance="apSipSAStatIdx" alias="apSipSAStatTotNAIn" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.12" instance="apSipSAStatIdx" alias="apSipSAStatTotOut" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.2.1.13" instance="apSipSAStatIdx" alias="apSipSAStatTotNAOt" type="counter"/>
+   </group>
+   <group name="acmepacket-h323" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.2" instance="apH323SAStatIdx" alias="apH323SAStatSAHost" type="string"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.8" instance="apH323SAStatIdx" alias="apH323SAStatTotIn" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.9" instance="apH323SAStatIdx" alias="apH323SAStatTotNAIn" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.12" instance="apH323SAStatIdx" alias="apH323SAStatTotOut" type="counter"/>
+      <mibObj oid=".1.3.6.1.4.1.9148.3.2.1.2.3.1.13" instance="apH323SAStatIdx" alias="apH32SAStatTotNAOt" type="counter"/>
+   </group>
+   <systemDef name="Acme Packet">
+      <sysoidMask>.1.3.6.1.4.1.9148.1.1.</sysoidMask>
+      <collect>
+         <includeGroup>acmepacket-sys</includeGroup>
+         <includeGroup>acmepacket-sip</includeGroup>
+         <includeGroup>acmepacket-h323</includeGroup>
+      </collect>
+   </systemDef>
 </datacollection-group>

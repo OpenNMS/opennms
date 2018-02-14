@@ -66,10 +66,6 @@ public final class DhcpdConfigFactory {
      * 
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      */
     DhcpdConfigFactory(File configFile) {
     	m_config = JaxbUtils.unmarshal(DhcpdConfiguration.class, configFile);
@@ -81,13 +77,7 @@ public final class DhcpdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void init() throws IOException {
         if (m_loaded) {
@@ -107,13 +97,7 @@ public final class DhcpdConfigFactory {
      *
      * @exception java.io.IOException
      *                Thrown if the specified config file cannot be read/loaded
-     * @exception org.exolab.castor.xml.MarshalException
-     *                Thrown if the file does not conform to the schema.
-     * @exception org.exolab.castor.xml.ValidationException
-     *                Thrown if the contents do not match the required schema.
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
     public static synchronized void reload() throws IOException {
         m_singleton = null;

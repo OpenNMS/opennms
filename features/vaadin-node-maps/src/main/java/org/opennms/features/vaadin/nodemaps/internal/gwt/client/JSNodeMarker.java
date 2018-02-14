@@ -37,7 +37,6 @@ import org.discotools.gwt.leaflet.client.Options;
 import org.discotools.gwt.leaflet.client.jsobject.JSObject;
 import org.discotools.gwt.leaflet.client.marker.Marker;
 import org.discotools.gwt.leaflet.client.types.LatLng;
-import org.opennms.features.geocoder.Coordinates;
 
 import com.google.gwt.core.client.JsArrayString;
 
@@ -75,7 +74,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
 
     public List<String> getTextPropertyNames() {
         final JsArrayString nativeNames = getNativePropertyNames(getJSObject());
-        final List<String> names = new ArrayList<String>();
+        final List<String> names = new ArrayList<>();
         for (int i = 0; i < nativeNames.length(); i++) {
             names.add(nativeNames.get(i));
         }
@@ -93,7 +92,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
     }-*/;
 
     public List<String> getCategoryList() {
-        final List<String> categories = new ArrayList<String>();
+        final List<String> categories = new ArrayList<>();
         final JsArrayString jsCategories = getCategories();
         for (int i = 0; i < jsCategories.length(); i++) {
             categories.add(jsCategories.get(i));
@@ -236,7 +235,7 @@ public class JSNodeMarker extends Marker implements NodeMarker {
     }
 
     public static LatLng coordinatesToLatLng(final Coordinates coordinates) {
-        return new LatLng(coordinates.getLatitudeAsDouble(), coordinates.getLongitudeAsDouble());
+        return new LatLng(coordinates.latitude, coordinates.longitude);
     }
 
 }

@@ -1,0 +1,66 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-syslog]]
+==== Syslog Messages
+
+Syslog messages sent over the network to {opennms-product-name} can be transformed into events according to pre-configured rules.
+
+IMPORTANT: The `Syslogd` service daemon, which enables {opennms-product-name} to receive syslog messages over the network, must be enabled for this functionality to work. This service daemon is *disabled* by default.
+
+===== Parsers
+
+Different parsers can be used to convert the syslog message fields into {opennms-product-name} event fields.
+
+[options="header, autowidth"]
+|===
+| Parser  | Description
+| `org.opennms.netmgt.syslogd.CustomSyslogParser`    | Default parser that uses a regex statement to parse the syslog header.
+| `org.opennms.netmgt.syslogd.RadixTreeSyslogParser` | Parser that uses an internal list of _grok_-style statements to parse the syslog header.
+| `org.opennms.netmgt.syslogd.SyslogNGParser`        | Parser that strictly parses messages in the default pattern of syslog-ng.
+| `org.opennms.netmgt.syslogd.Rfc5424SyslogParser`   | Parser that strictly parses the RFC 5424 format for syslog messages.
+|===
+
+====== RadixTreeSyslogParser
+
+The `RadixTreeSyslogParser` normally uses a set of internally-defined patterns to parse multiple syslog message formats.
+If you wish to customize the set of patterns, you can put a new set of patterns into a `syslog-grok-patterns.txt` in the `etc` directory for {opennms-product-name}.
+
+The patterns are defined in _grok_-style statements where each token is defined by a `%{PATTERN:semantic}` clause.
+Whitespace in the pattern will match 0...n whitespace characters and character literals in the pattern will match the corresponding characters.
+The '%' character literal must be escaped by using a backslash, ie. '\%'.
+
+NOTE: The RadixTreeSyslogParser's _grok_ implementation only supports a limited number of pattern types. However, these patterns should be sufficient to parse any syslog message format.
+
+The patterns should be arranged in the file from most specific to least specific since the first pattern to successfully match the syslog message will be used to construct the {opennms-product-name} event.
+
+[options="header, autowidth"]
+|===
+| Pattern   | Description
+| `INT`     | Positive integer.
+| `MONTH`   | 3-character English month abbreviation.
+| `NOSPACE` | String that contains no whitespace.
+| `STRING`  | String. Because this matches any character, it must be followed by a delimiter in the pattern string.
+|===
+
+[options="header, autowidth"]
+|===
+| Semantic Token | Description
+| `day` | 2-digit day of month (1-31).
+| `facilityPriority` | Facility-priority integer.
+| `hostname` | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
+| `hour` | 2-digit hour of day (0-23).
+| `message` | Remaining string message.
+| `messageId` | String message ID.
+| `minute` | 2-digit minute (0-59).
+| `month` | 2-digit month (1-12).
+| `processId` | String process ID.
+| `processName` | String process name.
+| `second` | 2-digit second (0-59).
+| `secondFraction` | 1- to 6-digit fractional second value as a string.
+| `timezone` | String timezone value.
+| `version` | Version.
+| `year` | 4-digit year.
+|===
+

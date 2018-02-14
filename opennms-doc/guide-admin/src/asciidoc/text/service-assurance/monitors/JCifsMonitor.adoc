@@ -1,0 +1,102 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== JCifsMonitor
+This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
+
+WARNING: This monitor is not installed by default.
+You have to install `opennmms-plugin-protocol-cifs` from your {opennms-product-name} installation repository.
+
+With the _JCIFS_ monitor you have different possibilities to test the availability of the _JCIFS_ service:
+
+With the _JCifsMonitor_ it is possible to run tests for the following use cases:
+
+* share is available in the network
+* a given file exists in the share
+* a given folder exists in the share
+* a given folder should contain at least one (1) file
+* a given folder folder should contain no (0) files
+* by testing on files and folders, you can use a regular expression to ignore specific file and folder names from the test
+
+A network resource in SMB like a file or folder is addressed as a link:https://en.wikipedia.org/wiki/Path_%28computing%29#Uniform_Naming_Convention[UNC Path].
+
+ \\server\share\folder\file.txt
+
+The Java implementation _jCIFS_, which implements the _CIFS/SMB_ network protocol, uses _SMB_ URLs to access the network resource.
+The same resource as in our example would look like this as an link:http://www.iana.org/assignments/uri-schemes/prov/smb[SMB URL]:
+
+ smb://workgroup;user:password@server/share/folder/file.txt
+
+The _JCifsMonitor_ can *not* test:
+
+* file contains specific content
+* a specific number of files in a folder, for example folder should contain exactly / more or less than x files
+* Age or modification time stamps of files or folders
+* Permissions or other attributes of files or folders
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.JCifsMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the JCifsMonitor
+[options="header, autowidth"]
+|===
+| Parameter           | Description                                                                                     | Required | Default value
+| `retry`             | Number of retries before the service is marked as _down_.                                       | optional | `0`
+| `domain`            | Windows domain where the user is located. You don't have to use the domain parameter if you use
+                        local user accounts.                                                                            | optional | empty String
+| `username`          | Username to access the resource over a network                                                  | optional | empty String
+| `password`          | Password for the user                                                                           | optional | empty String
+| `path`              | Path to the resource you want to test                                                           | required | empty String
+| `mode`              | The test mode which has the following options +
+                        `path_exist`: Service is _up_ if the resource is accessible +
+                        `path_not_exist`: Service is _up_ if the resource is *not* accessible +
+                        `folder_empty`: Service is _up_ if the folder is empty (0 files) +
+                        `folder_not_empty`: Service is _up_ if the folder has at least one file                         | optional | `path_exist`
+| `smbHost`           | Override the IP address of the SMB url to check shares on different file servers.               | optional | empty String
+| `folderIgnoreFiles` | Ignore specific files in folder with regular expression. This parameter will just be applied on
+                        `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+TIP: It makes little sense to have retries higher than `1`.
+     It is a waste of resources during the monitoring.
+
+TIP: Please consider, if you are accessing shares with Mac OSX you have some side effects with the hidden file '.DS_Store.'
+     It could give you false positives in monitoring, you can use then the `folderIgnoreFiles` parameter.
+
+===== Example test existence of a file
+
+This example shows how to configure the _JCifsMonitor_ to test if a file share is available over a network.
+For this example we have access to a share for error logs and we want to get an outage if we have any error log files in our folder.
+The share is named _log_.
+The service should go back to normal if the error log file is deleted and the folder is empty.
+
+.JCifsMonitor configuration to test that a shared folder is empty
+[source, xml]
+----
+<service name="CIFS-ErrorLog" interval="30000" user-defined="true" status="on">
+    <parameter key="retry" value="1" />
+    <parameter key="timeout" value="3000" />
+    <parameter key="domain" value="contoso" /><1>
+    <parameter key="username" value="MonitoringUser" /><2>
+    <parameter key="password" value="MonitoringPassword" /><3>
+    <parameter key="path" value="/fileshare/log/" /><4>
+    <parameter key="mode" value="folder_empty" /><5>
+</service>
+
+<monitor service="CIFS-ErrorLog" class-name="org.opennms.netmgt.poller.monitors.JCifsMonitor" />
+----
+<1> Name of the SMB or Microsoft Windows Domain
+<2> User for accessing the share
+<3> Password for accessing the share
+<4> Path to the folder inside of the share as part of the SMB URL
+<5> Mode is set to `folder_empty`

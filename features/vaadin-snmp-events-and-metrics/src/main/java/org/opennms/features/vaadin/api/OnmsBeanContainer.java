@@ -97,7 +97,7 @@ public class OnmsBeanContainer<T> extends BeanContainer<Long, T> {
      * @return the OpenNMS beans
      */
     public List<T> getOnmsBeans() {
-        List<T> beans = new ArrayList<T>();
+        List<T> beans = new ArrayList<>();
         for (Object itemId : getItemIds()) {
             beans.add(getOnmsBean(itemId));
         }

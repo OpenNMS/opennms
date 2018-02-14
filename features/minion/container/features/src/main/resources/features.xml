@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="karaf-extensions" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+    <feature name="karaf-extender" description="Karaf Extender" version="${project.version}">
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.opennms.features.minion.container/extender/${project.version}</bundle>
+    </feature>
+
+    <feature name="scv" description="Secure Credentials Vault" version="${project.version}">
+        <bundle dependency="true">mvn:commons-codec/commons-codec/${commonsCodecVersion}</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
+        <bundle>blueprint:mvn:org.opennms.features.minion.container/scv/${project.version}/xml/blueprint-scv</bundle>
+        <!-- The shell relies on the service exposed in the blueprint -->
+        <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
+    </feature>
+</features>

@@ -460,14 +460,8 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      */
     public class CreateOperation extends Operation {
 
-        private Map<String, String> attributeMappings;
-
         CreateOperation(String fileName, Object rrdDef) {
             super(fileName, CREATE, rrdDef, true);
-        }
-
-        public void setAttributeMappings(Map<String, String> attributeMappings) {
-            this.attributeMappings = attributeMappings;
         }
 
         @Override
@@ -480,7 +474,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
             }
 
             // create the file
-            m_delegate.createFile(getData(), attributeMappings);
+            m_delegate.createFile(getData());
 
             // keep stats
             setCreatesCompleted(getCreatesCompleted() + 1);
@@ -946,7 +940,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
      *
      * @return a {@link org.opennms.netmgt.rrd.RrdStrategy} object.
      */
-    RrdStrategy<Object, Object> getDelegate() {
+    public RrdStrategy<Object, Object> getDelegate() {
         return m_delegate;
     }
 
@@ -974,7 +968,7 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     /** {@inheritDoc} */
     @Override
     public CreateOperation createDefinition(String creator, String directory, String rrdName, int step, List<RrdDataSource> dataSources, List<String> rraList) throws Exception {
-        String fileName = directory + File.separator + rrdName + RrdUtils.getExtension();
+        String fileName = directory + File.separator + rrdName + m_delegate.getDefaultFileExtension();
         Object def = m_delegate.createDefinition(creator, directory, rrdName, step, dataSources, rraList);
         return makeCreateOperation(fileName, def);
     }
@@ -988,16 +982,15 @@ public class QueuingRrdStrategy implements RrdStrategy<QueuingRrdStrategy.Create
     /**
      * <p>createFile</p>
      *
-     * @param op a {@link org.opennms.netmgt.rrd.QueuingRrdStrategy.Operation} object.
+     * @param op a {@link Operation} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-    public void createFile(CreateOperation op, Map<String, String> attributeMappings) throws Exception {
+    public void createFile(CreateOperation op) throws Exception {
         if (m_queueCreates) {
-            op.setAttributeMappings(attributeMappings);
             addOperation(op);
         } else {
-            m_delegate.createFile(op.getData(), attributeMappings);
+            m_delegate.createFile(op.getData());
         }
     }
 

@@ -50,9 +50,9 @@ import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.ssl.SslHandler;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
-import org.opennms.netmgt.provision.support.trustmanager.RelaxedX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,7 +222,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
      * @throws KeyManagementException 
      */
     private static SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
-        final TrustManager[] tm = { new RelaxedX509TrustManager() };
+        final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");
         sslContext.init(null, tm, new java.security.SecureRandom());
         return sslContext;

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://xmlns.opennms.org/xsd/spring/onms-osgi
+           http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+    <context:annotation-config />
+
+    <bean id="alarmProvider" class="org.opennms.netmgt.bsm.service.internal.AlarmProviderImpl"/>
+    <!-- The stateMachine/businessServiceManager bean is in component-dao instead of component-service because we require
+         the bean to be same throughout the contexts. Beans in component-service are currently initialized
+         multiple times, i.e. once for the bsmd and again for web -->
+    <bean id="stateMachine" class="org.opennms.netmgt.bsm.service.internal.DefaultBusinessServiceStateMachine" />
+    <onmsgi:service interface="org.opennms.netmgt.bsm.service.BusinessServiceStateMachine" ref="stateMachine" />
+    <onmsgi:list id="stateChangeHandlerList" interface="org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler">
+        <onmsgi:listener ref="stateMachine" bind-method="addHandler" unbind-method="removeHandler" />
+    </onmsgi:list>
+    <bean id="businessServiceManager" class="org.opennms.netmgt.bsm.service.internal.BusinessServiceManagerImpl" />
+    <onmsgi:service ref="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" />
+</beans>

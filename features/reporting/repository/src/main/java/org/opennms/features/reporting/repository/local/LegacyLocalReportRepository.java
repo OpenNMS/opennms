@@ -28,6 +28,13 @@
 
 package org.opennms.features.reporting.repository.local;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.opennms.features.reporting.dao.LocalReportsDao;
 import org.opennms.features.reporting.dao.jasper.LocalJasperReportsDao;
@@ -36,15 +43,7 @@ import org.opennms.features.reporting.model.basicreport.LegacyLocalReportDefinit
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
-
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
 
 /**
  * <p>LegacyLocalReportRepository class.</p>
@@ -56,9 +55,6 @@ import java.util.logging.Level;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {
-        "classpath:META-INF/opennms/applicationContext-reportingRepository.xml",
-        "classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalReportRepository implements ReportRepository {
 
     /**
@@ -117,7 +113,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getReports() {
-        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> resultList = new ArrayList<>();
         for (BasicReportDefinition report : m_localReportsDao.getReports()) {
             BasicReportDefinition resultReport = new LegacyLocalReportDefinition();
             try {
@@ -142,7 +138,7 @@ public class LegacyLocalReportRepository implements ReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> resultList = new ArrayList<>();
         for (BasicReportDefinition report : m_localReportsDao.getOnlineReports()) {
             BasicReportDefinition resultReport = new LegacyLocalReportDefinition();
             try {

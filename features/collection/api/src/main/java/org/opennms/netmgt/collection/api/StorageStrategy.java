@@ -29,8 +29,7 @@
 package org.opennms.netmgt.collection.api;
 
 import java.util.List;
-
-import org.opennms.netmgt.config.datacollection.Parameter;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * <p>StorageStrategy interface.</p>
@@ -41,9 +40,9 @@ public interface StorageStrategy {
      *
      * @param resourceParent a {@link java.lang.String} object.
      * @param resource a {@link java.lang.String} object.
-     * @return a {@link java.lang.String} object.
+     * @return a {@link java.nio.file.Path} object.
      */
-    public String getRelativePathForAttribute(String resourceParent, String resource);
+    public ResourcePath getRelativePathForAttribute(ResourcePath resourceParent, String resource);
 
     /**
      * <p>setResourceTypeName</p>

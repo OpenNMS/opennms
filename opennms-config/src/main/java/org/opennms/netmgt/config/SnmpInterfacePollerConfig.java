@@ -29,12 +29,9 @@
 package org.opennms.netmgt.config;
 
 import java.io.IOException;
-
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 
 /**
  * <p>SnmpInterfacePollerConfig interface.</p>
@@ -117,7 +114,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a {@link java.lang.String} object.
      */
-    String getCriteria(String pkgName,String pkgInterfaceName);
+    Optional<String> getCriteria(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasPort</p>
      *
@@ -133,7 +130,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    int getPort(String pkgName,String pkgInterfaceName);
+    Optional<Integer> getPort(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasTimeout</p>
      *
@@ -149,7 +146,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    int getTimeout(String pkgName,String pkgInterfaceName);
+    Optional<Integer> getTimeout(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasRetries</p>
      *
@@ -165,7 +162,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    int getRetries(String pkgName,String pkgInterfaceName);
+    Optional<Integer> getRetries(String pkgName,String pkgInterfaceName);
     /**
      * <p>hasMaxVarsPerPdu</p>
      *
@@ -181,7 +178,7 @@ public interface SnmpInterfacePollerConfig {
      * @param pkgInterfaceName a {@link java.lang.String} object.
      * @return a int.
      */
-    int getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
+    Integer getMaxVarsPerPdu(String pkgName,String pkgInterfaceName);
     /**
      * <p>rebuildPackageIpListMap</p>
      */
@@ -190,8 +187,6 @@ public interface SnmpInterfacePollerConfig {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    void update() throws IOException, MarshalException, ValidationException;
+    void update() throws IOException;
 }

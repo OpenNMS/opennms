@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 
 /**
  * Detects the presence of the Citrix service on an IP address using
@@ -40,8 +37,7 @@ import org.springframework.stereotype.Component;
  * @version $Id: $
  */
 
-@Component
-@Scope("prototype")
+
 public class CitrixDetector extends AsyncLineOrientedDetectorMinaImpl {
     
     

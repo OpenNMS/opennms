@@ -39,9 +39,8 @@ import java.util.Date;
  */
 public class DbPollEvent extends PollEvent {
     
-    int m_eventId;
-    String m_uei;
-    Date m_date;
+    private final int m_eventId;
+    private final Date m_date;
     
     /**
      * <p>Constructor for DbPollEvent.</p>

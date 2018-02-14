@@ -1579,7 +1579,7 @@ public class Asset extends Object {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         builder.append("Asset [nodeId=");
         builder.append(nodeId);
         builder.append(", lastModifiedDate=");

@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +80,7 @@ public abstract class IpListFromUrl {
      * @return list of IPs in the file
      */
     public static List<String> fetch(final String url) {
-        final List<String> iplist = new ArrayList<String>();
+        final List<String> iplist = new ArrayList<>();
 
         URL u = null;
         InputStream stream = null;
@@ -93,7 +94,7 @@ public abstract class IpListFromUrl {
 
             // check to see if the file exists
             if (stream != null) {
-                isr = new InputStreamReader(stream, "UTF-8");
+                isr = new InputStreamReader(stream, StandardCharsets.UTF_8);
                 br = new BufferedReader(isr);
 
                 String ipLine = null;

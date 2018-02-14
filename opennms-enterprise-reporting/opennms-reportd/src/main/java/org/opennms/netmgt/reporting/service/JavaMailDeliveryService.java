@@ -31,54 +31,70 @@ package org.opennms.netmgt.reporting.service;
 import java.io.File;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
 
 import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaSendMailer;
+import org.opennms.netmgt.config.javamail.SendmailConfig;
+import org.opennms.netmgt.config.javamail.SendmailMessage;
+import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.reportd.Report;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
 /**
- * <p>JavaMailDeliveryService class.</p>
- *
+ * The Class JavaMailDeliveryService.
+ * 
  * @author ranger
- * @version $Id: $
  */
 public class JavaMailDeliveryService implements ReportDeliveryService {
-	
-	
-	private static final Logger LOG = LoggerFactory
-			.getLogger(JavaMailDeliveryService.class);
 
+    /** The Constant LOG. */
+    private static final Logger LOG = LoggerFactory.getLogger(JavaMailDeliveryService.class);
+
+    /** The JavaMail configuration DAO. */
     JavaMailConfigurationDao m_JavamailConfigDao;
 
-    /** {@inheritDoc} 
-     * @throws ReportDeliveryException */
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.reporting.service.ReportDeliveryService#deliverReport(org.opennms.netmgt.config.reportd.Report, java.lang.String)
+     */
     @Override
     public void deliverReport(Report report, String fileName) throws ReportDeliveryException {
         try {
+            SendmailConfig config = null;
 
-            JavaSendMailer sm = null;
-            String mailer = report.getMailer();
-            LOG.debug("deliverReport with mailer={}", mailer);
-            if (mailer != null && mailer.length() > 0) {
-                sm = new JavaSendMailer(m_JavamailConfigDao.getSendMailConfig(mailer));
+            if (report.getMailer().isPresent()) {
+                final String mailer = report.getMailer().get();
+                LOG.debug("deliverReport with mailer={}", mailer);
+                config = m_JavamailConfigDao.getSendMailConfig(mailer);
             } else {
-                sm = new JavaSendMailer(m_JavamailConfigDao.getDefaultSendmailConfig());
+                LOG.debug("deliverReport with default sendmail config");
+                config = m_JavamailConfigDao.getDefaultSendmailConfig();
             }
-            MimeMessageHelper helper = new MimeMessageHelper(sm.getMessage().getMimeMessage(),true);
-                
-            helper.setTo(report.getRecipient());
-            helper.setSubject("OpenNMS Report: " + report.getReportName());
-            helper.setText("OpenNMS Report: "); // FIXME: sm.send() will override this.
-                
-            helper.addAttachment(fileName, new File(fileName));
-                
-            sm.setMessage(new MimeMailMessage(helper));
-            sm.send();
+
+            JavaSendMailer sm = new JavaSendMailer(config);
+            MimeMessage msg = new MimeMessage(sm.getSession());
+
+            if (config.getSendmailMessage() != null && config.getSendmailProtocol() != null) {
+                final SendmailMessage sendmailMessage = config.getSendmailMessage();
+                final SendmailProtocol sendmailProtocol = config.getSendmailProtocol();
+
+                MimeMessageHelper helper = new MimeMessageHelper(msg, true, sendmailProtocol.getCharSet());
+                helper.setFrom(sendmailMessage.getFrom());
+                helper.setTo(report.getRecipients().toArray(new String[0]));
+                helper.setSubject("OpenNMS Report: " + report.getReportName());
+                if ("text/html".equals(sendmailProtocol.getMessageContentType().toLowerCase())) {
+                    helper.setText(sendmailMessage.getBody().replaceAll("\\<[^>]*>",""), sendmailMessage.getBody());
+                } else {
+                    helper.setText(sendmailMessage.getBody());
+                }
+                helper.addAttachment(fileName, new File(fileName));
+                sm.send(msg);
+            } else {
+                LOG.error("sendmail-message or sendmail-protocol is not configured!");
+            }
 
         } catch (JavaMailerException e) {
             LOG.error("Problem with JavaMailer {}", e.getMessage(), e);
@@ -90,33 +106,29 @@ public class JavaMailDeliveryService implements ReportDeliveryService {
             LOG.error("Unexpected exception: {}",e.getMessage(), e);
             throw new ReportDeliveryException("Caught unexpected " + e.getClass().getName() + ": " + e.getMessage());
         }
-        
+
     }
 
-
     /**
-     * <p>getJavamailConfigDao</p>
+     * Gets the JavaMail configuration DAO.
      *
-     * @return a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
+     * @return the JavaMail configuration DAO
      */
     public JavaMailConfigurationDao getJavamailConfigDao() {
         return m_JavamailConfigDao;
     }
 
-    
     /**
-     * <p>setJavamailConfigDao</p>
+     * Sets the JavaMail configuration DAO.
      *
-     * @param javamailConfigDao a {@link org.opennms.netmgt.dao.api.JavaMailConfigurationDao} object.
+     * @param javamailConfigDao the new JavaMail configuration DAO
      */
     public void setJavamailConfigDao(JavaMailConfigurationDao javamailConfigDao) {
         m_JavamailConfigDao = javamailConfigDao;
     }
-    
-    /**
-     * <p>reloadConfiguration</p>
-     * 
-     * Triggers a reload of the Javamail delivery service's configuration
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.reporting.service.ReportDeliveryService#reloadConfiguration()
      */
     public void reloadConfiguration() {
         m_JavamailConfigDao.reloadConfiguration();

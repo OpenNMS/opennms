@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tl1d-configuration 
     xmlns:this="http://xmlns.opennms.org/xsd/config/tl1d-configuration" 
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-    xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/tl1d-configuration">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
   <tl1-element host="127.0.0.1" 
                port="15001" 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<userinfo xmlns="http://xmlns.opennms.org/xsd/users">
+    <header>
+        <rev>.9</rev>
+        <created>Thursday, June 9, 2016 8:23:02 PM GMT</created>
+        <mstation>master.nmanage.com</mstation>
+    </header>
+    <users>
+        <user>
+            <user-id>admin</user-id>
+            <full-name>Administrator</full-name>
+            <user-comments>Default administrator, do not delete</user-comments>
+            <password>21232F297A57A5A743894A0E4A801FC3</password>
+        </user>
+        <user read-only="false">
+            <user-id>ranger</user-id>
+            <full-name></full-name>
+            <user-comments></user-comments>
+            <password salt="true">NThoObtudxITABYLHZhGiVWp3pIKGxS4hJex88+xIMDCnMBzaNsA4XDioLt+aR2G</password>
+        </user>
+    </users>
+</userinfo>

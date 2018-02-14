@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,9 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+
+import javax.xml.bind.ValidationException;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -46,9 +49,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 public abstract class AbstractForeignSourceRepository implements ForeignSourceRepository {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(AbstractForeignSourceRepository.class);
-    
+
     /**
      * <p>Constructor for AbstractForeignSourceRepository.</p>
      */
@@ -59,7 +62,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     @Override
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
- 
+
         LOG.debug("importing requisition from {}", resource);
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         requisition.setResource(resource);
@@ -97,7 +100,7 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(outputFile);
-            writer = new OutputStreamWriter(outputStream, "UTF-8");
+            writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
             JaxbUtils.marshal(foreignSource, writer);
         } catch (final Throwable e) {
             throw new ForeignSourceRepositoryException("unable to write requisition to " + outputFile.getPath(), e);
@@ -129,30 +132,31 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
         Requisition req = getRequisition(foreignSource);
         return (req == null ? null : req.getNodeRequistion(foreignId));
     }
-    
+
     @Override
     public void validate(final ForeignSource foreignSource) throws ForeignSourceRepositoryException {
-        /*
-    	final String name = foreignSource.getName();
-		if (name.contains(":")) {
-    		throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") cannot contain a colon!");
-    	}
-         */
+        final String name = foreignSource.getName();
+        if (name.contains("/")) {
+            throw new ForeignSourceRepositoryException("Foreign Source (" + name + ") contains invalid characters. ('/' is forbidden.)");
+        }
     }
-    
+
     @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
-        /*
-    	final String foreignSource = requisition.getForeignSource();
-		if (foreignSource.contains(":")) {
-    		throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") cannot contain a colon!");
-    	}
-    	for (final RequisitionNode node : requisition.getNodes()) {
-    		final String foreignId = node.getForeignId();
-			if (foreignId.contains(":")) {
-        		throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " cannot contain a colon!");
-    		}
-    	}
-         */
+        try {
+            requisition.validate();
+        } catch (final ValidationException e) {
+            throw new ForeignSourceRepositoryException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void clear() throws ForeignSourceRepositoryException {
+        for (final Requisition req : getRequisitions()) {
+            if (req != null) delete(req);
+        }
+        for (final ForeignSource fs : getForeignSources()) {
+            if (fs != null) delete(fs);
+        }
     }
 }

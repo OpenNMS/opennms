@@ -42,8 +42,6 @@
 	session="true"
 	import="
 		java.io.IOException,
-		org.exolab.castor.xml.MarshalException,
-		org.exolab.castor.xml.ValidationException,
 		org.opennms.web.category.*,
 		org.opennms.web.element.*,
 		java.util.Date
@@ -71,10 +69,6 @@
             m_warningThreshold = m_model.getCategoryWarningThreshold(CategoryModel.OVERALL_AVAILABILITY_CATEGORY);            
         } catch (IOException e) {
             throw new ServletException("Could not instantiate the CategoryModel", e);
-        } catch (MarshalException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
-        } catch (ValidationException e) {
-            throw new ServletException("Could not instantiate the CategoryModel", e);
         }
     }
 %>
@@ -88,7 +82,7 @@
     if (service.isManaged()) {
         //find the availability value for this node
         double rtcValue =
-            m_model.getServiceAvailability(service.getNodeId(),
+            CategoryModel.getServiceAvailability(service.getNodeId(),
 	                                       service.getIpAddress(),
                                            service.getServiceId());
         
@@ -109,7 +103,7 @@
     int nodeId = service.getNodeId();
     String ipAddr = service.getIpAddress();
 
-    Outage[] outages = new OutageModel().getCurrentOutagesForNode(nodeId);
+    Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 
     String warnClass = "Normal";
 
@@ -166,4 +160,6 @@
 </table>
 </div>
 
-<script type="text/javascript" src="js/timeline-resize.js"></script>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="timeline-resize" />
+</jsp:include>

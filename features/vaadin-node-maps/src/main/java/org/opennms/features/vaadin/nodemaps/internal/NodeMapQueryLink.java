@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.geo.GeoAssetProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 import com.vaadin.server.VaadinServlet;
@@ -56,14 +55,14 @@ public class NodeMapQueryLink implements Operation {
     }
 
     @Override
-    public Undoer execute(final List<VertexRef> targets, final OperationContext operationContext) {
+    public void execute(final List<VertexRef> targets, final OperationContext operationContext) {
         final Collection<VertexRef> availableNodes = m_geoAssetProvider.getNodesWithCoordinates();
 
         final StringBuilder sb = new StringBuilder();
         sb.append(VaadinServlet.getCurrent().getServletContext().getContextPath());
         sb.append("/node-maps#search/nodeId%20in%20");
 
-        final List<String> nodeIds = new ArrayList<String>();
+        final List<String> nodeIds = new ArrayList<>();
         for (final VertexRef ref : targets) {
             if (availableNodes.contains(ref)) {
                 nodeIds.add(ref.getId());
@@ -82,8 +81,6 @@ public class NodeMapQueryLink implements Operation {
         LOG.info("redirecting to: " + redirectUrl);
         final UI ui = operationContext.getMainWindow();
         ui.getPage().getJavaScript().execute("window.location = '" + redirectUrl + "';");
-
-        return null;
     }
 
     @Override

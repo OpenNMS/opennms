@@ -28,18 +28,34 @@
 
 package org.opennms.core.utils;
 
-import javax.swing.filechooser.FileSystemView;
-import javax.xml.transform.*;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.regex.Pattern;
 
+import javax.swing.filechooser.FileSystemView;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public abstract class StringUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
+
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
     private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
 
@@ -103,9 +119,9 @@ public abstract class StringUtils {
     }
 
     private static class CommandArrayGenerator {
-        private final ArrayList<String> m_segments = new ArrayList<String>();
+        private final ArrayList<String> m_segments = new ArrayList<>();
         private boolean m_isInQuotes = false;
-        private StringBuffer m_segmentBuffer = new StringBuffer();
+        private StringBuilder m_segmentBuffer = new StringBuilder();
 
         public CommandArrayGenerator(String s) {
             if (s == null) {
@@ -124,11 +140,6 @@ public abstract class StringUtils {
 
         private void onChar(char c) {
             if (c == '"') {
-                if(m_isInQuotes) {
-                    // Reset the segment if we reach another quote
-                    // while we're in quotes
-                    resetSegment();
-                }
                 m_isInQuotes = !m_isInQuotes; // Toggle
             } else if (isWhitespace(c)) {
                 if (!m_isInQuotes) {
@@ -153,7 +164,7 @@ public abstract class StringUtils {
             // Reset the segment if the buffer is not empty
             if (m_segmentBuffer.length() > 0) {
                 m_segments.add(m_segmentBuffer.toString());
-                m_segmentBuffer = new StringBuffer();
+                m_segmentBuffer = new StringBuilder();
             }
         }
 
@@ -210,24 +221,207 @@ public abstract class StringUtils {
      * Uses the Xalan javax.transform classes to indent an XML string properly
      * so that it is easier to read.
      */
-    public static String prettyXml(String xml) throws UnsupportedEncodingException, TransformerException {
+    public static String prettyXml(String xml) throws TransformerException {
         StringWriter out = new StringWriter();
 
         TransformerFactory transFactory = TransformerFactory.newInstance();
         Transformer transformer  = transFactory.newTransformer();
 
         // Set options on the transformer so that it will indent the XML properly
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
         StreamResult result = new StreamResult(out);
-        Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes("UTF-8")));
+        Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 
         // Run the transformer to put the XML into the StringWriter
         transformer.transform(source, result);
 
         return out.toString().trim();
+    }
+    
+    public static String iso8601LocalOffsetString(Date d) {
+        return iso8601OffsetString(d, ZoneId.systemDefault(), null);
+    }
+    
+    public static String iso8601OffsetString(Date d, ZoneId zone, ChronoUnit truncateTo) {
+        ZonedDateTime zdt = ((d).toInstant())
+                .atZone(zone);
+        if(truncateTo != null) {
+            zdt = zdt.truncatedTo(truncateTo);
+        }
+        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
+    public static String stripExtraQuotes(String string) {
+        return string.replaceAll("^\"(.*)\"$", "$1");
+    }
+
+    /**
+     * This is an optimized version of:
+     *    return a != null && a.trim().equals(b)
+     *
+     * that avoids creating a trimmed substring of A before
+     * comparison.
+     *
+     * Instead A and B are compared in place.
+     *
+     * @param a string to trim before comparing
+     * @param b string to compare
+     * @return <code>true</code> if A equals B, after A is trimmed
+     */
+    public static boolean equalsTrimmed(String a, String b) {
+        if (a == null) {
+            return false;
+        }
+
+        int alen = a.length();
+        final int blen = b.length();
+
+        // Fail fast: If B is longer than A, B cannot be a substring of A
+        if (blen > alen) {
+            return false;
+        }
+
+        // Find the index of the first non-whitespace character in A
+        int i = 0;
+        while ((i < alen) && (a.charAt(i) <= ' ')) {
+            i++;
+        }
+
+        // Match the subsequent characters in A to those in B
+        int j = 0;
+        while ((i < alen && j < blen)) {
+            if (a.charAt(i) != b.charAt(j)) {
+                return false;
+            }
+            i++;
+            j++;
+        }
+
+        // If we've reached the end of A, then we have a match
+        if (i == alen) {
+            return true;
+        }
+
+        // "Trim" the whitespace characters off the end of A 
+        while ((i < alen) && (a.charAt(alen - 1) <= ' ')) {
+            alen--;
+        }
+
+        // If only whitespace characters remained on A, then we have a match
+        if (alen - i == 0) {
+            return true;
+        }
+
+        // There are extra characters at the tail of A, that don't show up in B
+        return false;
+    }
+
+    public static boolean isEmpty(final String text) {
+        return text == null || text.trim().length() == 0;
+    }
+
+    public static boolean hasText(final String text) {
+        return text != null && text.trim().length() > 0;
+    }
+
+    /**
+     * <p>NMS-9091: This method calls {@link Date#toString()} but then calls
+     * {@link Date#setTime(long)} so that internally, the {@link Date#cdate}
+     * field is deallocated. This saves significant heap space for {@link Date} 
+     * instances that are stored in long-lived collections.</p>
+     * 
+     * <ul>
+     * <li>java.util.Date with only fastTime: 24 bytes</li>
+     * <li>java.util.Date with fastTime and cdate: 120 bytes</li>
+     * </ul>
+     * 
+     * @param date
+     * @return Value of date.toString()
+     */
+    public static String toStringEfficiently(final Date date) {
+        final long time = date.getTime();
+        final String retval = date.toString();
+        date.setTime(time);
+        return retval;
+    }
+
+    public static Integer parseDecimalInt(String value) {
+        return parseDecimalInt(value, true);
+    }
+
+    /**
+     * This is a quick and dirty parser for String representations
+     * of decimal integers. It should be up to 2X faster than
+     * {@link Integer#parseInt(String)}.
+     * 
+     * @param value Positive or negative decimal string value
+     * @return Integer representing the string value
+     */
+    public static Integer parseDecimalInt(String value, boolean throwExceptions) {
+        final int length = value.length();
+
+        if (value == null || length < 1) {
+            if (throwExceptions) {
+                throw new NumberFormatException("Null or empty value");
+            } else {
+                return null;
+            }
+        }
+
+        try {
+            int sign = -1;
+            int i = 0;
+
+            if (value.charAt(0) == '-') {
+                if (length == 1) {
+                    if (throwExceptions) {
+                        throw new NumberFormatException("No digits in value: " + value);
+                    } else {
+                        return null;
+                    }
+                }
+                sign = 1;
+                i = 1;
+            }
+
+            int retval = 0;
+            int oldValue;
+            int digit;
+
+            for (; i < length; i++) {
+                oldValue = retval;
+                final char current = value.charAt(i);
+                digit = (current - '0');
+                if (digit < 0 || digit > 9) {
+                    if (throwExceptions) {
+                        throw new NumberFormatException("Invalid digit: " + current);
+                    } else {
+                        return null;
+                    }
+                }
+                retval = (retval * 10) - digit;
+                // If the negative value overflows to positive, then throw an exception
+                if (retval > oldValue) {
+                    if (throwExceptions) {
+                        throw new NumberFormatException(sign == -1 ? "Overflow" : "Underflow");
+                    } else {
+                        return null;
+                    }
+                }
+            }
+            return sign * retval;
+        } catch (Exception e) {
+            if (throwExceptions) {
+                NumberFormatException nfe = new NumberFormatException("Could not parse integer value: " + value);
+                nfe.initCause(e);
+                throw nfe;
+            } else {
+                return null;
+            }
+        }
     }
 }

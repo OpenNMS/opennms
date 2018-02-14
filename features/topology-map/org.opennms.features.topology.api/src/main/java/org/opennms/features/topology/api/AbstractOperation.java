@@ -49,7 +49,7 @@ public abstract class AbstractOperation implements Operation {
 
     @Override
     public boolean enabled(final List<VertexRef> targets, final OperationContext operationContext) {
-        if (targets == null || targets.size() < 2) {
+        if (targets != null && targets.size() == 1) {
             for (final VertexRef target : targets) {
                 final Integer nodeValue = getNodeIdValue(operationContext, target);
                 if (nodeValue != null && nodeValue > 0) {
@@ -81,7 +81,7 @@ public abstract class AbstractOperation implements Operation {
     }
 
     protected static Vertex getVertexItem(final OperationContext operationContext, final VertexRef target) {
-        Vertex vertex = operationContext.getGraphContainer().getBaseTopology().getVertex(target, operationContext.getGraphContainer().getCriteria());
+        Vertex vertex = operationContext.getGraphContainer().getTopologyServiceClient().getVertex(target, operationContext.getGraphContainer().getCriteria());
         if (vertex == null) {
             LoggerFactory.getLogger(AbstractOperation.class).debug("Null vertex found for vertex reference: {}:{}", target.getNamespace(), target.getId());
             return null;

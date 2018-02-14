@@ -89,6 +89,7 @@ public class SearchStateTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         GWTMockUtilities.disarm();
+
         final SchedulerImpl scheduler = new TestSchedulerImpl();
         Whitebox.setInternalState(SchedulerImpl.class, "INSTANCE", scheduler);
     }
@@ -371,16 +372,6 @@ public class SearchStateTest {
         @Override public String getValue() { return m_value; }
         @Override public void setValue(final String value) { m_value = value; }
         @Override public String toString() { return "TestValueItem [value=" + m_value + "]"; }
-    }
-
-    private static final class TestSchedulerImpl extends SchedulerImpl {
-        @Override public void scheduleDeferred(final ScheduledCommand cmd) {
-            cmd.execute();
-        }
-
-        @Override public void scheduleIncremental(final RepeatingCommand cmd) {
-            while (cmd.execute()) {}
-        }
     }
 
     private static class MockSearchStateManager extends SearchStateManager {

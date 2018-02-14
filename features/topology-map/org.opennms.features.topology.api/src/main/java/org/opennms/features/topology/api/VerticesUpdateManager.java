@@ -49,14 +49,21 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
 
         private final Set<VertexRef> m_vertexRefs;
         private final boolean m_displayingAllVertices;
+        private final TopologyServiceClient m_source;
 
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs) {
-            this(vertexRefs, false);
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, TopologyServiceClient source) {
+            this(vertexRefs, source, false);
         }
 
-        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, boolean displayingAllVertices){
+        /**
+         * @param vertexRefs            The vertices currently selected.
+         * @param source                The source of the event.
+         * @param displayingAllVertices If all vertices are selected this should be true.
+         */
+        public VerticesUpdateEvent(Set<VertexRef> vertexRefs, TopologyServiceClient source, boolean displayingAllVertices){
             m_vertexRefs = vertexRefs;
             m_displayingAllVertices = displayingAllVertices;
+            m_source = source;
         }
 
         public Set<VertexRef> getVertexRefs() {
@@ -66,10 +73,14 @@ public interface VerticesUpdateManager extends SelectionListener, GraphContainer
         public boolean allVerticesSelected(){
             return m_displayingAllVertices;
         }
-        
+
+        public TopologyServiceClient getSource() {
+            return m_source;
+        }
+
         @Override
         public String toString() {
-            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + "]";
+            return "VerticesUpdateEvent@" + this.hashCode() + " [displayAll=" + m_displayingAllVertices + ", refs=" + m_vertexRefs + ", source=" + m_source + "]";
         }
     }
 }

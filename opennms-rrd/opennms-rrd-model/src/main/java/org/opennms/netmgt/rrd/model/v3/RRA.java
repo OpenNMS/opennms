@@ -56,7 +56,7 @@ public class RRA extends AbstractRRA {
     private Parameters parameters = new Parameters();
 
     /** The CDP Data. */
-    private List<RRADS> dataSources = new ArrayList<RRADS>();
+    private List<RRADS> dataSources = new ArrayList<>();
 
     /**
      * Gets the consolidation function.
@@ -156,6 +156,34 @@ public class RRA extends AbstractRRA {
         clone.getDataSources().add(getDataSources().get(dsIndex));
         clone.setParameters(getParameters());
         return clone;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRA#formatMergeable(org.opennms.netmgt.rrd.model.AbstractRRA)
+     */
+    @Override
+    public boolean formatMergeable(AbstractRRA sourceRra) {
+        if (sourceRra == null || sourceRra instanceof RRA == false)
+            return false;
+        if (!getPdpPerRow().equals(sourceRra.getPdpPerRow()))
+            return false;
+        RRA rra = (RRA) sourceRra;
+        if (this.consolidationFunction != null) {
+            if (rra.consolidationFunction == null) return false;
+            else if (!(this.consolidationFunction.equals(rra.consolidationFunction))) 
+                return false;
+        }
+        else if (rra.consolidationFunction != null)
+            return false;
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.netmgt.rrd.model.AbstractRRA#hasAverageAsCF()
+     */
+    @Override
+    public boolean hasAverageAsCF() {
+        return consolidationFunction.equals(CFType.AVERAGE);
     }
 
 }

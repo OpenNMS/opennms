@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<datacollection-config rrdRepository="%rrdRepository%">
+	<snmp-collection name="default" snmpStorageFlag="select">
+		<rrd step="300">
+			<rra>RRA:AVERAGE:0.5:1:2016</rra>
+			<rra>RRA:AVERAGE:0.5:12:1488</rra>
+			<rra>RRA:AVERAGE:0.5:288:366</rra>
+			<rra>RRA:MAX:0.5:288:366</rra>
+			<rra>RRA:MIN:0.5:288:366</rra>
+		</rrd>
+
+		<resourceType name="bsnAPEntry" label="Cisco Wireless AP" resourceLabel="${bsnAPName} (index ${index})">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+		<resourceType name="bsnAPIfLoadParametersEntry" label="Cisco Wireless AP Resources" resourceLabel="${bsnAPName} (index ${index})">
+			<persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy" />
+			<storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy" />
+		</resourceType>
+
+		<groups>
+		<group name="bsnAPTable" ifType="all">
+			<mibObj oid=".1.3.6.1.4.1.14179.2.2.1.1.3" instance="bsnAPEntry" alias="bsnAPName" type="string" />
+		</group>
+
+		<group name="bsnAPIfLoadParametersTable" ifType="all">
+			<mibObj oid=".1.3.6.1.4.1.14179.2.2.13.1.4" instance="bsnAPIfLoadParametersEntry" alias="bsnAPIfLoadNumOfCli" type="integer" />
+			<property instance="bsnAPIfLoadParametersEntry" alias="bsnAPName">
+				<parameter key="source-type" value="bsnAPEntry" />
+				<parameter key="source-alias" value="bsnAPName" />
+				<parameter key="index-pattern" value="^(.+)\.\d+$" />
+			</property>
+			<property instance="bsnAPIfLoadParametersEntry" alias="slotNumber" class-name="org.opennms.netmgt.collectd.IndexSplitPropertyExtender">
+				<parameter key="index-pattern" value="^.+\.(\d+)$" />
+			</property>
+		</group>
+		</groups>
+
+		<systems>
+			<systemDef name="Cisco WLC 5520">
+				<sysoidMask>.1.3.6.1.4.1.9.1.</sysoidMask>
+				<collect>
+					<includeGroup>bsnAPTable</includeGroup>
+					<includeGroup>bsnAPIfLoadParametersTable</includeGroup>
+				</collect>
+			</systemDef>
+		</systems>
+	</snmp-collection>
+</datacollection-config>

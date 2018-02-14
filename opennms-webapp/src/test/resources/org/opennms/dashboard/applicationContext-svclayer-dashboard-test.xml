@@ -3,7 +3,7 @@
      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
      xmlns:tx="http://www.springframework.org/schema/tx" 
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
 
   <tx:annotation-driven />
   
@@ -22,7 +22,7 @@
   </bean>
   
   <!-- Override the configResource location in applicationContext-dao.xml -->
-  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.castor.DefaultSurveillanceViewConfigDao">
+  <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">
     <property name="configResource" value="classpath:/org/opennms/web/svclayer/surveillance-views-gwtSurveillanceService.xml" />
   </bean>
   

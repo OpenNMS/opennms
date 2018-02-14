@@ -83,7 +83,7 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         return Arrays.asList(new Object[][] {
                 {
                     getMinimalPollerConfiguration(),
-                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" xmlrpc=\"false\" pathOutageEnabled=\"false\">"
+                    "<poller-configuration threads=\"30\" nextOutageId=\"SELECT nextval('outageNxtId')\" serviceUnresponsiveEnabled=\"false\" pathOutageEnabled=\"false\">"
                     + "   <node-outage status=\"on\" pollAllIfNoCriticalServiceDefined=\"true\"/>"
                     + "   <package name=\"test\">"
                     + "      <filter>abc</filter>"
@@ -152,7 +152,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");
@@ -202,7 +201,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.setThreads(30);
         config.setServiceUnresponsiveEnabled("false");
         config.setNextOutageId("SELECT nextval('outageNxtId')");
-        config.setXmlrpc("false");
 
         final NodeOutage nodeOutage = new NodeOutage();
         nodeOutage.setStatus("on");
@@ -552,26 +550,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
                                         "ds-name", "radiusauth"
                 ));
 
-        example1.addService(new Service("JBoss4", 300000, "false", "on",
-                                        "version", "4",
-                                        "port", "1099",
-                                        "retry", "2",
-                                        "timeout", "3000",
-                                        "factory", "RMI",
-                                        "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
-                                        "ds-name", "jboss"
-                ));
-
-        example1.addService(new Service("JBoss32", 300000, "false", "on",
-                                        "port", "1099",
-                                        "version", "32",
-                                        "retry", "2",
-                                        "timeout", "3000",
-                                        "factory", "RMI",
-                                        "rrd-repository", "/Users/ranger/rcs/opennms-work/target/opennms-1.13.0-SNAPSHOT/share/rrd/response",
-                                        "ds-name", "jboss"
-                ));
-
         example1.addService(new Service("JVM", 300000, "false", "on",
                                         "port", "9003",
                                         "retry", "2",
@@ -637,8 +615,6 @@ public class PollerConfigurationTest extends XmlTestNoCastor<PollerConfiguration
         config.addMonitor("LDAP", "org.opennms.netmgt.poller.monitors.LdapMonitor");
         config.addMonitor("Memcached", "org.opennms.netmgt.poller.monitors.MemcachedMonitor");
         config.addMonitor("HTTP-MGMT", "org.opennms.netmgt.poller.monitors.HttpMonitor");
-        config.addMonitor("JBoss4", "org.opennms.netmgt.poller.monitors.JBossMonitor");
-        config.addMonitor("JBoss32", "org.opennms.netmgt.poller.monitors.JBossMonitor");
         config.addMonitor("JVM", "org.opennms.netmgt.poller.monitors.Jsr160Monitor");
         config.addMonitor("NTP", "org.opennms.netmgt.poller.monitors.NtpMonitor");
         config.addMonitor("Sybase", "org.opennms.netmgt.poller.monitors.TcpMonitor");

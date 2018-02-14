@@ -70,7 +70,7 @@ public abstract class Criteria {
 	}
 
 	public static <T extends Criteria> Set<T> getCriteriaForGraphContainer(GraphContainer graphContainer, Class<T> criteriaClass) {
-		Set<T> retval = new HashSet<T>();
+		Set<T> retval = new HashSet<>();
 		Criteria[] criteria = graphContainer.getCriteria();
 		if (criteria != null) {
 			for (Criteria criterium : criteria) {
@@ -96,7 +96,7 @@ public abstract class Criteria {
 	 * This criteria only applies to providers for this namespace
 	 */
 	public abstract String getNamespace();
-	
+
     @Override
     public abstract int hashCode();
 

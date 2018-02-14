@@ -40,7 +40,10 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.web.api.Util;
+import org.opennms.web.outage.filter.LocationFilter;
+import org.opennms.web.outage.filter.NegativeLocationFilter;
 import org.opennms.web.filter.Filter;
+import org.opennms.web.outage.filter.AssetFilter;
 import org.opennms.web.outage.filter.ForeignSourceFilter;
 import org.opennms.web.outage.filter.InterfaceFilter;
 import org.opennms.web.outage.filter.LostServiceDateAfterFilter;
@@ -95,7 +98,7 @@ public abstract class OutageUtil extends Object {
         if (type.equals(NodeFilter.TYPE)) {
             filter = new NodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(ForeignSourceFilter.TYPE)) {
-            filter = new ForeignSourceFilter(value, servletContext);
+            filter = new ForeignSourceFilter(value);
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(value);
         } else if (type.equals(ServiceFilter.TYPE)) {
@@ -103,7 +106,7 @@ public abstract class OutageUtil extends Object {
         } else if (type.equals(OutageIdFilter.TYPE)) {
             filter = new OutageIdFilter(WebSecurityUtils.safeParseInt(value));
         } else if (type.equals(NegativeForeignSourceFilter.TYPE)) {
-            filter = new NegativeForeignSourceFilter(value, servletContext);
+            filter = new NegativeForeignSourceFilter(value);
         } else if (type.equals(NegativeNodeFilter.TYPE)) {
             filter = new NegativeNodeFilter(WebSecurityUtils.safeParseInt(value), servletContext);
         } else if (type.equals(NegativeInterfaceFilter.TYPE)) {
@@ -118,6 +121,12 @@ public abstract class OutageUtil extends Object {
             filter = new RegainedServiceDateBeforeFilter(WebSecurityUtils.safeParseLong(value));
         } else if (type.equals(RegainedServiceDateAfterFilter.TYPE)) {
             filter = new RegainedServiceDateAfterFilter(WebSecurityUtils.safeParseLong(value));
+        } else if (type.startsWith(AssetFilter.TYPE)) {
+            filter = new AssetFilter(type, value);
+        } else if (type.startsWith(LocationFilter.TYPE)) {
+            filter = new LocationFilter(value);
+        } else if (type.startsWith(NegativeLocationFilter.TYPE)) {
+            filter = new NegativeLocationFilter(value);
         }
 
         return filter;

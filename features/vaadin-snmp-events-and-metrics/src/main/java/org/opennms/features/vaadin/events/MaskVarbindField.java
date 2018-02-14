@@ -79,10 +79,10 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
     public MaskVarbindField(String caption) {
         setCaption(caption);
         table.addStyleName("light");
-        table.setVisibleColumns(new Object[]{"vbnumber", "vbvalueCollection"});
+        table.setVisibleColumns(new Object[]{"vbnumber", "vbvalues"});
         table.setColumnHeader("vbnumber", "Varbind Number");
-        table.setColumnHeader("vbvalueCollection", "Varbind Values");
-        table.setColumnExpandRatio("vbvalueCollection", 1);
+        table.setColumnHeader("vbvalues", "Varbind Values");
+        table.setColumnExpandRatio("vbvalues", 1);
         table.setEditable(!isReadOnly());
         table.setSelectable(true);
         table.setHeight("125px");
@@ -90,7 +90,7 @@ public class MaskVarbindField extends CustomField<List<Varbind>> implements Butt
         table.setTableFieldFactory(new DefaultFieldFactory() {
             @Override
             public Field<?> createField(Container container, Object itemId, Object propertyId, Component uiContext) {
-                if (propertyId.equals("vbvalueCollection")) {
+                if (propertyId.equals("vbvalues")) {
                     final TextField field = new TextField();
                     field.setConverter(new CsvListConverter());
                     return field;

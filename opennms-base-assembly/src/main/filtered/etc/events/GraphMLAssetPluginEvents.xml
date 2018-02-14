@@ -1,0 +1,50 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <!-- generic test event to generate topologies -->
+   <!-- send-event.pl  uei.opennms.plugins/assettopology/create localhost  -p 'providerId test' -p 'label test' -p 'assetLayers asset-country,asset-city,asset-building'-->
+   <event>
+      <uei>uei.opennms.plugins/assettopology/create</uei>
+      <event-label>Asset Topology Event : Create Topology</event-label>
+      <descr>&lt;p>Create New Asset Topology with the following Parameters&lt;p>
+    &lt;p>providerId %parm[providerId]% &lt;p>
+    &lt;p>label %parm[label]% &lt;p>
+    &lt;p>assetLayers %parm[assetLayers]% &lt;p>
+    &lt;p>filters %parm[filters]% &lt;p>
+    &lt;p>preferredLayout %parm[preferredLayout]% &lt;p>
+    &lt;p>breadcrumbStrategy %parm[breadcrumbStrategy]% &lt;p></descr>
+      <logmsg dest="logndisplay">
+    &lt;p>Create New Asset Topology providerId=%parm[providerId]% &lt;p>
+    </logmsg>
+      <severity>Normal</severity>
+      <operinstruct></operinstruct>
+   </event>
+   <event>
+      <uei>uei.opennms.plugins/assettopology/remove</uei>
+      <event-label>Asset Topology Event : Remove Topology</event-label>
+      <descr>&lt;p>Remove Asset Topology providerId %parm[providerId]&lt;p></descr>
+      <logmsg dest="logndisplay">
+    &lt;p>Remove Asset Topology providerId %parm[providerId]&lt;p>
+    </logmsg>
+      <severity>Normal</severity>
+      <operinstruct></operinstruct>
+   </event>
+   <event>
+      <uei>uei.opennms.plugins/assettopology/regenerate</uei>
+      <event-label>Asset Topology Event : Regenerate Topology</event-label>
+      <descr>&lt;p>Regenerate Asset Topology providerId %parm[providerId]&lt;p></descr>
+      <logmsg dest="logndisplay">
+    &lt;p>Regenerate Asset Topology providerId %parm[providerId]&lt;p>
+    </logmsg>
+      <severity>Normal</severity>
+      <operinstruct></operinstruct>
+   </event>
+   <event>
+      <uei>uei.opennms.plugins/assettopology/regenerateall</uei>
+      <event-label>Asset Topology Event : Regenerate All Asset Topologies</event-label>
+      <descr>&lt;p>Regenerate All Asset Topologies&lt;p></descr>
+      <logmsg dest="logndisplay">
+    &lt;p>Regenerate All Asset Topologies&lt;p>
+    </logmsg>
+      <severity>Normal</severity>
+      <operinstruct></operinstruct>
+   </event>
+</events>

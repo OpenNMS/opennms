@@ -36,9 +36,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.core.utils.ConfigFileConstants;
 
 /**
@@ -79,10 +78,8 @@ public class DestinationPathFactory extends DestinationPathManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public static synchronized void init() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public static synchronized void init() throws IOException, FileNotFoundException {
         if (!initialized) {
             getInstance().reload();
             initialized = true;
@@ -108,10 +105,8 @@ public class DestinationPathFactory extends DestinationPathManager {
      *
      * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      */
-    public void reload() throws IOException, FileNotFoundException, MarshalException, ValidationException {
+    public void reload() throws IOException, FileNotFoundException {
         m_pathsConfFile = ConfigFileConstants.getFile(ConfigFileConstants.DESTINATION_PATHS_CONF_FILE_NAME);
 
         InputStream configIn = new FileInputStream(m_pathsConfFile);
@@ -125,7 +120,7 @@ public class DestinationPathFactory extends DestinationPathManager {
     @Override
     protected void saveXML(String writerString) throws IOException {
         if (writerString != null) {
-            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), "UTF-8");
+            Writer fileWriter = new OutputStreamWriter(new FileOutputStream(m_pathsConfFile), StandardCharsets.UTF_8);
             fileWriter.write(writerString);
             fileWriter.flush();
             fileWriter.close();
@@ -136,12 +131,10 @@ public class DestinationPathFactory extends DestinationPathManager {
      * <p>update</p>
      *
      * @throws java.io.IOException if any.
-     * @throws org.exolab.castor.xml.MarshalException if any.
-     * @throws org.exolab.castor.xml.ValidationException if any.
      * @throws java.io.FileNotFoundException if any.
      */
     @Override
-    public void update() throws IOException, MarshalException, ValidationException, FileNotFoundException {
+    public void update() throws IOException, FileNotFoundException {
         if (m_lastModified != m_pathsConfFile.lastModified()) {
             reload();
         }

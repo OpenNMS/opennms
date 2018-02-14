@@ -31,16 +31,16 @@ package org.opennms.netmgt.ncs.persistence;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
-import org.opennms.netmgt.model.events.EventProxyException;
 import org.opennms.netmgt.xml.event.Event;
 
 public final class ComponentEventQueue {
-	private final Set<ComponentIdentifier> m_added   = new LinkedHashSet<ComponentIdentifier>();
-	private final Set<ComponentIdentifier> m_deleted = new LinkedHashSet<ComponentIdentifier>();
-	private final Set<ComponentIdentifier> m_updated = new LinkedHashSet<ComponentIdentifier>();
+	private final Set<ComponentIdentifier> m_added   = new LinkedHashSet<>();
+	private final Set<ComponentIdentifier> m_deleted = new LinkedHashSet<>();
+	private final Set<ComponentIdentifier> m_updated = new LinkedHashSet<>();
 
 	public void componentAdded(final ComponentIdentifier identifier) {
 		m_added.add(identifier);

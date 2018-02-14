@@ -34,7 +34,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -98,7 +97,7 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
         public void run() {
             try {
                 while (true) {
-                    Collection<PerformanceDataReading> sendMe = new ArrayList<PerformanceDataReading>();
+                    Collection<PerformanceDataReading> sendMe = new ArrayList<>();
                     if (m_myQueue.drainTo(sendMe) > 0) {
                         RrdOutputSocket socket = new RrdOutputSocket(m_strategy.getHost(), m_strategy.getPort());
                         for (PerformanceDataReading reading : sendMe) {
@@ -154,12 +153,11 @@ public class QueuingTcpRrdStrategy implements RrdStrategy<TcpRrdStrategy.RrdDefi
     /**
      * <p>createFile</p>
      *
-     * @param rrdDef a {@link org.opennms.netmgt.rrd.tcp.TcpRrdStrategy.RrdDefinition} object.
+     * @param rrdDef a {@link RrdDefinition} object.
      * @throws java.lang.Exception if any.
      */
     @Override
-	public void createFile(RrdDefinition rrdDef,
-			Map<String, String> attributeMappings) throws Exception {
+	public void createFile(RrdDefinition rrdDef) throws Exception {
 		// done nothing
     }
 

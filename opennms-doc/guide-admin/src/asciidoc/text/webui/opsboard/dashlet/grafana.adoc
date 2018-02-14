@@ -1,0 +1,14 @@
+
+===== Grafana
+
+This _Dashlet_ shows a _Grafana Dashboard_ for a given time range.
+The <<webui-grafana-dashboard-box, Grafana Dashboard Box>> configuration defined in the `opennms.properties` file is used to access the _Grafana_ instance.
+
+[options="autowidth"]
+|===
+| Boost support | false
+| `title`       | Title of the Grafana dashboard to be displayed
+| `uri`         | URI to the Grafana Dashboard to be displayed
+| `from`        | Start of time range
+| `to`          | End of time range
+|===

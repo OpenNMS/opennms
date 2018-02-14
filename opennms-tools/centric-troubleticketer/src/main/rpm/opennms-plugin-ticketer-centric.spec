@@ -48,7 +48,7 @@ http://www.opennms.org/index.php/CentricCRM_Trouble_Ticket_Plugin
 if [ "%{enable_snapshots}" = 1 ]; then
 	export EXTRA_OPTIONS="$EXTRA_OPTIONS -Denable.snapshots=true -DupdatePolicy=always"
 fi
-mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true package assembly:attached
+mvn -Droot.dir="%{instprefix}" $EXTRA_OPTIONS -Dmaven.test.skip.exec=true package assembly:single
 
 %install
 install -d -m 755 $RPM_BUILD_ROOT%{instprefix}

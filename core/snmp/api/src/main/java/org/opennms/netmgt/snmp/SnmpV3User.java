@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.util.Objects;
+
 public class SnmpV3User {
 
     private String engineId;
@@ -106,4 +108,40 @@ public class SnmpV3User {
         this.privProtocol = privacyProtocol;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(authPassPhrase, authProtocol, engineId, privPassPhrase, privProtocol);
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof SnmpV3User) {
+            final SnmpV3User that = (SnmpV3User)o;
+            return Objects.equals(getAuthPassPhrase(), that.getAuthPassPhrase()) &&
+                Objects.equals(getAuthProtocol(), that.getAuthProtocol()) &&
+                Objects.equals(getEngineId(), that.getEngineId()) &&
+                Objects.equals(getPrivPassPhrase(), that.getPrivPassPhrase()) &&
+                Objects.equals(getPrivProtocol(), that.getPrivProtocol());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+            .append("authPassPhrase", authPassPhrase)
+            .append("authProtocol", authProtocol)
+            .append("engineId", engineId)
+            .append("privPassPhrase", privPassPhrase)
+            .append("privProtocol", privProtocol)
+            .append("securityName", securityName)
+            .toString();
+    }
 }

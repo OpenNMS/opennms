@@ -30,9 +30,10 @@ package org.opennms.web.validator;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.OnmsApplication;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
-import org.opennms.web.command.DistributedStatusDetailsCommand;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.web.svclayer.model.DistributedStatusDetailsCommand;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -46,6 +47,7 @@ import org.springframework.validation.Validator;
  */
 public class DistributedStatusDetailsValidator implements Validator, InitializingBean {
     
+    private MonitoringLocationDao m_monitoringLocationDao;
     private LocationMonitorDao m_locationMonitorDao;
     private ApplicationDao m_applicationDao;
 
@@ -65,8 +67,8 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
                                new Object[] { "location" }, 
                                "Value required.");
         } else {
-            OnmsMonitoringLocationDefinition locationDef =
-                m_locationMonitorDao.findMonitoringLocationDefinition(cmd.getLocation());
+            OnmsMonitoringLocation locationDef =
+                m_monitoringLocationDao.get(cmd.getLocation());
             if (locationDef == null) {
                 errors.rejectValue("location", "location.not-found",
                                    new Object[] { cmd.getLocation() },
@@ -127,6 +129,10 @@ public class DistributedStatusDetailsValidator implements Validator, Initializin
      */
     public LocationMonitorDao getLocationMonitorDao() {
         return m_locationMonitorDao;
+    }
+
+    public void setMonitoringLocationDao(MonitoringLocationDao monitoringLocationDao) {
+        m_monitoringLocationDao = monitoringLocationDao;
     }
 
     /**

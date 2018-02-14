@@ -34,8 +34,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +42,7 @@ import org.opennms.netmgt.config.CategoryFactory;
 import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.RTCConfigFactory;
 import org.opennms.netmgt.config.categories.Category;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.rtc.datablock.RTCCategory;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -57,9 +55,9 @@ public class DataSenderTest {
      */
     @Test
     @Ignore
-    public void testSendData() throws MarshalException, ValidationException, IOException, FilterParseException, SAXException, SQLException, RTCException {
+    public void testSendData() throws IOException, FilterParseException, SAXException, SQLException, RTCException {
         InputStream stream = ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/rtc-configuration.xml");
-        RTCConfigFactory.setInstance(new RTCConfigFactory(stream));
+        RTCConfigFactory configFactory = new RTCConfigFactory(stream);
         stream.close();
         
         Resource categoryResource = ConfigurationTestUtils.getSpringResourceForResource(this, "/org/opennms/netmgt/config/categories.xml");
@@ -71,20 +69,18 @@ public class DataSenderTest {
 
         
         DataManager dataManager = new DataManager();
-        RTCManager.setDataManager(dataManager);
-
         String categoryName = "Database Servers";
         String categoryNameUrl = "Database+Servers";
         Category category = new Category();
         category.setLabel(categoryName);
         category.setComment("Some database servers.  Exciting, eh?");
-        category.setNormal(99.0);
-        category.setWarning(97.0);
+        category.setNormalThreshold(99.0);
+        category.setWarningThreshold(97.0);
         RTCCategory rtcCategory = new RTCCategory(category, categoryName);
         Map<String, RTCCategory> rtcCategories = new HashMap<String, RTCCategory>();
         rtcCategories.put(categoryName, rtcCategory);
         
-        DataSender sender = new DataSender(rtcCategories, 1);
+        DataSender sender = new DataSender(dataManager, configFactory);
         sender.subscribe("http://localhost:8080/opennms-webapp/rtc/post/" + categoryNameUrl, categoryName, "rtc", "rtc");
         sender.sendData();
     }

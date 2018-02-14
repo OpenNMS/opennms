@@ -39,7 +39,6 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -100,8 +99,6 @@ public class SearchTokenField extends Composite {
 
     private void init() {
         log(getClass().getSimpleName() + ".init(): " + m_suggestion.toString());
-
-        m_tokenContainer.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
 
         m_closeBtn.setTitle("Remove from focus");
         m_closeBtn.getElement().getStyle().setCursor(Style.Cursor.POINTER);

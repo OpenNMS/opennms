@@ -28,10 +28,10 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
+import java.nio.charset.StandardCharsets;
+
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.support.codec.MultilineOrientedCodecFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>SmtpDetector class.</p>
@@ -39,8 +39,7 @@ import org.springframework.stereotype.Component;
  * @author ranger
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class SmtpDetector extends AsyncMultilineDetectorMinaImpl {
     
     private static final String DEFAULT_SERVICE_NAME = "SMTP";
@@ -68,7 +67,7 @@ public class SmtpDetector extends AsyncMultilineDetectorMinaImpl {
      */
     @Override
     protected void onInit() {
-        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(CHARSET_UTF8, "-")));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new MultilineOrientedCodecFactory(StandardCharsets.UTF_8, "-")));
         
         expectBanner(startsWith("220"));
         send(request("HELO LOCALHOST"), startsWith("250"));

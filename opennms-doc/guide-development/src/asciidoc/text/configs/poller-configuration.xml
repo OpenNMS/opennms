@@ -1,0 +1,261 @@
+<?xml version="1.0"?>
+<poller-configuration threads="30"
+                      serviceUnresponsiveEnabled="false">
+  <node-outage status="on">
+    <critical-service name="ICMP" />
+  </node-outage>
+  <package name="example1">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254" />
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <!-- # tag::IcmpServiceConfig[] -->
+    <service name="ICMP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="icmp" />
+      <parameter key="ds-name" value="icmp" />
+    </service>
+    <!-- # end::IcmpServiceConfig[] -->
+    <service name="DNS" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2" />
+      <parameter key="timeout" value="5000" />
+      <parameter key="port" value="53" />
+      <parameter key="lookup" value="localhost" />
+      <parameter key="fatal-response-codes" value="2,3,5" /><!-- ServFail, NXDomain, Refused -->
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="dns" />
+      <parameter key="ds-name" value="dns" />
+    </service>
+    <service name="SMTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="25" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="smtp" />
+      <parameter key="ds-name" value="smtp" />
+    </service>
+    <service name="FTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="21" />
+      <parameter key="userid" value="" />
+      <parameter key="password" value="" />
+    </service>
+    <service name="SNMP" interval="300000" user-defined="false" status="on">
+      <parameter key="oid" value=".1.3.6.1.2.1.1.2.0" />
+    </service>
+    <service name="HTTP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="80" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="http" />
+      <parameter key="ds-name" value="http" />
+    </service>
+    <service name="HTTP-8080" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="8080" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="http-8080" />
+      <parameter key="ds-name" value="http-8080" />
+    </service>
+    <service name="HTTP-8000" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="8000" />
+      <parameter key="url" value="/" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="http-8000" />
+      <parameter key="ds-name" value="http-8000" />
+    </service>
+    <service name="HTTPS" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="5000" />
+      <parameter key="port" value="443" />
+      <parameter key="url" value="/" />
+    </service>
+    <service name="HypericAgent" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="2200" />
+      <parameter key="port" value="2144" />
+    </service>
+    <service name="HypericHQ" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="hyperic-hq" />
+      <parameter key="ds-name" value="hyperic-hq" />
+      <parameter key="page-sequence">
+        <page-sequence>
+          <page path="/Login.do" port="7080" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" />
+          <page path="/j_security_check.do" port="7080" method="POST"
+            failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed"
+            successMatch="HQ Dashboard">
+            <parameter key="j_username" value="hqadmin" />
+            <parameter key="j_password" value="hqadmin" />
+          </page>
+          <page path="/Logout.do" port="7080" successMatch="HQ Login" />
+        </page-sequence>
+      </parameter>
+    </service>
+    <service name="MySQL" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="3306" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="SQLServer" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1433" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Oracle" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="1521" />
+      <parameter key="banner" value="*" />
+    </service>
+    <service name="Postgres" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="banner" value="*" />
+      <parameter key="port" value="5432" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="SSH" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="banner" value="SSH" />
+      <parameter key="port" value="22" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="ssh" />
+      <parameter key="ds-name" value="ssh" />
+    </service>
+    <service name="IMAP" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="port" value="143" />
+      <parameter key="timeout" value="3000" />
+    </service>
+    <service name="POP3" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="port" value="110" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="pop3" />
+      <parameter key="ds-name" value="pop3" />
+    </service>
+    <service name="NRPE" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="3" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="5666" />
+      <parameter key="command" value="_NRPE_CHECK" />
+      <parameter key="padding" value="2" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="ds-name" value="nrpe" />
+    </service>
+    <service name="NRPE-NoSSL" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="3" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="port" value="5666" />
+      <parameter key="command" value="_NRPE_CHECK" />
+      <parameter key="usessl" value="false" />
+      <parameter key="padding" value="2" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="ds-name" value="nrpe" />
+    </service>
+    <service name="Windows-Task-Scheduler" interval="300000" user-defined="false" status="on">
+      <parameter key="service-name" value="Task Scheduler" />
+    </service>
+    <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+      <parameter key="port" value="18980"/>
+      <parameter key="factory" value="PASSWORD-CLEAR"/>
+      <parameter key="username" value="admin"/>
+      <parameter key="password" value="admin"/>
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="ds-name" value="opennms-jvm"/>
+      <parameter key="friendly-name" value="opennms-jvm"/>
+    </service>
+    <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
+    <service name="VMware-ManagedEntity" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="2"/>
+      <parameter key="timeout" value="3000"/>
+    </service>
+
+    <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m -->
+    <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h -->
+    <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+
+  </package>
+
+  <!-- Moved StrafePing to its own package.  This allows for more flexible configuration of which interfaces
+    will have StrafePing statistical analysis rather than being on for or off for all interfaces.  Change
+    this package's filter / ranges for directing the StrafePinger to choice interfaces.  Note: Strafing all
+    of your network interface may create high loads on the NMS file system.  -->
+
+  <package name="strafer">
+    <filter>IPADDR != '0.0.0.0'</filter>
+    <include-range begin="10.1.1.1" end="10.1.1.10" />
+    <!-- <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" /> -->
+    <rrd step="300">
+      <rra>RRA:AVERAGE:0.5:1:2016</rra>
+      <rra>RRA:AVERAGE:0.5:12:1488</rra>
+      <rra>RRA:AVERAGE:0.5:288:366</rra>
+      <rra>RRA:MAX:0.5:288:366</rra>
+      <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <service name="StrafePing" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="0" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="ping-count" value="20" />
+      <parameter key="failure-ping-count" value="20" />
+      <parameter key="wait-interval" value="50" />
+      <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+      <parameter key="rrd-base-name" value="strafeping" />
+    </service>
+    <downtime interval="300000" begin="0" end="432000000"/><!-- 5m, 0, 5d -->
+    <downtime begin="432000000" delete="true" /><!-- anything after 5 days delete -->
+  </package>
+
+  <monitor service="ICMP" class-name="org.opennms.netmgt.poller.monitors.IcmpMonitor" />
+  <monitor service="StrafePing" class-name="org.opennms.netmgt.poller.monitors.StrafePingMonitor" />
+  <monitor service="HTTP" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
+  <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
+  <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
+  <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
+  <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
+  <monitor service="FTP" class-name="org.opennms.netmgt.poller.monitors.FtpMonitor" />
+  <monitor service="SNMP" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
+  <monitor service="Oracle" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="Postgres" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="MySQL" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="SQLServer" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
+  <monitor service="SSH" class-name="org.opennms.netmgt.poller.monitors.SshMonitor" />
+  <monitor service="IMAP" class-name="org.opennms.netmgt.poller.monitors.ImapMonitor" />
+  <monitor service="POP3" class-name="org.opennms.netmgt.poller.monitors.Pop3Monitor" />
+  <monitor service="NRPE" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+  <monitor service="NRPE-NoSSL" class-name="org.opennms.netmgt.poller.monitors.NrpeMonitor" />
+  <monitor service="Windows-Task-Scheduler" class-name="org.opennms.netmgt.poller.monitors.Win32ServiceMonitor" />
+  <monitor service="OpenNMS-JVM" class-name="org.opennms.netmgt.poller.monitors.Jsr160Monitor" />
+  <monitor service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.poller.monitors.VmwareCimMonitor"/>
+  <monitor service="VMware-ManagedEntity" class-name="org.opennms.netmgt.poller.monitors.VmwareMonitor"/>
+</poller-configuration>

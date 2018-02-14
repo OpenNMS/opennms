@@ -1,0 +1,153 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== DhcpMonitor
+
+This monitor is used to monitor the availability and functionality of http://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol[DHCP servers].
+This monitor has two parts, the first one is the monitor class _DhcpMonitor_ executed by _Pollerd_ and the second part is a background daemon _Dhcpd_ running inside the {opennms-product-name} JVM and listening for DHCP responses.
+A DHCP server is tested by sending a _DISCOVER_ message.
+If the DHCP server responds with an _OFFER_ the service is marked as up.
+The _Dhcpd_ background daemon is disabled by default and has to be activated in `service-configuration.xml` in {opennms-product-name} by setting `service enabled="true"`.
+The behavior for testing the DHCP server can be modified in the `dhcp-configuration.xml` configuration file.
+
+IMPORTANT: It is required to install the `{opennms-package-base-name}-plugin-protocol-dhcp` before you can use this feature.
+
+.Installing the {opennms-package-base-name}-plugin-protocol-dhcp package
+----
+{apt-get,yum} install {opennms-package-base-name}-plugin-protocol-dhcp
+----
+
+If you try to start _{opennms-product-name}_ without the _{opennms-package-base-name}-plugin-protocol-dhcp_ you will see the following error message in `output.log`:
+
+----
+An error occurred while attempting to start the "OpenNMS:Name=Dhcpd" service (class org.opennms.netmgt.dhcpd.jmx.Dhcpd).  Shutting down and exiting.
+java.lang.ClassNotFoundException: org.opennms.netmgt.dhcpd.jmx.Dhcpd
+----
+
+CAUTION: Make sure no DHCP client is running on the _{opennms-product-name}_ server and using port UDP/68.
+         If UDP/68 is already in use, you will find an error message in the manager.log.
+         You can test if a process is listening on udp/68 with `sudo ss -lnpu sport = :68`.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.protocols.dhcp.monitor.DhcpMonitor`
+| Remote Enabled | false
+|===
+
+.Service monitor parameters configured in `poller-configuration.xml`
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                                                    | Required | Default value
+| `retry`          | Number of retries before the service is marked as down                                         | optional | `0`
+| `rrd-repository` | The location to write RRD data. Generally, you will not want to change this from default       | optional | `$OPENNMS_HOME/share/rrd/response`
+| `rrd-base-name`  | The name of the RRD file to write (minus the extension, +.rrd+ or +.jrb+)                      | optional | `dhcp`
+| `ds-name`        | This is the name as reference for this particular data source in the RRD file                  | optional | `dhcp`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== _Dhcpd_ configuration
+
+._Dhcpd_ parameters in `dhcp-configuration.xml`.
+[options="autowidth"]
+|===
+| Parameter          | Description                                                                       | Required           | Default value
+| `port`             | Defines the port your dhcp server is using                                        | required           | `5818`
+| `macAddress`       | The MAC address which {opennms-product-name} uses for a dhcp request                             | required           | `00:06:0D:BE:9C:B2`
+| `myIpAddress`      | This parameter will usually be set to the IP address of the {opennms-product-name} server,
+                       which puts the DHCP poller in `relay` mode as opposed to `broadcast` mode.
+                       In `relay` mode, the DHCP server being polled will unicast its responses directly
+                       back to the IP address specified by `myIpAddress` rather than broadcasting its
+                       responses. This allows DHCP servers to be polled even though they are not on the
+                       same subnet as the {opennms-product-name} server, and without the aid of an external relay.
+                       _Usage:_ `myIpAddress="10.11.12.13"` or `myIpAddress="broadcast"`                 | required           | `broadcast`
+| `extendedMode`     | When extendedMode is false, the DHCP poller will send a DISCOVER and expect an
+                       OFFER in return. When extendedMode is true, the DHCP poller will first send a
+                       DISCOVER. If no valid response is received it will send an INFORM. If no valid
+                       response is received it will then send a REQUEST. OFFER, ACK, and NAK are all
+                       considered valid responses in extendedMode.
+                       _Usage:_ `extendedMode="true"` or `extendedMode="false"`                          | required           | `false`
+| `requestIpAddress` | This parameter only applies to REQUEST queries sent to the DHCP server when
+                       extendedMode is true. If an IP address is specified, that IP address will be
+                       requested in the query. If `targetHost` is specified, the DHCP server's own IP
+                       address will be requested. Since a well-managed server will probably not respond
+                       to a request for its own IP, this parameter can also be set to `targetSubnet`.
+                       This is similar to `targetHost` except the DHCP server's IP address is
+                       incremented or decremented by 1 to obtain an ip address that is on the same
+                       subnet.
+                       (The resulting address will not be on the same subnet if the DHCP server's
+                       subnet is a /32 or /31. Otherwise, the algorithm used should be reliable.)
+                       _Usage:_ `requestIpAddress="10.77.88.99"` or `requestIpAddress="targetHost"`
+                       or `requestIpAddress="targetSubnet"`                                              | required           | `false`
+|===
+
+.Visualization of DHCP message flow in broadcast mode
+image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
+
+.Visualization of DHCP message flow in relay mode
+image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
+
+===== Example testing DHCP server in the same subnet
+
+Example configuration how to configure the monitor in the `poller-configuration.xml`.
+The monitor will try to send in maximum 3 _DISCOVER_ messages and waits 3 seconds for the DHCP server _OFFER_ message.
+
+.Step 1: Configure a DHCP service in `poller-configuration.xml`
+[source, xml]
+----
+<service name="DHCP" interval="300000" user-defined="false" status="on">
+ <parameter key="retry" value="2" />
+ <parameter key="timeout" value="3000" />
+ <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+ <parameter key="rrd-base-name" value="dhcp" />
+ <parameter key="ds-name" value="dhcp" />
+</service>
+
+<monitor service="DHCP" class-name="org.opennms.protocols.dhcp.monitor.DhcpMonitor"/>
+----
+
+.Step 2: Enable the {opennms-product-name} _Dhcpd_ daemon in `service-configuration.xml`
+[source, xml]
+----
+<service enabled="true">
+  <name>OpenNMS:Name=Dhcpd</name>
+  <class-name>org.opennms.netmgt.dhcpd.jmx.Dhcpd</class-name>
+  <invoke method="start" pass="1" at="start"/>
+  <invoke method="status" pass="0" at="status"/>
+  <invoke method="stop" pass="0" at="stop"/>
+</service>
+----
+
+.Step 3: Configure _Dhcpd_ to test a DHCP server in the same subnet as the {opennms-product-name} server.
+[source, xml]
+----
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="broadcast
+       extendedMode="false"
+       requestIpAddress="127.0.0.1">
+</DhcpdConfiguration>
+----
+
+===== Example testing DHCP server in a different subnet in extended mode
+
+You can use the same monitor in `poller-configuration.xml` as in the example above.
+
+.Configure _Dhcpd_ to test DHCP server in a different subnet. The OFFER from the DHCP server is sent to `myIpAddress`.
+[source, xml]
+----
+<DhcpdConfiguration
+       port="5818"
+       macAddress="00:06:0D:BE:9C:B2"
+       myIpAddress="10.4.1.234"
+       extendedMode="true"
+       requestIpAddress="targetSubnet">
+</DhcpdConfiguration>
+----
+
+NOTE: If in `extendedMode`, the time required to complete the poll for an unresponsive node is increased by a factor of 3.
+      Thus it is a good idea to limit the number of retries to a small number.

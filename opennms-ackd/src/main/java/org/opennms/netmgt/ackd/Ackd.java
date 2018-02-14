@@ -35,17 +35,17 @@ import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.ackd.AckReader.AckReaderState;
 import org.opennms.netmgt.ackd.readers.ReaderSchedule;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
@@ -133,7 +133,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         for (AckReader reader : m_ackReaders) {
             
             LOG.debug("startReaders: starting reader: {}", reader.getName());
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.STOPPED);
             
             try {
@@ -155,7 +155,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
         LOG.info("stopReaders: stopping {} readers...", m_ackReaders.size());
         for (AckReader reader : m_ackReaders) {
             LOG.debug("stopReaders: stopping reader: {}", reader.getName());
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.PAUSE_PENDING);
             allowedStates.add(AckReaderState.PAUSED);
             allowedStates.add(AckReaderState.RESUME_PENDING);
@@ -180,7 +180,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      */
     protected void pauseReaders() {
         for (AckReader reader : m_ackReaders) {
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.STARTED);
             allowedStates.add(AckReaderState.RESUMED);
             
@@ -197,7 +197,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
      */
     protected void resumeReaders() {
         for (AckReader reader : m_ackReaders) {
-            List<AckReaderState> allowedStates = new ArrayList<AckReaderState>();
+            List<AckReaderState> allowedStates = new ArrayList<>();
             allowedStates.add(AckReaderState.PAUSED);
             
             try {
@@ -379,7 +379,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -388,7 +388,7 @@ public class Ackd implements SpringServiceDaemon, DisposableBean {
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;

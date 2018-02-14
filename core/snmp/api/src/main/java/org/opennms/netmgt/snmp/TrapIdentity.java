@@ -34,6 +34,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * TODO: This class should override {@link #equals(Object)} and {@link #hashCode()}
+ * so that comparisons work properly.
+ */
 public class TrapIdentity {
 	
 	private static final transient Logger LOG = LoggerFactory.getLogger(TrapIdentity.class);
@@ -71,7 +75,7 @@ public class TrapIdentity {
      * Create the standard traps list - used in v2 processing
      */
     static {
-        GENERIC_TRAPS = new ArrayList<SnmpObjId>();
+        GENERIC_TRAPS = new ArrayList<>();
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.1")); // coldStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.2")); // warmStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.3")); // linkDown

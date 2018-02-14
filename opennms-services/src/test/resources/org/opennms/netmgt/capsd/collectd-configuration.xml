@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
 <collectd-configuration 
    threads="50">
    

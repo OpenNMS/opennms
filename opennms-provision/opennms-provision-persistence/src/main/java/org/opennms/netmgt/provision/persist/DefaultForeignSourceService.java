@@ -51,6 +51,7 @@ import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
 import org.opennms.netmgt.provision.support.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.aop.TargetClassAware;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -103,7 +104,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
      */
     @Override
     public Set<ForeignSource> getAllForeignSources() {
-        Set<ForeignSource> foreignSources = new TreeSet<ForeignSource>();
+        Set<ForeignSource> foreignSources = new TreeSet<>();
         foreignSources.addAll(m_pendingForeignSourceRepository.getForeignSources());
         for (ForeignSource fs : m_deployedForeignSourceRepository.getForeignSources()) {
             if (!foreignSources.contains(fs)) {
@@ -266,7 +267,12 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
                 if (serviceName == null) {
                     serviceName = d.getClass().getSimpleName();
                 }
-                detectors.put(serviceName, d.getClass().getName());
+                String className = d.getClass().getName();
+                // NMS-8119: The class name may be changed when using proxy objects
+                if (d instanceof TargetClassAware) {
+                    className = ((TargetClassAware)d).getTargetClass().getName();
+                }
+                detectors.put(serviceName, className);
             }
 
             m_detectors = new LinkedHashMap<String,String>();

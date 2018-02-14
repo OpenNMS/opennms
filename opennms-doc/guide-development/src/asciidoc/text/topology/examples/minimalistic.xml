@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns
+     http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+     <!-- key section -->
+    <key id="label" for="all" attr.name="label" attr.type="string"></key>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"></key>
+
+    <!-- shows up in the menu -->
+    <data key="label">Minimalistic GraphML Topology Provider</data> <1>
+    <graph id="minicmalistic"> <2>
+        <data key="namespace">minimalistic</data> <3>
+        <node id="node1"/> <4>
+        <node id="node2"/>
+        <node id="node3"/>
+        <node id="node4"/>
+    </graph>
+</graphml>

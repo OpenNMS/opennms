@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="winrm-os"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_OperatingSystem"
+           resource-type="node">
+        <attrib name="Name" alias="osName" type="String"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalSwapSpaceSize" alias="totalSwapSpace" type="Gauge"/>
+        <attrib name="TotalVirtualMemorySize" alias="totalVirtMem" type="Gauge"/>
+        <attrib name="TotalVisibleMemorySize" alias="totalVisibleMem" type="Gauge"/>
+        <attrib name="FreePhysicalMemory" alias="freePhysMem" type="Gauge"/>
+        <attrib name="FreeSpaceInPagingFiles" alias="freeSpaceInPage" type="Gauge"/>
+        <attrib name="FreeVirtualMemory" alias="freeVirtMem" type="Gauge"/>
+    </group>
+    <group name="winrm-cpu"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfOS_Processor"
+           resource-type="wrmOSCpu">
+        <attrib name="Name" alias="wrmOSCpuName" type="String"/>
+        <attrib name="InterruptsPersec" alias="wrmOSCpuIntsPerSec" type="Gauge"/>
+        <attrib name="PercentProcessorTime" alias="wrmOSCpuPctProcTime" type="Gauge"/>
+        <attrib name="PercentDPCTime" alias="wrmOSCpuPctDPCTime" type="Gauge"/>
+        <attrib name="PercentInterruptTime" alias="wrmOSCpuPctIntrTime" type="Gauge"/>
+        <attrib name="PercentUserTime" alias="wrmOSCpuPctUserTime" type="Gauge"/>
+    </group>
+    <group name="winrm-physical-disk" wmiClass="Win32_PerfFormattedData_PerfDisk_PhysicalDisk" wmiNamespace="root/cimv2"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfDisk_PhysicalDisk"
+           resource-type="wrmPhysicalDisk">
+        <attrib name="Name" alias="wrmPDName" type="string"/>
+        <attrib name="PercentDiskReadTime" alias="wrmPDPctDiskRdTime" type="Gauge"/>
+        <attrib name="PercentDiskWriteTime" alias="wrmPDPctDiskWrTime" type="Gauge"/>
+        <attrib name="SplitIOPerSec" alias="wrmPDSplitIOsPerSec" type="Gauge"/>
+        <attrib name="DiskTransfersPersec" alias="wrmPDTransPerSec" type="Gauge"/>
+        <attrib name="AvgDisksecPerTransfer" alias="wrmPDAvgSecPerTrans" type="Gauge"/>
+        <attrib name="CurrentDiskQueueLength" alias="wrmPDQueueLen" type="Gauge"/>
+        <attrib name="AvgDiskQueueLength" alias="wrmPDAvgQueueLen" type="Gauge"/>
+        <attrib name="PercentDiskTime" alias="wrmPDPctBusyTime" type="Gauge"/>
+        <attrib name="PercentIdleTime" alias="wrmPDPctIdleTime" type="Gauge"/>
+    </group>
+    <group name="winrm-logical-disk"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfDisk_LogicalDisk"
+           resource-type="wrmLogicalDisk">
+        <attrib name="Name" alias="wrmLDName" type="string"/>
+        <attrib name="FreeMegabytes" alias="wrmLDPctFreeMBytes" type="Gauge"/>
+        <attrib name="PercentDiskReadTime" alias="wrmLDPctDiskRdTime" type="Gauge"/>
+        <attrib name="PercentDiskWriteTime" alias="wrmLDPctDiskWrTime" type="Gauge"/>
+        <attrib name="PercentFreeSpace" alias="wrmLDPctFreeSpace" type="Gauge"/>
+        <attrib name="SplitIOPerSec" alias="wrmLDSplitIOsPerSec" type="Gauge"/>
+    </group>
+    <group name="winrm-network-interface"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfRawData_Tcpip_NetworkInterface"
+           resource-type="wrmTcpipNetworkInterface">
+        <attrib name="Name" alias="wrmIpNetIfName" type="string"/>
+        <attrib name="CurrentBandwidth" alias="wrmIpNetCurrSpeed" type="string"/>
+        <attrib name="BytesTotalPersec" alias="wrmIpNetBytesSec" type="Counter"/>
+        <attrib name="BytesReceivedPersec" alias="wrmIpNetIBytesSec" type="Counter"/>
+        <attrib name="BytesSentPersec" alias="wrmIpNetOBytesSec" type="Counter"/>
+        <attrib name="PacketsPersec" alias="wrmIpNetPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedPersec" alias="wrmIpNetIPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedNonUnicastPersec" alias="wrmIpNetINUPktsSec" type="Counter"/>
+        <attrib name="PacketsReceivedUnicastPersec" alias="wrmIpNetIUCPktsSec" type="Counter"/>
+        <attrib name="PacketsSentPersec" alias="wrmIpNetOPktsSec" type="Counter"/>
+        <attrib name="PacketsSentNonUnicastPersec" alias="wrmIpNetONUPktsSec" type="Counter"/>
+        <attrib name="PacketsSentUnicastPersec" alias="wrmIpNetOUCPktsSec" type="Counter"/>
+    </group>
+    <group name="winrm-terminal-services"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_LocalSessionManager_TerminalServices"
+           resource-type="node">
+        <attrib name="ActiveSessions" alias="wrmTSSessActive" type="Gauge"/>
+        <attrib name="InactiveSessions" alias="wrmTSSessInactive" type="Gauge"/>
+        <attrib name="TotalSessions" alias="wrmTSSessTotal" type="Gauge"/>
+    </group>
+    <group name="winrm-server-stats"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_PerfNet_Server"
+           resource-type="node">
+        <attrib name="ServerSessions" alias="wrmServerSessions" type="Gauge" />
+        <attrib name="SessionsErroredOut" alias="wrmServerSessErrOut" type="Counter" />
+        <attrib name="SessionsForcedOff" alias="wrmServerSessFcdOff" type="Counter" />
+        <attrib name="SessionsLoggedOff" alias="wrmServerSessLgdOff" type="Counter" />
+        <attrib name="SessionsTimedOut" alias="wrmServerSessTmdOut" type="Counter" />
+        <attrib name="ErrorsSystem" alias="wrmServerErrsSystem" type="Counter" />
+        <attrib name="ErrorsGrantedAccess" alias="wrmServerErrsGtdAxs" type="Counter" />
+        <attrib name="ErrorsAccessPermissions" alias="wrmServerErrsAxsPrm" type="Counter" />
+        <attrib name="ErrorsLogon" alias="wrmServerErrsLogon" type="Counter" />
+    </group>
+    <group name="winrm-w3svc-stats"
+           resource-uri="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_PerfFormattedData_W3SVC_WebService"
+           resource-type="wrmW3">
+                <attrib name="Name" alias="wrmW3Name" type="string"/>
+                <attrib name="TotalGetRequests" alias="wrmW3GetReq" type="Counter" />
+                <attrib name="TotalHeadRequests" alias="wrmW3HeadReq" type="Counter" />
+                <attrib name="TotalPostRequests" alias="wrmW3PostReq" type="Counter" />
+                <attrib name="TotalPutRequests" alias="wrmW3PutReq" type="Counter" />
+                <attrib name="TotalDeleteRequests" alias="wrmW3DelReq" type="Counter" />
+                <attrib name="TotalNotFoundErrors" alias="wrmW3NotFound" type="Counter" />
+    </group>
+
+    <system-definition name="Microsoft Windows (All Versions)">
+        <rule>#productVendor matches '^Microsoft.*' and #productVersion matches '^OS.*'</rule>
+        <include-group>winrm-os</include-group>
+        <include-group>winrm-cpu</include-group>
+        <include-group>winrm-logical-disk</include-group>
+        <include-group>winrm-physical-disk</include-group>
+        <include-group>winrm-network-interface</include-group>
+        <include-group>winrm-terminal-services</include-group>
+        <include-group>winrm-server-stats</include-group>
+        <include-group>winrm-w3svc-stats</include-group>
+    </system-definition>
+</wsman-datacollection-config>

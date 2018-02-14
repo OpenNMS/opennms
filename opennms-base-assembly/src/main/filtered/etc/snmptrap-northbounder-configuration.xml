@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<snmptrap-northbounder-config>
+<!-- The following are set to the default values.  -->
+   <enabled>false</enabled>
+   <nagles-delay>1000</nagles-delay>
+   <batch-size>100</batch-size>
+   <queue-size>300000</queue-size>
+
+<!-- The following fields expects a SPEL Expression based on NorthboundAlarm:
+      https://github.com/OpenNMS/opennms/blob/master/opennms-alarms/api/src/main/java/org/opennms/netmgt/alarmd/api/NorthboundAlarm.java
+
+      * mapping-group/rule
+      * mapping/rule
+      * varbind/value
+      * varbind/instance
+
+      Here are the most important fields from the NorthboundAlarm class are:
+
+      * id (Integer)
+      * uei (String)
+      * nodeId (Integer)
+      * nodeLabel (String)
+      * nodeSysObjectId (String)
+      * foreignSource (String)
+      * foreignId (String)
+      * ackTime (Date)
+      * ackUser (String)
+      * alarmType (enumeration of AlarmType: PROBLEM, RESOLUTION, NOTIFICATION)
+      * clearKey (String)
+      * count (Integer)
+      * desc (String)
+      * firstOccurrence (Date)
+      * ipAddr (String)
+      * lastOccurrence (Date)
+      * logMsg (Date)
+      * operInst (String)
+      * service (String)
+      * severity (enumeration of OnmsSeverity:  INDETERMINATE(1), CLEARED(2), NORMAL(3), WARNING(4), MINOR(5), MAJOR(6), CRITICAL(7))
+      * ticketId (String)
+      * ticketState (enumeration of TroubleTicketState)
+      * eventParametersMap (Map; using parameter name as the key, and parameter value as the value)
+      * eventParametersCollection (List of Parm)
+
+      The varbind value expect one of the following values:
+
+      * OctetString
+      * Int32
+      * ObjectIdentifier
+      * IpAddress
+      * TimeTicks
+      * Counter32
+      * Gauge32
+      * Opaque
+      * Counter64
+
+      For more information about SPEL Expressions:
+      http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html
+
+      The SNMP Settings are obtained at runtime from snmp-config.xml based on the sink's ip-address field.
+      You can override the following fields:
+
+      * port
+      * version
+
+      The version field is mandatory and should have one of the following values:
+
+      * v1
+      * v2c
+      * v3
+      * v2-inform
+      * v3-inform
+
+      The numeric representation of the selected version, and the version configured on snmp-config.xml for
+      the ip-address must match. Otherwise, an exception will be thrown.
+   -->
+
+   <snmp-trap-sink>
+      <name>localTest1</name>
+      <ip-address>127.0.0.1</ip-address><!-- You could use either an IPv4/IPv6 address or a FQDN -->
+      <version>v2c</version>
+      <mapping-group name="My Mappings">
+         <rule>foreignSource matches '^Server.*'</rule>
+         <mapping name="trap01">
+            <rule>uei == 'uei.opennms.org/trap/myTrap1'</rule>
+            <enterprise-oid>.1.2.3.4.5.6.7.8.100</enterprise-oid>
+            <specific>1</specific>
+            <varbind>
+               <oid>.1.2.3.4.5.6.7.8.1</oid>
+               <type>Int32</type>
+               <value>eventParametersCollection[2].value</value><!-- Value of the third parameter -->
+            </varbind>
+            <varbind>
+               <oid>.1.2.3.4.5.6.7.8.2</oid>
+               <type>OctetString</type>
+               <value>parameters['alarmMessage']</value><!-- Value of the parameter named alarmMessage -->
+               <max>48</max><!-- Maximum length for OctetString varibinds -->
+            </varbind>
+         </mapping>
+         <mapping name="trap02">
+            <rule>uei == 'uei.opennms.org/trap/myTrap2'</rule>
+            <enterprise-oid>.1.2.3.4.5.6.7.8.101</enterprise-oid>
+            <varbind>
+               <oid>.1.2.3.4.5.6.7.8.2</oid>
+               <type>OctetString</type>
+               <value>parameters['myMessage']</value><!-- Value of the parameter named myMessage -->
+               <instance>parameters['myId']</instance><!-- Value of the parameter named myId -->
+            </varbind>
+         </mapping>
+      </mapping-group>
+   </snmp-trap-sink>
+<!-- It is possible to define the mapping groups on a external file.
+
+         * The file my-mappings.xml should contain "mapping-group" as its root tag.
+         * The name of the mapping group should match the name of the XML (without the extension).
+
+   <snmp-trap-sink>
+      <name>localTest2</name>
+      <ip-address>127.0.0.2</ip-address>
+      <version>v3</version>
+      <import-mappings>snmptrap-northbounder-mappings.d/my-mappings.xml</import-mappings>
+   </snmp-trap-sink>
+-->
+</snmptrap-northbounder-config>

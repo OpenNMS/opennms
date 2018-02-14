@@ -207,33 +207,25 @@ public class LldpRemTableTracker extends TableTracker {
 	        return getValue(LLDP_REM_SYSNAME).toDisplayString();
 	    }
 	    
-	    public LldpLink getLldpLink(LldpLocPortGetter lldpLocPort) {
-            LOG.info( "getLldpLink: row local port num: {}",  getLldpRemLocalPortNum());
+	    public LldpLink getLldpLink() {
 
-            LldpLink lldpLink = lldpLocPort.get(getLldpRemLocalPortNum());
-            // Check if lldpLink is null.....and do what?
-
-            LOG.info( "getLldpLink: row local port id: {}", lldpLink.getLldpPortId());
-            LOG.info( "getLldpLink: row local port subtype: {}", LldpPortIdSubType.getTypeString(lldpLink.getLldpPortIdSubType().getValue()));
-    	
+            LldpLink lldpLink = new LldpLink();
+            lldpLink.setLldpLocalPortNum(getLldpRemLocalPortNum());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
-            LOG.info( "getLldpLink: row rem lldp identifier: {}", lldpLink.getLldpRemChassisId());
-            
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
-            LOG.info( "getLldpLink: row rem lldp chassis id subtype: {}", LldpChassisIdSubType.getTypeString(getLldpRemChassisidSubtype()));
-    	
             lldpLink.setLldpRemSysname(getLldpRemSysname());
-            LOG.info( "getLldpLink: row rem lldp sysname: {}", lldpLink.getLldpRemSysname());
-
             lldpLink.setLldpRemPortId(getLldpRemPortid());
-            LOG.info( "getLldpLink: row rem lldp port id: {}", lldpLink.getLldpRemPortId());
-
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
-            LOG.info( "getLldpLink: row rem lldp port id subtype: {}", LldpPortIdSubType.getTypeString(getLldpRemPortidSubtype()));
- 
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
+            LOG.debug( "getLldpLink: local port num: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",  
+                       getLldpRemLocalPortNum(),
+                       lldpLink.getLldpRemChassisId(), 
+                       LldpChassisIdSubType.getTypeString(getLldpRemChassisidSubtype()), 
+                       lldpLink.getLldpRemSysname(),
+                       lldpLink.getLldpRemPortId(),
+                       LldpPortIdSubType.getTypeString(getLldpRemPortidSubtype()));
             
-    		return lldpLink;
+            return lldpLink;
 	    }
     }
 

@@ -26,13 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-/*
- * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.1.2.1</a>, using an XML
- * Schema.
- * $Id$
- */
-
 package org.opennms.netmgt.config.datacollection;
 
 import java.io.Serializable;
@@ -57,7 +50,7 @@ public class Systems implements Serializable {
      * list of system definitions
      */
     @XmlElement(name="systemDef")
-    private List<SystemDef> m_systemDefs = new ArrayList<SystemDef>();
+    private List<SystemDef> m_systemDefs = new ArrayList<>();
 
     public Systems() {
         super();

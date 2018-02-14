@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ParameterTest" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="30" bottomMargin="30">
+	<parameter name="ONMS_REPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["/home/ulf/opennms-reports"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[$P{ONMS_REPORT_DIR} + "/subreports/"]]></defaultValueExpression>
+	</parameter>
+
+	<parameter name="COMPLEX" class="java.lang.String">
+		<defaultValueExpression><![CDATA["This is a " + $P{parameter1}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="parameter1" class="java.lang.String">
+		<defaultValueExpression><![CDATA["test with number " + $P{parameter2}]]></defaultValueExpression>
+	</parameter>
+	<parameter name="parameter2" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1 + 1 * 2 / 5]]></defaultValueExpression>
+	</parameter>
+	<title/>
+	<detail/>
+</jasperReport>

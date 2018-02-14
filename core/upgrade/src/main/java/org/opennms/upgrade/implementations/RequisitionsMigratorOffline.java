@@ -31,6 +31,8 @@ package org.opennms.upgrade.implementations;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -138,11 +140,11 @@ public class RequisitionsMigratorOffline extends AbstractOnmsUpgrade {
         try {
             for (File req : FileUtils.listFiles(getRequisitionDir(), new String[]{"xml"}, true)) {
                 log("Processing %s\n", req);
-                String content = IOUtils.toString(new FileInputStream(req), "UTF-8");
+                String content = IOUtils.toString(new FileInputStream(req), StandardCharsets.UTF_8);
                 String output = content.replaceAll(" non-ip-(snmp-primary|interfaces)=\"[^\"]+\"", "");
                 if (content.length() != output.length()) {
                     log("  Updating and parsing the requisition\n", req);
-                    IOUtils.write(output, new FileOutputStream(req), "UTF-8");
+                    IOUtils.write(output, new FileOutputStream(req), StandardCharsets.UTF_8);
                     Requisition requisition = JaxbUtils.unmarshal(Requisition.class, req, true);
                     if (requisition == null) {
                         throw new OnmsUpgradeException("Can't parse requisition " + req);

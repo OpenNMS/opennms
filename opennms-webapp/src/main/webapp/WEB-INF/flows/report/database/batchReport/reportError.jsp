@@ -53,7 +53,7 @@
             <div class="panel-body">
                 <form:form role="form">
                     <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
-                        <div class="alert alert-danger" rol="alert">${message.text}</div>
+                        <div class="alert alert-danger" role="alert">${message.text}</div>
                     </c:forEach>
                     <%--An error has occurred and it has not been possible to run or schedule your report.--%>
                     <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;

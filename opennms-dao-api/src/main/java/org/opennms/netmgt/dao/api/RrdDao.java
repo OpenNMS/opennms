@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.dao.api;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -73,7 +72,7 @@ public interface RrdDao {
      * @param workDir RRD files are relative to this directory
      * @return PNG graph image
      */
-    public InputStream createGraph(String command, File workDir);
+    public InputStream createGraph(String command);
 
     /**
      * Gets the offset of the top of the graph box from the top of the image.

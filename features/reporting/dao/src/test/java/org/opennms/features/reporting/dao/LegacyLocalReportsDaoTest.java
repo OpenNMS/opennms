@@ -50,7 +50,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDaoTest.xml"})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-reportingDaoTest.xml"})
 public class LegacyLocalReportsDaoTest implements InitializingBean {
 
     /**

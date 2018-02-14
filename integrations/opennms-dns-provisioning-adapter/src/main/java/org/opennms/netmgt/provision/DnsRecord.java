@@ -42,8 +42,10 @@ class DnsRecord {
     private String m_hostname;
     private String m_zone;
     
-    DnsRecord(OnmsNode node) {
-        
+    DnsRecord(OnmsNode node, int level) {
+
+        LOG.debug("Constructor: set level: {}", level);
+
         OnmsIpInterface primaryInterface = node.getPrimaryInterface();
         
         
@@ -61,7 +63,18 @@ class DnsRecord {
         LOG.debug("Constructor: set ip address: {}", m_ip);
         m_hostname = node.getLabel() + ".";
         LOG.debug("Constructor: set hostname: {}", m_hostname);
-        m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+
+        String[] singlestat = m_hostname.split("\\.");
+        if ( level == 0 || level >= singlestat.length){
+            m_zone = m_hostname.substring(m_hostname.indexOf('.') + 1);
+        } else {
+        	String domain="";
+        	for (int i=singlestat.length-level;i < singlestat.length;i++ ) {
+        		domain+=singlestat[i];
+        		domain+=".";
+        	}
+        	m_zone=domain;
+        }
         LOG.debug("Constructor: set zone: {}", m_zone);
 
     }
@@ -92,4 +105,5 @@ class DnsRecord {
     public String getHostname() {
         return m_hostname;
     }
+        
 }

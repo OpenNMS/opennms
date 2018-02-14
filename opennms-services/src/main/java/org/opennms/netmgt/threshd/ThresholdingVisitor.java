@@ -41,6 +41,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -96,7 +97,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) {
 
         String enabled = ParameterMap.getKeyedString(svcParams.getParameters(), "thresholding-enabled", null);
         if (enabled != null && !"true".equals(enabled)) {
@@ -104,7 +105,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
             return null;
         }
 
-        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, svcParams);
+        CollectorThresholdingSet thresholdingSet = new CollectorThresholdingSet(nodeId, hostAddress, serviceName, repo, svcParams, resourceStorageDao);
         if (!thresholdingSet.hasThresholds()) {
             LOG.warn("create: the ipaddress/service {}/{} on node {} has no configured thresholds.", hostAddress, serviceName, nodeId);
         }
@@ -185,13 +186,8 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         if (m_thresholdingSet.hasThresholds(attribute)) {
             String name = attribute.getName();
             m_attributesMap.put(name, attribute);
-            if (LOG.isDebugEnabled()) {
-                String value = attribute.getNumericValue();
-                if (value == null) {
-                    value = attribute.getStringValue();
-                }
-                LOG.debug("visitAttribute: storing value {} for attribute named {}", value, name);
-            }
+            LOG.debug("visitAttribute: storing value {} for attribute named {}",
+                    attribute.getNumericValue() != null ? attribute.getNumericValue() : attribute.getStringValue(), name);
         }
     }
 

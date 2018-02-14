@@ -1,0 +1,233 @@
+<?xml version="1.0"?>
+<trend-configuration xmlns="http://xmlns.opennms.org/xsd/config/trend">
+
+    <trend-definition name="nodes">
+        <title>Nodes</title>
+        <subtitle>with Outages</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-fire</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkHeight" value="35"/>
+            <trend-attribute key="sparkChartRangeMin" value="0"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
+            <trend-attribute key="sparkLineWidth" value="1.5"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkSpotRadius" value="3"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
+        </trend-attributes>
+        <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
+        <description>${intValue[23]} Nodes with Outage(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(distinct nodeid) from outages o, events e where e.eventid = o.svclosteventid and iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="severity">
+        <title>Severity</title>
+        <subtitle>Distribution</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-dashboard</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkType" value="pie"/>
+            <trend-attribute key="sparkHeight" value="35"/>
+            <trend-attribute key="sparkSliceColors" value="[#CC0000,#FF3300,#FF9900,#FFCC00,#999900,#336600,#999]"/>
+        </trend-attributes>
+        <descriptionLink>alarm/list.htm</descriptionLink>
+        <description>Go to Alarms Page</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from alarms where firsteventtime > now() - interval '24 hours' and severity = S
+                ) from (
+                    select S from generate_series(1,7) as S
+                ) I order by S desc;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="alarms-new">
+        <title>Alarms</title>
+        <subtitle>Occurence</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-bell</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkType" value="bar"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHeight" value="35"/>
+            <trend-attribute key="sparkBarWidth" value="4"/>
+            <trend-attribute key="sparkBarSpacing" value="2"/>
+        </trend-attributes>
+        <descriptionLink>alarm/list.htm</descriptionLink>
+        <description>${intValue[23]} New Alarm(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from alarms where firsteventtime > S and firsteventtime <= E
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="alarms-total">
+        <title>Alarms</title>
+        <subtitle>Unacknowledged</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-bell</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkHeight" value="40"/>
+            <trend-attribute key="sparkChartRangeMin" value="0"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
+            <trend-attribute key="sparkLineWidth" value="1.5"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkSpotRadius" value="3"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
+        </trend-attributes>
+        <descriptionLink>alarm/list.htm</descriptionLink>
+        <description>${intValue[23]} Unacknowledged Alarm(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from alarms where (alarmacktime is null or alarmacktime > E) and firsteventtime <= E
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="outages-new">
+        <title>Outages</title>
+        <subtitle>Occurence</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-exclamation-sign</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkType" value="bar"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHeight" value="40"/>
+            <trend-attribute key="sparkBarWidth" value="4"/>
+            <trend-attribute key="sparkBarSpacing" value="2"/>
+        </trend-attributes>
+        <descriptionLink>outage/list.htm?outtype=both</descriptionLink>
+        <description>${intValue[23]} New Outage(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from outages where iflostservice > S and iflostservice <= E
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="outages-total">
+        <title>Outages</title>
+        <subtitle>Current</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-exclamation-sign</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkHeight" value="40"/>
+            <trend-attribute key="sparkChartRangeMin" value="0"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
+            <trend-attribute key="sparkLineWidth" value="1.5"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkSpotRadius" value="3"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
+        </trend-attributes>
+        <descriptionLink>outage/list.htm?outtype=current</descriptionLink>
+        <description>${intValue[23]} Current Outage(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from outages where iflostservice < E and (ifregainedservice is null or ifregainedservice > E)
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="bsm-new">
+        <title>Business Services</title>
+        <subtitle>Problem Occurence</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-tasks</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkType" value="bar"/>
+            <trend-attribute key="sparkBarColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHeight" value="40"/>
+            <trend-attribute key="sparkBarWidth" value="4"/>
+            <trend-attribute key="sparkBarSpacing" value="2"/>
+        </trend-attributes>
+        <descriptionLink>topology?szl=1amp;layout=Hierarchy+Layout&amp;provider=Business+Services</descriptionLink>
+        <description>${intValue[23]} New Problem(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from alarms where firsteventtime > S and firsteventtime <= E and eventuei='uei.opennms.org/bsm/serviceProblem'
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+    <trend-definition name="bsm-total">
+        <title>Business Services</title>
+        <subtitle>Current Problems</subtitle>
+        <visible>true</visible>
+        <icon>glyphicon-tasks</icon>
+        <trend-attributes>
+            <trend-attribute key="sparkWidth" value="100%"/>
+            <trend-attribute key="sparkHeight" value="40"/>
+            <trend-attribute key="sparkChartRangeMin" value="0"/>
+            <trend-attribute key="sparkLineColor" value="#4c9d29"/>
+            <trend-attribute key="sparkLineWidth" value="1.5"/>
+            <trend-attribute key="sparkFillColor" value="rgba(76, 157, 41, 0.4)"/>
+            <trend-attribute key="sparkSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMinSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkMaxSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkSpotRadius" value="3"/>
+            <trend-attribute key="sparkHighlightSpotColor" value="#4c9d29"/>
+            <trend-attribute key="sparkHighlightLineColor" value="#4c9d29"/>
+        </trend-attributes>
+        <descriptionLink>topology?szl=1amp;layout=Hierarchy+Layout&amp;provider=Business+Services</descriptionLink>
+        <description>${intValue[23]} Current Problem(s)</description>
+        <query>
+            <![CDATA[
+                select (
+                    select count(*) from alarms where (alarmacktime is null or alarmacktime > E) and firsteventtime <= E and eventuei='uei.opennms.org/bsm/serviceProblem'
+                ) from (
+                    select now() - interval '1 hour' * (O + 1) AS S, now() - interval '1 hour' * O as E from generate_series(0, 23) as O
+                ) I order by S;
+            ]]>
+        </query>
+    </trend-definition>
+
+</trend-configuration>

@@ -30,10 +30,9 @@ package org.opennms.netmgt.alarmd;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.xml.event.Event;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * AlarmPersting Interface
+ * Alarm persisting interface.
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
  * @version $Id: $
@@ -44,9 +43,9 @@ public interface AlarmPersister {
      * <p>persist</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param eagerlyLoadAlarm <code>true</code> if all fields on the returned alarlm should be early loaded, <code>false</code> otherwise
      * @return 
      */
-    @Transactional
-    public abstract OnmsAlarm persist(Event event);
+    OnmsAlarm persist(Event event, boolean eagerlyLoadAlarm);
 
 }

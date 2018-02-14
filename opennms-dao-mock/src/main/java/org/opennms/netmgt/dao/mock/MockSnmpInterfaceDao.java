@@ -41,9 +41,9 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     private AtomicInteger m_id = new AtomicInteger(0);
 
     @Override
-    public void save(final OnmsSnmpInterface iface) {
+    public Integer save(final OnmsSnmpInterface iface) {
         updateParent(iface);
-        super.save(iface);
+        return super.save(iface);
     }
 
     @Override
@@ -102,4 +102,8 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
         return null;
     }
 
+    @Override
+    public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
 }

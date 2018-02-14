@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.ApplicationDao;
+import org.opennms.netmgt.dao.api.ApplicationStatus;
+import org.opennms.netmgt.dao.api.ApplicationStatusEntity;
 import org.opennms.netmgt.model.OnmsApplication;
 
 public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer> implements ApplicationDao {
@@ -54,6 +57,21 @@ public class MockApplicationDao extends AbstractMockDao<OnmsApplication, Integer
                 return app;
             }
         }
+        return null;
+    }
+
+    @Override
+    public List<ApplicationStatus> getApplicationStatus() {
+        return null;
+    }
+
+    @Override
+    public List<ApplicationStatus> getApplicationStatus(List<OnmsApplication> applications) {
+        return null;
+    }
+
+    @Override
+    public List<ApplicationStatusEntity> getAlarmStatus() {
         return null;
     }
 

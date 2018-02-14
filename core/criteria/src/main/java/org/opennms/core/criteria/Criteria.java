@@ -67,7 +67,7 @@ public class Criteria implements Cloneable {
 	}
 
     public static interface CriteriaVisitor {
-        public void visitClass(final Class<?> clazz);
+        public void visitClassAndRootAlias(final Class<?> clazz, final String rootAlias);
 
         public void visitOrder(final Order order);
 
@@ -95,7 +95,7 @@ public class Criteria implements Cloneable {
     }
 
     public void visit(final CriteriaVisitor visitor) {
-        visitor.visitClass(getCriteriaClass());
+        visitor.visitClassAndRootAlias(getCriteriaClass(), getRootAlias());
 
         for (final Order order : getOrders()) {
             visitor.visitOrder(order);
@@ -126,13 +126,15 @@ public class Criteria implements Cloneable {
 
     private Class<?> m_class;
 
-    private List<Order> m_orders = new ArrayList<Order>();
+    private final String m_rootAlias;
 
-    private List<Alias> m_aliases = new ArrayList<Alias>();
+    private List<Order> m_orders = new ArrayList<>();
 
-    private Set<Fetch> m_fetchTypes = new LinkedHashSet<Fetch>();
+    private List<Alias> m_aliases = new ArrayList<>();
 
-    private Set<Restriction> m_restrictions = new LinkedHashSet<Restriction>();
+    private Set<Fetch> m_fetchTypes = new LinkedHashSet<>();
+
+    private Set<Restriction> m_restrictions = new LinkedHashSet<>();
 
     private boolean m_distinct = false;
 
@@ -143,11 +145,24 @@ public class Criteria implements Cloneable {
     private LockType m_lockType = null;
 
     public Criteria(final Class<?> clazz) {
+        this(clazz, null);
+    }
+
+    public Criteria(final Class<?> clazz, String rootAlias) {
         m_class = clazz;
+        m_rootAlias = rootAlias;
+    }
+
+    public void setClass(Class<?> m_class) {
+        this.m_class = m_class;
     }
 
     public final Class<?> getCriteriaClass() {
         return m_class;
+    }
+
+    public final String getRootAlias() {
+        return m_rootAlias;
     }
 
     public final Collection<Order> getOrders() {
@@ -290,7 +305,7 @@ public class Criteria implements Cloneable {
                 // "match: class = %s, pathSections = %s, alias = %s",
                 // clazz.getName(), pathSections, alias);
                 // we have a match, retry with the "real" path
-                final List<String> paths = new ArrayList<String>();
+                final List<String> paths = new ArrayList<>();
                 paths.addAll(Arrays.asList(SPLIT_ON.split(associationPath)));
                 paths.addAll(remaining);
                 return getType(clazz, paths, aliases);
@@ -329,7 +344,7 @@ public class Criteria implements Cloneable {
     @Override
     public final String toString() {
         final StringBuilder sb = new StringBuilder();
-        final List<String> entries = new ArrayList<String>();
+        final List<String> entries = new ArrayList<>();
         sb.append("Criteria [");
         if (m_class != null) entries.add("class=" + m_class.toString());
         if (m_orders != null && m_orders.size() > 0) entries.add("orders=" + m_orders.toString());

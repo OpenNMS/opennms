@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ackd-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/ackd-configuration" 
   alarm-sync="true" 
   ack-expression="~(?i)^ack$" 
   clear-expression="~(?i)^(resolve|clear)$"

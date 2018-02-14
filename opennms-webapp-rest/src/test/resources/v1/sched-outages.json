@@ -1,0 +1,29 @@
+{
+    "outage": [
+        {
+            "interface": [
+                {
+                    "address": "match-any"
+                }
+            ], 
+            "name": "my-junit-test", 
+            "node": [
+                {
+                    "id": 18
+                }, 
+                {
+                    "id": 40
+                }
+            ], 
+            "time": [
+                {
+                    "begins": "13:30:00", 
+                    "day": "monday", 
+                    "ends": "13:30:01", 
+                    "id": null
+                }
+            ], 
+            "type": "weekly"
+        }
+    ]
+}

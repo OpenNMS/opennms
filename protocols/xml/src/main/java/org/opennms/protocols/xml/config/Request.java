@@ -44,7 +44,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name="request")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Request {
+public class Request implements Cloneable {
 
     /** The method. */
     @XmlAttribute
@@ -52,15 +52,24 @@ public class Request {
 
     /** The parameters. */
     @XmlElement(name="parameter")
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Parameter> parameters = new ArrayList<>();
 
     /** The headers. */
     @XmlElement(name="header")
-    private List<Header> headers = new ArrayList<Header>();
+    private List<Header> headers = new ArrayList<>();
 
     /** The content. */
     @XmlElement
     private Content content;
+
+    public Request() { }
+
+    public Request(Request copy) {
+        method = copy.method;
+        copy.parameters.stream().forEach(p -> parameters.add(p.clone()));
+        copy.headers.stream().forEach(h -> headers.add(h.clone()));
+        content = copy.content != null ? copy.content.clone() : null;
+    }
 
     /**
      * Gets the method.
@@ -211,4 +220,8 @@ public class Request {
         return "Request [method=" + method + ", parameters=" + parameters + ", headers=" + headers + ", content=" + content + "]";
     }
 
+    @Override
+    public Request clone() {
+        return new Request(this);
+    }
 }

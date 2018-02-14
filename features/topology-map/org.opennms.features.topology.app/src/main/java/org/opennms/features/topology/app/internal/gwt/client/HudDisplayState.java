@@ -31,7 +31,7 @@ package org.opennms.features.topology.app.internal.gwt.client;
 import com.vaadin.shared.AbstractComponentState;
 
 public class HudDisplayState extends AbstractComponentState {
-
+    static final long serialVersionUID = 1L;
 
     private int m_vertexFocusCount;
     private int m_edgeFocusCount;

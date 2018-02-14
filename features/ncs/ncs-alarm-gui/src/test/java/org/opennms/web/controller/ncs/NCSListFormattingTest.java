@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
@@ -185,7 +186,7 @@ public class NCSListFormattingTest {
     
     
     private String getComponentHTML(NCSComponent component) {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append("<li>");
         buffer.append(component.getName());
         
@@ -203,7 +204,7 @@ public class NCSListFormattingTest {
         
     }
     
-    private void printJaxbXML(NCSComponent svc) throws JAXBException, UnsupportedEncodingException {
+    private void printJaxbXML(NCSComponent svc) throws JAXBException {
         JAXBContext context = JAXBContext.newInstance(NCSComponent.class);
         Marshaller marshaller = context.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -217,7 +218,7 @@ public class NCSListFormattingTest {
         // verify its matches the expected results
         byte[] utf8 = out.toByteArray();
 
-        String result = new String(utf8, "UTF-8");
+        String result = new String(utf8, StandardCharsets.UTF_8);
         
         System.err.println(result);
     }

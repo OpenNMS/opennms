@@ -41,18 +41,22 @@ import org.springframework.util.Assert;
  * @since 1.8.1
  */
 public enum SortStyle {
+    LOCATION("location"),
     RESPONDER("responder"),
     PAGETIME("pagetime"),
     RESPONDTIME("respondtime"),
     NODE("node"),
+    NODE_LOCATION("nodelocation"),
     INTERFACE("interface"),
     SERVICE("service"),
     ID("id"),
     SEVERITY("severity"),
+    REVERSE_LOCATION("rev_location"),
     REVERSE_RESPONDER("rev_responder"),
     REVERSE_PAGETIME("rev_pagetime"),
     REVERSE_RESPONDTIME("rev_respondtime"),
     REVERSE_NODE("rev_node"),
+    REVERSE_NODE_LOCATION("rev_nodelocation"),
     REVERSE_INTERFACE("rev_interface"),
     REVERSE_SERVICE("rev_service"),
     REVERSE_ID("rev_id"),
@@ -191,10 +195,26 @@ public enum SortStyle {
             clause = " ORDER BY EVENT.EVENTSEVERITY ASC";
             break;
 
+        case LOCATION:
+            clause = " ORDER BY MONITORINGSYSTEMS.LOCATION ASC";
+            break;
+            
+        case REVERSE_LOCATION:
+            clause = " ORDER BY MONITORINGSYSTEMS.LOCATION DESC";
+            break;
+
+        case NODE_LOCATION:
+            clause = " ORDER BY NODE.LOCATION ASC";
+            break;
+
+        case REVERSE_NODE_LOCATION:
+            clause = " ORDER BY NODE.LOCATION DESC";
+            break;
+
         default:
             throw new IllegalArgumentException("Unknown SortStyle: " + getName());
         }
-        
+
         return clause;
     }
 

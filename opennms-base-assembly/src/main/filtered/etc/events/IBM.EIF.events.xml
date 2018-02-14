@@ -1,0 +1,91 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/vendor/IBM/EIF/OMEGAMON_BASE</uei>
+      <event-label>IBM: Event received through the EIF adapter</event-label>
+      <descr>&lt;p>Converted IBM Event Integration Facility Event&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	msg&lt;/b>&lt;/td>&lt;td>
+	%parm[msg]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cms_hostname&lt;/b>&lt;/td>&lt;td>
+	%parm[cms_hostname]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cms_port&lt;/b>&lt;/td>&lt;td>
+	%parm[cms_port]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	integration_type&lt;/b>&lt;/td>&lt;td>
+	%parm[integration_type]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	master_reset_flag&lt;/b>&lt;/td>&lt;td>
+	%parm[master_reset_flag]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	appl_label&lt;/b>&lt;/td>&lt;td>
+	%parm[appl_label]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_name&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_name]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_origin&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_origin]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_displayitem&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_displayitem]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_time&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_time]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_status&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_status]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_eventdata&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_eventdata]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_type&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_type]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_thrunode&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_thrunode]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_group&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_group]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	situation_fullname&lt;/b>&lt;/td>&lt;td>
+	%parm[situation_fullname]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			IBM: EIF Event received&lt;br>
+			cms_hostname=%parm[cms_hostname]%;
+			cms_port=%parm[cms_port]%;
+			integration_type=%parm[integration_type]%;
+			master_reset_flag=%parm[master_reset_flag]%;
+			appl_label=%parm[appl_label]%;
+			situation_name=%parm[situation_name]%;
+			situation_origin=%parm[situation_origin]%;
+			situation_displayitem=%parm[situation_displayitem]%;
+			situation_time=%parm[situation_time]%;
+			situation_status=%parm[situation_status]%;
+			situation_eventdata=%parm[situation_eventdata]%;
+			situation_type=%parm[situation_type]%;
+			situation_thrunode=%parm[situation_thrunode]%;
+			situation_group=%parm[situation_group]%;
+			situation_fullname=%parm[situation_fullname]%;
+			&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+</events>

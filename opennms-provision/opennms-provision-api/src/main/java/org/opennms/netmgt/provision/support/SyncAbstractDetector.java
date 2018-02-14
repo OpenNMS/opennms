@@ -30,6 +30,8 @@ package org.opennms.netmgt.provision.support;
 
 import java.net.InetAddress;
 
+import org.opennms.netmgt.provision.DetectRequest;
+import org.opennms.netmgt.provision.DetectResults;
 import org.opennms.netmgt.provision.SyncServiceDetector;
 
 /**
@@ -61,7 +63,16 @@ public abstract class SyncAbstractDetector extends AbstractDetector implements S
         super(serviceName, port);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * <p>isServiceDetected</p>
+     *
+     * @param address a {@link java.net.InetAddress} object.
+     * @return a boolean.
+     */
+    public abstract boolean isServiceDetected(InetAddress address);
+
     @Override
-    abstract public boolean isServiceDetected(final InetAddress address);
+    public DetectResults detect(DetectRequest request) {
+        return new DetectResultsImpl(isServiceDetected(request.getAddress()));
+    }
 }

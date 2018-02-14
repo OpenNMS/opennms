@@ -1,0 +1,44 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== WsManMonitor
+
+This monitor can be used to issue a WS-Man _Get_ command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.WsManMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the WsManMonitor
+[options="header, autowidth"]
+|===
+| Parameter      | Description                                                                 | Required | Default value
+| `resource-uri` | Resource URI                                                                | required | `-`
+| `rule`         | SPEL expression applied against the result of the _Get_                     | required | `-`
+| `selector.`    | Used to filter the result set. All selectors must prefixed with `selector.` | optional | `(None)`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+The following monitor will issue a _Get_ against the configured resource and verify that the correct service tag is returned:
+  
+[source, xml]
+----
+<service name="WsMan-ServiceTag-Check" interval="300000" user-defined="false" status="on">
+  <parameter key="resource-uri" value="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"/>
+  <parameter key="selector.CreationClassName" value="DCIM_ComputerSystem"/>
+  <parameter key="selector.Name" value="srv:system"/>
+  <parameter key="rule" value="#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches 'C7BBBP1'"/>
+</service>
+
+<monitor service="WsMan-ServiceTag-Check" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor/>
+----

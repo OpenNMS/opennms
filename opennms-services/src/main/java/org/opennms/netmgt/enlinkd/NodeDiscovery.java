@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.enlinkd;
 
+import static org.opennms.core.utils.InetAddressUtils.str;
+
 import java.net.InetAddress;
 
-import org.opennms.netmgt.linkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.linkd.scheduler.Scheduler;
+import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
+import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.topology.LinkableSnmpNode;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -45,10 +47,11 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
  */
 public abstract class NodeDiscovery implements ReadyRunnable {
 
-	/**
+    private static final Logger LOG = LoggerFactory.getLogger(NodeDiscovery.class);
+    /**
      * The node ID of the system used to collect the SNMP information
      */
-    protected final LinkableSnmpNode m_node;
+    protected final Node m_node;
 
     /**
      * The scheduler object
@@ -71,7 +74,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 
 
     protected final EnhancedLinkd m_linkd;
-
+    
     /**
      * Constructs a new SNMP collector for a node using the passed interface
      * as the collection point. The collection does not occur until the
@@ -81,7 +84,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public NodeDiscovery(final EnhancedLinkd linkd, final LinkableSnmpNode node) {
+    public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
         m_linkd = linkd;
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
@@ -100,46 +103,59 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      */
     public void run() {
-    	EventBuilder builder;
         if (m_suspendCollection) {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
+            sendSuspendedEvent(getNodeId());
         } else {
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-            
+            sendStartEvent(getNodeId());
+            LOG.info( "run: node [{}], start {} collection.", 
+                      getNodeId(), getName());
             runCollection();
-            
-            builder = new EventBuilder(
-                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                    "EnhancedLinkd");
-            builder.setNodeid(getNodeId());
-            builder.setInterface(getTarget());
-            builder.addParam("runnable", getName());
-            m_linkd.getEventForwarder().sendNow(builder.getEvent());
-
+            LOG.info( "run: node [{}], end {} collection.", 
+                      getNodeId(),getName());
+            sendCompletedEvent(getNodeId());
         }
         m_runned = true;
         reschedule();
     }
+
+    protected void sendSuspendedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getPrimaryIpAddress());
+                           builder.addParam("runnable", getName());
+       m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
     
+    protected void sendStartEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getPrimaryIpAddress());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+        
+    }
+    
+    protected void sendCompletedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(getNodeId());
+                           builder.setInterface(getPrimaryIpAddress());
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+
     protected abstract void runCollection(); 
     /**
      * <p>
      * getScheduler
      * </p>
      * 
-     * @return a {@link org.opennms.netmgt.linkd.scheduler.Scheduler} object.
+     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
      */
     public Scheduler getScheduler() {
         return m_scheduler;
@@ -151,7 +167,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * </p>
      * 
      * @param scheduler
-     *            a {@link org.opennms.netmgt.linkd.scheduler.Scheduler}
+     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
      *            object.
      */
     public void setScheduler(Scheduler scheduler) {
@@ -173,7 +189,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     /**
 	 * 
 	 */
-    private void reschedule() {
+    public void reschedule() {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
@@ -242,41 +258,12 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.net.InetAddress} object.
      */
-    public InetAddress getTarget() {
+    public InetAddress getPrimaryIpAddress() {
         return m_node.getSnmpPrimaryIpAddr();
     }
 
-    /**
-     * <p>
-     * getReadCommunity
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    public String getReadCommunity() {
-        return getPeer().getReadCommunity();
-    }
-
-    /**
-     * <p>
-     * getPeer
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     */
-    public SnmpAgentConfig getPeer() {
-        return m_linkd.getSnmpAgentConfig(getTarget());
-    }
-
-    /**
-     * <p>
-     * getPort
-     * </p>
-     * 
-     * @return a int.
-     */
-    public int getPort() {
-        return getPeer().getPort();
+    public String getPrimaryIpAddressString() {
+    	return str(m_node.getSnmpPrimaryIpAddr());
     }
 
     /**
@@ -286,7 +273,12 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
-    public abstract String getInfo();
+	public String getInfo() {
+        return  getName()  
+        		+ " node=" + getNodeId()
+        		+ " ip=" + str(getPrimaryIpAddress())
+        		+ " package=" + getPackageName();
+	}
 
     /**
      * <p>
@@ -360,6 +352,10 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         return m_node.getSysname();
     }
 
+    public String getLocation() {
+        return m_node.getLocation();
+    }
+
     public abstract String getName();
 
 	@Override
@@ -394,5 +390,5 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 			return false;
 		return true;
 	}
-    
+	
 }

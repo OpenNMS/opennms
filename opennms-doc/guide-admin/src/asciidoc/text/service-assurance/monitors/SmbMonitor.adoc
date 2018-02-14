@@ -1,0 +1,50 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== SmbMonitor
+
+This monitor is used to test the _NetBIOS over TCP/IP_ name resolution in _Microsoft Windows_ environments.
+The monitor tries to retrieve a _NetBIOS name_ for the IP address of the interface.
+Name services for _NetBIOS_ in _Microsoft Windows_ are provided on port 137/UDP or 137/TCP.
+
+The service uses the IP address of the interface, where the monitor is assigned to.
+The service is _up_ if for the given IP address a _NetBIOS name_ is registered and can be resolved.
+
+For troubleshooting see the usage of the Microsoft Windows command line tool `nbtstat` or on Linux `nmblookup`.
+
+WARNING: Microsoft deprecated the usage of _NetBIOS_.
+         Since Windows Server 2000 _DNS_ is used as the default name resolution.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name     | `org.opennms.netmgt.poller.monitors.SmbMonitor`
+| Remote Enabled | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the SmbMonitor
+[options="header, autowidth"]
+|===
+| Parameter        | Description                                                     | Required | Default value
+| `do-node-status` | Try to get the _NetBIOS_ node status type for the given address | optional | `true`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+===== Examples
+
+Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+
+[source, xml]
+----
+<service name="SMB" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="3000"/>
+</service>
+
+<monitor service="SMB" class-name="org.opennms.netmgt.poller.monitors.SmbMonitor"/>
+----

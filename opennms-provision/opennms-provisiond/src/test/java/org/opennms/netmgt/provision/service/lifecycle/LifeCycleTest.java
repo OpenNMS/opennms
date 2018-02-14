@@ -33,11 +33,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.tasks.DefaultTaskCoordinator;
+import org.opennms.core.tasks.TaskCoordinator;
 import org.opennms.core.test.MockLogAppender;
 
 
@@ -54,7 +54,7 @@ public class LifeCycleTest {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        DefaultTaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleTest", Executors.newSingleThreadExecutor());
+        TaskCoordinator coordinator = new DefaultTaskCoordinator("LifeCycleTest");
         m_lifeCycleRepository = new DefaultLifeCycleRepository(coordinator);
     }
 

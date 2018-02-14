@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.config.vmware.vijava;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * An Attribute Object
@@ -59,7 +60,7 @@ public class Attrib implements java.io.Serializable {
      * Field _type.
      */
     @XmlAttribute(name = "type")
-    private java.lang.String _type;
+    private AttributeType _type;
 
     public Attrib() {
         super();
@@ -110,9 +111,9 @@ public class Attrib implements java.io.Serializable {
      *
      * @return the value of field 'Type'.
      */
-    public java.lang.String getType(
+    public AttributeType getType(
     ) {
-        return this._type == null ? "" : this._type;
+        return this._type;
     }
 
     /**
@@ -141,7 +142,7 @@ public class Attrib implements java.io.Serializable {
      * @param type the value of field 'type'.
      */
     public void setType(
-            final java.lang.String type) {
+            final AttributeType type) {
         this._type = type;
     }
 }

@@ -96,7 +96,7 @@ public class MissingParameterException extends RuntimeException {
      */
     @Override
     public String getMessage() {
-	StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         b.append("Missing parameter \"" + getMissingParameter()
                  + "\" out of required parameters: ");

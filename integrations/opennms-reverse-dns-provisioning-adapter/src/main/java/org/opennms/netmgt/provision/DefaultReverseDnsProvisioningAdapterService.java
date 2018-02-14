@@ -45,6 +45,8 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     private NodeDao m_nodeDao;
     private IpInterfaceDao m_ipInterfaceDao;
     private TransactionTemplate m_template;
+    private Integer m_level = 3;
+
     
     /**
      * <p>setTemplate</p>
@@ -81,16 +83,22 @@ public class DefaultReverseDnsProvisioningAdapterService implements
     public void afterPropertiesSet() throws Exception {
         Assert.notNull(m_nodeDao, "ReverseDnsProvisioner requires a NodeDao which is not null.");
         Assert.notNull(m_ipInterfaceDao, "ReverseDnsProvisioner requires an IpInterfaceDao which is not null.");
+        String levelString = System.getProperty("importer.adapter.dns.reverse.level");
+        if (levelString != null) {
+        	Integer level = Integer.getInteger(levelString);
+        	if (level != null && level.intValue() > 0)
+        		m_level=level;
+        }
     }
     
     @Override
     public List<ReverseDnsRecord> get(final Integer nodeid) {
-        final List<ReverseDnsRecord> records = new ArrayList<ReverseDnsRecord>();
+        final List<ReverseDnsRecord> records = new ArrayList<>();
         m_template.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus arg0) {
                 for (OnmsIpInterface ipInterface : m_nodeDao.get(nodeid).getIpInterfaces()) {
-                    records.add(new ReverseDnsRecord(ipInterface));
+                    records.add(new ReverseDnsRecord(ipInterface,m_level));
                 }
             }
         });
@@ -105,5 +113,13 @@ public class DefaultReverseDnsProvisioningAdapterService implements
             m_ipInterfaceDao.update(ipInterface);
         }
     }
+
+	public Integer getLevel() {
+		return m_level;
+	}
+
+	public void setLevel(Integer level) {
+		m_level = level;
+	}
 
 }

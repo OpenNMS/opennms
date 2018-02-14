@@ -95,7 +95,7 @@ public class NotificationInfo implements Cloneable {
         m_numericalPin = "";
         m_textService = "";
         m_textPin = "";
-        m_dutySchedules = new ArrayList<DutySchedule>();
+        m_dutySchedules = new ArrayList<>();
     }
 
     /**
@@ -335,7 +335,7 @@ public class NotificationInfo implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("email             = " + m_email + "\n");
         buffer.append("xmpp              = " + m_xmppAddress + "\n");

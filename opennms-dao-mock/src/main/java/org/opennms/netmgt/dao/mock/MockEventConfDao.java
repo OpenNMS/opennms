@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.mock;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,10 +42,11 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.netmgt.config.EnterpriseIdPartition;
-import org.opennms.netmgt.config.EventLabelComparator;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.xml.eventconf.EnterpriseIdPartition;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
 import org.opennms.netmgt.xml.eventconf.EventOrdering;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.netmgt.xml.eventconf.Events.EventCallback;
@@ -79,7 +81,8 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
         try {
             is = m_resource.getInputStream();
             isr = new InputStreamReader(is);
-            m_events = Events.unmarshal(isr);
+            final Reader reader = isr;
+            m_events = JaxbUtils.unmarshal(Events.class, reader);
             m_events.loadEventFiles(m_resource);
             m_events.initialize(new EnterpriseIdPartition(), new EventOrdering());
         } catch (final IOException e) {
@@ -92,7 +95,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
 
     @Override
     public List<Event> getEvents(final String uei) {
-        final List<Event> events = new ArrayList<Event>();
+        final List<Event> events = new ArrayList<>();
         m_events.forEachEvent(events, new EventCallback<List<Event>>() {
             @Override
             public List<Event> process(final List<Event> events, final Event event) {
@@ -107,7 +110,7 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
 
     @Override
     public List<String> getEventUEIs() {
-        final Set<String> ueis = new HashSet<String>();
+        final Set<String> ueis = new HashSet<>();
         m_events.forEachEvent(ueis, new EventCallback<Set<String>>() {
             @Override
             public Set<String> process(final Set<String> ueis, final Event event) {

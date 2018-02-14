@@ -39,6 +39,11 @@ import org.opennms.features.topology.api.topo.VertexRef;
 public class DefaultSelectionContext implements SelectionContext {
 	private final Set<VertexRef> m_selectedVertices = Collections.synchronizedSet(new HashSet<VertexRef>());
 	private final Set<EdgeRef> m_selectedEdges = Collections.synchronizedSet(new HashSet<EdgeRef>());
+	private final GraphContainer m_graphContainer;
+
+	public DefaultSelectionContext(GraphContainer graphContainer) {
+		m_graphContainer = graphContainer;
+	}
 
 	@Override
 	public boolean isVertexRefSelected(VertexRef vertexRef) {
@@ -77,8 +82,13 @@ public class DefaultSelectionContext implements SelectionContext {
 	}
 
 	@Override
+	public GraphContainer getGraphContainer() {
+		return m_graphContainer;
+	}
+
+	@Override
 	public boolean selectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		for (VertexRef vertexRef : vertexRefs) {
@@ -94,7 +104,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean deselectVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		for (VertexRef vertexRef : vertexRefs) {
@@ -120,7 +130,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean setSelectedVertexRefs(Collection<? extends VertexRef> vertexRefs) {
-		Set<VertexRef> oldSet = new HashSet<VertexRef>();
+		Set<VertexRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedVertexRefs());
 
 		doDeselectAll();
@@ -136,7 +146,7 @@ public class DefaultSelectionContext implements SelectionContext {
 
 	@Override
 	public boolean setSelectedEdgeRefs(Collection<? extends EdgeRef> edgeRefs) {
-		Set<EdgeRef> oldSet = new HashSet<EdgeRef>();
+		Set<EdgeRef> oldSet = new HashSet<>();
 		oldSet.addAll(getSelectedEdgeRefs());
 
 		doDeselectAll();

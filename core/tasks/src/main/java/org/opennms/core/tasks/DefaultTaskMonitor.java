@@ -32,10 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * DefaultTaskMonitor
+ * This {@link TaskMonitor} is used to log {@link Task} lifecycle events.
  *
  * @author brozow
- * @version $Id: $
  */
 public class DefaultTaskMonitor implements TaskMonitor {
 	
@@ -57,8 +56,8 @@ public class DefaultTaskMonitor implements TaskMonitor {
 
     /** {@inheritDoc} */
     @Override
-    public void prerequisiteAdded(final Task monitored, final Task prerequsite) {
-        LOG.trace("prerequisiteAdded({}, {})", monitored, prerequsite);
+    public void prerequisiteAdded(final Task monitored, final Task prerequisite) {
+        LOG.trace("prerequisiteAdded({}, {})", monitored, prerequisite);
     }
 
     /** {@inheritDoc} */

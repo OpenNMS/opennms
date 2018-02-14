@@ -1,0 +1,48 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="VMware6">
+   <!--
+      Configuration file generated for:
+
+      Full name.......: VMware vCenter Server 6.0.0 build-3339084
+      API type........: VirtualCenter
+      API version.....: 6.0
+      Product name....: VMware VirtualCenter Server
+      Product version.: 6.0
+      OS type.........: linux-x64
+   -->
+   <resourceType name="vmware6Cpu" label="VMware v6 Cpu" resourceLabel="${vmware6CpuName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6DaSt" label="VMware v6 DaSt" resourceLabel="${vmware6DaStName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6Disk" label="VMware v6 Disk" resourceLabel="${vmware6DiskName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6Net" label="VMware v6 Net" resourceLabel="${vmware6NetName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6StAdptr" label="VMware v6 StAdptr" resourceLabel="${vmware6StAdptrName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6StPth" label="VMware v6 StPth" resourceLabel="${vmware6StPthName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6Sys" label="VMware v6 Sys" resourceLabel="${vmware6SysName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6VrtDisk" label="VMware v6 VrtDisk" resourceLabel="${vmware6VrtDiskName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="vmware6vflashModule" label="VMware v6 vflashModule" resourceLabel="${vmware6vflashModuleName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+</datacollection-group>

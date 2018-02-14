@@ -62,7 +62,7 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
      */
     public Jni6IcmpMessenger(int pingerId) throws IOException {
         m_pingerId = pingerId;
-        m_socket = new ICMPv6Socket();
+        m_socket = new ICMPv6Socket(Integer.valueOf(pingerId).shortValue());
     }
 
     void processPackets(ReplyHandler<Jni6PingResponse> callback) {
@@ -154,5 +154,24 @@ public class Jni6IcmpMessenger implements Messenger<Jni6PingRequest, Jni6PingRes
         Inet6Address address = (Inet6Address) packet.getAddress();
 
         return new Jni6PingResponse(address, echoReply);
+    }
+
+
+    public void setTrafficClass(int tc) throws IOException {
+        try {
+            m_socket.setTrafficClass(tc);
+        } catch (final IOException e) {
+            LOG.error("Failed to set traffic class {} on ICMPv6 socket.", tc, e);
+        }
+    }
+
+    public void setAllowFragmentation(final boolean allow) throws IOException {
+        if (!allow) {
+            try {
+                m_socket.dontFragment();
+            } catch (final IOException e) {
+                LOG.error("Failed to set 'Don't Fragment' bit on ICMPv6 socket.", e);
+            }
+        }
     }
 }

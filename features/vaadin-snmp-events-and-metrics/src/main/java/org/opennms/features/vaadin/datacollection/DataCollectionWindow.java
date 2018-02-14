@@ -33,10 +33,10 @@ import java.io.FileWriter;
 import java.util.List;
 
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.mibcompiler.services.PrefabGraphDumper;
 import org.opennms.features.vaadin.api.Logger;
-import org.opennms.features.vaadin.mibcompiler.api.MibParser;
-import org.opennms.features.vaadin.mibcompiler.services.PrefabGraphDumper;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.model.PrefabGraph;
 import org.vaadin.dialogs.ConfirmDialog;
@@ -62,7 +62,7 @@ public class DataCollectionWindow extends Window {
      * @param logger the logger object
      * @throws Exception the exception
      */
-    public DataCollectionWindow(final MibParser parser, final DataCollectionConfigDao dataCollectionConfigDao, final String fileName, final DatacollectionGroup dcGroup, final Logger logger) throws Exception {
+    public DataCollectionWindow(final MibParser parser, final DataCollectionConfigDao dataCollectionConfigDao, final String fileName, final DatacollectionGroup dcGroup, final Logger logger) {
         super(fileName); // Using fileName for as the window's name.
         //setScrollable(true);
         setModal(false);

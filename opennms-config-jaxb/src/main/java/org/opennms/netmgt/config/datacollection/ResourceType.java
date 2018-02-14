@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.internal.collection.DatacollectionConfigVisitor
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder={"m_name", "m_label", "m_resourceLabel", "m_persistenceSelectorStrategy", "m_storageStrategy"})
 @ValidateUsing("datacollection-config.xsd")
-public class ResourceType implements Serializable {
+public class ResourceType implements Serializable, org.opennms.netmgt.collection.api.ResourceType {
     private static final long serialVersionUID = -3663855168780520748L;
 
     /**

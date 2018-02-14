@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,9 +30,11 @@ package org.opennms.web.springframework.security;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
-import org.springframework.util.Assert;
 
 /**
  * <p>RequestAttributePreAuthenticationProcessingFilter class. This filter should be used
@@ -42,54 +44,74 @@ import org.springframework.util.Assert;
  * @author Timothy Nowaczyk, tan7f@virginia.edu
  */
 public class RequestAttributePreAuthenticationProcessingFilter extends AbstractPreAuthenticatedProcessingFilter {
-    
-    private String m_principalRequestAttribute = "REMOTE_USER"; 
-    private String m_credentialsRequestAttribute;
+    private static final Logger LOG = LoggerFactory.getLogger(RequestAttributePreAuthenticationProcessingFilter.class);
 
+    private boolean m_enabled = false;
+    private String m_principalRequestAttribute = null;
+    private String m_credentialsRequestAttribute = null;
+    private boolean m_failOnError = false;
 
-    /** {@inheritDoc} */
-    @Override
-    protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        Object principal = request.getAttribute(m_principalRequestAttribute);
-        
-        if (principal == null) {
-            throw new PreAuthenticatedCredentialsNotFoundException(m_principalRequestAttribute 
-                    + " attribute not found in request.");
+    public void afterPropertiesSet() {
+        super.afterPropertiesSet();
+        if (m_enabled) {
+            if (StringUtils.isBlank(m_principalRequestAttribute)) {
+                throw new IllegalStateException("RequestAttributePreAuthenticationProcessingFilter is enabled but 'principalRequestHeader' is not set!");
+            }
+            if (StringUtils.isBlank(m_credentialsRequestAttribute)) {
+                m_credentialsRequestAttribute = null;
+            }
+            LOG.debug("Request attribute pre-authentication filter is enabled.  Access will be pre-authenticated by the user (principal) in the '{}' attribute on each servlet request.", m_principalRequestAttribute);
+        } else {
+            LOG.info("Request attribute pre-authentication filter is disabled.");
         }
-
-        return principal;
     }
 
-    /** {@inheritDoc} */
     @Override
-    protected Object getPreAuthenticatedCredentials(HttpServletRequest request) {
-        if (m_credentialsRequestAttribute != null) {
-            Object credentials = request.getAttribute(m_credentialsRequestAttribute);
-            
-            return credentials;
+    protected Object getPreAuthenticatedPrincipal(final HttpServletRequest request) {
+        if (m_enabled) {
+            final Object user = request.getAttribute(m_principalRequestAttribute);
+            if (user == null && m_failOnError) {
+                throw new PreAuthenticatedCredentialsNotFoundException(m_principalRequestAttribute + " attribute not found in request.");
+            }
+            return user;
         }
+        return null;
+    }
 
+    @Override
+    protected Object getPreAuthenticatedCredentials(final HttpServletRequest request) {
+        if (m_credentialsRequestAttribute != null) {
+            return request.getAttribute(m_credentialsRequestAttribute);
+        }
         return "";
 
     }
-    
+
     /**
-     * <p>setPrincipalRequestHeader</p>
-     *
-     * @param principalRequestAttribute a {@link java.lang.String} object.
+     * Whether or not to enable this pre-auth filter.
      */
-    public void setPrincipalRequestHeader(String principalRequestAttribute) {
-        Assert.hasText(principalRequestAttribute, "principalRequestAttribute must not be empty or null");
-        m_principalRequestAttribute = principalRequestAttribute;
+    public void setEnabled(final boolean enabled) {
+        m_enabled = enabled;
     }
 
     /**
-     * <p>setCredentialsRequestHeader</p>
-     *
-     * @param credentialsRequestAttribute a {@link java.lang.String} object.
+     * The {@link ServletRequest#getAttribute attribute} to extract the authenticated user from.
      */
-    public void setCredentialsRequestHeader(String credentialsRequestAttribute) {
-        Assert.hasText(credentialsRequestAttribute, "credentialsRequestAttribute must not be empty or null");     
+    public void setPrincipalRequestHeader(final String principleRequestAttribute) {
+        m_principalRequestAttribute = principleRequestAttribute;
+    }
+
+    /**
+     * The {@link ServletRequest#getAttribute attribute} to extract the user's credentials from.
+     */
+    public void setCredentialsRequestHeader(final String credentialsRequestAttribute) {
         m_credentialsRequestAttribute = credentialsRequestAttribute;
+    }
+
+    /**
+     * Whether to fail if the user is not found, or to fall through to other authentication mechanisms.
+     */
+    public void setFailOnError(final boolean failOnError) {
+        m_failOnError = failOnError;
     }
 }

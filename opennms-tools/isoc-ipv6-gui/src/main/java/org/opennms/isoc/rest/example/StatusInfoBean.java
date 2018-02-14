@@ -38,5 +38,5 @@ public class StatusInfoBean {
 
     public String status = "Idle";
     public int tonerRemaining = 25;
-    public final Collection<JobInfoBean> jobs = new HashSet<JobInfoBean>();
+    public final Collection<JobInfoBean> jobs = new HashSet<>();
 }

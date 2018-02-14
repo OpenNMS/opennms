@@ -87,9 +87,9 @@ public enum CriteriaRestriction {
     },
     In(CriteriaEntry.Property, CriteriaEntry.Value) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
-            Set<Object> set = new HashSet<Object>();
+            Set<Object> set = new HashSet<>();
 
-            Class clazz = criteriaBuilderHelper.getTypeOfProperty(property);
+            Class<?> clazz = criteriaBuilderHelper.getTypeOfProperty(property);
 
             for (String string : String.valueOf(values[1]).split(",")) {
                 set.add(criteriaBuilderHelper.parseCriteriaValue(clazz, string));
@@ -192,7 +192,7 @@ public enum CriteriaRestriction {
      * @param values                the values of this criteria
      */
     public void addRestrictionToCriteriaBuilder(CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, String[] values) {
-        List<Object> listOfObjects = new ArrayList<Object>();
+        List<Object> listOfObjects = new ArrayList<>();
 
         int i = 0;
 
@@ -206,7 +206,7 @@ public enum CriteriaRestriction {
                     break;
                 }
                 case Value: {
-                    Class clazz = criteriaBuilderHelper.getTypeOfProperty(property);
+                    Class<?> clazz = criteriaBuilderHelper.getTypeOfProperty(property);
 
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
@@ -219,7 +219,7 @@ public enum CriteriaRestriction {
                     break;
                 }
                 case IntegerValue: {
-                    Class clazz = Integer.class;
+                    Class<?> clazz = Integer.class;
 
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 
@@ -232,7 +232,7 @@ public enum CriteriaRestriction {
                     break;
                 }
                 case StringValue: {
-                    Class clazz = String.class;
+                    Class<?> clazz = String.class;
 
                     Object object = criteriaBuilderHelper.parseCriteriaValue(clazz, values[i]);
 

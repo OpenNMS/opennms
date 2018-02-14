@@ -33,21 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.alarm.*"
+	import="org.opennms.web.alarm.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-     AlarmIdNotFoundException einfe = null;
-    
-    if( exception instanceof AlarmIdNotFoundException ) {
-        einfe = (AlarmIdNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        einfe = (AlarmIdNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
+    AlarmIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, AlarmIdNotFoundException.class);
 %>
 
 

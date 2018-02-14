@@ -50,7 +50,7 @@ public class NormalizedQueryParameters implements QueryParameters {
     }
 
     public NormalizedQueryParameters() {
-        filters = new ArrayList<Filter>();
+        filters = new ArrayList<>();
     }
 
     @Override
@@ -97,5 +97,9 @@ public class NormalizedQueryParameters implements QueryParameters {
 
     public void setDisplay(String display) {
         this.display = display;
+    }
+
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 }

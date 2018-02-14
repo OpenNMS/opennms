@@ -1,0 +1,48 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+	xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+        http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+        http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <bean id="vmwareMonitor" class="org.opennms.netmgt.poller.monitors.VmwareMonitor" />
+    <service ref="vmwareMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.VmwareMonitor" />
+        </service-properties>
+    </service>
+
+    <bean id="vmwareCimMonitor" class="org.opennms.netmgt.poller.monitors.VmwareCimMonitor" />
+    <service ref="vmwareCimMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+        <service-properties>
+            <entry key="type" value="org.opennms.netmgt.poller.monitors.VmwareCimMonitor" />
+        </service-properties>
+    </service>
+
+    <bean id="vmwareCollector" class="org.opennms.netmgt.collectd.VmwareCollector" />
+    <service ref="vmwareCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+        <service-properties>
+           <entry key="type" value="org.opennms.netmgt.collectd.VmwareCollector" />
+        </service-properties>
+    </service>
+
+    <bean id="vmwareCimCollector" class="org.opennms.netmgt.collectd.VmwareCimCollector" />
+    <service ref="vmwareCimCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+        <service-properties>
+           <entry key="type" value="org.opennms.netmgt.collectd.VmwareCimCollector" />
+        </service-properties>
+    </service>
+
+    <!-- The 'vmware' provider -->
+    <bean id="vmwareRequisitionProvider" class="org.opennms.netmgt.provision.service.vmware.VmwareRequisitionProvider" />
+    <service ref="vmwareRequisitionProvider" interface="org.opennms.netmgt.provision.persist.RequisitionProvider">
+      <service-properties>
+        <entry key="type" value="vmware" />
+      </service-properties>
+    </service>
+
+</blueprint>

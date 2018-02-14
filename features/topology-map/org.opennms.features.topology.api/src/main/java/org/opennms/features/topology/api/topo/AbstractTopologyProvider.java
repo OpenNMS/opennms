@@ -28,16 +28,17 @@
 
 package org.opennms.features.topology.api.topo;
 
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXBException;
-
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Predicate;
@@ -47,7 +48,10 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected static final String SIMPLE_VERTEX_ID_PREFIX = "v";
 	protected static final String SIMPLE_GROUP_ID_PREFIX = "g";
 	protected static final String SIMPLE_EDGE_ID_PREFIX = "e";
-	
+    protected TopologyProviderInfo topologyProviderInfo = new DefaultTopologyProviderInfo();
+
+	private static final Logger LOG = LoggerFactory.getLogger(AbstractTopologyProvider.class);
+
 	/**
 	 * This class generates an unique id. 
 	 * The generated id has the format '<prefix><counter>' (e.g. v100). 
@@ -130,7 +134,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
          */
         @SuppressWarnings("deprecation")
         private boolean isValid(String generatedId) {
-            return !provider.containsVertexId(new DefaultVertexRef(provider.getVertexNamespace(), generatedId));
+            return !provider.containsVertexId(new DefaultVertexRef(provider.getNamespace(), generatedId));
         }
 
         public void reset() {
@@ -201,6 +205,10 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     protected AbstractTopologyProvider(String namespace) {
 		super(namespace);
 	}
+
+    protected AbstractTopologyProvider(SimpleVertexProvider vertexProvider, SimpleEdgeProvider edgeProvider) {
+        super(vertexProvider, edgeProvider);
+    }
     
     public List<Vertex> getVerticesWithoutGroups() {
         return new ArrayList<Vertex>(
@@ -244,14 +252,9 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     
     protected final AbstractVertex addVertex(String id, int x, int y) {
         LoggerFactory.getLogger(getClass()).debug("Adding vertex in {} with ID: {}", getClass().getSimpleName(), id);
-        AbstractVertex vertex = new SimpleLeafVertex(getVertexNamespace(), id, x, y);
+        AbstractVertex vertex = new SimpleLeafVertex(getNamespace(), id, x, y);
         getSimpleVertexProvider().add(vertex);
         return vertex;
-    }
-
-    @Override
-    public boolean groupingSupported() {
-        return true;
     }
 
     @Override
@@ -261,7 +264,7 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     protected final AbstractVertex addGroup(String groupId, String iconKey, String label) {
-        AbstractVertex vertex = new SimpleGroup(getVertexNamespace(), groupId);
+        AbstractVertex vertex = new SimpleGroup(getNamespace(), groupId);
         if (containsVertexId(vertex)) {
             throw new IllegalArgumentException("A vertex or group with id " + groupId + " already exists!");
         }
@@ -316,10 +319,22 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     @Override
 	public Edge connectVertices(VertexRef sourceVertextId, VertexRef targetVertextId) {
         String nextEdgeId = getNextEdgeId();
-        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getEdgeNamespace());
+        return connectVertices(nextEdgeId, sourceVertextId, targetVertextId, getNamespace());
     }
 
     protected final AbstractEdge connectVertices(String id, VertexRef sourceId, VertexRef targetId, String namespace) {
+        if (sourceId == null) {
+            if (targetId == null) {
+                LOG.warn("Source and target vertices are null");
+                return null;
+            } else {
+                LOG.warn("Source vertex is null");
+                return null;
+            }
+        } else if (targetId == null) {
+            LOG.warn("Target vertex is null");
+            return null;
+        }
         SimpleConnector source = new SimpleConnector(sourceId.getNamespace(), sourceId.getId()+"-"+id+"-connector", sourceId);
         SimpleConnector target = new SimpleConnector(targetId.getNamespace(), targetId.getId()+"-"+id+"-connector", targetId);
 
@@ -344,11 +359,30 @@ public abstract class AbstractTopologyProvider extends DelegatingVertexEdgeProvi
     }
 
     @Override
-    public abstract void save();
-
-    @Override
-    public abstract void load(String filename) throws MalformedURLException, JAXBException;
-
-    @Override
     public abstract void refresh();
+
+    public TopologyProviderInfo getTopologyProviderInfo() {
+        return topologyProviderInfo;
+    }
+
+    public void setTopologyProviderInfo(TopologyProviderInfo topologyProviderInfo) {
+        this.topologyProviderInfo = topologyProviderInfo;
+    }
+
+    protected static SelectionChangedListener.Selection getSelection(String namespace, List<VertexRef> selectedVertices, ContentType type) {
+        final Set<Integer> nodeIds = selectedVertices.stream()
+                .filter(v -> namespace.equals(v.getNamespace()))
+                .filter(v -> v instanceof AbstractVertex)
+                .map(v -> (AbstractVertex) v)
+                .map(v -> v.getNodeID())
+                .filter(nodeId -> nodeId != null)
+                .collect(Collectors.toSet());
+        if (type == ContentType.Alarm) {
+            return new SelectionChangedListener.AlarmNodeIdSelection(nodeIds);
+        }
+        if (type == ContentType.Node) {
+            return new SelectionChangedListener.IdSelection<>(nodeIds);
+        }
+        return SelectionChangedListener.Selection.NONE;
+    }
 }

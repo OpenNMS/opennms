@@ -38,8 +38,8 @@ import java.util.SortedMap;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.filter.FilterDao;
-import org.opennms.netmgt.filter.FilterParseException;
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,7 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     @Override
     public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
         LOG.debug("rule = {}", rule);
-        final List<InetAddress> addrs = new ArrayList<InetAddress>();
+        final List<InetAddress> addrs = new ArrayList<>();
         if (rule.equals("IPADDR != '0.0.0.0'")) {
             Assert.notNull(m_ipInterfaceDao);
             final CriteriaBuilder builder = new CriteriaBuilder(OnmsIpInterface.class);

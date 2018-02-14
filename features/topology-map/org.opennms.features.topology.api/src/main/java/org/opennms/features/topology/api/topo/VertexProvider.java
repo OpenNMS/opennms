@@ -31,63 +31,47 @@ package org.opennms.features.topology.api.topo;
 import java.util.Collection;
 import java.util.List;
 
-public interface VertexProvider {
-	
-	/**
-	 * A string used to identify references belonging to this provider
-	 * 
-	 * May only contain characters that make for a reasonable Java identifier
-	 * such as letters digits and underscore (no colons, periods, commas etc.)
-	 * 
-	 */
-	public String getVertexNamespace();
-	
-	/**
-	 * This boolean returns true if the vertices in this provider are intended
-	 * to contribute to or overlay another namespace 
+import org.opennms.features.topology.api.NamespaceAware;
 
-	 * @param namespace the namespace of a provider
-	 * @return true if this provider contributes the the given namespace, false otherwise.  Should 
-	 * return false when passing in its own namepace. A provider doesn't contribute to itself.
-	 */
-	public boolean contributesTo(String namespace);
+public interface VertexProvider extends NamespaceAware {
 
 	/**
-	 * @deprecated Use {@link #containsVertexId(VertexRef id)} instead.
+	 * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.
 	 */
+	@Deprecated
 	boolean containsVertexId(String id);
 
 	boolean containsVertexId(VertexRef id, Criteria... criteria);
 
-	public Vertex getVertex(String namespace, String id);
+	Vertex getVertex(String namespace, String id);
 	
-	public Vertex getVertex(VertexRef reference, Criteria... criteria);
+	Vertex getVertex(VertexRef reference, Criteria... criteria);
 	
-	public int getSemanticZoomLevel(VertexRef vertex);
+	int getSemanticZoomLevel(VertexRef vertex);
 	
 	/**
 	 * Return an immutable list of vertices that match the criteria.
 	 */
-	public List<Vertex> getVertices(Criteria... criteria);
+	List<Vertex> getVertices(Criteria... criteria);
 	
-	public List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria);
+	List<Vertex> getVertices(Collection<? extends VertexRef> references, Criteria... criteria);
 	
-	public List<Vertex> getRootGroup();
+	List<Vertex> getRootGroup();
 	
-	public boolean hasChildren(VertexRef group);
+	boolean hasChildren(VertexRef group);
 	
-	public Vertex getParent(VertexRef vertex);
+	Vertex getParent(VertexRef vertex);
 	
 	boolean setParent(VertexRef child, VertexRef parent);
 	
-	public List<Vertex> getChildren(VertexRef group, Criteria... criteria);
+	List<Vertex> getChildren(VertexRef group, Criteria... criteria);
 	
-	public void addVertexListener(VertexListener vertexListener);
+	void addVertexListener(VertexListener vertexListener);
 	
-	public void removeVertexListener(VertexListener vertexListener);
+	void removeVertexListener(VertexListener vertexListener);
 
 	void clearVertices();
 
-    public int getVertexTotalCount();
+    int getVertexTotalCount();
 
 }

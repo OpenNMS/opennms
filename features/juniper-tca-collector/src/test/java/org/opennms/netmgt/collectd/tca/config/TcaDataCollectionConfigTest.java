@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -179,7 +180,7 @@ public class TcaDataCollectionConfigTest {
 		StringBuffer exampleXML = new StringBuffer();
 		File tcaCollectionConfig = getSourceFile();
 		assertTrue(TcaDataCollectionConfig.TCA_DATACOLLECTION_CONFIG_FILE + " is readable", tcaCollectionConfig.canRead());
-		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(tcaCollectionConfig), "UTF-8"));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(tcaCollectionConfig), StandardCharsets.UTF_8));
 		String line;
 		while (true) {
 			line = reader.readLine();

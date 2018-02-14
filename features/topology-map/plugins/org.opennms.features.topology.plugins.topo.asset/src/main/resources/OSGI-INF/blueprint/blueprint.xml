@@ -1,0 +1,29 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+  xsi:schemaLocation="
+    http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+    http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+    ">
+
+  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+  <reference id="eventIpcManager" interface="org.opennms.netmgt.events.api.EventIpcManager" availability="mandatory" />
+  <reference id="graphmlRepository" interface="org.opennms.features.graphml.service.GraphmlRepository" availability="mandatory" />
+  <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+  <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
+
+  <bean id="assetGraphDefinitionRepository" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepositoryImpl"/>
+  <service id="assetGraphDefinitionRepo" ref="assetGraphDefinitionRepository" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphDefinitionRepository" />
+
+  <bean id="assetGraphMLProvider" class="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" init-method="init" destroy-method="destroy">
+    <argument ref="graphmlRepository" />
+    <argument ref="eventIpcManager" />
+    <argument ref="nodeProvider" />
+    <argument ref="transactionOperations" />
+    <argument ref="assetGraphDefinitionRepository" />
+  </bean>
+  <service id="assetGraphMLProviderSvc" ref="assetGraphMLProvider" interface="org.opennms.features.topology.plugins.topo.asset.AssetGraphMLProvider" />
+
+  <bean id="nodeProvider" class="org.opennms.features.topology.plugins.topo.asset.layers.PersistenceNodeProvider">
+    <argument ref="genericPersistenceAccessor" />
+  </bean>
+
+</blueprint>

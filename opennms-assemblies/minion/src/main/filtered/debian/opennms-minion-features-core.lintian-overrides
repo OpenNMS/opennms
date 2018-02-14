@@ -1,0 +1,4 @@
+opennms-minion-features-core: misplaced-extra-member-in-deb
+opennms-minion-features-core: debian-revision-should-not-be-zero
+opennms-minion-features-core: debian-revision-not-well-formed
+opennms-minion-features-core: unknown-java-class-version

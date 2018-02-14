@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<features name="minion-core-features" xmlns="http://karaf.apache.org/xmlns/features/v1.4.0">
+
+    <!-- Apache ActiveMQ features -->
+    <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
+
+    <!-- Apache Camel features -->
+    <repository>mvn:org.apache.camel.karaf/apache-camel/${camelVersion}/xml/features</repository>
+
+    <feature name="minion-core" description="Minion :: Core" version="${project.version}">
+        <feature>camel-core</feature>
+        <feature>camel-blueprint</feature>
+        <feature>camel-jaxb</feature>
+
+        <!-- Used for the REST client -->
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
+
+        <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
+    </feature>
+
+    <feature name="minion-jms" description="Minion :: Core :: JMS" version="${project.version}">
+        <feature>minion-core</feature>
+        <feature>geronimo-jms-api</feature>
+
+        <!-- Needed by activemq-camel -->
+        <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
+        <feature>activemq-camel</feature>
+        <bundle>mvn:org.opennms.features.minion/jms/${project.version}</bundle>
+    </feature>
+
+    <feature name="minion-core-shell" description="Minion :: Core :: Shell" version="${project.version}">
+        <feature>minion-core</feature>
+        <feature>geronimo-jms-api</feature>
+        <bundle>mvn:org.opennms.features.minion/shell/${project.version}</bundle>
+    </feature>
+</features>

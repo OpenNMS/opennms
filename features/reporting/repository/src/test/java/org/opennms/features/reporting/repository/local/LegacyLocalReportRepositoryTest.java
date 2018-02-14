@@ -43,8 +43,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * <p>LegacyLocalReportRepositoryTest class.</p>
@@ -56,7 +56,7 @@ import static junit.framework.Assert.assertNotNull;
  * @since 1.8.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-reportingRepositoryTest.xml"})
 public class LegacyLocalReportRepositoryTest {
 
     private LegacyLocalReportRepository m_legacyLocalReportRepository;
@@ -71,8 +71,8 @@ public class LegacyLocalReportRepositoryTest {
     @Before
     public void setUp() throws Exception {
         // Mocked report list as a result from DAOs
-        List<BasicReportDefinition> reports = new ArrayList<BasicReportDefinition>();
-        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> reports = new ArrayList<>();
+        List<BasicReportDefinition> onlineReports = new ArrayList<>();
 
         reports.add(new LegacyLocalReportDefinition());
         reports.add(new LegacyLocalReportDefinition());

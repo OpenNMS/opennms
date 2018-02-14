@@ -47,7 +47,6 @@
   <jsp:param name="headTitle" value="Events" />
   <jsp:param name="location" value="event" />  
   <jsp:param name="breadcrumb" value="Events" />
-  <jsp:param name="script" value="<script type='text/javascript' src='js/tooltip.js'></script>" />
 </jsp:include>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -93,19 +92,19 @@
 
 					    	List<Filter> queryElements = callback.parse(current.getFilter());
 					    	
-					    	StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
+					    	final StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
 					    	for(Filter queryElement : queryElements) {
 					    	    buf.append("<li>");
-					    		buf.append(WebSecurityUtils.sanitizeString(queryElement.getTextDescription()));
+					    		buf.append(queryElement.getTextDescription());
 							    buf.append("</li>");
 					    	}
 					    	buf.append("</ul>");
-					    	
-					    	pageContext.setAttribute("favTitle", buf.toString());
+
+                            pageContext.setAttribute("favTitle", buf.toString());
     					%>
                       
                           <li>
-                              <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='${favTitle}' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+                              <a href="event/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="event/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/event/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
                           </li>
                     </c:forEach>
                 </ul>

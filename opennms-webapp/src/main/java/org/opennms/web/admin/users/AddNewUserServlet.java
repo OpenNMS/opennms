@@ -83,7 +83,7 @@ public class AddNewUserServlet extends HttpServlet {
             dispatcher.forward(request, response);
         } else {
             final Password pass = new Password();
-            pass.setContent(UserFactory.getInstance().encryptedPassword(password, true));
+            pass.setEncryptedPassword(UserFactory.getInstance().encryptedPassword(password, true));
             pass.setSalt(true);
 
             final User newUser = new User();

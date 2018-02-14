@@ -1,0 +1,97 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../images
+
+=== Integrating with Provisiond
+
+The ReST API should be used for integration from other provisioning systems with {opennms-product-name}.
+The ReST API provides an interface for defining foreign sources and requisitions.
+
+==== Provisioning Groups of Nodes
+
+Just as with the WebUI, groups of nodes can be managed via the ReST API from an external system.
+The steps are:
+
+. Create a Foreign Source (if not using the default) for the group
+. Update the SNMP configuration for each node in the group
+. Create/Update the group of nodes
+
+==== Example
+
+===== Step 1 - Create a Foreign Source
+
+If policies for this group of nodes are going to be specified differently than the default policy, then a foreign source should be created for the group.
+Using the ReST API, a foreign source can be provided.
+Here is an example:
+
+NOTE: The XML can be imbedded in the `curl` command option `-d` or be referenced from a file if the `@` prefix is used with the file name as in this case.
+
+The XML file: `customer-a.foreign-source.xml`:
+
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<foreign-source date-stamp="2009-10-12T17:26:11.616-04:00" name="customer-a" xmlns="http://xmlns.opennms.org/xsd/config/foreign-source">
+    <scan-interval>1d</scan-interval>
+    <detectors>
+        <detector class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector" name="ICMP"/>
+        <detector class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector" name="SNMP"/>
+    </detectors>
+    <policies>
+        <policy class="org.opennms.netmgt.provision.persist.policies.MatchingIpInterfacePolicy" name="no-192-168">
+            <parameter value="UNMANAGE" key="action"/>
+            <parameter value="ALL_PARAMETERS" key="matchBehavior"/>
+            <parameter value="~^192\.168\..*" key="ipAddress"/>
+        </policy>
+    </policies>
+</foreign-source>
+----
+
+Here is an example `curl` command used to create the foreign source with the above foreign source specification above:
+
+[source, bash]
+----
+curl -v -u admin:admin -X POST -H 'Content-type: application/xml' -d '@customer-a.foreign-source.xml' http://localhost:8980/opennms/rest/foreignSources
+----
+
+Now that you’ve created the foreign source, it needs to be deployed by Provisiond.
+Here an the example using the `curl` command to deploy the foreign source:
+
+[source, bash]
+----
+curl -v -u admin:admin http://localhost:8980/opennms/rest/foreignSources/pending/customer-a/deploy -X PUT
+----
+
+NOTE: The current API doesn’t strictly follow the ReST design guidelines and will be updated in a later release.
+
+===== Step 2 - Update the SNMP configuration
+
+The implementation only supports a _PUT_ request because it is an implied "Update" of the configuration since it requires an IP address and all IPs have a default configuration.
+This request is is passed to the SNMP configuration factory in {opennms-product-name} for optimization of the configuration store `snmp-config.xml`.
+This example changes the community string for the IP address 10.1.1.1 to `yRuSonoZ`.
+
+NOTE: Community string is the only required element
+
+[source, bash]
+----
+curl -v -X PUT -H "Content-Type: application/xml" -H "Accept: application/xml" -d <snmp-info><community>yRuSonoZ</community><port>161</port><retries>1</retries><timeout>2000</timeout><version>v2c</version></snmp-info>" -u admin:admin http://localhost:8980/opennms/rest/snmpConfig/10.1.1.1
+----
+
+===== Step 3 - Create/Update the Requisition
+
+This example adds 2 nodes to the Provisioning Group, _customer-a_.
+Note that the foreign-source attribute typically has a 1 to 1 relationship to the name of the Provisioning Group requisition.
+There is a direct relationship between the foreign- source attribute in the requisition and the foreign source policy specification.
+Also, typically, the name of the provisioning group will also be the same.
+In the following example, the ReST API will automatically create a provisioning group based on the value foreign-source attribute specified in the XML requisition.
+
+[source, bash]
+----
+curl -X POST -H "Content-Type: application/xml" -d "<?xml version="1.0" encoding="UTF-8"?><model-import xmlns="http://xmlns.opennms.org/xsd/config/model-import" date-stamp="2009-03-07T17:56:53.123-05:00" last-import="2009-03-07T17:56:53.117-05:00" foreign-source="customer-a"><node node-label="p-brane" foreign-id="1" ><interface ip-addr="10.0.1.3" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node><node node-label="m-brane" foreign-id="1" ><interface ip-addr="10.0.1.4" descr="en1" status="1" snmp-primary="P"><monitored-service service-name="ICMP"/><monitored-service service-name="SNMP"/></interface><category name="Production"/><category name="Routers"/></node></model-import>" -u admin:admin http://localhost:8980/opennms/rest/requisitions
+----
+
+A provisioning group file called `etc/imports/customer-a.xml` will be found on the {opennms-product-name} system following the successful completion of this `curl` command and will also be visible via the WebUI.
+
+NOTE: _Add_, _Update_, _Delete_ operations are handled via the ReST API in the same manner as described in detailed specification.
+
+.Adding a Node to a Current Requisition

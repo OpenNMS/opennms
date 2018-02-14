@@ -64,7 +64,7 @@ public class AbstractSnmpScanner implements Scanner {
      */
     protected AbstractSnmpScanner(String name) {
         m_name = name;
-        m_exchangeCollection = new ArrayList<SnmpExchange>();
+        m_exchangeCollection = new ArrayList<>();
     }
     
     /**
@@ -116,16 +116,13 @@ public class AbstractSnmpScanner implements Scanner {
         if (agentAddress == null) {
             return;
         }
-        
-        SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress);
-        
-        SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context));
-        walker.start();
-        
-        walker.waitFor();
-        
-        
-        
+
+        SnmpAgentConfig agentConfig = m_snmpAgentConfigFactory.getAgentConfig(agentAddress, null);
+
+        try(SnmpWalker walker = SnmpUtils.createWalker(agentConfig, getName(), createCollectionTracker(context))) {
+            walker.start();
+            walker.waitFor();
+        }
     }
 
     /**
@@ -133,7 +130,7 @@ public class AbstractSnmpScanner implements Scanner {
      * @return
      */
     private CollectionTracker createCollectionTracker(final ScanContext scanContext) {
-        List<Collectable> trackers = new ArrayList<Collectable>();
+        List<Collectable> trackers = new ArrayList<>();
         for(SnmpExchange exchange : m_exchangeCollection) {
             trackers.add(exchange.createTracker(scanContext));
         }

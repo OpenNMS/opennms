@@ -50,9 +50,8 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
 	}
 
     @Override
-    public final Undoer execute(List<VertexRef> targets, OperationContext operationContext) {
+    public final void execute(List<VertexRef> targets, OperationContext operationContext) {
         execute(operationContext.getGraphContainer());
-        return null;
     }
 
     /**
@@ -60,6 +59,7 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
      */
     private void execute(GraphContainer container) {
         container.setLayoutAlgorithm(m_factory.getLayoutAlgorithm());
+        container.redoLayout();
     }
 
     @Override
@@ -82,4 +82,8 @@ public abstract class LayoutOperation extends AbstractCheckedOperation {
 			execute(container);
 		}
 	}
+
+    public LayoutAlgorithm getLayoutAlgorithm() {
+        return m_factory.getLayoutAlgorithm();
+    }
 }

@@ -126,7 +126,7 @@ public class Day {
      */
     public CalendarEntry[] getEntries() {
         try {
-            List<CalendarEntry> entries = new ArrayList<CalendarEntry>();
+            List<CalendarEntry> entries = new ArrayList<>();
             
             OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
             
@@ -144,7 +144,7 @@ public class Day {
 
     private String ownerString(List<Owner> owners) {
         boolean first = true;
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         for (Owner owner : owners) {
             if (first) {
                 first = false;

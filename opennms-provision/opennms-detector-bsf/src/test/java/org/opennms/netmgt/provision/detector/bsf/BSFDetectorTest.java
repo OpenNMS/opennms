@@ -56,8 +56,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class BSFDetectorTest implements InitializingBean {
 
     @Autowired
-    public BSFDetector m_detector;
+    public BSFDetectorFactory m_detectorFactory;
 
+    BSFDetector m_detector;
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -66,6 +68,7 @@ public class BSFDetectorTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+        m_detector = m_detectorFactory.createDetector();
         assertNotNull(m_detector);
 
         m_detector.setFileName(null);

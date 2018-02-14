@@ -74,4 +74,14 @@ public interface PollerdMBean extends BaseOnmsMBean {
      * @return The maximum number of threads allowed in the poller's thread pool
      */
     public long getMaxPoolThreads();
+
+    /**
+     * @return The number of pending tasks on our ExecutorService
+     */
+    public long getTaskQueuePendingCount();
+
+    /**
+     * @return The number of open slots on our ExecutorService queue.
+     */
+    public long getTaskQueueRemainingCapacity();
 }

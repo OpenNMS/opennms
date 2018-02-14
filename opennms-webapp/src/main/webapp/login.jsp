@@ -1,9 +1,14 @@
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+  <jsp:param name="title" value="Login" />
+  <jsp:param name="nonavbar" value="true" />
+</jsp:include>
+<%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +31,8 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 --%>
-
-<%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Login" />
-  <jsp:param name="nonavbar" value="true" />
-</jsp:include>
+<jsp:include page="/includes/mobile-app-promo.jsp" flush="false" />
 
 <%-- this form-login-page form is also used as the 
          form-error-page to ask for a login again.
@@ -59,14 +57,14 @@
           <input type="text" class="form-control" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
             <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
-            placeholder="Username" autofocus="autofocus" />
+            placeholder="Username" autofocus="autofocus" autocomplete="username" />
         </div>
       </div>
 
       <div class="form-group">
         <label for="j_password" class="col-sm-4 control-label">Password</label>
         <div class="col-sm-8">
-          <input type="password" class="form-control" id="input_j_password" name="j_password" placeholder="Password">
+          <input type="password" class="form-control" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" >
         </div>
       </div>
 

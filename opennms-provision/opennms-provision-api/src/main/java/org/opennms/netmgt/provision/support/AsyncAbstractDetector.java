@@ -32,6 +32,7 @@ import java.net.InetAddress;
 
 import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.DetectFuture;
+import org.opennms.netmgt.provision.DetectRequest;
 
 /**
  * <p>AsyncAbstractDetector class.</p>
@@ -39,7 +40,7 @@ import org.opennms.netmgt.provision.DetectFuture;
  * @author thedesloge
  */
 public abstract class AsyncAbstractDetector extends AbstractDetector implements AsyncServiceDetector {
-    
+
     /**
      * <p>Constructor for AsyncAbstractDetector.</p>
      *
@@ -61,8 +62,12 @@ public abstract class AsyncAbstractDetector extends AbstractDetector implements 
     protected AsyncAbstractDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
-    
-    /** {@inheritDoc} */
+
+    public abstract DetectFuture isServiceDetected(final InetAddress address);
+
     @Override
-    abstract public DetectFuture isServiceDetected(final InetAddress address);
+    public DetectFuture detect(DetectRequest request) {
+        return isServiceDetected(request.getAddress());
+    }
+
 }

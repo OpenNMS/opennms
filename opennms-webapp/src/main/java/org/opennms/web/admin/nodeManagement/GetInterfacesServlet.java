@@ -59,7 +59,7 @@ public class GetInterfacesServlet extends HttpServlet {
 
     private static final String INTERFACE_QUERY = "SELECT ipaddr, isManaged FROM ipinterface " + "WHERE nodeid=? " + "AND ismanaged IN ('M','A','U','F') " + "AND ipaddr <> '0.0.0.0' " + "ORDER BY inet(ipaddr)";
 
-    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, servicename, status FROM ifservices, service " + "WHERE nodeid=? AND ipaddr=? AND status IN ('A','U','F', 'S', 'R') " + "AND ifservices.serviceid = service.serviceid ORDER BY servicename";
+    private static final String SERVICE_QUERY = "SELECT ifservices.serviceid, service.servicename, ifservices.status FROM ifservices, service, ipInterface, node WHERE ifServices.ipInterfaceId = ipInterface.id AND ipInterface.nodeId = node.nodeId AND node.nodeid = ? AND ipInterface.ipaddr = ? AND ifservices.status in ('A','U','F','S','R') AND ifservices.serviceid = service.serviceid ORDER BY service.servicename";
 
     /** {@inheritDoc} */
     @Override
@@ -106,7 +106,7 @@ public class GetInterfacesServlet extends HttpServlet {
      */
     private List<ManagedInterface> getInterfaces(HttpSession userSession, int nodeId) throws SQLException {
         Connection connection = null;
-        List<ManagedInterface> allInterfaces = new ArrayList<ManagedInterface>();
+        List<ManagedInterface> allInterfaces = new ArrayList<>();
         int lineCount = 0;
 
         final DBUtils d = new DBUtils(getClass());

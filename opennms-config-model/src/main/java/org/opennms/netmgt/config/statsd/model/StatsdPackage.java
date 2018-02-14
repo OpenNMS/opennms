@@ -42,7 +42,7 @@ import java.util.List;
 public class StatsdPackage {
     private String m_name;
     private String m_filter;
-    private List<PackageReport> m_reports = new ArrayList<PackageReport>();
+    private List<PackageReport> m_reports = new ArrayList<>();
     
     /**
      * <p>getFilter</p>

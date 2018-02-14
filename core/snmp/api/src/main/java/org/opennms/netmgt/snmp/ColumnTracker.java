@@ -28,6 +28,11 @@
 
 package org.opennms.netmgt.snmp;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,9 +79,9 @@ public class ColumnTracker extends CollectionTracker {
             .toString();
     }
         @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
-            throw new IllegalArgumentException("maxVarsPerPdu < 1");
+            throw new SnmpException("maxVarsPerPdu < 1");
         }
 
         LOG.debug("Requesting oid following: {}", m_last);
@@ -109,13 +114,13 @@ public class ColumnTracker extends CollectionTracker {
             }
 
             @Override
-            public boolean processErrors(int errorStatus, int errorIndex) {
+            public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
                 if (m_retries == null) m_retries = getMaxRetries();
                 //LOG.trace("processErrors: errorStatus={}, errorIndex={}, retries={}", errorStatus, errorIndex, m_retries);
 
                 final ErrorStatus status = ErrorStatus.fromStatus(errorStatus);
                 if (status == ErrorStatus.TOO_BIG) {
-                    throw new IllegalArgumentException("Unable to handle tooBigError for next oid request after "+m_last);
+                    throw new SnmpException("Unable to handle tooBigError for next oid request after "+m_last);
                 } else if (status == ErrorStatus.GEN_ERR) {
                     reportGenErr("Received genErr requesting next oid after "+m_last+". Marking column is finished.");
                     errorOccurred();
@@ -184,5 +189,24 @@ public class ColumnTracker extends CollectionTracker {
             return null;
         }
     }
-    
+
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        final WalkRequest walkRequest = new WalkRequest(m_base);
+        walkRequest.setMaxRepetitions(m_maxRepetitions);
+        return Collections.singletonList(walkRequest);
+    }
+
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store the result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .filter(res -> {
+                SnmpObjId responseOid = SnmpObjId.get(res.getBase(), res.getInstance());
+                return m_base.isPrefixOf(responseOid) && !m_base.equals(responseOid);
+            })
+            .forEach(this::storeResult);
+        setFinished(true);
+    }
 }

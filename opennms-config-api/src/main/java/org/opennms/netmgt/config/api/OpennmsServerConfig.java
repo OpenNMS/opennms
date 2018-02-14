@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.config.api;
 
+import java.net.InetAddress;
+
 /**
  * An interface for OpennmsServerConfigManager
  * 
@@ -42,14 +44,14 @@ public interface OpennmsServerConfig {
 	 * @return a String
 	 */
 	String getServerName();
-	
+
 	/**
 	 * <p>getDefaultCriticalPathService</p>
 	 * 
 	 * @return a String
 	 */
-	String getDefaultCriticalPathIp();
-	
+	InetAddress getDefaultCriticalPathIp();
+
 	/**
 	 * <p>getDefaultCriticalPathService</p>
 	 * 

@@ -37,17 +37,15 @@ import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>OmsaStorageDetector class.</p>
  *
  * @author agalue
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class OmsaStorageDetector extends SnmpDetector {
 
     private static final Logger LOG = LoggerFactory.getLogger(OmsaStorageDetector.class);
@@ -81,9 +79,8 @@ public class OmsaStorageDetector extends SnmpDetector {
      * added to service events if needed.
      */
     @Override
-    public boolean isServiceDetected(InetAddress address) {
+    public boolean isServiceDetected(final InetAddress address, final SnmpAgentConfig agentConfig) {
         try {
-            SnmpAgentConfig agentConfig = getAgentConfigFactory().getAgentConfig(address);
             configureAgentPTR(agentConfig);
             configureAgentVersion(agentConfig);
 
@@ -91,7 +88,7 @@ public class OmsaStorageDetector extends SnmpDetector {
             SnmpValue virtualDiskRollUpStatus = SnmpUtils.get(agentConfig, virtualDiskRollUpStatusSnmpObject);
 
             if (virtualDiskRollUpStatus == null || virtualDiskRollUpStatus.isNull()) {
-                LOG.debug("SNMP poll failed: no results, addr={} oid={}", address, virtualDiskRollUpStatusSnmpObject);
+                LOG.debug("SNMP poll failed: no results, addr={} oid={}", agentConfig.getAddress(), virtualDiskRollUpStatusSnmpObject);
                 return false;
             }
             if (virtualDiskRollUpStatus.toInt() != 3) { // 3 means Online

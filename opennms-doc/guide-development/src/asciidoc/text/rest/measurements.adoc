@@ -1,0 +1,260 @@
+==== Measurements API
+
+The _Measurements API_ can be used to retrieve collected values stored in _RRD_ (or _JRB_) files and in _Newts_.
+
+NOTE: Unless specific otherwise, all unit of time are expressed in milliseconds.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                                 | Description
+| `/measurements/{resourceId}/{attribute}` | Retrieve the measurements for a single attribute
+|===
+
+The following table shows all supported query string parameters and their default values.
+
+[options="header"]
+|===
+| name               | default   | comment
+| start              | -14400000 | Timestamp in milliseconds.
+
+                                   If > 0, the timestamp is relative to the UNIX epoch (January 1st 1970 00:00:00 AM).
+
+                                   If < 0, the timestamp is relative to the `end` option (i.e.: default value is 4 hours ago).
+| end                | 0         | Timestamp in milliseconds. If \<= 0, the effective value will be the current timestamp.
+| step               | 300000    | Requested time interval between rows. Actual step may differ.
+| maxrows            | 0         | When using the measurements to render a graph, this should be set to the graph's pixel width.
+| aggregation        | AVERAGE   | Consolidation function used. Can typically be `AVERAGE`, `MIN` or `MAX`. Depends on `RRA` definitions.
+| fallback-attribute |           | Secondary attribute that will be queried in the case the primary attribute does not exist.
+|===
+
+====== Step sizes
+
+The behavior of the `step` parameter changes based on time series strategy that is being used.
+
+When using persistence strategies based on _RRD_, the available step sizes are limited to those defined by the _RRA_ when the file was created.
+The effective step size used will be one that covers the requested period, and is closest to the requested step size.
+For maximum accuracy, use a step size of 1.
+
+When using _Newts_, the step size can be set arbitrarily since the aggregation is performed at the time of request.
+In order to help prevent large requests, we limit to the step size of a minimum of 5 minutes, the default collection rate.
+This value can be decreased by setting the `org.opennms.newts.query.minimum_step` system property.
+
+===== Usage examples with curl
+
+.Retrieve CPU counter metrics over the last 2 hours for node 1
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/measurements/node%5B1%5D.nodeSnmp%5B%5D/CpuRawUser?start=-7200000&maxrows=30&aggregation=AVERAGE"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<query-response end="1425588138256" start="1425580938256" step="300000">
+  <columns>
+    <values>159.5957271523179</values>
+    <values>158.08531037527592</values>
+    <values>158.45835584842285</values>
+    ...
+  </columns>
+  <labels>CpuRawUser</labels>
+  <timestamps>1425581100000</timestamps>
+  <timestamps>1425581400000</timestamps>
+  <timestamps>1425581700000</timestamps>
+  ...
+</query-response>
+----
+
+===== POSTs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource        | Description
+| `/measurements` | Retrieve the measurements for one or more attributes, possibly spanning multiple resources, with support for JEXL expressions.
+|===
+
+Here we use a POST instead of a GET to retrieve the measurements, which allows us to perform complex queries which are difficult to express in a query string.
+These requests cannot be used to update or create new metrics.
+
+An example of the POST body is available bellow.
+
+===== Usage examples with curl
+
+.Retrieve bits in and bits out metrics for a particular interface. Perform calculations on bits out, and only return the derived values.
+[source,bash]
+----
+curl -X POST  -H "Accept: application/json" -H "Content-Type: application/json" -u admin:admin  -d @report.json  http://127.0.0.1:8980/opennms/rest/measurements
+----
+
+.Contents of report.json
+[source,javascript]
+----
+{
+    "start": 1425563626316,
+    "end": 1425585226316,
+    "step": 10000,
+    "maxrows": 1600,
+    "source": [
+        {
+            "aggregation": "AVERAGE",
+            "attribute": "ifHCInOctets",
+            "label": "ifHCInOctets",
+            "resourceId": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "transient": "false"
+        },
+        {
+            "aggregation": "AVERAGE",
+            "attribute": "ifHCOutOctets",
+            "label": "ifHCOutOctets",
+            "resourceId": "nodeSource[Servers:1424038123222].interfaceSnmp[eth0-04013f75f101]",
+            "transient": "true"
+        }
+    ],
+    "expression": [
+        {
+            "label": "ifHCOutOctetsNeg",
+            "value": "-1.0 * ifHCOutOctets",
+            "transient": "false"
+        }
+    ]
+}
+----
+
+.Response
+[source,javascript]
+----
+{
+    "step": 300000,
+    "start": 1425563626316,
+    "end": 1425585226316,
+    "timestamps": [
+        1425563700000,
+        1425564000000,
+        1425564300000,
+        ...
+    ],
+    "labels": [
+        "ifHCInOctets",
+        "ifHCOutOctetsNeg"
+    ],
+    "columns": [
+        {
+            "values": [
+                139.94817275747508,
+                199.0062569213732,
+                162.6264894795127,
+                ...
+            ]
+        },
+        {
+            "values": [
+                -151.66179401993355,
+                -214.7415503875969,
+                -184.9012624584718,
+                ...
+            ]
+        }
+    ]
+}
+----
+===== More Advanced Expressions
+
+The JEXL 2.1.x library is used to parse the expression string and this also allows java objects and predefined functions to be included in the expression.
+
+JEXL uses a context which is pre-populated by OpenNMS with the results of the query.
+Several constants and arrays are also predefined as references in the context by OpenNMS.
+
+[%header,cols=2*] 
+|===
+|Constant or prefix
+|Description
+
+|__inf 
+|Double.POSITIVE_INFINITY
+
+|__neg_inf 
+|Double.NEGATIVE_INFINITY
+
+|NaN
+|Double.NaN
+
+|__E
+|java.lang.Math.E
+
+|__PI
+|java.lang.Math.PI
+
+|__diff_time
+|Time span between start and end of samples
+
+|__i
+|Index into the samples array which the present calculation is referencing
+
+|__AttributeName (where AttributeName is the searched for attribute)
+|This returns the complete double[] array of samples for AttributeName
+|===
+
+OpenNMS predefines a number of functions for use in expressions which are referenced by namespace:function.
+All of these functions return a java double value.
+
+Pre defined functions
+[%header,cols=3*] 
+|===
+|Function
+|Description
+|Example
+
+|jexl:evaluate("_formula"):
+|Passes a string to the JEXL engine to be evaluated as if it was entered as a normal expression. 
+Like normal expressions, expressions evaluated through this function will return a Java double value.
+This makes it possible to reference and evaluate a formula which has been stored in OpenNMS as a string variable.
+The use case for this capability is that it gives us the ability to define and store a per-node and per-value correction formula which can normalise samples from different sample sources.
+|
+
+|math:
+|References java.lang.Math class
+|math:cos(20)
+
+|strictmath:
+|References java.lang.StrictMath class
+|math:cos(20)
+
+|fn:
+|References the class org.opennms.netmgt.measurements.impl.SampleArrayFunctions. 
+This contains several functions which can reference previous samples in the time series.
+|
+
+|fn:arrayNaN("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with NaN.
+|fn:arrayNaN("x", 5)
+
+|fn:arrayZero("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with 0 (zero).
+|fn:arrayZero("x", 5)
+
+|fn:arrayFirst("sampleName", n)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with the first sample.
+|fn:arrayFirst("x", 5)
+
+|fn:arrayStart("sampleName", n, constant)
+|References the nth previous sample in the "sampleName" sample series. Replacing the n samples before the start of the series with a supplied constant.
+|fn:arrayStart("x", 5, 10)
+|===
+
+So for example with these additional variables and functions it is possible to create a Finite Impulse Response (FIR) filter function such as
+----
+y = a * f(n) + b * f(n-1) + c * f(n-2)
+----
+using the following expression where a,b and c are string constants and x is a time series value
+----
+a * x + b * fn:arrayNaN("x", 1) + c * fn:arrayNaN("x", 2)
+----
+
+
+
+
+
+    

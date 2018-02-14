@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 
 import org.opennms.netmgt.config.rws.BaseUrl;
@@ -73,11 +74,11 @@ public interface RWSConfig {
     public BaseUrl getBaseUrl();
     
     /**
-     * <p>getStanbyUrls</p>
+     * <p>getStandbyUrls</p>
      *
      * @return an array of {@link org.opennms.netmgt.config.rws.StandbyUrl} objects.
      */
-    public StandbyUrl[] getStanbyUrls();
+    public List<StandbyUrl> getStandbyUrls();
     
     /**
      * <p>getNextStandbyUrl</p>

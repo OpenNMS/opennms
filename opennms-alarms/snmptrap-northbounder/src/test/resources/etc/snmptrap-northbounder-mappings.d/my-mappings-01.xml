@@ -1,0 +1,18 @@
+<mapping-group name="my-mappings-01">
+	<rule>foreignSource matches 'Router.*'</rule>
+	<mapping name="trap01">
+		<rule>uei == 'uei.opennms.org/trap/myTrap3'</rule>
+		<enterprise-oid>.1.2.3.4.5.6.7.8.200</enterprise-oid>
+		<varbind>
+			<oid>.1.2.3.4.5.6.7.8.1</oid>
+			<type>Int32</type>
+			<value>eventParametersCollection[0].value</value>
+		</varbind>
+		<varbind>
+			<oid>.1.2.3.4.5.6.7.8.2</oid>
+			<type>OctetString</type>
+			<value>parameters['alarmMessage']</value>
+			<max>48</max>
+		</varbind>
+	</mapping>
+</mapping-group>

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.model;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
@@ -113,7 +112,7 @@ public class OnmsAcknowledgment {
      * @throws java.text.ParseException if any.
      */
     public OnmsAcknowledgment(final Event e) throws ParseException {
-        this(DateFormat.getDateInstance(DateFormat.FULL).parse(e.getTime()), "admin");
+        this(e.getTime(), "admin");
         Collection<Parm> parms = e.getParmCollection();
         
         if (parms.size() <= 2) {
@@ -334,7 +333,7 @@ public class OnmsAcknowledgment {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
+        final StringBuilder bldr = new StringBuilder("Acknowledgment ID:");
         bldr.append(m_id);
         bldr.append(" User:");
         bldr.append(m_ackUser);

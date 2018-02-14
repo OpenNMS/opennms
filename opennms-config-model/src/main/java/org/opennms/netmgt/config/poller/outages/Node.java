@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,185 +28,56 @@
 
 package org.opennms.netmgt.config.poller.outages;
 
-import java.io.IOException;
-import java.io.Reader;
 import java.io.Serializable;
-import java.io.Writer;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.exolab.castor.xml.Validator;
 import org.opennms.core.xml.ValidateUsing;
-import org.xml.sax.ContentHandler;
+import org.opennms.netmgt.config.utils.ConfigUtils;
 
 /**
  * Node to which the outage applies.
- * 
  */
 
 @XmlRootElement(name="node", namespace="http://xmlns.opennms.org/xsd/config/poller/outages")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("poll-outages.xsd")
 public class Node implements Serializable {
-    private static final long serialVersionUID = -3839620822068533737L;
+    private static final long serialVersionUID = 2L;
 
-    /**
-     * Field _id.
-     */
-    @XmlAttribute(name="id")
-    private Integer _id;
+    @XmlAttribute(name="id", required=true)
+    private Integer m_id;
 
     public Node() {
-        super();
     }
 
-    /**
-     */
-    public void deleteId() {
-        _id = null;
+    public Integer getId() {
+        return m_id == null? 0 : m_id;
     }
 
-    /**
-     * Overrides the java.lang.Object.equals method.
-     * 
-     * @param obj
-     * @return true if the objects are equal.
-     */
+    public void setId(final Integer id) {
+        m_id = ConfigUtils.assertNotNull(id, "id");
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_id);
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if ( this == obj )
             return true;
-        
+
         if (obj instanceof Node) {
-        
-            Node temp = (Node)obj;
-            if (this._id != temp._id)
-                return false;
-            return true;
+            final Node that = (Node)obj;
+            return Objects.equals(this.m_id, that.m_id);
         }
         return false;
-    }
-
-    /**
-     * Returns the value of field 'id'.
-     * 
-     * @return the value of field 'Id'.
-     */
-    public Integer getId() {
-        return _id == null? 0 : _id;
-    }
-
-    /**
-     * Method hasId.
-     * 
-     * @return true if at least one Id has been added
-     */
-    public boolean hasId() {
-        return _id != null;
-    }
-
-    /**
-     * Overrides the java.lang.Object.hashCode method.
-     * <p>
-     * The following steps came from <b>Effective Java Programming
-     * Language Guide</b> by Joshua Bloch, Chapter 3
-     * 
-     * @return a hash code value for the object.
-     */
-    @Override
-    public int hashCode() {
-        int result = 17;
-        
-        result = 37 * result + _id;
-        
-        return result;
-    }
-
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    @Deprecated
-    public boolean isValid() {
-        try {
-            validate();
-        } catch (ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    public void marshal(final Writer out) throws MarshalException, ValidationException {
-        Marshaller.marshal(this, out);
-    }
-
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    @Deprecated
-    public void marshal(final ContentHandler handler) throws IOException, MarshalException, ValidationException {
-        Marshaller.marshal(this, handler);
-    }
-
-    /**
-     * Sets the value of field 'id'.
-     * 
-     * @param id the value of field 'id'.
-     */
-    public void setId(final Integer id) {
-        this._id = id;
-    }
-
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled org.opennms.netmgt.config.poller.Node
-     */
-    @Deprecated
-    public static Node unmarshal(final Reader reader) throws MarshalException, ValidationException {
-        return (Node) Unmarshaller.unmarshal(Node.class, reader);
-    }
-
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    @Deprecated
-    public void validate() throws ValidationException {
-        new Validator().validate(this);
     }
 
 }

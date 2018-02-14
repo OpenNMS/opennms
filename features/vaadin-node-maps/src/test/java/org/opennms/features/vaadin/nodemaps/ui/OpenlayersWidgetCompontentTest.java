@@ -36,7 +36,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.features.geocoder.Coordinates;
 import org.opennms.features.geocoder.GeocoderService;
-import org.opennms.features.vaadin.nodemaps.internal.MapWidgetComponent;
+import org.opennms.features.vaadin.nodemaps.internal.NodeMapComponent;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
@@ -50,14 +50,14 @@ public class OpenlayersWidgetCompontentTest {
     private AssetRecordDao m_assetDao;
     private GeocoderService m_geocoder;
     @SuppressWarnings("unused")
-    private MapWidgetComponent m_component;
+    private NodeMapComponent m_component;
 
     @Before
     public void setUp() {
         m_nodeDao = EasyMock.createMock(NodeDao.class);
         m_assetDao = EasyMock.createMock(AssetRecordDao.class);
         m_geocoder = EasyMock.createMock(GeocoderService.class);
-        m_component = new MapWidgetComponent();
+        m_component = new NodeMapComponent();
     }
 
     @Test

@@ -80,13 +80,13 @@ public class SnmpCollection implements Serializable, Cloneable {
      *  System Definition Name or Data Collection Group Name.
      */
     @XmlElement(name="include-collection")
-    private List<IncludeCollection> m_includeCollections = new ArrayList<IncludeCollection>();
+    private List<IncludeCollection> m_includeCollections = new ArrayList<>();
 
     /**
      * Custom resource types
      */
     @XmlElement(name="resourceType")
-    private List<ResourceType> m_resourceTypes = new ArrayList<ResourceType>();
+    private List<ResourceType> m_resourceTypes = new ArrayList<>();
 
     /**
      * MIB object groups

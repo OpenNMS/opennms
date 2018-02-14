@@ -37,18 +37,23 @@ import org.opennms.jicmp.jna.NativeDatagramSocket;
 
 /**
  * JnaPinger
+ * 
+ * @deprecated This class seems like it's mostly a duplicate of 
+ * {@link org.opennms.netmgt.icmp.jna.AbstractPinger<T>}.
  *
  * @author brozow
  */
 public abstract class AbstractPinger<T extends InetAddress> implements Runnable {
+
+    public static final double NANOS_PER_MILLI = 1000000.0;
 
     private NativeDatagramSocket m_pingSocket;
     private Thread m_thread;
     protected final AtomicReference<Throwable> m_throwable = new AtomicReference<Throwable>(null);
     protected final Metric m_metric = new Metric();
     private volatile boolean m_stopped = false;
-    private final List<PingReplyListener> m_listeners = new ArrayList<PingReplyListener>();
-    
+    private final List<PingReplyListener> m_listeners = new ArrayList<>();
+
     protected AbstractPinger(NativeDatagramSocket pingSocket) {
         m_pingSocket = pingSocket;
     }

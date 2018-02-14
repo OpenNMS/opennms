@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
@@ -45,8 +45,6 @@ import org.opennms.netmgt.provision.support.codec.LineOrientedCodecFactory;
  */
 public abstract class AsyncLineOrientedDetectorMinaImpl extends AsyncBasicDetectorMinaImpl<LineOrientedRequest, LineOrientedResponse> {
 
-    protected static final Charset CHARSET_UTF8 = Charset.forName("UTF-8");
-
     /**
      * <p>Constructor for AsyncLineOrientedDetector.</p>
      *
@@ -55,7 +53,7 @@ public abstract class AsyncLineOrientedDetectorMinaImpl extends AsyncBasicDetect
      */
     public AsyncLineOrientedDetectorMinaImpl(final String serviceName, final int port) {
         super(serviceName, port);
-        setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(CHARSET_UTF8)));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(StandardCharsets.UTF_8)));
     }
 
     /**
@@ -68,7 +66,7 @@ public abstract class AsyncLineOrientedDetectorMinaImpl extends AsyncBasicDetect
      */
     public AsyncLineOrientedDetectorMinaImpl(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
-        setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(CHARSET_UTF8)));
+        setProtocolCodecFilter(new ProtocolCodecFilter(new LineOrientedCodecFactory(StandardCharsets.UTF_8)));
     }
 
     /** {@inheritDoc} */

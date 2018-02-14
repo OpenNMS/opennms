@@ -1,0 +1,16 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/internal/translator/hypericAlert</uei>
+      <event-label>OpenNMS-defined event: An event received from Hyperic has been translated</event-label>
+      <descr>This is a translated Hyperic Alert to associate with OpenNMS entity..&lt;p>
+
+            &lt;p>Alert reason: %parm[action.shortReason]% &lt;/p>
+            &lt;p>Alert reason: %parm[action.longReason]% &lt;/p>
+            &lt;p>&lt;a href=&quot;%parm[resource.url]%&quot; > %parm[resource.name]% &lt;/a>&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>&lt;a href=&quot;%parm[alert.url]%&quot; > Hyperic Alert: %parm[action.longReason]% &lt;/a>&lt;/p>
+        </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%:%parm[resource.name]%:%parm[alertDef.name]%" alarm-type="3" auto-clean="false"/>
+   </event>
+</events>

@@ -1,0 +1,91 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+	       xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <cm:property-placeholder persistent-id="org.opennms.features.datachoices.cfg">
+        <cm:default-properties>
+            <!-- The Oracle JDK does not currently recognize the Let's Encrypt Certificate Chain
+                 in default installations (the 'ISRG Root X1' root certificate in particular)
+                 so we resort to using HTTP. -->
+            <cm:property name="url" value="http://stats.opennms.org/datachoices/"/>
+            <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+    <reference id="eventDao" interface="org.opennms.netmgt.dao.api.EventDao" availability="mandatory"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="mandatory"/>
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory"/>
+
+    <!-- The state manager will manually pull properties from the configuration file -->
+    <bean id="stateManager" class="org.opennms.features.datachoices.internal.StateManager"/>
+
+	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
+        init-method="init" destroy-method="destroy">
+        <property name="url" value="${url}"/>
+        <property name="interval" value="${interval}"/>
+        <property name="stateManager" ref="stateManager"/>
+        <property name="alarmDao" ref="alarmDao"/>
+        <property name="eventDao" ref="eventDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="snmpInterfaceDao" ref="snmpInterfaceDao"/>
+    </bean>
+
+    <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
+        <property name="stateManager" ref="stateManager"/>
+        <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
+    </bean>
+    <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService" >
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+
+    <bean id="modalInjector" class="org.opennms.features.datachoices.web.internal.ModalInjector">
+        <property name="stateManager" ref="stateManager"/>
+    </bean>
+    <service interface="org.opennms.web.api.HtmlInjector" ref="modalInjector">
+        <service-properties>
+          <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <bean id="adminPageNavEntry" class="org.opennms.features.datachoices.web.internal.AdminPageNavEntry"/>
+    <service interface="org.opennms.web.navigate.PageNavEntry" ref="adminPageNavEntry">
+        <service-properties>
+            <entry key="Page" value="admin" />
+            <entry key="Category" value="operations" />
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+        <command>
+            <action class="org.opennms.features.datachoices.shell.internal.SendUsageReportCommand">
+                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
+            </action>
+        </command>
+        <command>
+            <action class="org.opennms.features.datachoices.shell.internal.DisplayUsageReportCommand">
+                <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
+            </action>
+        </command>
+        <command>
+            <action class="org.opennms.features.datachoices.shell.internal.ResetSystemIdCommand">
+                <property name="stateManager" ref="stateManager"/>
+            </action>
+        </command>
+    </command-bundle>
+
+</blueprint>

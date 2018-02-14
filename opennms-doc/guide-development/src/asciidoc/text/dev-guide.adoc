@@ -1,0 +1,101 @@
+
+This guide describes the requirements and the steps necessary in order to get started with the development of the OpenNMS project.
+
+=== Operating System / Environment
+
+To build/compile OpenNMS it is necessary to run a *nix system.
+You do not need to run it physically, a virtual machine is sufficient, but the choice is yours.
+We recommend one of the following:
+
+ * link:http://www.linuxmint.com/[Linux Mint] with Cinnamon Desktop environment
+ * link:http://ubuntu.com[Ubuntu Desktop]
+ * Mac OS X
+
+[NOTE]
+This documentation assumes that you chose a debian based desktop environment.
+
+=== Installation
+
+The next chapter describes the full setup of your environment in order to meet the pre-requirements.
+Simply follow these instructions, they may vary depending on your Operating System.
+
+[source, shell]
+----
+# add OpenNMS as repository to install icmp and such
+echo "deb http://debian.opennms.org stable main" > /etc/apt/sources.list.d/opennms.list
+echo "deb-src http://debian.opennms.org stable main" >> /etc/apt/sources.list.d/opennms.list
+# Add pgp key
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+
+# overall update
+apt-get update
+
+# install stuff
+apt-get install -y software-properties-common
+apt-get install -y git-core
+apt-get install -y nsis
+
+# install Oracle Java 8 JDK
+# this setup is based on: http://www.webupd8.org/2014/03/how-to-install-oracle-java-8-in-debian.html
+add-apt-repository -y ppa:webupd8team/java
+apt-get update
+apt-get install -y oracle-java8-installer
+apt-get install -y oracle-java8-set-default
+
+# install and configure PostgreSQL
+apt-get install -y postgresql
+echo "local   all             postgres                                peer" > /etc/postgresql/9.3/main/pg_hba.conf
+echo "local   all             all                                     peer" >> /etc/postgresql/9.3/main/pg_hba.conf
+echo "host    all             all             127.0.0.1/32            trust" >> /etc/postgresql/9.3/main/pg_hba.conf
+echo "host    all             all             ::1/128                 trust" >> /etc/postgresql/9.3/main/pg_hba.conf
+# restart postgres to use new configs
+/etc/init.d/postgresql restart
+
+# install OpenNMS basic dependencies
+apt-get install -y maven
+apt-get install -y jicmp jicmp6
+apt-get install -y jrrd
+
+# clone opennms
+mkdir -p ~/dev/opennms
+git clone https://github.com/OpenNMS/opennms.git ~/dev/opennms
+----
+
+After this you should be able to build OpenNMS:
+
+[source, shell]
+----
+cd ~/dev/opennms
+./clean.pl
+./compile.pl -DskipTests
+./assemble.pl -p dir
+----
+
+For more information on how to build OpenNMS from source check this wiki link:http://www.opennms.org/wiki/Installation:Source#Building[Install from Source].
+
+After OpenNMS successfully built, please follow the wiki link:http://www.opennms.org/wiki/Installation:Source#Running_OpenNMS[Running OpenNMS].
+
+=== Tooling
+We recommend the following toolset:
+
+ * IDE: link:https://www.jetbrains.com/idea/[IntelliJ IDEA Ultimate]
+ * DB-Tool: link:http://dbeaver.jkiss.org/[DBeaver] or link:http://www.pgadmin.org/[Postgres Admin - pgAdmin]
+ * Graphing: link:http://www.yworks.com/en/products/yfiles/yed/[yEd]
+ * Other: link:http://www.atom.io[atom.io]
+
+
+=== Useful links
+
+==== General
+ * https://www.github.com/OpenNMS/opennms: The source code hosted on GitHub
+ * http://wiki.opennms.org: Our Wiki, especially the start page is of interest. It points you in the right directions.
+ * http://issues.opennms.org: Our issue/bug tracker.
+ * https://github.com/opennms-forge/vagrant-opennms-dev: A vagrant box to setup a virtual box to build OpenNMS
+ * https://github.com/opennms-forge/vagrant-opennms: A vagrant box to setup a virtual box to run OpenNMS
+
+==== Installation / Setup
+ * http://www.opennms.eu/docs/opennms-community-welcome-guide/0.0.5-SNAPSHOT/[]
+ * http://www.opennms.org/wiki/Installation:Source[]
+ * http://www.opennms.org/wiki/Developing_with_Git[]
+ * http://www.opennms.org/wiki/Eclipse_and_OpenNMS[]
+ * http://www.opennms.org/wiki/IDEA_and_OpenNMS[]

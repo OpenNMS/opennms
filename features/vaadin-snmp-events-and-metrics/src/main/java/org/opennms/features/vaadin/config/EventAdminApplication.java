@@ -38,10 +38,10 @@ import org.slf4j.LoggerFactory;
 import org.vaadin.dialogs.ConfirmDialog;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.events.EventPanel;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.annotations.Theme;
@@ -185,7 +185,7 @@ public class EventAdminApplication extends UI {
                                     boolean modified = false;
                                     File configFile = ConfigFileConstants.getFile(ConfigFileConstants.EVENT_CONF_FILE_NAME);
                                     Events config = JaxbUtils.unmarshal(Events.class, configFile);
-                                    for (Iterator<String> it = config.getEventFileCollection().iterator(); it.hasNext();) {
+                                    for (Iterator<String> it = config.getEventFiles().iterator(); it.hasNext();) {
                                         String fileName = it.next();
                                         if (file.getAbsolutePath().contains(fileName)) {
                                             it.remove();

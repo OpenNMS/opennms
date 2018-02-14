@@ -101,11 +101,12 @@ public class OspfNbrTableTracker extends TableTracker {
 	    }
 
 		public OspfLink getOspfLink() {
-            LOG.info( "getOspfLink: row count: {}", getColumnCount());
+            LOG.debug( "getOspfLink: row count: {}", getColumnCount());
             OspfLink link = new OspfLink();
-            LOG.info( "getOspfLink: row ospf nbr router id: {}", str(getOspfNbrRouterId()));
-            LOG.info( "getOspfLink: row ospf nbr ip address: {}", str(getOspfNbrIpAddress()));
-            LOG.info( "getOspfLink: row ospf nbr address less ifindex: {}", getOspfNbrAddressLessIndex());
+            LOG.debug( "getOspfLink: nbr router id: {}, nbr ip address {}, nbr address less ifindex {}", 
+                       str(getOspfNbrRouterId()),
+                       str(getOspfNbrIpAddress()),
+                       getOspfNbrAddressLessIndex());
             link.setOspfRemRouterId(getOspfNbrRouterId());
             link.setOspfRemIpAddr(getOspfNbrIpAddress());
             link.setOspfRemAddressLessIndex(getOspfNbrAddressLessIndex());

@@ -49,7 +49,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * @param serviceName a {@link java.lang.String} object.
      * @param port a int.
      */
-    protected LineOrientedDetector(final String serviceName, final int port) {
+    public LineOrientedDetector(final String serviceName, final int port) {
         super(serviceName, port);
     }
     
@@ -61,7 +61,7 @@ public abstract class LineOrientedDetector extends BasicDetector<LineOrientedReq
      * @param retries a int.
      * @param serviceName a {@link java.lang.String} object.
      */
-    protected LineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
+    public LineOrientedDetector(final String serviceName, final int port, final int timeout, final int retries) {
         super(serviceName, port, timeout, retries);
 
     }

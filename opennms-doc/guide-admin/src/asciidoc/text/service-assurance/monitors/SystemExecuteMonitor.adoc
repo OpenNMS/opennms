@@ -1,0 +1,76 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== SystemExecuteMonitor
+
+If it is required to execute a system call or run a script to determine a service status, the _SystemExecuteMonitor_ can be used.
+It is calling a script or system command, if required it provides additional arguments to the call.
+To determine the status of the service the _SystemExecuteMonitor_ can rely on `0` or a _non-0_ exit code of system call.
+As an alternative, the output of the system call can be matched against a banner.
+If the banner is part of the output the status is interpreted as up.
+If the banner is not available in the output the status is determined as down.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name | `org.opennms.netmgt.poller.monitors.SystemExecuteMonitor`
+| Remote Enabled | true
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the SystemExecuteMonitor
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                                                               | Required | Default value
+| `script`  | The system-call to execute.                                                                               | required | `-`
+| `args`    | The arguments to hand over to the system-call. It supports variable replacement, see below.               | optional | `-`
+| `banner`  | A string that is match against the output of the system-call. If the output contains the banner, the
+              service is determined as _UP_.                                                                            | optional | `-`
+|===
+
+The parameter `args` supports variable replacement for the following set of variables.
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Variables which can be used in the configuration
+[options="header, autowidth"]
+|===
+| Variable        | Description
+| `${timeout}`    | Timeout in milliseconds, based on config of the service.
+| `${timeoutsec}` | Timeout in seconds, based on config of the service.
+| `${retry}`      | Amount of retries based on config of the service.
+| `${svcname}`    | Service name based on the config of the service.
+| `${ipaddr}`     | IP-address of the interface the service is bound to.
+| `${nodeid}`     | Nodeid of the node the monitor is associated to.
+| `${nodelabel}`  | Nodelabel of the node the monitor is associated to.
+|===
+
+===== Examples
+
+[source, xml]
+----
+<parameter key="args" value="-i ${ipaddr} -t ${timeout}"/>
+<parameter key="args" value="http://${nodelabel}/${svcname}/static"/>
+----
+
+===== SystemExecuteMonitor vs GpMonitor
+
+The SystemExecuteMonitor is the successor of the GpMonitor. The main differences are:
+
+* Variable replacement for the parameter args
+* There are no fixed arguments handed to the system-call
+* The _SystemExecuteMonitor_ supports _RemotePoller_ deployment
+
+To migrate services from the _GpMonitor_ to the _SystemExecuteMonitor_ it is required to alter the parameter args.
+To match the arguments called `hoption` for the `hostAddress` and `toption` for the `timeoutInSeconds`.
+The args string that matches the _GpMonitor_ call looks like this:
+
+[source, xml]
+----
+<parameter key="args" value="--hostname ${ipaddr} --timeout ${timeoutsec}" />
+----
+
+To migrate the GpMonitor parameters `hoption` and `toption` just replace the `--hostname` and `--timeout` directly in the `args` key.

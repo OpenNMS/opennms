@@ -147,9 +147,9 @@ public class UserGroupManagerTest {
         assertEquals(4, userNameList.size());
         assertTrue(userNameList.contains("brozow2"));
         
-        List<String> group1Users = m_groupManager.getGroup("InitialGroup").getUserCollection();
-        List<String> group2Users = m_groupManager.getGroup("EscalationGroup").getUserCollection();
-        List<String> group3Users = m_groupManager.getGroup("UpGroup").getUserCollection();
+        List<String> group1Users = m_groupManager.getGroup("InitialGroup").getUsers();
+        List<String> group2Users = m_groupManager.getGroup("EscalationGroup").getUsers();
+        List<String> group3Users = m_groupManager.getGroup("UpGroup").getUsers();
         
         assertFalse(group1Users.contains("brozow"));
         assertFalse(group2Users.contains("brozow"));

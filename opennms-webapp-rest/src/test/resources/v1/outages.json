@@ -1,0 +1,84 @@
+{
+    "count": 1, 
+    "offset": 0, 
+    "outage": [
+        {
+            "foreignId": "1", 
+            "foreignSource": "imported:", 
+            "id": 1, 
+            "ifLostService": 1436881548292, 
+            "ifRegainedService": 1436881548292, 
+            "ipAddress": "192.168.1.1", 
+            "locationName": "Default", 
+            "monitoredService": {
+                "applications": [], 
+                "down": true, 
+                "lastFail": null, 
+                "lastGood": null, 
+                "notify": null, 
+                "qualifier": null, 
+                "serviceType": {
+                    "id": 2, 
+                    "name": "SNMP"
+                }, 
+                "source": null, 
+                "status": "A", 
+                "statusLong": "Managed"
+            }, 
+            "nodeId": 1, 
+            "nodeLabel": "node1", 
+            "serviceId": 2, 
+            "serviceLostEvent": {
+                "createTime": 1436881548292, 
+                "description": "This is the description of a test event.", 
+                "display": "Y", 
+                "host": "127.0.0.1", 
+                "id": 1, 
+                "ifIndex": null, 
+                "ipAddress": "192.168.1.1", 
+                "log": "Y", 
+                "logMessage": "Test Event Log Message", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1,
+                    "name": "ICMP"
+                }, 
+                "severity": "INDETERMINATE", 
+                "source": "test", 
+                "time": 1436881548292, 
+                "uei": "uei.opennms.org/test"
+            }, 
+            "serviceRegainedEvent": {
+                "createTime": 1436881548292, 
+                "description": "This is the description of a test event.", 
+                "display": "Y", 
+                "host": "127.0.0.1", 
+                "id": 1, 
+                "ifIndex": null, 
+                "ipAddress": "192.168.1.1", 
+                "log": "Y", 
+                "logMessage": "Test Event Log Message", 
+                "nodeId": 1, 
+                "nodeLabel": "node1", 
+                "parameters": [
+                    {"name": "testParm", "value": "HelloWorld", "type":"string" }
+                ],
+                "serviceType": {
+                    "id": 1,
+                    "name": "ICMP"
+                }, 
+                "severity": "INDETERMINATE", 
+                "source": "test", 
+                "time": 1436881548292, 
+                "uei": "uei.opennms.org/test"
+            }, 
+            "suppressTime": null, 
+            "suppressedBy": null
+        }
+    ], 
+    "totalCount": 3
+}

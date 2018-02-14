@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,16 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
 import org.opennms.netmgt.config.collectd.Collector;
 import org.opennms.netmgt.config.collectd.Package;
 import org.opennms.netmgt.config.collectd.Parameter;
 import org.opennms.netmgt.config.collectd.Service;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-
-import javax.xml.bind.JAXB;
-import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 
 /**
  * This class wraps the <code>JmxDatacollectionConfig</code> and provides some
@@ -101,9 +100,9 @@ public class UiModel {
 	 * @return true if valid, false otherwise
 	 */
 	private boolean isValid(JmxDatacollectionConfig rawModel) {
-		return !(rawModel.getJmxCollection().isEmpty()
-				|| rawModel.getJmxCollection().get(0) == null
-				|| rawModel.getJmxCollection().get(0).getMbeans() == null);
+		return !(rawModel.getJmxCollectionList().isEmpty()
+				|| rawModel.getJmxCollectionList().get(0) == null
+				|| rawModel.getJmxCollectionList().get(0).getMbeans() == null);
 	}
 
 	public JmxDatacollectionConfig getRawModel() {
@@ -169,11 +168,9 @@ public class UiModel {
 		 service.setStatus("on");
 
 		 // add parameters to service
-		 service.addParameter(createParameter("port", getServiceConfig().getPort()));
+		 service.addParameter(createParameter("url", getServiceConfig().getConnection()));
 		 service.addParameter(createParameter("retry", "2"));
 		 service.addParameter(createParameter("timeout", "3000"));
-		 service.addParameter(createParameter("protocol", "rmi"));
-		 service.addParameter(createParameter("urlPath", String.format("/%s", getServiceConfig().isJmxmp() ? "jmxmp" : "jmxrmi")));
 		 service.addParameter(createParameter("rrd-base-name", "java"));
 		 service.addParameter(createParameter("ds-name", getServiceName()));
 		 service.addParameter(createParameter("friendly-name", getServiceName()));
@@ -218,8 +215,6 @@ public class UiModel {
 	 }
 
 	private static String marshal(Object anyObject) {
-		StringWriter stringWriter = new StringWriter();
-		JAXB.marshal(anyObject, stringWriter);
-		return stringWriter.getBuffer().toString();
+		return JaxbUtils.marshal(anyObject);
 	}
 }

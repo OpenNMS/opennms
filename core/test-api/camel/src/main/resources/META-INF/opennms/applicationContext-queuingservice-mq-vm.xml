@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+
+  <context:annotation-config />
+
+  <bean id="jmsConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="vm://localhost?create=false&amp;jms.useAsyncSend=true" />
+  </bean>
+
+  <bean id="pooledConnectionFactory" class="org.opennms.features.activemq.PooledConnectionFactory"
+    init-method="start" destroy-method="stop">
+    <property name="maxConnections" value="1" />
+    <property name="connectionFactory" ref="jmsConnectionFactory" />
+  </bean>
+
+  <bean id="jmsConfig" class="org.apache.camel.component.jms.JmsConfiguration">
+    <property name="connectionFactory" ref="pooledConnectionFactory" />
+    <property name="concurrentConsumers" value="1" />
+  </bean>
+
+  <bean id="queuingservice" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="configuration" ref="jmsConfig" />
+  </bean>
+
+</beans>

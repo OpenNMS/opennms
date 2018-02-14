@@ -1,0 +1,52 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+        http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <cm:property-placeholder id="minionProperties" persistent-id="org.opennms.minion.controller" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="location" value="MINION"/>
+            <cm:property name="id" value="00000000-0000-0000-0000-000000ddba11"/>
+            <cm:property name="http-url" value="http://127.0.0.1:8980/opennms"/>
+            <cm:property name="broker-url" value="failover:tcp://127.0.0.1:61616"/>
+            <cm:property name="broker-max-connections" value="8"/>
+            <cm:property name="broker-concurrent-consumers" value="10"/>
+            <cm:property name="broker-idle-timeout" value="0"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- Expose the controller configuration as a service, since other bundles cannot
+         reliably access the configuration from the same PID -->
+    <bean id="controllerConfig" class="org.opennms.minion.core.impl.ControllerConfigImpl">
+        <property name="brokerUrl" value="[[broker-url]]"/>
+        <property name="brokerMaxConnections" value="[[broker-max-connections]]"/>
+        <property name="brokerConcurrentConsumers" value="[[broker-concurrent-consumers]]"/>
+        <property name="brokerIdleTimeout" value="[[broker-idle-timeout]]"/>
+    </bean>
+    <service ref="controllerConfig" interface="org.opennms.minion.core.api.ControllerConfig"/>
+
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+
+    <!-- A canonical source for this Minion's identity -->
+    <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
+       <argument value="[[location]]"/>
+       <argument value="[[id]]"/>
+    </bean>
+    <service ref="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
+
+    <!-- REST Client used to communicate with the OpenNMS controller -->
+    <bean id="restClient" class="org.opennms.minion.core.impl.ScvEnabledRestClientImpl">
+        <argument value="[[http-url]]"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.http"/>
+    </bean>
+    <service ref="restClient" interface="org.opennms.minion.core.api.RestClient"/>
+
+</blueprint>

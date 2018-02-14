@@ -26,7 +26,7 @@
           </annotation>
         </element>
 
-        <element name="automations">
+        <element name="automations" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
               <element ref="this:automation" maxOccurs="unbounded" minOccurs="0" />
@@ -34,7 +34,7 @@
           </complexType>
         </element>
 
-        <element name="triggers">
+        <element name="triggers" minOccurs="0" maxOccurs="1">
           <annotation>
             <documentation>A collection of triggers</documentation>
           </annotation>
@@ -46,7 +46,7 @@
           </complexType>
         </element>
 
-        <element name="actions">
+        <element name="actions" minOccurs="0" maxOccurs="1">
           <annotation>
             <documentation>A collection of actions</documentation>
           </annotation>
@@ -58,7 +58,7 @@
           </complexType>
         </element>
 
-        <element name="auto-events">
+        <element name="auto-events" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
               <element ref="this:auto-event" maxOccurs="unbounded" minOccurs="0" />
@@ -66,7 +66,7 @@
           </complexType>
         </element>
 
-        <element name="action-events">
+        <element name="action-events" minOccurs="0" maxOccurs="1">
           <complexType>
             <sequence>
               <element ref="this:action-event"  minOccurs="0" maxOccurs="unbounded"/>

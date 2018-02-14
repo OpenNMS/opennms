@@ -1,0 +1,79 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-ticketing-tsrm]]
+=== TSRM Ticketing Plugin
+
+The _TSRM Ticketing Plugin_ is used to create TSRM incidents in response to _{opennms-product-name}_ alarms.
+
+[[ga-ticketing-tsrm-setup]]
+==== Setup
+
+In order to enable the plugin start by setting following property in `${OPENNMS_HOME}/etc/opennms.properties`:
+
+[source]
+----
+opennms.ticketer.plugin=org.opennms.netmgt.ticketd.OSGiBasedTicketerPlugin
+----
+
+Configure the plugin options by setting the following properties in `${OPENNMS_HOME}/etc/tsrm.properties`:
+
+[options="header, autowidth"]
+|===
+| Name                     | Description
+| `tsrm.url`               | TSRM Endpoint URL
+| `tsrm.ssl.strict`        | Strict SSL Check (true/false)
+| `tsrm.status.open`       | TSRM status for open ticket
+| `tsrm.status.close`      | TSRM status for close ticket
+|===
+
+Next, add `tsrm-troubleticketer` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`
+
+Restart _OpenNMS_.
+
+When _OpenNMS_ has started again, login to the _Karaf Shell_ and install the feature:
+
+[source]
+----
+feature:install tsrm-troubleticketer
+----
+
+The plugin should be ready to use. When troubleshooting, consult the following log files:
+
+* ${OPENNMS_HOME}/data/log/karaf.log
+* ${OPENNMS_HOME}/logs/trouble-ticketer.log
+
+==== Mapping OpenNMS Ticket with TSRM Incident
+
+Following tables shows mapping between OpenNMS ticket and TSRM Incident
+
+[options="header, autowidth"]
+|===
+|  Ticket Field           | TSRM Incident Field
+| `id`                    | `TICKETID`
+| `state`                 | `STATUS`
+| `summary`               | `DESCRIPTION`
+| `details`               | `DESCRIPTIONLONGDESCRIPTION`
+| `user`                  | `REPORTEDBY`
+|===
+
+Below fields are not part of Ticket, they have to be added as attributes.
+[options="header, autowidth"]
+|===
+|  Ticket Field           | TSRM Incident Field
+| `affectedPerson`        | `AFFECTEDPERSON`
+| `assetNum`              | `ASSETNUM`
+| `classId`               | `CLASS`
+| `classStructureId`      | `CLASSSTRUCTUREID`
+| `commodity`             | `COMMODITY`
+| `location`              | `LOCATION`
+| `ownerGroup`            | `OWNERGROUP`
+| `shsCallerType`         | `SHSCALLERTYPE`
+| `shsReasonForOutage`    | `SHSREASONFOROUTAGE`
+| `shsResolution`         | `SHSRESOLUTION`
+| `shsRoomNumber`         | `SHSROOMNUMBER`
+| `siteId`                | `SITEID`
+| `source`                | `source`
+| `statusIface`           | `STATUSIFACE`
+|===

@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+To support several specific applications and management agents, _Pollerd_ executes _Service Monitors_.
+This section describes all available built-in _Service Monitors_ which are available and can be configured to allow complex monitoring.
+For information how these can be extended, see _Development Guide_ of the _OpenNMS_ documentation.
+
+[[ga-service-assurance-monitors-common-parameters]]
+==== Common Configuration Parameters
+
+Application or Device specific _Monitors_ are based on a generic API which provide common configuration parameters.
+These minimal configuration parameters are available in all _Monitors_ and describe the behavior for timeouts, retries, etc.
+
+.Common implemented configuration parameters
+[options="header, autowidth"]
+|===
+| Parameter | Description                                                         | Required | Default value
+| `retry`   | Number of attempts to test a _Service_ to be up or down.            | optional | `3`
+| `timeout` | Timeout for the isReachable method, in milliseconds.                | optional | `3000`
+| `invert-status` | Invert the up/down behavior of the monitor                    | optional | `false`
+|===
+
+TIP: In case the _Monitor_ is using the _SNMP Protocol_ the default configuration for `timeout` and `retry` are used from the _SNMP Configuration_ (`snmp-config.xml`).
+
+[[ga-service-assurance-monitors-minion-parameters]]
+===== Minion Configuration Parameters
+
+When nodes are configured with a non-default location, the associated _Service Monitors_ are executed on a _Minion_ configured with that same location.
+If there are many _Minions_ at a given location, the _Service Monitor_ may be executed on any of the _Minions_ that are currently available.
+Users can choose to execute a _Service Monitor_ on a specific _Minion_, by specifying the _System ID_ of the _Minion_.
+This mechanism is used for monitoring the _Minions_ individually.
+
+The following parameters can be used to override this behavior and control *where* the _Service Monitors_ are executed.
+
+.Minion configuration parameters
+[options="header, autowidth"]
+|===
+| Parameter   | Description                                                                    | Required | Default value
+| `location`  | Specify the location at which the _Service Monitor_ should be executed.        | optional | (The location of the associated node)
+| `system-id` | Specify the _System ID_ on which the _Service Monitor_ should be executed      | optional | (None)
+| `use-foreign-id-as-system-id` | Use the foreign id of the associated node as the _System ID_ | optional | `false`
+|===
+
+NOTE: When specifying a _System ID_ the location should also be set to the corresponding location for that system.
+

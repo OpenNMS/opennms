@@ -35,9 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
+import org.opennms.netmgt.config.datacollection.MibObjProperty;
+import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.core.io.ByteArrayResource;
 
@@ -160,7 +160,7 @@ public class DataCollectionConfigFactoryTest {
     "       </resourceType>\n";
 
     @Test
-    public void testSetInstance() throws MarshalException, ValidationException, IOException {
+    public void testSetInstance() throws IOException {
         initDataCollectionFactory(m_xml);
         assertEquals(m_rrdRepository.getAbsolutePath(), DataCollectionConfigFactory.getInstance().getRrdPath());
         assertEquals(0, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.9.9.9.9", "127.0.0.1", 0).size());
@@ -171,20 +171,20 @@ public class DataCollectionConfigFactoryTest {
     }
 
     @Test
-    public void testNms6186() throws MarshalException, ValidationException, IOException {
+    public void testNms6186() throws IOException {
         initDataCollectionFactory(m_xml_nms6186);
         assertEquals(0, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.9.9.9.9", "127.0.0.1", 0).size());
     }
 
     @Test
-    public void testNms6186_2() throws MarshalException, ValidationException, IOException {
+    public void testNms6186_2() throws IOException {
         String modifiedXml = m_xml_nms6186.replaceFirst("</snmp-collection>", m_systemsXmlFragment+"</snmp-collection>");
         initDataCollectionFactory(modifiedXml);
         assertEquals(12, DataCollectionConfigFactory.getInstance().getMibObjectList("default", ".1.3.6.1.4.1.200", "127.0.0.1", 0).size());
     }
 
     @Test
-    public void testValidResourceType() throws MarshalException, ValidationException, IOException {
+    public void testValidResourceType() throws IOException {
     	String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex").replaceFirst("<groups", m_brocadeXmlFragment + "<groups");
         initDataCollectionFactory(modifiedXml);
         assertEquals(m_rrdRepository.getAbsolutePath(), DataCollectionConfigFactory.getInstance().getRrdPath());
@@ -200,7 +200,7 @@ public class DataCollectionConfigFactoryTest {
     }
 
     @Test
-    public void testInvalidResourceType() throws MarshalException, ValidationException, IOException {
+    public void testInvalidResourceType() throws IOException {
         String modifiedXml = m_xml.replaceFirst("ifIndex", "brocadeIndex");
         ThrowableAnticipator ta = new ThrowableAnticipator();
 //        ta.anticipate(new DataAccessResourceFailureException("Instance 'brocadeIndex' invalid in mibObj definition for OID '.1.3.6.1.2.1.2.2.1.10' for group 'mib2-interfaces'. Allowable instance values: any positive number, 'ifIndex', or any of the custom resourceTypes."));
@@ -214,6 +214,47 @@ public class DataCollectionConfigFactoryTest {
             ta.throwableReceived(t);
         }
         ta.verifyAnticipated();
+    }
+
+    @Test
+    public void testMibObjProperties() throws Exception {
+        String xml = "<datacollection-config rrdRepository = \"" + m_rrdRepository.getAbsolutePath() + File.separator + "\">" +
+                "<snmp-collection name=\"default\" snmpStorageFlag=\"select\">" +
+                "<rrd step=\"300\">" +
+                "<rra>RRA:AVERAGE:0.5:1:8928</rra>" +
+                "<rra>RRA:AVERAGE:0.5:12:8784</rra>" +
+                "<rra>RRA:MIN:0.5:12:8784</rra>" +
+                "<rra>RRA:MAX:0.5:12:8784</rra>" +
+                "</rrd>" +
+                "<resourceType name=\"bsnAPIfLoadParametersEntry\" label=\"Cisco Wireless AP Resources\" resourceLabel=\"${bsnAPName} (index ${index})\">" +
+                "<persistenceSelectorStrategy class=\"org.opennms.netmgt.collection.support.PersistAllSelectorStrategy\"/>" +
+                "<storageStrategy class=\"org.opennms.netmgt.collection.support.IndexStorageStrategy\"/>" +
+                "</resourceType>" +
+                "<groups>" +
+                "<group name=\"bsnAPIfLoadParametersTable\" ifType=\"all\">" +
+                "<mibObj oid=\".1.3.6.1.4.1.14179.2.2.13.1.4\" instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPIfLoadNumOfClients\" type=\"integer\" />" +
+                "<property instance=\"bsnAPIfLoadParametersEntry\" alias=\"bsnAPName\">" +
+                "<parameter key=\"source-type\" value=\"bsnAPEntry\" />" +
+                "<parameter key=\"source-alias\" value=\"bsnAPName\" />" +
+                "<parameter key=\"index-pattern\" value=\"^(.+)\\.\\d+$\"/>" +
+                "</property>" +
+                "</group>" +
+                "</groups>" +
+                "<systems>" +
+                "<systemDef name=\"Test\">" +
+                "<sysoidMask>.1.3.6.1.4.1.9999.</sysoidMask>" +
+                "<collect>" +
+                "<includeGroup>bsnAPIfLoadParametersTable</includeGroup>" +
+                "</collect>" +
+                "</systemDef>" +
+                "</systems>" +
+                "</snmp-collection>" +
+                "</datacollection-config>";
+        initDataCollectionFactory(xml);
+        List<MibObjProperty> properties = DataCollectionConfigFactory.getInstance().getMibObjProperties("default", ".1.3.6.1.4.1.9999.1.1", null);
+        assertEquals(1,  properties.size());
+        assertEquals("bsnAPName", properties.get(0).getAlias());
+        assertEquals("bsnAPEntry", properties.get(0).getParameterValue("source-type"));
     }
 
     private static void initDataCollectionFactory(String xmlConfig) {

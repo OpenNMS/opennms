@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.ibm.com/maximo" elementFormDefault="qualified" attributeFormDefault="unqualified" targetNamespace="http://www.ibm.com/maximo">
+  <xsd:include schemaLocation="MXMeta.xsd" />
+  <xsd:include schemaLocation="SHSIMPINC.xsd" />
+  <xsd:include schemaLocation="incident.xsd" />
+  <xsd:complexType name="CreateSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="InvokeSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="QuerySHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCQuery" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+    <xsd:attributeGroup ref="QueryContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="SyncSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="PublishSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+    <xsd:attributeGroup ref="PublishingContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="UpdateSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="DeleteSHSIMPINCType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="InvokeSHSIMPINCResponseType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="CreateSHSIMPINCResponseType">
+    <xsd:sequence>
+      <xsd:element ref="INCIDENTMboKeySet" minOccurs="0" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="QuerySHSIMPINCResponseType">
+    <xsd:sequence>
+      <xsd:element ref="SHSIMPINCSet" />
+    </xsd:sequence>
+    <xsd:attributeGroup ref="CommonContentGroup" />
+    <xsd:attributeGroup ref="ResponseContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="SyncSHSIMPINCResponseType">
+    <xsd:sequence />
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="DeleteSHSIMPINCResponseType">
+    <xsd:sequence />
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:complexType name="UpdateSHSIMPINCResponseType">
+    <xsd:sequence />
+    <xsd:attributeGroup ref="CommonContentGroup" />
+  </xsd:complexType>
+  <xsd:element name="UpdateSHSIMPINC" type="UpdateSHSIMPINCType" />
+  <xsd:element name="QuerySHSIMPINC" type="QuerySHSIMPINCType" />
+  <xsd:element name="CreateSHSIMPINC" type="CreateSHSIMPINCType" />
+  <xsd:element name="SyncSHSIMPINC" type="SyncSHSIMPINCType" />
+  <xsd:element name="DeleteSHSIMPINC" type="DeleteSHSIMPINCType" />
+  <xsd:element name="PublishSHSIMPINC" type="PublishSHSIMPINCType" />
+  <xsd:element name="InvokeSHSIMPINC" type="InvokeSHSIMPINCType" />
+  <xsd:element name="InvokeSHSIMPINCResponse" type="InvokeSHSIMPINCResponseType" />
+  <xsd:element name="QuerySHSIMPINCResponse" type="QuerySHSIMPINCResponseType" />
+  <xsd:element name="CreateSHSIMPINCResponse" type="CreateSHSIMPINCResponseType" />
+  <xsd:element name="SyncSHSIMPINCResponse" type="SyncSHSIMPINCResponseType" />
+  <xsd:element name="UpdateSHSIMPINCResponse" type="UpdateSHSIMPINCResponseType" />
+  <xsd:element name="DeleteSHSIMPINCResponse" type="DeleteSHSIMPINCResponseType" />
+</xsd:schema>
+

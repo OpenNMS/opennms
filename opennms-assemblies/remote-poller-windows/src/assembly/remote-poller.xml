@@ -1,4 +1,8 @@
-<assembly>
+<assembly
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd"
+>
   <id>remote-poller</id>
   <formats>
     <format>zip</format>
@@ -7,35 +11,33 @@
   <fileSets>
     <fileSet>
       <directory>target/classes</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <includes>
         <include>*.bat</include>
       </includes>
       <fileMode>0755</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
     <fileSet>
       <directory>target/classes</directory>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <includes>
         <include>*.*</include>
       </includes>
       <excludes>
         <exclude>*.bat</exclude>
       </excludes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </fileSet>
   </fileSets>
   <dependencySets>
     <dependencySet>
       <outputFileNameMapping>remote-poller-${project.version}.jar</outputFileNameMapping>
       <!-- <outputDirectory>remote-poller/lib</outputDirectory> -->
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.opennms.assemblies:org.opennms.assemblies.remote-poller-onejar:jar:signed-jar-with-dependencies:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </assembly>

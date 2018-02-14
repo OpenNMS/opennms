@@ -76,4 +76,14 @@ public interface CollectdMBean extends BaseOnmsMBean {
      * @return The number of collectable services currently seen by Collectd
      */
     public long getCollectableServiceCount();
+
+    /**
+     * @return The number of pending tasks
+     */
+    public long getTaskQueuePendingCount();
+
+    /**
+     * @return The number of pending tasks
+     */
+    public long getTaskQueueRemainingCapacity();
 }

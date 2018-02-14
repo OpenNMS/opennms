@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.netmgt.config.threshd.Expression;
+import org.opennms.netmgt.config.threshd.ThresholdType;
 
 import junit.framework.TestCase;
 
@@ -53,8 +54,8 @@ public class ThresholdExpressionTestCase extends TestCase {
     @Override
     public void setUp() {
         expression=new Expression();
-        expression.setType("high");
-        expression.setDsType("ds-type");
+        expression.setType(ThresholdType.HIGH);
+        expression.setDsType("node");
         expression.setValue(99.0);
         expression.setRearm(0.5);
         expression.setTrigger(1);
@@ -210,7 +211,7 @@ public class ThresholdExpressionTestCase extends TestCase {
 
         entity.addThreshold(wrapper);
         Collection<String> dataSources=entity.getRequiredDatasources();
-        StringBuffer dsStringBuffer = new StringBuffer();
+        final StringBuilder dsStringBuffer = new StringBuilder();
         for (String dataSource : dataSources) {
             dsStringBuffer.append(dataSource).append(" ");
         }

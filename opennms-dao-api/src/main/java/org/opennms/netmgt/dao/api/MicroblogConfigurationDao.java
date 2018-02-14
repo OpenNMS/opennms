@@ -65,7 +65,7 @@ public interface MicroblogConfigurationDao {
     MicroblogProfile getDefaultProfile();
         
     /**
-     * The underlying Castor based DAO abstraction in the default implementation doesn't provide access to the container so
+     * The underlying XML-based DAO abstraction in the default implementation doesn't provide access to the container so
      * this method is defined so that access to the container doesn't have to be exposed and a reload can still be controlled
      * by the user.
      *

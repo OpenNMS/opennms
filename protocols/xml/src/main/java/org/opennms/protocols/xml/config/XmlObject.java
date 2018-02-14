@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.apache.commons.lang.builder.EqualsBuilder;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * The Class XmlObject.
@@ -45,7 +46,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
  */
 @XmlRootElement(name="xml-object")
 @XmlAccessorType(XmlAccessType.FIELD)
-public class XmlObject implements Serializable, Comparable<XmlObject> {
+public class XmlObject implements Serializable, Comparable<XmlObject>, Cloneable {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -774378322863486535L;
@@ -55,8 +56,8 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     private String m_name;
 
     /** The data type. */
-    @XmlAttribute(name="type", required=true)    
-    private String m_dataType;
+    @XmlAttribute(name="type", required=true)
+    private AttributeType m_dataType;
 
     /** The XPath. */
     @XmlAttribute(name="xpath", required=true)
@@ -65,9 +66,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
     /**
      * Instantiates a new XML object.
      */
-    public XmlObject() {
-        super();
-    }
+    public XmlObject() { }
 
     /**
      * Instantiates a new XML object.
@@ -75,10 +74,15 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      * @param name the object name
      * @param dataType the data type
      */
-    public XmlObject(String name, String dataType) {
-        this();
-        this.m_name = name;
-        this.m_dataType = dataType;
+    public XmlObject(String name, AttributeType dataType) {
+        m_name = name;
+        m_dataType = dataType;
+    }
+
+    public XmlObject(XmlObject copy) {
+        m_name = copy.m_name;
+        m_dataType = copy.m_dataType;
+        m_xpath = copy.m_xpath;
     }
 
     /**
@@ -104,7 +108,7 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @return the data type
      */
-    public String getDataType() {
+    public AttributeType getDataType() {
         return m_dataType;
     }
 
@@ -113,10 +117,9 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
      *
      * @param dataType the new data type
      */
-    public void setDataType(String dataType) {
+    public void setDataType(AttributeType dataType) {
         m_dataType = dataType;
     }
-
 
     /**
      * Gets the XPath.
@@ -162,5 +165,10 @@ public class XmlObject implements Serializable, Comparable<XmlObject> {
             .isEquals();
         }
         return false;
+    }
+
+    @Override
+    public XmlObject clone() {
+        return new XmlObject(this);
     }
 }

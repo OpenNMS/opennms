@@ -31,31 +31,32 @@ package org.opennms.features.topology.shell;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.Operation;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import com.google.common.collect.Lists;
+
 @Command(scope = "topo", name = "listoperations", description="Lists the available OpenNMS topology operations.")
-public class OperationListShellCommand extends OsgiCommandSupport {
-//	public static final Comparator<Operation> OPERATION_COMPARATOR = new Comparator<Operation>() {
-//		@Override
-//		public int compare(final Operation a, final Operation b) {
-//			final int comp = a.getId().compareTo(b.getId());
-//			return comp == 0? a.getLabel().compareTo(b.getLabel()) : comp;
-//		}
-//	};
+@Service
+public class OperationListShellCommand implements Action {
+
+    @Reference
+    BundleContext bundleContext;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
 
-    	final Set<Operation> operations = new TreeSet<Operation>();
-    	final Map<Operation,Map<String,Object>> properties = new HashMap<Operation,Map<String,Object>>();
+    	final List<Operation> operations = Lists.newArrayList();
+    	final Map<Operation,Map<String,Object>> properties = new HashMap<>();
 
     	final Collection<ServiceReference<Operation>> services = this.bundleContext.getServiceReferences(Operation.class, null);
         if (services == null) return null;
@@ -66,44 +67,35 @@ public class OperationListShellCommand extends OsgiCommandSupport {
 
     		operations.add(operation);
 
-			final Map<String,Object> props = new TreeMap<String,Object>();
+			final Map<String,Object> props = new TreeMap<>();
     		for (final String key : sr.getPropertyKeys()) {
     			props.put(key, sr.getProperty(key));
     		}
     		properties.put(operation, props);
     	}
 
+    	// Output
     	for (final Operation operation : operations) {
     		final String operationClass = operation.getClass().getName();
-			System.out.println("    " + operationClass);
-    		System.out.println("    " + makeLine(operationClass));
-    		System.out.println();
-    		
+			System.out.println("    " + makeLine(operationClass));
+			System.out.println("    Class: " + operationClass);
     		System.out.println("    ID:    " + operation.getId());
-    		//System.out.println("    Label: " + operation.getLabel());
-    		System.out.println();
 
     		final Map<String,Object> props = properties.get(operation);
-
-    		if (props.size() > 0) {
+    		if (!props.isEmpty()) {
 	    		System.out.println("    Service Properties:");
-	    		System.out.println("    " + makeLine("Service Properties:"));
-	    		System.out.println();
-	    		
 	    		for (final String key : props.keySet()) {
 	    			final Object object = props.get(key);
 	    			final String value = (object instanceof Object[])? Arrays.toString((Object[])object) : object.toString();
 					System.out.println("        " + key + "=" + value);
 	    		}
-	    		
-	    		System.out.println();
     		}
     	}
 
         return null;
     }
 
-	private String makeLine(final String s) {
+	private static String makeLine(final String s) {
 		return new String(new char[s.length()]).replace("\0", "-");
 	}
 }

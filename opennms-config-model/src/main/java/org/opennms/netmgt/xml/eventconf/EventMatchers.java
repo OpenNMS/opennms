@@ -43,7 +43,7 @@ import static org.opennms.netmgt.xml.eventconf.Maskelement.TAG_UEI;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.opennms.netmgt.EventConstants;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 
@@ -111,7 +111,7 @@ public abstract class EventMatchers  {
 			
 			@Override
 			public String toString() {
-				StringBuilder buf = new StringBuilder();
+				final StringBuilder buf = new StringBuilder();
 				boolean first = true;
 				for(EventMatcher matcher : matchers) {
 					if (first) {
@@ -142,7 +142,7 @@ public abstract class EventMatchers  {
 			
 			@Override
 			public String toString() {
-				StringBuilder buf = new StringBuilder();
+				final StringBuilder buf = new StringBuilder();
 				boolean first = true;
 				for(EventMatcher matcher : matchers) {
 					if (first) {

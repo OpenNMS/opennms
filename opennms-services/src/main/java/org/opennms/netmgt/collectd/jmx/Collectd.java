@@ -122,6 +122,24 @@ public class Collectd extends AbstractSpringContextJmxServiceDaemon<org.opennms.
     }
     
     @Override
+    public long getTaskQueuePendingCount() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().size();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
+    public long getTaskQueueRemainingCapacity() {
+        if (getThreadPoolStatsStatus()) {
+            return getExecutor().getQueue().remainingCapacity();
+        } else {
+            return 0L;
+        }
+    }
+
+    @Override
     public long getCollectableServiceCount() {
         return getDaemon().getCollectableServiceCount();
     }

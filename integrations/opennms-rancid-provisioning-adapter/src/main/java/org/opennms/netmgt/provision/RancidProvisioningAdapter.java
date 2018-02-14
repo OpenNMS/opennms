@@ -39,19 +39,19 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.RWSConfig;
 import org.opennms.netmgt.config.RancidAdapterConfig;
 import org.opennms.netmgt.config.RancidAdapterConfigFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventForwarder;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.rancid.ConnectionProperties;
@@ -159,7 +159,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void getRancidCategories() {
-        
+        if (!isAdapterConfigured()) {
+            LOG.info("RANCID is not configured. Skipping category initialization.");
+            return;
+        }
+
         try {
             m_rancid_categories = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp).getResource();
         } catch (RancidApiException e) {
@@ -169,7 +173,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     m_rancid_categories = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp).getResource();
                 } catch (RancidApiException e1) {
                     LOG.warn("getRancidCategories: not able to retrieve rancid categories from RWS server");
-                    m_rancid_categories = new ArrayList<String>();
+                    m_rancid_categories = new ArrayList<>();
                     m_rancid_categories.add("cisco");
                     LOG.warn("getRancidCategories: setting categories list to 'cisco'");
                 }
@@ -178,6 +182,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void buildRancidNodeMap() {
+        if (!isAdapterConfigured()) {
+            LOG.info("RANCID is not configured.  Skipping node map generation.");
+            return;
+        }
+
         List<OnmsNode> nodes = m_nodeDao.findAllProvisionedNodes();
         m_onmsNodeRancidNodeMap = new ConcurrentHashMap<Integer, RancidNode>(nodes.size());
         m_onmsNodeIpMap = new ConcurrentHashMap<Integer, String>(nodes.size());
@@ -214,6 +223,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doAdd: adding nodeid: {}", nodeId);
 
         final OnmsNode node = m_nodeDao.get(nodeId);                                                                                                                                                                                            
@@ -274,9 +284,11 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doUpdate: updating nodeid: {}", nodeId);
             
         RancidNode rLocalNode = m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId));
+        Assert.notNull(rLocalNode, "doUpdate: failed to get local node for given nodeId:"+nodeId);
         LOG.debug("doUpdate: found local map Node: {}", rLocalNode);
         
         final OnmsNode node = m_nodeDao.get(nodeId);
@@ -433,6 +445,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
         if (! isAdapterConfigured()) {
             return;
         }
+
         LOG.debug("doNodeConfigChanged: nodeid: {}", nodeId);
         if (m_onmsNodeRancidNodeMap.containsKey(Integer.valueOf(nodeId))) {
             updateConfiguration(nodeId,m_onmsNodeRancidNodeMap.get(Integer.valueOf(nodeId)),cp, retry);
@@ -442,7 +455,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
 
     private void updateConfiguration(int nodeid, RancidNode rNode,ConnectionProperties cp, boolean retry) throws ProvisioningAdapterException {
-        LOG.debug("updateConfiguration: Updating Rancid Router.db configuration for node: {} type: {} group: {}", rNode.getGroup(), rNode.getDeviceName(), rNode.getDeviceType());
+        LOG.debug("updateConfiguration: Updating Rancid Router.db configuration for node: {} type: {} group: {}", rNode.getDeviceName(), rNode.getDeviceType(),rNode.getGroup());
         try {
                 RWSClientApi.updateRWSRancidNode(cp, rNode);
         } catch (Throwable e) {
@@ -490,7 +503,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>setEventForwarder</p>
      *
-     * @param eventForwarder a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public void setEventForwarder(EventForwarder eventForwarder) {
         m_eventForwarder = eventForwarder;
@@ -499,7 +512,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     /**
      * <p>getEventForwarder</p>
      *
-     * @return a {@link org.opennms.netmgt.model.events.EventForwarder} object.
+     * @return a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      */
     public EventForwarder getEventForwarder() {
         return m_eventForwarder;
@@ -852,7 +865,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
     }
     
     private boolean isAdapterConfigured() {
-        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServer_url())) {
+        if ("http://rws-not-configured".equals(m_rwsConfig.getBaseUrl().getServerUrl())) {
             LOG.debug("Not taking any action because server_url is set to http://rws-not-configured");
             return false;
         }

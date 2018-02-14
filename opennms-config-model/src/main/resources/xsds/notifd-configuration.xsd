@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/notifd"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/notifd"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified">
+  <annotation>
+    <documentation>XML Schema for the notifd-configuration.xml configuration
+    file. Version: $Id$</documentation>
+  </annotation>
+
+  <element name="notifd-configuration">
+    <annotation>
+      <documentation>Top-level element for the notifd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="0"
+                 ref="this:auto-acknowledge-alarm"/>
+
+        <element maxOccurs="unbounded" minOccurs="0"
+                 ref="this:auto-acknowledge"/>
+
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:queue"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" name="outage-calendar"
+                 type="string"/>
+      </sequence>
+
+      <attribute name="status" type="string" use="required"/>
+
+      <attribute name="pages-sent" type="string" use="optional" default="SELECT * FROM notifications"/>
+
+      <attribute name="next-notif-id" type="string" use="optional" default="SELECT nextval('notifynxtid')"/>
+
+      <attribute name="next-user-notif-id" type="string" use="optional" default="SELECT nextval('userNotifNxtId')"/>
+
+      <attribute name="next-group-id" type="string" use="optional" default="SELECT nextval('notifygrpid')"/>
+
+      <attribute name="service-id-sql" type="string" use="optional" default="SELECT serviceID from service where serviceName = ?"/>
+
+      <attribute name="outstanding-notices-sql" type="string" use="optional" default="SELECT notifyid FROM notifications where notifyId = ? AND respondTime is not null"/>
+
+      <attribute name="acknowledge-id-sql" type="string" use="optional" default="SELECT notifyid FROM notifications WHERE eventuei=? AND nodeid=? AND interfaceid=? AND serviceid=?"/>
+
+      <attribute name="acknowledge-update-sql" type="string" use="optional" default="UPDATE notifications SET answeredby=?, respondtime=? WHERE notifyId=?"/>
+
+      <attribute name="match-all" type="boolean" use="required"/>
+      
+      <attribute name="email-address-command" type="string" use="optional" default="javaEmail"/>
+
+      <attribute name="numeric-skip-resolution-prefix" type="boolean" use="optional" default="false"/>
+
+      <attribute name="max-threads" type="nonNegativeInteger" use="optional" default="100"/>
+    </complexType>
+  </element>
+
+  <element name="auto-acknowledge-alarm">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" name="uei" type="string"/>
+      </sequence>
+
+      <attribute default="RESOLVED: " name="resolution-prefix" type="string"/>
+
+      <attribute default="true" name="notify" type="boolean" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="auto-acknowledge">
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" name="match"
+                 type="string"/>
+      </sequence>
+
+      <attribute default="RESOLVED: " name="resolution-prefix" type="string"/>
+
+      <attribute name="uei" type="string" use="required"/>
+
+      <attribute name="acknowledge" type="string" use="required"/>
+
+      <attribute default="true" name="notify" type="boolean" use="optional"/>
+    </complexType>
+  </element>
+
+  <element name="queue">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="queue-id" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" name="interval" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" ref="this:handler-class"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="handler-class">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="name" type="string"/>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:init-params"/>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="init-params">
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" name="param-name" type="string"/>
+
+        <element maxOccurs="1" minOccurs="1" name="param-value" type="string"/>
+      </sequence>
+    </complexType>
+  </element>
+</schema>

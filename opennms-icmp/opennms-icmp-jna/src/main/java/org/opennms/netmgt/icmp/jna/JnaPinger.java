@@ -68,13 +68,21 @@ public class JnaPinger implements Pinger {
      */
     private synchronized void initialize() throws Exception {
         if (m_pingTracker != null) return;
-        m_messenger = new JnaIcmpMessenger(m_pingerId);
-        m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
-            @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
-                return new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+        try {
+            m_messenger = new JnaIcmpMessenger(m_pingerId);
+            m_pingTracker = Logging.withPrefix("icmp", new Callable<RequestTracker<JnaPingRequest,JnaPingReply>>() {
+                @Override public RequestTracker<JnaPingRequest, JnaPingReply> call() throws Exception {
+                    return new RequestTracker<JnaPingRequest, JnaPingReply>("JNA-ICMP-"+m_pingerId, m_messenger, new IDBasedRequestLocator<JnaPingRequestId, JnaPingRequest, JnaPingReply>());
+                }
+            });
+            m_pingTracker.start();
+        } catch (final IOException e) {
+            final String errorMessage = e.getMessage().toLowerCase();
+            if (errorMessage.contains("permission denied") || errorMessage.contains("operation not permitted")) {
+                LOG.error("Permission error received while attempting to open ICMP socket. See https://wiki.opennms.org/wiki/ICMP for information on configuring ICMP for non-root.");
             }
-        });
-        m_pingTracker.start();
+            throw e;
+        }
     }
 
     @Override
@@ -204,29 +212,61 @@ public class JnaPinger implements Pinger {
     }
 
     /**
-     * <p>parallelPing</p>
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
      *
-     * @param host a {@link java.net.InetAddress} object.
-     * @param count a int.
-     * @param timeout a long.
-     * @param pingInterval a long.
-     * @return a {@link java.util.List} object.
-     * @throws java.lang.Exception if any.
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @param size The size of the packet to send.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
      */
     @Override
-    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval, final int size) throws Exception {
         initialize();
         final ParallelPingResponseCallback cb = new ParallelPingResponseCallback(count);
 
         final long threadId = JnaPingRequest.getNextTID();
         for (int seqNum = 0; seqNum < count; seqNum++) {
-            final JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout,0 , DEFAULT_PACKET_SIZE, cb);
+            final JnaPingRequest request = new JnaPingRequest(host, m_pingerId, seqNum, threadId, timeout == 0? DEFAULT_TIMEOUT : timeout, 0, size, cb);
             m_pingTracker.sendRequest(request);
             Thread.sleep(pingInterval);
         }
 
         cb.waitFor();
         return cb.getResponseTimes();
+    }
+
+    /**
+     * Ping a remote host, sending 1 or more packets at the given interval, and then
+     * return the response times as a list.
+     *
+     * @param host The {@link java.net.InetAddress} address to poll.
+     * @param count The number of packets to send.
+     * @param timeout The time to wait between each retry.
+     * @param pingInterval The interval at which packets will be sent.
+     * @return a {@link java.util.List} of response times in microseconds.
+     *     If, for a given ping request, the host is reachable and has responded with an
+     *     echo reply, it will contain a number, otherwise a null value.
+     */
+    @Override
+    public List<Number> parallelPing(final InetAddress host, final int count, final long timeout, final long pingInterval) throws Exception {
+        return parallelPing(host, count, timeout, pingInterval, DEFAULT_PACKET_SIZE);
+    }
+
+    @Override
+    public void setAllowFragmentation(boolean allow) throws Exception {
+        initialize();
+        m_messenger.setAllowFragmentation(allow);
+    }
+
+    @Override
+    public void setTrafficClass(int tc) throws Exception {
+        initialize();
+        m_messenger.setTrafficClass(tc);
     }
 
 }

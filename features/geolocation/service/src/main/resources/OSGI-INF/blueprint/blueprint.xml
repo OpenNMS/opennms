@@ -1,0 +1,40 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
+
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+    <reference id="geocoderService" interface="org.opennms.features.geocoder.GeocoderService" availability="mandatory" />
+    <reference id="genericPersistenceAccessor" interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor" availability="mandatory" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="nodeStatusCalculator" interface="org.opennms.features.status.api.node.NodeStatusCalculator" availability="mandatory"/>
+
+    <bean id="geolocationResolver" class="org.opennms.features.geolocation.services.DefaultGeolocationResolver" >
+        <argument ref="geocoderService" />
+        <argument ref="nodeDao" />
+    </bean>
+    <service ref="geolocationResolver" interface="org.opennms.features.geolocation.api.GeolocationResolver">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+    <bean id="geolocationService" class="org.opennms.features.geolocation.services.DefaultGeolocationService" >
+        <argument ref="genericPersistenceAccessor" />
+        <argument ref="nodeStatusCalculator" />
+    </bean>
+    <service ref="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+    <bean id="geolocationConfiguration" class="org.opennms.features.geolocation.services.DefaultGeolocationConfiguration"/>
+    <service ref="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+</blueprint>

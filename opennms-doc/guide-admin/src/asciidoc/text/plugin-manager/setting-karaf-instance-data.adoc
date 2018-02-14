@@ -1,0 +1,61 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Plugin Manager UI panel
+
+The _Plugin Manager_ is accessed as an entry in the _Additional Tools_ panel of the _{opennms-product-name} Admin Gui_.
+
+image::plugin-manager/01_adminPageEntry.png[]
+
+The _Plugin Manager_ administration page is split into six main areas as illustrated below.
+
+1. Top Left is the _Karaf_ Instance data panel which lists the _Karaf_ instances known to the _Plugin Manager_.
+   When a _Karaf_ instance is selected, the data on the rest of the page refers to the selected instance.
+2. Bottom Left is the _Available Plugins Server Panel_ which is used to set the address and passwords to access the _Available Plugins Server_ and / or the list of locally available plugins provided by a _Kar_ or _RPM_.
+3. Top Right, just below the main _{opennms-product-name}_ menu bar are links to three diagnostic pages which can help test the _ReST_ interface to remote _Karaf_ Instances.
+4. Middle Right is a messages panel which reports the status of any operations.
+   If an operation fails, the full error message can be viewed by pressing the error message button.
+5. Bottom Right is a tabbed panel which reflects the status of the plugins and licences installed in the _Karaf_ instance selected by the _Karaf_ Instance data panel.
+
+image::plugin-manager/02_pluginmgrFullPage.png[]
+
+=== Setting Karaf Instance Data
+
+The _Karaf_ instances known to the _Plugin Manager_ are listed in the _Karaf_ Instance data panel.
+`Localhost` refers to the local _{opennms-product-name}_ server and is always an option in the panel.
+The _Karaf_ instance data is persisted locally and should be refreshed from remote sources using the reload _Karaf_ instance data button before changes are made.
+
+NOTE: Please note that the `Localhost` configuration in the _Plugin Manager_  by default uses `admin` for both the username and the password. This will not work in a production OpenNMS where you have changed the admin user password. You should edit the `Localhost` configuration using the `edit instance list` button to match your local configuration)
+
+Each _Karaf_ instance must have a unique system id which is used to update its configuration and also to validate its licences.
+The system id  it must be unique and included a checksum. A new random system id can be generated for a _Karaf_ instance using a button on the panel.
+
+In most situations the remote _Karaf_ instance can be accessed from the _{opennms-product-name}_ _Plugin Manager_.
+However in many cases, the remote _Karaf_ will be behind a firewall in which case it must initiate the communications to request its configuration and supply an update on its status.
+
+The `Remote is Accessible` field tells the _Plugin Manager_ which mode of operation is in use.
+
+NOTE: Remote request of configuration is not yet fully implemented and will be completed in a future release.
+
+._Karaf_ Instance Fields
+[width="100%",options="header,footer"]
+|===
+| Field Name                      | Description
+| Instance Name                   | host Name of the _Karaf_ instance
+| Karaf URL                       | URL used to access the _Karaf_ _Plugin Manager_ ReST API
+| Current Instance System ID      | The system ID currently installed in the _Karaf_ system
+| Manifest System ID              | The system ID to be provisioned in the _Karaf_ system
+| Remote is Accessible            | If ticked 'true', the _Plugin Manager_ will try and contact the remote _Karaf_ instance using the URL.
+                                    If not ticked (i.e. false), the remote _Karaf_ instance must request its configuration.
+| Allow Status Update from Remote | Allow the remote _Karaf_ instance to request an update to its remote configuration from the locally held manifest and at the same time to update its status.
+|===
+
+image::plugin-manager/03_karafInstanceData.png[]
+
+=== Manually adding a managed _Karaf_ instance
+
+The list of _Karaf_ instances can be modified using the _Karaf_ instance editor illustrated below.
+The same fields apply as above.
+
+image::plugin-manager/04_karafinstanceeditor.png[]

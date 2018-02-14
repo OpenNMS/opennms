@@ -1,0 +1,146 @@
+
+==== Resources API
+
+The _Resources API_ can be used to list or delete resources at the node level and below.
+This service is especially useful in conjunction with the _Measurements API_.
+
+===== GETs (Reading Data)
+
+[options="header", cols="5,10"]
+|===
+| Resource                            | Description
+| `/resources`                        | Retrieve the full tree of resources in the system (expensive, use with care)
+| `/resources/{resourceId}`           | Retrieve the tree of resources starting with the named resource ID
+| `/resources/fornode/{nodeCriteria}` | Retrieve the tree of resources for a node, given its database ID or `foreign-source:foreign-ID` tuple
+|===
+
+===== DELETEs (Removing Data)
+[options="header", cols="5,10"]
+|===
+| Resource                  | Description
+| `/resources/{resourceId}` | Delete resource with the named resource ID, and all its child resources, if any
+|===
+
+The following table shows all supported query string parameters and their default values.
+
+[options="header"]
+|===
+| name  | default | comment
+| depth | varies  | GET only.
+                    Limits the tree depth for retrieved resources.
+                    Defaults to 1 when listing all resources, or to -1 (no limit) when listing a single resource.
+|===
+
+===== Usage examples with curl
+
+.Retrieve the tree of resources rooted at the node with database ID `1`, by resource ID
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/node%5B1%5D"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resource id="node[1]"
+          label="anode"
+          name="1"
+          link="element/node.jsp?node=1"
+          typeLabel="Node">
+  <children count="11" totalCount="11">
+    <resource id="node[1].nodeSnmp[]"
+              label="Node-level Performance Data"
+              name=""
+              typeLabel="SNMP Node Data"
+              parentId="node[1]">
+      <children/>
+      <stringPropertyAttributes/>
+      <externalValueAttributes/>
+      <rrdGraphAttributes>
+        <entry>
+          <key>loadavg1</key>
+          <value name="loadavg1"
+                 relativePath="snmp/1"
+                 rrdFile="loadavg1.jrb"/>
+        </entry>
+          <key>tcpActiveOpens</key>
+          <value name="tcpActiveOpens"
+                 relativePath="snmp/1"
+                 rrdFile="tcpActiveOpens.jrb"/>
+        </entry>
+        <entry>
+          <key>memTotalFree</key>
+          <value name="memTotalFree"
+                 relativePath="snmp/1"
+                 rrdFile="memTotalFree.jrb"/>
+        </entry>
+        ...
+      </rrdGraphAttributes>
+    </resource>
+    <resource id="node[1].interfaceSnmp[lo]"
+              label="lo (10 Mbps)"
+              name="lo"
+              link="element/snmpinterface.jsp?node=1&amp;ifindex=1"
+              typeLabel="SNMP Interface Data"
+              parentId="node[1]">
+      <children/>
+      <stringPropertyAttributes>
+        <entry>
+          <key>ifName</key>
+          <value>lo</value>
+        </entry>
+        ...
+      </stringPropertyAttributes>
+      <externalValueAttributes>
+        <entry>
+          <key>ifSpeed</key>
+          <value>10000000</value>
+        </entry>
+        <entry>
+          <key>ifSpeedFriendly</key>
+          <value>10 Mbps</value>
+        </entry>
+      </externalValueAttributes>
+      <rrdGraphAttributes>
+        ...
+        <entry>
+          <key>ifHCInOctets</key>
+          <value name="ifHCInOctets"
+                 relativePath="snmp/1/lo"
+                 rrdFile="ifHCInOctets.jrb"/>
+        </entry>
+        <entry>
+          <key>ifHCOutOctets</key>
+          <value name="ifHCOutOctets"
+                 relativePath="snmp/1/lo"
+                 rrdFile="ifHCOutOctets.jrb"/>
+        </entry>
+        ...
+      </rrdGraphAttributes>
+    </resource>
+    ...
+  </children>
+  <stringPropertyAttributes/>
+  <externalValueAttributes/>
+  <rrdGraphAttributes/>
+</resource>
+----
+
+.Retrieve the tree of resources rooted at the node with database ID `1`, without having to construct a resource ID
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/fornode/1"
+----
+
+.Retrieve the tree of resources rooted at the node with foreign-ID `node42` in requisition `Servers`, by resource ID
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/nodeSource%5BServers:node42%5D"
+----
+
+.Retrieve the tree of resources rooted at the node with foreign-ID `node42` in requisition `Servers`, without having to construct a resource ID
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/resources/fornode/Servers:node42"
+----

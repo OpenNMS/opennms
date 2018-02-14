@@ -1,0 +1,66 @@
+/*
+ * Styling properties for Trend Charts
+ */
+
+@import "properties.scss";
+
+
+.alert-box .row {
+  margin-left: 5px !important;
+  margin-right: -5px !important;
+}
+
+/* defines the grid layout trend chart page */
+
+.row.gutter-10 {
+  padding-top: 5px;
+  padding-bottom: 0px;
+}
+
+.gutter-10 > [class^="col-"], .gutter-10 > [class^=" col-"] {
+  padding-left: 0px;
+  padding-right: 5px;
+}
+
+.alert-box.panel-body {
+  background-color: $color_alto_approx;
+}
+
+/* Background color for trend charts */
+
+.alert-trend {
+  background-color: #eeeeee;
+  border-color: #eeeeee;
+  height: 90px;
+  color: #000000;
+  margin-bottom: 10px;
+  margin-right: 5px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.alert-trend hr {
+  border-top-color: #bbbbbb;
+}
+
+.alert-trend h1 .glyphicon {
+  font-size: 1em;
+  padding-right: 5px;
+}
+
+.alert-trend .alert-link {
+  color: $color_lima_approx;
+}
+
+.alert-trend a {
+  color: $color_lima_approx;
+}
+
+.alert {
+  padding: 10px !important;
+}
+
+.jqstooltip {
+  width: auto !important;
+  height: auto !important;
+}

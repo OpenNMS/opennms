@@ -38,10 +38,10 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.mail.Flags.Flag;
 import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Flags.Flag;
 import javax.mail.internet.InternetAddress;
 
 import org.opennms.core.utils.StringUtils;
@@ -49,13 +49,14 @@ import org.opennms.javamail.JavaMailerException;
 import org.opennms.javamail.JavaReadMailer;
 import org.opennms.netmgt.config.ackd.Parameter;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
+import org.opennms.netmgt.config.javamail.ReadmailHost;
+import org.opennms.netmgt.config.javamail.UserAuth;
 import org.opennms.netmgt.dao.api.AckdConfigurationDao;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -129,7 +130,7 @@ class MailAckProcessor implements AckProcessor {
         List<OnmsAcknowledgment> acks = null;
         
         if (msgs != null && msgs.size() > 0) {
-            acks = new ArrayList<OnmsAcknowledgment>();
+            acks = new ArrayList<>();
             
             Iterator<Message> it = msgs.iterator();
             while (it.hasNext()) {
@@ -277,7 +278,11 @@ class MailAckProcessor implements AckProcessor {
         
         ReadmailConfig readMailConfig = determineMailReaderConfig();
         
-        LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readMailConfig.getReadmailHost().getHost(), readMailConfig.getReadmailHost().getPort(), readMailConfig.getReadmailHost().getReadmailProtocol().getSslEnable(), readMailConfig.getReadmailHost().getReadmailProtocol().getTransport(), readMailConfig.getUserAuth().getUserName(), readMailConfig.getUserAuth().getPassword());
+        if (readMailConfig.getReadmailHost() != null) {
+            final ReadmailHost readmailHost = readMailConfig.getReadmailHost();
+            final UserAuth userAuth = readMailConfig.getUserAuth();
+            LOG.debug("retrieveAckMessages: creating JavaReadMailer with config: host: {} port: {} ssl: {} transport: {} user: {} password: {}", readmailHost.getHost(), readmailHost.getPort(), readmailHost.getReadmailProtocol().isSslEnable(), readmailHost.getReadmailProtocol().getTransport(), userAuth == null? null : userAuth.getUserName(), userAuth == null? null : userAuth.getPassword());
+        }
         
         //TODO: make flag for folder open mode
         //TODO: Make sure configuration supports flag for deleting acknowledgments
@@ -326,7 +331,7 @@ class MailAckProcessor implements AckProcessor {
 
     @SuppressWarnings("unchecked")
     private static String createLog(final Message msg) {
-        StringBuilder bldr = new StringBuilder();
+        final StringBuilder bldr = new StringBuilder();
         Enumeration<Header> allHeaders;
         try {
             allHeaders = msg.getAllHeaders();

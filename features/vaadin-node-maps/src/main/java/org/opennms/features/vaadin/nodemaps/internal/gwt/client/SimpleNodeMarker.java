@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.features.geocoder.Coordinates;
 public class SimpleNodeMarker implements NodeMarker {
 
     private Integer m_nodeId;
@@ -49,7 +48,7 @@ public class SimpleNodeMarker implements NodeMarker {
     private Integer m_unackedCount;
     private String m_maintContract;
     private Coordinates m_coordinates;
-    private List<String> m_categoryList = new ArrayList<String>();
+    private List<String> m_categoryList = new ArrayList<>();
 
     public final Map<String,String> getProperties() {
         final Map<String,String> props = new HashMap<String,String>();

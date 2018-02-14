@@ -33,22 +33,11 @@
 	contentType="text/html"
 	session="true"
 	isErrorPage="true"
-	import="org.opennms.web.outage.*"
+	import="org.opennms.web.outage.*, org.opennms.web.utils.ExceptionUtils"
 %>
 
 <%
-     OutageIdNotFoundException einfe = null;
-    
-    if( exception instanceof OutageIdNotFoundException ) {
-        einfe = (OutageIdNotFoundException)exception;
-    }
-    else if( exception instanceof ServletException ) {
-        einfe = (OutageIdNotFoundException)((ServletException)exception).getRootCause();
-    }
-    else {
-        einfe = new OutageIdNotFoundException("a", "b");
-        // throw new ServletException( "This error page does not handle this exception type.", exception );
-    }
+     OutageIdNotFoundException einfe = ExceptionUtils.getRootCause(exception, OutageIdNotFoundException.class);
 %>
 
 

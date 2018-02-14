@@ -36,16 +36,13 @@ import java.util.Set;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.opennms.netmgt.provision.AsyncServiceDetector;
 import org.opennms.netmgt.provision.IpInterfacePolicy;
 import org.opennms.netmgt.provision.NodePolicy;
 import org.opennms.netmgt.provision.OnmsPolicy;
-import org.opennms.netmgt.provision.ServiceDetector;
 import org.opennms.netmgt.provision.SnmpInterfacePolicy;
-import org.opennms.netmgt.provision.SyncServiceDetector;
 import org.opennms.netmgt.provision.persist.foreignsource.PluginConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyAccessorFactory;
@@ -62,14 +59,7 @@ import org.springframework.context.ApplicationContext;
  */
 public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPluginRegistry.class);
-    
-    
-    @Autowired(required=false)
-    Set<SyncServiceDetector> m_syncDetectors;
-    
-    @Autowired(required=false)
-    Set<AsyncServiceDetector> m_asyncDetectors;
-    
+
     @Autowired(required=false)
     Set<NodePolicy> m_nodePolicies;
     
@@ -78,18 +68,16 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     @Autowired(required=false)
     Set<SnmpInterfacePolicy> m_snmpInterfacePolicies;
-    
+
     @Autowired
     ServiceRegistry m_serviceRegistry;
-    
+
     @Autowired
     private ApplicationContext m_applicationContext;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
-        addAllExtensions(m_asyncDetectors, AsyncServiceDetector.class, ServiceDetector.class);
-        addAllExtensions(m_syncDetectors, SyncServiceDetector.class, ServiceDetector.class);
         addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
@@ -138,7 +126,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         
         Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
 
-        
+
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);
         try {
             wrapper.setPropertyValues(parameters);
@@ -156,9 +144,12 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     private <T> T beanWithNameOfType(String beanName, Class<T> pluginClass) {
         Map<String, T> beans = beansOfType(pluginClass);
         T bean = beans.get(beanName);
-        if (bean != null) debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+        if (bean != null) {
+            debug("Found bean {} with name {} of type {}", bean, beanName, pluginClass);
+        } else {
+            debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
+        }
         return bean;
     }
-    
     
 }

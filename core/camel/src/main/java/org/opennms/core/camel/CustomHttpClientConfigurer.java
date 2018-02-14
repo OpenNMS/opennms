@@ -38,6 +38,7 @@ import org.apache.camel.component.http.HttpClientConfigurer;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
+import org.opennms.core.utils.AnyServerX509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ public class CustomHttpClientConfigurer implements HttpClientConfigurer {
     public void configureHttpClient(final HttpClient client) {
         try {
             final SSLContext ctx = SSLContext.getInstance("SSL");
-            ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new DefaultTrustManager() }, new SecureRandom());
+            ctx.init(EMPTY_KEYMANAGER_ARRAY, new TrustManager[] { new AnyServerX509TrustManager() }, new SecureRandom());
             SSLContext.setDefault(ctx);
 
             final UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(getUsername(), getPassword());

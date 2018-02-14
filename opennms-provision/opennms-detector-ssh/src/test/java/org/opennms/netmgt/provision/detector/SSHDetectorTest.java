@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,23 +41,23 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.detector.ssh.SshDetector;
-import org.springframework.beans.BeansException;
+import org.opennms.netmgt.provision.detector.ssh.SshDetectorFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/detectors.xml"})
 @Ignore
-public class SSHDetectorTest implements ApplicationContextAware, InitializingBean {
+public class SSHDetectorTest implements InitializingBean {
     //Tested on a local server with SSH
-    private static final String TEST_HOST = "192.168.1.103";
+    private static final String TEST_HOST = "127.0.0.1";
 
     @Autowired
-    public SshDetector m_detector;
+    public SshDetectorFactory m_detectorFactory;
+
+    SshDetector m_detector;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -67,7 +67,7 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_detector = new SshDetector();
+        m_detector = m_detectorFactory.createDetector();
         m_detector.setTimeout(1);
     }
 
@@ -89,11 +89,5 @@ public class SSHDetectorTest implements ApplicationContextAware, InitializingBea
         m_detector.setBanner("Hello there crazy");
         m_detector.init();
         assertFalse(m_detector.isServiceDetected(InetAddressUtils.addr(TEST_HOST)));
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        // TODO Auto-generated method stub
-
     }
 }

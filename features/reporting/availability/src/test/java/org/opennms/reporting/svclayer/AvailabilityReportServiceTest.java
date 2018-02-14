@@ -47,7 +47,7 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
     DependencyInjectionTestExecutionListener.class
 })
 @ContextConfiguration(locations={
-        "classpath:org/opennms/reporting/availability/svclayer/AvailabilityReportServiceTest.xml"
+        "classpath:/org/opennms/reporting/availability/svclayer/AvailabilityReportServiceTest.xml"
 })
 public class AvailabilityReportServiceTest implements InitializingBean {
     

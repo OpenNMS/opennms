@@ -117,7 +117,7 @@ function toggleReqNodes() {
           <label for="toAdd">Available nodes</label>
           <select id="toAdd" class="form-control" name="toAdd" size="20" multiple>
             <optgroup id="toAddAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
-            <optgroup id="toAddReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
+            <optgroup id="toAddReqGroup" disabled="disabled" label="Requisitioned Nodes"></optgroup>
           </select>
         </div> <!-- column -->
 
@@ -129,10 +129,10 @@ function toggleReqNodes() {
         </div>
 
         <div class="col-md-5">
-          <label for"toDelete">Nodes on category</label>
+          <label for="toDelete">Nodes on category</label>
           <select id="toDelete" class="form-control" name="toDelete" size="20" multiple>
             <optgroup id="toDeleteAutoGroup" label="Auto-Provisioned Nodes"></optgroup>
-            <optgroup id="toDeleteReqGroup" disabled="true" label="Requisitioned Nodes"></optgroup>
+            <optgroup id="toDeleteReqGroup" disabled="disabled" label="Requisitioned Nodes"></optgroup>
           </select>
         </div>
       </div>

@@ -34,7 +34,7 @@ import java.util.TreeSet;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.features.vaadin.config.EditorToolbar;
-import org.opennms.netmgt.config.DataCollectionConfigDao;
+import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.datacollection.DatacollectionGroup;
 import org.opennms.netmgt.config.datacollection.Group;
 import org.opennms.netmgt.config.datacollection.MibObj;
@@ -217,7 +217,7 @@ public class ResourceTypePanel extends Panel {
      * @return the parent groups.
      */
     private Set<String> getParentGroups(final DataCollectionConfigDao dataCollectionConfigDao, String resourceTypeName) {
-        Set<String> groupMap = new TreeSet<String>();
+        Set<String> groupMap = new TreeSet<>();
         for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
             for (final Group group : collection.getGroups().getGroups()) {
                 for (final MibObj mibObj : group.getMibObjs()) {

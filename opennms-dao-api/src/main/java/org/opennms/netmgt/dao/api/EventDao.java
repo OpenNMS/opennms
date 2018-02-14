@@ -28,10 +28,11 @@
 
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.OnmsEvent;
-
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import org.opennms.netmgt.model.OnmsEvent;
 
 public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
 
@@ -47,5 +48,7 @@ public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
      *         AFTER date and the uei of each event matches one uei entry of the ueiList.
      */
     List<OnmsEvent> getEventsAfterDate(List<String> ueiList, Date date);
+
+    List<OnmsEvent> getEventsForEventParameters(final Map<String, String> eventParameters);
 
 }

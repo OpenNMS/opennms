@@ -50,7 +50,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
     private static final String FOREIGN_SOURCE_PROPERTY = "foreignSource";
 
     private final NCSComponentRepository m_dao;
-    private final Set<NCSServiceItem> m_rootItems = new HashSet<NCSServiceItem>();
+    private final Set<NCSServiceItem> m_rootItems = new HashSet<>();
 
     public NCSServiceContainer(NCSComponentRepository dao) {
         super(NCSServiceItem.class);
@@ -65,7 +65,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
 
 
     private void createRootItems(List<NCSComponent> components) {
-        Set<String> foreignSources = new HashSet<String>();
+        Set<String> foreignSources = new HashSet<>();
         for(NCSComponent component : components) {
             if(!foreignSources.contains(component.getForeignSource())) {
                 foreignSources.add(component.getForeignSource());
@@ -76,7 +76,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
 
 
     private Collection<? extends NCSServiceItem> createListFromComponents(List<NCSComponent> ncsComponents) {
-        Collection<NCSServiceItem> list = new ArrayList<NCSServiceItem>();
+        Collection<NCSServiceItem> list = new ArrayList<>();
         for(NCSComponent ncsComponent : ncsComponents) {
             list.add(new NCSServiceItem(ncsComponent));
         }
@@ -97,7 +97,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
         BeanItem<NCSServiceItem> component = getItem(itemId);
         String foreignSource = (String) component.getItemProperty( FOREIGN_SOURCE_PROPERTY ).getValue();
         LOG.trace("entering method getChildren");
-        List<Long> retval = new ArrayList<Long>();
+        List<Long> retval = new ArrayList<>();
         for (Long id : getAllItemIds()) {
             // Per talks with Paulo, only descend to the level of ServiceElement.
             // ServiceElementComponents have no representation on the current map
@@ -132,7 +132,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
 
     @Override
     public Collection<Long> rootItemIds() {
-        List<Long> retval = new ArrayList<Long>();
+        List<Long> retval = new ArrayList<>();
         // Return all components of type "Service"
         for (NCSServiceItem item : m_rootItems) {
             retval.add(item.getId());
@@ -154,7 +154,7 @@ public class NCSServiceContainer extends HierarchicalBeanContainer<Long, NCSServ
         //		Long id = (Long)itemId;
         //		Long parentId = (Long)newParentId;
         //		NCSComponent component = m_dao.load(id);
-        //		Set<NCSComponent> parent = new HashSet<NCSComponent>();
+        //		Set<NCSComponent> parent = new HashSet<>();
         //		parent.add(m_dao.load(parentId));
         //		component.setParentComponents(parent);
         return true;

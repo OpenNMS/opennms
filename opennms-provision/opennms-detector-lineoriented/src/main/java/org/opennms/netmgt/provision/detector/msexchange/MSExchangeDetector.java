@@ -34,17 +34,15 @@ import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
+
 /**
  * <p>MSExchangeDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExchangeResponse> {
     
     private static String SERVICE_NAME = "MSExchange";
@@ -59,7 +57,7 @@ public class MSExchangeDetector extends BasicDetector<LineOrientedRequest, MSExc
     /**
      * <p>Constructor for MSExchangeDetector.</p>
      */
-    protected MSExchangeDetector() {
+    public MSExchangeDetector() {
         super(SERVICE_NAME, 0);
         setPop3Port(DEFAULT_POP3_PORT);
         setImapPort(DEFAULT_IMAP_PORT);

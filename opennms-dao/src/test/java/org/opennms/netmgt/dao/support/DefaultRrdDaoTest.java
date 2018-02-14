@@ -39,12 +39,11 @@ import junit.framework.TestCase;
 import org.opennms.netmgt.mock.MockResourceType;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.rrd.DefaultRrdGraphDetails;
 import org.opennms.netmgt.rrd.RrdException;
 import org.opennms.netmgt.rrd.RrdStrategy;
-import org.opennms.netmgt.rrd.RrdUtils;
-import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.dao.DataAccessResourceFailureException;
@@ -62,16 +61,14 @@ public class DefaultRrdDaoTest extends TestCase {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-        
-        RrdUtils.setStrategy(new JRobinRrdStrategy());
-        
+
         m_dao = new DefaultRrdDao();
         m_dao.setRrdStrategy(m_rrdStrategy);
         m_dao.setRrdBaseDirectory(new File(System.getProperty("java.io.tmpdir")));
         m_dao.setRrdBinaryPath("/bin/true");
         m_dao.afterPropertiesSet();
     }
-    
+
     public void testInit() {
         // Don't do anything... test that the setUp method works
     }
@@ -166,19 +163,19 @@ public class DefaultRrdDaoTest extends TestCase {
                 "-",
                 "--start=" + (start / 1000),
                 "--end=" + (end / 1000),
-                "DEF:ds=" + escapedFile + ":ifInOctets:AVERAGE",
-                "PRINT:ds:AVERAGE:\"%le\""
+                "DEF:ds1=\"" + escapedFile + "\":ifInOctets:AVERAGE",
+                "PRINT:ds1:AVERAGE:\"%le\""
         };
         String commandString = StringUtils.arrayToDelimitedString(command, " ");
 
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
         MockResourceType childResourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet, new ResourcePath("foo"));
         childResource.setParent(topResource);
         
         DefaultRrdGraphDetails details = new DefaultRrdGraphDetails();
@@ -192,14 +189,14 @@ public class DefaultRrdDaoTest extends TestCase {
         String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
         MockResourceType childResourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet, new ResourcePath("foo"));
         childResource.setParent(topResource);
         
         int interval = 300000;
@@ -220,14 +217,14 @@ public class DefaultRrdDaoTest extends TestCase {
         String rrdDir = "snmp" + File.separator + "1" + File.separator + "eth0";
         String rrdFile = "ifInOctets.jrb";
 
-        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0));
+        OnmsResource topResource = new OnmsResource("1", "Node One", new MockResourceType(), new HashSet<OnmsAttribute>(0), new ResourcePath("foo"));
 
         OnmsAttribute attribute = new RrdGraphAttribute("ifInOctets", rrdDir, rrdFile);
         HashSet<OnmsAttribute> attributeSet = new HashSet<OnmsAttribute>(1);
         attributeSet.add(attribute);
         
         MockResourceType childResourceType = new MockResourceType();
-        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet);
+        OnmsResource childResource = new OnmsResource("eth0", "Interface One: eth0", childResourceType, attributeSet, new ResourcePath("foo"));
         childResource.setParent(topResource);
         
         int interval = 300000;

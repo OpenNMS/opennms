@@ -38,6 +38,22 @@ import java.net.InetAddress;
  */
 public abstract class IPLike {
 
+    private enum AddressType {
+        IPv4,
+        IPv6,
+    }
+
+    private static class IPv6Address {
+        public final String[] fields;
+        public final String scope;
+
+        private IPv6Address(final String[] fields,
+                            final String scope) {
+            this.fields = fields;
+            this.scope = scope;
+        }
+    }
+
     private interface RangeMatcher {
         boolean match(final String value, final String range);
     }
@@ -59,7 +75,38 @@ public abstract class IPLike {
     public static boolean matches(final InetAddress address, final String pattern) {
     	return matches(InetAddressUtils.str(address), pattern);
     }
-    
+
+    private static AddressType classifyAddress(final String address) {
+        if (address.indexOf(':') != -1) {
+            return AddressType.IPv6;
+        }
+
+        if (address.indexOf('.') != -1) {
+            return AddressType.IPv4;
+        }
+
+        return null;
+    }
+
+    private static String[] parseIPv4Address(final String address) {
+        // Split address in fields
+        return address.split("\\.", 0);
+    }
+
+    private static IPv6Address parseIPv6Address(final String address) {
+        // Split of scope identifier
+        final String[] addressAndScope = address.split("%", 2);
+
+        // Split address in fields
+        final String[] fields = addressAndScope[0].split("\\:", 0);
+
+        final String scope = addressAndScope.length == 2
+                             ? addressAndScope[1]
+                             : null;
+
+        return new IPv6Address(fields, scope);
+    }
+
     /**
      * <p>matches</p>
      *
@@ -68,56 +115,67 @@ public abstract class IPLike {
      * @return a boolean.
      */
     public static boolean matches(String address, String pattern) {
-        String[] hostOctets = null;
-        String[] matchOctets = null;
-        RangeMatcher matcher = null;
-        int numberOfOctets = 4;
+        final AddressType addressType = classifyAddress(address);
+        final AddressType patternType = classifyAddress(pattern);
 
-        if (address.indexOf(':') >= 0) {
-            // First try and match the scope identifier
-            final String[] patternAndScope = pattern.split("%");
-            pattern = patternAndScope[0];
-            final String[] addressAndScope = address.split("%");
-            address = addressAndScope[0];
-            if (patternAndScope.length < 2) {
-                // Do nothing; there was no pattern specified for the scope identifier
-            } else if (patternAndScope.length == 2) {
-                if (addressAndScope.length < 2) {
-                    return false;
-                } else if (addressAndScope.length == 2) {
-                    // Assume that scope identifiers are always decimal
-                    if (!matchNumericListOrRange(addressAndScope[1], patternAndScope[1], new DecimalRangeMatcher())) {
-                        return false;
-                    }
-                } else {
-                    throw new IllegalArgumentException("Illegal scope identifier in address: " + address);
-                }
-            } else {
-                throw new IllegalArgumentException("Illegal scope identifier filter: " + pattern);
-            }
-
-            hostOctets = address.split("\\:", 0);
-            matchOctets = pattern.split("\\:", 0);
-            numberOfOctets = 8;
-            matcher = new HexRangeMatcher();
-        } else {
-            hostOctets = address.split("\\.", 0);
-            matchOctets = pattern.split("\\.", 0);
-            numberOfOctets = 4;
-            matcher = new DecimalRangeMatcher();
+        if (addressType != patternType) {
+            // Different address types will never match
+            return false;
         }
 
-        if (hostOctets.length != numberOfOctets) {
+        final String[] addressFields;
+        final String[] patternFields;
+        final int expectedFieldCount;
+        final RangeMatcher matcher;
+        switch (addressType) {
+            case IPv4: {
+                addressFields = parseIPv4Address(address);
+                patternFields = parseIPv4Address(pattern);
+                expectedFieldCount = 4;
+                matcher = new DecimalRangeMatcher();
+                break;
+            }
+
+            case IPv6: {
+                final IPv6Address parsedAddress = parseIPv6Address(address);
+                final IPv6Address parsedPattern = parseIPv6Address(pattern);
+
+                if (parsedPattern.scope != null) {
+                    if (parsedAddress.scope == null) {
+                        // Fail if scope is expected but does not exists
+                        return false;
+                    } else {
+                        // Assume that scope identifiers are always decimal
+                        if (!matchNumericListOrRange(parsedAddress.scope, parsedPattern.scope, new DecimalRangeMatcher())) {
+                            return false;
+                        }
+                    }
+                }
+
+                addressFields = parsedAddress.fields;
+                patternFields = parsedPattern.fields;
+                expectedFieldCount = 8;
+                matcher = new HexRangeMatcher();
+                break;
+            }
+
+            default: throw new IllegalStateException();
+        }
+
+        if (addressFields.length != expectedFieldCount) {
             throw new IllegalArgumentException("Malformatted IP address: " + address);
-        } else if (matchOctets.length != numberOfOctets) {
+        }
+
+        if (patternFields.length != expectedFieldCount) {
             throw new IllegalArgumentException("Malformatted IPLIKE match expression: " + pattern);
         }
 
-        for (int i = 0; i < numberOfOctets; i++) {
-            if (!matchNumericListOrRange(hostOctets[i], matchOctets[i], matcher)) {
+        for (int i = 0; i < expectedFieldCount; i++) {
+            if (!matchNumericListOrRange(addressFields[i], patternFields[i], matcher)) {
                 return false;
             }
         }
+
         return true;
     }
 

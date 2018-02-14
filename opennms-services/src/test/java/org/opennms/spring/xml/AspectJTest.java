@@ -35,8 +35,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -81,7 +81,7 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        m_handler.handleAnEvent(createEvent(EventConstants.ADD_INTERFACE_EVENT_UEI));
+        m_handler.handleAnEvent(createEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI));
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -96,7 +96,7 @@ public class AspectJTest implements InitializingBean {
         assertEquals(0, m_interceptor.getPreEventCount());
         assertEquals(0, m_interceptor.getPostEventCount());
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -114,7 +114,7 @@ public class AspectJTest implements InitializingBean {
         
         m_handler.setThrownException(new RuntimeException("test exception"));
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());
@@ -133,7 +133,7 @@ public class AspectJTest implements InitializingBean {
         
         m_handler.setThrownException(new Exception("test exception"));
         
-        sendEvent(EventConstants.ADD_INTERFACE_EVENT_UEI);
+        sendEvent(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
         
         assertEquals(1, m_handler.getHandlerCallCount());
         assertEquals(1, m_interceptor.getPreEventCount());

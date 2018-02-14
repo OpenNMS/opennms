@@ -38,17 +38,13 @@ import org.opennms.netmgt.provision.support.ResponseValidator;
 import org.opennms.netmgt.provision.support.ntp.NtpMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>NtpDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
 public class NtpDetector extends BasicDetector<NtpMessage, DatagramPacket> {
     
     private static final Logger LOG = LoggerFactory.getLogger(NtpDetector.class);

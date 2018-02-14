@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Row {
 
     /** The values. */
-    private List<Double> values = new ArrayList<Double>();
+    private List<Double> values = new ArrayList<>();
 
     /**
      * Gets the values.
@@ -57,6 +57,16 @@ public class Row {
     @XmlElement(name="v")
     public List<Double> getValues() {
         return values;
+    }
+
+    /**
+     * Gets the value.
+     *
+     * @param index the index
+     * @return the value
+     */
+    public Double getValue(int index) {
+        return values.get(index);
     }
 
     /**

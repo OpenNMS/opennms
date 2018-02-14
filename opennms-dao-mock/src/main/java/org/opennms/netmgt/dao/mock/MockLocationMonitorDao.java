@@ -31,46 +31,43 @@ package org.opennms.netmgt.dao.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.UUID;
 
 import org.opennms.netmgt.dao.api.LocationMonitorDao;
 import org.opennms.netmgt.model.LocationMonitorIpInterface;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsLocationMonitor.MonitorStatus;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.OnmsLocationSpecificStatus;
 import org.opennms.netmgt.model.OnmsMonitoredService;
-import org.opennms.netmgt.model.OnmsMonitoringLocationDefinition;
 import org.springframework.util.Assert;
 
-public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, Integer> implements LocationMonitorDao {
-    private AtomicInteger m_id = new AtomicInteger(0);
-    private Map<String,OnmsMonitoringLocationDefinition> m_locationDefinitions = new HashMap<String,OnmsMonitoringLocationDefinition>();
-    private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<OnmsLocationSpecificStatus>();
+public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor, String> implements LocationMonitorDao {
+
+    private Set<OnmsLocationSpecificStatus> m_statuses = new LinkedHashSet<>();
 
     @Override
     protected void generateId(final OnmsLocationMonitor mon) {
-        mon.setId(m_id.incrementAndGet());
+        mon.setId(UUID.randomUUID().toString());
     }
 
     @Override
-    protected Integer getId(final OnmsLocationMonitor loc) {
+    protected String getId(final OnmsLocationMonitor loc) {
         return loc.getId();
     }
 
     @Override
-    public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocationDefinition locationDefinition) {
-        final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+    public Collection<OnmsLocationMonitor> findByLocationDefinition(final OnmsMonitoringLocation locationDefinition) {
+        final Set<OnmsLocationMonitor> monitors = new HashSet<>();
         for (final OnmsLocationMonitor mon : findAll()) {
-            if (mon.getDefinitionName().equals(locationDefinition.getName())) {
+            if (mon.getLocation().equals(locationDefinition.getLocationName())) {
                 monitors.add(mon);
             }
         }
@@ -90,38 +87,13 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
                 ")", application);
 
          */
-        final Set<OnmsLocationMonitor> monitors = new HashSet<OnmsLocationMonitor>();
+        final Set<OnmsLocationMonitor> monitors = new HashSet<>();
         for (final OnmsLocationSpecificStatus stat : getAllMostRecentStatusChanges()) {
             if (stat.getMonitoredService().getApplications().contains(application)) {
                 monitors.add(stat.getLocationMonitor());
             }
         }
         return monitors;
-    }
-
-    @Override
-    public List<OnmsMonitoringLocationDefinition> findAllMonitoringLocationDefinitions() {
-        return new ArrayList<OnmsMonitoringLocationDefinition>(m_locationDefinitions.values());
-    }
-
-    @Override
-    public OnmsMonitoringLocationDefinition findMonitoringLocationDefinition(final String monitoringLocationDefinitionName) {
-        if (m_locationDefinitions.containsKey(monitoringLocationDefinitionName)) {
-            return m_locationDefinitions.get(monitoringLocationDefinitionName);
-        }
-        return null;
-    }
-
-    @Override
-    public void saveMonitoringLocationDefinition(final OnmsMonitoringLocationDefinition def) {
-        m_locationDefinitions.put(def.getName(), def);
-    }
-
-    @Override
-    public void saveMonitoringLocationDefinitions(final Collection<OnmsMonitoringLocationDefinition> defs) {
-        for (final OnmsMonitoringLocationDefinition def : defs) {
-           saveMonitoringLocationDefinition(def);
-        }
     }
 
     @Override
@@ -166,7 +138,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
             return result;
         }
 
-        private Integer getLocationMonitorId() {
+        private String getLocationMonitorId() {
             return m_status.getLocationMonitor().getId();
         }
 
@@ -202,12 +174,12 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
     }
 
     private Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesInCollection(final Collection<OnmsLocationSpecificStatus> sourceStatuses) {
-        final Set<StatusState> states = new LinkedHashSet<StatusState>();
+        final Set<StatusState> states = new LinkedHashSet<>();
         for (final OnmsLocationSpecificStatus status : sourceStatuses) {
             final StatusState state = new StatusState(status);
             states.add(state);
         }
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final StatusState state : states) {
             statuses.add(state.getStatus());
         }
@@ -221,7 +193,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetween(final Date startDate, final Date endDate) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : m_statuses) {
             final Date timestamp = status.getPollResult().getTimestamp();
             if (timestamp.getTime() == startDate.getTime() || timestamp.after(startDate)) {
@@ -233,7 +205,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForLocationBetween(final Date startDate, final Date endDate, final String locationDefinitionName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             if (locationDefinitionName.equals(status.getLocationMonitor().getName())) {
                 statuses.add(status);
@@ -244,7 +216,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesForApplicationBetween(final Date startDate, final Date endDate, final String applicationName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             for (final OnmsApplication app : status.getMonitoredService().getApplications()) {
                 if (applicationName.equals(app.getName())) {
@@ -258,7 +230,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getStatusChangesBetweenForApplications(final Date startDate, final Date endDate, final Collection<String> applicationNames) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getStatusChangesBetween(startDate, endDate)) {
             boolean added = false;
             for (final OnmsApplication app : status.getMonitoredService().getApplications()) {
@@ -277,7 +249,7 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<OnmsLocationSpecificStatus> getMostRecentStatusChangesForLocation(final String locationName) {
-        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<OnmsLocationSpecificStatus>();
+        final List<OnmsLocationSpecificStatus> statuses = new ArrayList<>();
         for (final OnmsLocationSpecificStatus status : getAllMostRecentStatusChanges()) {
             if (locationName.equals(status.getLocationMonitor().getName())) {
                 statuses.add(status);
@@ -288,9 +260,11 @@ public class MockLocationMonitorDao extends AbstractMockDao<OnmsLocationMonitor,
 
     @Override
     public Collection<LocationMonitorIpInterface> findStatusChangesForNodeForUniqueMonitorAndInterface(final int nodeId) {
-        final Set<LocationMonitorIpInterface> ifaces = new HashSet<LocationMonitorIpInterface>();
+        final Set<LocationMonitorIpInterface> ifaces = new HashSet<>();
         for (final OnmsLocationSpecificStatus status : m_statuses) {
-            ifaces.add(new LocationMonitorIpInterface(status.getLocationMonitor(), status.getMonitoredService().getIpInterface()));
+            if (status.getMonitoredService().getNodeId() == nodeId) {
+                ifaces.add(new LocationMonitorIpInterface(status.getLocationMonitor(), status.getMonitoredService().getIpInterface()));
+            }
         }
         return ifaces;
     }

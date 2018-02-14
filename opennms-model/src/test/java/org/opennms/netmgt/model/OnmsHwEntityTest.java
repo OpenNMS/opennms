@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.model;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 import org.junit.Test;
 import org.opennms.core.xml.JaxbUtils;

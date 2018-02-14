@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,12 +27,12 @@
  *******************************************************************************/
 
 @XmlSchema(
-    namespace="http://xmlns.opennms.org/xsd/mail-transport-test",
-    elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/mail-transport-test")
-    }
-)
+           namespace="http://xmlns.opennms.org/xsd/mail-transport-test",
+           elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+           xmlns={
+                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/mail-transport-test")
+           }
+        )
 package org.opennms.netmgt.config.mailtransporttest;
 import javax.xml.bind.annotation.XmlNs;
 import javax.xml.bind.annotation.XmlSchema;

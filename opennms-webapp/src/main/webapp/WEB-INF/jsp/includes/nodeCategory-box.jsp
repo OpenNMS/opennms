@@ -30,34 +30,34 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
+        contentType="text/html"
+        session="true"
 %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <div id="category-box" class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
-  	  Surveillance Category Memberships
-  	  <c:if test="${isAdmin == 'true'}">
-  	     (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
-      </c:if>
-    </h3>
-  </div>
-  <table class="table table-condensed">
-  <c:if test="${empty categories}">
-    <tr>
-      <td>This node is not a member of any categories.</td>
-    </tr>
-  </c:if>
-  
+    <div class="panel-heading">
+        <h3 class="panel-title">
+            Surveillance Category Memberships
+            <c:if test="${isAdmin == 'true'}">
+                (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
+            </c:if>
+        </h3>
+    </div>
+    <div style="max-height: 15em; overflow-x: auto">
+        <table class="table table-condensed" style="margin-bottom: 0px">
+            <c:if test="${empty categories}">
+                <tr>
+                    <td>This node is not a member of any categories.</td>
+                </tr>
+            </c:if>
 
-  <c:forEach items="${categories}" var="category">
-    <tr>
-      <td>${category.name}</td>
-    </tr>
-  </c:forEach>
-</table>   
 
+            <c:forEach items="${categories}" var="category">
+                <tr>
+                    <td>${category.name}</td>
+                </tr>
+            </c:forEach>
+        </table>
+    </div>
 </div>

@@ -34,10 +34,10 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.fiber.PausableFiber;
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ final class Executor implements Runnable, PausableFiber {
     /**
      * The input queue of runnable commands.
      */
-    private FifoQueue<String> m_execQ;
+    private BlockingQueue<String> m_execQ;
 
     /**
      * The list of outstanding commands.
@@ -284,7 +284,7 @@ final class Executor implements Runnable, PausableFiber {
 
         // get the processing elements.
         //
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
         List<String> args = new ArrayList<String>(5);
         char[] chars = cmd.toCharArray();
 
@@ -327,7 +327,6 @@ final class Executor implements Runnable, PausableFiber {
         if (buf.length() > 0) {
             args.add(buf.toString());
         }
-        buf = null;
 
         // Convert to string array
         //
@@ -346,7 +345,7 @@ final class Executor implements Runnable, PausableFiber {
      *            The maximum runtime of a process.
      * 
      */
-    Executor(FifoQueue<String> execQ, long maxRunTime, int maxProcesses) {
+    Executor(BlockingQueue<String> execQ, long maxRunTime, int maxProcesses) {
         m_processes = Collections.synchronizedList(new LinkedList<DatedProc>());
         m_execQ = execQ;
         m_maxWait = maxRunTime;
@@ -422,15 +421,12 @@ final class Executor implements Runnable, PausableFiber {
             //
             String cmd = null;
             try {
-                cmd = m_execQ.remove(1000);
+                cmd = m_execQ.poll(1000, TimeUnit.MILLISECONDS);
                 if (cmd == null) // status check time
                 {
                     continue; // goto top of loop
                 }
             } catch (InterruptedException ex) {
-                break;
-            } catch (FifoQueueException ex) {
-                LOG.warn("The input execution queue has errors, exiting...", ex);
                 break;
             }
 

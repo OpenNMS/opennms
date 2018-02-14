@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:ns2="http://www.w3.org/1999/xlink">
+    <key id="label" for="graphml" attr.name="label" attr.type="string"/>
+    <key id="breadcrumb-strategy" for="graphml" attr.name="breadcrumb-strategy" attr.type="string"/>
+    <key id="preferred-layout" for="graph" attr.name="preferred-layout" attr.type="string"/>
+    <key id="focus-strategy" for="graph" attr.name="focus-strategy" attr.type="string"/>
+    <key id="namespace" for="graph" attr.name="namespace" attr.type="string"/>
+    <key id="description" for="graph" attr.name="description" attr.type="string"/>
+    <key id="vertex-status-provider" for="graph" attr.name="vertex-status-provider" attr.type="boolean"/>
+    <key id="semantic-zoom-level" for="graph" attr.name="semantic-zoom-level" attr.type="int"/>
+    <key id="label" for="node" attr.name="label" attr.type="string"/>
+    <key id="nodeID" for="node" attr.name="nodeID" attr.type="int"/>
+    <data key="label">Asset Topology Provider</data>
+    <data key="breadcrumb-strategy">SHORTEST_PATH_TO_ROOT</data>
+    <graph id="asset:asset-region">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:asset-region</data>
+        <data key="label">Region</data>
+        <data key="description">Displays all regions of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="Stuttgart">
+            <data key="label">Stuttgart</data>
+        </node>
+        <edge id="Stuttgart_Stuttgart.S1" source="Stuttgart" target="Stuttgart.S1"/>
+        <edge id="Stuttgart_Stuttgart.S2" source="Stuttgart" target="Stuttgart.S2"/>
+    </graph>
+    <graph id="asset:asset-building">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:asset-building</data>
+        <data key="label">Building</data>
+        <data key="description">Displays all buildings of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="Stuttgart.S1">
+            <data key="label">S1</data>
+        </node>
+        <node id="Stuttgart.S2">
+            <data key="label">S2</data>
+        </node>
+        <edge id="Stuttgart.S1_Stuttgart.S1.Server" source="Stuttgart.S1" target="Stuttgart.S1.Server"/>
+        <edge id="Stuttgart.S2_Stuttgart.S2.Server" source="Stuttgart.S2" target="Stuttgart.S2.Server"/>
+        <edge id="Stuttgart.S2_Stuttgart.S2.Server,Router" source="Stuttgart.S2" target="Stuttgart.S2.Server,Router"/>
+    </graph>
+    <graph id="asset:node-categories">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:node-categories</data>
+        <data key="label">Node Categories</data>
+        <data key="description">Displays all node categories of the topology</data>
+        <data key="vertex-status-provider">false</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="Stuttgart.S1.Server">
+            <data key="label">Server</data>
+        </node>
+        <node id="Stuttgart.S2.Server">
+            <data key="label">Server</data>
+        </node>
+        <node id="Stuttgart.S2.Server,Router">
+            <data key="label">Server,Router</data>
+        </node>
+        <edge id="Stuttgart.S1.Server_nodes:1:Node 1" source="Stuttgart.S1.Server" target="nodes:1:Node 1"/>
+        <edge id="Stuttgart.S2.Server_nodes:2:Node 2" source="Stuttgart.S2.Server" target="nodes:2:Node 2"/>
+        <edge id="Stuttgart.S2.Server,Router_nodes:3:Node 3" source="Stuttgart.S2.Server,Router" target="nodes:3:Node 3"/>
+    </graph>
+    <graph id="asset:nodes">
+        <data key="preferred-layout">Grid Layout</data>
+        <data key="focus-strategy">ALL</data>
+        <data key="namespace">asset:nodes</data>
+        <data key="label">Nodes</data>
+        <data key="description">The nodes in the hierarchy of the topology</data>
+        <data key="vertex-status-provider">true</data>
+        <data key="semantic-zoom-level">0</data>
+        <node id="nodes:1:Node 1">
+            <data key="label">Node 1</data>
+            <data key="nodeID">1</data>
+        </node>
+        <node id="nodes:2:Node 2">
+            <data key="label">Node 2</data>
+            <data key="nodeID">2</data>
+        </node>
+        <node id="nodes:3:Node 3">
+            <data key="label">Node 3</data>
+            <data key="nodeID">3</data>
+        </node>
+    </graph>
+</graphml>

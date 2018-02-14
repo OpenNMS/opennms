@@ -47,7 +47,7 @@ public class DashletSelector implements BundleActivator {
     /**
      * A {@link List} holding the {@link ServiceListChangedListener} references
      */
-    List<ServiceListChangedListener> m_serviceListChangedListeners = new ArrayList<ServiceListChangedListener>();
+    List<ServiceListChangedListener> m_serviceListChangedListeners = new ArrayList<>();
     /**
      * A {@link Map} holding the {@link DashletFactory} instances
      */
@@ -87,7 +87,7 @@ public class DashletSelector implements BundleActivator {
      */
     public void bind(DashletFactory dashletFactory) {
         if (dashletFactory != null) {
-            LoggerFactory.getLogger(DashletSelector.class).warn("bind service " + dashletFactory.getClass().getName());
+            LoggerFactory.getLogger(DashletSelector.class).info("bind service " + dashletFactory.getClass().getName());
 
             m_serviceInterfaceMap.put(dashletFactory.getName(), dashletFactory);
             fireServiceListChangedListeners();
@@ -103,7 +103,7 @@ public class DashletSelector implements BundleActivator {
      */
     public void unbind(DashletFactory dashletFactory) {
         if (dashletFactory != null) {
-            LoggerFactory.getLogger(DashletSelector.class).warn("unbind service " + dashletFactory.getClass().getName());
+            LoggerFactory.getLogger(DashletSelector.class).info("unbind service " + dashletFactory.getClass().getName());
 
             m_serviceInterfaceMap.remove(dashletFactory.getName());
             fireServiceListChangedListeners();
@@ -134,7 +134,7 @@ public class DashletSelector implements BundleActivator {
      * This method will fire execute the {@link ServiceListChangedListener} listeners.
      */
     private void fireServiceListChangedListeners() {
-        List<DashletFactory> factoryList = new ArrayList<DashletFactory>();
+        List<DashletFactory> factoryList = new ArrayList<>();
         factoryList.addAll(m_serviceInterfaceMap.values());
 
         for (ServiceListChangedListener serviceListChangedListener : m_serviceListChangedListeners) {
@@ -148,7 +148,7 @@ public class DashletSelector implements BundleActivator {
      * @return a {@link List} of {@link DashletFactory} instances
      */
     public List<DashletFactory> getDashletFactoryList() {
-        List<DashletFactory> factoryList = new ArrayList<DashletFactory>();
+        List<DashletFactory> factoryList = new ArrayList<>();
         factoryList.addAll(m_serviceInterfaceMap.values());
         return factoryList;
     }

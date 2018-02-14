@@ -40,7 +40,7 @@ import org.junit.Test;
 import org.opennms.api.reporting.ReportMode;
 import org.opennms.api.reporting.parameter.ReportDateParm;
 import org.opennms.api.reporting.parameter.ReportParameters;
-import org.opennms.netmgt.dao.castor.DefaultOnmsReportConfigDao;
+import org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -63,7 +63,7 @@ public class DefaultParameterConversionServiceTest {
     @Test
     public void testGetDateParms() {
         assertNotNull(m_dao.getDateParms(ID));
-        assertEquals(1,m_dao.getDateParms(ID).length);
+        assertEquals(1,m_dao.getDateParms(ID).size());
     }
     
     @Test

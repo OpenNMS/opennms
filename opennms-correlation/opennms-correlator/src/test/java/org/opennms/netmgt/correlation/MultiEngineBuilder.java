@@ -31,8 +31,8 @@ package org.opennms.netmgt.correlation;
 import java.util.Arrays;
 import java.util.List;
 
+import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -67,6 +67,15 @@ public class MultiEngineBuilder implements InitializingBean {
         @Override
         public String getName() {
            return "MyEngine";
+        }
+
+        @Override
+        public void tearDown() {
+            // pass
+        }
+
+        @Override
+        public void reloadConfig() {
         }
         
     }

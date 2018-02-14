@@ -2,7 +2,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -34,15 +34,14 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@page import="java.util.HashMap"%>
-<%@page import="java.util.regex.Matcher"%>
-<%@page import="java.util.regex.Pattern"%>
-<%@page import="org.springframework.util.Assert"%>
-
-<%@page import="org.opennms.netmgt.EventConstants"%>
-<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
-<%@page import="org.opennms.web.event.Event"%>
-<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="java.util.Map"%>
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
+<%@page import="org.opennms.netmgt.events.api.EventConstants"%>
+
+<%@page import="org.opennms.web.event.AcknowledgeType"%>
+<%@page import="org.opennms.web.event.Event"%>
+<%@page import="org.opennms.web.servlet.XssRequestWrapper"%>
+<%@page import="org.springframework.util.Assert"%>
 
 <%
 	XssRequestWrapper req = new XssRequestWrapper(request);
@@ -50,7 +49,7 @@
 	Event event = null;
 	String action = null;
     String buttonName=null;
-    HashMap<String, String> parms = new HashMap<String, String>();
+    Map<String, String> parms = new HashMap<String, String>();
 	if ( events.length > 0 ) {
 		Assert.isTrue(events.length == 1, "event detail filter should match only one event: event found:" + events.length);
 
@@ -67,22 +66,8 @@
 	        action = AcknowledgeType.UNACKNOWLEDGED.getShortName();
 	    }
 
-		Pattern p = Pattern.compile("([^=]+)=(.*)\\((\\w+),(\\w+)\\)");
-	    
-	    if (event.getParms() != null) {
-			String[] parmStrings = event.getParms().split(";");
-			for (String parmString : parmStrings) {
-				Matcher m = p.matcher(parmString);
-				if (!m.matches()) {
-					log("Could not match event parameter string element '"
-						+ parmString + "' in event ID " + (event == null? "NULL" : event.getId()) );
-					continue;
-				}
-				
-				parms.put(m.group(1), m.group(2));
-			}
-	    }
-	}    
+	    parms = event.getParms();
+	}
 
 %>
 
@@ -98,7 +83,7 @@
   <jsp:param name="headTitle" value="Detail" />
   <jsp:param name="headTtitle" value="Events" />
   <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value="<%="Event " + (event == null? "Not Found" : event.getId()) %>" />
+  <jsp:param name="breadcrumb" value='<%="Event " + (event == null? "Not Found" : event.getId()) %>' />
 </jsp:include>
 
 <% if (event == null ) { %>
@@ -127,8 +112,13 @@
             <td class="col-md-3"><%=event.getAcknowledgeUser()!=null ? event.getAcknowledgeUser() : "&nbsp;"%></td>
           </c:if>
         </tr>
-
-        <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+              <th class="col-md-1">Event Source Location</th>
+              <td class="col-md-3"><%=event.getLocation()%> (<%= event.getSystemId() %>)</td>
+              <th class="col-md-1">Node Location</th>
+              <td class="col-md-3"><%= event.getNodeLocation() %></td>
+          </tr>
+          <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Time</th>
           <td class="col-md-3"><fmt:formatDate value="<%=event.getTime()%>" type="BOTH" /></td>
           <th class="col-md-1">Interface</th>
@@ -197,6 +187,16 @@
           	<% } %>
                 </td>
         </tr>
+
+          <% if (event.getAlarmId() != null && event.getAlarmId().intValue() != 0) { %>
+            <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+              <th class="col-md-1">Alarm ID</th>
+              <td colspan="5" class="col-md-11">
+                  <a href="alarm/detail.htm?id=<%=event.getAlarmId()%>"><%=event.getAlarmId()%></a>
+              </td>
+            </tr>
+          <% }%>
+
       </table>
     </div>
 

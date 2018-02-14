@@ -85,8 +85,8 @@ public class Schedule {
                 try {
                     Schedule.this.run();
                 } catch (PostponeNecessary e) {
-				   // Chose a random number of seconds between 5 and 14 to wait before trying again
-                    m_timer.schedule(random.nextInt(10)*1000+5000, this);
+                    // Chose a random number of seconds between 5 and 14 to wait before trying again
+                    m_timer.schedule(random.nextInt(10) * 1000L + 5000L, this);
                     return;
                 }
             }

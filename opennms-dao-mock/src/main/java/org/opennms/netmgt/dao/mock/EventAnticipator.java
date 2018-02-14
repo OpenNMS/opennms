@@ -33,10 +33,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
-
-import org.opennms.netmgt.model.events.EventListener;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,20 +54,20 @@ public class EventAnticipator implements EventListener {
      * This collection contains events that are expected to be received during the
      * given unit test.
      */
-    final List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
+    final List<EventWrapper> m_anticipatedEvents = new ArrayList<>();
     
     /**
      * This collection contains events that have been received during the unit test.
      * These events are removed from {@link #m_anticipatedEvents} as they are received.
      */
-    final List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
+    final List<Event> m_anticipatedEventsReceived = new ArrayList<>();
 
     /**
      * This list contains events that were received during the test duration but were not
      * in the {@link #m_anticipatedEvents} list. The {@link #m_unanticipatedEvents} list is 
      * only populated if {@link #m_discardUnanticipated} is set to <code>false</code>.
      */
-    final List<Event> m_unanticipatedEvents = new ArrayList<Event>();
+    final List<Event> m_unanticipatedEvents = new ArrayList<>();
 
     /**
      */
@@ -130,43 +130,41 @@ public class EventAnticipator implements EventListener {
         }
     }
 
-    private void saveUnanticipatedEvent(Event event) {
+    private synchronized void saveUnanticipatedEvent(Event event) {
         if (!m_discardUnanticipated) {
             m_unanticipatedEvents.add(event);
         }
     }
 
-    public synchronized Collection<Event> getAnticipatedEvents() {
-        List<Event> events = new ArrayList<Event>(m_anticipatedEvents.size());
-        for (EventWrapper w : m_anticipatedEvents) {
-            events.add(w.getEvent());
-        }
-        return events;
-    }
-    
-    public synchronized List<Event> getAnticipatedEventsRecieved() {
-        return new ArrayList<Event>(m_anticipatedEventsReceived);
+    public synchronized List<Event> getAnticipatedEvents() {
+        return Collections.unmodifiableList(
+            m_anticipatedEvents.stream().map(EventWrapper::getEvent).collect(Collectors.toList())
+        );
     }
 
-    public void reset() {
-        resetAnticipated();
-        resetUnanticipated();
-    }
-
-    public void resetUnanticipated() {
-        m_unanticipatedEvents.clear();
-    }
-
-    public void resetAnticipated() {
-        m_anticipatedEvents.clear();
-        m_anticipatedEventsReceived.clear();
+    public synchronized List<Event> getAnticipatedEventsReceived() {
+        return Collections.unmodifiableList(m_anticipatedEventsReceived);
     }
 
     /**
      * @return
      */
-    public Collection<Event> unanticipatedEvents() {
-        return Collections.synchronizedCollection(Collections.unmodifiableCollection(m_unanticipatedEvents));
+    public synchronized List<Event> getUnanticipatedEvents() {
+        return Collections.unmodifiableList(m_unanticipatedEvents);
+    }
+
+    public synchronized void reset() {
+        resetAnticipated();
+        resetUnanticipated();
+    }
+
+    public synchronized void resetUnanticipated() {
+        m_unanticipatedEvents.clear();
+    }
+
+    public synchronized void resetAnticipated() {
+        m_anticipatedEvents.clear();
+        m_anticipatedEventsReceived.clear();
     }
 
     /**
@@ -198,13 +196,13 @@ public class EventAnticipator implements EventListener {
     public void eventProcessed(Event event) {
     }
 
-    public void verifyAnticipated(long wait,
+    public synchronized void verifyAnticipated(long wait,
             long sleepMiddle,
             long sleepAfter,
             int anticipatedSize,
             int unanticipatedSize) {
 
-        StringBuffer problems = new StringBuffer();
+        final StringBuilder problems = new StringBuilder();
 
         Collection<Event> missingEvents = waitForAnticipated(wait);
 
@@ -229,11 +227,11 @@ public class EventAnticipator implements EventListener {
             }
         }
 
-        if (unanticipatedSize >= 0 && unanticipatedEvents().size() != unanticipatedSize) {
-            problems.append(unanticipatedEvents().size() +
+        if (unanticipatedSize >= 0 && getUnanticipatedEvents().size() != unanticipatedSize) {
+            problems.append(getUnanticipatedEvents().size() +
                     " unanticipated events received (expected " +
                     unanticipatedSize + "):\n");
-            problems.append(listEvents("\t", unanticipatedEvents()));
+            problems.append(listEvents("\t", getUnanticipatedEvents()));
         }
 
         if (problems.length() > 0) {
@@ -247,7 +245,7 @@ public class EventAnticipator implements EventListener {
     }
 
     private static String listEvents(String prefix, Collection<Event> events) {
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
 
         for (final Event event : events) {
             b.append(prefix);

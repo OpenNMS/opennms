@@ -58,7 +58,7 @@ public class ExistingResourceAccessor implements ResourceAccessor {
     public Enumeration<URL> getResources(final String packageName) throws IOException {
         throw new UnsupportedOperationException("Not yet implemented!");
         /*
-        final Vector<URL> resources = new Vector<URL>();
+        final Vector<URL> resources = new Vector<>();
         if (m_resource != null) {
             resources.add(m_resource.getURI().toURL());
         }
@@ -73,6 +73,6 @@ public class ExistingResourceAccessor implements ResourceAccessor {
 
     @Override
     public String toString() {
-        return m_resource.toString();
+        return m_resource == null ? "null" : m_resource.toString();
     }
 }

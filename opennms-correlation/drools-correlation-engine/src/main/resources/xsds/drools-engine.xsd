@@ -26,6 +26,7 @@
         <element minOccurs="0" maxOccurs="unbounded" ref="this:global" />
       </sequence>
       <attribute name="name" type="string" use="required" />
+      <attribute name="persist-state" type="boolean" use="optional" default="false" />
       <attribute name="assert-behaviour" use="optional" default="identity" >
         <simpleType>
           <restriction base="string">
@@ -33,6 +34,13 @@
           </restriction>
         </simpleType>
       </attribute>
+      <attribute name="event-processing-mode" use="optional" default="cloud" >
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(cloud|stream)" />
+          </restriction>
+        </simpleType>
+      </attribute>      
     </complexType>
   </element>
   

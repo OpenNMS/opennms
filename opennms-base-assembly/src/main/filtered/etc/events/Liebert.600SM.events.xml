@@ -1,726 +1,678 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: LIEBERT-SERIES-600-UPS-MODULE-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverloadWarningTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverloadWarningTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOverloadWarningTrap signifies that the UPS
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverloadWarningTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverloadWarningTrap</event-label>
+      <descr>&lt;p>An lcUpsOverloadWarningTrap signifies that the UPS
 has detected an Overload condition where the output
-load has exceeded the UPS's rated capacity.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+load has exceeded the UPS's rated capacity.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverloadWarningTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverloadShutdownTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverloadShutdownTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOverloadShutdownTrap signifies that the
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverloadShutdownTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverloadShutdownTrap</event-label>
+      <descr>&lt;p>An lcUpsOverloadShutdownTrap signifies that the
 UPS has detected an Overload condition where the
 output load has exceeded the UPS's rated capacity
-and has shut off the output.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+and has shut off the output.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverloadShutdownTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOnBatteryTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOnBatteryTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOnBatteryTrap signifies that the
-UPS is currently on Battery Power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOnBatteryTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOnBatteryTrap</event-label>
+      <descr>&lt;p>An lcUpsOnBatteryTrap signifies that the
+UPS is currently on Battery Power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOnBatteryTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsLowBatteryWarningTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLowBatteryWarningTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsLowBatteryWarningTrap signifies that the
-UPS has entered a Low Battery state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsLowBatteryWarningTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLowBatteryWarningTrap</event-label>
+      <descr>&lt;p>An lcUpsLowBatteryWarningTrap signifies that the
+UPS has entered a Low Battery state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsLowBatteryWarningTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsLowBatteryShutdownTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLowBatteryShutdownTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsLowBatteryShutdownTrap signifies that the
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsLowBatteryShutdownTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLowBatteryShutdownTrap</event-label>
+      <descr>&lt;p>An lcUpsLowBatteryShutdownTrap signifies that the
 UPS has shut off the output due to a Low
-Battery state.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Battery state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsLowBatteryShutdownTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsUtilPowerFailedTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsUtilPowerFailedTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsUtilPowerFailedTrap signifies that the
-utility power input to the UPS has been lost.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsUtilPowerFailedTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsUtilPowerFailedTrap</event-label>
+      <descr>&lt;p>An lcUpsUtilPowerFailedTrap signifies that the
+utility power input to the UPS has been lost.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsUtilPowerFailedTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsUtilPowerRestoredTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsUtilPowerRestoredTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsUtilPowerRestoredTrap signifies that the
-utility power has been restored to the UPS.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsUtilPowerRestoredTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsUtilPowerRestoredTrap</event-label>
+      <descr>&lt;p>An lcUpsUtilPowerRestoredTrap signifies that the
+utility power has been restored to the UPS.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsUtilPowerRestoredTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsInputOverVoltageTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsInputOverVoltageTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsInputOverVoltageTrap signifies that the
-UPS has detected a high input voltage condition.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsInputOverVoltageTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsInputOverVoltageTrap</event-label>
+      <descr>&lt;p>An lcUpsInputOverVoltageTrap signifies that the
+UPS has detected a high input voltage condition.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsInputOverVoltageTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverTempWarningTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverTempWarningTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOverTempWarningTrap signifies that the
-UPS has detected a excessive temperature condition.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverTempWarningTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverTempWarningTrap</event-label>
+      <descr>&lt;p>An lcUpsOverTempWarningTrap signifies that the
+UPS has detected a excessive temperature condition.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverTempWarningTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverTempShutdownTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverTempShutdownTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOverTempShutdownTrap signifies that the
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOverTempShutdownTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOverTempShutdownTrap</event-label>
+      <descr>&lt;p>An lcUpsOverTempShutdownTrap signifies that the
 UPS has detected a excessive temperature condition
-and shut off the output.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+and shut off the output.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOverTempShutdownTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsAlarmTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsAlarmTrap</event-label>
-	<descr>
-&lt;p&gt;An Alarm condition has occurred and is being reported
-in the lcUpsAlarmTable.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsAlarmTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsAlarmTrap</event-label>
+      <descr>&lt;p>An Alarm condition has occurred and is being reported
+in the lcUpsAlarmTable.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsAlarmTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOffTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOffTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOutputOffTrap is sent when the UPS
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOffTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOffTrap</event-label>
+      <descr>&lt;p>An lcUpsOutputOffTrap is sent when the UPS
 turns all of its output off, either at the
-inverter or via a relay.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+inverter or via a relay.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOffTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOnTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOnTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOutputOnTrap is sent when the UPS
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOnTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOnTrap</event-label>
+      <descr>&lt;p>An lcUpsOutputOnTrap is sent when the UPS
 turns all of its output back on, either at the
-inverter or via a relay.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+inverter or via a relay.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOnTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>23</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsDCOverVoltageShutdownTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsDCOverVoltageShutdownTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsDCOverVoltageShutdownTrap signifies that
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsDCOverVoltageShutdownTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsDCOverVoltageShutdownTrap</event-label>
+      <descr>&lt;p>An lcUpsDCOverVoltageShutdownTrap signifies that
 the UPS has detected that battery voltage is over
-the tolarable level.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+the tolarable level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsDCOverVoltageShutdownTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>24</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOverVoltageTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOverVoltageTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsOutputOverVoltageTrap signifies that the
-UPS has detected that the output voltage is too high.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsOutputOverVoltageTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsOutputOverVoltageTrap</event-label>
+      <descr>&lt;p>An lcUpsOutputOverVoltageTrap signifies that the
+UPS has detected that the output voltage is too high.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsOutputOverVoltageTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>25</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsFuseBlownTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsFuseBlownTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsFuseBlownTrap is sent when the UPS's
-rectifier or DC capacitor fuse has failed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsFuseBlownTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsFuseBlownTrap</event-label>
+      <descr>&lt;p>An lcUpsFuseBlownTrap is sent when the UPS's
+rectifier or DC capacitor fuse has failed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsFuseBlownTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>26</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsEmergencyPowerOffTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsEmergencyPowerOffTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsEmergencyPowerOffTrap signifies that
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsEmergencyPowerOffTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsEmergencyPowerOffTrap</event-label>
+      <descr>&lt;p>An lcUpsEmergencyPowerOffTrap signifies that
 the UPS has shut off output due to an emergency
-condition.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+condition.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsEmergencyPowerOffTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>27</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsControlPowerFailureTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsControlPowerFailureTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsControlPowerFailureTrap signifies a failure in
-the secondary control power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsControlPowerFailureTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsControlPowerFailureTrap</event-label>
+      <descr>&lt;p>An lcUpsControlPowerFailureTrap signifies a failure in
+the secondary control power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsControlPowerFailureTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>28</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsReversePowerTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsReversePowerTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsReversePowerTrap signifies that output has been
-shut off due to a reverse power flow condition.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsReversePowerTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsReversePowerTrap</event-label>
+      <descr>&lt;p>An lcUpsReversePowerTrap signifies that output has been
+shut off due to a reverse power flow condition.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsReversePowerTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>29</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsPhaseRotationErrorTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsPhaseRotationErrorTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsPhaseRotationErrorTrap signifies a phase-rotation
-error in the bypass power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsPhaseRotationErrorTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsPhaseRotationErrorTrap</event-label>
+      <descr>&lt;p>An lcUpsPhaseRotationErrorTrap signifies a phase-rotation
+error in the bypass power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsPhaseRotationErrorTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>30</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsLoadOnBypassTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLoadOnBypassTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsLoadOnBypassTrap signifies that the load has
-been transferred to bypass power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsLoadOnBypassTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsLoadOnBypassTrap</event-label>
+      <descr>&lt;p>An lcUpsLoadOnBypassTrap signifies that the load has
+been transferred to bypass power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsLoadOnBypassTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>31</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsEmergencyXferToBypassTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsEmergencyXferToBypassTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsEmergencyXferToBypassTrap signifies that the UPS has
-automatically tranferred the load to bypass power.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>31</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsEmergencyXferToBypassTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsEmergencyXferToBypassTrap</event-label>
+      <descr>&lt;p>An lcUpsEmergencyXferToBypassTrap signifies that the UPS has
+automatically tranferred the load to bypass power.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsEmergencyXferToBypassTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>34</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/liebert/traps/lcUpsInverterFaultTrap</uei>
-	<event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsInverterFaultTrap</event-label>
-	<descr>
-&lt;p&gt;An lcUpsInverterFaultTrap signifies that the UPS
-detected a problem with the Inverter.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.1.1.1.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>34</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lcUpsInverterFaultTrap</uei>
+      <event-label>LIEBERT-SERIES-600-UPS-MODULE-MIB defined trap event: lcUpsInverterFaultTrap</event-label>
+      <descr>&lt;p>An lcUpsInverterFaultTrap signifies that the UPS
+detected a problem with the Inverter.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	sysUpTime&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			lcUpsInverterFaultTrap trap received 
-			sysUpTime=%parm[#1]%&lt;/p&gt;
+			sysUpTime=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: LIEBERT-SERIES-600-UPS-MODULE-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

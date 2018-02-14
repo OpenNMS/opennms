@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://xmlns.opennms.org/xsd/config/thresholding"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:this="http://xmlns.opennms.org/xsd/config/thresholding"
+        xmlns:ns2="http://www.w3.org/1999/xhtml"
+        xmlns:ns="http://www.w3.org/2001/XMLSchema"
+		  xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
+		  elementFormDefault="qualified" version="1.1">
+  <annotation>
+    <documentation>XML Schema for the thresholding related configuration</documentation>
+  </annotation>
+
+  <element name="threshd-configuration">
+    <annotation>
+      <documentation>Top-level element for the threshd-configuration.xml
+      configuration file.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="1" ref="this:package">
+          <annotation>
+            <documentation>Package encapsulating addresses eligible for
+            thresholding.</documentation>
+          </annotation>
+        </element>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:thresholder">
+          <annotation>
+            <documentation>Service thresholders</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="threads" type="int" use="required">
+        <annotation>
+          <documentation>Maximum number of threads used for
+          thresholding.</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="thresholder">
+    <annotation>
+      <documentation>Thresholder for a service</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <annotation>
+          <documentation>Parameters for performing thresholding via this
+          service</documentation>
+        </annotation>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
+      </sequence>
+
+      <attribute name="service" type="string" use="required">
+        <annotation>
+          <documentation>Service name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="class-name" type="string" use="required">
+        <annotation>
+          <documentation>Java class name used to perform thresholding via the
+          service</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="package">
+    <annotation>
+      <documentation>Package encapsulating addresses eligible for
+      thresholding.</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="1" minOccurs="1" ref="this:filter">
+          <annotation>
+            <documentation>A rule which addresses belonging to this package
+            must pass. This package is applied only to addresses that pass
+            this filter</documentation>
+          </annotation>
+        </element>
+
+        <choice minOccurs="0" maxOccurs="unbounded">
+          <element maxOccurs="unbounded" minOccurs="0" name="specific" type="string">
+            <annotation>
+              <documentation>Addresses in this package</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:include-range">
+            <annotation>
+              <documentation>Range of addresses in this package</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:exclude-range">
+            <annotation>
+              <documentation>Range of addresses to be excluded from this package</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="unbounded" minOccurs="0" name="include-url" type="string">
+            <annotation>
+              <documentation>A file URL holding specific addresses to be polled.
+              Each line in the URL file can be one of:
+              &lt;IP&gt;&lt;space&gt;#&lt;comments&gt;, or &lt;IP&gt;, or
+              #&lt;comments&gt;. Lines starting with a '#' are ignored and so
+              are characters after a '&lt;space&gt;#' in a line.</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="unbounded" minOccurs="0" ref="this:service">
+            <annotation>
+              <documentation>Services for which thresholding is to occur in this package</documentation>
+            </annotation>
+          </element>
+
+          <element maxOccurs="unbounded" minOccurs="0" name="outage-calendar" type="string">
+            <annotation>
+              <documentation>Scheduled outages. Thresholding is not performed during scheduled outages.</documentation>
+            </annotation>
+          </element>
+        </choice>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Name or identifier for this package</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="filter">
+    <annotation>
+      <documentation>A rule which addresses belonging to this package must
+      pass. This package is applied only to addresses that pass this
+      filter.</documentation>
+    </annotation>
+
+    <complexType>
+      <simpleContent>
+        <extension base="string"/>
+      </simpleContent>
+    </complexType>
+  </element>
+
+  <element name="include-range">
+    <annotation>
+      <documentation>Range of addresses to be included in this
+      package</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting address of the range</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending address of the range</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="exclude-range">
+    <annotation>
+      <documentation>Range of addresses to be excluded from this
+      package</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="begin" type="string" use="required">
+        <annotation>
+          <documentation>Starting address of the range</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="end" type="string" use="required">
+        <annotation>
+          <documentation>Ending address of the range</documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="service">
+    <annotation>
+      <documentation>Service for which thresholding is to be performed for
+      addresses in this package</documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <annotation>
+          <documentation>Parameters to be used for doing thresholding via this
+          service. "thresholding-group": name of the thresholding group to
+          use. Thresholding groups are defined in
+          'thresholding-config.xml'.</documentation>
+        </annotation>
+
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter"/>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Service name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="interval" type="long" use="required">
+        <annotation>
+          <documentation>Interval at which the service is to be threshold
+          checked</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute type="boolean" name="user-defined" use="optional">
+        <annotation>
+          <documentation>Specifies if this is a user-defined service. Used
+          specifically for UI purposes.</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="status" use="optional">
+        <annotation>
+          <documentation>Thresholding status for this service. Service is
+          checked against thresholds only if set to 'on'.</documentation>
+        </annotation>
+
+        <simpleType>
+          <restriction base="string">
+            <pattern value="(on|off)"/>
+          </restriction>
+        </simpleType>
+      </attribute>
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <annotation>
+      <documentation>Parameters to be used for threshold checking this
+      service. Parameters are specfic to the service
+      thresholder.</documentation>
+    </annotation>
+
+    <complexType>
+      <attribute name="key" type="string" use="required"/>
+
+      <attribute name="value" type="string" use="required"/>
+    </complexType>
+  </element>
+
+
+  <element name="thresholding-config">
+    <annotation>
+      <documentation>
+        Top-level element for the thresholds.xml configuration file.
+      </documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:group">
+          <annotation>
+            <documentation>Thresholding group element</documentation>
+          </annotation>
+        </element>
+      </sequence>
+    </complexType>
+  </element>
+
+  <element name="group">
+    <annotation>
+      <documentation>
+        Grouping of related threshold definitions
+      </documentation>
+    </annotation>
+
+    <complexType>
+      <sequence>
+        <element maxOccurs="unbounded" minOccurs="0"
+          ref="this:threshold">
+          <annotation>
+            <documentation>Threshold definition</documentation>
+          </annotation>
+        </element>
+        <element maxOccurs="unbounded" minOccurs="0"
+          ref="this:expression">
+          <annotation>
+            <documentation>Expression definition</documentation>
+          </annotation>
+        </element>
+      </sequence>
+
+      <attribute name="name" type="string" use="required">
+        <annotation>
+          <documentation>Group name</documentation>
+        </annotation>
+      </attribute>
+
+      <attribute name="rrdRepository" type="string" use="required">
+        <annotation>
+          <documentation>
+            Full path to the RRD repository where the data is stored
+          </documentation>
+        </annotation>
+      </attribute>
+    </complexType>
+  </element>
+
+  <!-- Expression definitions -->
+  <complexType name="basethresholddef" abstract="true">
+    <sequence>
+       <element maxOccurs="unbounded" minOccurs="0" ref="this:resource-filter">
+         <annotation>
+           <documentation>The filter used to select the ds by a string</documentation>
+         </annotation>
+       </element>
+    </sequence>
+
+    <attribute name="relaxed" type="boolean" use="optional" default="false">
+      <annotation>
+        <documentation>
+          An optional flag to tell the threshold processor to evaluate the expression even if there are unknown values.
+          This can be useful when processing expressions with conditionals. Default: false
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="description" type="string" use="optional">
+      <annotation>
+        <documentation>
+          An optional description for the threshold, to help identify what is their purpose.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="type" use="required">
+      <annotation>
+        <documentation>
+          Threshold type. "high" to trigger if the value exceeds the threshold,
+          "low" to trigger if the value drops below the threshold,
+          "relativeChange" to trigger if the value changes more than the proportion represented by the threshold, or
+          "absoluteChange" to trigger if the value changes by more than the threshold value
+        </documentation>
+      </annotation>
+      <simpleType>
+        <restriction base="string">
+          <enumeration value="high"/>
+          <enumeration value="low"/>
+          <enumeration value="relativeChange"/>
+          <enumeration value="absoluteChange"/>
+          <enumeration value="rearmingAbsoluteChange"/>
+        </restriction>
+      </simpleType>
+    </attribute>
+
+    <attribute name="ds-type" type="string" use="required">
+      <annotation>
+        <documentation>
+          RRD datasource type. "node" indicates a node level datasource.
+          "if" indicates an interface level datasource.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="value" type="double" use="required">
+      <annotation>
+        <documentation>
+          Threshold value. If the datasource value rises above this
+          value, in the case of a "high" threshold, or drops below this
+          value, in the case of a "low" threshold the threshold is
+          considered to have been exceeded and the exceeded count will
+          be incremented. Any time that the datasource value drops below
+          this value, in the case of a "high" threshold, or rises above
+          this value, in the case of a "low" threshold the exceeded
+          count is reset back to zero. Whenever the exceeded count
+          reaches the trigger value then a threshold event is generated.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="rearm" type="double" use="required">
+      <annotation>
+        <documentation>
+          Rearm value. Identifies the value that the datasource must
+          fall below, in the case of a "high" threshold or rise above,
+          in the case of a "low" threshold, before the threshold will
+          rearm, and once again be eligible to generate an event.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="trigger" use="required">
+      <annotation>
+        <documentation>
+          Trigger value. Identifies the number of consecutive polls that
+          the datasource value must exceed the defined threshold value
+          before a threshold event is generated.
+        </documentation>
+      </annotation>
+
+      <simpleType>
+        <restriction base="int">
+          <minInclusive value="1"/>
+        </restriction>
+      </simpleType>      
+    </attribute>
+
+    <attribute name="ds-label" type="string" use="optional">
+      <annotation>
+        <documentation>
+          Value to retrieve from strings.properties to label this
+          datasource.
+        </documentation>
+      </annotation>
+    </attribute>
+    
+    <attribute name="triggeredUEI" type="string" use="optional">
+      <annotation>
+        <documentation>
+          The UEI to send when this threshold is triggered. If not
+          specified, defaults to standard threshold UEIs
+        </documentation>
+      </annotation>
+    </attribute>
+    
+    <attribute name="rearmedUEI" type="string" use="optional">
+      <annotation>
+        <documentation>
+          The UEI to send when this threshold is re-armed. If not
+          specified, defaults to standard threshold UEIs
+        </documentation>
+      </annotation>
+    </attribute>
+    
+    <attribute name="filterOperator" use="optional" default="or">
+      <annotation>
+        <documentation>
+          The operator to be used when applying filters. The
+          default is "or". If you want to match all filters,
+          you should specify "and";
+        </documentation>
+      </annotation>
+      <simpleType>
+        <restriction base="string">
+          <pattern value="([Oo][Rr])|([Aa][Nn][Dd])"/>
+        </restriction>
+      </simpleType>
+    </attribute>
+    
+  </complexType>
+
+  <element name="resource-filter">
+    <complexType>
+      <simpleContent>
+        <extension base="string">
+          <attribute name="field" type="string" use="required"/>
+        </extension>
+      </simpleContent>
+    </complexType>
+  </element>
+  
+  <element name="threshold">
+    <annotation>
+      <documentation>Threshold definition</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="this:basethresholddef">
+          <attribute name="ds-name" type="string" use="required">
+            <annotation>
+              <documentation>
+                RRD datasource name. Mutually exclusive with expression,
+                but one of them must be specified
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+  
+  <element name="expression">
+    <annotation>
+      <documentation>Threshold definition</documentation>
+    </annotation>
+    <complexType>
+      <complexContent>
+        <extension base="this:basethresholddef">
+          <attribute name="expression" type="string" use="required">
+            <annotation>
+              <documentation>
+                An expression of Datasource names and constants to be
+                evaluate
+              </documentation>
+            </annotation>
+          </attribute>
+        </extension>
+      </complexContent>
+    </complexType>
+  </element>
+</schema>

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!-- Syslog message match definitions for Postfix -->
+<syslogd-configuration-group>
+    <ueiList>
+        <ueiMatch>
+            <process-match expression="^postfix.*$"/>
+            <match type="regex" expression="^.*?warning: database (.*?) is older than source file (.*?)$"/>
+            <uei>uei.opennms.org/vendor/postfix/syslog/postfix/obsoleteDatabase</uei>
+            <parameter-assignment matching-group="1" parameter-name="databaseName"/>
+            <parameter-assignment matching-group="1" parameter-name="sourceFile"/>
+        </ueiMatch>
+        <ueiMatch>
+            <process-match expression="^postfix.*$"/>
+            <match type="substr" expression="disabling TLS support"/>
+            <uei>uei.opennms.org/vendor/postfix/syslog/postfix/TLSDisabled</uei>
+        </ueiMatch>
+    </ueiList>
+</syslogd-configuration-group>

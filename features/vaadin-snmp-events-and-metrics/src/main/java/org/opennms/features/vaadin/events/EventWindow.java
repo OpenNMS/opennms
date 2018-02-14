@@ -32,7 +32,7 @@ import java.io.File;
 
 import org.opennms.features.vaadin.api.Logger;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.model.events.EventProxy;
+import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.xml.eventconf.Events;
 
 import com.vaadin.ui.Window;
@@ -55,7 +55,7 @@ public class EventWindow extends Window {
      * @param logger the logger object
      * @throws Exception the exception
      */
-    public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) throws Exception {
+    public EventWindow(final EventConfDao eventConfDao, final EventProxy eventProxy, final File eventFile, final Events events, final Logger logger) {
         super(eventFile.getAbsolutePath()); // Using fileName for as the window's name.
         setModal(false);
         setClosable(false);

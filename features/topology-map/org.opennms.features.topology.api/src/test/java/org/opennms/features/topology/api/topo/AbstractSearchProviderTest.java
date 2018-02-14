@@ -125,10 +125,11 @@ public class AbstractSearchProviderTest {
 
             @Override
             public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-                List<SearchResult> verts = new ArrayList<SearchResult>();
+                List<SearchResult> verts = new ArrayList<>();
                 for (VertexRef vertexRef : m_vertexRefs) {
                     if (searchQuery.matches(vertexRef.getLabel())) {
-                        verts.add(new SearchResult(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(), searchQuery.getQueryString()));
+                        verts.add(new SearchResult(vertexRef.getNamespace(), vertexRef.getId(), vertexRef.getLabel(),
+                                searchQuery.getQueryString(), !SearchResult.COLLAPSIBLE, !SearchResult.COLLAPSED));
                     }
                 }
                 return verts;
@@ -167,7 +168,7 @@ public class AbstractSearchProviderTest {
     }
 
     private List<VertexRef> getVertexRefs(){
-        List<VertexRef> vertexRefs = new ArrayList<VertexRef>();
+        List<VertexRef> vertexRefs = new ArrayList<>();
 
         for(int i = 0; i < 10; i++) {
             vertexRefs.add(new TestVertexRef("" + i, "node-label-" + i));

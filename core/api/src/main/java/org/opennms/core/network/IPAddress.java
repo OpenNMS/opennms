@@ -269,7 +269,7 @@ public class IPAddress implements Comparable<IPAddress> {
                 if (addr6.getScopeId() != 0) {
                     sb.append("%").append(addr6.getScopeId());
                 }
-                return sb.toString().intern();
+                return sb.toString();
             } else {
                 throw new IllegalArgumentException("Unknown type of InetAddress: " + addr.getClass().getName());
             }
@@ -278,7 +278,7 @@ public class IPAddress implements Comparable<IPAddress> {
 
     protected String toIpAddrString(final byte[] addr) {
         if (addr.length == 4) {
-            return getInetAddress(addr).getHostAddress().intern();
+            return getInetAddress(addr).getHostAddress();
         } else if (addr.length == 16) {
             return String.format("%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x",
                                  addr[0],
@@ -297,7 +297,7 @@ public class IPAddress implements Comparable<IPAddress> {
                                  addr[13],
                                  addr[14],
                                  addr[15]
-                    ).intern();
+                    );
         } else {
             throw new IllegalArgumentException("IP address has an illegal number of bytes: " + addr.length);
         }
@@ -416,7 +416,7 @@ public class IPAddress implements Comparable<IPAddress> {
          *   num->num   => ":num"    num->gap   => "::"
          *   gap->num   => "num"     gap->gap   => ""
          */
-        StringBuilder buf = new StringBuilder(39);
+        final StringBuilder buf = new StringBuilder(39);
         boolean lastWasNumber = false;
         for (int i = 0; i < hextets.length; i++) {
             final boolean thisIsNumber = hextets[i] >= 0;

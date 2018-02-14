@@ -1,0 +1,53 @@
+
+// Allow image rendering
+:imagesdir: ../../images
+
+=== Event Receiver
+
+The event receiver listens for messages from an AMQP target and forwards them onto the internal event bus of {opennms-product-name}.
+Messages are sent to a Camel processor, which can filter or transform these, before being sent onto the event bus.
+
+The event receiver exposes the following properties via the `org.opennms.features.amqp.eventreceiver` pid:
+
+[options="header"]
+|===
+| Property      | Default                           | Description
+| connectionUrl | amqp://localhost:5672             | Used by the JmsConnectionFactory. See http://camel.apache.org/amqp.html[AMQP] for details.
+| username      | guest                             | Username
+| password      | guest                             | Password
+| source        | amqp:queue:opennms-events         | Source queue or topic. See http://camel.apache.org/amqp.html[AMQP] for details.
+| processorName | default-event-receiver-processor  | Named `org.apache.camel.Processor` implementation used to filter and/or format the events.
+|===
+
+The default processor, the `default-event-receiver-processor`, expects the message bodies to contain XML strings which are it unmarshalls to events.
+
+==== Setup
+
+Start by logging into a Karaf shell.
+
+Update the properties with your deployment specific values:
+
+[source]
+----
+config:edit org.opennms.features.amqp.eventreceiver
+config:property-set connectionUrl amqp://localhost:5672
+config:property-set source amqp:queue:opennms-events
+config:property-set processorName default-event-receiver-processor
+config:update
+----
+
+Install the feature:
+
+[source]
+----
+feature:install opennms-amqp-event-receiver
+----
+
+==== Debugging
+
+You can get detailed information on the Camel route using:
+
+[source]
+----
+camel:route-info receiveEvent
+----

@@ -34,17 +34,14 @@ import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.support.BasicDetector;
 import org.opennms.netmgt.provision.support.Client;
 import org.opennms.netmgt.provision.support.ResponseValidator;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
-@Component
 /**
  * <p>LoopDetector class.</p>
  *
  * @author ranger
  * @version $Id: $
  */
-@Scope("prototype")
+
 public class LoopDetector extends BasicDetector<LineOrientedRequest, LoopResponse> {
     private static final String DEFAULT_SERVICE_NAME = "LOOP";
     private static final int DEFAULT_PORT = 0;

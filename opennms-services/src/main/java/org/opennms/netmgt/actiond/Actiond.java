@@ -29,9 +29,9 @@
 package org.opennms.netmgt.actiond;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
-import org.opennms.core.queue.FifoQueue;
-import org.opennms.core.queue.FifoQueueImpl;
 import org.opennms.netmgt.config.ActiondConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.slf4j.Logger;
@@ -84,7 +84,7 @@ public final class Actiond extends AbstractServiceDaemon {
 	protected void onInit() {
 		// A queue for execution
         //
-        FifoQueue<String> execQ = new FifoQueueImpl<String>();
+        BlockingQueue<String> execQ = new LinkedBlockingQueue<>();
 
         // start the event reader
         //

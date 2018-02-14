@@ -1,0 +1,56 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd">
+
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="businessServiceManager" interface="org.opennms.netmgt.bsm.service.BusinessServiceManager" availability="mandatory"/>
+
+    <bean id="transactionAwareBeanProxyFactory" class="org.opennms.netmgt.vaadin.core.TransactionAwareBeanProxyFactory">
+        <argument ref="transactionOperations"/>
+    </bean>
+
+    <bean id="bsmDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.BSMDashletFactory" scope="singleton">
+        <argument ref="transactionAwareBeanProxyFactory"/>
+        <argument ref="businessServiceManager"/>
+
+        <property name="name" value="BSM"/>
+        <property name="boostable" value="false"/>
+        <property name="dashboardSuitable" value="true"/>
+
+        <property name="requiredParameters">
+            <map>
+                <entry key="filterByName" value="no"/>
+                <entry key="nameValue" value=".*"/>
+                <entry key="filterByAttribute" value="no"/>
+                <entry key="attributeKey" value="key"/>
+                <entry key="attributeValue" value=".*"/>
+                <entry key="filterBySeverity" value="yes"/>
+                <entry key="severityValue" value="WARNING"/>
+                <entry key="resultsLimit" value="10"/>
+                <entry key="severityCompareOperator" value="GreaterOrEqual"/>
+                <entry key="orderBy" value="Name"/>
+                <entry key="orderAsc" value="true"/>
+                <entry key="columnCountBoard" value="10"/>
+                <entry key="columnCountPanel" value="5"/>
+            </map>
+        </property>
+
+        <property name="requiredParameterDescriptions">
+            <map>
+                <entry key="filterByName" value="Indicates whether results should be filtered by name"/>
+                <entry key="nameValue" value="A regular expression for matching the name value"/>
+                <entry key="filterByAttribute" value="Indicates whether results should be filtered by attribute "/>
+                <entry key="attributeKey" value="The attribute key to search for"/>
+                <entry key="attributeValue" value="A regular expression for matching the attribute value"/>
+                <entry key="filterBySeverity" value="Indicates whether results should be filtered by severity "/>
+                <entry key="severityValue" value="The severity filter value"/>
+                <entry key="resultsLimit" value="The results limit"/>
+                <entry key="severityCompareOperator" value="Comparator for the severity value"/>
+                <entry key="orderBy" value="Order of results"/>
+                <entry key="orderAsc" value="Ascending or descending order"/>
+                <entry key="columnCountBoard" value="Number of columns for displaying elements in the Ops Board"/>
+                <entry key="columnCountPanel" value="Number of columns for displaying elements in the Ops Panel"/>
+            </map>
+        </property>
+    </bean>
+
+    <service ref="bsmDashletFactory" interface="org.opennms.features.vaadin.dashboard.model.DashletFactory"/>
+</blueprint>

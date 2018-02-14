@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
+
+  <bean id="dumpStatsFrequency" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_stats_frequency:5}" />
+  </bean>
+
+  <bean id="dumpCacheFrequency" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.evaluate.dump_cache_frequency:60}" />
+  </bean>
+
+  <bean id="evaluateStats" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluateStats">
+      <constructor-arg index="0" ref="metricRegistry" />
+      <constructor-arg index="1" ref="dumpStatsFrequency" />  
+      <constructor-arg index="2" ref="dumpCacheFrequency" />  
+  </bean>
+
+  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.evaluate.EvaluatePersisterFactory">
+      <constructor-arg index="0" ref="evaluateStats" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.api.EmptyResourceStorageDao" />
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+  <!-- Some beans still require an RrdStrategy -->
+  <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+  <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+</beans>
+

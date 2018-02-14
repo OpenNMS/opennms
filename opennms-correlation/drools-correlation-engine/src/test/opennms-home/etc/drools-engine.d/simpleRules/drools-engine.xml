@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <engine-configuration 
 	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xsi:schemaLocation="http://xmlns.opennms.org/xsd/drools-engine ../../../main/castor/drools-engine.xsd ">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <rule-set name="simpleRules">
     <rule-file>SimpleRules.drl</rule-file>
     <event>uei.opennms.org/nodes/nodeLostService</event>

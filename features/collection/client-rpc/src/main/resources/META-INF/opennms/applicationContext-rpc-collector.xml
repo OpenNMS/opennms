@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx" 
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
+
+	<context:annotation-config />
+
+    <bean id="serviceCollectorRegistry" class="org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry" />
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.ServiceCollectorRegistry" ref="serviceCollectorRegistry"/>
+
+    <bean id="collectorClientRpcModule" class="org.opennms.netmgt.collection.client.rpc.CollectorClientRpcModule" />
+
+    <bean id="locationAwareCollectorClient" class="org.opennms.netmgt.collection.client.rpc.LocationAwareCollectorClientImpl" />
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.LocationAwareCollectorClient" ref="locationAwareCollectorClient"/>
+
+    <!-- This executor pool is implicitly limited by the size of the collectd's scheduler pool.
+         When a collector is triggered, collectd will use a thread and block while
+         the collector is executed in this pool. -->
+    <bean id="collectorExecutor" class="java.util.concurrent.Executors" factory-method="newCachedThreadPool"/>
+
+</beans>

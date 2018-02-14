@@ -1,0 +1,88 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== XmlCollector
+
+The _XmlCollector_ is used to collect and extract metrics from a _XML_ and _JSON_ documents.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name            | `org.opennms.protocols.xml.collector.XmlCollector`
+| Package               | core
+| Supported on Minion   | `Yes` (see limitations)
+|===
+
+====== Limitations on _Minion_
+
+The following handlers are not currently supported on _Minion_:
+
+* DefaultJsonCollectionHandler
+* Sftp3gppXmlCollectionHandler
+* Sftp3gppVTDXmlCollectionHandler
+
+===== Collector Parameters
+
+.Collector specific parameters for the XmlCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the _XML Collection_ to use  | required | `-`
+| `handler-class`        | Class used to perform the collection     | optional | `org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler`
+|===
+
+The available handlers include:
+
+* `org.opennms.protocols.xml.collector.DefaultXmlCollectionHandler`
+* `org.opennms.protocols.xml.collector.Sftp3gppXmlCollectionHandler`
+* `org.opennms.protocols.xml.vtdxml.DefaultVTDXmlCollectionHandler`
+* `org.opennms.protocols.xml.vtdxml.Sftp3gppVTDXmlCollectionHandler`
+* `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler`
+* `org.opennms.protocols.http.collector.HttpCollectionHandler`
+
+===== XML Collection Configuration
+
+_XML Collections_ are defined in the `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
+
+Here is a snippet providing a collection definition named `xml-opennms-nodes`:
+
+[source, xml]
+----
+<xml-collection name="xml-opennms-nodes">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <xml-source url="http://admin:admin@{ipaddr}:8980/opennms/rest/nodes">
+    <import-groups>xml-datacollection/opennms-nodes.xml</import-groups>
+  </xml-source>
+</xml-collection
+----
+
+The referenced `opennms-nodes.xml` file contains:
+
+[source, xml]
+----
+<xml-groups>
+    <xml-group name="nodes" resource-type="node" resource-xpath="/nodes">
+        <xml-object name="totalCount" type="GAUGE" xpath="@totalCount"/>
+    </xml-group>
+</xml-groups>
+----
+
+With the configuration in place, you can test it using the `collect` command available in the _Karaf Shell_:
+
+[source]
+----
+collection:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
+----
+
+===== Caveats
+
+The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be single element of type object to make xpath query work.
+If the root element is an array, it will be wrapped in an object whereas the original array is accessible as `/elements`.

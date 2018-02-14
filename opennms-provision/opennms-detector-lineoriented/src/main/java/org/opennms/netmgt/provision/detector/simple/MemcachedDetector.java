@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 
 /**
  * <p>MemcachedDetector class.</p>
@@ -37,8 +35,7 @@ import org.springframework.stereotype.Component;
  * @author agalue
  * @version $Id: $
  */
-@Component
-@Scope("prototype")
+
 public class MemcachedDetector extends AsyncLineOrientedDetectorMinaImpl {
 
     private static final String DEFAULT_SERVICE_NAME = "Memcached";

@@ -162,7 +162,15 @@ public class Ticket {
     public String getId() {
         return m_id;
     }
-    
+
+    public boolean hasId() {
+        return m_id != null && !m_id.isEmpty();
+    }
+
+    public boolean hasAttributes() {
+        return m_attributes != null && !m_attributes.isEmpty();
+    }
+
     /**
      * The TicketerPlugin should set the ID.
      *
@@ -281,5 +289,12 @@ public class Ticket {
     public void setIpAddress(InetAddress ipAddress) {
         this.m_ipAddress = ipAddress;
     }
-    
+
+    @Override
+    public String toString() {
+        return String.format("Ticket[id=%s, alarmId=%d, nodeId=%d, ipAddress=%s, state=%s, "
+                + "summary=%s, details=%s, user=%s, modificationTimestamp=%s, attributes=%s]",
+                m_id, m_alarmId, m_nodeId, m_ipAddress, m_state, m_summary, m_details, m_user,
+                m_modificationTimestamp, m_attributes);
+    }
 }

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.correlation.drools;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,8 +41,9 @@ import org.opennms.netmgt.xml.event.Event;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class Cause {
-    
+public class Cause implements Serializable {
+    private static final long serialVersionUID = 3872681023624865186L;
+
     public enum Type {
         POSSIBLE,
         IMPACT,
@@ -52,7 +54,7 @@ public class Cause {
     private Long m_cause;
     private Event m_symptom;
     private Integer m_timerId;
-    private final Set<Cause> m_impacted = new HashSet<Cause>();
+    private final Set<Cause> m_impacted = new HashSet<>();
 
     /**
      * <p>Constructor for Cause.</p>

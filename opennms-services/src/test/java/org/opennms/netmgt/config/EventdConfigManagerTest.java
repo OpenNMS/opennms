@@ -33,8 +33,6 @@ import static org.junit.Assert.assertEquals;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 
@@ -44,7 +42,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 public class EventdConfigManagerTest {
 
 	@Test
-	public void defaultQueueLength() throws MarshalException, ValidationException, FileNotFoundException, IOException {
+	public void defaultQueueLength() throws FileNotFoundException, IOException {
 		EventdConfigManager manager = new EventdConfigManager(ConfigurationTestUtils.getInputStreamForConfigFile("eventd-configuration.xml"));
 		assertEquals("Queue length should be Integer.MAX_VALUE", Integer.MAX_VALUE, manager.getQueueLength());
 	}

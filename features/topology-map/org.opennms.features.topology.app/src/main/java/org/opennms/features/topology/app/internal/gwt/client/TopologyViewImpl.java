@@ -28,17 +28,6 @@
 
 package org.opennms.features.topology.app.internal.gwt.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Element;
-import com.google.gwt.dom.client.EventTarget;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.DOM;
-import com.google.gwt.user.client.Event;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Widget;
-import com.vaadin.client.VTooltip;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.GraphUpdateListener;
 import org.opennms.features.topology.app.internal.gwt.client.VTopologyComponent.TopologyViewRenderer;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGElement;
@@ -46,6 +35,14 @@ import org.opennms.features.topology.app.internal.gwt.client.svg.SVGGElement;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGMatrix;
 import org.opennms.features.topology.app.internal.gwt.client.svg.SVGPoint;
 import org.opennms.features.topology.app.internal.gwt.client.view.TopologyView;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 public class TopologyViewImpl extends Composite implements TopologyView<TopologyViewRenderer>, GraphUpdateListener {
 
@@ -99,7 +96,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     protected void onLoad() {
         super.onLoad();
         m_widgetContainer.setSize("100%", "100%");
-        sinkEvents(Event.ONCONTEXTMENU | VTooltip.TOOLTIP_EVENTS | Event.ONMOUSEWHEEL);
         m_svg.setId("TopologyComponent");
     }
 
@@ -112,10 +108,6 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     @Override
     public SVGElement getSVGElement() {
         return m_svg.cast();
-    }
-    
-    private SVGGElement getMarginContainer() {
-        return m_marginContainer.cast();
     }
     
     @Override
@@ -134,47 +126,8 @@ public class TopologyViewImpl extends Composite implements TopologyView<Topology
     }
 
     @Override
-    public Element getReferenceViewPort() {
-        return m_referenceMapViewport;
-    }
-
-    @Override
     public Element getMarqueeElement() {
         return m_marquee;
-    }
-
-    @Override
-    public void repaintNow(GWTGraph graph) {
-        m_presenter.getViewRenderer().draw(graph, this, graph.getBoundingBox());
-    }
-
-    @Override
-    public void onBrowserEvent(final Event event) {
-        super.onBrowserEvent(event);
-        switch(DOM.eventGetType(event)) {
-            case Event.ONCONTEXTMENU:
-
-                EventTarget target = event.getEventTarget();
-                
-                if (target.equals( getSVGElement() )) {
-                    m_presenter.onContextMenu(null, event.getClientX(), event.getClientY(), "map");
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-    
-            case Event.ONCLICK:
-                if(event.getEventTarget().equals(getSVGElement())) {
-                    m_presenter.onBackgroundClick();
-                }
-                event.preventDefault();
-                event.stopPropagation();
-                break;
-                
-        }
-
-
     }
 
     @Override

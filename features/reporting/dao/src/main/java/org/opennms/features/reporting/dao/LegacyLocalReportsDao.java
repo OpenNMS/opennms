@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,14 +33,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.JAXB;
-
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.basicreport.LegacyLocalReportsDefinition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 /**
@@ -53,7 +51,6 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.10.1
  */
-@ContextConfiguration(locations = {"classpath:META-INF/opennms/applicationContext-reportingDao.xml"})
 public class LegacyLocalReportsDao implements LocalReportsDao {
 
     /**
@@ -97,7 +94,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
             logger.error("Resource '{}' does not seem to have an underlying File object.", m_configResource);
         }
 
-        setLegacyLocalReportsDefinition(JAXB.unmarshal(file, LegacyLocalReportsDefinition.class));
+        setLegacyLocalReportsDefinition(JaxbUtils.unmarshal(LegacyLocalReportsDefinition.class, file));
         Assert.notNull(m_legacyLocalReportsDefinition, "unmarshall config file returned a null value.");
         logger.debug("Unmarshalling config file '{}'", file.getAbsolutePath());
         logger.debug("Local report definitions assigned: '{}'", m_legacyLocalReportsDefinition.toString());
@@ -124,7 +121,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      */
     @Override
     public List<BasicReportDefinition> getReports() {
-        ArrayList<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        ArrayList<BasicReportDefinition> resultList = new ArrayList<>();
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
             resultList.add(report);
         }
@@ -136,7 +133,7 @@ public class LegacyLocalReportsDao implements LocalReportsDao {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-        List<BasicReportDefinition> onlineReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> onlineReports = new ArrayList<>();
         for (BasicReportDefinition report : m_legacyLocalReportsDefinition.getReportList()) {
             if (report.getOnline()) {
                 onlineReports.add(report);

@@ -55,10 +55,10 @@ public class Main {
 
         PingReplyMetric metric;
         if (addr instanceof Inet4Address) {
-            V4Pinger pinger = new V4Pinger();
+            V4Pinger pinger = new V4Pinger(1234);
             metric = pinger.ping((Inet4Address)addr);
         } else if (addr instanceof Inet6Address){
-            V6Pinger pinger = new V6Pinger();
+            V6Pinger pinger = new V6Pinger(1234);
             metric = pinger.ping((Inet6Address)addr);
         } else {
             System.err.println("Unrecognized address type " + addr.getClass());

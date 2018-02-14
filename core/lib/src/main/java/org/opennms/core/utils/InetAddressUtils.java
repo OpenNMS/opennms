@@ -314,7 +314,7 @@ public abstract class InetAddressUtils {
         if (cidr < 0 || cidr > 32) {
             throw new IllegalArgumentException("Illegal IPv4 CIDR mask length: " + cidr);
         }
-        StringBuilder binaryString = new StringBuilder();
+        final StringBuilder binaryString = new StringBuilder();
         int i = 0;
         for (; i < cidr; i++) {
             binaryString.append('1');
@@ -333,7 +333,7 @@ public abstract class InetAddressUtils {
         if (cidr < 0 || cidr > 128) {
             throw new IllegalArgumentException("Illegal IPv6 CIDR mask length: " + cidr);
         }
-        StringBuilder binaryString = new StringBuilder();
+        final StringBuilder binaryString = new StringBuilder();
         int i = 0;
         for (; i < cidr; i++) {
             binaryString.append('1');

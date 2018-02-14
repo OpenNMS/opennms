@@ -1,0 +1,68 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+_Users_ are entities with login accounts in the _{opennms-product-name}_ system.
+Ideally each user corresponds to a person.
+An _{opennms-product-name}_ _User_ represents an actor which may be granted permissions in the system by associating _Security Roles_.
+_{opennms-product-name}_ stores by default _User_ information and credentials in a local embedded file based storage.
+Credentials and user details, e.g. contact information, descriptions or _Security Roles_ can be managed through the _Admin Section_ in the Web User Interface.
+
+Beside local _Users_, external link:https://wiki.opennms.org/wiki/Spring_Security_and_LDAP[LDAP] service and link:https://wiki.opennms.org/wiki/Single_Sign_On[SSO] can be configured, but are not scope in this section.
+The following paragraphs describe how to manage the embedded _User_ and _Security Roles_ in _{opennms-product-name}_.
+
+[[ga-role-user-management-users]]
+=== Users
+
+Managing _Users_ is done through the _Web User Interface_ and requires to login as a _User_ with administrative permissions.
+By default the _admin_ user is used to initially create and modify _Users_.
+The _User_, _Password_ and other detail descriptions are persisted in `users.xml` file.
+It is not required to restart _{opennms-product-name}_ when _User_ attributes are changed.
+
+In case administrative tasks should be delegated to an _User_ the _Security Role_ named _ROLE_ADMIN_ can be assigned.
+
+WARNING: Don't delete the _admin_ and _rtc_ user.
+         The _RTC_ user is used for the communication of the Real-Time Console on the start page to calculate the node and service availability.
+
+IMPORTANT: Change the default _admin_ password to a secure password.
+
+.How to set a new password for any user
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Click the *Modify* icon next to an existing _User_ and select *Reset Password*
+. Set a new *Password*, *Confirm Password* and click *OK*
+. Click *Finish* to persist and apply the changes
+
+.How users can change their own password
+
+. Login with user name and old password
+. Choose *Change Password* from the user specific main navigation which is named as your login user name
+. Select *Change Password*
+. Identify yourself with the old password and set the new password and confirm
+. Click *Submit*
+. Logout and login with your new password
+
+.How to create or modify user
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Use *Add new user* and type in a *login name* as _User ID_ and a *Password* with confirmation or click *Modify* next to an existing _User_
+. _Optional_: Fill in detailed _User Information_ to provide more context information around the new user in the system
+. _Optional_: Assign _Security Roles_ to give or remove permissions in the system
+. _Optional_: Provide _Notification Information_ which are used in _Notification_ targets to send messages to the _User_
+. _Optional_: Set a schedule when a _User_ should receive _Notifications_
+. Click *Finish* to persist and apply the changes
+
+NOTE: By default a new _User_ has the _Security Role_ similar to _ROLE_USER_ assigned.
+     Acknowledgment and working with _Alarms_ and _Notifications_ is possible.
+     The _Configure OpenNMS_ administration menu is not available.
+
+.How to delete existing user
+
+. Login as a *User* with administrative permissions
+. Choose *Configure OpenNMS* from the user specific main navigation which is named as your login user name
+. Choose *Configure Users, Groups and On-Call roles* and select *Configure Users*
+. Use the trash bin icon next to the _User_ to delete
+. Confirm delete request with *OK*

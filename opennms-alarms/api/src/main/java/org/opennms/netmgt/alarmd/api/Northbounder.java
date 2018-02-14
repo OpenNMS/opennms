@@ -28,24 +28,58 @@
 
 package org.opennms.netmgt.alarmd.api;
 
-
-
-
 /**
- * North bound Interface API
- * 
+ * North bound Interface API.
+ *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
- * @version $Id: $
  */
-
 public interface Northbounder {
 
+    /**
+     * Start.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
     public void start() throws NorthbounderException;
-    
+
+    /**
+     * Used to determine if the northbounder is ready to accept alarms.
+     *
+     * If no northbounders are ready, the caller can save resources by not creating and
+     * initializing the {@link NorthboundAlarm}s.
+     *
+     * This method is called once after northbounder is registered and started.
+     * If the status were to change sometime after, the northbounder must re-register itself.
+     *
+     * @return <code>true</code> if the northbounder is ready to accept alarms, <code>false</code> otherwise.
+     */
+    boolean isReady();
+
+    /**
+     * On alarm.
+     *
+     * @param alarm the alarm
+     * @throws NorthbounderException the northbounder exception
+     */
     public void onAlarm(NorthboundAlarm alarm) throws NorthbounderException;
-    
+
+    /**
+     * Stop.
+     *
+     * @throws NorthbounderException the northbounder exception
+     */
     public void stop() throws NorthbounderException;
-    
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String getName();
-    
+
+    /**
+     * Reloads configuration.
+     */
+    public void reloadConfig() throws NorthbounderException;
+
 }

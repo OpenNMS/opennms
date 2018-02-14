@@ -1,29 +1,32 @@
-<component>
+<component
+    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/component/1.1.2 http://maven.apache.org/xsd/component-1.1.2.xsd"
+>
   <dependencySets>
     <!-- Jetty Configuration -->
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
-      <outputDirectory>/</outputDirectory>
+      <!-- Output to the root directory -->
+      <outputDirectory></outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <includes>
         <include>org.opennms:opennms-jetty:tar.gz:etc:${project.version}</include>
       </includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
 
     <!-- ROOT webapp -->
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/ROOT</outputDirectory>
       <includes><include>org.opennms.features:root-webapp:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
 
     <!-- OpenNMS webapp -->
@@ -35,33 +38,30 @@
         </excludes>
       </unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms</outputDirectory>
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.webapp-full:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
     <dependencySet>
       <unpack>true</unpack>
       <unpackOptions><filtered>true</filtered></unpackOptions>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms/META-INF</outputDirectory>
       <outputFileNameMapping></outputFileNameMapping>
       <includes><include>org.opennms:opennms-webapp:tar.gz:meta-inf:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
 
     <!-- Remoting webapp -->
     <dependencySet>
       <unpack>true</unpack>
       <useProjectArtifact>false</useProjectArtifact>
+      <useStrictFiltering>true</useStrictFiltering>
       <useTransitiveDependencies>false</useTransitiveDependencies>
       <outputDirectory>jetty-webapps/opennms-remoting</outputDirectory>
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
-      <fileMode>0644</fileMode>
-      <directoryMode>0755</directoryMode>
     </dependencySet>
   </dependencySets>
 </component>

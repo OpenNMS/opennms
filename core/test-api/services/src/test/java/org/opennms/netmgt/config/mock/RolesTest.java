@@ -184,7 +184,7 @@ public class RolesTest extends IntervalTestCase {
 
     private void assertGroup(Group group, WebGroup webGroup) throws Exception {
         assertEquals(group.getName(), webGroup.getName());
-        Collection<String> userNames = group.getUserCollection();
+        Collection<String> userNames = group.getUsers();
         assertEquals(userNames.size(), webGroup.getUsers().size());
         for (Iterator<WebUser> it = webGroup.getUsers().iterator(); it.hasNext();) {
             WebUser user = it.next();
@@ -196,7 +196,7 @@ public class RolesTest extends IntervalTestCase {
 
     private void assertRole(Role role, WebRole webRole) throws Exception {
         assertEquals(role.getName(), webRole.getName());
-        assertEquals(role.getDescription(), webRole.getDescription());
+        assertEquals(role.getDescription().orElse(null), webRole.getDescription());
         assertNotNull(webRole.getMembershipGroup());
         assertEquals(role.getMembershipGroup(), webRole.getMembershipGroup().getName());
         assertNotNull(webRole.getDefaultUser());

@@ -34,12 +34,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
-/* wrapper object to deal with old castor resources */
+/* wrapper object to deal with old non-JAXB resources */
 public class BasicSchedule {
 
 	private String m_name;
 	private String m_type;
-	private List<Time> m_times = new ArrayList<Time>();
+	private List<Time> m_times = new ArrayList<>();
 
 	public String getName() {
 		return m_name;

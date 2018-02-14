@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
 <collectd-configuration threads="50">
 	<package name="example1">
 		<filter>IPADDR != '0.0.0.0'</filter>
@@ -25,5 +24,10 @@
 		class-name="org.opennms.netmgt.collectd.SnmpCollector" />
 	<collector service="OpenNMS-JVM"
 		class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+	<!--
+		Define a JMX-Based collector not used in any package.
+		This is to verify issue NMS-7792.
+	 -->
+	<collector service="CUSTOM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
 </collectd-configuration>
 

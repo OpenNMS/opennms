@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -27,12 +27,12 @@
  *******************************************************************************/
 
 @XmlSchema(
-    namespace = "http://xmlns.opennms.org/xsd/config/ami",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/ami")
-    }
-)
+           namespace = "http://xmlns.opennms.org/xsd/config/ami",
+           elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
+           xmlns={
+                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/ami")
+           }
+        )
 package org.opennms.netmgt.config.ami;
 
 import javax.xml.bind.annotation.XmlNs;

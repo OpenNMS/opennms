@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+    xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <!-- See https://kafka.apache.org/0100/documentation.html#producerconfigs
+         for the list of supported properties -->
+    <cm:property-placeholder id="kafkaProperties" persistent-id="org.opennms.core.ipc.sink.kafka" update-strategy="reload" />
+
+    <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
+
+	<bean id="kafkaRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.KafkaRemoteMessageDispatcherFactory"
+	  init-method="init" destroy-method="destroy">
+	  <property name="configAdmin" ref="configAdmin"/>
+	</bean>
+
+    <service ref="kafkaRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+
+</blueprint>

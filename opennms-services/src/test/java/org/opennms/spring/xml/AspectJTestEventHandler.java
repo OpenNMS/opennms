@@ -28,9 +28,9 @@
 
 package org.opennms.spring.xml;
 
-import org.opennms.netmgt.EventConstants;
-import org.opennms.netmgt.model.events.annotations.EventHandler;
-import org.opennms.netmgt.model.events.annotations.EventListener;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.xml.event.Event;
 
 @EventListener(name="AspectJTestEventHandler")
@@ -52,7 +52,7 @@ public class AspectJTestEventHandler {
         this.handlerCallCount = handlerCallCount;
     }
 
-    @EventHandler(uei=EventConstants.ADD_INTERFACE_EVENT_UEI)
+    @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
     public void handleAnEvent(Event e) throws Throwable {
         System.err.println("Received Event "+e.getUei());
         handlerCallCount++;

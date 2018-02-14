@@ -1,7 +1,0 @@
-#Fri Aug 05 15:28:22 EDT 2011
-org.opennms.netmgt.config.datacollection.DatacollectionConfig=org.opennms.netmgt.config.datacollection.descriptors.DatacollectionConfigDescriptor
-org.opennms.netmgt.config.datacollection.IncludeCollection=org.opennms.netmgt.config.datacollection.descriptors.IncludeCollectionDescriptor
-org.opennms.netmgt.config.datacollection.Systems=org.opennms.netmgt.config.datacollection.descriptors.SystemsDescriptor
-org.opennms.netmgt.config.datacollection.Groups=org.opennms.netmgt.config.datacollection.descriptors.GroupsDescriptor
-org.opennms.netmgt.config.datacollection.SnmpCollection=org.opennms.netmgt.config.datacollection.descriptors.SnmpCollectionDescriptor
-org.opennms.netmgt.config.datacollection.Rrd=org.opennms.netmgt.config.datacollection.descriptors.RrdDescriptor

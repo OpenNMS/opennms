@@ -34,14 +34,13 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.netmgt.EventConstants;
 import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventIpcManager;
+import org.opennms.netmgt.events.api.EventIpcManagerFactory;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.model.events.EventIpcManager;
-import org.opennms.netmgt.model.events.EventIpcManagerFactory;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
-import org.opennms.netmgt.xml.eventconf.AlarmData;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -189,21 +188,20 @@ public class TicketNotificationStrategy implements NotificationStrategy {
      *
      * @return 0 if alarmid is null
      */
-	protected AlarmType getAlarmTypeFromUEI(String eventUEI) {
-        Event event = m_eventConfDao.findByUei(eventUEI);
-        if( event == null )
-        	return AlarmType.NOT_AN_ALARM;
-        
-        AlarmData alarmData = event.getAlarmData();        
-        if( alarmData != null && alarmData.hasAlarmType() ) {
-        	if( alarmData.getAlarmType() == 2) {
-        		return AlarmType.RESULTION;
-        	} else {
-        		return AlarmType.PROBLEM;
-        	}
-        }
-        
-		return AlarmType.NOT_AN_ALARM;
+	protected AlarmType getAlarmTypeFromUEI(final String eventUEI) {
+	    final Event event = m_eventConfDao.findByUei(eventUEI);
+	    if( event == null ) {
+	        return AlarmType.NOT_AN_ALARM;
+	    }
+
+	    if (event.getAlarmData() != null && event.getAlarmData().getAlarmType() != null) {
+	        if( event.getAlarmData().getAlarmType() == 2) {
+	            return AlarmType.RESULTION;
+	        } else {
+	            return AlarmType.PROBLEM;
+	        }
+	    }
+	    return AlarmType.NOT_AN_ALARM;
 	}
 	
     /**

@@ -32,11 +32,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Optional;
 
-import org.opennms.bootstrap.Bootstrap;
 import org.opennms.netmgt.config.microblog.MicroblogProfile;
 import org.opennms.netmgt.dao.api.MicroblogConfigurationDao;
-import org.opennms.netmgt.dao.castor.DefaultMicroblogConfigurationDao;
+import org.opennms.netmgt.dao.jaxb.DefaultMicroblogConfigurationDao;
 import org.opennms.netmgt.notifd.MicroblogAuthorization.MicroblogAuthorizationException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -46,7 +46,7 @@ import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class MicroblogClient extends Bootstrap {
+public class MicroblogClient {
     private final MicroblogConfigurationDao m_configDao;
 
     public MicroblogClient(final MicroblogConfigurationDao dao) {
@@ -188,8 +188,8 @@ public class MicroblogClient extends Bootstrap {
         return !isEmpty(mp.getAuthenUsername()) && !isEmpty(mp.getAuthenPassword());
     }
 
-    private static boolean isEmpty(final String value) {
-        return value == null || "".equals(value);
+    private static boolean isEmpty(final Optional<String> value) {
+        return !value.isPresent() || "".equals(value.get());
     }
 
     public MicroblogAuthorization requestAuthorization(final String profile) throws MicroblogAuthorizationException {
@@ -202,12 +202,12 @@ public class MicroblogClient extends Bootstrap {
         final ConfigurationBuilder builder = new ConfigurationBuilder();
         builder.setClientURL(mp.getServiceUrl());
 
-        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey());
-        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret());
-        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken());
-        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret());
-        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername());
-        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword());
+        if (!isEmpty(mp.getOauthConsumerKey()))       builder.setOAuthConsumerKey(mp.getOauthConsumerKey().orElse(null));
+        if (!isEmpty(mp.getOauthConsumerSecret()))    builder.setOAuthConsumerSecret(mp.getOauthConsumerSecret().orElse(null));
+        if (!isEmpty(mp.getOauthAccessToken()))       builder.setOAuthAccessToken(mp.getOauthAccessToken().orElse(null));
+        if (!isEmpty(mp.getOauthAccessTokenSecret())) builder.setOAuthAccessTokenSecret(mp.getOauthAccessTokenSecret().orElse(null));
+        if (!isEmpty(mp.getAuthenUsername()))         builder.setUser(mp.getAuthenUsername().orElse(null));
+        if (!isEmpty(mp.getAuthenPassword()))         builder.setPassword(mp.getAuthenPassword().orElse(null));
 
         return new TwitterFactory(builder.build()).getInstance();
     }

@@ -66,7 +66,7 @@ public class DatacollectionConfig implements Serializable {
      * SNMP data collection element
      */
     @XmlElement(name="snmp-collection")
-    private List<SnmpCollection> m_snmpCollections = new ArrayList<SnmpCollection>();
+    private List<SnmpCollection> m_snmpCollections = new ArrayList<>();
 
 
     public DatacollectionConfig() {

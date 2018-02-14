@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import java.util.Map.Entry;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
+import org.apache.bsf.BSFManagerTerminator;
 import org.apache.bsf.util.IOUtils;
 import org.opennms.netmgt.provision.detector.bsf.request.BSFRequest;
 import org.opennms.netmgt.provision.detector.bsf.response.BSFResponse;
@@ -92,7 +94,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
             }
 
             if (file.exists() && file.canRead()) {
-                String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
+                String code = IOUtils.getStringFromReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
 
                 // Declare some beans that can be used inside the script
                 bsfManager.declareBean("map", map, Map.class);
@@ -139,7 +141,7 @@ public class BSFClient implements Client<BSFRequest, BSFResponse> {
             m_results.clear();
             LOG.warn("BSFDetector poll for service '{}' failed with unexpected throwable: {}", m_serviceName, e.getMessage(), e);
         } finally {
-            bsfManager.terminate();
+            BSFManagerTerminator.terminate(bsfManager);
         }
     }
 

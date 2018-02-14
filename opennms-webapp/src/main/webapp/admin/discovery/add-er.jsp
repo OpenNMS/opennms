@@ -28,8 +28,9 @@
  *******************************************************************************/
 
 --%>
-
-<%@page language="java" contentType="text/html" session="true" import="org.opennms.web.admin.discovery.ActionDiscoveryServlet" %>
+<%@page language="java" contentType="text/html" session="true" import="
+  org.opennms.web.admin.discovery.DiscoveryServletConstants
+"%>
 <% 
 	response.setDateHeader("Expires", 0);
 	response.setHeader("Pragma", "no-cache");
@@ -44,31 +45,11 @@
     <jsp:param name="quiet" value="true" />
 </jsp:include>
 
-<script type='text/javascript' src='js/ipv6/ipv6.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/jsbn.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/jsbn2.js'></script>
-<script type='text/javascript' src='js/ipv6/lib/sprintf.js'></script>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="ipaddress-js" />
+</jsp:include>
 
 <script type="text/javascript">
-function v4BigInteger(ip) {
-    var a = ip.split('.');
-    return parseInt(a[0])*Math.pow(2,24) + parseInt(a[1])*Math.pow(2,16) + parseInt(a[2])*Math.pow(2,8) + parseInt(a[3]);
-};
-
-function checkIpRange(ip1, ip2){
-    if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
-        var a = v4BigInteger(ip1);
-        var b = v4BigInteger(ip2);
-        return b >= a;
-    }
-    if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
-        var a = new v6.Address(ip1).bigInteger();
-        var b = new v6.Address(ip2).bigInteger();
-        return b.compareTo(a) >= 0;
-    }
-    return false;
-}
-
 function doAddExcludeRange(){
 	if(!isValidIPAddress(document.getElementById("begin").value)){
 		alert("Begin Address not valid.");
@@ -90,11 +71,10 @@ function doAddExcludeRange(){
 	
 	opener.document.getElementById("erbegin").value=document.getElementById("begin").value;
 	opener.document.getElementById("erend").value=document.getElementById("end").value;
-	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=ActionDiscoveryServlet.addExcludeRangeAction%>";
+	opener.document.getElementById("modifyDiscoveryConfig").action=opener.document.getElementById("modifyDiscoveryConfig").action+"?action=<%=DiscoveryServletConstants.addExcludeRangeAction%>";
 	opener.document.getElementById("modifyDiscoveryConfig").submit();
 	window.close();
 	opener.document.focus();
-	
 }
 
 </script>
@@ -106,12 +86,9 @@ function doAddExcludeRange(){
         <h3 class="panel-title">Add Range to Exclude from Discovery</h3>
       </div>
       <div class="panel-body">
-        <p>Add a range of IP addresses to exclude from discovery.<br/>
-        Insert <i>Begin</i> and <i>End</i> IP addresses and click on <i>Add</i> to confirm.
-        </p>
         <form role="form" class="form-horizontal">
           <div class="form-group">
-            <label for="begin" class="control-label col-sm-2">Being IP Address:</label>
+            <label for="begin" class="control-label col-sm-2">Begin IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="begin" name="begin" value=''/>
             </div>

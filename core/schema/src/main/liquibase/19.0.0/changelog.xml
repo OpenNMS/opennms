@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="seth" id="19.0.0-insert-default-monitoringlocation">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(id) FROM monitoringlocations WHERE id='localhost';
+      </sqlCheck>
+    </preConditions>
+    <insert tableName="monitoringlocations">
+      <column name="id" value="localhost"/>
+      <column name="monitoringarea" value="localhost"/>
+    </insert>
+  </changeSet>
+
+  <changeSet author="seth" id="19.0.0-associate-nodes-with-monitoringlocation">
+    <addColumn tableName="node">
+      <column name="location" type="TEXT" value="localhost"/>
+    </addColumn>
+    <addNotNullConstraint tableName="node" columnName="location"/>
+    <addForeignKeyConstraint constraintName="fk_node_location" baseTableName="node" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" deleteCascade="true"/>
+  </changeSet>
+
+  <!-- Add fields for BSM reduce function: exponentatial propagate  -->
+  <changeSet author="fooker" id="19.0.0-bsm-exponentatial-propagate">
+    <addColumn tableName="bsm_reduce">
+      <column name="base" type="float"/>
+    </addColumn>
+  </changeSet>
+
+  <!-- NMS-8261: Drop unused sequences -->
+  <changeSet author="seth" id="19.0.0-drop-mapnxtid-reportnxtid-sequences">
+    <sql>
+      DROP SEQUENCE IF EXISTS mapnxtid;
+      DROP SEQUENCE IF EXISTS reportnxtid;
+    </sql>
+  </changeSet>
+
+  <!-- NMS-8749: Rename default location from 'localhost' to 'Default' -->
+  <changeSet author="seth" id="19.0.0-change-name-of-default-monitoringlocation">
+    <!-- Drop existing foreign key constraints -->
+    <dropForeignKeyConstraint baseTableName="node" constraintName="fk_node_location"/>
+    <dropForeignKeyConstraint baseTableName="monitoringlocationscollectionpackages" constraintName="monitoringlocationscollectionpackages_fkey"/>
+    <dropForeignKeyConstraint baseTableName="monitoringlocationspollingpackages" constraintName="monitoringlocationspollingpackages_fkey"/>
+    <dropForeignKeyConstraint baseTableName="monitoringlocationstags" constraintName="monitoringlocationstags_fkey"/>
+    <dropForeignKeyConstraint baseTableName="scanreports" constraintName="scanreports_monitoringlocations_fkey"/>
+
+    <!-- Add new foreign key constraints that include onUpdate="CASCADE" -->
+    <addForeignKeyConstraint baseTableName="node" constraintName="fk_node_location" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="monitoringlocationscollectionpackages" constraintName="monitoringlocationscollectionpackages_fkey" baseColumnNames="monitoringlocationid" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="monitoringlocationspollingpackages" constraintName="monitoringlocationspollingpackages_fkey" baseColumnNames="monitoringlocationid" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="monitoringlocationstags" constraintName="monitoringlocationstags_fkey" baseColumnNames="monitoringlocationid" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+    <addForeignKeyConstraint baseTableName="scanreports" constraintName="scanreports_monitoringlocations_fkey" baseColumnNames="location" referencedTableName="monitoringlocations" referencedColumnNames="id" onDelete="CASCADE" onUpdate="CASCADE"/>
+
+    <!-- Rename any existing 'Default' location to 'My Default' -->
+    <update tableName="monitoringlocations">
+      <column name="id" type="text" value="My Default"/>
+      <where>id = 'Default'</where>
+    </update>
+
+    <!-- Update the value from 'localhost' to 'Default' -->
+    <update tableName="monitoringlocations">
+      <column name="id" type="text" value="Default"/>
+      <where>id = 'localhost'</where>
+    </update>
+
+    <!-- Rename any existing 'Default' location to 'My Default' -->
+    <update tableName="monitoringsystems">
+      <column name="location" type="text" value="My Default"/>
+      <where>location = 'Default'</where>
+    </update>
+
+    <!-- Update the value from 'localhost' to 'Default' -->
+    <update tableName="monitoringsystems">
+      <column name="location" type="text" value="Default"/>
+      <where>location = 'localhost'</where>
+    </update>
+  </changeSet>
+
+  <!-- Topology Layout Table -->
+  <changeSet author="mvrueden" id="19.0.0-create-topology-layout-tables">
+      <!-- The layout -->
+      <createTable tableName="topo_layout" >
+        <column name="id" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="created" type="DATETIME">
+          <constraints nullable="false"/>
+        </column>
+        <column name="creator" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="updated" type="DATETIME">
+          <constraints nullable="false"/>
+        </column>
+        <column name="updator" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="last_used" type="DATETIME"/>
+      </createTable>
+      <addPrimaryKey tableName="topo_layout" columnNames="id" constraintName="topo_layout_pkey" />
+
+      <!-- Coordinates of vertex in layout -->
+      <createTable tableName="topo_vertex_position" >
+        <column name="id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="x" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="y" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="vertex_namespace" type="text">
+          <constraints nullable="false"/>
+        </column>
+        <column name="vertex_id" type="text">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addPrimaryKey tableName="topo_vertex_position" columnNames="id" constraintName="topo_vertex_position_pkey" />
+
+      <!-- Relationship table from layout to coordinates -->
+      <createTable tableName="topo_layout_vertex_positions" >
+        <column name="vertex_position_id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="layout_id" type="text">
+          <constraints nullable="false"/>
+        </column>
+      </createTable>
+      <addForeignKeyConstraint constraintName="fk_topo_layout_vertex_positions_layout_id"
+                               baseTableName="topo_layout_vertex_positions" baseColumnNames="layout_id"
+                               referencedTableName="topo_layout" referencedColumnNames="id" onDelete="CASCADE"/>
+      <addForeignKeyConstraint constraintName="fk_topo_layout_vertex_positions_vertex_position_id"
+                              baseTableName="topo_layout_vertex_positions" baseColumnNames="vertex_position_id"
+                              referencedTableName="topo_vertex_position" referencedColumnNames="id" onDelete="CASCADE"/>
+  </changeSet>
+
+</databaseChangeLog>

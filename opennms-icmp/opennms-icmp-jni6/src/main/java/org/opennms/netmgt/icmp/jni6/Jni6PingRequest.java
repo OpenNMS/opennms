@@ -35,6 +35,7 @@ import java.net.NoRouteToHostException;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.opennms.netmgt.icmp.EchoPacket;
 import org.opennms.netmgt.icmp.HostIsDownException;
@@ -56,10 +57,10 @@ import org.slf4j.LoggerFactory;
 public class Jni6PingRequest implements Request<Jni6PingRequestId, Jni6PingRequest, Jni6PingResponse>, EchoPacket {
     private static final Logger LOG = LoggerFactory.getLogger(Jni6PingRequest.class);
 
-    private static long s_nextTid = 1;
+    private static final AtomicLong s_nextTid = new AtomicLong(1);
 
-    public static synchronized final long getNextTID() {
-        return s_nextTid++;
+    public static final long getNextTID() {
+        return s_nextTid.getAndIncrement();
     }
 
     /**

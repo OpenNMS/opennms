@@ -28,9 +28,11 @@
 
 package org.opennms.protocols.xml.collector;
 
+import java.util.Map;
+
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.protocols.xml.config.Request;
-import org.opennms.protocols.xml.config.XmlResourceUtils;
 import org.w3c.dom.Document;
 
 /**
@@ -53,16 +55,8 @@ public class MockDefaultXmlCollectionHandler extends DefaultXmlCollectionHandler
      * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#parseUrl(java.lang.String, org.opennms.netmgt.collectd.CollectionAgent, java.lang.Integer)
      */
     @Override
-    protected String parseUrl(String unformattedUrl, CollectionAgent agent, Integer collectionStep) {
+    public String parseUrl(NodeDao nodeDao, String unformattedUrl, CollectionAgent agent, Integer collectionStep, final Map<String,String> parameters) {
         return unformattedUrl.replace("{ipaddr}", "127.0.0.1");
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#getXmlResourceType(org.opennms.netmgt.collectd.CollectionAgent, java.lang.String)
-     */
-    @Override
-    protected XmlResourceType getXmlResourceType(CollectionAgent agent, String resourceType) {
-        return XmlResourceUtils.getXmlResourceType(agent, resourceType);
-    }
 }
-

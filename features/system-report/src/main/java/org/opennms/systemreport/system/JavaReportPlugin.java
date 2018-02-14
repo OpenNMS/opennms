@@ -106,7 +106,7 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             final Map<String,Resource> temp = new TreeMap<String,Resource>();
             addGetters(bean, map);
 
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             for (final String s : temp.keySet()) {
                 sb.append(s).append(": ").append(temp.get(s)).append("\n");
             }

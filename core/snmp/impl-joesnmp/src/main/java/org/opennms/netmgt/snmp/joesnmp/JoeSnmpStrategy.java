@@ -36,6 +36,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.InetAddrUtils;
@@ -51,7 +52,6 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.snmp.SnmpWalker;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
-import org.opennms.netmgt.snmp.TrapProcessorFactory;
 import org.opennms.protocols.snmp.SnmpObjectId;
 import org.opennms.protocols.snmp.SnmpOctetString;
 import org.opennms.protocols.snmp.SnmpParameters;
@@ -155,7 +155,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         }
         return values;
     }
-    
+
+    @Override
+    public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
+        LOG.warn("The JoeSnmpStrategy does not support asynchronous SNMP GET requests.");
+        return CompletableFuture.completedFuture(get(agentConfig, oids));
+    }
+
         @Override
     public SnmpValue getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
@@ -316,9 +322,9 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
 
         @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, InetAddress address, int snmpTrapPort) throws IOException {
+    public void registerForTraps(final TrapNotificationListener listener, InetAddress address, int snmpTrapPort) throws IOException {
     	final RegistrationInfo info = new RegistrationInfo(listener, address, snmpTrapPort);
-    	final JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener, processorFactory);
+    	final JoeSnmpTrapNotifier m_trapHandler = new JoeSnmpTrapNotifier(listener);
         info.setHandler(m_trapHandler);
         SnmpTrapSession m_trapSession = new SnmpTrapSession(m_trapHandler, address, snmpTrapPort);
         info.setSession(m_trapSession);
@@ -327,13 +333,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
     }
     
         @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpv3Users) throws IOException {
-        registerForTraps(listener, processorFactory, address, snmpTrapPort);
+    public void registerForTraps(final TrapNotificationListener listener, final InetAddress address, final int snmpTrapPort, final List<SnmpV3User> snmpv3Users) throws IOException {
+        registerForTraps(listener, address, snmpTrapPort);
     }
 
         @Override
-    public void registerForTraps(final TrapNotificationListener listener, final TrapProcessorFactory processorFactory, final int snmpTrapPort) throws IOException {
-    	registerForTraps(listener, processorFactory, null, snmpTrapPort);
+    public void registerForTraps(final TrapNotificationListener listener, final int snmpTrapPort) throws IOException {
+    	registerForTraps(listener, null, snmpTrapPort);
     }
     
         @Override
@@ -429,5 +435,4 @@ public class JoeSnmpStrategy implements SnmpStrategy {
 	public byte[] getLocalEngineID() {
 		throw new UnsupportedOperationException();
 	}
-
 }

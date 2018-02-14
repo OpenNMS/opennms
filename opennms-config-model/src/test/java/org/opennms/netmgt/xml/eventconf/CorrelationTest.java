@@ -45,8 +45,8 @@ public class CorrelationTest extends XmlTestNoCastor<Correlation> {
 	public static Collection<Object[]> data() throws ParseException {
 		Correlation correlation0 = new Correlation();
 		Correlation correlation1 = new Correlation();
-		correlation1.setState("on");
-		correlation1.setPath("pathOutage");
+		correlation1.setState(StateType.ON);
+		correlation1.setPath(PathType.PATH_OUTAGE);
 		correlation1.setCmin("cmin");
 		correlation1.setCmax("cmax");
 		correlation1.setCtime("ctime");

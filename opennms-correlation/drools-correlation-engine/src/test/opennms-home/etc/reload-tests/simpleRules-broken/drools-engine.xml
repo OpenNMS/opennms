@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<engine-configuration 
+	xmlns="http://xmlns.opennms.org/xsd/drools-engine" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <rule-set name="simpleRules">
+    <rule-file>SimpleRules.drl</rule-file>
+    <event>uei.opennms.org/nodes/nodeLostService</event>
+    <event>uei.opennms.org/junit/myTestEvent</event>
+    <global name="PROVISIONING_GROUP" type="java.lang.String" value="ApplicationServers" />
+    <global name="SERVICE_NAME" type="java.lang.String" value="Tomcat" />
+  </rule-set>  
+</engine-configuration>

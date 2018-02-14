@@ -34,10 +34,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.xml.ValidateUsing;
 
 @XmlRootElement(name="requisitions")
+@JsonRootName("requisitions")
 @ValidateUsing("model-import.xsd")
 public class RequisitionCollection extends JaxbListWrapper<Requisition> {
     private static final long serialVersionUID = 1L;
@@ -48,8 +51,8 @@ public class RequisitionCollection extends JaxbListWrapper<Requisition> {
     }
 
     @XmlElement(name="model-import")
+    @JsonProperty("model-import")
     public List<Requisition> getObjects() {
         return super.getObjects();
     }
 }
-

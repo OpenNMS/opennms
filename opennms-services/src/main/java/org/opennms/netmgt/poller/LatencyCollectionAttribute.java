@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.poller;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
-import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>LatencyCollectionAttribute class.</p>
@@ -43,20 +45,25 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
  */
 public class LatencyCollectionAttribute implements CollectionAttribute {
 
+    private static final Logger LOG = LoggerFactory.getLogger(LatencyCollectionAttribute.class);
+
     private LatencyCollectionResource m_resource;
+    private LatencyCollectionAttributeType m_type;
     private Double m_value;
     private String m_name;
-    
+
     /**
      * <p>Constructor for LatencyCollectionAttribute.</p>
      *
      * @param resource a {@link org.opennms.netmgt.poller.LatencyCollectionResource} object.
+     * @param type a {@link org.opennms.netmgt.poller.LatencyCollectionAttributeType} object.
      * @param name a {@link java.lang.String} object.
      * @param value a {@link java.lang.Double} object.
      */
-    public LatencyCollectionAttribute(LatencyCollectionResource resource, String name, Double value) {
+    public LatencyCollectionAttribute(LatencyCollectionResource resource, LatencyCollectionAttributeType type, String name, Double value) {
         super();
         m_resource = resource;
+        m_type = type;
         m_name = name;
         m_value = value;
     }
@@ -64,11 +71,11 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
     /**
      * <p>getAttributeType</p>
      *
-     * @return a {@link org.opennms.netmgt.collection.api.CollectionAttributeType} object.
+     * @return a {@link org.opennms.netmgt.poller.LatencyCollectionAttributeType} object.
      */
     @Override
-    public CollectionAttributeType getAttributeType() {
-        return null;
+    public LatencyCollectionAttributeType getAttributeType() {
+        return m_type;
     }
 
     /**
@@ -87,8 +94,8 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
      * @return a {@link java.lang.String} object.
      */
     @Override
-    public String getNumericValue() {
-        return m_value.toString();
+    public Double getNumericValue() {
+        return m_value;
     }
 
     /**
@@ -114,11 +121,11 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
     /**
      * <p>getType</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link AttributeType} object.
      */
     @Override
-    public String getType() {
-        return "gauge";
+    public AttributeType getType() {
+        return AttributeType.GAUGE;
     }
 
     /** {@inheritDoc} */
@@ -130,16 +137,24 @@ public class LatencyCollectionAttribute implements CollectionAttribute {
     /** {@inheritDoc} */
     @Override
     public void storeAttribute(Persister persister) {
+        getAttributeType().storeAttribute(this, persister);
     }
 
     /** {@inheritDoc} */
     @Override
     public void visit(CollectionSetVisitor visitor) {
+        LOG.debug("Visiting attribute {}", this);
+        visitor.visitAttribute(this);
+        visitor.completeAttribute(this);
     }
 
     @Override
     public String getMetricIdentifier() {
-        return "Not_Supported_Yet_Poller_Latency_"+getName();
+        return String.format("%s/%s", m_resource.getServiceName(), m_resource.getIpAddress());
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s: %f", m_name, m_value);
+    }
 }

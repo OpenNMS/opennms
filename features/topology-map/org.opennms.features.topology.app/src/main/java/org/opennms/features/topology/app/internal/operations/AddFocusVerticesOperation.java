@@ -34,25 +34,23 @@ import org.opennms.features.topology.api.Constants;
 import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Operation;
 import org.opennms.features.topology.api.OperationContext;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.FocusNodeHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.VertexRef;
 
 public class AddFocusVerticesOperation implements Constants, Operation {
 
 	@Override
-	public Undoer execute(List<VertexRef> targets, final OperationContext operationContext) {
-		if (targets == null || targets.isEmpty()) return null;
-
+	public void execute(List<VertexRef> targets, final OperationContext operationContext) {
+		if (targets == null || targets.isEmpty()) {
+			return;
+		}
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
-
-		FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer);
 		for (VertexRef target : targets) {
-			criteria.add(target);
+			graphContainer.addCriteria(new DefaultVertexHopCriteria(target));
 		}
 		graphContainer.redoLayout();
-		return null;
 	}
 
 	@Override
@@ -63,30 +61,14 @@ public class AddFocusVerticesOperation implements Constants, Operation {
 	@Override
 	public boolean enabled(List<VertexRef> targets, OperationContext operationContext) {
 		if (targets == null || targets.isEmpty()) return false;
-
 		final GraphContainer graphContainer = operationContext.getGraphContainer();
-
-        for (Criteria crit : graphContainer.getCriteria()){
-            if(crit instanceof VertexHopGraphProvider.VertexHopCriteria) {
-                if (((VertexHopGraphProvider.VertexHopCriteria) crit).getVertices().containsAll(targets)){
+        for (Criteria crit : graphContainer.getCriteria()) {
+            if(crit instanceof VertexHopCriteria) {
+                if (((VertexHopCriteria) crit).getVertices().containsAll(targets)) {
                     return false;
                 }
             }
         }
-
-
-		FocusNodeHopCriteria criteria = VertexHopGraphProvider.getFocusNodeHopCriteriaForContainer(graphContainer, false);
-		if (criteria == null) {
-			return true;
-		} else {
-			for (VertexRef target : targets) {
-				// If any of the vertices are not currently in the criteria, return true
-				if (criteria.contains(target)) {
-					return false;
-				}
-			}
-		}
-
 		return true;
 	}
 

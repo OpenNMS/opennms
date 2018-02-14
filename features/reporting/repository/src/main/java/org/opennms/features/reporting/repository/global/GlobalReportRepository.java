@@ -36,16 +36,16 @@ import org.opennms.features.reporting.repository.ReportRepository;
 
 public interface GlobalReportRepository {
     
-    public List<BasicReportDefinition> getAllReports();
-    public List<BasicReportDefinition> getAllOnlineReports();
-    public List<BasicReportDefinition> getReports(String repoId);
-    public List<BasicReportDefinition> getOnlineReports(String repoId);
-    public String getReportService(String reportId);
-    public String getDisplayName(String reportId);
-    public String getEngine(String reportId);
-    public InputStream getTemplateStream(String reportId);
-    public List<ReportRepository> getRepositoryList();
-    public void addReportRepository(ReportRepository repository);
-    public ReportRepository getRepositoryById(String repoId);
-    public void reloadConfigurationFiles();
+    List<BasicReportDefinition> getAllReports();
+    List<BasicReportDefinition> getAllOnlineReports();
+    List<BasicReportDefinition> getReports(String repoId);
+    List<BasicReportDefinition> getOnlineReports(String repoId);
+    String getReportService(String reportId);
+    String getDisplayName(String reportId);
+    String getEngine(String reportId);
+    InputStream getTemplateStream(String reportId);
+    List<ReportRepository> getRepositoryList();
+    void addReportRepository(ReportRepository repository);
+    ReportRepository getRepositoryById(String repoId);
+    void reloadConfigurationFiles();
 }

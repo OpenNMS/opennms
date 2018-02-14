@@ -33,12 +33,15 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.opennms.netmgt.snmp.proxy.WalkRequest;
+import org.opennms.netmgt.snmp.proxy.WalkResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TableTracker extends CollectionTracker implements RowCallback, RowResultFactory {
-	
+
 	private static final transient Logger LOG = LoggerFactory.getLogger(TableTracker.class);
 
     private final SnmpTableResult m_tableResult;
@@ -92,7 +95,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
     }
 
     @Override
-    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+    public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
         if (pduBuilder.getMaxVarsPerPdu() < 1) {
             throw new IllegalArgumentException("maxVarsPerPdu < 1");
         }
@@ -182,7 +185,7 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
         }
 
         @Override
-        public boolean processErrors(int errorStatus, int errorIndex) {
+        public boolean processErrors(int errorStatus, int errorIndex) throws SnmpException {
             
             /*
              * errorIndex is varBind index (1 based array of vars)
@@ -199,7 +202,32 @@ public class TableTracker extends CollectionTracker implements RowCallback, RowR
 
     }
 
-    
-    
+    @Override
+    public List<WalkRequest> getWalkRequests() {
+        return m_columnTrackers.stream()
+                .map(c -> {
+                    WalkRequest walkRequest = new WalkRequest(c.getBase());
+                    walkRequest.setMaxRepetitions(c.getMaxRepetitions());
+                    return walkRequest;
+                })
+                .collect(Collectors.toList());
+    }
 
+    @Override
+    public void handleWalkResponses(List<WalkResponse> responses) {
+        // Store each result
+        responses.stream()
+            .flatMap(res -> res.getResults().stream())
+            .forEach(this::storeResult);
+        // Mark all of the base columns as completed
+        m_columnTrackers.stream()
+            .map(ColumnTracker::getBase)
+            .forEach(m_tableResult::columnFinished);
+        // Mark all of the column trackers as completed
+        m_columnTrackers.stream()
+            .forEach(t -> t.setFinished(true));
+        // Mark the table as completed
+        m_tableResult.tableFinished();
+            
+    }
 }

@@ -1,0 +1,80 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== JolokiaBeanMonitor
+
+The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
+If it is required to execute a method via _JMX_ or poll an attribute via _JMX_, the _JolokiaBeanMonitor_ can be used.
+It requires a fully installed and configured _Jolokia agent_ to be deployed in the JVM container.
+If required it allows attribute names, paths, and method parameters to be provided additional arguments to the call.
+To determine the status of the service the _JolokiaBeanMonitor_ relies on the output to be matched against a banner.
+If the banner is part of the output the status is interpreted as up.
+If the banner is not available in the output the status is determined as _down_.
+Banner matching supports regular expression and substring match.
+
+===== Monitor facts
+
+[options="autowidth"]
+|===
+| Class Name      | `org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor`
+| Remote Enabled  | false
+|===
+
+===== Configuration and Usage
+
+.Monitor specific parameters for the JolokiaBeanMonitor
+[options="header, autowidth"]
+|===
+| Parameter       | Description                                                                                         | Required                                          | Default value
+| `beanname`      | The bean name to query against.                                                                     | required                                          | `-`
+| `attrname`      | The name of the JMX attribute to scrape.                                                            | optional (`attrname` or `methodname` must be set) | `-`
+| `attrpath`      | The attribute path.                                                                                 | optional                                          | `-`
+| `auth-username` | The username to use for HTTP BASIC auth.                                                            | optional                                          | `-`
+| `auth-password` | The password to use for HTTP BASIC auth.                                                            | optional                                          | `-`
+| `banner`        | A string that is match against the output of the system-call. If the output contains the banner,
+                    the service is determined as _up_. Specify a regex by starting with `~`.                            | optional                                          | `-`
+| `input1`        | Method input                                                                                        | optional                                          | `-`
+| `input2`        | Method input                                                                                        | optional                                          | `-`
+| `methodname`    | The name of the bean method to execute, output will be compared to banner.                          | optional (`attrname` or `methodname` must be set) | `-`
+| `port`          | The port of the jolokia agent.                                                                      | optional                                          | `8080`
+| `url`           | The jolokia agent url. Defaults to "http://<ipaddr>:<port>/jolokia"                                 | optional                                          | `-`
+|===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+.Variables which can be used in the configuration
+[options="header, autowidth"]
+|===
+| Variable    | Description
+| `${ipaddr}` | IP-address of the interface the service is bound to.
+| `${port}`   | Port the service it bound to.
+|===
+
+===== Examples
+
+Some example configuration how to configure the monitor in the `poller-configuration.xml`
+[source, xml]
+----
+<parameter key="url" value="http://${ipaddr}:${port}/jolokia"/>
+<parameter key="url" value="https://${ipaddr}:${port}/jolokia"/>
+----
+
+===== AttrName vs MethodName
+
+The JolokiaBeanMonitor has two modes of operation. It can either scrape an attribute from a bean, or execute a method and compare output to a banner. The method execute is useful when your application has it's own test methods that you would like to trigger via {opennms-product-name}.
+
+The args to execute a test method called "superTest" that take in a string as input would look like this:
+[source, xml]
+----
+<parameter key="beanname" value="MyBean" />
+<parameter key="methodname" value="superTest" />
+<parameter key="input1" value="someString"/>
+----
+
+The args to scrape an attribute from the same bean would look like this:
+[source, xml]
+----
+<parameter key="beanname" value="MyBean" />
+<parameter key="attrname" value="upTime" />
+----

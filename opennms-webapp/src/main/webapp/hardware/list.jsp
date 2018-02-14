@@ -50,7 +50,7 @@
 
     public void init() throws ServletException {
         WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
-        hwEntityDao = (HwEntityDao) webAppContext.getBean("hwEntityDao", HwEntityDao.class);
+        hwEntityDao = webAppContext.getBean("hwEntityDao", HwEntityDao.class);
     }
 
     public String getTitle(OnmsHwEntity entity) {
@@ -110,8 +110,10 @@
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
   <jsp:param name="breadcrumb" value="Hardware Inventory" />
-  <jsp:param name="link" value='<link type="text/css" href="hardware/jquery.treegrid.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="hardware/jquery.treegrid.js"></script>' />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="jquery-treegrid-js" />
 </jsp:include>
 
 <br/>

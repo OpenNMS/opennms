@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -54,20 +54,21 @@
 	}
 
 	for (User curUser : users.values()) {
-		usersHash.put(curUser.getUserId(), curUser.getFullName());
+		usersHash.put(curUser.getUserId(), curUser.getFullName().orElse(null));
 	}
 
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Role Configuration" />
+	<jsp:param name="title" value="On-Call Role Configuration" />
 	<jsp:param name="headTitle" value="List" />
 	<jsp:param name="headTitle" value="Roles" />
 	<jsp:param name="headTitle" value="Admin" />
 	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and Roles</a>" />
+	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and On-Call Roles</a>" />
 	<jsp:param name="breadcrumb" value="Role List" />
 </jsp:include>
 
@@ -96,7 +97,7 @@
 
 <div class="panel panel-default">
   <div class="panel-heading">
-    <h3 class="panel-title">Role Configuration</h3>
+    <h3 class="panel-title">On-Call Role Configuration</h3>
   </div>
   <table class="table table-condensed">
         <tr>
@@ -118,9 +119,9 @@
 	 	  
 	 	  <c:otherwise>
 			<c:forEach var="role" items="${roleManager.roles}">
-				<c:set var="deleteUrl" value="javascript:doDelete('${role.name}')" />
-				<c:set var="viewUrl" value="javascript:doView('${role.name}')" />
-				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${role.name}?')"/>
+				<c:set var="deleteUrl" value="javascript:doDelete('${e:forJavaScript(role.name)}')" />
+				<c:set var="viewUrl" value="javascript:doView('${e:forJavaScript(role.name)}')" />
+				<c:set var="confirmScript" value="return confirm('Are you sure you want to delete the role ${e:forJavaScript(role.name)}?')"/>
 				
 				<tr>
 				<td><a href="${deleteUrl}" onclick="${confirmScript}"><i class="fa fa-trash-o fa-2x"></i></a></td>
@@ -138,7 +139,7 @@
 					</c:forEach>	
 				</td>
 				<td>${role.membershipGroup}</td>
-				<td>${role.description}</td>
+				<td><c:out value="${role.description}"/></td>
 				</tr>
 			</c:forEach>
 	 	  </c:otherwise>
@@ -148,7 +149,7 @@
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
   <input name="operation" type="hidden" value="new"/>
-  <button type="submit" class="btn btn-default">Add New Role</button>
+  <button type="submit" class="btn btn-default">Add New On-Call Role</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

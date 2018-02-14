@@ -1,0 +1,2 @@
+org.opennms.netmgt.collectd.HttpCollector
+org.opennms.netmgt.collectd.Jsr160Collector

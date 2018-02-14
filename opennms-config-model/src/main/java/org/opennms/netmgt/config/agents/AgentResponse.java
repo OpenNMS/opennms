@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,25 +28,43 @@
 
 package org.opennms.netmgt.config.agents;
 
+import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.core.xml.JaxbMapAdapter;
+
 
 @XmlRootElement(name="agent")
-public class AgentResponse {
-    private InetAddress m_address;
-    private Integer m_port;
-    private String m_serviceName;
-    private Map<String,String> m_parameters;
+@XmlAccessorType(XmlAccessType.FIELD)
+public class AgentResponse implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    public AgentResponse() {
-    }
+    @XmlElement(name="address")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    private InetAddress m_address;
+
+    @XmlElement(name="port")
+    private Integer m_port;
+
+    @XmlElement(name="serviceName")
+    private String m_serviceName;
+
+    @XmlElement(name = "parameters")
+    @XmlJavaTypeAdapter(JaxbMapAdapter.class)
+    private Map<String,String> m_parameters = new HashMap<>();
+
+    public AgentResponse() { }
 
     public AgentResponse(final InetAddress address, final Integer port, final String serviceName, final Map<String,String> parameters) {
         m_address = address;
@@ -55,21 +73,18 @@ public class AgentResponse {
         m_parameters = parameters;
     }
 
-    @XmlElement(name="address")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getAddress() {
-        return m_address;
+    public Optional<InetAddress> getAddress() {
+        return Optional.ofNullable(m_address);
     }
-    @XmlElement(name="port")
-    public Integer getPort() {
-        return m_port;
+
+    public Optional<Integer> getPort() {
+        return Optional.ofNullable(m_port);
     }
-    @XmlElement(name="serviceName")
-    public String getServiceName() {
-        return m_serviceName;
+
+    public Optional<String> getServiceName() {
+        return Optional.ofNullable(m_serviceName);
     }
-    @XmlElementWrapper(name="parameters")
-    @XmlElement(name="parameter")
+
     public Map<String,String> getParameters() {
         return m_parameters;
     }
@@ -77,5 +92,25 @@ public class AgentResponse {
     @Override
     public String toString() {
         return "AgentResponse [address=" + m_address + ", port=" + m_port + ", serviceName=" + m_serviceName + ", parameters=" + m_parameters + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(m_address, m_port, m_serviceName, m_parameters);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof AgentResponse) {
+            final AgentResponse that = (AgentResponse) obj;
+            return Objects.equals(this.m_address, that.m_address) &&
+                    Objects.equals(this.m_port, that.m_port) &&
+                    Objects.equals(this.m_serviceName, that.m_serviceName) &&
+                    Objects.equals(this.m_parameters, that.m_parameters);
+        }
+        return false;
     }
 }

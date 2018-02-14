@@ -345,7 +345,7 @@ public class JavaMailer {
      * @return
      */
     private String createSendLogMsg() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         sb.append("\n\tTo: ");
         sb.append(getTo());
         sb.append("\n\tFrom: ");
@@ -852,9 +852,9 @@ public class JavaMailer {
     	
     	private static final Logger LOG = LoggerFactory.getLogger(LoggingTransportListener.class);
 
-        private List<Address> m_invalidAddresses = new ArrayList<Address>();
-        private List<Address> m_validSentAddresses = new ArrayList<Address>();
-        private List<Address> m_validUnsentAddresses = new ArrayList<Address>();
+        private List<Address> m_invalidAddresses = new ArrayList<>();
+        private List<Address> m_validSentAddresses = new ArrayList<>();
+        private List<Address> m_validUnsentAddresses = new ArrayList<>();
 
         
 

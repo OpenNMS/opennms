@@ -28,11 +28,17 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import org.opennms.features.topology.link.TopologyLinkBuilder;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
+import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
+import org.opennms.features.vaadin.dashboard.model.Dashlet;
+import org.opennms.features.vaadin.dashboard.model.DashletComponent;
+import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.BrowserFrame;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.dashboard.model.*;
 
 /**
  * This class implements a {@link Dashlet} for displaying the topology map application.
@@ -66,40 +72,20 @@ public class TopologyDashlet extends AbstractDashlet {
                 @Override
                 public void refresh() {
                     m_verticalLayout.removeAllComponents();
-
-                    String focusNodes = "";
-                    String szl = "";
-                    String provider = "";
+                    TopologyLinkBuilder linkBuilder = new TopologyLinkBuilder();
 
                     if (getDashletSpec().getParameters().containsKey("focusNodes")) {
-                        focusNodes = getDashletSpec().getParameters().get("focusNodes");
+                        linkBuilder.focus(getDashletSpec().getParameters().get("focusNodes").split(","));
                     }
-
                     if (getDashletSpec().getParameters().containsKey("szl")) {
-                        szl = getDashletSpec().getParameters().get("szl");
+                        linkBuilder.szl(Integer.valueOf(getDashletSpec().getParameters().get("szl")));
                     }
-
                     if (getDashletSpec().getParameters().containsKey("provider")) {
-                        provider = getDashletSpec().getParameters().get("provider");
+                        linkBuilder.provider(() -> getDashletSpec().getParameters().get("provider"));
                     }
 
-                    String query = "";
-
-                    if (!"".equals(focusNodes)) {
-                        query += "focusNodes=" + focusNodes + "&";
-                    }
-
-                    if (!"".equals(szl)) {
-                        query += "szl=" + szl + "&";
-                    }
-
-                    if (!"".equals(provider)) {
-                        query += "provider=" + provider + "&";
-                    }
-                    /**
-                     * creating browser frame to display the topology
-                     */
-                    BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource("/opennms/topology?" + query));
+                    //creating browser frame to display the topology
+                    BrowserFrame browserFrame = new BrowserFrame(null, new ExternalResource(linkBuilder.getLink()));
                     browserFrame.setSizeFull();
                     m_verticalLayout.addComponent(browserFrame);
                 }

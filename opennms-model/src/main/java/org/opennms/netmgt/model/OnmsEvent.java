@@ -30,10 +30,14 @@ package org.opennms.netmgt.model;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,7 +53,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -60,6 +64,8 @@ import org.hibernate.ObjectNotFoundException;
 import org.hibernate.annotations.Filter;
 import org.hibernate.annotations.Type;
 import org.opennms.core.network.InetAddressXmlAdapter;
+import org.opennms.netmgt.events.api.EventParameterUtils;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.core.style.ToStringCreator;
 
 /**
@@ -96,7 +102,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private InetAddress m_ipAddr;
 
 	/** persistent field */
-	private OnmsDistPoller m_distPoller;
+	private OnmsMonitoringSystem m_distPoller;
 
 	/** nullable persistent field */
 	private String m_eventSnmpHost;
@@ -107,8 +113,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/** nullable persistent field */
 	private String m_eventSnmp;
 
-	/** nullable persistent field */
-	private String m_eventParms;
+	private List<OnmsEventParameter> m_eventParameters;
 
 	/** persistent field */
 	private Date m_eventCreateTime;
@@ -183,152 +188,18 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private org.opennms.netmgt.model.OnmsNode m_node;
 
 	/** persistent field */
-	private Set<OnmsNotification> m_notifications = new HashSet<OnmsNotification>();
+	private Set<OnmsNotification> m_notifications = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<OnmsOutage>();
+	private Set<OnmsOutage> m_associatedServiceRegainedOutages = new HashSet<>();
 
 	/** persistent field */
-	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<OnmsOutage>();
-
-	/**
-	 * full constructor
-	 *
-	 * @param eventid a {@link java.lang.Integer} object.
-	 * @param eventuei a {@link java.lang.String} object.
-	 * @param eventtime a {@link java.util.Date} object.
-	 * @param eventhost a {@link java.lang.String} object.
-	 * @param eventsource a {@link java.lang.String} object.
-	 * @param ipaddr a {@link java.lang.String} object.
-	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-	 * @param eventsnmphost a {@link java.lang.String} object.
-	 * @param service a {@link org.opennms.netmgt.model.OnmsServiceType} object.
-	 * @param eventsnmp a {@link java.lang.String} object.
-	 * @param eventparms a {@link java.lang.String} object.
-	 * @param eventcreatetime a {@link java.util.Date} object.
-	 * @param eventdescr a {@link java.lang.String} object.
-	 * @param eventloggroup a {@link java.lang.String} object.
-	 * @param eventlogmsg a {@link java.lang.String} object.
-	 * @param eventseverity a {@link java.lang.Integer} object.
-	 * @param eventpathoutage a {@link java.lang.String} object.
-	 * @param eventcorrelation a {@link java.lang.String} object.
-	 * @param eventsuppressedcount a {@link java.lang.Integer} object.
-	 * @param eventoperinstruct a {@link java.lang.String} object.
-	 * @param eventautoaction a {@link java.lang.String} object.
-	 * @param eventoperaction a {@link java.lang.String} object.
-	 * @param eventoperactionmenutext a {@link java.lang.String} object.
-	 * @param eventnotification a {@link java.lang.String} object.
-	 * @param eventtticket a {@link java.lang.String} object.
-	 * @param eventtticketstate a {@link java.lang.Integer} object.
-	 * @param eventforward a {@link java.lang.String} object.
-	 * @param eventmouseovertext a {@link java.lang.String} object.
-	 * @param eventlog a {@link java.lang.String} object.
-	 * @param eventdisplay a {@link java.lang.String} object.
-	 * @param eventackuser a {@link java.lang.String} object.
-	 * @param eventacktime a {@link java.util.Date} object.
-	 * @param alarm a {@link org.opennms.netmgt.model.OnmsAlarm} object.
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 * @param notifications a {@link java.util.Set} object.
-	 * @param outagesBySvcregainedeventid a {@link java.util.Set} object.
-	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
-	 */
-	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventhost, String eventsource, InetAddress ipaddr,
-			OnmsDistPoller distPoller, String eventsnmphost, OnmsServiceType service,
-			String eventsnmp, String eventparms, Date eventcreatetime,
-			String eventdescr, String eventloggroup, String eventlogmsg,
-			Integer eventseverity, String eventpathoutage, String eventcorrelation,
-			Integer eventsuppressedcount, String eventoperinstruct,
-			String eventautoaction, String eventoperaction,
-			String eventoperactionmenutext, String eventnotification,
-			String eventtticket, Integer eventtticketstate,
-			String eventforward, String eventmouseovertext, String eventlog,
-			String eventdisplay, String eventackuser, Date eventacktime,
-			OnmsAlarm alarm, org.opennms.netmgt.model.OnmsNode node,
-			Set<OnmsNotification> notifications, Set<OnmsOutage> outagesBySvcregainedeventid,
-			Set<OnmsOutage> outagesBySvclosteventid) {
-		m_eventId = eventid;
-		m_eventUei = eventuei;
-		m_eventTime = eventtime;
-		m_eventHost = eventhost;
-		m_eventSource = eventsource;
-		m_ipAddr = ipaddr;
-		m_distPoller = distPoller;
-		m_eventSnmpHost = eventsnmphost;
-		m_serviceType = service;
-		m_eventSnmp = eventsnmp;
-		m_eventParms = eventparms;
-		m_eventCreateTime = eventcreatetime;
-		m_eventDescr = eventdescr;
-		m_eventLogGroup = eventloggroup;
-		m_eventLogMsg = eventlogmsg;
-		m_eventSeverity = eventseverity;
-		m_eventPathOutage = eventpathoutage;
-		m_eventCorrelation = eventcorrelation;
-		m_eventSuppressedCount = eventsuppressedcount;
-		m_eventOperInstruct = eventoperinstruct;
-		m_eventAutoAction = eventautoaction;
-		m_eventOperAction = eventoperaction;
-		m_eventOperActionMenuText = eventoperactionmenutext;
-		m_eventNotification = eventnotification;
-		m_eventTTicket = eventtticket;
-		m_eventTTicketState = eventtticketstate;
-		m_eventForward = eventforward;
-		m_eventMouseOverText = eventmouseovertext;
-		m_eventLog = eventlog;
-		m_eventDisplay = eventdisplay;
-		m_eventAckUser = eventackuser;
-		m_eventAckTime = eventacktime;
-		m_alarm = alarm;
-		m_node = node;
-		m_notifications = notifications;
-		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
-		m_associatedServiceLostOutages = outagesBySvclosteventid;
-	}
+	private Set<OnmsOutage> m_associatedServiceLostOutages = new HashSet<>();
 
 	/**
 	 * default constructor
 	 */
 	public OnmsEvent() {
-	}
-
-	/**
-	 * minimal constructor
-	 *
-	 * @param eventid a {@link java.lang.Integer} object.
-	 * @param eventuei a {@link java.lang.String} object.
-	 * @param eventtime a {@link java.util.Date} object.
-	 * @param eventsource a {@link java.lang.String} object.
-	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
-	 * @param eventcreatetime a {@link java.util.Date} object.
-	 * @param eventseverity a {@link java.lang.Integer} object.
-	 * @param eventlog a {@link java.lang.String} object.
-	 * @param eventdisplay a {@link java.lang.String} object.
-	 * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
-	 * @param notifications a {@link java.util.Set} object.
-	 * @param outagesBySvcregainedeventid a {@link java.util.Set} object.
-	 * @param outagesBySvclosteventid a {@link java.util.Set} object.
-	 * @param alarms a {@link java.util.Set} object.
-	 */
-	public OnmsEvent(Integer eventid, String eventuei, Date eventtime,
-			String eventsource, OnmsDistPoller distPoller, Date eventcreatetime,
-			Integer eventseverity, String eventlog, String eventdisplay,
-			org.opennms.netmgt.model.OnmsNode node, Set<OnmsNotification> notifications,
-			Set<OnmsOutage> outagesBySvcregainedeventid, Set<OnmsOutage> outagesBySvclosteventid,
-			Set<OnmsAlarm> alarms) {
-		m_eventId = eventid;
-		m_eventUei = eventuei;
-		m_eventTime = eventtime;
-		m_eventSource = eventsource;
-		m_distPoller = distPoller;
-		m_eventCreateTime = eventcreatetime;
-		m_eventSeverity = eventseverity;
-		m_eventLog = eventlog;
-		m_eventDisplay = eventdisplay;
-		m_node = node;
-		m_notifications = notifications;
-		m_associatedServiceRegainedOutages = outagesBySvcregainedeventid;
-		m_associatedServiceLostOutages = outagesBySvclosteventid;
 	}
 
     /**
@@ -340,7 +211,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
     @XmlAttribute(name="id")
     @Column(name="eventId", nullable=false)
     @SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
-    @GeneratedValue(generator="eventSequence")    
+    @GeneratedValue(generator="eventSequence")
 	public Integer getId() {
 		return m_eventId;
 	}
@@ -460,12 +331,12 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	/**
 	 * <p>getDistPoller</p>
 	 *
-	 * @return a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
+	 * @return a {@link org.opennms.netmgt.model.OnmsMonitoringSystem} object.
 	 */
 	@XmlTransient
-	@ManyToOne(fetch=FetchType.LAZY)
-	@JoinColumn(name="eventDpName", nullable=false)
-	public OnmsDistPoller getDistPoller() {
+	@ManyToOne
+	@JoinColumn(name="systemId", nullable=false)
+	public OnmsMonitoringSystem getDistPoller() {
 		return m_distPoller;
 	}
 
@@ -474,7 +345,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param distPoller a {@link org.opennms.netmgt.model.OnmsDistPoller} object.
 	 */
-	public void setDistPoller(OnmsDistPoller distPoller) {
+	public void setDistPoller(OnmsMonitoringSystem distPoller) {
 		m_distPoller = distPoller;
 	}
 
@@ -538,24 +409,31 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 		m_eventSnmp = eventsnmp;
 	}
 
-	/**
-	 * <p>getEventParms</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@XmlElement(name="parms")
-	@Column(name="eventParms", length=1024)
-	public String getEventParms() {
-		return m_eventParms;
+	@XmlElementWrapper(name="parameters")
+	@XmlElement(name="parameter")
+	@OneToMany(mappedBy="event", cascade=CascadeType.ALL)
+	public List<OnmsEventParameter> getEventParameters() {
+	    return this.m_eventParameters;
 	}
 
-	/**
-	 * <p>setEventParms</p>
-	 *
-	 * @param eventparms a {@link java.lang.String} object.
-	 */
-	public void setEventParms(String eventparms) {
-		m_eventParms = eventparms;
+	public void setEventParameters(List<OnmsEventParameter> eventParameters) {
+		this.m_eventParameters = eventParameters;
+	}
+
+	public void setEventParametersFromEvent(final Event event) {
+		this.m_eventParameters = EventParameterUtils.normalize(event.getParmCollection()).values().stream()
+				.map(p -> new OnmsEventParameter(this, p))
+				.collect(Collectors.toList());
+	}
+
+	public void addEventParameter(OnmsEventParameter parameter) {
+		if (m_eventParameters == null) {
+			m_eventParameters = new ArrayList<>();
+		}
+		if (m_eventParameters.contains(parameter)) {
+			m_eventParameters.remove(parameter);
+		}
+		m_eventParameters.add(parameter);
 	}
 
 	/**
@@ -1163,5 +1041,4 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	    public void setIfIndex(Integer ifIndex) {
 	        m_ifIndex = ifIndex;
 	    }
-
 }

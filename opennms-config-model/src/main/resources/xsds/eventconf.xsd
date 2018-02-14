@@ -128,6 +128,14 @@
           </annotation>
         </element>
 
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:parameter">
+          <annotation>
+            <documentation>An optional parameter (name-value pair) to be 
+            assigned to the event. If this parameter duplciates an existing
+            parameter of the event, it will be ignored.</documentation>
+          </annotation>
+        </element>
+
         <element maxOccurs="unbounded" minOccurs="0" ref="this:operaction">
           <annotation>
             <documentation>The operator action to be taken when this event
@@ -243,8 +251,11 @@
             <documentation>The mask element value. A case-sensitive, exact
             match is performed. If the mask value has a "%" as the last
             character, it will match zero or more characters at the end of the
-            string being matched. The mask element value matching is performed
-            by
+            string being matched. If the mask value starts with a "~", the 
+            mask element value will be evaluated as a regular expression to be
+            matched. If several mask element values are provided, the match will
+            succeed when at least one of  the mask element values matches
+           ('OR' condition). The mask element value matching is performed by
             org.opennms.netmgt.eventd.datablock.EventConfData#eventValuePassesMaskValue.</documentation>
           </annotation>
         </element>
@@ -639,6 +650,14 @@
         </element>
       </choice>
       <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
+    </complexType>
+  </element>
+
+  <element name="parameter">
+    <complexType>
+      <attribute name="name" type="string" use="required" />
+      <attribute name="value" type="string" use="required" />
+      <attribute name="expand" type="boolean" use="optional" default="false" />
     </complexType>
   </element>
 </schema>

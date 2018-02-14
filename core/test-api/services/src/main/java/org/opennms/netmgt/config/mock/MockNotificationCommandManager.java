@@ -29,10 +29,9 @@
 package org.opennms.netmgt.config.mock;
 
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.ValidationException;
 import org.opennms.netmgt.config.NotificationCommandManager;
 
 /**
@@ -41,14 +40,10 @@ import org.opennms.netmgt.config.NotificationCommandManager;
 
 public class MockNotificationCommandManager extends NotificationCommandManager {
 
-    public MockNotificationCommandManager(String xmlString) throws MarshalException, ValidationException {
-        try {
-            parseXML(new ByteArrayInputStream(xmlString.getBytes("UTF-8")));
-        } catch (UnsupportedEncodingException e) {
-            // This will never happen; all JVMs support UTF-8
-        }
+    public MockNotificationCommandManager(String xmlString) throws IOException {
+        parseXML(new ByteArrayInputStream(xmlString.getBytes(StandardCharsets.UTF_8)));
     }
-    
+
     @Override
     public void update() throws Exception {
         

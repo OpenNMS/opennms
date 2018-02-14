@@ -59,7 +59,7 @@ public class TcaProtocolCollector implements ProtocolCollector {
     private static Logger logger = LoggerFactory.getLogger(TcaProtocolCollector.class);
     private static final String PROTOCOL = "TCA";
     private SnmpStrategy m_snmpStrategy;
-    private final List<String> keywords = new ArrayList<String>();
+    private final List<String> keywords = new ArrayList<>();
     {
         keywords.add("inboundDelay");
         keywords.add("inboundJitter");
@@ -96,7 +96,7 @@ public class TcaProtocolCollector implements ProtocolCollector {
 
         SnmpAgentConfig snmpAgentConfig = SnmpAgentConfig.parseProtocolConfigurationString(collectionJob.getProtocolConfiguration());
 
-        List<Collectable> trackers = new ArrayList<Collectable>();
+        List<Collectable> trackers = new ArrayList<>();
         for (final String metricObjId : collectionJob.getAllMetrics()) {
             
             final String keyword = metricObjId.substring(metricObjId.lastIndexOf("_") + 1);
@@ -133,16 +133,16 @@ public class TcaProtocolCollector implements ProtocolCollector {
 
         CollectionTracker tracker = new AggregateTracker(trackers);
 
-        SnmpWalker walker = m_snmpStrategy.createWalker(snmpAgentConfig, "SnmpProtocolCollector for " + snmpAgentConfig.getAddress(), tracker);
-
-        walker.start();
-        try {
-            walker.waitFor();
-        } catch (InterruptedException e) {
-            // TODO What should we do here
+        try(SnmpWalker walker = m_snmpStrategy.createWalker(snmpAgentConfig, "SnmpProtocolCollector for " + snmpAgentConfig.getAddress(), tracker)) {
+            walker.start();
+            try {
+                walker.waitFor();
+            } catch (InterruptedException e) {
+                logger.error("Interuppted while waiting for collector. Results may be incomplete.", e);
+            }
         }
+
         return collectionJob;
-        
     }
 
     /*

@@ -1,0 +1,297 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <!--
+      Netgear Prosafe Smart Switch syslog events
+      Event severities are listed in the order from least important to most important
+   -->
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Debug/NTPServerVersionNotCompatible</uei>
+      <event-label>Netgear debug syslog message event: NTPServerVersionNotCompatible</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: NTPServerVersionNotCompatible&lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear debug syslog message has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/WebConsoleLogin</uei>
+      <event-label>Netgear informational syslog message event: WebConsoleLogin</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: WebConsoleLogin&lt;br>
+       Username: %parm[userName]%&lt;br>
+       Source IP: %parm[sourceIP]%&lt;br>
+       Destination IP: %parm[destinationIP]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear informational syslog message WebConsoleLogin has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/WebConsoleLogout</uei>
+      <event-label>Netgear informational syslog message event: WebConsoleLogout</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: WebConsoleLogout&lt;br>
+       Username: %parm[userName]%&lt;br>
+       Source IP: %parm[sourceIP]%&lt;br>
+       Destination IP: %parm[destinationIP]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear informational syslog message WebConsoleLogout has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/PortStatusLinkUp</uei>
+      <event-label>Netgear informational syslog message event: PortStatusLinkUp</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: PortStatusLinkUp&lt;br>
+       Port name: %parm[portName]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear informational syslog message PortStatusLinkUp has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Informational/DHCPAddressRenewed</uei>
+      <event-label>Netgear informational syslog message event: DHCPAddressRenewed</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: DHCPAddressRenewed&lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear informational syslog message DHCPAddressRenewed has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/FirmwareCopyCompletedSuccessfully</uei>
+      <event-label>Netgear notice syslog message event: FirmwareCopyCompletedSuccessfully</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: FirmwareCopyCompletedSuccessfully&lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear notice syslog message FirmwareCopyCompletedSuccessfully has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/SwitchConfigUpdateStart</uei>
+      <event-label>Netgear notice syslog message event: SwitchConfigUpdateStart</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: SwitchConfigUpdateStart&lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="suppress">
+       &lt;p>A Netgear notice syslog message SwitchConfigUpdateStart has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Notice/SwitchConfigUpdateEnd</uei>
+      <event-label>Netgear notice syslog message event: SwitchConfigUpdateEnd</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: SwitchConfigUpdateEnd&lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear notice syslog message SwitchConfigUpdateEnd has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/EnergyEfficientEthernetStateTrue</uei>
+      <event-label>Netgear warning syslog message event: EnergyEfficientEthernetStateTrue</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: EnergyEfficientEthernetStateTrue&lt;br>
+       Port name: %parm[portName]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear warning syslog message EnergyEfficientEthernetStateTrue has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/EnergyEfficientEthernetStateFalse</uei>
+      <event-label>Netgear warning syslog message event: EnergyEfficientEthernetStateFalse</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: EnergyEfficientEthernetStateFalse&lt;br>
+       Port name: %parm[portName]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear warning syslog message EnergyEfficientEthernetStateFalse has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/PortSTPStatusForwarding</uei>
+      <event-label>Netgear warning syslog message event: PortSTPStatusForwarding</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: PortSTPStatusForwarding&lt;br>
+       Port name: %parm[portName]%&lt;br>
+       Instance number: %parm[instanceNumber]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear warning syslog message PortSTPStatusForwarding has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/PortStatusLinkDown</uei>
+      <event-label>Netgear warning syslog message event: PortStatusLinkDown</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: PortStatusLinkDown&lt;br>
+       Port name: %parm[portName]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear warning syslog message PortStatusLinkDown has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Warning/WebConsoleLoginFailure</uei>
+      <event-label>Netgear warning syslog message event: WebConsoleLoginFailure</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: WebConsoleLoginFailure&lt;br>
+       Username: %parm[userName]%&lt;br>
+       Source IP: %parm[sourceIP]%&lt;br>
+       Destination IP: %parm[destinationIP]%&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear warning syslog message WebConsoleLoginFailure has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/vendor/netgear/syslog/prosafesmartswitch/Critical/SwitchBootingUp</uei>
+      <event-label>Netgear critical syslog message event: SwitchBootingUp</event-label>
+      <descr>&lt;p>The interface %interface% generated a syslog message: SwitchBootingUp&lt;br>
+       &lt;p>This is a normal event to receive on switch startup.&lt;br>
+       &lt;br>
+       Node ID: %nodeid%&lt;br>
+       Host: %nodelabel%&lt;br>
+       Interface: %interface% &lt;br>
+       Syslog severity: %parm[severity]% &lt;br>
+       OpenNMS severity: %severity% &lt;br>
+       Message: %parm[syslogmessage]% &lt;br>
+       Process: %parm[process]% &lt;br>
+       PID: %parm[processid]%
+       &lt;/p></descr>
+      <logmsg dest="logndisplay">
+       &lt;p>A Netgear critical syslog message SwitchBootingUp has been received&lt;/p>
+       Message: %parm[process]%: %parm[syslogmessage]% &lt;br>
+     </logmsg>
+      <severity>Normal</severity>
+   </event>
+</events>

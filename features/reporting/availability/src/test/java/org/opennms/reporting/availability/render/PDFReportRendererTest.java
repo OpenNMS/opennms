@@ -30,6 +30,7 @@ package org.opennms.reporting.availability.render;
 
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import junit.framework.TestCase;
 
@@ -39,12 +40,12 @@ public class PDFReportRendererTest extends TestCase {
                 new InputStreamReader(
                         // This is a freely-licensed sample XSL-FO document from IBM developerWorks
                         Thread.currentThread().getContextClassLoader().getResourceAsStream("org/opennms/reporting/availability/render/currency.fo"), 
-                        "UTF-8"
+                        StandardCharsets.UTF_8
                 ),
                 new FileOutputStream("target/sampleDocument.pdf"),
                 new InputStreamReader(
                         Thread.currentThread().getContextClassLoader().getResourceAsStream("org/opennms/reporting/availability/render/identity.xsl"), 
-                        "UTF-8"
+                        StandardCharsets.UTF_8
                 )
         );
     }
