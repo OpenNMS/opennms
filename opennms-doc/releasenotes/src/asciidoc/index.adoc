@@ -7,13 +7,13 @@
 :toclevels: 3
 :numbered!:
 
-= OpenNMS Meridian Release Notes
-:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
-:revnumber: OpenNMS Meridian v{opennms-version}
+= {opennms-product-name} Release Notes
+:author: Copyright (c) 2016-2018 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-== OpenNMS Meridian Development Team
+== {opennms-product-name} Development Team
 [options="header"]
 |===
 | Tarus Balog <tarus@opennms.org>
