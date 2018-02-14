@@ -111,19 +111,19 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     	String repository = getBaseUrl() 
        			+ "/opennms/featuremgr/rest/v1-0/features-addrepositoryurl?uri=mvn:org.opennms.karaf/opennms/"
        			+ version+"/xml/features";
-    	LOG.debug("Smoke Test loading repository from "+repository);
+    	LOG.info("Smoke Test loading repository from "+repository);
        	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(repository)));
         	
     	// install alarm-change-notifier plugin
        	String install = getBaseUrl() 
     			+ "/opennms/featuremgr/rest/v1-0/features-install?name=alarm-change-notifier&version="+version;
-       	LOG.debug("Smoke Test installing plugin from "+install);
+       	LOG.info("Smoke Test installing plugin from "+install);
     	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(install)));
 
     	// uninstall alarm-change-notifier plugin
     	String uninstall = getBaseUrl() 
     			+ "/opennms/featuremgr/rest/v1-0/features-uninstall?name=alarm-change-notifier&version="+version;
-    	LOG.debug("Smoke Test uninstalling plugin from "+uninstall);
+    	LOG.info("Smoke Test uninstalling plugin from "+uninstall);
     	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(uninstall)));
 
     }
