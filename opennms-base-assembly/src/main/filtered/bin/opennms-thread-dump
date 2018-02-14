@@ -138,7 +138,7 @@ parseArgs() {
 }
 
 deleteOldThreadDumps() {
-    find ${output_dir} -name \'${base_filename}.*\' -a -mmin +${oldest_survivor} -delete
+    find ${output_dir}/ -name ${base_filename}.'*' -a -mmin +${oldest_survivor} -delete
 }
 
 writeThreadDump() {
