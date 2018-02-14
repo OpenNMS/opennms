@@ -305,8 +305,8 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         createNode();
         sendPut("/nodes/1/assetRecord", "description=Right here, Right now", 204);
         String xml = sendRequest(GET, "/nodes/1/assetRecord", 200);
-	assertTrue(xml.contains("<description>Right here, Right now</description>"));
-	assertTrue(xml.matches("<id>\\d+</id>"));
+	    assertTrue(xml.contains("<description>Right here, Right now</description>"));
+	    assertTrue(xml.matches(".*<id>\\d+</id>.*"));
     }
 
     @Test
