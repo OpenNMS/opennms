@@ -12,8 +12,6 @@ For a high-level overview of what's changed in OpenNMS 21, see link:https://docs
 
 The codename for 21.0.4 is _link:https://bladerunner.wikia.com/wiki/Priscilla_Stratton[Priscilla Stratton]_.
 
-=== Changelog
-
 ===== Bug
 
 * ClassNotFoundException for org.apache.logging.log4j.core.util.ExecutorServices in output.log (Issue http://issues.opennms.org/browse/NMS-9695[NMS-9695])
