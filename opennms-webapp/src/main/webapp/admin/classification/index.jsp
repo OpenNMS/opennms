@@ -1,8 +1,9 @@
+<%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +27,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.rest.classification;
+--%>
+<jsp:include page="/includes/bootstrap.jsp" flush="false">
+    <jsp:param name="norequirejs" value="true" />
 
-public class RuleDTOBuilder {
-    private final RuleDTO ruleDTO = new RuleDTO();
+    <jsp:param name="title" value="Flow Classification" />
+    <jsp:param name="headTitle" value="Flow Classification" />
+    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
+    <jsp:param name="breadcrumb" value="Flow Classification" />
+</jsp:include>
 
-    public RuleDTOBuilder withName(String name) {
-        this.ruleDTO.setName(name);
-        return this;
-    }
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="onms-classifications" />
+</jsp:include>
 
-    public RuleDTOBuilder withProtocol(String protocol) {
-        this.ruleDTO.setProtocol(protocol);
-        return this;
-    }
+<div ng-app="onms.classifications" ui-view>
 
-    public RuleDTOBuilder withPort(String port) {
-        this.ruleDTO.setPort(port);
-        return this;
-    }
+</div>
 
-    public RuleDTOBuilder withIpAddress(String ipAddress) {
-        this.ruleDTO.setIpAddress(ipAddress);
-        return this;
-    }
-
-    public RuleDTO build() {
-        return ruleDTO;
-    }
-}
+<jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
