@@ -28,12 +28,16 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt32;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getTime;
+
+import java.time.Instant;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.bson.BsonDocument;
-import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Flow;
 
 class IpfixFlow implements Flow {
@@ -44,221 +48,219 @@ class IpfixFlow implements Flow {
     }
 
     @Override
-    public Long getTimestamp() {
-        return get(document, "exportTime")
-                .map(v -> v.asTimestamp().getTime() * 1000L)
-                .orElse(null);
+    public long getTimestamp() {
+        return getInt64(this.document, "@exportTime").get() * 1000;
     }
 
     @Override
     public Long getBytes() {
         // TODO: What about the totals?
-        return first(get(document, "elements", "octetDeltaCount", "v"),
-                     get(document, "elements", "postOctetDeltaCount", "v"),
-                     get(document, "elements", "postMCastOctetDeltaCount", "v"),
-                     get(document, "elements", "initiatorOctets", "v"),
-                     get(document, "elements", "responderOctets", "v"),
-                     get(document, "elements", "layer2OctetDeltaCount", "v"),
-                     get(document, "elements", "postLayer2OctetDeltaCount", "v"),
-                     get(document, "elements", "postMCastLayer2OctetDeltaCount", "v"),
-                     get(document, "elements", "flowSelectedOctetDeltaCount", "v"),
-                     get(document, "elements", "transportOctetDeltaCount", "v"))
-                .map(v -> v.asInt64().getValue())
+        return first(getInt64(this.document,  "octetDeltaCount"),
+                     getInt64(this.document,  "postOctetDeltaCount"),
+                     getInt64(this.document,  "layer2OctetDeltaCount"),
+                     getInt64(this.document,  "postLayer2OctetDeltaCount"),
+                     getInt64(this.document,  "transportOctetDeltaCount"))
                 .orElse(null);
     }
 
     @Override
     public Direction getDirection() {
-        return get(document, "elements", "flowDirection", "v")
-                .map(v -> v.asInt32().getValue() == 0x00 ? Direction.INGRESS
-                        : v.asInt32().getValue() == 0x01 ? Direction.EGRESS
+        return getInt32(this.document,  "flowDirection")
+                .map(v -> v == 0x00 ? Direction.INGRESS
+                        : v == 0x01 ? Direction.EGRESS
                         : null)
                 .orElse(null);
     }
 
     @Override
     public String getDstAddr() {
-        return first(get(document, "elements", "destinationIPv6Address", "v"),
-                     get(document, "elements", "destinationIPv4Address", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document,  "destinationIPv6Address"),
+                     getString(this.document,  "destinationIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getDstAs() {
-        return get(document, "elements", "bgpDestinationAsNumber", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "bgpDestinationAsNumber")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstMaskLen() {
-        return first(get(document, "elements", "destinationIPv6PrefixLength", "v"),
-                     get(document, "elements", "destinationIPv4PrefixLength", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "destinationIPv6PrefixLength"),
+                     getInt64(this.document,  "destinationIPv4PrefixLength"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstPort() {
-        return get(document, "elements", "destinationTransportPort", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "destinationTransportPort")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineId() {
-        return get(document, "elements", "engineId", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "engineId")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineType() {
-        return get(document, "elements", "engineType", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "engineType")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getFirstSwitched() {
-        // TODO: What about flowStart*, flowStartDelta*, flowDuration*, minFlowStart* ?
-        return get(document, "elements", "flowStartSysUpTime", "v")
-                .map(v -> v.asInt64().getValue())
-                .orElse(null);
+        // TODO: What about flowDuration* ?
+        return first(
+                first(getTime(this.document, "flowStartSeconds"),
+                      getTime(this.document, "flowStartMilliseconds"),
+                      getTime(this.document, "flowStartMicroseconds"),
+                      getTime(this.document, "flowStartNanoseconds")
+                ).map(Instant::toEpochMilli),
+                getInt64(this.document, "flowStartDeltaMicroseconds").map(t -> this.getTimestamp() + t),
+                getInt64(this.document, "flowStartSysUpTime").flatMap(t ->
+                    getTime(this.document, "systemInitTimeMilliseconds").map(ts -> ts.toEpochMilli() + t)
+                )
+        ).orElse(null);
     }
 
     @Override
     public int getFlowRecords() {
-        return get(document, "recordCount")
-                .map(v -> v.asInt32().getValue())
+        return getInt32(this.document, "@recordCount")
                 .orElse(0);
     }
 
     @Override
     public long getFlowSeqNum() {
-        return get(document, "sequenceNumber")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document, "@sequenceNumber")
                 .orElse(0L);
     }
 
     @Override
     public Integer getInputSnmp() {
-        return get(document, "elements", "ingressInterface", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "ingressInterface")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getIpProtocolVersion() {
-        return get(document, "elements", "IP_PROTOCOL_VERSION", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "ipVersion")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getLastSwitched() {
-        // TODO: What about flowEnd*, flowEndDelta*, flowDuration*, maxFlowEnd* ?
-        return get(document, "elements", "flowEndSysUpTime", "v")
-                .map(v -> v.asInt64().getValue())
-                .orElse(null);
+        // TODO: What about flowDuration* ?
+        return first(
+                first(getTime(this.document, "flowEndSeconds"),
+                      getTime(this.document, "flowEndMilliseconds"),
+                      getTime(this.document, "flowEndMicroseconds"),
+                      getTime(this.document, "flowEndNanoseconds")
+                ).map(Instant::toEpochMilli),
+                getInt64(this.document, "flowEndDeltaMicroseconds").map(t -> this.getTimestamp() + t),
+                getInt64(this.document, "flowEndSysUpTime").flatMap(t ->
+                        getTime(this.document, "systemInitTimeMilliseconds").map(ts -> ts.toEpochMilli() + t)
+                )
+        ).orElse(null);
     }
 
     @Override
     public String getNextHop() {
-        return first(get(document, "elements", "ipNextHopIPv6Address", "v"),
-                     get(document, "elements", "ipNextHopIPv4Address", "v"),
-                     get(document, "elements", "bgpNextHopIPv6Address", "v"),
-                     get(document, "elements", "bgpNextHopIPv4Address", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document,  "ipNextHopIPv6Address"),
+                     getString(this.document,  "ipNextHopIPv4Address"),
+                     getString(this.document,  "bgpNextHopIPv6Address"),
+                     getString(this.document,  "bgpNextHopIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return get(document, "elements", "egressInterface", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "egressInterface")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getPackets() {
         // TODO: What about the totals?
-        return first(get(document, "elements", "packetDeltaCount", "v"),
-                     get(document, "elements", "postPacketDeltaCount", "v"),
-                     get(document, "elements", "postMCastPacketDeltaCount", "v"),
-                     get(document, "elements", "initiatorPackets", "v"),
-                     get(document, "elements", "responderPackets", "v"),
-                     get(document, "elements", "flowSelectedPacketDeltaCount", "v"),
-                     get(document, "elements", "transportPacketDeltaCount", "v"))
-                .map(v -> v.asInt64().getValue())
+        return first(getInt64(this.document,  "packetDeltaCount"),
+                     getInt64(this.document,  "postPacketDeltaCount"),
+                     getInt64(this.document,  "transportPacketDeltaCount"))
                 .orElse(null);
     }
 
     @Override
     public Integer getProtocol() {
-        return get(document, "elements", "protocolIdentifier", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "protocolIdentifier")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSamplingAlgorithm() {
-        return first(get(document, "elements", "selectorAlgorithm", "v"),
-                     get(document, "elements", "samplingAlgorithm", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "selectorAlgorithm"),
+                     getInt64(this.document,  "samplingAlgorithm"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSamplingInterval() {
-        return first(get(document, "elements", "samplingPacketInterval", "v"),
-                     get(document, "elements", "samplingInterval", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "samplingPacketInterval"),
+                     getInt64(this.document,  "samplingInterval"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public String getSrcAddr() {
-        return first(get(document, "elements", "sourceIPv6Address", "v"),
-                     get(document, "elements", "sourceIPv4Address", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document,  "sourceIPv6Address"),
+                     getString(this.document,  "sourceIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcAs() {
-        return get(document, "elements", "bgpSourceAsNumber", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "bgpSourceAsNumber")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcMaskLen() {
-        return first(get(document, "elements", "sourceIPv6PrefixLength", "v"),
-                     get(document, "elements", "sourceIPv4PrefixLength", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "sourceIPv6PrefixLength"),
+                     getInt64(this.document,  "sourceIPv4PrefixLength"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcPort() {
-        return get(document, "elements", "sourceTransportPort", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "sourceTransportPort")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTcpFlags() {
-        return get(document, "elements", "tcpControlBits", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "tcpControlBits")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTos() {
-        return get(document, "elements", "ipClassOfService", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "ipClassOfService")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -269,32 +271,13 @@ class IpfixFlow implements Flow {
 
     @Override
     public Integer getVlan() {
-        return first(get(document, "elements", "vlanId", "v"),
-                     get(document, "elements", "postVlanId", "v"),
-                     get(document, "elements", "dot1qVlanId", "v"),
-                     get(document, "elements", "dot1qCustomerVlanId", "v"),
-                     get(document, "elements", "postDot1qVlanId", "v"),
-                     get(document, "elements", "postDot1qCustomerVlanId", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "vlanId"),
+                     getInt64(this.document,  "postVlanId"),
+                     getInt64(this.document,  "dot1qVlanId"),
+                     getInt64(this.document,  "dot1qCustomerVlanId"),
+                     getInt64(this.document,  "postDot1qVlanId"),
+                     getInt64(this.document,  "postDot1qCustomerVlanId"))
+                .map(Long::intValue)
                 .orElse(null);
-    }
-
-    private static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
-        BsonValue value = doc;
-        for (final String p : path) {
-            value = value.asDocument().get(p);
-            if (value == null) {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(value);
-    }
-
-    private static <V> Optional<V> first(final Optional<V>... values) {
-        return Stream.of(values)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
     }
 }

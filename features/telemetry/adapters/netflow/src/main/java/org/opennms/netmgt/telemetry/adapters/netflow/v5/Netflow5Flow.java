@@ -44,7 +44,7 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public Long getTimestamp() {
+    public long getTimestamp() {
         return this.packet.getUnixSecs() * 1000L + this.packet.getUnixNSecs() / 1000L / 1000L;
     }
 

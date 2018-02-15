@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 
 public class UdpSessionManager {
@@ -69,7 +70,8 @@ public class UdpSessionManager {
 
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
-                for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : UdpSessionManager.this.options.entrySet()) {
+                for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
+                                                                                                   e -> e.getKey().observationDomainId == this.observationDomainId)) {
                     final Template template = this.lookupTemplate(e.getKey().templateId).get();
 
                     final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());

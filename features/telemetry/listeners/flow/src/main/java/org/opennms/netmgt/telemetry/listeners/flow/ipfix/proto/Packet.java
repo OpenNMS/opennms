@@ -41,10 +41,14 @@ import java.util.stream.Stream;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 
 public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
@@ -152,9 +156,10 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
                         for (final DataRecord record : dataSet) {
                             session.addOptions(this.header.observationDomainId, dataSet.template.id, record.scopes, record.fields);
                         }
+                    } else {
+                        dataSets.add(dataSet);
                     }
 
-                    dataSets.add(dataSet);
                     break;
                 }
 
@@ -177,20 +182,21 @@ public final class Packet implements Iterable<FlowSet<?>>, RecordProvider {
     }
 
     @Override
-    public Stream<RecordProvider.Record> getRecords() {
+    public Stream<Iterable<Value<?>>> getRecords() {
         final int recordCount = this.dataSets.stream()
                 .mapToInt(s -> s.records.size())
                 .sum();
 
         return this.dataSets.stream()
                 .flatMap(s -> s.records.stream())
-                .map(r -> new RecordProvider.Record(
-                        this.header.observationDomainId,
-                        this.header.exportTime,
-                        r.template.scopes.size(),
-                        recordCount,
-                        this.header.sequenceNumber,
-                        r.fields
+                .map(r -> Iterables.concat(
+                        ImmutableList.of(
+                                new UnsignedValue("@recordCount", recordCount),
+                                new UnsignedValue("@sequenceNumber", this.header.sequenceNumber),
+                                new UnsignedValue("@exportTime", this.header.exportTime),
+                                new UnsignedValue("@observationDomainId", this.header.observationDomainId)),
+                        r.fields,
+                        r.options
                 ));
     }
 

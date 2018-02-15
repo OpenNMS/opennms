@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.v9;
 
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt32;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
+
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.bson.BsonDocument;
-import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Flow;
 
 class Netflow9Flow implements Flow {
@@ -44,200 +46,191 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Long getTimestamp() {
-        return get(document, "exportTime")
-                .map(v -> v.asTimestamp().getTime() * 1000L)
-                .orElse(null);
+    public long getTimestamp() {
+        return getInt64(this.document, "@unixSecs").get() * 1000;
     }
 
     @Override
     public Long getBytes() {
-        return get(document, "elements", "IN_BYTES", "v")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document, "IN_BYTES")
                 .orElse(null);
     }
 
     @Override
     public Direction getDirection() {
-        return get(document, "elements", "DIRECTION", "v")
-                .map(v -> v.asInt32().getValue() == 0 ? Direction.INGRESS
-                        : v.asInt32().getValue() == 1 ? Direction.EGRESS
+        return getInt32(this.document, "DIRECTION")
+                .map(v -> v == 0 ? Direction.INGRESS
+                        : v == 1 ? Direction.EGRESS
                         : null)
                 .orElse(null);
     }
 
     @Override
     public String getDstAddr() {
-        return first(get(document, "elements", "IPV6_DST_ADDR", "v"),
-                     get(document, "elements", "IPV4_DST_ADDR", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document, "IPV6_DST_ADDR"),
+                     getString(this.document, "IPV4_DST_ADDR"))
                 .orElse(null);
     }
 
     @Override
     public Integer getDstAs() {
-        return get(document, "elements", "DST_AS", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "DST_AS")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstMaskLen() {
-        return first(get(document, "elements", "IPV6_DST_MASK", "v"),
-                     get(document, "elements", "DST_MASK", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "IPV6_DST_MASK"),
+                     getInt64(this.document,  "DST_MASK"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstPort() {
-        return get(document, "elements", "L4_DST_PORT", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "L4_DST_PORT")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineId() {
-        return get(document, "elements", "ENGINE_ID", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "ENGINE_ID")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineType() {
-        return get(document, "elements", "ENGINE_TYPE", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "ENGINE_TYPE")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getFirstSwitched() {
-        return get(document, "elements", "FIRST_SWITCHED", "v")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document,  "FIRST_SWITCHED")
+                .map(t -> this.getBootTime() + t)
                 .orElse(null);
     }
 
     @Override
     public int getFlowRecords() {
-        return get(document, "recordCount")
-                .map(v -> v.asInt32().getValue())
+        return getInt32(this.document, "@recordCount")
                 .orElse(0);
     }
 
     @Override
     public long getFlowSeqNum() {
-        return get(document, "sequenceNumber")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document, "@sequenceNumber")
                 .orElse(0L);
     }
 
     @Override
     public Integer getInputSnmp() {
-        return get(document, "elements", "INPUT_SNMP", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "INPUT_SNMP")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getIpProtocolVersion() {
-        return get(document, "elements", "IP_PROTOCOL_VERSION", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "IP_PROTOCOL_VERSION")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getLastSwitched() {
-        return get(document, "elements", "LAST_SWITCHED", "v")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document,  "LAST_SWITCHED")
+                .map(t -> this.getBootTime() + t)
                 .orElse(null);
     }
 
     @Override
     public String getNextHop() {
-        return first(get(document, "elements", "IPV6_NEXT_HOP", "v"),
-                     get(document, "elements", "IPV4_NEXT_HOP", "v"),
-                     get(document, "elements", "BPG_IPV6_NEXT_HOP", "v"),
-                     get(document, "elements", "BPG_IPV4_NEXT_HOP", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document,  "IPV6_NEXT_HOP"),
+                     getString(this.document,  "IPV4_NEXT_HOP"),
+                     getString(this.document,  "BPG_IPV6_NEXT_HOP"),
+                     getString(this.document,  "BPG_IPV4_NEXT_HOP"))
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return get(document, "elements", "OUTPUT_SNMP", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "OUTPUT_SNMP")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Long getPackets() {
-        return get(document, "elements", "IN_PKTS", "v")
-                .map(v -> v.asInt64().getValue())
+        return getInt64(this.document,  "IN_PKTS")
                 .orElse(null);
     }
 
     @Override
     public Integer getProtocol() {
-        return get(document, "elements", "PROTOCOL", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "PROTOCOL")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSamplingAlgorithm() {
-        return get(document, "elements", "SAMPLING_ALGORITHM", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "SAMPLING_ALGORITHM")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSamplingInterval() {
-        return get(document, "elements", "SAMPLING_INTERVAL", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "SAMPLING_INTERVAL")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public String getSrcAddr() {
-        return first(get(document, "elements", "IPV6_SRC_ADDR", "v"),
-                     get(document, "elements", "IPV4_SRC_ADDR", "v"))
-                .map(v -> v.asString().getValue())
+        return first(getString(this.document,  "IPV6_SRC_ADDR"),
+                     getString(this.document,  "IPV4_SRC_ADDR"))
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcAs() {
-        return get(document, "elements", "SRC_AS", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "SRC_AS")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcMaskLen() {
-        return first(get(document, "elements", "IPV6_SRC_MASK", "v"),
-                     get(document, "elements", "SRC_MASK", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "IPV6_SRC_MASK"),
+                     getInt64(this.document,  "SRC_MASK"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcPort() {
-        return get(document, "elements", "L4_SRC_PORT", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "L4_SRC_PORT")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTcpFlags() {
-        return get(document, "elements", "TCP_FLAGS", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "TCP_FLAGS")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTos() {
-        return get(document, "elements", "TOS", "v")
-                .map(v -> (int) v.asInt64().getValue())
+        return getInt64(this.document,  "TOS")
+                .map(Long::intValue)
                 .orElse(null);
     }
 
@@ -248,28 +241,17 @@ class Netflow9Flow implements Flow {
 
     @Override
     public Integer getVlan() {
-        return first(get(document, "elements", "SRC_VLAN", "v"),
-                     get(document, "elements", "DST_VLAN", "v"))
-                .map(v -> (int) v.asInt64().getValue())
+        return first(getInt64(this.document,  "SRC_VLAN"),
+                     getInt64(this.document,  "DST_VLAN"))
+                .map(Long::intValue)
                 .orElse(null);
     }
 
-    private static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
-        BsonValue value = doc;
-        for (final String p : path) {
-            value = value.asDocument().get(p);
-            if (value == null) {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(value);
+    private long getSysUpTime() {
+        return getInt64(this.document, "@sysUpTime").get() * 1000;
     }
 
-    private static <V> Optional<V> first(final Optional<V>... values) {
-        return Stream.of(values)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
+    private long getBootTime() {
+        return this.getTimestamp() - getSysUpTime();
     }
 }

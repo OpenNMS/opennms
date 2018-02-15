@@ -51,6 +51,11 @@ public class UnsignedValue extends Value<UnsignedLong> {
         this.value = value;
     }
 
+    public UnsignedValue(final String name,
+                         final long value) {
+        this(name, Optional.empty(), UnsignedLong.valueOf(value));
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

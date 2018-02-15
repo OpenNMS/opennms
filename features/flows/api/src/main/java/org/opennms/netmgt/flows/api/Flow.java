@@ -46,7 +46,7 @@ public interface Flow {
     /**
      * Flow timestamp in milliseconds.
      */
-    Long getTimestamp();
+    long getTimestamp();
 
     /**
      * Number of bytes transferred in the flow.

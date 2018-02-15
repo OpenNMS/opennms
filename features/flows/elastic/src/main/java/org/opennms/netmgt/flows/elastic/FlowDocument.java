@@ -42,7 +42,7 @@ public class FlowDocument {
      * Flow timestamp in milliseconds.
      */
     @SerializedName("@timestamp")
-    private Long timestamp;
+    private long timestamp;
 
     /**
      * Schema version.
@@ -290,11 +290,11 @@ public class FlowDocument {
     @SerializedName("node_src")
     private NodeDocument nodeSrc;
 
-    public Long getTimestamp() {
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Long timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
 

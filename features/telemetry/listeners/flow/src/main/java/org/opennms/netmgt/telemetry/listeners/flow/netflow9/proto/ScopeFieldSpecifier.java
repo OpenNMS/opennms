@@ -44,7 +44,6 @@ import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.primitives.UnsignedLong;
 
 public final class ScopeFieldSpecifier implements Field, Scope {
 
@@ -160,8 +159,8 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     public static List<Value<?>> buildScopeValues(final DataRecord record) {
         final ImmutableList.Builder<Value<?>> values = ImmutableList.builder();
 
-        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_SYSTEM, Optional.empty(), UnsignedLong.fromLongBits(record.set.packet.header.sourceId)));
-        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_TEMPLATE, Optional.empty(), UnsignedLong.fromLongBits(record.set.template.id)));
+        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_SYSTEM, record.set.packet.header.sourceId));
+        values.add(new UnsignedValue(ScopeFieldSpecifier.SCOPE_TEMPLATE, record.set.template.id));
 
         return values.build();
     }

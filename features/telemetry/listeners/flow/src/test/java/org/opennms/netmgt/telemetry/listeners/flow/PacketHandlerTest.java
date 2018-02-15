@@ -37,8 +37,8 @@ import java.util.Optional;
 import org.bson.RawBsonDocument;
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
+import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
@@ -54,7 +54,7 @@ public class PacketHandlerTest {
 
     @Test
     public void test() throws Exception {
-        final RecordProvider.Record record = new RecordProvider.Record(0, 0, 3, 0, 1, Arrays.asList(
+        final Iterable<Value<?>> record = Arrays.asList(
                 new StringValue("name1", Optional.empty(), "my value 1"),
                 new UnsignedValue("name2", Optional.of(Semantics.TOTAL_COUNTER), UnsignedLong.valueOf(23)),
                 new IPv6AddressValue("name3", Optional.of(Semantics.IDENTIFIER), (Inet6Address) Inet6Address.getByName("::1")),
@@ -84,15 +84,16 @@ public class PacketHandlerTest {
                                 new ListValue("name5t3e1", Optional.empty(), ListValue.Semantic.NONE_OF, Arrays.asList())
                         ))
                 )
-        ));
+        );
 
         final ByteBuffer output = PacketHandler.serialize(Protocol.IPFIX, record);
 
         final RawBsonDocument bson = new RawBsonDocument(output.array());
-        System.out.println(bson.toString());
 
-        Assert.assertEquals("my value 1", bson.getDocument("elements").getDocument("name1").getString("v").getValue());
-        Assert.assertEquals(23, bson.getDocument("elements").getDocument("name2").getInt64("v").getValue());
-        Assert.assertEquals(Semantics.IDENTIFIER.ordinal(), bson.getDocument("elements").getDocument("name3").getInt32("s").getValue());
+        Assert.assertEquals("my value 1", bson.getString("name1").getValue());
+        Assert.assertEquals(23, bson.getInt64("name2").getValue());
+
+        Assert.assertEquals(5, bson.getDocument("name5").getArray("values").get(0).asDocument().getInt64("name5t0e0").getValue());
+        Assert.assertEquals(1.5, bson.getDocument("name5").getArray("values").get(3).asDocument().getDocument("name5t3e0").getArray("values").get(0).asDocument().getDouble("name5t3e0t0e0").doubleValue(), 0.0);
     }
 }
