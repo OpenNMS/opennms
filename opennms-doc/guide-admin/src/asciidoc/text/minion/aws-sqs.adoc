@@ -95,7 +95,8 @@ Restart _Minion_ to apply the changes.
 
 NOTE: AWS credentials are required when the Minion is not running inside a VPC.
 
-IMPORTANT: The Minion SQS settings must match what OpenNMS currently has. This is particularly critical for the _FifoQueue_ setting.
+IMPORTANT: The Minion SQS settings must match what OpenNMS currently has.
+           This is particularly critical for the _FifoQueue_ setting.
 
 ==== SQS Configuration Settings
 
@@ -105,40 +106,40 @@ From the link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReferen
 
 Queues used for reception of unsolicited messages (e.g. SNMP traps, syslog messages) are configured by setting properties with `sink` prepended to the SQS parameter name:
 
-[options="header",frame="topbot",grid="none"]
+[options="header"]
 |====
-|Parameter|Notes|_{opennms-product-name}_|Minion
-|`DelaySeconds`|Default: 0 seconds|`org.opennms.core.ipc.aws.sqs.sink.DelaySeconds`|`sink.DelaySeconds`
-|`MaximumMessageSize`|Default: 262144 bytes|`org.opennms.core.ipc.aws.sqs.sink.MaximumMessageSize`|`sink.MaximumMessageSize`
-|`MessageRetentionPeriod`|Default: 1209600 seconds|`org.opennms.core.ipc.aws.sqs.sink.MessageRetentionPeriod`|`sink.MessageRetentionPeriod`
-|`ReceiveMessageWaitTimeSeconds`|Default: 10 seconds (for OpenNMS)|`org.opennms.core.ipc.aws.sqs.sink.ReceiveMessageWaitTimeSeconds`|`sink.ReceiveMessageWaitTimeSeconds`
-|`VisibilityTimeout`|Default: 30 seconds|`org.opennms.core.ipc.aws.sqs.sink.VisibilityTimeout`|`sink.VisibilityTimeout`
-|`Policy`||`org.opennms.core.ipc.aws.sqs.sink.Policy`|`sink.Policy`
-|`RedrivePolicy`||`org.opennms.core.ipc.aws.sqs.sink.RedrivePolicy`|`sink.RedrivePolicy`
-|`KmsMasterKeyId`||`org.opennms.core.ipc.aws.sqs.sink.KmsMasterKeyId`|`sink.KmsMasterKeyId`
-|`KmsDataKeyReusePeriodSeconds`||`org.opennms.core.ipc.aws.sqs.sink.KmsDataKeyReusePeriodSeconds`|`sink.KmsDataKeyReusePeriodSeconds`
-|`FifoQueue`|Default: false|`org.opennms.core.ipc.aws.sqs.sink.FifoQueue`|`sink.FifoQueue`
-|`ContentBasedDeduplication`|Valid only when `sink.FifoQueue` is `true`|`org.opennms.core.ipc.aws.sqs.sink.ContentBasedDeduplication`|`sink.ContentBasedDeduplication`
+| Parameter                      | Notes                                         | _{opennms-product-name}_                                          | Minion
+| `DelaySeconds`                 | Default: 0 seconds                            | `org.opennms.core.ipc.aws.sqs.sink.DelaySeconds`                  | `sink.DelaySeconds`
+| `MaximumMessageSize`           | Default: 262144 bytes                         | `org.opennms.core.ipc.aws.sqs.sink.MaximumMessageSize`            | `sink.MaximumMessageSize`
+| `MessageRetentionPeriod`       | Default: 1209600 seconds                      | `org.opennms.core.ipc.aws.sqs.sink.MessageRetentionPeriod`        | `sink.MessageRetentionPeriod`
+| `ReceiveMessageWaitTimeSeconds`| Default: 10 seconds (for OpenNMS)             | `org.opennms.core.ipc.aws.sqs.sink.ReceiveMessageWaitTimeSeconds` | `sink.ReceiveMessageWaitTimeSeconds`
+| `VisibilityTimeout`            | Default: 30 seconds                           | `org.opennms.core.ipc.aws.sqs.sink.VisibilityTimeout`             | `sink.VisibilityTimeout`
+| `Policy`                       | -                                             | `org.opennms.core.ipc.aws.sqs.sink.Policy`                        | `sink.Policy`
+| `RedrivePolicy`                | -                                             | `org.opennms.core.ipc.aws.sqs.sink.RedrivePolicy`                 | `sink.RedrivePolicy`
+| `KmsMasterKeyId`               | -                                             | `org.opennms.core.ipc.aws.sqs.sink.KmsMasterKeyId`                | `sink.KmsMasterKeyId`
+| `KmsDataKeyReusePeriodSeconds` | -                                             | `org.opennms.core.ipc.aws.sqs.sink.KmsDataKeyReusePeriodSeconds`  | `sink.KmsDataKeyReusePeriodSeconds`
+| `FifoQueue`                    | Default: false                                | `org.opennms.core.ipc.aws.sqs.sink.FifoQueue`                     | `sink.FifoQueue`
+| `ContentBasedDeduplication`    | Valid only when `sink.FifoQueue` is `true`    | `org.opennms.core.ipc.aws.sqs.sink.ContentBasedDeduplication`     |`sink.ContentBasedDeduplication`
 |====
 
 ===== RPC Settings
 
 Queues used for provisioning, service polling, data collection, and other concerns apart from unsolicited message reception are configured by setting properties with `rpc` prepended to the SQS parameter name:
 
-[options="header",frame="topbot",grid="none"]
+[options="header"]
 |====
-|Parameter|Notes|_{opennms-product-name}_|Minion
-|`DelaySeconds`|Default: 0 seconds|`org.opennms.core.ipc.aws.sqs.rpc.DelaySeconds`|`rpc.DelaySeconds`
-|`MaximumMessageSize`|Default: 262144 bytes|`org.opennms.core.ipc.aws.sqs.rpc.MaximumMessageSize`|`rpc.MaximumMessageSize`
-|`MessageRetentionPeriod`|Default: 1209600 seconds|`org.opennms.core.ipc.aws.sqs.rpc.MessageRetentionPeriod`|`rpc.MessageRetentionPeriod`
-|`ReceiveMessageWaitTimeSeconds`|Default: 10 seconds (for OpenNMS)|`org.opennms.core.ipc.aws.sqs.rpc.ReceiveMessageWaitTimeSeconds`|`rpc.ReceiveMessageWaitTimeSeconds`
-|`VisibilityTimeout`|Default: 30 seconds|`org.opennms.core.ipc.aws.sqs.rpc.VisibilityTimeout`|`rpc.VisibilityTimeout`
-|`Policy`||`org.opennms.core.ipc.aws.sqs.rpc.Policy`|`rpc.Policy`
-|`RedrivePolicy`||`org.opennms.core.ipc.aws.sqs.rpc.RedrivePolicy`|`rpc.RedrivePolicy`
-|`KmsMasterKeyId`||`org.opennms.core.ipc.aws.sqs.rpc.KmsMasterKeyId`|`rpc.KmsMasterKeyId`
-|`KmsDataKeyReusePeriodSeconds`||`org.opennms.core.ipc.aws.sqs.rpc.KmsDataKeyReusePeriodSeconds`|`rpc.KmsDataKeyReusePeriodSeconds`
-|`FifoQueue`|Default: false|`org.opennms.core.ipc.aws.sqs.rpc.FifoQueue`|`rpc.FifoQueue`
-|`ContentBasedDeduplication`|Valid only when `rpc.FifoQueue` is `true`|`org.opennms.core.ipc.aws.sqs.rpc.ContentBasedDeduplication`|`rpc.ContentBasedDeduplication`
+| Parameter                       | Notes                                     | _{opennms-product-name}_                                         | Minion
+| `DelaySeconds`                  | Default: 0 seconds                        | `org.opennms.core.ipc.aws.sqs.rpc.DelaySeconds`                  | `rpc.DelaySeconds`
+| `MaximumMessageSize`            | Default: 262144 bytes                     | `org.opennms.core.ipc.aws.sqs.rpc.MaximumMessageSize`            | `rpc.MaximumMessageSize`
+| `MessageRetentionPeriod`        | Default: 1209600 seconds                  | `org.opennms.core.ipc.aws.sqs.rpc.MessageRetentionPeriod`        | `rpc.MessageRetentionPeriod`
+| `ReceiveMessageWaitTimeSeconds` | Default: 10 seconds (for OpenNMS)         | `org.opennms.core.ipc.aws.sqs.rpc.ReceiveMessageWaitTimeSeconds` | `rpc.ReceiveMessageWaitTimeSeconds`
+| `VisibilityTimeout`             | Default: 30 seconds                       | `org.opennms.core.ipc.aws.sqs.rpc.VisibilityTimeout`             | `rpc.VisibilityTimeout`
+| `Policy`                        | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.Policy`                        | `rpc.Policy`
+| `RedrivePolicy`                 | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.RedrivePolicy`                 | `rpc.RedrivePolicy`
+| `KmsMasterKeyId`                | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.KmsMasterKeyId`                | `rpc.KmsMasterKeyId`
+| `KmsDataKeyReusePeriodSeconds`  | -                                         | `org.opennms.core.ipc.aws.sqs.rpc.KmsDataKeyReusePeriodSeconds`  | `rpc.KmsDataKeyReusePeriodSeconds`
+| `FifoQueue`                     | Default: false                            | `org.opennms.core.ipc.aws.sqs.rpc.FifoQueue`                     | `rpc.FifoQueue`
+| `ContentBasedDeduplication`     | Valid only when `rpc.FifoQueue` is `true` | `org.opennms.core.ipc.aws.sqs.rpc.ContentBasedDeduplication`     |`rpc.ContentBasedDeduplication`
 |====
 
 NOTE: When FIFO queues are not required, there is no need to add `FifoQueue=false` to the configuration files, as this is the default behavior.
@@ -165,7 +166,7 @@ In order to create credentials just for accessing SQS resources, follow this pro
 * On the search bar, write SQS, and then check on `AmazonSQSFullAccess`.
 * Click on Create User
 
-image:../images/minion/aws-minion-user.png[]
+image:minion/aws-minion-user.png[]
 
 Finally, either click on Download .csv or click on "Show" to grab a copy of the Access key ID, and the Secret access key.
 
@@ -184,5 +185,6 @@ See link:http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGui
 Queue names in _AWS SQS_ are limited to 80 characters.
 When issuing remote procedure calls, the target location is used a part of the queue name.
 For this reason, it is important that:
+
 * The length of the location name and queue name prefix (if used) must not exceed 32 characters in aggregate.
 * Both the location name and queue name prefix (if used) may only contain alphanumeric characters, hyphens (-), and underscores (_).
