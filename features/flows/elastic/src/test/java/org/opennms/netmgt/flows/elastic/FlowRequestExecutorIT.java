@@ -46,6 +46,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.plugins.elasticsearch.rest.OnmsJestClient;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;

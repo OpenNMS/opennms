@@ -26,27 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.index;
 
-import static org.junit.Assert.assertEquals;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+/**
+ * Factory to create an {@link IndexStrategy} from a string.
+ * Should help using {@link IndexStrategy} objects while creating objects from blueprint.xml files.
+ */
+public class IndexStrategyFactory {
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
+    private static final Logger LOG = LoggerFactory.getLogger(IndexStrategyFactory.class);
+
+    private static final IndexStrategy DEFAULT_INDEX = IndexStrategy.MONTHLY;
+
+    public static IndexStrategy createIndexStrategy(String input) {
+        for (IndexStrategy strategy : IndexStrategy.values()) {
+            if (strategy.name().equalsIgnoreCase(input)) {
+                LOG.debug("Using strategy {}", strategy);
+                return strategy;
+            }
         }
-
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+        LOG.debug("No strategy found for key {}, falling back to {}", input, DEFAULT_INDEX);
+        return DEFAULT_INDEX;
     }
-
 }

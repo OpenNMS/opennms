@@ -37,6 +37,9 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
+import org.opennms.plugins.elasticsearch.rest.template.CachingTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.TemplateLoader;
 
 public class CachingTemplateLoaderTest {
 

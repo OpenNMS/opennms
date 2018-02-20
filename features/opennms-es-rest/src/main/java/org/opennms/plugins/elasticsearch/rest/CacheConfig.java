@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest;
 
-import static org.junit.Assert.assertEquals;
+public class CacheConfig {
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+    private long maxSize;
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+    private long maxTTL; // minutes
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+    public long getMaxSize() {
+        return maxSize;
     }
 
+    public void setMaxSize(long maxSize) {
+        this.maxSize = maxSize;
+    }
+
+    public long getMaxTTL() {
+        return maxTTL;
+    }
+
+    public void setMaxTTL(long maxTTL) {
+        this.maxTTL = maxTTL;
+    }
 }

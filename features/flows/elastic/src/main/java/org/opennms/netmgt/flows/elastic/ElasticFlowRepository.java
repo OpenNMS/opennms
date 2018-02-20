@@ -54,6 +54,7 @@ import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
 import org.opennms.plugins.elasticsearch.rest.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,7 +153,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
         try (final Timer.Context ctx = logPersistingTimer.time()) {
-            final String index = indexStrategy.getIndex(new Date());
+            final String index = indexStrategy.getIndex("netflow", new Date());
 
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FlowDocument flowDocument : flowDocuments) {

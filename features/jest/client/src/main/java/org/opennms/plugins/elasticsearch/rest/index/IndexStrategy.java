@@ -26,27 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.index;
 
-import static org.junit.Assert.assertEquals;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Objects;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+/**
+ * Defines a strategy on how to define the index when persisting.
+ */
+public enum IndexStrategy {
+    YEARLY(new SimpleDateFormat("yyyy")),
+    MONTHLY(new SimpleDateFormat("yyyy-MM")),
+    DAILY(new SimpleDateFormat("yyyy-MM-dd")),
+    HOURLY(new SimpleDateFormat("yyyy-MM-dd-HH"));
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+    private final DateFormat dateFormat;
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+    IndexStrategy(DateFormat dateFormat) {
+        this.dateFormat = Objects.requireNonNull(dateFormat);
     }
 
+    public String getIndex(String indexPrefix, Date date) {
+        return String.format("%s-$s", indexPrefix, dateFormat.format(date));
+    }
 }

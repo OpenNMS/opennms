@@ -28,16 +28,15 @@
 
 package org.opennms.netmgt.flows.elastic.template;
 
-import static org.junit.Assert.assertEquals;
 import static org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE;
 
 import java.io.IOException;
 
 import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
 
 public class MergingTemplateLoaderTest {
 

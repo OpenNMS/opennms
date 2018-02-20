@@ -26,26 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+/**
+ * Caches the loading of templates.
+ */
+public class CachingTemplateLoader implements TemplateLoader {
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
+    private final LoadingCache<String, String> cache;
+
+    public CachingTemplateLoader(final TemplateLoader delegate) {
+        Objects.requireNonNull(delegate);
+
+        this.cache = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<String, String>() {
+            @Override
+            public String load(String resource) throws Exception {
+                return delegate.load(resource);
+            }
+        });
+    }
+
+    @Override
+    public String load(String resource) throws IOException {
+        try {
+            return cache.get(resource);
+        } catch (ExecutionException e) {
+            throw new IOException("Could not read data from cache", e);
         }
     }
 

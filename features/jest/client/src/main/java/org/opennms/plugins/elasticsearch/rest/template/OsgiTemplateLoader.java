@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,27 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Objects;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+import org.osgi.framework.BundleContext;
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+// OSGI-aware TemplateLoader.
+public class OsgiTemplateLoader extends DefaultTemplateLoader {
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+    private final BundleContext bundleContext;
+
+    public OsgiTemplateLoader(BundleContext bundleContext) {
+        this.bundleContext = Objects.requireNonNull(bundleContext);
     }
 
+    @Override
+    protected InputStream getResourceAsStream(String resource) throws IOException {
+        final URL theResource = bundleContext.getBundle().getResource(resource);
+        if (theResource != null) {
+            return theResource.openConnection().getInputStream();
+        }
+        return null;
+    }
 }

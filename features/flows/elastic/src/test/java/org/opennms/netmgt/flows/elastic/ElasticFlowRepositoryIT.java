@@ -38,6 +38,7 @@ import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;

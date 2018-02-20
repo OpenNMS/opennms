@@ -26,27 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+import com.google.common.io.ByteStreams;
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+public class DefaultTemplateLoader implements TemplateLoader {
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
+    @Override
+    public String load(String resource) throws IOException {
+        try (InputStream inputStream = getResourceAsStream(resource)) {
+            // Ensure resource actually exists
+            if (inputStream == null) {
+                throw new NullPointerException("Provided inputStream to read template from is null");
+            }
+            // Read template
+            final byte[] bytes = new byte[inputStream.available()];
+            ByteStreams.readFully(inputStream, bytes);
+            final String template = new String(bytes);
+            return template;
         }
     }
 
+    protected InputStream getResourceAsStream(String resource) throws IOException {
+        return getClass().getResourceAsStream(resource);
+    }
 }

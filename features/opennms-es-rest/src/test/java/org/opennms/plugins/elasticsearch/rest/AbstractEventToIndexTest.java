@@ -26,27 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.After;
+import org.junit.Before;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+import io.searchbox.client.JestClient;
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+public abstract class AbstractEventToIndexTest {
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+    protected JestClient jestClient;
+    protected EventToIndex eventToIndex;
+
+    @Before
+    public void setUp() throws Exception {
+        this.jestClient = new RestClientFactory("http://localhost:9200", "", "").createClient();
+        this.eventToIndex = new EventToIndex(jestClient);
     }
 
+    @After
+    public void tearDown() {
+        if (jestClient != null) {
+            jestClient.shutdownClient();
+        }
+        if (eventToIndex != null) {
+            eventToIndex.close();
+        }
+    }
 }

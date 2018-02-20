@@ -42,6 +42,7 @@ import org.opennms.core.test.elastic.ExecutionTime;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;

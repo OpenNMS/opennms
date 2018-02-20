@@ -26,27 +26,32 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.template;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+import java.util.Objects;
 
-import org.junit.Test;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
+/**
+ * Merges a template which is loaded from a delegate {@link TemplateLoader} with optional {@link IndexSettings}.
+ */
+public class MergingTemplateLoader implements TemplateLoader {
 
-public class IndexStrategyFactoryTest {
-    @Test
-    public void verifyInitialization() {
-        // Verify initialization for each IndexStrategy (case matches)
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name()));
-        }
+    private final TemplateLoader delegate;
+    private final IndexSettings indexSettings;
 
-        // Verify Initialization for each IndexStrategy (case does not match)
-        // See HZN-1240 for more details
-        for (IndexStrategy eachValue : IndexStrategy.values()) {
-            assertEquals(eachValue, IndexStrategyFactory.createIndexStrategy(eachValue.name().toLowerCase()));
-        }
+    public MergingTemplateLoader(TemplateLoader delegate, IndexSettings indexSettings) {
+        this.delegate = Objects.requireNonNull(delegate);
+        this.indexSettings = indexSettings;
     }
 
+    @Override
+    public String load(String resource) throws IOException {
+        final String template = delegate.load(resource);
+        return merge(template);
+    }
+
+    private String merge(String template) {
+        final String mergedTemplate = new TemplateMerger().merge(template, indexSettings);
+        return mergedTemplate;
+    }
 }
