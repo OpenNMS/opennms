@@ -1382,7 +1382,6 @@
     <licencemanagerVersion>1.0.6</licencemanagerVersion>
     <featuremanagerVersion>1.0.6</featuremanagerVersion>
 
-<<<<<<< HEAD
     <!-- subscription properties -->
     <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
     <!-- Subscription name, version and groupId for generated subscription artifacts -->
@@ -1396,17 +1395,11 @@
     <!-- Set this false once you have a permanent licence generated and deployed -->
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
 
-=======
->>>>>>> develop
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
     <nodeVersion>v8.9.3</nodeVersion>
     <npmVersion>5.5.1</npmVersion>
     <yarnVersion>v1.3.2</yarnVersion>
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
   </properties>
 
   <profiles>
