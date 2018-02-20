@@ -1394,6 +1394,12 @@
     <!-- Set this false once you have a permanent licence generated and deployed -->
     <defaultRegenerateSubscription>true</defaultRegenerateSubscription>
 
+    <!-- nodejs development -->
+    <frontendPluginVersion>1.6</frontendPluginVersion>
+    <nodeVersion>v8.9.3</nodeVersion>
+    <npmVersion>5.5.1</npmVersion>
+    <yarnVersion>v1.3.2</yarnVersion>
+
   </properties>
 
   <profiles>
@@ -1794,6 +1800,11 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.web</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.web-assets</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
