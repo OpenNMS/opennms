@@ -122,32 +122,47 @@ final String baseHref = Util.calculateUrlBase( request );
   <!--  ${nostyles} -->
   <c:choose>
     <c:when test="${param.nostyles != 'true' }">
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/styles.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/gwt-asset.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/onms-gwt-chrome.css" media="screen" />
-        <link rel="stylesheet" type="text/css" href="<%= baseHref %>css/print.css" media="print" />
+	    <jsp:include page="/assets/load-assets.jsp" flush="false">
+	      <jsp:param name="asset" value="styles" />
+	      <jsp:param name="asset-media" value="screen" />
+	      <jsp:param name="asset-type" value="css" />
+	    </jsp:include>
+	    <jsp:include page="/assets/load-assets.jsp" flush="false">
+	      <jsp:param name="asset" value="gwt-asset" />
+	      <jsp:param name="asset-media" value="screen" />
+	      <jsp:param name="asset-type" value="css" />
+	    </jsp:include>
+	    <jsp:include page="/assets/load-assets.jsp" flush="false">
+	      <jsp:param name="asset" value="onms-gwt-chrome" />
+	      <jsp:param name="asset-media" value="screen" />
+	      <jsp:param name="asset-type" value="css" />
+	    </jsp:include>
+	    <jsp:include page="/assets/load-assets.jsp" flush="false">
+	      <jsp:param name="asset" value="print" />
+	      <jsp:param name="asset-type" value="css" />
+	    </jsp:include>
     </c:when>
   </c:choose>
   <link rel="shortcut icon" href="<%= baseHref %>favicon.ico" />
   <c:forEach var="link" items="${paramValues.link}">
     <c:out value="${link}" escapeXml="false" />
   </c:forEach>
-  <script type="text/javascript" src="<%= baseHref %>js/global.js"></script>
+  <jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="global" />
+  </jsp:include>
 	<c:if test="${param.storageAdmin == 'true'}">
-  		<script type='text/javascript' src='<%= baseHref %>js/rwsStorage.js'></script>
+      <jsp:include page="/assets/load-assets.jsp" flush="false">
+        <jsp:param name="asset" value="rws-storage" />
+      </jsp:include>
 	</c:if>
 
-	<c:if test="${param.enableSpringDojo == 'true'}">	
-		<script type="text/javascript" src='<%= baseHref %>resources/dojo/dojo.js'></script>
-   		<script type="text/javascript" src='<%= baseHref %>resources/spring/Spring.js'></script>
-                <script type="text/javascript" src='<%= baseHref %>resources/spring/Spring-Dojo.js'></script>
-    </c:if>
-
 <c:forEach var="script" items="${paramValues.script}">
+    <!-- WARNING: "script" parameters are deprecated. Remove the next line from your JSP. -->
     <c:out value="${script}" escapeXml="false" />
   </c:forEach>
 
 <c:forEach var="extras" items="${paramValues.extras}">
+    <!-- WARNING: "extras" parameters are deprecated. Remove the next line from your JSP. -->
   <c:out value="${extras}" escapeXml="false" />
 </c:forEach>
 

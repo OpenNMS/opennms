@@ -31,19 +31,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Resource Graphs" />
   <jsp:param name="headTitle" value="Reports" />
   <jsp:param name="location" value="performance" />
   <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
   <jsp:param name="breadcrumb" value="Resource Graphs" />
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/underscore/underscore.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-resources/app.js"></script>' />
 </jsp:include>
 
 <div class="container-fluid" ng-app="onms-resources" ng-controller="NodeListCtrl">
@@ -130,5 +123,12 @@
   </div>
 
 </div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="angular-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="onms-resources" />
+</jsp:include>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ncs-northbounder-config enabled="true" nagles-delay="1000" 
+<ncs-northbounder-config enabled="false" nagles-delay="1000"
 	scheme="https" host="localhost" path="/fmpm/restful/NotificationMessageRelay">
 	<uei>uei.opennms.org/internal/ncs/componentImpacted</uei>
 	<uei>uei.opennms.org/internal/ncs/componentResolved</uei>

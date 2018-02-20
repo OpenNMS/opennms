@@ -40,14 +40,18 @@
     String hostName = InetAddressUtils.getLocalHostName();
 %>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Send Event" />
   <jsp:param name="headTitle" value="Send Event" />
   <jsp:param name="headTitle" value="Admin" />
   <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
   <jsp:param name="breadcrumb" value="Send Event" />
-  <jsp:param name="link" value='<link type="text/css" href="lib/jquery-ui/themes/base/all.css" rel="stylesheet" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/jquery-ui/jquery-ui.js"></script>' />
+</jsp:include>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="jquery-ui-base-theme" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="jquery-js" />
 </jsp:include>
 
 <style type="text/css">

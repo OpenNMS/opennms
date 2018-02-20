@@ -61,7 +61,7 @@ import org.springframework.util.ClassUtils;
  * @author brozow
  * @version $Id: $
  */
-public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
+public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, ThreadAwareEventListener, InitializingBean, DisposableBean {
     
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AnnotationBasedEventListenerAdapter.class);
@@ -69,6 +69,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     private volatile String m_name = null;
     private volatile Object m_annotatedListener;
     private volatile String m_logPrefix = null;
+    private volatile int m_threads = 1;
     private volatile EventSubscriptionService m_subscriptionService;
 
     private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
@@ -293,7 +294,9 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
                 m_logPrefix = m_name;
             }
         }
-        
+
+        m_threads = listenerInfo.threads();
+
         populatePreProcessorList();
         
         populateUeiToHandlerMap();
@@ -332,6 +335,17 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         Assert.state(method.getParameterTypes().length == 2, "Invalid number of parameters. EventExceptionHandler methods must take 2 arguments with types (Event, ? extends Throwable)");
         Assert.state(ClassUtils.isAssignable(Event.class, method.getParameterTypes()[0]), "First parameter of incorrect type. EventExceptionHandler first paramenter must be of type Event");
         Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrect type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
+    }
+
+    @Override
+    public int getNumThreads() {
+        // If the listener is thread aware, then use the value provided by
+        // the thread aware interface, otherwise fall back to the value
+        // provided in the annotation
+        if (m_annotatedListener instanceof ThreadAwareEventListener) {
+            return ((ThreadAwareEventListener) m_annotatedListener).getNumThreads();
+        }
+        return m_threads;
     }
 
     private static class ClassComparator<T> implements Comparator<Class<? extends T>> {

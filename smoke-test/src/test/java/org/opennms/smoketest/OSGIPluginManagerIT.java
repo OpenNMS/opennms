@@ -51,6 +51,10 @@ import org.slf4j.LoggerFactory;
  */
 public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     private static final Logger LOG = LoggerFactory.getLogger(OSGIPluginManagerIT.class);
+<<<<<<< HEAD
+=======
+
+>>>>>>> develop
 
     @Test
     public void canListProducts() throws ClientProtocolException, IOException, InterruptedException {
@@ -110,19 +114,31 @@ public class OSGIPluginManagerIT extends OpenNMSSeleniumTestCase {
     	String repository = getBaseUrl() 
        			+ "/opennms/featuremgr/rest/v1-0/features-addrepositoryurl?uri=mvn:org.opennms.karaf/opennms/"
        			+ version+"/xml/features";
+<<<<<<< HEAD
     	LOG.debug("Smoke Test loading repository from "+repository);
+=======
+    	LOG.info("Smoke Test loading repository from "+repository);
+>>>>>>> develop
        	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(repository)));
         	
     	// install alarm-change-notifier plugin
        	String install = getBaseUrl() 
     			+ "/opennms/featuremgr/rest/v1-0/features-install?name=alarm-change-notifier&version="+version;
+<<<<<<< HEAD
        	LOG.debug("Smoke Test installing plugin from "+install);
+=======
+       	LOG.info("Smoke Test installing plugin from "+install);
+>>>>>>> develop
     	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(install)));
 
     	// uninstall alarm-change-notifier plugin
     	String uninstall = getBaseUrl() 
     			+ "/opennms/featuremgr/rest/v1-0/features-uninstall?name=alarm-change-notifier&version="+version;
+<<<<<<< HEAD
     	LOG.debug("Smoke Test uninstalling plugin from "+uninstall);
+=======
+    	LOG.info("Smoke Test uninstalling plugin from "+uninstall);
+>>>>>>> develop
     	assertEquals(Integer.valueOf(200), doRequest(new HttpGet(uninstall)));
 
     }
