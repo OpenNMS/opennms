@@ -27,6 +27,7 @@
             <cm:property name="retryCooldown" value="500" />
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
+            <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
 
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
@@ -59,6 +60,7 @@
         <property name="requestExecutorFactory" ref="flowRequestExecutorFactory" />
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
+        <property name="retries" value="${retries}" />
     </bean>
 
     <!-- Actually creates the client, but only once -->

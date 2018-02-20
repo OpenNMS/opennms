@@ -33,6 +33,7 @@ ${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inte
 
 By default, this will open a UDP socket bound to `0.0.0.0:8877` to which _NetFlow v5_ messages can be forwarded.
 
+[[configure-elasticsearch-persistence]]
 ===== Configure ElasticSearch Persistence
 
 The _NetFlow 5 Adapter_ persists the data to _ElasticSearch_ and access needs to be configured on the _{opennms-product-name}_ system through _Karaf Console_:
@@ -64,7 +65,7 @@ The following configuration properties can be set:
 | `daily`
 
 | _elasticGlobalUser_
-| User name to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
+| Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
 | optional
 | -
 
@@ -97,6 +98,11 @@ The following configuration properties can be set:
 | Allows defining a HTTP proxy. Only accepts valid URLs.
 | optional
 | -
+
+| _retries_
+| Defines how many times an operation is retried before considered failed.
+| optional
+| 0
 
 | _retryCooldown_
 | Defines the cooldown in ms to wait before retrying. Value of `0` means no cooldown. Value must be >= `0`.
