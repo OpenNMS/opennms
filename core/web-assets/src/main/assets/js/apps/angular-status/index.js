@@ -4,9 +4,9 @@ const MODULE_NAME = 'onms.status';
 
 const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
+require('lib/onms-pagination');
 
 const filterTemplate            = require('./templates/filter.html');
-const paginationToolbarTemplate = require('./templates/pagination-toolbar.html');
 const severityFilterTemplate    = require('./templates/severity-filter.html');
 
 const applicationsTemplate      = require('./views/applications.html');
@@ -27,7 +27,7 @@ const toList = (severityFilter) => {
     return list;
 };
 
-angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onms.elementList' ])
+angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onms.elementList', 'onms.pagination' ])
     .directive('onmsStatusList', () => {
         return {
             restrict: 'E',
@@ -77,16 +77,6 @@ angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'u
                     $scope.severity = {};
                 }
             }
-        }
-    })
-    .directive('pagination', function() {
-        return {
-            restrict: 'E',
-            scope: {
-                query: '=model'
-            },
-            transclude: true,
-            templateUrl: paginationToolbarTemplate
         }
     })
 

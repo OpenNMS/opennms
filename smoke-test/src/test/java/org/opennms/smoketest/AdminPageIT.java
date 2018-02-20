@@ -56,6 +56,9 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
         new String[] { "Manually Add an Interface", "//h3[text()='Enter IP Address']" },
         new String[] { "Delete Nodes", "//h3[text()='Delete Nodes']" },
 
+        // Flow Management
+        new String[] { "Manage Flow Classification", "//div/ol/li[text()='Flow Classification']" },
+
         // Event Management
         new String[] { "Manually Send an Event", "//h3[text()='Send Event to OpenNMS']" },
         new String[] { "Configure Notifications", "//h3[text()='Configure Notifications']" },
@@ -94,9 +97,10 @@ public class AdminPageIT extends OpenNMSSeleniumTestCase {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(8, countElementsMatchingCss("h3.panel-title"));
+        assertEquals(9, countElementsMatchingCss("h3.panel-title"));
         findElementByXpath("//h3[text()='OpenNMS System']");
         findElementByXpath("//h3[text()='Provisioning']");
+        findElementByXpath("//h3[text()='Flow Management']");
         findElementByXpath("//h3[text()='Event Management']");
         findElementByXpath("//h3[text()='Service Monitoring']");
         findElementByXpath("//h3[text()='Performance Measurement']");
