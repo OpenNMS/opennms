@@ -33,34 +33,28 @@
         <div class="panel">
             <div class="panel-default panel-body">
                 <div class="col-md-12">
-                    <form name="classifyForm" class="form-horizontal">
+                    <form name="classifyForm">
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="classify-protocol">Protocol</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text"
-                                       id="classify-protocol"
-                                       name="classify-protocol"
-                                       ng-model="classificationRequest.protocol"
-                                       placeholder="tcp"
-                                       typeahead-min-length="0"
-                                       uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
-                                       typeahead-editable="false"/>
-                            </div>
+                            <label class="control-label" for="classify-protocol">Protocol</label>
+                            <input class="form-control" type="text"
+                                   id="classify-protocol"
+                                   name="classify-protocol"
+                                   ng-model="classificationRequest.protocol"
+                                   placeholder="tcp"
+                                   typeahead-min-length="0"
+                                   uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
+                                   typeahead-editable="false"/>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="classify-ipAddress">IP Address</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" id="classify-ipAddress" name="classify-ipAddress" placeholder="127.0.0.1" ng-model="classificationRequest.ipAddress"></input>
-                            </div>
+                            <label class="control-label" for="classify-ipAddress">IP Address</label>
+                            <input class="form-control" type="text" id="classify-ipAddress" name="classify-ipAddress" placeholder="127.0.0.1" ng-model="classificationRequest.ipAddress"></input>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-2 control-label" for="classify-port">Port</label>
-                            <div class="col-sm-10">
-                                <input class="form-control" type="text" id="classify-port" name="classify-port" placeholder="80" ng-model="classificationRequest.port"></input>
-                            </div>
+                            <label class="control-label" for="classify-port">Port</label>
+                            <input class="form-control" type="text" id="classify-port" name="classify-port" placeholder="80" ng-model="classificationRequest.port"></input>
                         </div>
                         <div class="form-group">
-                            <div class="col-sm-offset-2 col-sm-10">
+                            <div>
                                 <span class="alert alert-danger" ng-show="error">{{error}}</span>
                                 <span id="classification-response" ng-show="classificationResponse" title="Based on the current set of rules, the given flow would be mapped to" class="badge">{{classificationResponse}}</span>
                                 <button type="submit" class="btn btn-primary pull-right" id="classification-submit" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
