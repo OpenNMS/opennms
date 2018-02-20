@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt32;
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getTime;
@@ -65,7 +64,7 @@ class IpfixFlow implements Flow {
 
     @Override
     public Direction getDirection() {
-        return getInt32(this.document,  "flowDirection")
+        return getInt64(this.document,  "flowDirection")
                 .map(v -> v == 0x00 ? Direction.INGRESS
                         : v == 0x01 ? Direction.EGRESS
                         : null)
@@ -133,7 +132,8 @@ class IpfixFlow implements Flow {
 
     @Override
     public int getFlowRecords() {
-        return getInt32(this.document, "@recordCount")
+        return getInt64(this.document, "@recordCount")
+                .map(Long::intValue)
                 .orElse(0);
     }
 

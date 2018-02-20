@@ -112,6 +112,10 @@ public final class DataRecord implements Record {
 
         // Expand the data record by appending values from
         // TODO fooker: extend fields with packet metadata
+        //   At a minimum, Collecting Processes SHOULD support as scope the
+        //   observationDomainId, exportingProcessId, meteringProcessId,
+        //   templateId, lineCardId, exporterIPv4Address, exporterIPv6Address,
+        //   and ingressInterface Information Elements.
         this.options = resolver.lookupOptions(this.fields);
     }
 

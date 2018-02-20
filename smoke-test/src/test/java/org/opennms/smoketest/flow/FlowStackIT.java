@@ -154,12 +154,12 @@ public class FlowStackIT {
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 16;
+                return response.isSucceeded() && response.getTotal() == 11;
             });
 
             // Verify the flow count via the REST API
             with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
-                    .until(() -> restClient.getFlowCount(0L, System.currentTimeMillis()), equalTo(16L));
+                    .until(() -> restClient.getFlowCount(0L, System.currentTimeMillis()), equalTo(11L));
         }
     }
 

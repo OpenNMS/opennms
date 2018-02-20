@@ -58,10 +58,13 @@ public class UdpSessionManager {
                 this.observationDomainId = observationDomainId;
             }
 
+            private Key key(final int templateId) {
+                return new Key(UdpSession.this.remoteAddress, UdpSession.this.localAddress, this.observationDomainId, templateId);
+            }
+
             @Override
             public Optional<Template> lookupTemplate(final int templateId) {
-                final Key key = new Key(UdpSession.this.remoteAddress, UdpSession.this.localAddress, this.observationDomainId, templateId);
-                return Optional.ofNullable(UdpSessionManager.this.templates.get(key)).map(v -> v.template);
+                return Optional.ofNullable(UdpSessionManager.this.templates.get(key(templateId))).map(v -> v.template);
             }
 
             @Override
@@ -71,8 +74,10 @@ public class UdpSessionManager {
                 final Set<String> scoped = values.stream().map(Value::getName).collect(Collectors.toSet());
 
                 for (final Map.Entry<Key, Map<Set<Value<?>>, List<Value<?>>>> e : Iterables.filter(UdpSessionManager.this.options.entrySet(),
-                                                                                                   e -> e.getKey().observationDomainId == this.observationDomainId)) {
-                    final Template template = this.lookupTemplate(e.getKey().templateId).get();
+                                                                                                   e -> Objects.equals(e.getKey().localAddress, UdpSession.this.localAddress) &&
+                                                                                                        Objects.equals(e.getKey().remoteAddress, UdpSession.this.remoteAddress) &&
+                                                                                                        Objects.equals(e.getKey().observationDomainId, this.observationDomainId))) {
+                    final Template template = UdpSessionManager.this.templates.get(e.getKey()).template;
 
                     final Set<String> scopes = template.scopes.stream().map(Scope::getName).collect(Collectors.toSet());
 

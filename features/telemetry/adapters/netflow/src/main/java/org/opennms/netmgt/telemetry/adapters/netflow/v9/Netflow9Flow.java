@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.adapters.netflow.v9;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt32;
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
 
@@ -58,7 +57,7 @@ class Netflow9Flow implements Flow {
 
     @Override
     public Direction getDirection() {
-        return getInt32(this.document, "DIRECTION")
+        return getInt64(this.document, "DIRECTION")
                 .map(v -> v == 0 ? Direction.INGRESS
                         : v == 1 ? Direction.EGRESS
                         : null)
@@ -117,7 +116,8 @@ class Netflow9Flow implements Flow {
 
     @Override
     public int getFlowRecords() {
-        return getInt32(this.document, "@recordCount")
+        return getInt64(this.document, "@recordCount")
+                .map(Long::intValue)
                 .orElse(0);
     }
 
