@@ -41,16 +41,39 @@
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Import-Package>
+              <!-- To expose the queuingservice Camel Component -->
+              org.apache.camel,
+              <!-- Required for Spring annotation scanning -->
+              org.apache.camel.spi,
               <!-- Declare the Attach API as an optional dependency -->
               com.sun.tools.attach;resolution:=optional,
               <!-- ActiveMQ broker is also optional -->
               org.apache.activemq.broker;resolution:=optional,
+              org.apache.activemq.broker.jmx;resolution:=optional,
+              org.apache.activemq.broker.region.policy;resolution:=optional,
               org.apache.activemq.command;resolution:=optional,
+              org.apache.activemq.hooks;resolution:=optional,
               org.apache.activemq.jaas;resolution:=optional,
               org.apache.activemq.security;resolution:=optional,
+              org.apache.activemq.store.kahadb;resolution:=optional,
+              org.apache.activemq.usage;resolution:=optional,
+              org.apache.activemq.util;resolution:=optional,
+              org.apache.activemq.xbean;resolution:=optional,
+              <!-- Spring dependencies needed for ActiveMQ broker -->
+              org.springframework.beans;version="[4.2,4.3)";resolution:=optional,
+              org.springframework.beans.factory.config;version="[4.2,4.3)";resolution:=optional,
+              org.springframework.cglib.core;version="[4.2,4.3)";resolution:=optional,
+              org.springframework.cglib.proxy;version="[4.2,4.3)";resolution:=optional,
+              org.springframework.core.annotation;version="[4.2,4.3)";resolution:=optional,
+              org.springframework.stereotype;version="[4.2,4.3)";resolution:=optional,
+
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
+            <Spring-Context>
+              META-INF/opennms/applicationContext-daemon.xml,
+              META-INF/opennms/applicationContext-daemon-osgi.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>

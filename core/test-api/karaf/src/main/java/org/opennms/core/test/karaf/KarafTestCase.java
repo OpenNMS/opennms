@@ -35,6 +35,7 @@ import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConf
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
+//import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.keepRuntimeFolder;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.replaceConfigurationFile;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
@@ -51,10 +52,14 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.inject.Inject;
 import javax.security.auth.Subject;
@@ -410,5 +415,38 @@ public abstract class KarafTestCase {
             return type.cast(bundleContext.getService(serviceReference));
         }
         return null;
+    }
+
+    protected <T> T getOsgiService(final Class<T> type, final long timeout) {
+        AtomicBoolean cancelled = new AtomicBoolean(false);
+        CompletableFuture<T> osgiService = CompletableFuture.supplyAsync(() -> {
+            while (!cancelled.get()) {
+                T service = getOsgiService(type);
+                if (service != null) {
+                    return service;
+                } else {
+                    try {
+                        Thread.sleep(Math.max(timeout / 100, 500));
+                    } catch (InterruptedException e1) {
+                        return null;
+                    }
+                }
+            }
+            return null;
+        });
+
+        osgiService.exceptionally(e -> { return null; });
+
+        try {
+            T retval = osgiService.get(timeout, TimeUnit.MILLISECONDS);
+            if (retval != null) {
+                LOG.info("Found service: {}", type.getName());
+            }
+            return retval;
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            LOG.error("Timed out after {} without retrieving service: {}", timeout, type.getName());
+            cancelled.set(true);
+            return null;
+        }
     }
 }

@@ -38,6 +38,10 @@
       <type>pom</type>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.lib</artifactId>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -58,6 +62,13 @@
             -->
             <DynamicImport-Package>*</DynamicImport-Package>
             <Export-Package>org.opennms.core.soa.*;version="${project.version}"</Export-Package>
+
+            <!-- Launch the Spring context when this bundle is loaded in OSGi -->
+            <Spring-Context>
+              META-INF/opennms/applicationContext-soa.xml,
+              META-INF/opennms/applicationContext-soa-osgi.xml
+            </Spring-Context>
+
             <!-- Launch a BundleActivator that will synchronize services between OSGi and the OnmSGi registry -->
             <Bundle-Activator>org.opennms.core.soa.support.OnmsOSGiBridgeActivator</Bundle-Activator>
           </instructions>

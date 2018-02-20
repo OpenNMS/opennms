@@ -21,6 +21,10 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Spring-Context>
+              META-INF/opennms/component-dao.xml,
+              META-INF/opennms/applicationContext-telemetryRegistry-osgi.xml
+            </Spring-Context>
           </instructions>
         </configuration>
       </plugin>

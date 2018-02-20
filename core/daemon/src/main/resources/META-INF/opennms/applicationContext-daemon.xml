@@ -58,4 +58,10 @@
     <property name="configuration" ref="jmsConfig" />
   </bean>
 
+  <onmsgi:service ref="queuingservice" interface="org.apache.camel.Component">
+      <onmsgi:service-properties>
+          <entry key="alias" value="opennms.broker"/>
+      </onmsgi:service-properties>
+  </onmsgi:service>
+
 </beans>

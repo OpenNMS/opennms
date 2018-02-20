@@ -97,8 +97,10 @@
               org.opennms.netmgt.xml.rtc.*;version="${project.version}"
             </Export-Package>
             <Import-Package>
+              javassist.util.proxy,
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              org.hibernate.proxy,
               org.opennms.core.network,
               org.opennms.netmgt.collection.adapters,
               *

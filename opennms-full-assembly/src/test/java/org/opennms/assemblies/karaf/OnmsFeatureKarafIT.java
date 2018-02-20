@@ -28,6 +28,7 @@
 
 package org.opennms.assemblies.karaf;
 
+import static org.junit.Assert.assertNotNull;
 import static org.ops4j.pax.exam.CoreOptions.maven;
 
 import java.util.EnumSet;
@@ -278,7 +279,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("lmax-disruptor");
 		System.out.println(executeCommand("feature:list -i"));
 	}
-
 	@Test
 	@Ignore("OSGi dependency problems: org.opennms.netmgt.alarmd.api")
 	public void testInstallFeatureAmqpAlarmNorthbounder() {
@@ -319,6 +319,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureOpennmsCollectionApi() {
 		installFeature("opennms-collection-api");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.netmgt.collection.api.ServiceCollectorRegistry.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsCollectionCommands() {
@@ -377,8 +378,18 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	public void testInstallFeatureOpennmsCoreIpcSinkCamelGemini() {
+		installFeature("opennms-core-ipc-sink-camel-gemini");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsCoreIpcSinkKafka() {
 		installFeature("opennms-core-ipc-sink-kafka");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsCoreIpcSinkKafkaGemini() {
+		installFeature("opennms-core-ipc-sink-kafka-gemini");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
@@ -387,9 +398,15 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	public void testInstallFeatureOpennmsCoreIpcSinkAwsSqsGemini() {
+		installFeature("opennms-core-ipc-sink-aws-sqs-gemini");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsCoreIpcRpcApi() {
 		installFeature("opennms-core-ipc-rpc-api");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.core.rpc.api.RpcModule.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsCoreIpcRpcJms() {
@@ -397,8 +414,18 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	public void testInstallFeatureOpennmsCoreIpcRpcJmsGemini() {
+		installFeature("opennms-core-ipc-rpc-jms-gemini");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureOpennmsCoreIpcRpcAwsSqs() {
 		installFeature("opennms-core-ipc-rpc-aws-sqs");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
+	public void testInstallFeatureOpennmsCoreIpcRpcAwsSqsGemini() {
+		installFeature("opennms-core-ipc-rpc-aws-sqs-gemini");
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
@@ -489,6 +516,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureOpennmsPollerApi() {
 		installFeature("opennms-poller-api");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.netmgt.poller.ServiceMonitorRegistry.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsPollerMonitorsCore() {
@@ -541,6 +569,8 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureOpennmsSnmp() {
 		installFeature("opennms-snmp");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.netmgt.snmp.SnmpStrategy.class, 30000));
+		System.out.println(executeCommand("bundle:services org.opennms.core.snmp.implementations.snmp4j"));
 	}
 	@Test
 	public void testInstallFeatureOpennmsSnmpCommands() {
@@ -583,12 +613,16 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-telemetry-jti");
 		System.out.println(executeCommand("feature:list -i"));
+		// Relies on opennms-dao services
+		//assertNotNull(getOsgiService(org.opennms.features.telemetry.adapters.factory.api.AdapterFactory.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsTelemetryNxos() {
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-telemetry-nxos");
 		System.out.println(executeCommand("feature:list -i"));
+		// Relies on opennms-dao services
+		//assertNotNull(getOsgiService(org.opennms.features.telemetry.adapters.factory.api.AdapterFactory.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsTrapd() {
@@ -688,6 +722,9 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureDatachoices() {
 		installFeature("datachoices");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.web.navigate.PageNavEntry.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.web.api.HtmlInjector.class, 30000));
+		//assertNotNull(getOsgiService(org.opennms.features.datachoices.web.DataChoiceRestService.class, 30000));
 	}
 	@Test
 	@Ignore("OSGi dependency problems: javax.persistence")
@@ -714,6 +751,10 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-model"); // System classpath
 		installFeature("alarm-change-notifier");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.karaf.licencemgr.LicenceService.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.licencepub.LicencePublisher.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.productpub.ProductRegister.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.productpub.ProductPublisher.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureOpennmsEsRest() {
@@ -725,6 +766,10 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		installFeature("opennms-dao-api"); // System classpath
 		installFeature("opennms-es-rest");
 		System.out.println(executeCommand("feature:list -i"));
+		assertNotNull(getOsgiService(org.opennms.karaf.licencemgr.LicenceService.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.licencepub.LicencePublisher.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.productpub.ProductRegister.class, 30000));
+		assertNotNull(getOsgiService(org.opennms.karaf.productpub.ProductPublisher.class, 30000));
 	}
 	@Test
 	public void testInstallFeatureInternalPluginsDescriptor() {
