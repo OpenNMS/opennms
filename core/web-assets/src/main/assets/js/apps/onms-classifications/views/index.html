@@ -53,12 +53,14 @@
                             <label class="control-label" for="classify-port">Port</label>
                             <input class="form-control" type="text" id="classify-port" name="classify-port" placeholder="An IP port between 0 and 65535" ng-model="classificationRequest.port"></input>
                         </div>
+                        <div class="badge" ng-show="classificationResponse">
+                            <span id="classification-response" title="Based on the current set of rules, the given flow would be mapped to">{{classificationResponse}}</span>
+                        </div>
+                        <div class="alert alert-danger" ng-show="error">
+                            <span id="classification-error">{{error}}</span>
+                        </div>
                         <div class="form-group">
-                            <div>
-                                <span class="alert alert-danger" ng-show="error">{{error}}</span>
-                                <span id="classification-response" ng-show="classificationResponse" title="Based on the current set of rules, the given flow would be mapped to" class="badge">{{classificationResponse}}</span>
-                                <button type="submit" class="btn btn-primary pull-right" id="classification-submit" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary pull-right" id="classification-submit" ng-click="classify(classificationRequest)" ng-disabled="classifyForm.$invalid || !fullyDefined()">Classify</button>
                         </div>
                     </form>
                 </div>

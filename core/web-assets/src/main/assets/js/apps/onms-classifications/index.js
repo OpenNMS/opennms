@@ -84,14 +84,17 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
         })
         .controller('ClassificationController', ['$scope', '$state', 'ClassificationService', 'ClassificationGroupService', 'ProtocolService', function($scope, $state, ClassificationService, ClassificationGroupService, ProtocolService) {
             $scope.groups = [];
-            $scope.classificationRequest = {}
+            $scope.classificationRequest = {};
+            $scope.classificationResponse = undefined;
             $scope.isClassificationCollapsed = true;
+            $scope.error = undefined;
 
-            $scope.classify = function(classificationRequest) {
-                ClassificationService.classify(classificationRequest, function(result) {
+            $scope.classify = function (classificationRequest) {
+                ClassificationService.classify(classificationRequest, function (result) {
+                    $scope.error = undefined;
                     $scope.classificationResponse = result.classification === undefined ? 'No mapping found' : result.classification;
-                }, function(response) {
-                    //console.log(response);
+                }, function (response) {
+                    $scope.classificationResponse = undefined;
                     if (response.status === 400 && response.data && response.data.message) {
                         $scope.error = response.data.message;
                     } else {
