@@ -106,4 +106,10 @@
     </rollback>
   </changeSet>
 
+  <changeSet author="mvrueden" id="NMS-9855-asset-delete-null-nodeid">
+    <sql>
+      DELETE FROM assets WHERE nodeid IS NULL;
+    </sql>
+  </changeSet>
+
 </databaseChangeLog>
