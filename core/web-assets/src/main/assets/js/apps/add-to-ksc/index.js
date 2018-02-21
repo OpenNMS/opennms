@@ -114,4 +114,22 @@ angular.module('onms-ksc', [
     });
   };
 
+}])
+.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
+
+$scope.flowCount = 0;
+$scope.hasFlows = false;
+
+  $scope.getFlowCount = function(nodeId, ifIndex , start, end) {
+    $http({
+      url: 'rest/flows/count?exporterNode='+nodeId+'&ifIndex='+ifIndex+'&start='+start+'&end='+end,
+      method: 'GET',
+      params: { limit: 0 }
+    }).success(function(data) {
+      $scope.flowCount = data;
+      if ( data > 0) {
+        $scope.hasFlows = true;
+      }
+    });
+  };
 }]);

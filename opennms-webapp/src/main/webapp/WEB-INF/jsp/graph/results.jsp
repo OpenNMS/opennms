@@ -107,7 +107,7 @@
                         </c:choose>
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
-                </select>          
+                </select>
               </div> <!-- form-group -->
               </div> <!-- row -->
 
@@ -143,7 +143,7 @@
                         </c:choose>
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
-                </select>          
+                </select>
             </div> <!-- form-group -->
             </div> <!-- row -->
             <button type="submit" class="btn btn-default">Apply Custom Time Period</button>
@@ -158,6 +158,7 @@
 </div> <!-- row -->
 
 <c:set var="showFootnote1" value="false"/>
+
 
 <div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
 
@@ -198,6 +199,29 @@
             </c:if>
         </h3>
      </div> <!-- panel-heading -->
+       <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP Interface')}">
+         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
+           <c:forEach var="attribute" items="${resultSet.resource.attributes}">
+             <c:if test="${fn:contains(attribute.name, 'ifIndex')}">
+               <c:set var="ifIndex" value="${attribute.value}"/>
+             </c:if>
+             <c:if test="${fn:contains(attribute.name, 'nodeId')}">
+               <c:set var="nodeId" value="${attribute.value}"/>
+             </c:if>
+           </c:forEach>
+           <%
+           String grafanaProtocol = System.getProperty("org.opennms.grafanaBox.protocol", "http");
+           String grafanaHostname = System.getProperty("org.opennms.grafanaBox.hostname", "localhost");
+           int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
+
+           %>
+           <div ng-app="onms-ksc" ng-controller="checkFlowsCtrl" ng-init="getFlowCount(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
+               <div ng-show="hasFlows">
+                 <a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/flows?orgId=1&amp;var-node=${nodeId}&amp;var-interface=${ifIndex}" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.name}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-bar-chart" aria-hidden="true"></i></span></button></a>
+               </div>
+          </div>
+         </c:if>
+        </c:if>
      <div class="panel-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
@@ -208,7 +232,7 @@
         </script>
 
         <c:choose>
-            <c:when test="${!empty resultSet.graphs}"> 
+            <c:when test="${!empty resultSet.graphs}">
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>
@@ -266,7 +290,7 @@
                 <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li> 
+                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
                     </c:forEach>
                 </ul>
             </li>
@@ -296,11 +320,11 @@
                     document.getElementById("customTimeForm").style.display = "block";
                 } else {
                     goRelativeTime(value);
-                }  
+                }
             }
         }
     }
-  
+
     /*
      * This is used by the relative time form to reload the page with a new
      * time period.
