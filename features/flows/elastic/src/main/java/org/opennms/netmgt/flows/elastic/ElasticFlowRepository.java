@@ -44,11 +44,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -91,8 +91,6 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final DocumentEnricher documentEnricher;
 
-    private final Netflow5Converter converter = new Netflow5Converter();
-
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
     /**
@@ -101,7 +99,12 @@ public class ElasticFlowRepository implements FlowRepository {
     private final Meter flowsPersistedMeter;
 
     /**
-     * Time taken to convert and enrich the flows in a log
+     * Time taken to convert the flows in a log
+     */
+    private final Timer logConversionTimer;
+
+    /**
+     * Time taken to enrich the flows in a log
      */
     private final Timer logEnrichementTimer;
 
@@ -121,22 +124,28 @@ public class ElasticFlowRepository implements FlowRepository {
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
+        logConversionTimer = metricRegistry.timer("logConversion");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
         logPersistingTimer = metricRegistry.timer("logPersisting");
         flowsPerLog = metricRegistry.histogram("flowsPerLog");
     }
 
     @Override
-    public void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException {
-        LOG.debug("Converting {} Netflow 5 packets from {} to flow documents.", packets.size(), source);
-        final List<FlowDocument> flowDocuments = packets.stream()
-                .map(converter::convert)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        enrichAndPersistFlows(flowDocuments, source);
+    public <P> void persist(final Collection<? extends P> packets, final FlowSource source, final Converter<P> converter) throws FlowException {
+        LOG.debug("Converting {} flow packets from {} to flow documents.", packets.size(), source);
+        final List<FlowDocument> documents;
+        try (final Timer.Context ctx = logConversionTimer.time()) {
+            documents = packets.stream()
+                    .map(converter::convert)
+                    .flatMap(Collection::stream)
+                    .map(FlowDocument::from)
+                    .collect(Collectors.toList());
+        }
+
+        enrichAndPersistFlows(documents, source);
     }
 
-    public void enrichAndPersistFlows(List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
+    public void enrichAndPersistFlows(final List<FlowDocument> flowDocuments, FlowSource source) throws FlowException {
         // Track the number of flows per call
         flowsPerLog.update(flowDocuments.size());
 
@@ -498,9 +507,9 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private static boolean isIngress(TermsAggregation.Entry entry) {
-        if (Direction.INGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+        if (Direction.INGRESS.name().equalsIgnoreCase(entry.getKeyAsString())) {
             return true;
-        } else if (Direction.EGRESS.getValue().equalsIgnoreCase(entry.getKeyAsString())) {
+        } else if (Direction.EGRESS.name().equalsIgnoreCase(entry.getKeyAsString())) {
             return false;
         } else {
             return Boolean.valueOf(entry.getKeyAsString());

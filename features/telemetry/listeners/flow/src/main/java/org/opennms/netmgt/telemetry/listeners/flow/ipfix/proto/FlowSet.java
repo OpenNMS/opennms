@@ -26,30 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
+package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
-
-import java.nio.ByteBuffer;
+import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
-public class FieldValue {
+public abstract class FlowSet<R extends Record> implements Iterable<R> {
 
     /*
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |   Record N - Field Value M    |   Record N - Field Value M+1  |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     +--------------------------------------------------+
+     | Set Header                                       |
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+      ...
+     +--------------------------------------------------+
+     | record                                           |
+     +--------------------------------------------------+
+     | Padding (opt.)                                   |
+     +--------------------------------------------------+
     */
 
-    public final Value value;
+    public final Packet packet; // Enclosing packet
 
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        value = templateField.parse(templateResolver, slice(buffer, templateField.length));
+    public final FlowSetHeader header;
+
+    public FlowSet(final Packet packet,
+                   final FlowSetHeader header) throws InvalidPacketException {
+        this.packet = Objects.requireNonNull(packet);
+        this.header = Objects.requireNonNull(header);
     }
 }

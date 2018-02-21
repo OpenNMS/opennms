@@ -36,13 +36,13 @@ import java.util.Objects;
 public class ConversationKey {
 
     private final String location;
-    private final int protocol;
+    private final Integer protocol;
     private final String srcIp;
     private final String dstIp;
-    private final int srcPort;
-    private final int dstPort;
+    private final Integer srcPort;
+    private final Integer dstPort;
 
-    public ConversationKey(String location, int protocol, String srcIp, int srcPort, String dstIp, int dstPort) {
+    public ConversationKey(String location, Integer protocol, String srcIp, Integer srcPort, String dstIp, Integer dstPort) {
         this.location = location;
         this.protocol = protocol;
         this.srcIp = Objects.requireNonNull(srcIp);
@@ -67,11 +67,11 @@ public class ConversationKey {
         return dstIp;
     }
 
-    public int getSrcPort() {
+    public Integer getSrcPort() {
         return srcPort;
     }
 
-    public int getDstPort() {
+    public Integer getDstPort() {
         return dstPort;
     }
 
@@ -80,9 +80,9 @@ public class ConversationKey {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ConversationKey that = (ConversationKey) o;
-        return protocol == that.protocol &&
-                srcPort == that.srcPort &&
-                dstPort == that.dstPort &&
+        return Objects.equals(protocol, that.protocol) &&
+                Objects.equals(srcPort, that.srcPort) &&
+                Objects.equals(dstPort, that.dstPort) &&
                 Objects.equals(location, that.location) &&
                 Objects.equals(srcIp, that.srcIp) &&
                 Objects.equals(dstIp, that.dstIp);

@@ -97,4 +97,18 @@ public abstract class Value<T> {
     public abstract T getValue();
 
     public abstract void visit(final Visitor visitor);
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Value)) return false;
+        final Value<?> value = (Value<?>) o;
+        return Objects.equals(this.name, value.name) &&
+                Objects.equals(this.getValue(), value.getValue());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.name, this.getValue());
+    }
 }

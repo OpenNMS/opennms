@@ -28,29 +28,27 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.DataRecord;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldSpecifier;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FieldValue;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Set;
-import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.SetHeader;
+import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.FlowSetHeader;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Template;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
-
-import com.google.common.collect.Lists;
 
 public class ListValue extends Value<List<List<Value<?>>>> {
 
@@ -111,13 +109,13 @@ public class ListValue extends Value<List<List<Value<?>>>> {
     public static InformationElement parserWithBasicList(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
                 final FieldSpecifier field = new FieldSpecifier(buffer);
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
-                    values.add(Collections.singletonList(new FieldValue(templateResolver, field.specifier, buffer).value));
+                    values.add(Collections.singletonList(DataRecord.parseField(field, resolver, buffer)));
                 }
 
                 return new ListValue(name, semantics, semantic, values);
@@ -154,16 +152,19 @@ public class ListValue extends Value<List<List<Value<?>>>> {
     public static InformationElement parserWithSubTemplateList(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
                 final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
                 final int templateId = uint16(buffer);
 
-                final Template template = templateResolver.lookup(templateId).orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", templateId));
+                final Template template = resolver.lookupTemplate(templateId).orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", templateId));
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
-                    final DataRecord record = new DataRecord(templateResolver, template, buffer);
-                    values.add(Lists.transform(record.fields, f -> f.value));
+                    final List<Value<?>> record = new ArrayList(template.count());
+                    for (final Field field : template) {
+                        record.add(DataRecord.parseField(field, resolver, buffer));
+                    }
+                    values.add(record);
                 }
 
                 return new ListValue(name, semantics, semantic, values);
@@ -238,22 +239,27 @@ public class ListValue extends Value<List<List<Value<?>>>> {
     public static InformationElement parserWithSubTemplateMultiList(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-                final Semantic semantic = Semantic.parse(buffer, BufferUtils.uint8(buffer));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) throws InvalidPacketException {
+                final Semantic semantic = Semantic.parse(buffer, uint8(buffer));
 
                 final List<List<Value<?>>> values = new LinkedList<>();
                 while (buffer.hasRemaining()) {
-                    final SetHeader header = new SetHeader(buffer);
+                    final FlowSetHeader header = new FlowSetHeader(buffer);
                     if (header.setId <= 255) {
                         throw new InvalidPacketException(buffer, "Invalid template ID: %d", header.setId);
                     }
 
-                    final ByteBuffer payloadBuffer = BufferUtils.slice(buffer, header.length - SetHeader.SIZE);
-                    final Template template = templateResolver.lookup(header.setId)
+                    final ByteBuffer payloadBuffer = slice(buffer, header.length - FlowSetHeader.SIZE);
+                    final Template template = resolver.lookupTemplate(header.setId)
                             .orElseThrow(() -> new InvalidPacketException(buffer, "Unknown Template ID: %d", header.setId));
-                    final Set<DataRecord> dataSet = new Set<>(header, DataRecord.parser(template, templateResolver), payloadBuffer);
 
-                    values.addAll(Lists.transform(dataSet.records, r -> Lists.transform(r.fields, f -> f.value)));
+                    while (payloadBuffer.hasRemaining()) {
+                        final List<Value<?>> record = new ArrayList(template.count());
+                        for (final Field field : template) {
+                            record.add(DataRecord.parseField(field, resolver, payloadBuffer));
+                        }
+                        values.add(record);
+                    }
                 }
 
                 return new ListValue(name, semantics, semantic, values);

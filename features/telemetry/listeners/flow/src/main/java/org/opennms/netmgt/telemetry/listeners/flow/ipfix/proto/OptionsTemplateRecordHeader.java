@@ -56,7 +56,7 @@ public final class OptionsTemplateRecordHeader {
 
     public OptionsTemplateRecordHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.templateId = uint16(buffer);
-        if (this.templateId <= 255 && this.templateId != SetHeader.OPTIONS_TEMPLATE_SET_ID) {
+        if (this.templateId <= 255 && this.templateId != FlowSetHeader.OPTIONS_TEMPLATE_SET_ID) {
             // Since Template IDs are used as Set IDs in the Sets they describe
             throw new InvalidPacketException(buffer, "Invalid template ID: %d", this.templateId);
         }

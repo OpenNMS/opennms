@@ -35,11 +35,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
-import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.elastic.template.IndexSettings;
 import org.opennms.netmgt.flows.filter.api.Filter;
@@ -72,9 +72,9 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public void persistNetFlow5Packets(Collection<? extends NF5Packet> packets, FlowSource source) throws FlowException {
+    public <P> void persist(Collection<? extends P> packets, FlowSource source, Converter<P> converter) throws FlowException {
         ensureInitialized();
-        delegate.persistNetFlow5Packets(packets, source);
+        delegate.persist(packets, source, converter);
     }
 
     @Override

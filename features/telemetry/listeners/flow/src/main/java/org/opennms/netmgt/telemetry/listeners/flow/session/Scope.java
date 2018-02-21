@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,32 +26,8 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.api;
+package org.opennms.netmgt.telemetry.listeners.flow.session;
 
-import java.util.List;
-
-public interface NF5Packet {
-
-    int getSize();
-
-    int getVersion();
-
-    int getCount();
-
-    long getSysUptime();
-
-    long getUnixSecs();
-
-    long getUnixNSecs();
-
-    long getFlowSequence();
-
-    int getEngineType();
-
-    int getEngineId();
-
-    int getSamplingInterval();
-
-    List<? extends NF5Record> getRecords();
-
+public interface Scope extends Field {
+    String getName();
 }

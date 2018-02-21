@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bson.BsonBinary;
 import org.bson.BsonBinaryWriter;
-import org.bson.BsonTimestamp;
 import org.bson.BsonWriter;
 import org.bson.io.BasicOutputBuffer;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -99,25 +98,17 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
         });
     }
 
-    public static ByteBuffer serialize(final Protocol protocol, final RecordProvider.Record record) {
+    public static ByteBuffer serialize(final Protocol protocol, final Iterable<Value<?>> record) {
         // Build BSON document from flow
         final BasicOutputBuffer output = new BasicOutputBuffer();
         try (final BsonBinaryWriter writer = new BsonBinaryWriter(output)) {
             writer.writeStartDocument();
-
-            writer.writeInt32("version", protocol.magic);
-            writer.writeInt64("domain", record.observationDomainId);
-            writer.writeTimestamp("exportTime", new BsonTimestamp(record.exportTime << 32));
-            writer.writeInt32("scoped", record.scopeFieldCount);
-
-            writer.writeStartDocument("elements");
+            writer.writeInt32("@version", protocol.magic);
 
             final FlowBuilderVisitor visitor = new FlowBuilderVisitor(writer);
-            for (final Value value : record.values) {
+            for (final Value<?> value : record) {
                 value.visit(visitor);
             }
-
-            writer.writeEndDocument();
 
             writer.writeEndDocument();
         }
@@ -136,66 +127,39 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         @Override
         public void accept(final NullValue value) {
-            // Ignored
-            // TODO: Not sure if this is used as some kind of marker in enterprise extensions
+            this.writer.writeNull(value.getName());
         }
 
         @Override
         public void accept(final BooleanValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeBoolean("v", value.getValue());
-            this.writer.writeEndDocument();
+            this.writer.writeBoolean(value.getName(), value.getValue());
         }
 
         @Override
         public void accept(final DateTimeValue value) {
             this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeStartDocument("v");
             this.writer.writeInt64("epoch", value.getValue().getEpochSecond());
             if (value.getValue().getNano() != 0) {
-                this.writer.writeInt64("nano", value.getValue().getNano());
+                this.writer.writeInt64("nanos", value.getValue().getNano());
             }
-            this.writer.writeEndDocument();
-
             this.writer.writeEndDocument();
         }
 
         @Override
         public void accept(final FloatValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeDouble("v", value.getValue());
-            this.writer.writeEndDocument();
+            this.writer.writeDouble(value.getName(), value.getValue());
         }
 
         @Override
         public void accept(final IPv4AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
             // TODO: Transport as binary?
-            this.writer.writeString("v", value.getValue().getHostAddress());
-            this.writer.writeEndDocument();
+            this.writer.writeString(value.getName(), value.getValue().getHostAddress());
         }
 
         @Override
         public void accept(final IPv6AddressValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
             // TODO: Transport as binary?
-            this.writer.writeString("v", value.getValue().getHostAddress());
-            this.writer.writeEndDocument();
+            this.writer.writeString(value.getName(), value.getValue().getHostAddress());
         }
 
         @Override
@@ -210,50 +174,30 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         @Override
         public void accept(final OctetArrayValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
-            this.writer.writeEndDocument();
+            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
         }
 
         @Override
         public void accept(final SignedValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeInt64("v", value.getValue());
-            this.writer.writeEndDocument();
+            this.writer.writeInt64(value.getName(), value.getValue());
         }
 
         @Override
         public void accept(final StringValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeString("v", value.getValue());
-            this.writer.writeEndDocument();
+            this.writer.writeString(value.getName(), value.getValue());
         }
 
         @Override
         public void accept(final ListValue value) {
             this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
             this.writer.writeInt32("semantic", value.getSemantic().ordinal());
-            this.writer.writeStartArray("v");
+            this.writer.writeStartArray("values");
             for (int i = 0; i < value.getValue().size(); i++) {
-                this.writer.writeStartArray();
+                this.writer.writeStartDocument();
                 for (int j = 0; j < value.getValue().get(i).size(); j++) {
-                    writer.writeStartDocument();
                     value.getValue().get(i).get(j).visit(this);
-                    this.writer.writeEndDocument();
                 }
-                this.writer.writeEndArray();
+                this.writer.writeEndDocument();
             }
             this.writer.writeEndArray();
             this.writer.writeEndDocument();
@@ -261,23 +205,13 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
 
         @Override
         public void accept(final UnsignedValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
             // TODO: Mark this as unsigned?
-            this.writer.writeInt64("v", value.getValue().longValue());
-            this.writer.writeEndDocument();
+            this.writer.writeInt64(value.getName(), value.getValue().longValue());
         }
 
         @Override
         public void accept(final UndeclaredValue value) {
-            this.writer.writeStartDocument(value.getName());
-            value.getSemantics().ifPresent(semantics -> {
-                this.writer.writeInt32("s", semantics.ordinal());
-            });
-            this.writer.writeBinaryData("v", new BsonBinary(value.getValue()));
-            this.writer.writeEndDocument();
+            this.writer.writeBinaryData(value.getName(), new BsonBinary(value.getValue()));
         }
     }
 }

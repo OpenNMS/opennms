@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,23 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.session;
+package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 
-public interface TemplateManager {
+import org.bson.BsonDocument;
+import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
 
-    @FunctionalInterface
-    interface TemplateResolver {
-        Optional<Template> lookup(final int templateId);
+public class IpfixConverter implements Converter<BsonDocument> {
+
+    @Override
+    public List<Flow> convert(final BsonDocument packet) {
+        return Collections.singletonList(new IpfixFlow(packet));
     }
-
-    void add(final long observationDomainId, final int templateId, final Template template);
-
-    void remove(final long observationDomainId, final int templateId);
-
-    void removeAll(final long observationDomainId, final Template.Type type);
-
-    TemplateResolver getResolver(final long observationDomainId);
-
 }

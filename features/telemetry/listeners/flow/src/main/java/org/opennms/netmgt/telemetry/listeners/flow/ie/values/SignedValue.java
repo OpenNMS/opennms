@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.sint;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 
@@ -60,8 +61,8 @@ public class SignedValue extends Value<Long> {
     public static InformationElement parserWith8Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, 1));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+                return new SignedValue(name, semantics, sint(buffer, 1));
             }
 
             @Override
@@ -84,8 +85,8 @@ public class SignedValue extends Value<Long> {
     public static InformationElement parserWith16Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -108,8 +109,8 @@ public class SignedValue extends Value<Long> {
     public static InformationElement parserWith32Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override
@@ -132,8 +133,8 @@ public class SignedValue extends Value<Long> {
     public static InformationElement parserWith64Bit(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) {
-                return new SignedValue(name, semantics, BufferUtils.sint(buffer, buffer.remaining()));
+            public Value<?> parse(final Session.Resolver resolver, final ByteBuffer buffer) {
+                return new SignedValue(name, semantics, sint(buffer, buffer.remaining()));
             }
 
             @Override

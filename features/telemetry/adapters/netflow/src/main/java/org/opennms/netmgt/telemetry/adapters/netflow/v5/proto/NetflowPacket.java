@@ -26,15 +26,13 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.adapters.netflow.v5;
+package org.opennms.netmgt.telemetry.adapters.netflow.v5.proto;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.opennms.netmgt.flows.api.NF5Packet;
-
-public class NetflowPacket implements NF5Packet {
+public class NetflowPacket {
 
     public static final int VERSION = 5;
     public static final int MIN_COUNT = 1;
@@ -103,57 +101,46 @@ public class NetflowPacket implements NF5Packet {
         return this.records.get(recordIndex);
     }
 
-    @Override
     public List<NetflowRecord> getRecords() {
        return this.records;
     }
 
-    @Override
     public int getSize() {
         return HEADER_SIZE;
     }
 
-    @Override
     public int getVersion() {
         return version;
     }
 
-    @Override
     public int getCount() {
         return count;
     }
 
-    @Override
     public long getSysUptime() {
         return sysUptime;
     }
 
-    @Override
     public long getUnixSecs() {
         return unixSecs;
     }
 
-    @Override
     public long getUnixNSecs() {
         return unixNSecs;
     }
 
-    @Override
     public long getFlowSequence() {
         return flowSequence;
     }
 
-    @Override
     public int getEngineType() {
         return engineType;
     }
 
-    @Override
     public int getEngineId() {
         return engineId;
     }
 
-    @Override
     public int getSamplingInterval() {
         return samplingInterval;
     }

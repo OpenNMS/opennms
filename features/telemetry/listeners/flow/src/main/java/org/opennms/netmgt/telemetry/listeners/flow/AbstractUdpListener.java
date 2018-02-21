@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,8 +60,8 @@ public abstract class AbstractUdpListener implements Listener {
 
     private String name;
 
-    private String bindHost = "::";
-    private int bindPort = 4738;
+    private String host = "::";
+    private int port = 4738;
 
     private Duration templateTimeout = Duration.ofMinutes(30);
 
@@ -70,21 +70,21 @@ public abstract class AbstractUdpListener implements Listener {
     private EventLoopGroup bossGroup;
     private ChannelFuture socketFuture;
 
-    private UdpSession session;
+    private UdpSessionManager sessionManager;
     private ScheduledFuture<?> housekeepingFuture;
 
-    protected abstract ChannelHandler buildDecoder(final UdpSession session);
+    protected abstract ChannelHandler buildDecoder(final UdpSessionManager sessionManager);
 
     protected AbstractUdpListener(final Protocol protocol) {
         this.protocol = protocol;
     }
 
     public void start() throws InterruptedException {
-        this.session = new UdpSession(this.templateTimeout);
+        this.sessionManager = new UdpSessionManager(this.templateTimeout);
 
         this.bossGroup = new NioEventLoopGroup();
 
-        this.housekeepingFuture = this.bossGroup.scheduleAtFixedRate(this.session::doHousekeeping, HOUSEKEEPING_INTERVAL, HOUSEKEEPING_INTERVAL, TimeUnit.MILLISECONDS);
+        this.housekeepingFuture = this.bossGroup.scheduleAtFixedRate(this.sessionManager::doHousekeeping, HOUSEKEEPING_INTERVAL, HOUSEKEEPING_INTERVAL, TimeUnit.MILLISECONDS);
 
         this.socketFuture = new Bootstrap()
                 .group(this.bossGroup)
@@ -94,19 +94,19 @@ public abstract class AbstractUdpListener implements Listener {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(AbstractUdpListener.this.buildDecoder(AbstractUdpListener.this.session))
+                                .addLast(AbstractUdpListener.this.buildDecoder(AbstractUdpListener.this.sessionManager))
                                 .addLast(new PacketHandler(AbstractUdpListener.this.protocol, AbstractUdpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
-                                        AbstractUdpListener.this.session.drop(ch.remoteAddress(), ch.localAddress());
+                                        AbstractUdpListener.this.sessionManager.drop(ch.remoteAddress(), ch.localAddress());
                                     }
                                 });
                     }
                 })
-                .bind(this.bindHost, this.bindPort)
+                .bind(this.host, this.port)
                 .sync();
     }
 
@@ -130,20 +130,20 @@ public abstract class AbstractUdpListener implements Listener {
         this.name = name;
     }
 
-    public String getBindHost() {
-        return this.bindHost;
+    public String getHost() {
+        return this.host;
     }
 
-    public void setBindHost(final String bindHost) {
-        this.bindHost = bindHost;
+    public void setHost(final String host) {
+        this.host = host;
     }
 
-    public int getBindPort() {
-        return this.bindPort;
+    public int getPort() {
+        return this.port;
     }
 
-    public void setBindPort(final int bindPort) {
-        this.bindPort = bindPort;
+    public void setPort(final int port) {
+        this.port = port;
     }
 
     public Duration getTemplateTimeout() {

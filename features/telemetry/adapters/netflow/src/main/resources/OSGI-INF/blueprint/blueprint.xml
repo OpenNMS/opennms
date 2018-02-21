@@ -10,15 +10,39 @@
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
 
-	<!-- Factory and Adapter -->
-	<bean id="netflow5factory" class="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5AdapterFactory">
+	<!-- Netflow5 Factory and Adapter -->
+	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5AdapterFactory">
 		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
 		<property name="flowRepository" ref="flowRepository" />
 	</bean>
-	<service ref="netflow5factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+	<service ref="netflow5Factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
-			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter" />
+		</service-properties>
+	</service>
+
+	<!-- Netflow9 Factory and Adapter -->
+	<bean id="netflow9Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9AdapterFactory">
+		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="netflow9Factory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter" />
+		</service-properties>
+	</service>
+
+	<!-- IPFix Factory and Adapter -->
+	<bean id="ipfixFactory" class="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapterFactory">
+		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
+		<property name="flowRepository" ref="flowRepository" />
+	</bean>
+	<service ref="ipfixFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter" />
 		</service-properties>
 	</service>
 

@@ -34,7 +34,7 @@ import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +76,11 @@ public class TcpListener implements Listener {
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
-                    protected void initChannel(final SocketChannel ch) throws Exception {
-                        final TemplateManager templateManager = new TcpSession();
+                    protected void initChannel(final SocketChannel ch) {
+                        final Session session = new TcpSession();
 
                         ch.pipeline()
-                                .addLast(new TcpPacketDecoder(ch.remoteAddress(), ch.localAddress(), templateManager))
+                                .addLast(new TcpPacketDecoder(ch.remoteAddress(), ch.localAddress(), session))
                                 .addLast(new PacketHandler(Protocol.IPFIX, TcpListener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override

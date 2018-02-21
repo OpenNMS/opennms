@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,23 +29,13 @@
 package org.opennms.netmgt.telemetry.listeners.flow.session;
 
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
 
-public class Field {
-    public final int length;
-    public final InformationElement informationElement;
+public interface Field {
+    int length();
 
-    public Field(final int length,
-                 final InformationElement informationElement) {
-        this.length = length;
-        this.informationElement = Objects.requireNonNull(informationElement);
-    }
-
-    public Value parse(final TemplateManager.TemplateResolver templateResolver, final ByteBuffer buffer) throws InvalidPacketException {
-        return this.informationElement.parse(templateResolver, buffer);
-    }
+    Value<?> parse(final Session.Resolver resolver,
+                   final ByteBuffer buffer) throws InvalidPacketException;
 }
