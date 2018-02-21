@@ -321,6 +321,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	@Ignore("Needs Collectd classes which are not in an OSGi bundle yet")
 	public void testInstallFeatureOpennmsCollectionCommands() {
 		installFeature("opennms-collection-api"); // System classpath
 		installFeature("opennms-collection-commands");

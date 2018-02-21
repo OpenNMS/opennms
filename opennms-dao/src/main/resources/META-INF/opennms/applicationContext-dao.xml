@@ -104,7 +104,9 @@
     <property name="sessionFactory" ref="sessionFactory" />
     <property name="nestedTransactionAllowed" value="true"/>
   </bean>
-  
+
+  <onmsgi:service interface="org.springframework.transaction.PlatformTransactionManager" ref="transactionManager" />
+
   <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
     <property name="transactionManager" ref="transactionManager" />
   </bean>

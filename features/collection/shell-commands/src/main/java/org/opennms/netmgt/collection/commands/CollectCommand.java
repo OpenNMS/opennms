@@ -45,6 +45,9 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.collectd.DefaultSnmpCollectionAgent;
+import org.opennms.netmgt.collectd.SnmpCollectionAgent;
+import org.opennms.netmgt.collectd.SnmpCollector;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -58,8 +61,13 @@ import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
 import org.opennms.netmgt.collection.dto.CollectionAgentDTO;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.snmp.InetAddrUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @Command(scope = "collection", name = "collect", description="Invokes a collector against a host at a specified location.")
 @Service
@@ -94,7 +102,70 @@ public class CollectCommand implements Action {
     public LocationAwareCollectorClient locationAwareCollectorClient;
 
     @Reference
-    public CollectionAgentFactory collectionAgentFactory;
+    public NodeDao nodeDao;
+
+    @Reference
+    public IpInterfaceDao ipInterfaceDao;
+
+    @Reference
+    public PlatformTransactionManager transMgr;
+
+    private static interface SnmpCollectionAgentFactory extends CollectionAgentFactory {
+        @Override
+        SnmpCollectionAgent createCollectionAgent(OnmsIpInterface ipIf);
+
+        @Override
+        SnmpCollectionAgent createCollectionAgent(String nodeCriteria, InetAddress ipAddr);
+
+        @Override
+        SnmpCollectionAgent createCollectionAgentAndOverrideLocation(String nodeCriteria, InetAddress ipAddr, String location);
+    }
+
+    /**
+     * Create a specialized {@link CollectionAgentFactory} that returns 
+     * {@link SnmpCollectionAgent} instances so that the agents will run
+     * with any collector (including the {@link SnmpCollector}).
+     */
+    private static class DefaultSnmpCollectionAgentFactory implements SnmpCollectionAgentFactory {
+
+        private final NodeDao m_nodeDao;
+        private final IpInterfaceDao m_ipInterfaceDao;
+        private final PlatformTransactionManager m_transMgr;
+
+        public DefaultSnmpCollectionAgentFactory(final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao, final PlatformTransactionManager transMgr) {
+            m_nodeDao = nodeDao;
+            m_ipInterfaceDao = ipInterfaceDao;
+            m_transMgr = transMgr;
+        }
+
+        @Override
+        public SnmpCollectionAgent createCollectionAgentAndOverrideLocation(String nodeCriteria, InetAddress ipAddr,
+                String location) {
+            final OnmsNode node = m_nodeDao.get(nodeCriteria);
+            if (node == null) {
+                throw new IllegalArgumentException(String.format("No node found with lookup criteria: %s",
+                        nodeCriteria));
+            }
+            final OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(
+                    node.getId(), InetAddrUtils.str(ipAddr));
+            if (ipInterface == null) {
+                throw new IllegalArgumentException(String.format("No interface found with IP %s on node %s",
+                        InetAddrUtils.str(ipAddr), nodeCriteria));
+            }
+            return DefaultSnmpCollectionAgent.create(ipInterface.getId(), m_ipInterfaceDao, m_transMgr, location);
+        }
+
+        @Override
+        public SnmpCollectionAgent createCollectionAgent(String nodeCriteria, InetAddress ipAddr) {
+            return createCollectionAgentAndOverrideLocation(nodeCriteria, ipAddr, null);
+        }
+
+        @Override
+        public SnmpCollectionAgent createCollectionAgent(OnmsIpInterface ipIf) {
+            return DefaultSnmpCollectionAgent.create(ipIf.getId(), m_ipInterfaceDao, m_transMgr);
+        }
+
+    }
 
     @Override
     public Void execute() {
@@ -151,7 +222,7 @@ public class CollectCommand implements Action {
     private CollectionAgent getCollectionAgent() {
         final InetAddress hostAddr = InetAddrUtils.addr(host);
         if (nodeCriteria != null) {
-            return collectionAgentFactory.createCollectionAgentAndOverrideLocation(nodeCriteria, hostAddr, location);
+            return new DefaultSnmpCollectionAgentFactory(nodeDao, ipInterfaceDao, transMgr).createCollectionAgentAndOverrideLocation(nodeCriteria, hostAddr, location);
         } else {
             System.out.println("NOTE: Some collectors require a database node and IP interface.\n");
             final CollectionAgentDTO agent = new CollectionAgentDTO();
