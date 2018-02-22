@@ -74,13 +74,29 @@ message Alarm {
   string clear_key = 24;
 }
 
+message IpInterface {
+ string ip_address = 1;
+ repeated string service = 2;
+}
+
+message SnmpInterface {
+  uint32 if_index = 1;
+  string if_descr = 2;
+  string if_name = 3;
+}
+
 message Node {
   uint64 id = 1;
   string foreign_source = 2;
   string foreign_id = 3;
   string type = 4; // TODO: Enum
   string location = 5;
-  repeated string categories = 6;
+  repeated string category = 6;
   string label = 7;
   uint64 create_time = 8;
+  string sys_contact = 9;
+  string sys_description = 10;
+  string sys_object_id = 11;
+  repeated IpInterface ip_interface = 12;
+  repeated SnmpInterface snmp_interface = 13;
 }

@@ -29,16 +29,22 @@
 package org.opennms.features.kafka.producer;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.xml.event.Event;
 
 public class ProtobufMapper {
@@ -53,7 +59,41 @@ public class ProtobufMapper {
         if (node == null) {
             return null;
         }
-        final OpennmsModelProtos.Node.Builder builder = OpennmsModelProtos.Node.newBuilder();
+
+        final OpennmsModelProtos.Node.Builder builder = OpennmsModelProtos.Node.newBuilder()
+                .setId(node.getId())
+                .setLabel(node.getLabel())
+                .setLocation(node.getLocation().getLocationName());
+        if (node.getForeignSource() != null) {
+            builder.setForeignSource(node.getForeignSource());
+        }
+        if (node.getForeignId() != null) {
+            builder.setForeignId(node.getForeignId());
+        }
+        if (node.getSysContact() != null) {
+            builder.setSysContact(node.getSysContact());
+        }
+        if (node.getSysDescription() != null) {
+            builder.setSysDescription(node.getSysDescription());
+        }
+        if (node.getSysObjectId() != null) {
+            builder.setSysObjectId(node.getSysObjectId());
+        }
+
+        // Add all of the intefaces
+        node.getSnmpInterfaces().forEach(s -> builder.addSnmpInterface(toSnmpInterface(s)));
+        node.getIpInterfaces().forEach(i -> builder.addIpInterface(toIpInterface(i)));
+
+
+        // Add all of the categories, sorting them by name first
+        node.getCategories()
+                .stream()
+                .map(OnmsCategory::getName)
+                .sorted()
+                .forEach(builder::addCategory);
+
+        setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
+
         return builder;
     }
 
@@ -196,6 +236,29 @@ public class ProtobufMapper {
                 severity = OpennmsModelProtos.Severity.UNRECOGNIZED;
         }
         return severity;
+    }
+
+    public OpennmsModelProtos.IpInterface.Builder toIpInterface(OnmsIpInterface ipInterface) {
+        if (ipInterface == null) {
+            return null;
+        }
+
+        final OpennmsModelProtos.IpInterface.Builder builder = OpennmsModelProtos.IpInterface.newBuilder()
+                .setIpAddress(InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
+        ipInterface.getMonitoredServices().forEach(svc -> builder.addService(svc.getServiceName()));
+
+        return builder;
+    }
+
+    public OpennmsModelProtos.SnmpInterface.Builder toSnmpInterface(OnmsSnmpInterface snmpInterface) {
+        if (snmpInterface == null) {
+            return null;
+        }
+
+        return OpennmsModelProtos.SnmpInterface.newBuilder()
+                .setIfIndex(snmpInterface.getIfIndex())
+                .setIfDescr(snmpInterface.getIfDescr())
+                .setIfName(snmpInterface.getIfName());
     }
 
     private static void setTimeIfNotNull(Date date, Consumer<Long> setter) {
