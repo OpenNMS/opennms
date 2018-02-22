@@ -109,18 +109,28 @@ public class ProtobufMapper {
         final OpennmsModelProtos.Alarm.Builder builder = OpennmsModelProtos.Alarm.newBuilder()
                 .setId(alarm.getId())
                 .setUei(alarm.getUei())
-                .setIpAddress(InetAddressUtils.toIpAddrString(alarm.getIpAddr()))
                 .setReductionKey(alarm.getReductionKey())
-                .setIfIndex(alarm.getIfIndex())
                 .setCount(alarm.getCounter())
                 .setDescription(alarm.getDescription())
                 .setLogMessage(alarm.getLogMsg())
-                .setOperatorInstructions(alarm.getOperInstruct())
-                .setAckUser(alarm.getAckUser())
-                .setClearKey(alarm.getClearKey())
                 .setLastEvent(toEvent(alarm.getLastEvent()))
                 .setSeverity(toSeverity(alarm.getSeverity()));
 
+        if (alarm.getIpAddr() != null) {
+            builder.setIpAddress(InetAddressUtils.toIpAddrString(alarm.getIpAddr()));
+        }
+        if (alarm.getIfIndex() != null) {
+            builder.setIfIndex(alarm.getIfIndex());
+        }
+        if (alarm.getOperInstruct() != null) {
+            builder.setOperatorInstructions(alarm.getOperInstruct());
+        }
+        if (alarm.getAckUser() != null) {
+            builder.setAckUser(alarm.getAckUser());
+        }
+        if (alarm.getClearKey() != null) {
+            builder.setClearKey(alarm.getClearKey());
+        }
         if (alarm.getNodeId() != null) {
             builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
                     .setId(alarm.getNodeId())
