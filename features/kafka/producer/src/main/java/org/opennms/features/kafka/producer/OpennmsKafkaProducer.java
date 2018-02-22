@@ -58,37 +58,30 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
     private static final String KAFKA_PRODUCER_CLIENT_PID = "org.opennms.features.kafka.producer.client";
 
-    private final String eventTopic;
-    private final String alarmTopic;
-    private final String nodeTopic;
     private final ProtobufMapper protobufMapper;
     private final NodeCache nodeCache;
     private final ConfigurationAdmin configAdmin;
     private final EventSubscriptionService eventSubscriptionService;
     private final AlarmLifecycleSubscriptionService alarmLifecycleSubscriptionService;
 
-    private final boolean forwardEvents;
-    private final boolean forwardAlarms;
-    private final boolean forwardNodes;
+    private String eventTopic;
+    private String alarmTopic;
+    private String nodeTopic;
+
+    private boolean forwardEvents;
+    private boolean forwardAlarms;
+    private boolean forwardNodes;
 
     private KafkaProducer<String, byte[]> producer;
 
-    public OpennmsKafkaProducer(String eventTopic, String alarmTopic, String nodeTopic,
-                                ProtobufMapper protobufMapper, NodeCache nodeCache,
+    public OpennmsKafkaProducer(ProtobufMapper protobufMapper, NodeCache nodeCache,
                                 ConfigurationAdmin configAdmin, EventSubscriptionService eventSubscriptionService,
                                 AlarmLifecycleSubscriptionService alarmLifecycleSubscriptionService) {
-        this.eventTopic = eventTopic;
-        this.alarmTopic = alarmTopic;
-        this.nodeTopic = nodeTopic;
         this.protobufMapper = Objects.requireNonNull(protobufMapper);
         this.nodeCache = Objects.requireNonNull(nodeCache);
         this.configAdmin = Objects.requireNonNull(configAdmin);
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.alarmLifecycleSubscriptionService = Objects.requireNonNull(alarmLifecycleSubscriptionService);
-
-        forwardEvents = !Strings.isNullOrEmpty(eventTopic);
-        forwardAlarms = !Strings.isNullOrEmpty(alarmTopic);
-        forwardNodes = !Strings.isNullOrEmpty(nodeTopic);
     }
 
     public void init() throws IOException {
@@ -138,7 +131,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void forwardEvent(Event event) {
-        if (forwardNodes && event.getNodeid() != null) {
+        if (forwardNodes && event.getNodeid() != null && event.getNodeid() != 0) {
             maybeUpdateNode(event.getNodeid());
         }
         sendRecord(() -> {
@@ -164,26 +157,24 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void maybeUpdateNode(long nodeId) {
-        if (!nodeCache.needsUpdate(nodeId)) {
-            return;
-        }
+        nodeCache.triggerIfNeeded(nodeId, (node) -> {
+            final String nodeCriteria;
+            if (node != null && node.getForeignSource() != null && node.getForeignId() != null) {
+                nodeCriteria = String.format("%s:%s", node.getForeignSource(), node.getForeignId());
+            } else {
+                nodeCriteria = Long.toString(nodeId);
+            }
 
-        final OnmsNode node = nodeCache.getNode(nodeId);
-        if (node == null) {
-            LOG.info("Could not find node with id: {}. Skipping update.", nodeId);
-            return;
-        }
+            if (node == null) {
+                // The node was deleted, push a null record
+                sendRecord(() -> new ProducerRecord<>(nodeTopic, nodeCriteria, null));
+                return;
+            }
 
-        final String nodeCriteria;
-        if (node.getForeignSource() != null && node.getForeignId() != null) {
-            nodeCriteria = String.format("%s:%s", node.getForeignSource(), node.getForeignId());
-        } else {
-            nodeCriteria = Integer.toString(node.getId());
-        }
-
-        sendRecord(() -> {
-            final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
-            return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
+            sendRecord(() -> {
+                final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
+                return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
+            });
         });
     }
 
@@ -225,5 +216,20 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     @Override
     public void onEvent(Event event) {
         forwardEvent(event);
+    }
+
+    public void setEventTopic(String eventTopic) {
+        this.eventTopic = eventTopic;
+        forwardEvents = !Strings.isNullOrEmpty(eventTopic);
+    }
+
+    public void setAlarmTopic(String alarmTopic) {
+        this.alarmTopic = alarmTopic;
+        forwardAlarms = !Strings.isNullOrEmpty(alarmTopic);
+    }
+
+    public void setNodeTopic(String nodeTopic) {
+        this.nodeTopic = nodeTopic;
+        forwardNodes = !Strings.isNullOrEmpty(nodeTopic);
     }
 }

@@ -28,15 +28,62 @@
 
 package org.opennms.features.kafka.producer;
 
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Maps;
 
 public class NodeCache {
 
-    public OnmsNode getNode(long nodeId) {
-        return null;
+    private static final Logger LOG = LoggerFactory.getLogger(NodeCache.class);
+
+    private final NodeDao nodeDao;
+
+    private final TransactionOperations transactionOperations;
+
+    private final Map<Long, Long> lastUpdatedByNodeId = Maps.newHashMap();
+
+    private long timeoutInMs = TimeUnit.MINUTES.toMillis(5);
+
+    public NodeCache(NodeDao nodeDao, TransactionOperations transactionOperations) {
+        this.nodeDao = Objects.requireNonNull(nodeDao);
+        this.transactionOperations = Objects.requireNonNull(transactionOperations);
     }
 
-    public boolean needsUpdate(long nodeId) {
-        return false;
+    public synchronized void triggerIfNeeded(long nodeId, Consumer<OnmsNode> consumer) {
+        final long now = System.currentTimeMillis();
+        final Long lastUpdated = lastUpdatedByNodeId.get(nodeId);
+        if (lastUpdated != null && now - lastUpdated <= timeoutInMs) {
+            // No update required
+            return;
+        }
+
+        transactionOperations.execute((TransactionCallback<Void>) status -> {
+            // Lookup the node
+            final OnmsNode node = nodeDao.get((int)nodeId);
+
+            // Use the timestamp we gather at the beginning of the function, instead
+            // of making another call to System.currentTimeMillis(), even though
+            // some time may have passed since
+            lastUpdatedByNodeId.put(nodeId, now);
+
+            // We got a node, trigger the consumer while holding the transaction
+            // in order to allow relationships to be loaded
+            consumer.accept(node);
+            return null;
+        });
+    }
+
+    public void setTimeoutInMs(long timeoutInMs) {
+        this.timeoutInMs = timeoutInMs;
     }
 }
