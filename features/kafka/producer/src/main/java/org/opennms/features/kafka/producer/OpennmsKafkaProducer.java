@@ -137,26 +137,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
     }
 
-    private void sendRecord(Callable<ProducerRecord<String,byte[]>> callable) {
-        if (producer == null) {
-            return;
-        }
-
-        final ProducerRecord<String,byte[]> record;
-        try {
-            record = callable.call();
-        } catch (Exception e) {
-            // Propagate
-            throw new RuntimeException(e);
-        }
-
-        producer.send(record, (recordMetadata, e) -> {
-            if (e != null) {
-                LOG.warn("Failed to send record to producer: {}.", record, e);
-            }
-        });
-    }
-
     private void forwardEvent(Event event) {
         if (forwardNodes && event.getNodeid() != null) {
             maybeUpdateNode(event.getNodeid());
@@ -184,7 +164,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
         final OnmsNode node = nodeCache.getNode(nodeId);
         if (node == null) {
-            LOG.warn("Oops3. {}", nodeId);
+            LOG.info("Could not find node with id: {}. Skipping update.", nodeId);
             return;
         }
 
@@ -198,6 +178,26 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         sendRecord(() -> {
             final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
             return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
+        });
+    }
+
+    private void sendRecord(Callable<ProducerRecord<String,byte[]>> callable) {
+        if (producer == null) {
+            return;
+        }
+
+        final ProducerRecord<String,byte[]> record;
+        try {
+            record = callable.call();
+        } catch (Exception e) {
+            // Propagate
+            throw new RuntimeException(e);
+        }
+
+        producer.send(record, (recordMetadata, e) -> {
+            if (e != null) {
+                LOG.warn("Failed to send record to producer: {}.", record, e);
+            }
         });
     }
 

@@ -95,7 +95,22 @@ public class AlarmLifecycleListenerManager implements AlarmLifecycleSubscription
             }
 
             if (EventConstants.ALARM_DELETED_EVENT_UEI.equals(e.getUei())) {
-                handleAlarmDeleted(e, alarmId);
+                final Parm reductionKeyParm = e.getParm(EventConstants.PARM_ALARM_REDUCTION_KEY);
+                if (reductionKeyParm == null) {
+                    LOG.warn("Received alarm deleted event without reduction key. Ignoring.");
+                    return;
+                }
+                if (reductionKeyParm.getValue() == null) {
+                    LOG.warn("Received alarm deleted event with null reduction key value. Ignoring.");
+                    return;
+                }
+                final String reductionKey = reductionKeyParm.getValue().getContent();
+                if (reductionKey == null) {
+                    LOG.warn("Received alarm deleted event with null reduction key content. Ignoring.");
+                    return;
+                }
+
+                handleAlarmDeleted(alarmId, reductionKey);
             } else {
                 handleAlarmCreatedOrUpdated(e, alarmId);
             }
@@ -118,21 +133,7 @@ public class AlarmLifecycleListenerManager implements AlarmLifecycleSubscription
         });
     }
 
-    private void handleAlarmDeleted(Event e, int alarmId) {
-        final Parm reductionKeyParm = e.getParm("reductionKey");
-        if (reductionKeyParm == null) {
-            LOG.error("Received alarm deleted event without reduction key. Ignoring.");
-            return;
-        }
-        if (reductionKeyParm.getValue() == null) {
-            LOG.error("Oops.");
-            return;
-        }
-        final String reductionKey = reductionKeyParm.getValue().getContent();
-        if (reductionKey == null) {
-            LOG.error("Oops2.");
-            return;
-        }
+    private void handleAlarmDeleted(int alarmId, String reductionKey) {
         listeners.forEach(l -> l.handleDeletedAlarm(alarmId, reductionKey));
     }
 
