@@ -1,0 +1,86 @@
+syntax = "proto3";
+option java_package = "org.opennms.features.kafka.producer.model";
+option java_outer_classname = "OpennmsModelProtos";
+
+// The values differ from the standard codes in OpenNMS
+// since proto3 enforces us to start at 0
+enum Severity {
+  INDETERMINATE = 0;
+  CLEARED = 1;
+  NORMAL = 2;
+  WARNING = 3;
+  MINOR = 4;
+  MAJOR = 5;
+  CRITICAL = 6;
+}
+
+message NodeCriteria {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+}
+
+message EventParameter {
+  string name = 1;
+  string value = 2;
+  string type = 3;
+}
+
+message Event {
+  uint64 id = 1;
+  string uei = 2;
+  string label = 3;
+  uint64 time = 4;
+  string soure = 5;
+  repeated EventParameter parameters = 6;
+  uint64 create_time = 7;
+  string description = 8;
+  string log_message = 9;
+  Severity severity = 10;
+  bool log = 11;
+  bool display = 12;
+  string location = 13;
+  NodeCriteria node_criteria = 14;
+}
+
+message Alarm {
+  uint64 id = 1;
+  string uei = 2;
+  string location = 3;
+  NodeCriteria node_criteria = 4;
+  string node_label = 5;
+  string ip_address = 6;
+  string service_name = 8;
+  string reduction_key = 9;
+  enum Type {
+    PROBLEM_WITH_CLEAR = 0;
+    CLEAR = 1;
+    PROBLEM_WITHOUT_CLEAR = 2;
+  }
+  Type type = 10;
+  uint64 count = 11;
+  Severity severity = 12;
+  uint64 first_event_time = 13;
+  string description = 14;
+  string log_message = 15;
+  uint64 supressed_until = 16;
+  uint64 supressed_time = 17;
+  string ack_user = 18;
+  uint64 ack_time = 19;
+  Event last_event = 20;
+  uint64 last_event_time = 21;
+  uint32 if_index = 22;
+  string operator_instructions = 23;
+  string clear_key = 24;
+}
+
+message Node {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+  string type = 4; // TODO: Enum
+  string location = 5;
+  repeated string categories = 6;
+  string label = 7;
+  uint64 create_time = 8;
+}
