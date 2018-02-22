@@ -4,6 +4,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/jasper-reports">
         <report id="Early-Morning-Report" template="Early-Morning-Report.jrxml" engine="jdbc" />
+        <report id="Early-Morning-Category-Report" template="Early-Morning-Category-Report.jrxml" engine="jdbc" />
         <report id="Response-Time-Summary-Report" template="ResponseTimeSummary.jrxml" engine="jdbc" />
         <report id="Node-Availability-Report" template="NodeAvailabilityReport.jrxml" engine="jdbc" />
         <report id="Availability-Summary-Report" template="AvailabilitySummary.jrxml" engine="jdbc" />
