@@ -148,6 +148,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
+        if (alarm == null) {
+            // The alarm was deleted, push a null record to the reduction key
+            sendRecord(() -> new ProducerRecord<>(alarmTopic, reductionKey, null));
+            return;
+        }
+
         if (forwardNodes && alarm.getNodeId() != null) {
             maybeUpdateNode(alarm.getNodeId());
         }
