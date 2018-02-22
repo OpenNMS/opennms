@@ -29,4 +29,13 @@
     <onmsgi:listener ref="daemon" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
   </onmsgi:list>
 
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" />
+
+  <bean id="alarmLifecycleListenerManagerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="alarmLifecycleListenerManager" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService" ref="alarmLifecycleListenerManager"/>
+
 </beans>

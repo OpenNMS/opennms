@@ -29,6 +29,8 @@
     <!-- Graphml -->
     <module>graphml</module>
 
+    <module>kafka</module>
+
     <!-- Executor factories -->
     <module>executor-factory</module>
 
