@@ -122,9 +122,13 @@ $scope.hasFlows = false;
 
   $scope.getFlowCount = function(nodeId, ifIndex , start, end) {
     $http({
-      url: 'rest/flows/count?exporterNode='+nodeId+'&ifIndex='+ifIndex+'&start='+start+'&end='+end,
+      url: 'rest/flows/count',
       method: 'GET',
-      params: { limit: 0 }
+      params: { exporterNode : nodeId,
+                ifIndex : ifIndex,
+                start : start,
+                end : end,
+                limit: 0 }
     }).success(function(data) {
       $scope.flowCount = data;
       if ( data > 0) {

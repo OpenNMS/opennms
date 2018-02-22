@@ -209,15 +209,9 @@
                <c:set var="nodeId" value="${attribute.value}"/>
              </c:if>
            </c:forEach>
-           <%
-           String grafanaProtocol = System.getProperty("org.opennms.grafanaBox.protocol", "http");
-           String grafanaHostname = System.getProperty("org.opennms.grafanaBox.hostname", "localhost");
-           int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
-
-           %>
            <div ng-app="onms-ksc" ng-controller="checkFlowsCtrl" ng-init="getFlowCount(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
                <div ng-show="hasFlows">
-                 <a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/flows?orgId=1&amp;var-node=${nodeId}&amp;var-interface=${ifIndex}" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.name}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-bar-chart" aria-hidden="true"></i></span></button></a>
+                 <a target=_blank" href="http://grafana:3000/dashboard/var-node=${nodeId}&amp;var-interface=${ifIndex}" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-bar-chart" aria-hidden="true"></i></span></button></a>
                </div>
           </div>
          </c:if>
