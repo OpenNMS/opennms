@@ -28,6 +28,9 @@
 
 package org.opennms.protocols.radius.utils;
 
+import java.security.Provider;
+import java.security.Security;
+
 /**
  * @author jmk <jm+opennms@kubek.fr>
  *
@@ -39,5 +42,14 @@ public class RadiusUtils {
     }
     public final static boolean isTunneling(final String authType) {
         return isEAPTTLS(authType) || authType.equalsIgnoreCase("peap");
+    }
+
+    public final static void loadSecurityProvider() {
+        // This adds support for MD4 digest used by mschapv2 - NMS-9763
+        Security.addProvider(new Provider("MD4", 0.0D, "MD4 for Radius") {
+            {
+                this.put("MessageDigest.MD4", jcifs.util.MD4.class.getName());
+            }
+        });
     }
 }

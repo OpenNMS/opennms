@@ -128,7 +128,11 @@ public class RadiusAuthDetector extends BasicDetector<CompositeAttributeLists, R
     private String m_password = DEFAULT_PASSWORD;
     private String m_ttlsInnerAuthType = DEFAULT_TTLS_INNER_AUTH_TYPE;
 	private String m_InnerIdentity = DEFAULT_INNER_IDENTITY;
-    
+
+    static {
+        RadiusUtils.loadSecurityProvider();
+    }
+
     /**
      * Default constructor
      */
