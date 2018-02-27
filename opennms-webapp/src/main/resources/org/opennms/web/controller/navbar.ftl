@@ -50,7 +50,7 @@
 		        <#-- has sub-entries, draw menu drop-downs -->
 		        <li class="dropdown">
 		          <#if item.url?has_content && item.url != "#">
-		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
+		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
 		          <#else>
 		            <a href="#" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
 		          </#if>
