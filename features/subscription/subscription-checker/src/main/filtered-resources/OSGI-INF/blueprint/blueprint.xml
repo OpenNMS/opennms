@@ -7,7 +7,7 @@
                 http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
 ">
 
-  <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg">
+  <cm:property-placeholder persistent-id="org.opennms.features.subscriptionchecker.cfg" update-strategy="reload">
     <cm:default-properties>
       <cm:property name="org.opennms.subscription.enabled" value="${subscriptionCheckEnabled}" />
       <cm:property name="org.opennms.subscription.groupid" value="${subscriptionGroupId}" />
