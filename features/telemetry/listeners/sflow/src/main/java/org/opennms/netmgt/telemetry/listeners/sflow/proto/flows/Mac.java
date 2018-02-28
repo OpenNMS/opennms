@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // typedef opaque mac[6];
 
 public class Mac {
@@ -41,5 +43,12 @@ public class Mac {
 
     public Mac(final ByteBuffer buffer) throws InvalidPacketException {
         this.mac = new Opaque(buffer, Optional.of(6), Opaque::parseBytes);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mac", mac)
+                .toString();
     }
 }

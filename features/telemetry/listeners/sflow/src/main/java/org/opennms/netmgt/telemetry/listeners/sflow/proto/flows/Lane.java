@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct lane {
 //   unsigned int index; /* 1-based index of lane within module, 0=unknown */
 //   unsigned int tx_bias_current; /* microamps */
@@ -69,5 +71,21 @@ public class Lane {
         this.rx_power_min = BufferUtils.uint32(buffer);
         this.rx_power_max = BufferUtils.uint32(buffer);
         this.rx_wavelength = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("index", index)
+                .add("tx_bias_current", tx_bias_current)
+                .add("tx_power", tx_power)
+                .add("tx_power_min", tx_power_min)
+                .add("tx_power_max", tx_power_max)
+                .add("tx_wavelength", tx_wavelength)
+                .add("rx_power", rx_power)
+                .add("rx_power_min", rx_power_min)
+                .add("rx_power_max", rx_power_max)
+                .add("rx_wavelength", rx_wavelength)
+                .toString();
     }
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 
 // struct counter_record {

@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // typedef opaque utf8string<>;
 
 public class Utf8string {
@@ -41,5 +43,12 @@ public class Utf8string {
 
     public Utf8string(final ByteBuffer buffer) throws InvalidPacketException {
         this.utf8string = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("utf8string", utf8string)
+                .toString();
     }
 }

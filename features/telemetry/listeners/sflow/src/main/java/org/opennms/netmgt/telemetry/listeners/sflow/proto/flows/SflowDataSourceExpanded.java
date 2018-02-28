@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct sflow_data_source_expanded {
 //    unsigned int source_id_type;   /* sFlowDataSource type */
 //    unsigned int source_id_index;  /* sFlowDataSource index */
@@ -45,5 +47,13 @@ public class SflowDataSourceExpanded {
     public SflowDataSourceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.source_id_type = BufferUtils.uint32(buffer);
         this.source_id_index = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("source_id_type", source_id_type)
+                .add("source_id_index", source_id_index)
+                .toString();
     }
 }

@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct host_net_io {
@@ -65,5 +66,19 @@ public class HostNetIo implements CounterData {
         this.packets_out = BufferUtils.uint32(buffer);
         this.errs_out = BufferUtils.uint32(buffer);
         this.drops_out = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("bytes_in", bytes_in)
+                .add("pkts_in", pkts_in)
+                .add("errs_in", errs_in)
+                .add("drops_in", drops_in)
+                .add("bytes_out", bytes_out)
+                .add("packets_out", packets_out)
+                .add("errs_out", errs_out)
+                .add("drops_out", drops_out)
+                .toString();
     }
 }

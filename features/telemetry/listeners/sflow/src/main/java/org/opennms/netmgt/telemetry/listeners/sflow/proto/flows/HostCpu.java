@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct host_cpu {
 //    float load_one;              /* 1 minute load avg., -1.0 = unknown */
 //    float load_five;             /* 5 minute load avg., -1.0 = unknown */
@@ -71,6 +73,29 @@ public class HostCpu implements CounterData {
     public final long cpu_sintr;
     public final long interrupts;
     public final long contexts;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("load_one", load_one)
+                .add("load_five", load_five)
+                .add("load_fifteen", load_fifteen)
+                .add("proc_run", proc_run)
+                .add("proc_total", proc_total)
+                .add("cpu_num", cpu_num)
+                .add("cpu_speed", cpu_speed)
+                .add("uptime", uptime)
+                .add("cpu_user", cpu_user)
+                .add("cpu_nice", cpu_nice)
+                .add("cpu_system", cpu_system)
+                .add("cpu_idle", cpu_idle)
+                .add("cpu_wio", cpu_wio)
+                .add("cpu_intr", cpu_intr)
+                .add("cpu_sintr", cpu_sintr)
+                .add("interrupts", interrupts)
+                .add("contexts", contexts)
+                .toString();
+    }
 
     public HostCpu(final ByteBuffer buffer) throws InvalidPacketException {
         this.load_one = BufferUtils.sfloat(buffer);

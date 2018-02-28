@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct mib2_tcp_group {
 //   unsigned int tcpRtoAlgorithm;
 //   unsigned int tcpRtoMin;
@@ -84,5 +86,26 @@ public class Mib2TcpGroup implements CounterData {
         this.tcpInErrs = BufferUtils.uint32(buffer);
         this.tcpOutRsts = BufferUtils.uint32(buffer);
         this.tcpInCsumErrs = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("tcpRtoAlgorithm", tcpRtoAlgorithm)
+                .add("tcpRtoMin", tcpRtoMin)
+                .add("tcpRtoMax", tcpRtoMax)
+                .add("tcpMaxConn", tcpMaxConn)
+                .add("tcpActiveOpens", tcpActiveOpens)
+                .add("tcpPassiveOpens", tcpPassiveOpens)
+                .add("tcpAttemptFails", tcpAttemptFails)
+                .add("tcpEstabResets", tcpEstabResets)
+                .add("tcpCurrEstab", tcpCurrEstab)
+                .add("tcpInSegs", tcpInSegs)
+                .add("tcpOutSegs", tcpOutSegs)
+                .add("tcpRetransSegs", tcpRetransSegs)
+                .add("tcpInErrs", tcpInErrs)
+                .add("tcpOutRsts", tcpOutRsts)
+                .add("tcpInCsumErrs", tcpInCsumErrs)
+                .toString();
     }
 }

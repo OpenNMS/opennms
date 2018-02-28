@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // struct sampled_header {
 //    header_protocol protocol;       /* Format of sampled header */
 //    unsigned int frame_length;      /* Original length of packet before
@@ -86,5 +88,15 @@ public class SampledHeader implements FlowData {
         this.frame_length = BufferUtils.uint32(buffer);
         this.stripped = BufferUtils.uint32(buffer);
         this.header = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("protocol", protocol)
+                .add("frame_length", frame_length)
+                .add("stripped", stripped)
+                .add("header", header)
+                .toString();
     }
 }

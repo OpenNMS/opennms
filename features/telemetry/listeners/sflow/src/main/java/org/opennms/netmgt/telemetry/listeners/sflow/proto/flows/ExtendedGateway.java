@@ -35,6 +35,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedInteger;
 
 // struct extended_gateway {
@@ -65,5 +66,18 @@ public class ExtendedGateway implements FlowData {
         this.dst_as_path = new Array(buffer, Optional.empty(), AsPathType::new);
         this.communities = new Array(buffer, Optional.empty(), BufferUtils::uint32);
         this.localpref = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("nexthop", nexthop)
+                .add("as", as)
+                .add("src_as", src_as)
+                .add("src_peer_as", src_peer_as)
+                .add("dst_as_path", dst_as_path)
+                .add("communities", communities)
+                .add("localpref", localpref)
+                .toString();
     }
 }

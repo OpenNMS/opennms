@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct vlan_counters {
@@ -59,5 +60,17 @@ public class VlanCounters implements CounterData {
         this.multicastPkts = BufferUtils.uint32(buffer);
         this.broadcastPkts = BufferUtils.uint32(buffer);
         this.discards = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("vlan_id", vlan_id)
+                .add("octets", octets)
+                .add("ucastPkts", ucastPkts)
+                .add("multicastPkts", multicastPkts)
+                .add("broadcastPkts", broadcastPkts)
+                .add("discards", discards)
+                .toString();
     }
 }

@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct virt_memory {
@@ -47,5 +48,13 @@ public class VirtMemory implements CounterData {
     public VirtMemory(final ByteBuffer buffer) throws InvalidPacketException {
         this.memory = BufferUtils.uint64(buffer);
         this.maxMemory = BufferUtils.uint64(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("memory", memory)
+                .add("maxMemory", maxMemory)
+                .toString();
     }
 }

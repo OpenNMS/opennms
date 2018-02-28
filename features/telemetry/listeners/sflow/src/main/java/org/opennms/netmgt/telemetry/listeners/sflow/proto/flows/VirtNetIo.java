@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct virt_net_io {
@@ -65,5 +66,19 @@ public class VirtNetIo implements CounterData {
         this.tx_packets = BufferUtils.uint32(buffer);
         this.tx_errs = BufferUtils.uint32(buffer);
         this.tx_drop = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("rx_bytes", rx_bytes)
+                .add("rx_packets", rx_packets)
+                .add("rx_errs", rx_errs)
+                .add("rx_drop", rx_drop)
+                .add("tx_bytes", tx_bytes)
+                .add("tx_packets", tx_packets)
+                .add("tx_errs", tx_errs)
+                .add("tx_drop", tx_drop)
+                .toString();
     }
 }

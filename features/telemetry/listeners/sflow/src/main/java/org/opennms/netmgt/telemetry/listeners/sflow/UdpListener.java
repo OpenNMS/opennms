@@ -130,7 +130,7 @@ public class UdpListener implements Listener {
 
     public static void main(final String... args) throws Exception {
         final UdpListener l = new UdpListener();
-        l.setName("test");
+        l.setName("sflow-test");
         l.start();
 
         while (true) {

@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct app_initiator {
 //    actor actor;
 // };
@@ -41,5 +43,12 @@ public class AppInitiator implements FlowData {
 
     public AppInitiator(final ByteBuffer buffer) throws InvalidPacketException {
         this.actor = new Actor(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("actor", actor)
+                .toString();
     }
 }

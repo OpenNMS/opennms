@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct host_memory {
@@ -74,5 +75,22 @@ public class HostMemory implements CounterData {
         this.page_out = BufferUtils.uint32(buffer);
         this.swap_in = BufferUtils.uint32(buffer);
         this.swap_out = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mem_total", mem_total)
+                .add("mem_free", mem_free)
+                .add("mem_shared", mem_shared)
+                .add("mem_buffers", mem_buffers)
+                .add("mem_cached", mem_cached)
+                .add("swap_total", swap_total)
+                .add("swap_free", swap_free)
+                .add("page_in", page_in)
+                .add("page_out", page_out)
+                .add("swap_in", swap_in)
+                .add("swap_out", swap_out)
+                .toString();
     }
 }

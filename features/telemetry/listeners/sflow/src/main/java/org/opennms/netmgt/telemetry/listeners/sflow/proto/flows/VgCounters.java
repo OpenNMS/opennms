@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct vg_counters {
@@ -83,5 +84,25 @@ public class VgCounters implements CounterData {
         this.dot12HCInHighPriorityOctets = BufferUtils.uint64(buffer);
         this.dot12HCInNormPriorityOctets = BufferUtils.uint64(buffer);
         this.dot12HCOutHighPriorityOctets = BufferUtils.uint64(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot12InHighPriorityFrames", dot12InHighPriorityFrames)
+                .add("dot12InHighPriorityOctets", dot12InHighPriorityOctets)
+                .add("dot12InNormPriorityFrames", dot12InNormPriorityFrames)
+                .add("dot12InNormPriorityOctets", dot12InNormPriorityOctets)
+                .add("dot12InIPMErrors", dot12InIPMErrors)
+                .add("dot12InOversizeFrameErrors", dot12InOversizeFrameErrors)
+                .add("dot12InDataErrors", dot12InDataErrors)
+                .add("dot12InNullAddressedFrames", dot12InNullAddressedFrames)
+                .add("dot12OutHighPriorityFrames", dot12OutHighPriorityFrames)
+                .add("dot12OutHighPriorityOctets", dot12OutHighPriorityOctets)
+                .add("dot12TransitionIntoTrainings", dot12TransitionIntoTrainings)
+                .add("dot12HCInHighPriorityOctets", dot12HCInHighPriorityOctets)
+                .add("dot12HCInNormPriorityOctets", dot12HCInNormPriorityOctets)
+                .add("dot12HCOutHighPriorityOctets", dot12HCOutHighPriorityOctets)
+                .toString();
     }
 }

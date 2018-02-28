@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct radio_utilization {
 //    unsigned int elapsed_time;         /* elapsed time in ms */
 //    unsigned int on_channel_time;      /* time in ms spent on channel */
@@ -49,5 +51,14 @@ public class RadioUtilization implements CounterData {
         this.elapsed_time = BufferUtils.uint32(buffer);
         this.on_channel_time = BufferUtils.uint32(buffer);
         this.on_channel_busy_time = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("elapsed_time", elapsed_time)
+                .add("on_channel_time", on_channel_time)
+                .add("on_channel_busy_time", on_channel_busy_time)
+                .toString();
     }
 }

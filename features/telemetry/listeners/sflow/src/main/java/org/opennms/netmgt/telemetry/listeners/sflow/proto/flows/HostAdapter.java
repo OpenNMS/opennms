@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct host_adapter {
 //    unsigned int ifIndex;     /* ifIndex associated with adapter
 //                                 Must match ifIndex of vSwitch
@@ -50,5 +52,13 @@ public class HostAdapter {
     public HostAdapter(final ByteBuffer buffer) throws InvalidPacketException {
         this.ifIndex = BufferUtils.uint32(buffer);
         this.mac_address = new Array(buffer, Optional.empty(), Mac::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ifIndex", ifIndex)
+                .add("mac_address", mac_address)
+                .toString();
     }
 }

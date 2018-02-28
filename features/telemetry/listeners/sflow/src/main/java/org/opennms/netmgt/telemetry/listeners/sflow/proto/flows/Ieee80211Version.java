@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // enum ieee80211_version {
 //   a = 1,
 //   b = 2,
@@ -50,6 +52,13 @@ public enum Ieee80211Version {
 
     Ieee80211Version(final int value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 
     public static Ieee80211Version from(final ByteBuffer buffer) throws InvalidPacketException {

@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_nat {
 //      address src_address;            /* Source address */
 //      address dst_address;            /* Destination address */
@@ -44,5 +46,13 @@ public class ExtendedNat implements FlowData {
     public ExtendedNat(final ByteBuffer buffer) throws InvalidPacketException {
         this.src_address = new Address(buffer);
         this.dst_address = new Address(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("src_address", src_address)
+                .add("dst_address", dst_address)
+                .toString();
     }
 }

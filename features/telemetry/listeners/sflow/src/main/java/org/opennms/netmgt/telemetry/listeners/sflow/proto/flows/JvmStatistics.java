@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct jvm_statistics {
@@ -108,5 +109,30 @@ public class JvmStatistics implements CounterData {
         this.thread_num_started = BufferUtils.uint32(buffer);
         this.fd_open_count = BufferUtils.uint32(buffer);
         this.fd_max_count = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("heap_initial", heap_initial)
+                .add("heap_used", heap_used)
+                .add("heap_committed", heap_committed)
+                .add("heap_max", heap_max)
+                .add("non_heap_initial", non_heap_initial)
+                .add("non_heap_used", non_heap_used)
+                .add("non_heap_committed", non_heap_committed)
+                .add("non_heap_max", non_heap_max)
+                .add("gc_count", gc_count)
+                .add("gc_time", gc_time)
+                .add("classes_loaded", classes_loaded)
+                .add("classes_total", classes_total)
+                .add("classes_unloaded", classes_unloaded)
+                .add("compilation_time", compilation_time)
+                .add("thread_num_live", thread_num_live)
+                .add("thread_num_daemon", thread_num_daemon)
+                .add("thread_num_started", thread_num_started)
+                .add("fd_open_count", fd_open_count)
+                .add("fd_max_count", fd_max_count)
+                .toString();
     }
 }

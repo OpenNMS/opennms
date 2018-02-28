@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct mib2_icmp_group {
 //   unsigned int icmpInMsgs;
 //   unsigned int icmpInErrors;
@@ -114,5 +116,36 @@ public class Mib2IcmpGroup implements CounterData {
         this.icmpOutTimestampReps = BufferUtils.uint32(buffer);
         this.icmpOutAddrMasks = BufferUtils.uint32(buffer);
         this.icmpOutAddrMaskReps = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("icmpInMsgs", icmpInMsgs)
+                .add("icmpInErrors", icmpInErrors)
+                .add("icmpInDestUnreachs", icmpInDestUnreachs)
+                .add("icmpInTimeExcds", icmpInTimeExcds)
+                .add("icmpInParamProbs", icmpInParamProbs)
+                .add("icmpInSrcQuenchs", icmpInSrcQuenchs)
+                .add("icmpInRedirects", icmpInRedirects)
+                .add("icmpInEchos", icmpInEchos)
+                .add("icmpInEchoReps", icmpInEchoReps)
+                .add("icmpInTimestamps", icmpInTimestamps)
+                .add("icmpInAddrMasks", icmpInAddrMasks)
+                .add("icmpInAddrMaskReps", icmpInAddrMaskReps)
+                .add("icmpOutMsgs", icmpOutMsgs)
+                .add("icmpOutErrors", icmpOutErrors)
+                .add("icmpOutDestUnreachs", icmpOutDestUnreachs)
+                .add("icmpOutTimeExcds", icmpOutTimeExcds)
+                .add("icmpOutParamProbs", icmpOutParamProbs)
+                .add("icmpOutSrcQuenchs", icmpOutSrcQuenchs)
+                .add("icmpOutRedirects", icmpOutRedirects)
+                .add("icmpOutEchos", icmpOutEchos)
+                .add("icmpOutEchoReps", icmpOutEchoReps)
+                .add("icmpOutTimestamps", icmpOutTimestamps)
+                .add("icmpOutTimestampReps", icmpOutTimestampReps)
+                .add("icmpOutAddrMasks", icmpOutAddrMasks)
+                .add("icmpOutAddrMaskReps", icmpOutAddrMaskReps)
+                .toString();
     }
 }

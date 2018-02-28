@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct virt_node {
@@ -56,5 +57,16 @@ public class VirtNode implements CounterData {
         this.memory = BufferUtils.uint64(buffer);
         this.memory_free = BufferUtils.uint64(buffer);
         this.num_domains = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mhz", mhz)
+                .add("cpus", cpus)
+                .add("memory", memory)
+                .add("memory_free", memory_free)
+                .add("num_domains", num_domains)
+                .toString();
     }
 }

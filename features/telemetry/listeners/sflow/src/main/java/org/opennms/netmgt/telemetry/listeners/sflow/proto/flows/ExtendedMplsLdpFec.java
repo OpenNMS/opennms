@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_mpls_LDP_FEC {
 //    unsigned int mplsFecAddrPrefixLength;
 // };
@@ -42,5 +44,12 @@ public class ExtendedMplsLdpFec implements FlowData {
 
     public ExtendedMplsLdpFec(final ByteBuffer buffer) throws InvalidPacketException {
         this.mplsFecAddrPrefixLength = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mplsFecAddrPrefixLength", mplsFecAddrPrefixLength)
+                .toString();
     }
 }

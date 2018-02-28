@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct if_counters {
@@ -81,6 +82,31 @@ public class IfCounters implements CounterData {
     public final long ifOutDiscards;
     public final long ifOutErrors;
     public final long ifPromiscuousMode;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ifIndex", ifIndex)
+                .add("ifType", ifType)
+                .add("ifSpeed", ifSpeed)
+                .add("ifDirection", ifDirection)
+                .add("ifStatus", ifStatus)
+                .add("ifInOctets", ifInOctets)
+                .add("ifInUcastPkts", ifInUcastPkts)
+                .add("ifInMulticastPkts", ifInMulticastPkts)
+                .add("ifInBroadcastPkts", ifInBroadcastPkts)
+                .add("ifInDiscards", ifInDiscards)
+                .add("ifInErrors", ifInErrors)
+                .add("ifInUnknownProtos", ifInUnknownProtos)
+                .add("ifOutOctets", ifOutOctets)
+                .add("ifOutUcastPkts", ifOutUcastPkts)
+                .add("ifOutMulticastPkts", ifOutMulticastPkts)
+                .add("ifOutBroadcastPkts", ifOutBroadcastPkts)
+                .add("ifOutDiscards", ifOutDiscards)
+                .add("ifOutErrors", ifOutErrors)
+                .add("ifPromiscuousMode", ifPromiscuousMode)
+                .toString();
+    }
 
     public IfCounters(final ByteBuffer buffer) throws InvalidPacketException {
         this.ifIndex = BufferUtils.uint32(buffer);

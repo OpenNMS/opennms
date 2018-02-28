@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_router {
 //    next_hop nexthop;            /* IP address of next hop router */
 //    unsigned int src_mask_len;   /* Source address prefix mask
@@ -50,5 +52,14 @@ public class ExtendedRouter implements FlowData {
         this.nexthop = new NextHop(buffer);
         this.src_mask_len = BufferUtils.uint32(buffer);
         this.dst_mask_len = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("nexthop", nexthop)
+                .add("src_mask_len", src_mask_len)
+                .add("dst_mask_len", dst_mask_len)
+                .toString();
     }
 }

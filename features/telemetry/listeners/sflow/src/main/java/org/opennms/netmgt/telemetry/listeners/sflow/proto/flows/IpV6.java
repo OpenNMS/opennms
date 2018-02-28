@@ -34,10 +34,19 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // typedef opaque ip_v6[16];
 
 public class IpV6 {
     public final Opaque<byte[]> ip_v6;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ip_v6", ip_v6)
+                .toString();
+    }
 
     public IpV6(final ByteBuffer buffer) throws InvalidPacketException {
         this.ip_v6 = new Opaque(buffer, Optional.of(16), Opaque::parseBytes);

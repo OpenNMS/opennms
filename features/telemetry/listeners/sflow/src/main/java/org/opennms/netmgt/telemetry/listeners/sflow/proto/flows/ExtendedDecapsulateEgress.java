@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_decapsulate_egress {
 //    unsigned int inner_header_offset;
 // };
@@ -42,5 +44,12 @@ public class ExtendedDecapsulateEgress implements FlowData {
 
     public ExtendedDecapsulateEgress(final ByteBuffer buffer) throws InvalidPacketException {
         this.inner_header_offset = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("inner_header_offset", inner_header_offset)
+                .toString();
     }
 }

@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct context {
 //   application application;
 //   operation operation;
@@ -47,5 +49,14 @@ public class Context {
         this.application = new Application(buffer);
         this.operation = new Operation(buffer);
         this.attributes = new Attributes(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("application", application)
+                .add("operation", operation)
+                .add("attributes", attributes)
+                .toString();
     }
 }

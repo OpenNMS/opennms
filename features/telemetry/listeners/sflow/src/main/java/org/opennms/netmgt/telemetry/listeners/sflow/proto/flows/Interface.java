@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef unsigned int interface;
 
 public class Interface {
@@ -40,5 +42,12 @@ public class Interface {
 
     public Interface(final ByteBuffer buffer) throws InvalidPacketException {
         this.iface = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("iface", iface)
+                .toString();
     }
 }

@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_mpls_tunnel {
 //    string tunnel_lsp_name<>;   /* Tunnel name */
 //    unsigned int tunnel_id;     /* Tunnel ID */
@@ -50,5 +52,14 @@ public class ExtendedMplsTunnel implements FlowData {
         this.tunnel_lsp_name = new AsciiString(buffer, Optional.empty());
         this.tunnel_id = BufferUtils.uint32(buffer);
         this.tunnel_cos = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("tunnel_lsp_name", tunnel_lsp_name)
+                .add("tunnel_id", tunnel_id)
+                .add("tunnel_cos", tunnel_cos)
+                .toString();
     }
 }

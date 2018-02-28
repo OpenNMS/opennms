@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct sample_datagram {
 //    sample_datagram_type version;
 // };
@@ -41,5 +43,12 @@ public class SampleDatagram {
 
     public SampleDatagram(final ByteBuffer buffer) throws InvalidPacketException {
         this.version = new SampleDatagramType(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("version", version)
+                .toString();
     }
 }

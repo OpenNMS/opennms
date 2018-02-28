@@ -35,6 +35,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedInteger;
 
 // struct extended_vlantunnel { 
@@ -46,6 +47,13 @@ import com.google.common.primitives.UnsignedInteger;
 
 public class ExtendedVlantunnel implements FlowData {
     public final Array<UnsignedInteger> stack;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("stack", stack)
+                .toString();
+    }
 
     public ExtendedVlantunnel(final ByteBuffer buffer) throws InvalidPacketException {
         this.stack = new Array(buffer, Optional.empty(), BufferUtils::uint32);

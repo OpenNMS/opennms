@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct ethernet_counters {
 //    unsigned int dot3StatsAlignmentErrors;
 //    unsigned int dot3StatsFCSErrors;
@@ -78,5 +80,24 @@ public class EthernetCounters implements CounterData {
         this.dot3StatsFrameTooLongs = BufferUtils.uint32(buffer);
         this.dot3StatsInternalMacReceiveErrors = BufferUtils.uint32(buffer);
         this.dot3StatsSymbolErrors = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot3StatsAlignmentErrors", dot3StatsAlignmentErrors)
+                .add("dot3StatsFCSErrors", dot3StatsFCSErrors)
+                .add("dot3StatsSingleCollisionFrames", dot3StatsSingleCollisionFrames)
+                .add("dot3StatsMultipleCollisionFrames", dot3StatsMultipleCollisionFrames)
+                .add("dot3StatsSQETestErrors", dot3StatsSQETestErrors)
+                .add("dot3StatsDeferredTransmissions", dot3StatsDeferredTransmissions)
+                .add("dot3StatsLateCollisions", dot3StatsLateCollisions)
+                .add("dot3StatsExcessiveCollisions", dot3StatsExcessiveCollisions)
+                .add("dot3StatsInternalMacTransmitErrors", dot3StatsInternalMacTransmitErrors)
+                .add("dot3StatsCarrierSenseErrors", dot3StatsCarrierSenseErrors)
+                .add("dot3StatsFrameTooLongs", dot3StatsFrameTooLongs)
+                .add("dot3StatsInternalMacReceiveErrors", dot3StatsInternalMacReceiveErrors)
+                .add("dot3StatsSymbolErrors", dot3StatsSymbolErrors)
+                .toString();
     }
 }

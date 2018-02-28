@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct app_operations {
 //   application application;
 //   unsigned int success;
@@ -75,5 +77,23 @@ public class AppOperations implements CounterData {
         this.not_found = BufferUtils.uint32(buffer);
         this.unavailable = BufferUtils.uint32(buffer);
         this.unauthorized = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("application", application)
+                .add("success", success)
+                .add("other", other)
+                .add("timeout", timeout)
+                .add("internal_error", internal_error)
+                .add("bad_request", bad_request)
+                .add("forbidden", forbidden)
+                .add("too_large", too_large)
+                .add("not_implemented", not_implemented)
+                .add("not_found", not_found)
+                .add("unavailable", unavailable)
+                .add("unauthorized", unauthorized)
+                .toString();
     }
 }

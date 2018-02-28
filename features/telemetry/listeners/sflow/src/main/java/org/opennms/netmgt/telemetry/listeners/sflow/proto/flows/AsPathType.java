@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // union as_path_type switch (as_path_segment_type type) {
 //    case AS_SET:
 //       unsigned int as_set<>;
@@ -61,5 +63,14 @@ public class AsPathType {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("type", type)
+                .add("asSet", asSet)
+                .add("asSequence", asSequence)
+                .toString();
     }
 }

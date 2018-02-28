@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct jvm_runtime {
 //   string vm_name<64>;      /* vm name */
 //   string vm_vendor<32>;    /* the vendor for the JVM */
@@ -44,6 +46,15 @@ public class JvmRuntime implements CounterData {
     public final AsciiString vm_name;
     public final AsciiString vm_vendor;
     public final AsciiString vm_version;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("vm_name", vm_name)
+                .add("vm_vendor", vm_vendor)
+                .add("vm_version", vm_version)
+                .toString();
+    }
 
     public JvmRuntime(final ByteBuffer buffer) throws InvalidPacketException {
         this.vm_name = new AsciiString(buffer, Optional.empty());

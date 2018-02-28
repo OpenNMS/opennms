@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct mib2_ip_group {
 //   unsigned int ipForwarding;
 //   unsigned int ipDefaultTTL;
@@ -96,5 +98,30 @@ public class Mib2IpGroup implements CounterData {
         this.ipFragOKs = BufferUtils.uint32(buffer);
         this.ipFragFails = BufferUtils.uint32(buffer);
         this.ipFragCreates = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ipForwarding", ipForwarding)
+                .add("ipDefaultTTL", ipDefaultTTL)
+                .add("ipInReceives", ipInReceives)
+                .add("ipInHdrErrors", ipInHdrErrors)
+                .add("ipInAddrErrors", ipInAddrErrors)
+                .add("ipForwDatagrams", ipForwDatagrams)
+                .add("ipInUnknownProtos", ipInUnknownProtos)
+                .add("ipInDiscards", ipInDiscards)
+                .add("ipInDelivers", ipInDelivers)
+                .add("ipOutRequests", ipOutRequests)
+                .add("ipOutDiscards", ipOutDiscards)
+                .add("ipOutNoRoutes", ipOutNoRoutes)
+                .add("ipReasmTimeout", ipReasmTimeout)
+                .add("ipReasmReqds", ipReasmReqds)
+                .add("ipReasmOKs", ipReasmOKs)
+                .add("ipReasmFails", ipReasmFails)
+                .add("ipFragOKs", ipFragOKs)
+                .add("ipFragFails", ipFragFails)
+                .add("ipFragCreates", ipFragCreates)
+                .toString();
     }
 }

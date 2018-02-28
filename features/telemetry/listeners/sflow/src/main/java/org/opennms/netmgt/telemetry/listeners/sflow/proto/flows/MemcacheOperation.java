@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct memcache_operation {
 //   memcache_protocol protocol;  /* protocol */
 //   memcache_cmd cmd;            /* command */
@@ -64,5 +66,18 @@ public class MemcacheOperation implements CounterData {
         this.value_bytes = BufferUtils.uint32(buffer);
         this.uS = BufferUtils.uint32(buffer);
         this.status = MemcacheStatus.from(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("protocol", protocol)
+                .add("cmd", cmd)
+                .add("key", key)
+                .add("nkeys", nkeys)
+                .add("value_bytes", value_bytes)
+                .add("uS", uS)
+                .add("status", status)
+                .toString();
     }
 }

@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct tokenring_counters {
 //   unsigned int dot5StatsLineErrors;
 //   unsigned int dot5StatsBurstErrors;
@@ -93,5 +95,29 @@ public class TokenringCounters implements CounterData {
         this.dot5StatsRemoves = BufferUtils.uint32(buffer);
         this.dot5StatsSingles = BufferUtils.uint32(buffer);
         this.dot5StatsFreqErrors = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot5StatsLineErrors", dot5StatsLineErrors)
+                .add("dot5StatsBurstErrors", dot5StatsBurstErrors)
+                .add("dot5StatsACErrors", dot5StatsACErrors)
+                .add("dot5StatsAbortTransErrors", dot5StatsAbortTransErrors)
+                .add("dot5StatsInternalErrors", dot5StatsInternalErrors)
+                .add("dot5StatsLostFrameErrors", dot5StatsLostFrameErrors)
+                .add("dot5StatsReceiveCongestions", dot5StatsReceiveCongestions)
+                .add("dot5StatsFrameCopiedErrors", dot5StatsFrameCopiedErrors)
+                .add("dot5StatsTokenErrors", dot5StatsTokenErrors)
+                .add("dot5StatsSoftErrors", dot5StatsSoftErrors)
+                .add("dot5StatsHardErrors", dot5StatsHardErrors)
+                .add("dot5StatsSignalLoss", dot5StatsSignalLoss)
+                .add("dot5StatsTransmitBeacons", dot5StatsTransmitBeacons)
+                .add("dot5StatsRecoverys", dot5StatsRecoverys)
+                .add("dot5StatsLobeWires", dot5StatsLobeWires)
+                .add("dot5StatsRemoves", dot5StatsRemoves)
+                .add("dot5StatsSingles", dot5StatsSingles)
+                .add("dot5StatsFreqErrors", dot5StatsFreqErrors)
+                .toString();
     }
 }

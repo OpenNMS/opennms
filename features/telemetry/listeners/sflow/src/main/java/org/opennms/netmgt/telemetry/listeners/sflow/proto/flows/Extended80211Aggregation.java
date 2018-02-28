@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_80211_aggregation {
 //    pdu pdus<>;
 // };
@@ -43,5 +45,12 @@ public class Extended80211Aggregation implements FlowData {
 
     public Extended80211Aggregation(final ByteBuffer buffer) throws InvalidPacketException {
         this.pdus = new Array(buffer, Optional.empty(), Pdu::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("pdus", pdus)
+                .toString();
     }
 }

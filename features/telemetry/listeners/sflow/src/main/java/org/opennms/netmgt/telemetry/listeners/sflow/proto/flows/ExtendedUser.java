@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_user {
 //    charset src_charset;        /* Character set for src_user */
 //    opaque src_user<>;          /* User ID associated with packet source */
@@ -46,6 +48,16 @@ public class ExtendedUser implements FlowData {
     public final Opaque<byte[]> src_user;
     public final Charset dst_charset;
     public final Opaque<byte[]> dst_user;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("src_charset", src_charset)
+                .add("src_user", src_user)
+                .add("dst_charset", dst_charset)
+                .add("dst_user", dst_user)
+                .toString();
+    }
 
     public ExtendedUser(final ByteBuffer buffer) throws InvalidPacketException {
         this.src_charset = new Charset(buffer);

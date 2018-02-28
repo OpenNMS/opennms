@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // struct host_descr {
 //    string hostname<64>;       /* hostname, empty if unknown */
 //    opaque uuid<16>;           /* 16 bytes binary UUID, empty if unknown */
@@ -56,5 +58,16 @@ public class HostDescr implements CounterData {
         this.machine_type = MachineType.from(buffer);
         this.os_name = OsName.from(buffer);
         this.os_release = new AsciiString(buffer, Optional.empty());
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("hostname", hostname)
+                .add("uuid", uuid)
+                .add("machine_type", machine_type)
+                .add("os_name", os_name)
+                .add("os_release", os_release)
+                .toString();
     }
 }

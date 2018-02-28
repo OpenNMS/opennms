@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct host_disk_io {
@@ -68,5 +69,20 @@ public class HostDiskIo implements CounterData {
         this.writes = BufferUtils.uint32(buffer);
         this.bytes_written = BufferUtils.uint64(buffer);
         this.write_time = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("disk_total", disk_total)
+                .add("disk_free", disk_free)
+                .add("part_max_used", part_max_used)
+                .add("reads", reads)
+                .add("bytes_read", bytes_read)
+                .add("read_time", read_time)
+                .add("writes", writes)
+                .add("bytes_written", bytes_written)
+                .add("write_time", write_time)
+                .toString();
     }
 }

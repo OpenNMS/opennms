@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_L2_tunnel_ingress {
 //      sampled_ethernet header;
 // };
@@ -41,5 +43,12 @@ public class ExtendedL2TunnelIngress implements FlowData {
 
     public ExtendedL2TunnelIngress(final ByteBuffer buffer) throws InvalidPacketException {
         this.header = new SampledEthernet(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("header", header)
+                .toString();
     }
 }

@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct sfp {
 //   unsigned int module_id;
 //   unsigned int module_num_lanes;      /* total number of lanes in module */
@@ -56,5 +58,16 @@ public class Sfp {
         this.module_supply_voltage = BufferUtils.uint32(buffer);
         this.module_temperature = BufferUtils.sint32(buffer);
         this.lanes = new Array(buffer, Optional.empty(), Lane::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("module_id", module_id)
+                .add("module_num_lanes", module_num_lanes)
+                .add("module_supply_voltage", module_supply_voltage)
+                .add("module_temperature", module_temperature)
+                .add("lanes", lanes)
+                .toString();
     }
 }

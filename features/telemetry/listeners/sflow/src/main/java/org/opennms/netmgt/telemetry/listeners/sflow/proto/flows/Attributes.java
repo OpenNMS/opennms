@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // typedef utf8string attributes<255>;
 
 public class Attributes {
@@ -41,5 +43,12 @@ public class Attributes {
 
     public Attributes(final ByteBuffer buffer) throws InvalidPacketException {
         this.attributes = new Array(buffer, Optional.empty(), Utf8string::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("attributes", attributes)
+                .toString();
     }
 }

@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // struct lag_port_stats {
 //   mac dot3adAggPortActorSystemID;
 //   mac dot3adAggPortPartnerOperSystemID;
@@ -83,5 +85,23 @@ public class LagPortStats {
         this.dot3adAggPortStatsLACPDUsTx = BufferUtils.uint32(buffer);
         this.dot3adAggPortStatsMarkerPDUsTx = BufferUtils.uint32(buffer);
         this.dot3adAggPortStatsMarkerResponsePDUsTx = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot3adAggPortActorSystemID", dot3adAggPortActorSystemID)
+                .add("dot3adAggPortPartnerOperSystemID", dot3adAggPortPartnerOperSystemID)
+                .add("dot3adAggPortAttachedAggID", dot3adAggPortAttachedAggID)
+                .add("dot3adAggPortState", dot3adAggPortState)
+                .add("dot3adAggPortStatsLACPDUsRx", dot3adAggPortStatsLACPDUsRx)
+                .add("dot3adAggPortStatsMarkerPDUsRx", dot3adAggPortStatsMarkerPDUsRx)
+                .add("dot3adAggPortStatsMarkerResponsePDUsRx", dot3adAggPortStatsMarkerResponsePDUsRx)
+                .add("dot3adAggPortStatsUnknownRx", dot3adAggPortStatsUnknownRx)
+                .add("dot3adAggPortStatsIllegalRx", dot3adAggPortStatsIllegalRx)
+                .add("dot3adAggPortStatsLACPDUsTx", dot3adAggPortStatsLACPDUsTx)
+                .add("dot3adAggPortStatsMarkerPDUsTx", dot3adAggPortStatsMarkerPDUsTx)
+                .add("dot3adAggPortStatsMarkerResponsePDUsTx", dot3adAggPortStatsMarkerResponsePDUsTx)
+                .toString();
     }
 }

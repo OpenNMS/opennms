@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_url {
 //    url_direction direction;    /* Direction of connection */
 //    string url<>;               /* The HTTP request-line (see RFC 2616) */
@@ -49,5 +51,14 @@ public class ExtendedUrl implements FlowData {
         this.direction = UrlDirection.from(buffer);
         this.url = new AsciiString(buffer, Optional.empty());
         this.host = new AsciiString(buffer, Optional.empty());
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("direction", direction)
+                .add("url", url)
+                .add("host", host)
+                .toString();
     }
 }

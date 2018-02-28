@@ -35,6 +35,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct http_request {
@@ -84,5 +85,24 @@ public class HttpRequest implements FlowData {
         this.resp_bytes = BufferUtils.uint64(buffer);
         this.uS = BufferUtils.uint32(buffer);
         this.status = BufferUtils.sint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("method", method)
+                .add("protocol", protocol)
+                .add("uri", uri)
+                .add("host", host)
+                .add("referer", referer)
+                .add("useragent", useragent)
+                .add("xff", xff)
+                .add("authuser", authuser)
+                .add("mime_type", mime_type)
+                .add("req_bytes", req_bytes)
+                .add("resp_bytes", resp_bytes)
+                .add("uS", uS)
+                .add("status", status)
+                .toString();
     }
 }

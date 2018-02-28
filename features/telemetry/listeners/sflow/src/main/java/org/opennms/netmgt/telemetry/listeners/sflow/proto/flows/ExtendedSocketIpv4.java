@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_socket_ipv4 {
 //    unsigned int protocol;     /* IP Protocol type
 //                                  (for example, TCP = 6, UDP = 17) */
@@ -48,6 +50,17 @@ public class ExtendedSocketIpv4 implements FlowData {
     public final IpV4 remote_ip;
     public final long local_port;
     public final long remote_port;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("protocol", protocol)
+                .add("local_ip", local_ip)
+                .add("remote_ip", remote_ip)
+                .add("local_port", local_port)
+                .add("remote_port", remote_port)
+                .toString();
+    }
 
     public ExtendedSocketIpv4(final ByteBuffer buffer) throws InvalidPacketException {
         this.protocol = BufferUtils.uint32(buffer);

@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct host_adapters {
 //    host_adapter adapters<>;              /* adapter(s) associated with entity */
 // };
@@ -43,5 +45,12 @@ public class HostAdapters implements CounterData {
 
     public HostAdapters(final ByteBuffer buffer) throws InvalidPacketException {
         this.adapters = new Array(buffer, Optional.empty(), HostAdapter::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("adapters", adapters)
+                .toString();
     }
 }

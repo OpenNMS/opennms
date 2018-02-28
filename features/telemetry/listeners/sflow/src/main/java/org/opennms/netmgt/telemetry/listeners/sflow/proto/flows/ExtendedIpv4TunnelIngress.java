@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_ipv4_tunnel_ingress {
 //     sampled_ipv4 header;
 // };
@@ -41,5 +43,12 @@ public class ExtendedIpv4TunnelIngress implements FlowData {
 
     public ExtendedIpv4TunnelIngress(final ByteBuffer buffer) throws InvalidPacketException {
         this.header = new SampledIpv4(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("header", header)
+                .toString();
     }
 }

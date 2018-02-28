@@ -33,12 +33,21 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_vni_ingress {
 //    unsigned int vni;
 // };
 
 public class ExtendedVniIngress implements FlowData {
     public final long vni;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("vni", vni)
+                .toString();
+    }
 
     public ExtendedVniIngress(final ByteBuffer buffer) throws InvalidPacketException {
         this.vni = BufferUtils.uint32(buffer);

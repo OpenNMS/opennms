@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct virt_disk_io {
@@ -65,5 +66,19 @@ public class VirtDiskIo implements CounterData {
         this.wr_req = BufferUtils.uint32(buffer);
         this.wr_bytes = BufferUtils.uint64(buffer);
         this.errs = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("capacity", capacity)
+                .add("allocation", allocation)
+                .add("available", available)
+                .add("rd_req", rd_req)
+                .add("rd_bytes", rd_bytes)
+                .add("wr_req", wr_req)
+                .add("wr_bytes", wr_bytes)
+                .add("errs", errs)
+                .toString();
     }
 }

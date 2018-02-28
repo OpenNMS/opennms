@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // typedef opaque ip_v4[4];
 
 public class IpV4 {
@@ -41,5 +43,12 @@ public class IpV4 {
 
     public IpV4(final ByteBuffer buffer) throws InvalidPacketException {
         this.ip_v4 = new Opaque(buffer, Optional.of(4), Opaque::parseBytes);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ip_v4", ip_v4)
+                .toString();
     }
 }

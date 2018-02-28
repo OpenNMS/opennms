@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct sample_datagram_v5 {
 //    address agent_address;          /* IP address of sampling agent,
 //                                      sFlowAgentAddress. */
@@ -68,5 +70,16 @@ public class SampleDatagramV5 {
         this.sequence_number = BufferUtils.uint32(buffer);
         this.uptime = BufferUtils.uint32(buffer);
         this.samples = new Array(buffer, Optional.empty(), SampleRecord::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("agent_address", agent_address)
+                .add("sub_agent_id", sub_agent_id)
+                .add("sequence_number", sequence_number)
+                .add("uptime", uptime)
+                .add("samples", samples)
+                .toString();
     }
 }

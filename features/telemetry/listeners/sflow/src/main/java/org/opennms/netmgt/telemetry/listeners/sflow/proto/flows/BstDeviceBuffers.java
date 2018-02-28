@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct bst_device_buffers {
 //   int uc_pc;  /* unicast buffers percentage utilization */
 //   int mc_pc;  /* multicast buffers percentage utilization */
@@ -45,5 +47,13 @@ public class BstDeviceBuffers implements CounterData {
     public BstDeviceBuffers(final ByteBuffer buffer) throws InvalidPacketException {
         this.uc_pc = BufferUtils.sint32(buffer);
         this.mc_pc = BufferUtils.sint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uc_pc", uc_pc)
+                .add("mc_pc", mc_pc)
+                .toString();
     }
 }

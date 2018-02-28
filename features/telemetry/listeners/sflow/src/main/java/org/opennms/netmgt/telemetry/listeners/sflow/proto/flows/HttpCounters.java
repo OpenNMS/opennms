@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct http_counters {
 //   unsigned int method_option_count;
 //   unsigned int method_get_count;
@@ -67,6 +69,27 @@ public class HttpCounters implements CounterData {
     public final long status_4XX_count;
     public final long status_5XX_count;
     public final long status_other_count;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("method_option_count", method_option_count)
+                .add("method_get_count", method_get_count)
+                .add("method_head_count", method_head_count)
+                .add("method_post_count", method_post_count)
+                .add("method_put_count", method_put_count)
+                .add("method_delete_count", method_delete_count)
+                .add("method_trace_count", method_trace_count)
+                .add("method_connect_count", method_connect_count)
+                .add("method_other_count", method_other_count)
+                .add("status_1XX_count", status_1XX_count)
+                .add("status_2XX_count", status_2XX_count)
+                .add("status_3XX_count", status_3XX_count)
+                .add("status_4XX_count", status_4XX_count)
+                .add("status_5XX_count", status_5XX_count)
+                .add("status_other_count", status_other_count)
+                .toString();
+    }
 
     public HttpCounters(final ByteBuffer buffer) throws InvalidPacketException {
         this.method_option_count = BufferUtils.uint32(buffer);

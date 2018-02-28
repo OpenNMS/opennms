@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_switch {
 //    unsigned int src_vlan;     /* The 802.1Q VLAN id of incoming frame */
 //    unsigned int src_priority; /* The 802.1p priority of incoming frame */
@@ -51,5 +53,15 @@ public class ExtendedSwitch implements FlowData {
         this.src_priority = BufferUtils.uint32(buffer);
         this.dst_vlan = BufferUtils.uint32(buffer);
         this.dst_priority = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("src_vlan", src_vlan)
+                .add("src_priority", src_priority)
+                .add("dst_vlan", dst_vlan)
+                .add("dst_priority", dst_priority)
+                .toString();
     }
 }

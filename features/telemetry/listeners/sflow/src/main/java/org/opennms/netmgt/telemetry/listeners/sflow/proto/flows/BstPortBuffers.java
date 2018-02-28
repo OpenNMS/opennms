@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct bst_port_buffers {
 //   int ingress_uc_pc;         /* ingress unicast buffers utilization */
 //   int ingress_mc_pc;         /* ingress multicast buffers utilization */
@@ -59,5 +61,17 @@ public class BstPortBuffers implements CounterData {
         this.egress_mc_pc = BufferUtils.sint32(buffer);
         this.egress_queue_uc_pc = new Array(buffer, Optional.empty(), BufferUtils::sint32);
         this.egress_queue_mc_pc = new Array(buffer, Optional.empty(), BufferUtils::sint32);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ingress_uc_pc", ingress_uc_pc)
+                .add("ingress_mc_pc", ingress_mc_pc)
+                .add("egress_uc_pc", egress_uc_pc)
+                .add("egress_mc_pc", egress_mc_pc)
+                .add("egress_queue_uc_pc", egress_queue_uc_pc)
+                .add("egress_queue_mc_pc", egress_queue_mc_pc)
+                .toString();
     }
 }

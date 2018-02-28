@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct app_workers {
 //   unsigned int workers_active; /* number of active workers */
 //   unsigned int workers_idle;   /* number of idle workers */
@@ -56,5 +58,16 @@ public class AppWorkers implements CounterData {
         this.workers_max = BufferUtils.uint32(buffer);
         this.req_delayed = BufferUtils.uint32(buffer);
         this.req_dropped = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("workers_active", workers_active)
+                .add("workers_idle", workers_idle)
+                .add("workers_max", workers_max)
+                .add("req_delayed", req_delayed)
+                .add("req_dropped", req_dropped)
+                .toString();
     }
 }

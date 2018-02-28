@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // enum url_direction {
 //    src    = 1,                 /* Source address is server */
 //    dst    = 2                  /* Destination address is server */
@@ -58,5 +60,12 @@ public enum UrlDirection {
             default:
                 throw new InvalidPacketException(buffer, "Unknown value: {}", value);
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 }

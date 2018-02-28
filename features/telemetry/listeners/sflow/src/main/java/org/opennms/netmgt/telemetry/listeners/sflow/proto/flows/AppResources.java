@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct app_resources {
@@ -67,5 +68,19 @@ public class AppResources implements CounterData {
         this.fd_max = BufferUtils.uint32(buffer);
         this.conn_open = BufferUtils.uint32(buffer);
         this.conn_max = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("user_time", user_time)
+                .add("system_time", system_time)
+                .add("mem_used", mem_used)
+                .add("mem_max", mem_max)
+                .add("fd_open", fd_open)
+                .add("fd_max", fd_max)
+                .add("conn_open", conn_open)
+                .add("conn_max", conn_max)
+                .toString();
     }
 }

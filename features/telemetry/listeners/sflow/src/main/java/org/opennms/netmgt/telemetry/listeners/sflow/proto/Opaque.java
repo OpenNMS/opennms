@@ -73,4 +73,6 @@ public class Opaque<T> {
     public static byte[] parseBytes(final ByteBuffer buffer) throws InvalidPacketException {
         return BufferUtils.bytes(buffer, buffer.remaining());
     }
+
+
 }

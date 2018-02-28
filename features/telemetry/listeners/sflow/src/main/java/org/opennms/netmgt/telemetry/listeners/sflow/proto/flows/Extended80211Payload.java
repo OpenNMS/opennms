@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_80211_payload {
 //    cipher_suite ciphersuite; /* encryption scheme used for this packet */
 //    opaque       data<>;      /* unencrypted bytes from the payload */
@@ -46,5 +48,13 @@ public class Extended80211Payload implements FlowData {
     public Extended80211Payload(final ByteBuffer buffer) throws InvalidPacketException {
         this.ciphersuite = new CipherSuite(buffer);
         this.data = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ciphersuite", ciphersuite)
+                .add("data", data)
+                .toString();
     }
 }

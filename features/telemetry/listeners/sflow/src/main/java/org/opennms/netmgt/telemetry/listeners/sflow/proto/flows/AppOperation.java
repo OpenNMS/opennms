@@ -35,6 +35,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct app_operation {
@@ -62,5 +63,17 @@ public class AppOperation implements FlowData {
         this.resp_bytes = BufferUtils.uint64(buffer);
         this.uS = BufferUtils.uint32(buffer);
         this.status = Status.from(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("context", context)
+                .add("status_descr", status_descr)
+                .add("req_bytes", req_bytes)
+                .add("resp_bytes", resp_bytes)
+                .add("uS", uS)
+                .add("status", status)
+                .toString();
     }
 }

@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct sampled_ipv6 {
 //    unsigned int length;     /* The length of the IP packet excluding
 //                                lower layer encapsulations */
@@ -65,5 +67,19 @@ public class SampledIpv6 implements FlowData {
         this.dst_port = BufferUtils.uint32(buffer);
         this.tcp_flags = BufferUtils.uint32(buffer);
         this.priority = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("length", length)
+                .add("protocol", protocol)
+                .add("src_ip", src_ip)
+                .add("dst_ip", dst_ip)
+                .add("src_port", src_port)
+                .add("dst_port", dst_port)
+                .add("tcp_flags", tcp_flags)
+                .add("priority", priority)
+                .toString();
     }
 }

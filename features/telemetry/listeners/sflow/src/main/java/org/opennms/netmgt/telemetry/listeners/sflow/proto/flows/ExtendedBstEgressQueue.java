@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_bst_egress_queue {
 //   unsigned int queue;  /* eqress queue number selected for sampled packet */
 // };
@@ -42,5 +44,12 @@ public class ExtendedBstEgressQueue implements FlowData {
 
     public ExtendedBstEgressQueue(final ByteBuffer buffer) throws InvalidPacketException {
         this.queue = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("queue", queue)
+                .toString();
     }
 }

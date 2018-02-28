@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct ieee80211_counters {
 //    unsigned int dot11TransmittedFragmentCount;
 //    unsigned int dot11MulticastTransmittedFrameCount;
@@ -77,6 +79,32 @@ public class Ieee80211Counters implements CounterData {
     public final long dot11QoSCFPollsUnusedCount;
     public final long dot11QoSCFPollsUnusableCount;
     public final long dot11QoSCFPollsLostCount;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot11TransmittedFragmentCount", dot11TransmittedFragmentCount)
+                .add("dot11MulticastTransmittedFrameCount", dot11MulticastTransmittedFrameCount)
+                .add("dot11FailedCount", dot11FailedCount)
+                .add("dot11RetryCount", dot11RetryCount)
+                .add("dot11MultipleRetryCount", dot11MultipleRetryCount)
+                .add("dot11FrameDuplicateCount", dot11FrameDuplicateCount)
+                .add("dot11RTSSuccessCount", dot11RTSSuccessCount)
+                .add("dot11RTSFailureCount", dot11RTSFailureCount)
+                .add("dot11ACKFailureCount", dot11ACKFailureCount)
+                .add("dot11ReceivedFragmentCount", dot11ReceivedFragmentCount)
+                .add("dot11MulticastReceivedFrameCount", dot11MulticastReceivedFrameCount)
+                .add("dot11FCSErrorCount", dot11FCSErrorCount)
+                .add("dot11TransmittedFrameCount", dot11TransmittedFrameCount)
+                .add("dot11WEPUndecryptableCount", dot11WEPUndecryptableCount)
+                .add("dot11QoSDiscardedFragmentCount", dot11QoSDiscardedFragmentCount)
+                .add("dot11AssociatedStationCount", dot11AssociatedStationCount)
+                .add("dot11QoSCFPollsReceivedCount", dot11QoSCFPollsReceivedCount)
+                .add("dot11QoSCFPollsUnusedCount", dot11QoSCFPollsUnusedCount)
+                .add("dot11QoSCFPollsUnusableCount", dot11QoSCFPollsUnusableCount)
+                .add("dot11QoSCFPollsLostCount", dot11QoSCFPollsLostCount)
+                .toString();
+    }
 
     public Ieee80211Counters(final ByteBuffer buffer) throws InvalidPacketException {
         this.dot11TransmittedFragmentCount = BufferUtils.uint32(buffer);

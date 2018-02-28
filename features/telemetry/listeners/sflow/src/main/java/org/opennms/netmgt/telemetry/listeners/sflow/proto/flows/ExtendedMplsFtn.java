@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_mpls_FTN {
 //    string mplsFTNDescr<>;
 //    unsigned int mplsFTNMask;
@@ -47,5 +49,13 @@ public class ExtendedMplsFtn implements FlowData {
     public ExtendedMplsFtn(final ByteBuffer buffer) throws InvalidPacketException {
         this.mplsFTNDescr = new AsciiString(buffer, Optional.empty());
         this.mplsFTNMask = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("mplsFTNDescr", mplsFTNDescr)
+                .add("mplsFTNMask", mplsFTNMask)
+                .toString();
     }
 }

@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct memcache_counters {
@@ -134,5 +135,42 @@ public class MemcacheCounters implements CounterData {
         this.bytes_written = BufferUtils.uint64(buffer);
         this.bytes = BufferUtils.uint64(buffer);
         this.limit_maxbytes = BufferUtils.uint64(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("cmd_set", cmd_set)
+                .add("cmd_touch", cmd_touch)
+                .add("cmd_flush", cmd_flush)
+                .add("get_hits", get_hits)
+                .add("get_misses", get_misses)
+                .add("delete_hits", delete_hits)
+                .add("delete_misses", delete_misses)
+                .add("incr_hits", incr_hits)
+                .add("incr_misses", incr_misses)
+                .add("decr_hits", decr_hits)
+                .add("decr_misses", decr_misses)
+                .add("cas_hits", cas_hits)
+                .add("cas_misses", cas_misses)
+                .add("cas_badval", cas_badval)
+                .add("auth_cmds", auth_cmds)
+                .add("auth_errors", auth_errors)
+                .add("threads", threads)
+                .add("conn_yields", conn_yields)
+                .add("listen_disabled_num", listen_disabled_num)
+                .add("curr_connections", curr_connections)
+                .add("rejected_connections", rejected_connections)
+                .add("total_connections", total_connections)
+                .add("connection_structures", connection_structures)
+                .add("evictions", evictions)
+                .add("reclaimed", reclaimed)
+                .add("curr_items", curr_items)
+                .add("total_items", total_items)
+                .add("bytes_read", bytes_read)
+                .add("bytes_written", bytes_written)
+                .add("bytes", bytes)
+                .add("limit_maxbytes", limit_maxbytes)
+                .toString();
     }
 }

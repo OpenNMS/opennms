@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // enum datagram_version {
 //    VERSION5 = 5
 // };
@@ -54,5 +56,12 @@ public enum DatagramVersion {
             default:
                 throw new InvalidPacketException(buffer, "Unknown value: {}", value);
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 }

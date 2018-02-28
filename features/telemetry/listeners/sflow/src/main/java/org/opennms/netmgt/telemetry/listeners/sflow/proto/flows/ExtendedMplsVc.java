@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_mpls_vc {
 //    string vc_instance_name<>;  /* VC instance name */
 //    unsigned int vll_vc_id;     /* VLL/VC instance ID */
@@ -50,5 +52,14 @@ public class ExtendedMplsVc implements FlowData {
         this.vc_instance_name = new AsciiString(buffer, Optional.empty());
         this.vll_vc_id = BufferUtils.uint32(buffer);
         this.vc_label_cos = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("vc_instance_name", vc_instance_name)
+                .add("vll_vc_id", vll_vc_id)
+                .add("vc_label_cos", vc_label_cos)
+                .toString();
     }
 }

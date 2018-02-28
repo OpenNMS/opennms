@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // enum memcache_cmd {
 //   OTHER    = 0,
 //   SET      = 1,
@@ -118,5 +120,12 @@ public enum MemcacheCmd {
             default:
                 throw new InvalidPacketException(buffer, "Unknown value: {}", value);
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 }

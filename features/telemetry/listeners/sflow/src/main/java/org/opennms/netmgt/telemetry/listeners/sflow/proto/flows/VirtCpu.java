@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct virt_cpu {
 //    unsigned int state;         /* virtDomainState */
 //    unsigned int cpuTime;       /* the CPU time used (ms) */
@@ -48,5 +50,14 @@ public class VirtCpu implements CounterData {
         this.state = BufferUtils.uint32(buffer);
         this.cpuTime = BufferUtils.uint32(buffer);
         this.nrVirtCpu = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("state", state)
+                .add("cpuTime", cpuTime)
+                .add("nrVirtCpu", nrVirtCpu)
+                .toString();
     }
 }

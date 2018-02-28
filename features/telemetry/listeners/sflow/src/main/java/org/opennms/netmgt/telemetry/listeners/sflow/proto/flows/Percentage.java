@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef int percentage;
 
 public class Percentage {
@@ -40,5 +42,12 @@ public class Percentage {
 
     public Percentage(final ByteBuffer buffer) throws InvalidPacketException {
         this.percentage = BufferUtils.sint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("percentage", percentage)
+                .toString();
     }
 }

@@ -35,6 +35,7 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct extended_80211_rx {
@@ -70,5 +71,19 @@ public class Extended80211Rx implements FlowData {
         this.rsni = BufferUtils.uint32(buffer);
         this.rcpi = BufferUtils.uint32(buffer);
         this.packet_duration = new DurationUs(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ssid", ssid)
+                .add("bssid", bssid)
+                .add("version", version)
+                .add("channel", channel)
+                .add("speed", speed)
+                .add("rsni", rsni)
+                .add("rcpi", rcpi)
+                .add("packet_duration", packet_duration)
+                .toString();
     }
 }

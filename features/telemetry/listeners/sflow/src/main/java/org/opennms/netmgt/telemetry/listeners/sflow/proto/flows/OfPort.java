@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct of_port {
@@ -47,5 +48,13 @@ public class OfPort implements CounterData {
     public OfPort(final ByteBuffer buffer) throws InvalidPacketException {
         this.datapath_id = BufferUtils.uint64(buffer);
         this.port_no = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("datapath_id", datapath_id)
+                .add("port_no", port_no)
+                .toString();
     }
 }

@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct host_parent {
 //    unsigned int container_type;     /* sFlowDataSource type */
 //    unsigned int container_index;    /* sFlowDataSource index */
@@ -45,5 +47,13 @@ public class HostParent implements CounterData {
     public HostParent(final ByteBuffer buffer) throws InvalidPacketException {
         this.container_type = BufferUtils.uint32(buffer);
         this.container_index = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("container_type", container_type)
+                .add("container_index", container_index)
+                .toString();
     }
 }

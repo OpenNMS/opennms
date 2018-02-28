@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_proxy_socket_ipv4 {
 //   extended_socket_ipv4 socket;
 // };
@@ -41,5 +43,12 @@ public class ExtendedProxySocketIpv4 implements FlowData {
 
     public ExtendedProxySocketIpv4(final ByteBuffer buffer) throws InvalidPacketException {
         this.socket = new ExtendedSocketIpv4(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("socket", socket)
+                .toString();
     }
 }

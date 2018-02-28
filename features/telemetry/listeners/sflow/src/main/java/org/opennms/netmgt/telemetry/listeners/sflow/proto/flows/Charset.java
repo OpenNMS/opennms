@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef unsigned int charset;
 
 public class Charset {
@@ -40,5 +42,12 @@ public class Charset {
 
     public Charset(final ByteBuffer buffer) throws InvalidPacketException {
         this.charset = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("charset", charset)
+                .toString();
     }
 }

@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef unsigned int duration_us;
 
 public class DurationUs {
@@ -40,5 +42,12 @@ public class DurationUs {
 
     public DurationUs(final ByteBuffer buffer) throws InvalidPacketException {
         this.duration_us = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("duration_us", duration_us)
+                .toString();
     }
 }

@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct port_name {
 //   string name<255>;
 // };
@@ -43,5 +45,12 @@ public class PortName implements CounterData {
 
     public PortName(final ByteBuffer buffer) throws InvalidPacketException {
         this.name = new AsciiString(buffer, Optional.empty());
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("name", name)
+                .toString();
     }
 }

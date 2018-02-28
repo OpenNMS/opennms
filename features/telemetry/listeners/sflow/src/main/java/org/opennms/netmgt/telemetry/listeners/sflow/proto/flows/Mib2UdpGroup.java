@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct mib2_udp_group {
 //   unsigned int udpInDatagrams;
 //   unsigned int udpNoPorts;
@@ -60,5 +62,18 @@ public class Mib2UdpGroup implements CounterData {
         this.udpRcvbufErrors = BufferUtils.uint32(buffer);
         this.udpSndbufErrors = BufferUtils.uint32(buffer);
         this.udpInCsumErrors = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("udpInDatagrams", udpInDatagrams)
+                .add("udpNoPorts", udpNoPorts)
+                .add("udpInErrors", udpInErrors)
+                .add("udpOutDatagrams", udpOutDatagrams)
+                .add("udpRcvbufErrors", udpRcvbufErrors)
+                .add("udpSndbufErrors", udpSndbufErrors)
+                .add("udpInCsumErrors", udpInCsumErrors)
+                .toString();
     }
 }

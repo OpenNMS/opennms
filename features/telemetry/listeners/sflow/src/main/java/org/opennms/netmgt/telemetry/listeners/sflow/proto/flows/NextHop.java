@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef address next_hop;
 
 public class NextHop {
@@ -39,5 +41,12 @@ public class NextHop {
 
     public NextHop(final ByteBuffer buffer) throws InvalidPacketException {
         this.next_hop = new Address(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("next_hop", next_hop)
+                .toString();
     }
 }

@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // union address switch (address_type type) {
 //    case UNKNOWN:
 //      void;
@@ -60,5 +62,14 @@ public class Address {
             default:
                 throw new IllegalStateException();
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("type", type)
+                .add("ipV4", ipV4)
+                .add("ipV6", ipV6)
+                .toString();
     }
 }

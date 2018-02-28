@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_mpls { 
 //    next_hop nexthop;           /* Address of the next hop */ 
 //    label_stack in_stack;       /* Label stack of received packet */ 
@@ -42,6 +44,15 @@ public class ExtendedMpls implements FlowData {
     public final NextHop nexthop;
     public final LabelStack in_stack;
     public final LabelStack out_stack;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("nexthop", nexthop)
+                .add("in_stack", in_stack)
+                .add("out_stack", out_stack)
+                .toString();
+    }
 
     public ExtendedMpls(final ByteBuffer buffer) throws InvalidPacketException {
         this.nexthop = new NextHop(buffer);

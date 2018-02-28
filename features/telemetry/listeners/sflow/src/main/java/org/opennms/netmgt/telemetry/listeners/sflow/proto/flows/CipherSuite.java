@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef unsigned int cipher_suite;
 
 public class CipherSuite {
@@ -40,5 +42,12 @@ public class CipherSuite {
 
     public CipherSuite(final ByteBuffer buffer) throws InvalidPacketException {
         this.cipher_suite = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("cipher_suite", cipher_suite)
+                .toString();
     }
 }

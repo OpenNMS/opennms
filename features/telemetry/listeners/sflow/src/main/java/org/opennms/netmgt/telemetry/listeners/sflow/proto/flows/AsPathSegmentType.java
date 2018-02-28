@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // enum as_path_segment_type {
 //    AS_SET      = 1,            /* Unordered set of ASs */
 //    AS_SEQUENCE = 2             /* Ordered set of ASs */
@@ -58,5 +60,12 @@ public enum AsPathSegmentType {
             default:
                 throw new InvalidPacketException(buffer, "Unknown value: {}", value);
         }
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("value", value)
+                .toString();
     }
 }

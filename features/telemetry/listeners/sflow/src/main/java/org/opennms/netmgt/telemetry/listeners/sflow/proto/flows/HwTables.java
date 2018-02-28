@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct hw_tables {
 //   unsigned int host_entries;
 //   unsigned int host_entries_max;
@@ -88,6 +90,49 @@ public class HwTables implements CounterData {
     public final long ecmp_nexthops;
     public final long ecmp_nexthops_max;
     public final long mac_entries;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("host_entries", host_entries)
+                .add("host_entries_max", host_entries_max)
+                .add("ipv4_entries", ipv4_entries)
+                .add("ipv4_entries_max", ipv4_entries_max)
+                .add("ipv6_entries", ipv6_entries)
+                .add("ipv6_entries_max", ipv6_entries_max)
+                .add("ipv4_ipv6_entries", ipv4_ipv6_entries)
+                .add("ipv6_ipv6_entries_max", ipv6_ipv6_entries_max)
+                .add("long_ipv6_entries", long_ipv6_entries)
+                .add("long_ipv6_entries_max", long_ipv6_entries_max)
+                .add("total_routes", total_routes)
+                .add("total_routes_max", total_routes_max)
+                .add("ecmp_nexthops", ecmp_nexthops)
+                .add("ecmp_nexthops_max", ecmp_nexthops_max)
+                .add("mac_entries", mac_entries)
+                .add("mac_entries_max", mac_entries_max)
+                .add("ipv4_neighbors", ipv4_neighbors)
+                .add("ipv6_neighbors", ipv6_neighbors)
+                .add("ipv4_routes", ipv4_routes)
+                .add("ipv6_routes", ipv6_routes)
+                .add("acl_ingress_entries", acl_ingress_entries)
+                .add("acl_ingress_entries_max", acl_ingress_entries_max)
+                .add("acl_ingress_counters", acl_ingress_counters)
+                .add("acl_ingress_counters_max", acl_ingress_counters_max)
+                .add("acl_ingress_meters", acl_ingress_meters)
+                .add("acl_ingress_meters_max", acl_ingress_meters_max)
+                .add("acl_ingress_slices", acl_ingress_slices)
+                .add("acl_ingress_slices_max", acl_ingress_slices_max)
+                .add("acl_egress_entries", acl_egress_entries)
+                .add("acl_egress_entries_max", acl_egress_entries_max)
+                .add("acl_egress_counters", acl_egress_counters)
+                .add("acl_egress_counters_max", acl_egress_counters_max)
+                .add("acl_egress_meters", acl_egress_meters)
+                .add("acl_egress_meters_max", acl_egress_meters_max)
+                .add("acl_egress_slices", acl_egress_slices)
+                .add("acl_egress_slices_max", acl_egress_slices_max)
+                .toString();
+    }
+
     public final long mac_entries_max;
     public final long ipv4_neighbors;
     public final long ipv6_neighbors;

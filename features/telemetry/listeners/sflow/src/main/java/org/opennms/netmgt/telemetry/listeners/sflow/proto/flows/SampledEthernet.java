@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct sampled_ethernet {
 //      unsigned int length;   /* The length of the MAC packet received on the
 //                                network, excluding lower layer encapsulations
@@ -53,5 +55,15 @@ public class SampledEthernet implements FlowData {
         this.src_mac = new Mac(buffer);
         this.dst_mac = new Mac(buffer);
         this.type = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("length", length)
+                .add("src_mac", src_mac)
+                .add("dst_mac", dst_mac)
+                .add("type", type)
+                .toString();
     }
 }

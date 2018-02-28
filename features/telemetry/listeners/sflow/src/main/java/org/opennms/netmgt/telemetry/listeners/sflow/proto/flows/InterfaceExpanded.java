@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct interface_expanded {
 //   unsigned int format;            /* interface format */
 //   unsigned int value;             /* interface value */
@@ -45,5 +47,13 @@ public class InterfaceExpanded {
     public InterfaceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
         this.format = BufferUtils.uint32(buffer);
         this.value = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("format", format)
+                .add("value", value)
+                .toString();
     }
 }

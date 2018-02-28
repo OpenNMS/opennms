@@ -33,6 +33,8 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // typedef unsigned int version;
 
 public class Version {
@@ -40,5 +42,12 @@ public class Version {
 
     public Version(final ByteBuffer buffer) throws InvalidPacketException {
         this.version = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("version", version)
+                .toString();
     }
 }

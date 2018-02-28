@@ -57,4 +57,8 @@ public class Processor implements CounterData {
         this.total_memory = BufferUtils.uint64(buffer);
         this.free_memory = BufferUtils.uint64(buffer);
     }
+
+    public Percentage getCpu_5s() {
+        return cpu_5s;
+    }
 }

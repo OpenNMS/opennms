@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 // struct app_parent_content {
 //    context context;
 // };
@@ -41,5 +43,12 @@ public class AppParentContent implements FlowData {
 
     public AppParentContent(final ByteBuffer buffer) throws InvalidPacketException {
         this.context = new Context(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("context", context)
+                .toString();
     }
 }

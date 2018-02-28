@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
+import com.google.common.base.MoreObjects;
+
 // struct extended_proxy_request {
 //   string uri<255>;           /* URI in request to downstream server */
 //   string  host<64>;          /* Host in request to downstream server */
@@ -42,6 +44,14 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 public class ExtendedProxyRequest implements FlowData {
     public final AsciiString uri;
     public final AsciiString host;
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("uri", uri)
+                .add("host", host)
+                .toString();
+    }
 
     public ExtendedProxyRequest(final ByteBuffer buffer) throws InvalidPacketException {
         this.uri = new AsciiString(buffer, Optional.empty());

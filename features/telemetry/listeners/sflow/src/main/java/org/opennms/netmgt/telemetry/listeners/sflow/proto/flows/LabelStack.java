@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // typedef int label_stack<>;
 
 public class LabelStack {
@@ -42,5 +44,12 @@ public class LabelStack {
 
     public LabelStack(final ByteBuffer buffer) throws InvalidPacketException {
         this.label_stack = new Array(buffer, Optional.empty(), BufferUtils::sint32);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("label_stack", label_stack)
+                .toString();
     }
 }

@@ -35,6 +35,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
+
 public class AsciiString {
     public final int length;
     public final String value;
@@ -50,5 +52,13 @@ public class AsciiString {
 
         // Skip over optional padding
         BufferUtils.skip(buffer, this.length % 4);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("length", length)
+                .add("value", value)
+                .toString();
     }
 }

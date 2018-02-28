@@ -34,6 +34,8 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
+import com.google.common.base.MoreObjects;
+
 // struct pdu {
 //    flow_record flow_records<>;  /* Flow records for each of the PDUs
 //                                    in the aggregation */
@@ -44,5 +46,12 @@ public class Pdu {
 
     public Pdu(final ByteBuffer buffer) throws InvalidPacketException {
         this.flow_records = new Array(buffer, Optional.empty(), FlowRecord::new);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("flow_records", flow_records)
+                .toString();
     }
 }

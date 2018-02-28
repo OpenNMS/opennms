@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct nvidia_gpu {
@@ -82,5 +83,21 @@ public class NvidiaGpu implements CounterData {
         this.energy = BufferUtils.uint32(buffer);
         this.temperature = BufferUtils.uint32(buffer);
         this.fan_speed = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("device_count", device_count)
+                .add("processes", processes)
+                .add("gpu_time", gpu_time)
+                .add("mem_time", mem_time)
+                .add("mem_total", mem_total)
+                .add("mem_free", mem_free)
+                .add("ecc_errors", ecc_errors)
+                .add("energy", energy)
+                .add("temperature", temperature)
+                .add("fan_speed", fan_speed)
+                .toString();
     }
 }
