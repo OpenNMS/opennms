@@ -1378,9 +1378,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.0.6</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.6</licencemanagerVersion>
-    <featuremanagerVersion>1.0.6</featuremanagerVersion>
+    <pluginmanagerVersion>1.0.7</pluginmanagerVersion>
+    <licencemanagerVersion>1.0.7</licencemanagerVersion>
+    <featuremanagerVersion>1.0.7</featuremanagerVersion>
 
     <!-- subscription properties -->
     <!-- These default subscription properties will be replaced by the properties in productkeys.properties -->
