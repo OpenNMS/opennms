@@ -6,14 +6,12 @@ var path = require('path');
 var file = require('file');
 var fs = require('fs');
 
-var AfterChunkHashPlugin = require('webpack-after-chunk-hash-plugin');
 var AssetsPlugin = require('assets-webpack-plugin');
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 var CopyWebpackPlugin = require('copy-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var ProgressBarPlugin = require('progress-bar-webpack-plugin');
 var StringReplacePlugin = require('string-replace-webpack-plugin');
-var TypedocWebpackPlugin = require('typedoc-webpack-plugin');
+var UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 var WebpackMd5Hash = require('webpack-md5-hash');
 var createVariants = require('parallel-webpack').createVariants;
 var clonedeep = require('lodash.clonedeep');
@@ -21,7 +19,6 @@ var clonedeep = require('lodash.clonedeep');
 var extractText = new ExtractTextPlugin({
   allChunks: true,
   filename: '[name].css'
-  /*filename: '[name]-[contenthash:8].css'*/
 });
 
 
@@ -251,12 +248,11 @@ var config = {
         use: [{
           loader: 'expose-loader',
           options: 'L'
-        }/*,{
-          loader: 'script-loader'
-        }*/]
+        }]
       },
       {
         test: /OpenLayers\.js$/,
+        include: path.resolve(__dirname, 'src', 'main', 'assets'),
         use: [{
           loader: 'expose-loader',
           options: 'OpenLayers'
@@ -275,24 +271,26 @@ var config = {
           loader: 'file-loader',
           options: {
             name: '[name].[ext]?v=[hash:8]'
-            /* name: '[name]-[hash:8].[ext]' */
           }
         }]
       },
       {
         test: /\.scss$/,
-        /* loader: 'style-loader!css-loader!group-css-media-queries-loader!sass-loader' */
         use: extractText.extract({
           fallback: 'style-loader',
           use: [
+            {
+              loader: 'cache-loader',
+              options: {
+                cacheDirectory: path.resolve('target/cache-loader')
+              }
+            },
             {
               loader: StringReplacePlugin.replace({
                 replacements: [
                   {
                     pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
                     replacement: function(match, p1, offset, string) {
-                      //console.log('match:',match);
-                      //console.log('p1:',p1);
                       return p1;
                     }
                   }
@@ -319,75 +317,68 @@ var config = {
         })
       },
       {
-        /* run tslint on typescript files before rendering */
-        enforce: 'pre',
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: 'tslint-loader',
-            options: {
-              typeCheck: true
-            }
-          }
-        ],
-        exclude: [/node_modules/]
-      },
-      {
         // special case, include and load globally
         test: /\.html$/,
+        include: path.resolve(__dirname, 'src', 'main', 'assets'),
+        exclude: [/node_modules/],
         use: [
           { loader: 'ngtemplate-loader' },
           { loader: 'html-loader' }
         ]
       },
-      /*
-      {
-        // special case, include and load globally
-        test: /\/(jquery|c3|d3)\.js$/,
-        use: [
-          {
-            loader: 'script-loader'
-          }
-        ]
-      },
-      */
       {
         /* translate javascript to es2015 */
         test: /(\.jsx?)$/,
+        exclude: [/node_modules/],
         use: [
           {
+            loader: 'cache-loader',
+            options: {
+              cacheDirectory: path.resolve('target/cache-loader')
+            }
+          },
+          {
             loader: 'babel-loader',
-            query: {
+            options: {
               compact: false
             }
           }
-        ],
-        // exclude: [/node_modules/, /(jquery|c3|d3)\.js$/]
-        exclude: [/node_modules/]
+        ]
       },
       {
         /* translate typescript to es2015 */
         test: /(\.tsx?)$/,
+        exclude: [/node_modules/],
         use: [
           {
+            loader: 'cache-loader',
+            options: {
+              cacheDirectory: path.resolve('target/cache-loader')
+            }
+          },
+          {
             loader: 'babel-loader',
-            query: {
+            options: {
               compact: false
             }
           },
           {
-            loader: 'ts-loader'
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true
+            }
           }
-        ],
-        exclude: [/node_modules/]
+        ]
       }
     ]
   },
   resolve: {
+    /*
     alias: {
-      /* fix a weird issue in angular-ui-bootstrap not finding its modules */
+      // fix a weird issue in angular-ui-bootstrap not finding its modules
       uib: path.join(__dirname, 'node_modules', 'angular-ui-bootstrap')
     },
+    */
     modules: [
       path.resolve('./src/main/assets/modules'),
       path.resolve('./src/main/assets/js'),
@@ -398,7 +389,21 @@ var config = {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
-    new ProgressBarPlugin(),
+  /*
+    new webpack.ProvidePlugin({
+      angular: 'angular',
+      Backshift: 'backshift/dist/backshift.onms',
+      bootbox: 'bootbox',
+      c3: 'c3',
+      d3: 'd3',
+      Holder: 'holderjs',
+      holder: 'holderjs',
+      jQuery: 'jquery',
+      $: 'jquery',
+      L: 'leaflet',
+      _: 'underscore'
+    }),
+    */
     new WebpackMd5Hash(),
     new StringReplacePlugin()
   ]
@@ -419,6 +424,8 @@ function createConfig(options) {
   var myconf = clonedeep(config);
   //myconf.devtool = options.production? 'source-map' : 'eval-source-map';
   myconf.devtool = 'source-map';
+
+  myconf.mode = options.production? 'production':'development';
 
   var defs = {
     IS_PRODUCTION: Boolean(options.production),
@@ -449,32 +456,70 @@ function createConfig(options) {
   }));
 
   if (options.production !== 'vaadin') {
-    myconf.plugins.push(new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      filename: getFile('[name]', options),
-      minChunks: (module, count) => {
-        //console.log('module=',module);
-        return module.context
-          && module.context.includes('node_modules')
-          && !module.context.includes('d3')
-          && !module.context.includes('holderjs')
-          && !module.context.includes('leaflet');
+    myconf.module.rules.unshift({
+      // run tslint on typescript files before rendering
+      enforce: 'pre',
+      test: /\.tsx?$/,
+      use: [
+        {
+          loader: 'tslint-loader',
+          options: {
+            typeCheck: true
+          }
+        }
+      ],
+      exclude: [/node_modules/]
+    });
+
+    myconf.optimization = {
+      runtimeChunk: false,
+      splitChunks: {
+        chunks: 'all',
+        minSize: 1,
+        minChunks: 1,
+        name: true,
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          runtime: false,
+          vendor: {
+            name: 'vendor',
+            enforce: true,
+            test: (module, chunks) => {
+              return module.context
+              && module.context.includes('node_modules')
+              && !module.context.includes('d3')
+              && !module.context.includes('holderjs')
+              && !module.context.includes('leaflet');
+            }
+          }
+        }
       }
-    }));
-    myconf.plugins.push(new webpack.optimize.CommonsChunkPlugin('manifest'));
-    //myconf.plugins.push(new webpack.NamedModulesPlugin());
-    //myconf.plugins.push(new webpack.optimize.OccurrenceOrderPlugin(true));
+    };
   }
   myconf.plugins.push(extractText);
 
+  if (!myconf.optimization) {
+    myconf.optimization = {};
+  }
+
   if (options.production) {
-    myconf.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    myconf.optimization.minimize = true;
+    if (!myconf.optimization.minimizer) {
+      myconf.optimization.minimizer = [];
+    } else {
+      console.log('minimizer exists:',myconf.optimization.minimizer);
+    }
+    myconf.optimization.minimizer.push(new UglifyJsPlugin({
+      cache: true,
+      parallel: true,
       sourceMap: true,
-      mangle: {
-        except: [ '$element', '$super', '$scope', '$uib', '$', 'jQuery', 'exports', 'require', 'angular', 'c3', 'd3' ]
-      },
-      minimize: true,
-      compress: true
+      uglifyOptions: {
+        mangle: {
+          reserved: [ '$element', '$super', '$scope', '$uib', '$', 'jQuery', 'exports', 'require', 'angular', 'c3', 'd3' ]
+        },
+        compress: true
+      }
     }));
   } else {
     //myconf.plugins.push(new BundleAnalyzerPlugin());
@@ -487,19 +532,14 @@ function createConfig(options) {
     includeManifest: true
   }));
 
-  myconf.output.filename = getFile('[name]' /*'[name]-[chunkhash:8]'*/, options);
-  myconf.output.chunkFilename = getFile('[name]' /*'[name]-[chunkhash:8]'*/, options);
+  myconf.output.filename = getFile('[name]', options);
+  myconf.output.chunkFilename = getFile('[name]', options);
 
   myconf.plugins.push(new CopyWebpackPlugin([
     {
       from: 'src/main/assets/static'
     }
   ]));
-  /*
-  myconf.plugins.push(new AfterChunkHashPlugin({
-    manifestJsonName: assetJsonFile
-  }));
-  */
 
   console.log('Building variant: production=' + options.production);
   //console.log(myconf);
