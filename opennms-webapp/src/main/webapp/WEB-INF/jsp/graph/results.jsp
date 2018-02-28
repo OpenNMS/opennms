@@ -199,23 +199,6 @@
             </c:if>
         </h3>
      </div> <!-- panel-heading -->
-       <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP Interface')}">
-         <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-           <c:forEach var="attribute" items="${resultSet.resource.attributes}">
-             <c:if test="${fn:contains(attribute.name, 'ifIndex')}">
-               <c:set var="ifIndex" value="${attribute.value}"/>
-             </c:if>
-             <c:if test="${fn:contains(attribute.name, 'nodeId')}">
-               <c:set var="nodeId" value="${attribute.value}"/>
-             </c:if>
-           </c:forEach>
-           <div ng-app="onms-ksc" ng-controller="checkFlowsCtrl" ng-init="getFlowCount(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
-               <div ng-show="hasFlows">
-                 <a target=_blank" href="http://grafana:3000/dashboard/var-node=${nodeId}&amp;var-interface=${ifIndex}" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-bar-chart" aria-hidden="true"></i></span></button></a>
-               </div>
-          </div>
-         </c:if>
-        </c:if>
      <div class="panel-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
@@ -227,6 +210,17 @@
 
         <c:choose>
             <c:when test="${!empty resultSet.graphs}">
+              <c:set var="nodeId" value="0"/>
+              <c:set var="ifIndex" value="0"/>
+              <c:forEach var="attribute" items="${resultSet.resource.attributes}">
+                <c:if test="${fn:contains(attribute.name, 'ifIndex')}">
+                  <c:set var="ifIndex" value="${attribute.value}"/>
+                </c:if>
+                <c:if test="${fn:contains(attribute.name, 'nodeId')}">
+                  <c:set var="nodeId" value="${attribute.value}"/>
+                </c:if>
+              </c:forEach>
+              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowCount(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>
@@ -254,14 +248,27 @@
                                     <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
+                        <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP Interface')}">
+                          <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
+                              <div style="display: inline" ng-if="hasFlows">
+                                <a ng-href="{{deepDiveUrl}}" target="_blank" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}">
+                                <span> <button type="button" class="btn btn-default btn-xs">
+                                  <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                                  </button>
+                                </span>
+                              </a>
+                            </div>
+                          </c:if>
+                         </c:if>
 	                    </div> <!-- graph-aux-controls -->
 	                    <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                     </div>
                     <br/><br/>
                 </c:forEach>
+              </div>
             </c:when>
 
             <c:otherwise>

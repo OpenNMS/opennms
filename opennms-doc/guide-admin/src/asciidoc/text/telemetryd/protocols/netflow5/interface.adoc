@@ -163,6 +163,19 @@ Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-credent
 </elastic-credentials>
 ```
 
+===== Configure Deep Dive Tool  URL
+
+In order to directly access flows from OpenNMS Web UI, deep dive tool url needs to be configured in opennms.properties.
+
+Enable `org.opennms.netmgt.flows.deepDiveUrl` property and specify placeholders for OpenNMS related fields like `nodeId` (Node Id), `ifIndex` (SNMP Interface Index), `start` (Start time), `end` (End time).
+
+For ex:
+----
+org.opennms.netmgt.flows.deepDiveUrl=http://localhost:3000/dashboard/db/flows?orgId=1&var-node=$nodeId&var-interface=$ifIndex&start=$start&end=$end
+----
+where `$nodeId` , `$ifIndex`, `$start`, `$end` will be replaced with actual values from graphs.
+
+
 ===== Configure NetFlow v5 Listener on a Minion
 
 To enable and configure an _UDP Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:

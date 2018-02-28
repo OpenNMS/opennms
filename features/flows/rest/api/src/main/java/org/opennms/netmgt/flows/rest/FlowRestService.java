@@ -138,4 +138,15 @@ public interface FlowRestService {
             @Context final UriInfo uriInfo
     );
 
+    /**
+     * Retrieves the deep dive tool url from configured properties.
+     *
+     *
+     * @param uriInfo JAX-RS context
+     * @return url to deep dive tool
+     */
+    @GET
+    @Path("deepDiveUrl")
+    String getDeepDiveToolUrl(@Context final UriInfo uriInfo);
+
 }

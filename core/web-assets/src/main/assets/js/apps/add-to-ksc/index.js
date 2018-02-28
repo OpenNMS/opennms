@@ -113,27 +113,67 @@ angular.module('onms-ksc', [
       growl.error(msg);
     });
   };
-
 }])
-.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', function($scope, $http, $filter) {
+.factory('flowsRestFactory', function ($http, $q) {
 
-$scope.flowCount = 0;
-$scope.hasFlows = false;
+  var resources = {};
+  resources.retrieveFlowCount = function(nodeId, ifIndex , start, end) {
+      var deferred = $q.defer();
+      $http({
+        url: 'rest/flows/count',
+        method: 'GET',
+        params: { exporterNode : nodeId,
+                  ifIndex : ifIndex,
+                  start : start,
+                  end : end,
+                  limit: 0 }
+      }).success(function(data) {
+        deferred.resolve(data);
+      });
+      return deferred.promise;
+  };
 
+  resources.getDeepDiveToolUrl = function(nodeId, ifIndex , start, end) {
+      var deferred = $q.defer();
+      $http({
+        url: 'rest/flows/deepDiveUrl',
+        method: 'GET',
+        params: { exporterNode : nodeId,
+                  ifIndex : ifIndex,
+                  start : start,
+                  end : end,
+                  limit: 0 }
+      }).success(function(data) {
+        deferred.resolve(data);
+      });
+      return deferred.promise;
+  };
+
+  return resources;
+})
+.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
+
+  $scope.flowCount = 0;
+  $scope.hasFlows = false;
+  $scope.deepDiveUrl = '';
   $scope.getFlowCount = function(nodeId, ifIndex , start, end) {
-    $http({
-      url: 'rest/flows/count',
-      method: 'GET',
-      params: { exporterNode : nodeId,
-                ifIndex : ifIndex,
-                start : start,
-                end : end,
-                limit: 0 }
-    }).success(function(data) {
-      $scope.flowCount = data;
-      if ( data > 0) {
-        $scope.hasFlows = true;
-      }
+    if (nodeId == 0 || ifIndex == 0) {
+      return;
+    }
+    flowsRestFactory.retrieveFlowCount(nodeId, ifIndex, start, end)
+      .then(function (data) {
+        $scope.flowCount = data;
+        if ( $scope.flowCount > 0) {
+            $scope.hasFlows = true;
+            $scope.getDeepDiveToolUrl(nodeId, ifIndex, start, end);
+        }
     });
+  };
+
+  $scope.getDeepDiveToolUrl = function(nodeId, ifIndex , start, end) {
+    flowsRestFactory.getDeepDiveToolUrl(nodeId, ifIndex, start, end)
+      .then(function (data) {
+        $scope.deepDiveUrl = data;
+      });
   };
 }]);

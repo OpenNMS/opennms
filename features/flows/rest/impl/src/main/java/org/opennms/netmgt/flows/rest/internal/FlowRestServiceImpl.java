@@ -48,6 +48,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -75,6 +76,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 public class FlowRestServiceImpl implements FlowRestService {
+
 
     private final FlowRepository flowRepository;
     private final NodeDao nodeDao;
@@ -325,6 +327,28 @@ public class FlowRestServiceImpl implements FlowRestService {
 
         response.setTimestamps(timestamps);
         response.setValues(values);
+    }
+
+    @Override
+    public String getDeepDiveToolUrl(UriInfo uriInfo) {
+
+        long count = waitForFuture(
+                flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
+
+        if (count > 0) {
+            // If there are valid flows then generate URL from template.
+            String deepDiveToolUrl = System.getProperty("org.opennms.netmgt.flows.deepDiveUrl");
+            if (StringUtils.isBlank(deepDiveToolUrl)) {
+                throw new BadRequestException("deepDiveUrl not configured in opennms.properties");
+            }
+            MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+            deepDiveToolUrl = deepDiveToolUrl.replaceAll("\\$nodeId", queryParams.getFirst("exporterNode"))
+                                             .replaceAll("\\$ifIndex", queryParams.getFirst("ifIndex"))
+                                             .replaceAll("\\$start", queryParams.getFirst("start"))
+                                             .replaceAll("\\$end", queryParams.getFirst("end"));
+            return deepDiveToolUrl;
+        }
+        return null;
     }
 
 }
