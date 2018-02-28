@@ -35,8 +35,10 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.opennms.features.subscriptionchecker.internal.StateManager;
+import org.opennms.features.subscriptionchecker.internal.Model;
 import org.opennms.web.api.HtmlInjector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
 
@@ -46,17 +48,24 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
 public class ModalInjector implements HtmlInjector {
-    private StateManager m_stateManager;
+	private static final Logger LOG = LoggerFactory.getLogger(ModalInjector.class);
+	
+    private Model m_model;
+
 
     @Override
     public String inject(HttpServletRequest request) throws TemplateException, IOException {  
-        if (m_stateManager.isEnabled() == true && isPage("/opennms/index.jsp", request)) {
+    	boolean isIndexPage= isPage("/opennms/index.jsp", request);
+    	
+    	if(LOG.isDebugEnabled()) LOG.debug("try injecting subscription modal:"+m_model+" isIndexPage /opennms/index.jsp:"+isIndexPage);
+    	
+        if (m_model.isEnabled() == true && isIndexPage ) {
             return generateModalHtml(isUserInAdminRole(request), 
-            		m_stateManager.getSubscriptionGroupId(),
-                	m_stateManager.getSubscriptionArtifactId(),
-                	m_stateManager.getSubscriptionVersion(),
-                	m_stateManager.getAdminMessage(),
-                	m_stateManager.getUserMessage()
+            		m_model.getSubscriptionGroupId(),
+                	m_model.getSubscriptionArtifactId(),
+                	m_model.getSubscriptionVersion(),
+                	m_model.getAdminMessage(),
+                	m_model.getUserMessage()
                 	);
         }
         return null;
@@ -100,7 +109,11 @@ public class ModalInjector implements HtmlInjector {
         return request.isUserInRole("ROLE_ADMIN");
     }
 
-    public void setStateManager(StateManager stateManager) {
-        m_stateManager = stateManager;
-    }
+
+	public void setModel(Model model) {
+		m_model = model;
+    	if(LOG.isDebugEnabled()) LOG.debug("subscription checker settings:"+m_model);
+	}
+
+
 }
