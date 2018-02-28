@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <product>
-  <!-- productId is expected to contain the name of the product in the form <name>/<version> -->
+  <!-- productId is expected to contain the name of the product in the form <name>/<version>  -->
   <!-- The productId is used as the feature name for installing into Karaf the top level feature -->
   <!-- definition of the licensed product such that the feature can be installed using -->
   <!-- features:install name/version (version is optional) (Karaf 2.4.3) -->
