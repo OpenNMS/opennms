@@ -78,7 +78,7 @@
 		    </#if>
 		  </#list>
 		  <li class="dropdown">
-            <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="dropdown-toggle disabled" data-toggle="dropdown" role="button" aria-expanded="false">
+            <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
               <#if request.remoteUser?has_content >
                 <span class="glyphicon glyphicon-user"></span>
                 ${request.remoteUser}
