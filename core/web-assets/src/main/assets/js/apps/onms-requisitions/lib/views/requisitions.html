@@ -1,0 +1,147 @@
+<div>
+
+<!-- Author: Alejandro Galue <agalue@opennms.org> -->
+
+<ol class="breadcrumb">
+  <li><a href="/opennms/index.jsp">Home</a></li>
+  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li>Provisioning Requisitions</li>
+</ol>
+
+<!-- Toolbar -->
+
+<div class="row">
+  <div class="col-md-6">
+    <h4>Requisitions ({{ requisitionsData.requisitions.length }})</h4>
+  </div>
+  <div class="col-md-6" ng-show="loaded">
+    <form class="form-inline pull-right" role="search">
+      <div class="input-group">
+        <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+        <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter" id="search-requisitions"></input>
+      </div>
+      <div class="input-group">
+        <button type="button" class="btn btn-default" ng-click="refreshData()" id="refresh-requisitions" ng-disabled="timingStatus.isRunning">
+          <span class="glyphicon glyphicon-refresh"/> Refresh
+        </button>
+        <button type="button" class="btn btn-default" ng-click="quickAddNode()" id="quick-add-node" ng-disabled="timingStatus.isRunning" ng-show="requisitionsData.requisitions.length > 0">
+          <span class="glyphicon glyphicon-upload"/> Quick Add Node
+        </button>
+        <button type="button" class="btn btn-default" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
+          <span class="glyphicon glyphicon-edit"/> Edit Default FS
+        </button>
+        <button type="button" class="btn btn-default" ng-click="resetDefaultForeignSource()" id="reset-default-foreign-source" ng-disabled="timingStatus.isRunning">
+          <span class="glyphicon glyphicon-retweet"/> Reset Default
+        </button>
+        <button type="button" class="btn btn-default" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
+          <span class="glyphicon glyphicon-plus-sign"/> Add Requisition
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Content -->
+
+<div class="row">
+  <div class="col-md-12">
+
+    <!-- Loading Message -->
+    <div class="jumbotron" ng-show="!loaded">
+      <div class="container">
+        <h1>Loading Requisitions</h1>
+        <p>Please wait while all the requisitions are loaded into your browser.</p>
+        <p>This could take time, depending on the number of requisitions, and the number of nodes on each requisition.</p>
+      </div>
+    </div>
+
+    <!-- No Requisitions -->
+    <div class="jumbotron" ng-show="loaded && requisitionsData.requisitions.length == 0">
+      <div class="container">
+        <h1>There are no requisitions</h1>
+        <p>Please click on the 'Add Requisition' button, to start adding requisitions.</p>
+      </div>
+    </div>
+
+    <!-- Table with Navigation -->
+    <div class="container-fluid table-responsive" ng-show="requisitionsData.requisitions.length > 0">
+
+      <table class="table table-striped table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Requisition Name</th>
+            <th>Last Update</th>
+            <th>Last Import</th>
+            <th>Nodes Defined</th>
+            <th>Nodes in Database</th>
+            <th><span class="pull-right">Actions</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-class="{danger: requisition.isModified()}" ng-repeat="requisition in filteredRequisitions | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+            <td>{{ requisition.foreignSource }}</td>
+            <td>{{ requisition.dateStamp | date:'dd-MM-yy hh:mm:ss' }}</td>
+            <td>{{ (requisition.lastImport | date:'dd-MM-yy hh:mm:ss') || 'Never' }}</td>
+            <td>{{ requisition.nodesDefined }}</td>
+            <td>{{ requisition.nodesInDatabase }}</td>
+            <td>
+              <span class="pull-right">
+                <button type="button" class="btn btn-default btn-xs"
+                        uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
+                        ng-click="edit(requisition.foreignSource)">
+                  <span class="glyphicon glyphicon-pencil"></span>
+                </button>
+                <button type="button" class="btn btn-default btn-xs"
+                        uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
+                        ng-disabled="timingStatus.isRunning"
+                        ng-click="synchronize(requisition)">
+                  <span class="glyphicon glyphicon-transfer"></span>
+                </button>
+
+                <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                  <button id="btn-append-to-to-body" uib-tooltip="More actions for requisition {{requisition.foreignSource}}" type="button" class="btn btn-default btn-xs" uib-dropdown-toggle>
+                    <span class="fa fa-ellipsis-h"></span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">
+                    <li role="menuitem" ><a style="padding:1px" href=""
+                                           ng-disabled="timingStatus.isRunning"
+                                           ng-click="refresh(requisition)">
+                      <span class="glyphicon glyphicon-refresh"/>&nbsp;&nbsp;Refresh deployed stats</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
+                                           id="editForeignSource-{{requisition.foreignSource}}"
+                                           ng-click="editForeignSource(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-edit"/>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
+                                           ng-disabled="timingStatus.isRunning"
+                                           ng-click="clone(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-random"/>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
+                    <li class="divider"></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
+                                           ng-disabled="timingStatus.isRunning"
+                                           ng-click="removeAllNodes(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-remove-circle"/>&nbsp;&nbsp;Remove all nodes</a></li>
+                    <li role="menuitem"><a style="padding:1px" href=""
+                                           ng-disabled="requisition.nodesInDatabase > 0"
+                                           ng-disabled="timingStatus.isRunning"
+                                           ng-click="delete(requisition.foreignSource)">
+                      <span class="glyphicon glyphicon-trash"/>&nbsp;&nbsp;Delete requisition</a></li>
+                  </ul>
+                </div>
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br ng-hide="filteredRequisitions.length > pageSize" />
+
+      <ul uib-pagination total-items="totalItems" num-pages="numPages" ng-model="currentPage" max-size="maxSize" boundary-links="true"
+        class="pagination-sm" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;"
+        ng-show="filteredRequisitions.length > pageSize"></ul>
+
+    </div> <!-- table-with-navigation -->
+
+  </div> <!-- column -->
+</div> <!-- row -->
+
+</div>

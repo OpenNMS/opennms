@@ -120,6 +120,11 @@ public class SnmpTrapNorthbounder extends AbstractNorthbounder implements Initia
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return initialized && getConfig().isEnabled();
+    }
+
     /**
      * Each implementation of the AbstractNorthbounder has a nice queue (Nagle's algorithmic) and the worker thread that processes the queue
      * calls this method to send alarms to the northern NMS.

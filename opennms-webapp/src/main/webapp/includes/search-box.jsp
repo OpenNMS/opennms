@@ -3,10 +3,6 @@
         session="true"
 %>
 
-<script type="text/javascript" src="lib/angular/angular.js"></script>
-<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script type="text/javascript" src="js/onms-search/app.js"></script>
-
 <div id="onms-search">
 
   <div class="panel panel-default">
@@ -28,3 +24,7 @@
   </div>
 
 </div>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="search" />
+</jsp:include>

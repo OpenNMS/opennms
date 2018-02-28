@@ -329,4 +329,8 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         }
     }
 
+    @Override
+    public boolean isReady() {
+        return initialized && getConfig().isEnabled();
+    }
 }

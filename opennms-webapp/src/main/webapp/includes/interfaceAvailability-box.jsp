@@ -167,4 +167,6 @@
 </table>
 </div>
 
-<script type="text/javascript" src="js/timeline-resize.js"></script>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="timeline-resize" />
+</jsp:include>

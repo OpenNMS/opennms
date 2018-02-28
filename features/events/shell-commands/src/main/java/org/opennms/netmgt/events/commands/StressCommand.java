@@ -71,7 +71,9 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  */
 @Command(scope = "events", name = "stress", description="Stress the event bus with generated events.",detailedDescription=
         "Generate newSuspect events with increasing IP addresses:\n"
-        + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"")
+        + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"\n"
+	+ "Trigger 100 alarms and reduce additional events against these:\n"
+	+ "\tevents:stress -x -t 10 -e 100 -u uei.opennms.org/alarms/trigger -j \"eb.addParam('node', math:floor(math:random() * 100))\"")
 @Service
 public class StressCommand implements Action {
 
@@ -123,6 +125,7 @@ public class StressCommand implements Action {
 
             Map<String, Object> functions = Maps.newHashMap();
             functions.put("iputils", IpUtils.class);
+            functions.put("math", Math.class);
             engine.setFunctions(functions);
 
             for (String jexlExpression : jexlExpressions) {

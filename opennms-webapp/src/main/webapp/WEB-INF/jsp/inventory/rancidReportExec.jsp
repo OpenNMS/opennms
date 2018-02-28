@@ -88,8 +88,3 @@
 </div>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />
-
-<script type="text/javascript">
-
-</script>
-

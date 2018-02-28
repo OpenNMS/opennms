@@ -10,9 +10,6 @@
   <packaging>war</packaging>
   <name>OpenNMS Web Application</name>
   <properties>
-    <frontendPluginVersion>1.0</frontendPluginVersion>
-    <nodeVersion>v6.10.2</nodeVersion>
-    <npmVersion>3.10.10</npmVersion>
     <moduleName>org.opennms.dashboard.Dashboard</moduleName>
     <moduleHtml>index.html</moduleHtml>
     <web.port>8080</web.port>
@@ -23,40 +20,44 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.jasig.maven</groupId>
-        <artifactId>sass-maven-plugin</artifactId>
-        <version>${sass.maven.plugin.version}</version>
-        <executions>
-          <execution>
-            <goals><goal>update-stylesheets</goal></goals>
-            <phase>generate-resources</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <sassSourceDirectory>${basedir}/src/main/scss</sassSourceDirectory>
-          <destination>${project.build.directory}/${project.build.finalName}/css</destination>
-        </configuration>
-      </plugin>
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
+            <id>unpack-js</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.core</groupId>
+                  <artifactId>org.opennms.core.web-assets</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>dist</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/opennms-webapp-${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jaxb-dependencies</id>
             <phase>test-compile</phase>
             <goals><goal>copy</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.dependencies</groupId>
+                  <artifactId>jaxb-dependencies</artifactId>
+                  <type>pom</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${basedir}/target/endorsed</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <artifactItems>
-            <artifactItem>
-              <groupId>org.opennms.dependencies</groupId>
-              <artifactId>jaxb-dependencies</artifactId>
-              <type>pom</type>
-              <overWrite>false</overWrite>
-              <outputDirectory>${basedir}/target/endorsed</outputDirectory>
-            </artifactItem>
-          </artifactItems>
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-clean-plugin</artifactId>
@@ -335,15 +336,6 @@
     							</pluginExecutionFilter>
     							<action><ignore/></action>
     						</pluginExecution>
-    						<pluginExecution>
-    							<pluginExecutionFilter>
-    								<groupId>org.jasig.maven</groupId>
-    								<artifactId>sass-maven-plugin</artifactId>
-    								<versionRange>[${sass.maven.plugin.version},)</versionRange>
-    								<goals><goal>update-stylesheets</goal></goals>
-    							</pluginExecutionFilter>
-    							<action><ignore/></action>
-    						</pluginExecution>
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
@@ -353,90 +345,10 @@
   </build>
   <profiles>
     <profile>
-      <id>runJSTests</id>
-      <activation>
-        <property>
-          <name>skipITs</name>
-          <value>false</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <!-- https://github.com/eirslett/frontend-maven-plugin -->
-            <groupId>com.github.eirslett</groupId>
-            <artifactId>frontend-maven-plugin</artifactId>
-            <version>${frontendPluginVersion}</version>
-            <configuration>
-              <nodeDownloadRoot>http://mirror.internal.opennms.com/nodejs/dist/</nodeDownloadRoot>
-              <npmDownloadRoot>http://mirror.internal.opennms.com/npmjs/npm/-/</npmDownloadRoot>
-              <installDirectory>target</installDirectory>
-              <triggerfiles>
-                <triggerfile>package.json</triggerfile>
-              </triggerfiles>
-            </configuration>
-            <executions>
-              <execution>
-                <id>install node and npm</id>
-                <goals>
-                  <goal>install-node-and-npm</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <nodeVersion>${nodeVersion}</nodeVersion>
-                  <npmVersion>${npmVersion}</npmVersion>
-                </configuration>
-              </execution>
-              <execution>
-                <id>install nodejs dependencies</id>
-                <goals>
-                  <goal>npm</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>install</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>install bower dependencies</id>
-                <goals>
-                  <goal>bower</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>install --allow-root</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>copy third-party dependencies</id>
-                <goals>
-                  <goal>gulp</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>vendor</arguments>
-                </configuration>
-              </execution>
-              <execution>
-                <id>execute karma tests</id>
-                <goals>
-                  <goal>karma</goal>
-                </goals>
-                <phase>generate-resources</phase>
-                <configuration>
-                  <arguments>start</arguments>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>runInPlace</id>
       <activation><activeByDefault>false</activeByDefault></activation>
       <properties>
-    		<onmsLibScope>compile</onmsLibScope>
+        <onmsLibScope>compile</onmsLibScope>
       </properties>
       <dependencies>
         <dependency>
@@ -520,6 +432,20 @@
     </profile>
   </profiles>
   <dependencies>
+    <!-- this dependency only exists for unpacking into the final webapp, hence scope=provided -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+      <version>${project.version}</version>
+      <classifier>dist</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <!-- ...but this one contains code -->
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.web-assets</artifactId>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
 
     <!-- indirect OpenNMS dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
@@ -607,7 +533,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.discovery</artifactId>
-      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
@@ -675,7 +600,6 @@
     <dependency>
       <groupId>org.opennms.features.measurements</groupId>
       <artifactId>org.opennms.features.measurements.impl</artifactId>
-      <version>${project.version}</version>
       <scope>${onmsLibScope}</scope>
     </dependency>
 

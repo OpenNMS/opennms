@@ -138,6 +138,7 @@
       <bundle>wrap:mvn:org.opennms/rancid-api/1.0.3</bundle>
 
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
 
       <feature>spring-security32</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>
