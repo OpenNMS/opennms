@@ -49,7 +49,7 @@ import com.google.common.primitives.UnsignedLong;
 //     unsigned int swap_out;      /* swap out count */
 // };
 
-public class HostMemory {
+public class HostMemory implements CounterData {
     public final UnsignedLong mem_total;
     public final UnsignedLong mem_free;
     public final UnsignedLong mem_shared;

@@ -29,10 +29,12 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
+import java.util.Map;
 
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
+
+import com.google.common.collect.ImmutableMap;
 
 // struct sample_record {
 //    data_format sample_type;       /* Specifies the type of sample data */
@@ -40,12 +42,15 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 //                                      sample_type */
 // };
 
-public class SampleRecord {
-    public final DataFormat sample_type;
-    public final Opaque<byte[]> sample_data;
+public class SampleRecord extends Record<SampleData> {
+    private static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<SampleData>>builder()
+            .put(DataFormat.from(1), FlowSample::new)
+            .put(DataFormat.from(2), CountersSample::new)
+            .put(DataFormat.from(3), FlowSampleExpanded::new)
+            .put(DataFormat.from(4), CountersSampleExpanded::new)
+            .build();
 
     public SampleRecord(final ByteBuffer buffer) throws InvalidPacketException {
-        this.sample_type = new DataFormat(buffer);
-        this.sample_data = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+        super(buffer, sampleDataFormats);
     }
 }

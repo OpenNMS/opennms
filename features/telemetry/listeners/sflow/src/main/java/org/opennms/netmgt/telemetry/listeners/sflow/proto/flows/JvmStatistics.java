@@ -67,7 +67,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned int fd_max_count;      /* max number of file descriptors */
 // };
 
-public class JvmStatistics {
+public class JvmStatistics implements CounterData {
     public final UnsignedLong heap_initial;
     public final UnsignedLong heap_used;
     public final UnsignedLong heap_committed;

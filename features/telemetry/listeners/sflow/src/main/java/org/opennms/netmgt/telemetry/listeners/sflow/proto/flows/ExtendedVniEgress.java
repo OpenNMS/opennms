@@ -37,7 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int vni;
 // };
 
-public class ExtendedVniEgress {
+public class ExtendedVniEgress implements FlowData {
     public final long vni;
 
     public ExtendedVniEgress(final ByteBuffer buffer) throws InvalidPacketException {

@@ -41,7 +41,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 //    opaque dst_user<>;          /* User ID associated with packet destination */
 // };
 
-public class ExtendedUser {
+public class ExtendedUser implements FlowData {
     public final Charset src_charset;
     public final Opaque<byte[]> src_user;
     public final Charset dst_charset;

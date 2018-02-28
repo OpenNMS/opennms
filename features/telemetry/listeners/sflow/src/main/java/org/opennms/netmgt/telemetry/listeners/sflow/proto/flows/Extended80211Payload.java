@@ -39,7 +39,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 //    opaque       data<>;      /* unencrypted bytes from the payload */
 // };
 
-public class Extended80211Payload {
+public class Extended80211Payload implements FlowData {
     public final CipherSuite ciphersuite;
     public final Opaque<byte[]> data;
 

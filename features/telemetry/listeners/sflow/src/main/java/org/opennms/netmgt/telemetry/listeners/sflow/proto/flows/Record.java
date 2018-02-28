@@ -27,7 +27,7 @@
  *******************************************************************************/
 
 
-package org.opennms.netmgt.telemetry.listeners.sflow.proto;
+package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 import java.util.Map;
@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

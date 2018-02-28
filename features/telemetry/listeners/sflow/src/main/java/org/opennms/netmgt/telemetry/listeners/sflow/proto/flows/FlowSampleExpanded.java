@@ -68,7 +68,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 //    flow_record flow_records<>;    /* Information about a sampled packet */
 // };
 
-public class FlowSampleExpanded {
+public class FlowSampleExpanded implements SampleData {
     public final long sequence_number;
     public final SflowDataSourceExpanded source_id;
     public final long sampling_rate;

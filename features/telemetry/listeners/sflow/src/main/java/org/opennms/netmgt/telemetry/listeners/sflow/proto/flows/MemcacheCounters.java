@@ -69,7 +69,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned hyper limit_maxbytes;
 // };
 
-public class MemcacheCounters {
+public class MemcacheCounters implements CounterData {
     public final long cmd_set;
     public final long cmd_touch;
     public final long cmd_flush;

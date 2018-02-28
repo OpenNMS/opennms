@@ -37,7 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int inner_header_offset;
 // };
 
-public class ExtendedDecapsulateEgress {
+public class ExtendedDecapsulateEgress implements FlowData {
     public final long inner_header_offset;
 
     public ExtendedDecapsulateEgress(final ByteBuffer buffer) throws InvalidPacketException {

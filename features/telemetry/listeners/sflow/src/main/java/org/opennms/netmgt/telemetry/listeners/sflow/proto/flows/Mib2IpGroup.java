@@ -55,7 +55,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int ipFragCreates;
 // };
 
-public class Mib2IpGroup {
+public class Mib2IpGroup implements CounterData {
     public final long ipForwarding;
     public final long ipDefaultTTL;
     public final long ipInReceives;

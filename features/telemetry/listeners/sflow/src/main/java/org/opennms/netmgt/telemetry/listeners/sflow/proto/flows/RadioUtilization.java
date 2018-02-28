@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //                                          and busy */
 // };
 
-public class RadioUtilization {
+public class RadioUtilization implements CounterData {
     public final long elapsed_time;
     public final long on_channel_time;
     public final long on_channel_busy_time;

@@ -39,7 +39,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //   string  host<64>;          /* Host in request to downstream server */
 // };
 
-public class ExtendedProxyRequest {
+public class ExtendedProxyRequest implements FlowData {
     public final AsciiString uri;
     public final AsciiString host;
 

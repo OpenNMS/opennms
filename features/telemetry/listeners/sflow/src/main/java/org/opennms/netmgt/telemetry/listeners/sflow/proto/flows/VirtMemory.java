@@ -40,7 +40,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned hyper maxMemory;   /* memory in bytes allowed */
 // };
 
-public class VirtMemory {
+public class VirtMemory implements CounterData {
     public final UnsignedLong memory;
     public final UnsignedLong maxMemory;
 

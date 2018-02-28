@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int container_index;    /* sFlowDataSource index */
 // };
 
-public class HostParent {
+public class HostParent implements CounterData {
     public final long container_type;
     public final long container_index;
 

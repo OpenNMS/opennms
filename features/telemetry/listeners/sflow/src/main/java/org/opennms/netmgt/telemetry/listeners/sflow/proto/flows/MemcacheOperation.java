@@ -47,7 +47,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //   memcache_status status;      /* status of command */
 // };
 
-public class MemcacheOperation {
+public class MemcacheOperation implements CounterData {
     public final MemcacheProtocol protocol;
     public final MemcacheCmd cmd;
     public final AsciiString key;

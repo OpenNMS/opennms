@@ -46,7 +46,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int tos;        /* IP type of service */
 // };
 
-public class SampledIpv4 {
+public class SampledIpv4 implements FlowData {
     public final long length;
     public final long protocol;
     public final IpV4 src_ip;

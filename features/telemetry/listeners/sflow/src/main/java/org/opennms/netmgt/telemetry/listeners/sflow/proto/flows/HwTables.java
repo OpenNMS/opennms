@@ -72,7 +72,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int acl_egress_slices_max;
 // };
 
-public class HwTables {
+public class HwTables implements CounterData {
     public final long host_entries;
     public final long host_entries_max;
     public final long ipv4_entries;

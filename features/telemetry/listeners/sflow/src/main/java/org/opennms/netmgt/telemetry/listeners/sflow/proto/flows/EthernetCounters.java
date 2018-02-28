@@ -49,7 +49,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int dot3StatsSymbolErrors;
 // };
 
-public class EthernetCounters {
+public class EthernetCounters implements CounterData {
     public final long dot3StatsAlignmentErrors;
     public final long dot3StatsFCSErrors;
     public final long dot3StatsSingleCollisionFrames;

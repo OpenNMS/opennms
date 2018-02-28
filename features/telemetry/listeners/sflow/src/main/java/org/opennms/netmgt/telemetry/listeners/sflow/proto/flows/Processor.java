@@ -43,7 +43,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned hyper free_memory;  /* free memory (in bytes) */
 // };
 
-public class Processor {
+public class Processor implements CounterData {
     public final Percentage cpu_5s;
     public final Percentage cpu_1m;
     public final Percentage cpu_5m;

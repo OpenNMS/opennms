@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    label_stack out_stack;      /* Label stack for transmitted packet */ 
 // };
 
-public class ExtendedMpls {
+public class ExtendedMpls implements FlowData {
     public final NextHop nexthop;
     public final LabelStack in_stack;
     public final LabelStack out_stack;

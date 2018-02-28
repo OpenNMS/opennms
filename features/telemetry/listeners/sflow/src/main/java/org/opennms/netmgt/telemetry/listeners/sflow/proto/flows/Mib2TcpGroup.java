@@ -51,7 +51,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int tcpInCsumErrs;
 // };
 
-public class Mib2TcpGroup {
+public class Mib2TcpGroup implements CounterData {
     public final long tcpRtoAlgorithm;
     public final long tcpRtoMin;
     public final long tcpRtoMax;

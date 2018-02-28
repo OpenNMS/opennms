@@ -41,7 +41,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //    unsigned int tunnel_cos;    /* Tunnel COS value */
 // };
 
-public class ExtendedMplsTunnel {
+public class ExtendedMplsTunnel implements FlowData {
     public final AsciiString tunnel_lsp_name;
     public final long tunnel_id;
     public final long tunnel_cos;

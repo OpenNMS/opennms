@@ -51,7 +51,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int status_other_count;
 // };
 
-public class HttpCounters {
+public class HttpCounters implements CounterData {
     public final long method_option_count;
     public final long method_get_count;
     public final long method_head_count;

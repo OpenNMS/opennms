@@ -57,7 +57,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int power;           /* transmit power in mW. */
 // };
 
-public class Extended80211Tx {
+public class Extended80211Tx implements FlowData {
     public final AsciiString ssid;
     public final Mac bssid;
     public final Ieee80211Version version;

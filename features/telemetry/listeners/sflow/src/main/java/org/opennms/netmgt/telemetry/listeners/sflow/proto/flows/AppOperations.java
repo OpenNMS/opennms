@@ -48,7 +48,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int unauthorized;
 // };
 
-public class AppOperations {
+public class AppOperations implements CounterData {
     public final Application application;
     public final long success;
     public final long other;

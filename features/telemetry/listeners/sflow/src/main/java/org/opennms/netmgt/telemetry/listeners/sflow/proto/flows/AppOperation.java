@@ -47,7 +47,7 @@ import com.google.common.primitives.UnsignedLong;
 //   status status;               /* status code */
 // };
 
-public class AppOperation {
+public class AppOperation implements FlowData {
     public final Context context;
     public final Array<Utf8string> status_descr;
     public final UnsignedLong req_bytes;

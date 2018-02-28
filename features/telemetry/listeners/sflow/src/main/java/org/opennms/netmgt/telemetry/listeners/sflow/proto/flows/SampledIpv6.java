@@ -46,7 +46,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int priority;   /* IP priority */
 // };
 
-public class SampledIpv6 {
+public class SampledIpv6 implements FlowData {
     public final long length;
     public final long protocol;
     public final IpV6 src_ip;

@@ -43,7 +43,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int num_domains;   /* number of active domains */
 // };
 
-public class VirtNode {
+public class VirtNode implements CounterData {
     public final long mhz;
     public final long cpus;
     public final UnsignedLong memory;

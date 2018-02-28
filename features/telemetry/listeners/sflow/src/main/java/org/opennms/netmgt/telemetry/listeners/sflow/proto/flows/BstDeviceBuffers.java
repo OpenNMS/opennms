@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   int mc_pc;  /* multicast buffers percentage utilization */
 // };
 
-public class BstDeviceBuffers {
+public class BstDeviceBuffers implements CounterData {
     public final Integer uc_pc;
     public final Integer mc_pc;
 

@@ -48,7 +48,7 @@ import com.google.common.primitives.UnsignedInteger;
 //    unsigned int localpref;     /* LocalPref associated with this route */
 // };
 
-public class ExtendedGateway {
+public class ExtendedGateway implements FlowData {
     public final NextHop nexthop;
     public final long as;
     public final long src_as;

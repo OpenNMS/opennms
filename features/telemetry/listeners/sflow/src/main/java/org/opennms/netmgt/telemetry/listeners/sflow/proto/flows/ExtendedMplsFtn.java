@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //    unsigned int mplsFTNMask;
 // };
 
-public class ExtendedMplsFtn {
+public class ExtendedMplsFtn implements FlowData {
     public final AsciiString mplsFTNDescr;
     public final long mplsFTNMask;
 

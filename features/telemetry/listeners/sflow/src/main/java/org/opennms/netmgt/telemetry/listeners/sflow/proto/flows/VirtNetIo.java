@@ -46,7 +46,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int tx_drop;     /* total transmit drops */
 // };
 
-public class VirtNetIo {
+public class VirtNetIo implements CounterData {
     public final UnsignedLong rx_bytes;
     public final long rx_packets;
     public final long rx_errs;

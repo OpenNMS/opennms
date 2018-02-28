@@ -43,7 +43,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //                                   because of a lack of resources */
 // };
 
-public class AppWorkers {
+public class AppWorkers implements CounterData {
     public final long workers_active;
     public final long workers_idle;
     public final long workers_max;

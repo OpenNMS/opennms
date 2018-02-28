@@ -44,7 +44,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned int discards;
 // };
 
-public class VlanCounters {
+public class VlanCounters implements CounterData {
     public final long vlan_id;
     public final UnsignedLong octets;
     public final long ucastPkts;

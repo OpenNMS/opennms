@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   extended_socket_ipv4 socket;
 // };
 
-public class ExtendedProxySocketIpv4 {
+public class ExtendedProxySocketIpv4 implements FlowData {
     public final ExtendedSocketIpv4 socket;
 
     public ExtendedProxySocketIpv4(final ByteBuffer buffer) throws InvalidPacketException {

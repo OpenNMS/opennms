@@ -40,7 +40,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned int port_no;
 // };
 
-public class OfPort {
+public class OfPort implements CounterData {
     public final UnsignedLong datapath_id;
     public final long port_no;
 

@@ -52,7 +52,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned hyper dot12HCOutHighPriorityOctets;
 // };
 
-public class VgCounters {
+public class VgCounters implements CounterData {
     public final long dot12InHighPriorityFrames;
     public final UnsignedLong dot12InHighPriorityOctets;
     public final long dot12InNormPriorityFrames;

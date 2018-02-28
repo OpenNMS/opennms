@@ -61,7 +61,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int ifPromiscuousMode;
 // };
 
-public class IfCounters {
+public class IfCounters implements CounterData {
     public final long ifIndex;
     public final long ifType;
     public final UnsignedLong ifSpeed;

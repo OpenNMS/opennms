@@ -41,7 +41,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //    unsigned int vc_label_cos;  /* VC Label COS value */
 // };
 
-public class ExtendedMplsVc {
+public class ExtendedMplsVc implements FlowData {
     public final AsciiString vc_instance_name;
     public final long vll_vc_id;
     public final long vc_label_cos;

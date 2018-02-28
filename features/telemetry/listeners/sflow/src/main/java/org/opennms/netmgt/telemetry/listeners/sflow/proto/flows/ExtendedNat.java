@@ -37,7 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //      address dst_address;            /* Destination address */
 // };
 
-public class ExtendedNat {
+public class ExtendedNat implements FlowData {
     public final Address src_address;
     public final Address dst_address;
 

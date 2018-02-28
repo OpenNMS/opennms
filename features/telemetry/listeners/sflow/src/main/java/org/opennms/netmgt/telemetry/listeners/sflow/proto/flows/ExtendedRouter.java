@@ -41,7 +41,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //                                    (expressed as number of bits) */
 // };
 
-public class ExtendedRouter {
+public class ExtendedRouter implements FlowData {
     public final NextHop nexthop;
     public final long src_mask_len;
     public final long dst_mask_len;

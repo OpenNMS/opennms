@@ -26,29 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.sflow.proto;
+package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.nio.ByteBuffer;
-
-import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-
-import com.google.common.base.MoreObjects;
-
-public class InterfaceExpanded {
-    public final long format;
-    public final long value;
-
-    public InterfaceExpanded(final ByteBuffer buffer) throws InvalidPacketException {
-        this.format = BufferUtils.uint32(buffer);
-        this.value = BufferUtils.uint32(buffer);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("format", format)
-                .add("value", value)
-                .toString();
-    }
+public interface SampleData {
 }

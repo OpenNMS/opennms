@@ -61,7 +61,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int icmpOutAddrMaskReps;
 // };
 
-public class Mib2IcmpGroup {
+public class Mib2IcmpGroup implements CounterData {
     public final long icmpInMsgs;
     public final long icmpInErrors;
     public final long icmpInDestUnreachs;

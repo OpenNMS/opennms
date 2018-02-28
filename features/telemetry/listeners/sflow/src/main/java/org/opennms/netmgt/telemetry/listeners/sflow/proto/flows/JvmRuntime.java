@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //   string vm_version<32>;   /* the version for the JVM */
 // };
 
-public class JvmRuntime {
+public class JvmRuntime implements CounterData {
     public final AsciiString vm_name;
     public final AsciiString vm_vendor;
     public final AsciiString vm_version;

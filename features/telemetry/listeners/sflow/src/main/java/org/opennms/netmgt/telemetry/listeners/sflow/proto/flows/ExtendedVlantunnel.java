@@ -44,7 +44,7 @@ import com.google.common.primitives.UnsignedInteger;
 //                             innermost. */ 
 // };
 
-public class ExtendedVlantunnel {
+public class ExtendedVlantunnel implements FlowData {
     public final Array<UnsignedInteger> stack;
 
     public ExtendedVlantunnel(final ByteBuffer buffer) throws InvalidPacketException {

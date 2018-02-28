@@ -54,7 +54,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int dot5StatsFreqErrors;
 // };
 
-public class TokenringCounters {
+public class TokenringCounters implements CounterData {
     public final long dot5StatsLineErrors;
     public final long dot5StatsBurstErrors;
     public final long dot5StatsACErrors;

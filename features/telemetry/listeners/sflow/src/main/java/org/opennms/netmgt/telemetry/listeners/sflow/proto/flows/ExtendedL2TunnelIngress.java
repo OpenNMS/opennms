@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //      sampled_ethernet header;
 // };
 
-public class ExtendedL2TunnelIngress {
+public class ExtendedL2TunnelIngress implements FlowData {
     public final SampledEthernet header;
 
     public ExtendedL2TunnelIngress(final ByteBuffer buffer) throws InvalidPacketException {

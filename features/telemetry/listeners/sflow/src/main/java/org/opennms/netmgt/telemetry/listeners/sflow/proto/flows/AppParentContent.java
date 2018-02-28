@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    context context;
 // };
 
-public class AppParentContent {
+public class AppParentContent implements FlowData {
     public final Context context;
 
     public AppParentContent(final ByteBuffer buffer) throws InvalidPacketException {

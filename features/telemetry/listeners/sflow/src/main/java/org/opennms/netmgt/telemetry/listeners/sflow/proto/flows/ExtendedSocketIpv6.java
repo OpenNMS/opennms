@@ -42,7 +42,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int remote_port;  /* TCP/UDP remote port number of equivalent */
 // };
 
-public class ExtendedSocketIpv6 {
+public class ExtendedSocketIpv6 implements FlowData {
     public final long protocol;
     public final IpV6 local_ip;
     public final IpV6 remote_ip;

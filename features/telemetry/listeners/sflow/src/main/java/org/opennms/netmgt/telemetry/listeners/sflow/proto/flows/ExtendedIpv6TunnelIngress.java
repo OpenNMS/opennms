@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //     sampled_ipv6 header;
 // };
 
-public class ExtendedIpv6TunnelIngress {
+public class ExtendedIpv6TunnelIngress implements FlowData {
     public final SampledIpv6 header;
 
     public ExtendedIpv6TunnelIngress(final ByteBuffer buffer) throws InvalidPacketException {

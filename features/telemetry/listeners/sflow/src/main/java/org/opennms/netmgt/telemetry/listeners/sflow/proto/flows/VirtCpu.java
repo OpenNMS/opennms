@@ -39,7 +39,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int nrVirtCpu;     /* number of virtual CPUs for the domain */
 // };
 
-public class VirtCpu {
+public class VirtCpu implements CounterData {
     public final long state;
     public final long cpuTime;
     public final long nrVirtCpu;

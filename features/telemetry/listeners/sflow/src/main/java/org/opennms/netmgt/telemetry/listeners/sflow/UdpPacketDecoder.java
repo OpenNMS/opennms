@@ -31,7 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.SampleDatagram;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleDatagram;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultAddressedEnvelope;

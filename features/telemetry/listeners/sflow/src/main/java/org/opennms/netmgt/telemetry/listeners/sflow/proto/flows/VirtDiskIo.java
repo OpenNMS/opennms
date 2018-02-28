@@ -46,7 +46,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int errs;         /* read/write errors */
 // };
 
-public class VirtDiskIo {
+public class VirtDiskIo implements CounterData {
     public final UnsignedLong capacity;
     public final UnsignedLong allocation;
     public final UnsignedLong available;

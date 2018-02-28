@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    actor actor;
 // };
 
-public class AppInitiator {
+public class AppInitiator implements FlowData {
     public final Actor actor;
 
     public AppInitiator(final ByteBuffer buffer) throws InvalidPacketException {

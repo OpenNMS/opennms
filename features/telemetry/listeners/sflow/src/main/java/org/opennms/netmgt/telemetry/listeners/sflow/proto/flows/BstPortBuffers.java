@@ -44,7 +44,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 //   int egress_queue_mc_pc<8>; /* per egress queue multicast buffers utilization*/
 // };
 
-public class BstPortBuffers {
+public class BstPortBuffers implements CounterData {
     public final Integer ingress_uc_pc;
     public final Integer ingress_mc_pc;
     public final Integer egress_uc_pc;

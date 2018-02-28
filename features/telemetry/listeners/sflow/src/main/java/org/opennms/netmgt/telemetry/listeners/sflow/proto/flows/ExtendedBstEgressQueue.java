@@ -37,7 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int queue;  /* eqress queue number selected for sampled packet */
 // };
 
-public class ExtendedBstEgressQueue {
+public class ExtendedBstEgressQueue implements FlowData {
     public final long queue;
 
     public ExtendedBstEgressQueue(final ByteBuffer buffer) throws InvalidPacketException {

@@ -36,7 +36,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //     sampled_ipv4 header;
 // };
 
-public class ExtendedIpv4TunnelEgress {
+public class ExtendedIpv4TunnelEgress implements FlowData {
     public final SampledIpv4 header;
 
     public ExtendedIpv4TunnelEgress(final ByteBuffer buffer) throws InvalidPacketException {

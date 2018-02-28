@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int dst_priority; /* The 802.1p priority of outgoing frame */
 // };
 
-public class ExtendedSwitch {
+public class ExtendedSwitch implements FlowData {
     public final long src_vlan;
     public final long src_priority;
     public final long dst_vlan;

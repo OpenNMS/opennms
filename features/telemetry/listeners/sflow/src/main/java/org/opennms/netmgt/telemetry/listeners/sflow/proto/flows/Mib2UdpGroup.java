@@ -43,7 +43,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //   unsigned int udpInCsumErrors;
 // };
 
-public class Mib2UdpGroup {
+public class Mib2UdpGroup implements CounterData {
     public final long udpInDatagrams;
     public final long udpNoPorts;
     public final long udpInErrors;

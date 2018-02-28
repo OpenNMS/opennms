@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 //    pdu pdus<>;
 // };
 
-public class Extended80211Aggregation {
+public class Extended80211Aggregation implements FlowData {
     public final Array<Pdu> pdus;
 
     public Extended80211Aggregation(final ByteBuffer buffer) throws InvalidPacketException {

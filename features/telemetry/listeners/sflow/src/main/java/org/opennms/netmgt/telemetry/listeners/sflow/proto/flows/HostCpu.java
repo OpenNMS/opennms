@@ -53,7 +53,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int contexts;       /* context switch count */
 // };
 
-public class HostCpu {
+public class HostCpu implements CounterData {
     public final float load_one;
     public final float load_five;
     public final float load_fifteen;

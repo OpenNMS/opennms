@@ -48,7 +48,7 @@ import com.google.common.primitives.UnsignedLong;
 //   unsigned int conn_max;       /* max. number of network connections */
 // };
 
-public class AppResources {
+public class AppResources implements CounterData {
     public final long user_time;
     public final long system_time;
     public final UnsignedLong mem_used;

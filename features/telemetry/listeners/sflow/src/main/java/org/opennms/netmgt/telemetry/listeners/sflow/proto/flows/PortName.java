@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //   string name<255>;
 // };
 
-public class PortName {
+public class PortName implements CounterData {
     public final AsciiString name;
 
     public PortName(final ByteBuffer buffer) throws InvalidPacketException {

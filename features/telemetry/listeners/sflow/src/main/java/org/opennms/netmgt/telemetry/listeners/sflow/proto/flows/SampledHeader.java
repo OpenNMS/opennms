@@ -75,7 +75,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 //    opaque header<>;                /* Header bytes */
 // };
 
-public class SampledHeader {
+public class SampledHeader implements FlowData {
     public final HeaderProtocol protocol;
     public final long frame_length;
     public final long stripped;

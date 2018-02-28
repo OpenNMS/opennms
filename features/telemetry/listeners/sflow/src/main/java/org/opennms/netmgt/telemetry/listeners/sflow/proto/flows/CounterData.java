@@ -28,17 +28,5 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.nio.ByteBuffer;
-
-import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
-import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-
-// typedef unsigned int data_format;
-
-public class DataFormat {
-    public final long data_format;
-
-    public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
-        this.data_format = BufferUtils.uint32(buffer);
-    }
+public interface CounterData {
 }

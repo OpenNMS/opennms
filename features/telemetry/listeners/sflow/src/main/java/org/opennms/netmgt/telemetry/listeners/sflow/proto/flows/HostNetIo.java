@@ -46,7 +46,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int drops_out;   /* total drops out */
 // };
 
-public class HostNetIo {
+public class HostNetIo implements CounterData {
     public final UnsignedLong bytes_in;
     public final long pkts_in;
     public final long errs_in;

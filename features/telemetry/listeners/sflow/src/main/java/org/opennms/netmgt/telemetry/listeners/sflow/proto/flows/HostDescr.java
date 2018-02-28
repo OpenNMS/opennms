@@ -43,7 +43,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 //    string os_release<32>;     /* e.g. 2.6.9-42.ELsmp,xp-sp3, empty if unknown */
 // };
 
-public class HostDescr {
+public class HostDescr implements CounterData {
     public final AsciiString hostname;
     public final Opaque<byte[]> uuid;
     public final MachineType machine_type;

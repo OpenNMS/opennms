@@ -56,7 +56,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int dot11QoSCFPollsLostCount;
 // };
 
-public class Ieee80211Counters {
+public class Ieee80211Counters implements CounterData {
     public final long dot11TransmittedFragmentCount;
     public final long dot11MulticastTransmittedFrameCount;
     public final long dot11FailedCount;

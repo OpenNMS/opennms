@@ -50,7 +50,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 //    counter_record counters<>;      /* Counters polled for this source */
 // };
 
-public class CountersSample {
+public class CountersSample implements SampleData {
     public final long sequence_number;
     public final SflowDataSource source_id;
     public final Array<CounterRecord> counters;

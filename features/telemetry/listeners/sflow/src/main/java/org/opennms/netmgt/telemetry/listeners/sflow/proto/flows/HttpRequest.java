@@ -55,7 +55,7 @@ import com.google.common.primitives.UnsignedLong;
 //   int status;                /* HTTP status code */
 // };
 
-public class HttpRequest {
+public class HttpRequest implements FlowData {
     public final HttpMethod method;
     public final Version protocol;
     public final AsciiString uri;

@@ -37,7 +37,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //    unsigned int mplsFecAddrPrefixLength;
 // };
 
-public class ExtendedMplsLdpFec {
+public class ExtendedMplsLdpFec implements FlowData {
     public final long mplsFecAddrPrefixLength;
 
     public ExtendedMplsLdpFec(final ByteBuffer buffer) throws InvalidPacketException {

@@ -40,7 +40,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 //    string host<>;              /* The host field from the HTTP header */
 // };
 
-public class ExtendedUrl {
+public class ExtendedUrl implements FlowData {
     public final UrlDirection direction;
     public final AsciiString url;
     public final AsciiString host;

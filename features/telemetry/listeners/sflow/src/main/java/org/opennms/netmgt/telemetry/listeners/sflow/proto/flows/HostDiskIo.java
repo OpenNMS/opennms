@@ -47,7 +47,7 @@ import com.google.common.primitives.UnsignedLong;
 //    unsigned int write_time;      /* write time (ms) */
 // };
 
-public class HostDiskIo {
+public class HostDiskIo implements CounterData {
     public final UnsignedLong disk_total;
     public final UnsignedLong disk_free;
     public final Percentage part_max_used;

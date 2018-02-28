@@ -38,7 +38,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 //    host_adapter adapters<>;              /* adapter(s) associated with entity */
 // };
 
-public class HostAdapters {
+public class HostAdapters implements CounterData {
     public final Array<HostAdapter> adapters;
 
     public HostAdapters(final ByteBuffer buffer) throws InvalidPacketException {

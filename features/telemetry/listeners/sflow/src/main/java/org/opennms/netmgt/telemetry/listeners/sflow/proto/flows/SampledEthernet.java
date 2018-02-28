@@ -42,7 +42,7 @@ import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 //      unsigned int type;     /* Ethernet packet type */
 // };
 
-public class SampledEthernet {
+public class SampledEthernet implements FlowData {
     public final long length;
     public final Mac src_mac;
     public final Mac dst_mac;

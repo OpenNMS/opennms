@@ -51,7 +51,7 @@ import com.google.common.primitives.UnsignedLong;
 //                                   received packet occupied the RF medium. */
 // };
 
-public class Extended80211Rx {
+public class Extended80211Rx implements FlowData {
     public final AsciiString ssid;
     public final Mac bssid;
     public final Ieee80211Version version;

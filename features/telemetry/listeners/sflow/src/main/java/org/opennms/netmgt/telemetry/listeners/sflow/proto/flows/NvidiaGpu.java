@@ -59,7 +59,7 @@ import com.google.common.primitives.UnsignedLong;
 //                                 see nvmlDeviceGetFanSpeed */
 // };
 
-public class NvidiaGpu {
+public class NvidiaGpu implements CounterData {
     public final long device_count;
     public final long processes;
     public final long gpu_time;
