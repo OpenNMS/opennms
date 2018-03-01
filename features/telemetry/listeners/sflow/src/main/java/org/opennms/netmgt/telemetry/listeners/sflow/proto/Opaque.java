@@ -53,14 +53,14 @@ public class Opaque<T> {
         this.value = parser.parse(BufferUtils.slice(buffer, this.length));
 
         // Skip over optional padding
-        BufferUtils.skip(buffer, this.length % 4);
+        BufferUtils.skip(buffer, (4 - (this.length % 4)) % 4);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("length", length)
-                .add("value", value)
+                .add("length", this.length)
+                .add("value", this.value)
                 .toString();
     }
 
@@ -73,6 +73,4 @@ public class Opaque<T> {
     public static byte[] parseBytes(final ByteBuffer buffer) throws InvalidPacketException {
         return BufferUtils.bytes(buffer, buffer.remaining());
     }
-
-
 }

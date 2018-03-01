@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -47,15 +47,23 @@ public class ExtendedMplsFtn implements FlowData {
     public final long mplsFTNMask;
 
     public ExtendedMplsFtn(final ByteBuffer buffer) throws InvalidPacketException {
-        this.mplsFTNDescr = new AsciiString(buffer, Optional.empty());
+        this.mplsFTNDescr = new AsciiString(buffer);
         this.mplsFTNMask = BufferUtils.uint32(buffer);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("mplsFTNDescr", mplsFTNDescr)
-                .add("mplsFTNMask", mplsFTNMask)
+                .add("mplsFTNDescr", this.mplsFTNDescr)
+                .add("mplsFTNMask", this.mplsFTNMask)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("mplsFTNDescr", this.mplsFTNDescr.value);
+        bsonWriter.writeInt64("mplsFTNMask", this.mplsFTNMask);
+        bsonWriter.writeEndDocument();
     }
 }

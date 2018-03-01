@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -91,21 +92,43 @@ public class Mib2TcpGroup implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("tcpRtoAlgorithm", tcpRtoAlgorithm)
-                .add("tcpRtoMin", tcpRtoMin)
-                .add("tcpRtoMax", tcpRtoMax)
-                .add("tcpMaxConn", tcpMaxConn)
-                .add("tcpActiveOpens", tcpActiveOpens)
-                .add("tcpPassiveOpens", tcpPassiveOpens)
-                .add("tcpAttemptFails", tcpAttemptFails)
-                .add("tcpEstabResets", tcpEstabResets)
-                .add("tcpCurrEstab", tcpCurrEstab)
-                .add("tcpInSegs", tcpInSegs)
-                .add("tcpOutSegs", tcpOutSegs)
-                .add("tcpRetransSegs", tcpRetransSegs)
-                .add("tcpInErrs", tcpInErrs)
-                .add("tcpOutRsts", tcpOutRsts)
-                .add("tcpInCsumErrs", tcpInCsumErrs)
+                .add("tcpRtoAlgorithm", this.tcpRtoAlgorithm)
+                .add("tcpRtoMin", this.tcpRtoMin)
+                .add("tcpRtoMax", this.tcpRtoMax)
+                .add("tcpMaxConn", this.tcpMaxConn)
+                .add("tcpActiveOpens", this.tcpActiveOpens)
+                .add("tcpPassiveOpens", this.tcpPassiveOpens)
+                .add("tcpAttemptFails", this.tcpAttemptFails)
+                .add("tcpEstabResets", this.tcpEstabResets)
+                .add("tcpCurrEstab", this.tcpCurrEstab)
+                .add("tcpInSegs", this.tcpInSegs)
+                .add("tcpOutSegs", this.tcpOutSegs)
+                .add("tcpRetransSegs", this.tcpRetransSegs)
+                .add("tcpInErrs", this.tcpInErrs)
+                .add("tcpOutRsts", this.tcpOutRsts)
+                .add("tcpInCsumErrs", this.tcpInCsumErrs)
                 .toString();
     }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("tcpRtoAlgorithm", this.tcpRtoAlgorithm);
+        bsonWriter.writeInt64("tcpRtoMin", this.tcpRtoMin);
+        bsonWriter.writeInt64("tcpRtoMax", this.tcpRtoMax);
+        bsonWriter.writeInt64("tcpMaxConn", this.tcpMaxConn);
+        bsonWriter.writeInt64("tcpActiveOpens", this.tcpActiveOpens);
+        bsonWriter.writeInt64("tcpPassiveOpens", this.tcpPassiveOpens);
+        bsonWriter.writeInt64("tcpAttemptFails", this.tcpAttemptFails);
+        bsonWriter.writeInt64("tcpEstabResets", this.tcpEstabResets);
+        bsonWriter.writeInt64("tcpCurrEstab", this.tcpCurrEstab);
+        bsonWriter.writeInt64("tcpInSegs", this.tcpInSegs);
+        bsonWriter.writeInt64("tcpOutSegs", this.tcpOutSegs);
+        bsonWriter.writeInt64("tcpRetransSegs", this.tcpRetransSegs);
+        bsonWriter.writeInt64("tcpInErrs", this.tcpInErrs);
+        bsonWriter.writeInt64("tcpOutRsts", this.tcpOutRsts);
+        bsonWriter.writeInt64("tcpInCsumErrs", this.tcpInCsumErrs);
+        bsonWriter.writeEndDocument();
+    }
+
 }

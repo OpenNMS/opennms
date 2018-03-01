@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -51,11 +52,20 @@ public class ExtendedVlantunnel implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("stack", stack)
+                .add("stack", this.stack)
                 .toString();
     }
 
     public ExtendedVlantunnel(final ByteBuffer buffer) throws InvalidPacketException {
         this.stack = new Array(buffer, Optional.empty(), BufferUtils::uint32);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartArray();
+        for (final UnsignedInteger unsignedInteger : stack) {
+            bsonWriter.writeInt64(unsignedInteger.longValue());
+        }
+        bsonWriter.writeEndArray();
     }
 }

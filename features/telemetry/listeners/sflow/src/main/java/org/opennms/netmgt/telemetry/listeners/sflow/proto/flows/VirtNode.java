@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -62,11 +63,22 @@ public class VirtNode implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("mhz", mhz)
-                .add("cpus", cpus)
-                .add("memory", memory)
-                .add("memory_free", memory_free)
-                .add("num_domains", num_domains)
+                .add("mhz", this.mhz)
+                .add("cpus", this.cpus)
+                .add("memory", this.memory)
+                .add("memory_free", this.memory_free)
+                .add("num_domains", this.num_domains)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("mhz", this.mhz);
+        bsonWriter.writeInt64("cpus", this.cpus);
+        bsonWriter.writeInt64("memory", this.memory.longValue());
+        bsonWriter.writeInt64("memory_free", this.memory_free.longValue());
+        bsonWriter.writeInt64("num_domains", this.num_domains);
+        bsonWriter.writeEndDocument();
+    }
+
 }

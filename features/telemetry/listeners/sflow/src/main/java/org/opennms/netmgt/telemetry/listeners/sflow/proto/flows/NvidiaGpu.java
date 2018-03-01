@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -88,16 +89,33 @@ public class NvidiaGpu implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("device_count", device_count)
-                .add("processes", processes)
-                .add("gpu_time", gpu_time)
-                .add("mem_time", mem_time)
-                .add("mem_total", mem_total)
-                .add("mem_free", mem_free)
-                .add("ecc_errors", ecc_errors)
-                .add("energy", energy)
-                .add("temperature", temperature)
-                .add("fan_speed", fan_speed)
+                .add("device_count", this.device_count)
+                .add("processes", this.processes)
+                .add("gpu_time", this.gpu_time)
+                .add("mem_time", this.mem_time)
+                .add("mem_total", this.mem_total)
+                .add("mem_free", this.mem_free)
+                .add("ecc_errors", this.ecc_errors)
+                .add("energy", this.energy)
+                .add("temperature", this.temperature)
+                .add("fan_speed", this.fan_speed)
                 .toString();
     }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("device_count", this.device_count);
+        bsonWriter.writeInt64("processes", this.processes);
+        bsonWriter.writeInt64("gpu_time", this.gpu_time);
+        bsonWriter.writeInt64("mem_time", this.mem_time);
+        bsonWriter.writeInt64("mem_total", this.mem_total.longValue());
+        bsonWriter.writeInt64("mem_free", this.mem_free.longValue());
+        bsonWriter.writeInt64("ecc_errors", this.ecc_errors);
+        bsonWriter.writeInt64("energy", this.energy);
+        bsonWriter.writeInt64("temperature", this.temperature);
+        bsonWriter.writeInt64("fan_speed", this.fan_speed);
+        bsonWriter.writeEndDocument();
+    }
+
 }

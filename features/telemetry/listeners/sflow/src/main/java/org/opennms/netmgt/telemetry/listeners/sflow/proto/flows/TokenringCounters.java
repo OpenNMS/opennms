@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -100,24 +101,47 @@ public class TokenringCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("dot5StatsLineErrors", dot5StatsLineErrors)
-                .add("dot5StatsBurstErrors", dot5StatsBurstErrors)
-                .add("dot5StatsACErrors", dot5StatsACErrors)
-                .add("dot5StatsAbortTransErrors", dot5StatsAbortTransErrors)
-                .add("dot5StatsInternalErrors", dot5StatsInternalErrors)
-                .add("dot5StatsLostFrameErrors", dot5StatsLostFrameErrors)
-                .add("dot5StatsReceiveCongestions", dot5StatsReceiveCongestions)
-                .add("dot5StatsFrameCopiedErrors", dot5StatsFrameCopiedErrors)
-                .add("dot5StatsTokenErrors", dot5StatsTokenErrors)
-                .add("dot5StatsSoftErrors", dot5StatsSoftErrors)
-                .add("dot5StatsHardErrors", dot5StatsHardErrors)
-                .add("dot5StatsSignalLoss", dot5StatsSignalLoss)
-                .add("dot5StatsTransmitBeacons", dot5StatsTransmitBeacons)
-                .add("dot5StatsRecoverys", dot5StatsRecoverys)
-                .add("dot5StatsLobeWires", dot5StatsLobeWires)
-                .add("dot5StatsRemoves", dot5StatsRemoves)
-                .add("dot5StatsSingles", dot5StatsSingles)
-                .add("dot5StatsFreqErrors", dot5StatsFreqErrors)
+                .add("dot5StatsLineErrors", this.dot5StatsLineErrors)
+                .add("dot5StatsBurstErrors", this.dot5StatsBurstErrors)
+                .add("dot5StatsACErrors", this.dot5StatsACErrors)
+                .add("dot5StatsAbortTransErrors", this.dot5StatsAbortTransErrors)
+                .add("dot5StatsInternalErrors", this.dot5StatsInternalErrors)
+                .add("dot5StatsLostFrameErrors", this.dot5StatsLostFrameErrors)
+                .add("dot5StatsReceiveCongestions", this.dot5StatsReceiveCongestions)
+                .add("dot5StatsFrameCopiedErrors", this.dot5StatsFrameCopiedErrors)
+                .add("dot5StatsTokenErrors", this.dot5StatsTokenErrors)
+                .add("dot5StatsSoftErrors", this.dot5StatsSoftErrors)
+                .add("dot5StatsHardErrors", this.dot5StatsHardErrors)
+                .add("dot5StatsSignalLoss", this.dot5StatsSignalLoss)
+                .add("dot5StatsTransmitBeacons", this.dot5StatsTransmitBeacons)
+                .add("dot5StatsRecoverys", this.dot5StatsRecoverys)
+                .add("dot5StatsLobeWires", this.dot5StatsLobeWires)
+                .add("dot5StatsRemoves", this.dot5StatsRemoves)
+                .add("dot5StatsSingles", this.dot5StatsSingles)
+                .add("dot5StatsFreqErrors", this.dot5StatsFreqErrors)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("dot5StatsLineErrors", this.dot5StatsLineErrors);
+        bsonWriter.writeInt64("dot5StatsBurstErrors", this.dot5StatsBurstErrors);
+        bsonWriter.writeInt64("dot5StatsACErrors", this.dot5StatsACErrors);
+        bsonWriter.writeInt64("dot5StatsAbortTransErrors", this.dot5StatsAbortTransErrors);
+        bsonWriter.writeInt64("dot5StatsInternalErrors", this.dot5StatsInternalErrors);
+        bsonWriter.writeInt64("dot5StatsLostFrameErrors", this.dot5StatsLostFrameErrors);
+        bsonWriter.writeInt64("dot5StatsReceiveCongestions", this.dot5StatsReceiveCongestions);
+        bsonWriter.writeInt64("dot5StatsFrameCopiedErrors", this.dot5StatsFrameCopiedErrors);
+        bsonWriter.writeInt64("dot5StatsTokenErrors", this.dot5StatsTokenErrors);
+        bsonWriter.writeInt64("dot5StatsSoftErrors", this.dot5StatsSoftErrors);
+        bsonWriter.writeInt64("dot5StatsHardErrors", this.dot5StatsHardErrors);
+        bsonWriter.writeInt64("dot5StatsSignalLoss", this.dot5StatsSignalLoss);
+        bsonWriter.writeInt64("dot5StatsTransmitBeacons", this.dot5StatsTransmitBeacons);
+        bsonWriter.writeInt64("dot5StatsRecoverys", this.dot5StatsRecoverys);
+        bsonWriter.writeInt64("dot5StatsLobeWires", this.dot5StatsLobeWires);
+        bsonWriter.writeInt64("dot5StatsRemoves", this.dot5StatsRemoves);
+        bsonWriter.writeInt64("dot5StatsSingles", this.dot5StatsSingles);
+        bsonWriter.writeInt64("dot5StatsFreqErrors", this.dot5StatsFreqErrors);
+        bsonWriter.writeEndDocument();
     }
 }

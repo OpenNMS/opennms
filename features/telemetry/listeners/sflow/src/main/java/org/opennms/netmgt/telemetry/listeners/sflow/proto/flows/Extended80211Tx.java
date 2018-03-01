@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -70,7 +70,7 @@ public class Extended80211Tx implements FlowData {
     public final long power;
 
     public Extended80211Tx(final ByteBuffer buffer) throws InvalidPacketException {
-        this.ssid = new AsciiString(buffer, Optional.empty());
+        this.ssid = new AsciiString(buffer);
         this.bssid = new Mac(buffer);
         this.version = Ieee80211Version.from(buffer);
         this.transmissions = BufferUtils.uint32(buffer);
@@ -84,15 +84,38 @@ public class Extended80211Tx implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ssid", ssid)
-                .add("bssid", bssid)
-                .add("version", version)
-                .add("transmissions", transmissions)
-                .add("packet_duration", packet_duration)
-                .add("retrans_duration", retrans_duration)
-                .add("channel", channel)
-                .add("speed", speed)
-                .add("power", power)
+                .add("ssid", this.ssid)
+                .add("bssid", this.bssid)
+                .add("version", this.version)
+                .add("transmissions", this.transmissions)
+                .add("packet_duration", this.packet_duration)
+                .add("retrans_duration", this.retrans_duration)
+                .add("channel", this.channel)
+                .add("speed", this.speed)
+                .add("power", this.power)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("ssid", this.ssid.value);
+
+        bsonWriter.writeName("bssid");
+        this.bssid.writeBson(bsonWriter);
+        bsonWriter.writeName("version");
+        this.version.writeBson(bsonWriter);
+
+        bsonWriter.writeInt64("transmissions", this.transmissions);
+        bsonWriter.writeName("packet_duration");
+        this.packet_duration.writeBson(bsonWriter);
+        bsonWriter.writeName("retrans_duration");
+        this.retrans_duration.writeBson(bsonWriter);
+
+        bsonWriter.writeInt64("channel", this.channel);
+        bsonWriter.writeInt64("speed", this.speed.longValue());
+        bsonWriter.writeInt64("power", this.power);
+
+        bsonWriter.writeEndDocument();
     }
 }

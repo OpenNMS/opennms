@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -80,32 +81,6 @@ public class Ieee80211Counters implements CounterData {
     public final long dot11QoSCFPollsUnusableCount;
     public final long dot11QoSCFPollsLostCount;
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("dot11TransmittedFragmentCount", dot11TransmittedFragmentCount)
-                .add("dot11MulticastTransmittedFrameCount", dot11MulticastTransmittedFrameCount)
-                .add("dot11FailedCount", dot11FailedCount)
-                .add("dot11RetryCount", dot11RetryCount)
-                .add("dot11MultipleRetryCount", dot11MultipleRetryCount)
-                .add("dot11FrameDuplicateCount", dot11FrameDuplicateCount)
-                .add("dot11RTSSuccessCount", dot11RTSSuccessCount)
-                .add("dot11RTSFailureCount", dot11RTSFailureCount)
-                .add("dot11ACKFailureCount", dot11ACKFailureCount)
-                .add("dot11ReceivedFragmentCount", dot11ReceivedFragmentCount)
-                .add("dot11MulticastReceivedFrameCount", dot11MulticastReceivedFrameCount)
-                .add("dot11FCSErrorCount", dot11FCSErrorCount)
-                .add("dot11TransmittedFrameCount", dot11TransmittedFrameCount)
-                .add("dot11WEPUndecryptableCount", dot11WEPUndecryptableCount)
-                .add("dot11QoSDiscardedFragmentCount", dot11QoSDiscardedFragmentCount)
-                .add("dot11AssociatedStationCount", dot11AssociatedStationCount)
-                .add("dot11QoSCFPollsReceivedCount", dot11QoSCFPollsReceivedCount)
-                .add("dot11QoSCFPollsUnusedCount", dot11QoSCFPollsUnusedCount)
-                .add("dot11QoSCFPollsUnusableCount", dot11QoSCFPollsUnusableCount)
-                .add("dot11QoSCFPollsLostCount", dot11QoSCFPollsLostCount)
-                .toString();
-    }
-
     public Ieee80211Counters(final ByteBuffer buffer) throws InvalidPacketException {
         this.dot11TransmittedFragmentCount = BufferUtils.uint32(buffer);
         this.dot11MulticastTransmittedFrameCount = BufferUtils.uint32(buffer);
@@ -127,5 +102,57 @@ public class Ieee80211Counters implements CounterData {
         this.dot11QoSCFPollsUnusedCount = BufferUtils.uint32(buffer);
         this.dot11QoSCFPollsUnusableCount = BufferUtils.uint32(buffer);
         this.dot11QoSCFPollsLostCount = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("dot11TransmittedFragmentCount", this.dot11TransmittedFragmentCount)
+                .add("dot11MulticastTransmittedFrameCount", this.dot11MulticastTransmittedFrameCount)
+                .add("dot11FailedCount", this.dot11FailedCount)
+                .add("dot11RetryCount", this.dot11RetryCount)
+                .add("dot11MultipleRetryCount", this.dot11MultipleRetryCount)
+                .add("dot11FrameDuplicateCount", this.dot11FrameDuplicateCount)
+                .add("dot11RTSSuccessCount", this.dot11RTSSuccessCount)
+                .add("dot11RTSFailureCount", this.dot11RTSFailureCount)
+                .add("dot11ACKFailureCount", this.dot11ACKFailureCount)
+                .add("dot11ReceivedFragmentCount", this.dot11ReceivedFragmentCount)
+                .add("dot11MulticastReceivedFrameCount", this.dot11MulticastReceivedFrameCount)
+                .add("dot11FCSErrorCount", this.dot11FCSErrorCount)
+                .add("dot11TransmittedFrameCount", this.dot11TransmittedFrameCount)
+                .add("dot11WEPUndecryptableCount", this.dot11WEPUndecryptableCount)
+                .add("dot11QoSDiscardedFragmentCount", this.dot11QoSDiscardedFragmentCount)
+                .add("dot11AssociatedStationCount", this.dot11AssociatedStationCount)
+                .add("dot11QoSCFPollsReceivedCount", this.dot11QoSCFPollsReceivedCount)
+                .add("dot11QoSCFPollsUnusedCount", this.dot11QoSCFPollsUnusedCount)
+                .add("dot11QoSCFPollsUnusableCount", this.dot11QoSCFPollsUnusableCount)
+                .add("dot11QoSCFPollsLostCount", this.dot11QoSCFPollsLostCount)
+                .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("dot11TransmittedFragmentCount", this.dot11TransmittedFragmentCount);
+        bsonWriter.writeInt64("dot11MulticastTransmittedFrameCount", this.dot11MulticastTransmittedFrameCount);
+        bsonWriter.writeInt64("dot11FailedCount", this.dot11FailedCount);
+        bsonWriter.writeInt64("dot11RetryCount", this.dot11RetryCount);
+        bsonWriter.writeInt64("dot11MultipleRetryCount", this.dot11MultipleRetryCount);
+        bsonWriter.writeInt64("dot11FrameDuplicateCount", this.dot11FrameDuplicateCount);
+        bsonWriter.writeInt64("dot11RTSSuccessCount", this.dot11RTSSuccessCount);
+        bsonWriter.writeInt64("dot11RTSFailureCount", this.dot11RTSFailureCount);
+        bsonWriter.writeInt64("dot11ACKFailureCount", this.dot11ACKFailureCount);
+        bsonWriter.writeInt64("dot11ReceivedFragmentCount", this.dot11ReceivedFragmentCount);
+        bsonWriter.writeInt64("dot11MulticastReceivedFrameCount", this.dot11MulticastReceivedFrameCount);
+        bsonWriter.writeInt64("dot11FCSErrorCount", this.dot11FCSErrorCount);
+        bsonWriter.writeInt64("dot11TransmittedFrameCount", this.dot11TransmittedFrameCount);
+        bsonWriter.writeInt64("dot11WEPUndecryptableCount", this.dot11WEPUndecryptableCount);
+        bsonWriter.writeInt64("dot11QoSDiscardedFragmentCount", this.dot11QoSDiscardedFragmentCount);
+        bsonWriter.writeInt64("dot11AssociatedStationCount", this.dot11AssociatedStationCount);
+        bsonWriter.writeInt64("dot11QoSCFPollsReceivedCount", this.dot11QoSCFPollsReceivedCount);
+        bsonWriter.writeInt64("dot11QoSCFPollsUnusedCount", this.dot11QoSCFPollsUnusedCount);
+        bsonWriter.writeInt64("dot11QoSCFPollsUnusableCount", this.dot11QoSCFPollsUnusableCount);
+        bsonWriter.writeInt64("dot11QoSCFPollsLostCount", this.dot11QoSCFPollsLostCount);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -89,20 +90,39 @@ public class VgCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("dot12InHighPriorityFrames", dot12InHighPriorityFrames)
-                .add("dot12InHighPriorityOctets", dot12InHighPriorityOctets)
-                .add("dot12InNormPriorityFrames", dot12InNormPriorityFrames)
-                .add("dot12InNormPriorityOctets", dot12InNormPriorityOctets)
-                .add("dot12InIPMErrors", dot12InIPMErrors)
-                .add("dot12InOversizeFrameErrors", dot12InOversizeFrameErrors)
-                .add("dot12InDataErrors", dot12InDataErrors)
-                .add("dot12InNullAddressedFrames", dot12InNullAddressedFrames)
-                .add("dot12OutHighPriorityFrames", dot12OutHighPriorityFrames)
-                .add("dot12OutHighPriorityOctets", dot12OutHighPriorityOctets)
-                .add("dot12TransitionIntoTrainings", dot12TransitionIntoTrainings)
-                .add("dot12HCInHighPriorityOctets", dot12HCInHighPriorityOctets)
-                .add("dot12HCInNormPriorityOctets", dot12HCInNormPriorityOctets)
-                .add("dot12HCOutHighPriorityOctets", dot12HCOutHighPriorityOctets)
+                .add("dot12InHighPriorityFrames", this.dot12InHighPriorityFrames)
+                .add("dot12InHighPriorityOctets", this.dot12InHighPriorityOctets)
+                .add("dot12InNormPriorityFrames", this.dot12InNormPriorityFrames)
+                .add("dot12InNormPriorityOctets", this.dot12InNormPriorityOctets)
+                .add("dot12InIPMErrors", this.dot12InIPMErrors)
+                .add("dot12InOversizeFrameErrors", this.dot12InOversizeFrameErrors)
+                .add("dot12InDataErrors", this.dot12InDataErrors)
+                .add("dot12InNullAddressedFrames", this.dot12InNullAddressedFrames)
+                .add("dot12OutHighPriorityFrames", this.dot12OutHighPriorityFrames)
+                .add("dot12OutHighPriorityOctets", this.dot12OutHighPriorityOctets)
+                .add("dot12TransitionIntoTrainings", this.dot12TransitionIntoTrainings)
+                .add("dot12HCInHighPriorityOctets", this.dot12HCInHighPriorityOctets)
+                .add("dot12HCInNormPriorityOctets", this.dot12HCInNormPriorityOctets)
+                .add("dot12HCOutHighPriorityOctets", this.dot12HCOutHighPriorityOctets)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("dot12InHighPriorityFrames", this.dot12InHighPriorityFrames);
+        bsonWriter.writeInt64("dot12InHighPriorityOctets", this.dot12InHighPriorityOctets.longValue());
+        bsonWriter.writeInt64("dot12InNormPriorityFrames", this.dot12InNormPriorityFrames);
+        bsonWriter.writeInt64("dot12InNormPriorityOctets", this.dot12InNormPriorityOctets.longValue());
+        bsonWriter.writeInt64("dot12InIPMErrors", this.dot12InIPMErrors);
+        bsonWriter.writeInt64("dot12InOversizeFrameErrors", this.dot12InOversizeFrameErrors);
+        bsonWriter.writeInt64("dot12InDataErrors", this.dot12InDataErrors);
+        bsonWriter.writeInt64("dot12InNullAddressedFrames", this.dot12InNullAddressedFrames);
+        bsonWriter.writeInt64("dot12OutHighPriorityFrames", this.dot12OutHighPriorityFrames);
+        bsonWriter.writeInt64("dot12OutHighPriorityOctets", this.dot12OutHighPriorityOctets.longValue());
+        bsonWriter.writeInt64("dot12TransitionIntoTrainings", this.dot12TransitionIntoTrainings);
+        bsonWriter.writeInt64("dot12HCInHighPriorityOctets", this.dot12HCInHighPriorityOctets.longValue());
+        bsonWriter.writeInt64("dot12HCInNormPriorityOctets", this.dot12HCInNormPriorityOctets.longValue());
+        bsonWriter.writeInt64("dot12HCOutHighPriorityOctets", this.dot12HCOutHighPriorityOctets.longValue());
+        bsonWriter.writeEndDocument();
     }
 }

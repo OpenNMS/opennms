@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
@@ -50,15 +50,24 @@ public class JvmRuntime implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("vm_name", vm_name)
-                .add("vm_vendor", vm_vendor)
-                .add("vm_version", vm_version)
+                .add("vm_name", this.vm_name)
+                .add("vm_vendor", this.vm_vendor)
+                .add("vm_version", this.vm_version)
                 .toString();
     }
 
     public JvmRuntime(final ByteBuffer buffer) throws InvalidPacketException {
-        this.vm_name = new AsciiString(buffer, Optional.empty());
-        this.vm_vendor = new AsciiString(buffer, Optional.empty());
-        this.vm_version = new AsciiString(buffer, Optional.empty());
+        this.vm_name = new AsciiString(buffer);
+        this.vm_vendor = new AsciiString(buffer);
+        this.vm_version = new AsciiString(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("vm_name", this.vm_name.value);
+        bsonWriter.writeString("vm_vendor", this.vm_vendor.value);
+        bsonWriter.writeString("vm_version", this.vm_version.value);
+        bsonWriter.writeEndDocument();
     }
 }

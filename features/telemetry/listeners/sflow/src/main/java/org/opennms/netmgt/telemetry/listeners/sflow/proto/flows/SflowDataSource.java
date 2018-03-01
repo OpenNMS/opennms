@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -48,7 +49,11 @@ public class SflowDataSource {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("sflow_data_source", sflow_data_source)
+                .add("sflow_data_source", this.sflow_data_source)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt64(this.sflow_data_source);
     }
 }

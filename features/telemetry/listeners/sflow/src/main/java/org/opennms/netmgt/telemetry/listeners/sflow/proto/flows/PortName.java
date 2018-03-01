@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
@@ -44,13 +44,18 @@ public class PortName implements CounterData {
     public final AsciiString name;
 
     public PortName(final ByteBuffer buffer) throws InvalidPacketException {
-        this.name = new AsciiString(buffer, Optional.empty());
+        this.name = new AsciiString(buffer);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("name", name)
+                .add("name", this.name)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeString(this.name.value);
     }
 }

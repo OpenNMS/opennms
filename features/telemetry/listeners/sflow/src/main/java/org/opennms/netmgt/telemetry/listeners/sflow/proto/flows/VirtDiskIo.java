@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -71,14 +72,28 @@ public class VirtDiskIo implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("capacity", capacity)
-                .add("allocation", allocation)
-                .add("available", available)
-                .add("rd_req", rd_req)
-                .add("rd_bytes", rd_bytes)
-                .add("wr_req", wr_req)
-                .add("wr_bytes", wr_bytes)
-                .add("errs", errs)
+                .add("capacity", this.capacity)
+                .add("allocation", this.allocation)
+                .add("available", this.available)
+                .add("rd_req", this.rd_req)
+                .add("rd_bytes", this.rd_bytes)
+                .add("wr_req", this.wr_req)
+                .add("wr_bytes", this.wr_bytes)
+                .add("errs", this.errs)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("capacity", this.capacity.longValue());
+        bsonWriter.writeInt64("allocation", this.allocation.longValue());
+        bsonWriter.writeInt64("available", this.available.longValue());
+        bsonWriter.writeInt64("rd_req", this.rd_req);
+        bsonWriter.writeInt64("rd_bytes", this.rd_bytes.longValue());
+        bsonWriter.writeInt64("wr_req", this.wr_req);
+        bsonWriter.writeInt64("wr_bytes", this.wr_bytes.longValue());
+        bsonWriter.writeInt64("errs", this.errs);
+        bsonWriter.writeEndDocument();
+    }
+
 }

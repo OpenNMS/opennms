@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -49,7 +49,7 @@ public class ExtendedMplsTunnel implements FlowData {
     public final long tunnel_cos;
 
     public ExtendedMplsTunnel(final ByteBuffer buffer) throws InvalidPacketException {
-        this.tunnel_lsp_name = new AsciiString(buffer, Optional.empty());
+        this.tunnel_lsp_name = new AsciiString(buffer);
         this.tunnel_id = BufferUtils.uint32(buffer);
         this.tunnel_cos = BufferUtils.uint32(buffer);
     }
@@ -57,9 +57,18 @@ public class ExtendedMplsTunnel implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("tunnel_lsp_name", tunnel_lsp_name)
-                .add("tunnel_id", tunnel_id)
-                .add("tunnel_cos", tunnel_cos)
+                .add("tunnel_lsp_name", this.tunnel_lsp_name)
+                .add("tunnel_id", this.tunnel_id)
+                .add("tunnel_cos", this.tunnel_cos)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("tunnel_lsp_name", this.tunnel_lsp_name.value);
+        bsonWriter.writeInt64("tunnel_id", this.tunnel_id);
+        bsonWriter.writeInt64("tunnel_cos", this.tunnel_cos);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -83,14 +84,14 @@ public class FlowSampleExpanded implements SampleData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("sequence_number", sequence_number)
-                .add("source_id", source_id)
-                .add("sampling_rate", sampling_rate)
-                .add("sample_pool", sample_pool)
-                .add("drops", drops)
-                .add("input", input)
-                .add("output", output)
-                .add("flow_records", flow_records)
+                .add("sequence_number", this.sequence_number)
+                .add("source_id", this.source_id)
+                .add("sampling_rate", this.sampling_rate)
+                .add("sample_pool", this.sample_pool)
+                .add("drops", this.drops)
+                .add("input", this.input)
+                .add("output", this.output)
+                .add("flow_records", this.flow_records)
                 .toString();
     }
 
@@ -103,5 +104,26 @@ public class FlowSampleExpanded implements SampleData {
         this.input = new InterfaceExpanded(buffer);
         this.output = new InterfaceExpanded(buffer);
         this.flow_records = new Array(buffer, Optional.empty(), FlowRecord::new);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("sequence_number", this.sequence_number);
+        bsonWriter.writeName("source_id");
+        this.source_id.writeBson(bsonWriter);
+        bsonWriter.writeInt64("sampling_rate", this.sampling_rate);
+        bsonWriter.writeInt64("sample_pool", this.sample_pool);
+        bsonWriter.writeInt64("drops", this.drops);
+        bsonWriter.writeName("input");
+        this.input.writeBson(bsonWriter);
+        bsonWriter.writeName("output");
+        this.output.writeBson(bsonWriter);
+        bsonWriter.writeStartArray("flow_records");
+        for (final FlowRecord flowRecord : this.flow_records) {
+            flowRecord.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

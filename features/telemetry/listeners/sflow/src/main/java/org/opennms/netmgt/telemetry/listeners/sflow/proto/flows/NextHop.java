@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -46,7 +47,11 @@ public class NextHop {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("next_hop", next_hop)
+                .add("next_hop", this.next_hop)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        this.next_hop.writeBson(bsonWriter);
     }
 }

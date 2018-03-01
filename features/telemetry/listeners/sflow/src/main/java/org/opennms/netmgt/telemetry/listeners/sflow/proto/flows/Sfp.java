@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -63,11 +64,25 @@ public class Sfp {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("module_id", module_id)
-                .add("module_num_lanes", module_num_lanes)
-                .add("module_supply_voltage", module_supply_voltage)
-                .add("module_temperature", module_temperature)
-                .add("lanes", lanes)
+                .add("module_id", this.module_id)
+                .add("module_num_lanes", this.module_num_lanes)
+                .add("module_supply_voltage", this.module_supply_voltage)
+                .add("module_temperature", this.module_temperature)
+                .add("lanes", this.lanes)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("module_id", this.module_id);
+        bsonWriter.writeInt64("module_num_lanes", this.module_num_lanes);
+        bsonWriter.writeInt64("module_supply_voltage", this.module_supply_voltage);
+        bsonWriter.writeInt32("module_temperature", this.module_temperature);
+        bsonWriter.writeStartArray("lanes");
+        for (final Lane lane : lanes) {
+            lane.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

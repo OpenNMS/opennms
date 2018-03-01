@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 
@@ -49,16 +49,26 @@ public class ExtendedUrl implements FlowData {
 
     public ExtendedUrl(final ByteBuffer buffer) throws InvalidPacketException {
         this.direction = UrlDirection.from(buffer);
-        this.url = new AsciiString(buffer, Optional.empty());
-        this.host = new AsciiString(buffer, Optional.empty());
+        this.url = new AsciiString(buffer);
+        this.host = new AsciiString(buffer);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("direction", direction)
-                .add("url", url)
-                .add("host", host)
+                .add("direction", this.direction)
+                .add("url", this.url)
+                .add("host", this.host)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("direction");
+        this.direction.writeBson(bsonWriter);
+        bsonWriter.writeString("url", this.url.value);
+        bsonWriter.writeString("host", this.host.value);
+        bsonWriter.writeEndDocument();
     }
 }

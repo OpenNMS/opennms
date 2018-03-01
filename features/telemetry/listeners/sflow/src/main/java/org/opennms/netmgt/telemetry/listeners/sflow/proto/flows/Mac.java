@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
@@ -48,7 +50,11 @@ public class Mac {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("mac", mac)
+                .add("mac", this.mac)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeBinaryData(new BsonBinary(this.mac.value));
     }
 }

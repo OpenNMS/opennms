@@ -33,6 +33,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
@@ -51,7 +52,7 @@ import com.google.common.base.Objects;
 //     by the enterprise that should uniquely identify the the format of the
 //     structure.
 
-public class Record<T> {
+public abstract class Record<T> {
 
     private static final Logger LOG = LoggerFactory.getLogger(Record.class);
 
@@ -95,9 +96,16 @@ public class Record<T> {
         @Override
         public String toString() {
             return MoreObjects.toStringHelper(this)
-                    .add("enterpriseNumber", enterpriseNumber)
-                    .add("formatNumber", formatNumber)
+                    .add("enterpriseNumber", this.enterpriseNumber)
+                    .add("formatNumber", this.formatNumber)
                     .toString();
+        }
+
+        public void writeBson(final BsonWriter bsonWriter) {
+            bsonWriter.writeStartDocument();
+            bsonWriter.writeInt32("enterpriseNumber", this.enterpriseNumber);
+            bsonWriter.writeInt32("formatNumber", this.formatNumber);
+            bsonWriter.writeEndDocument();
         }
     }
 
@@ -113,6 +121,7 @@ public class Record<T> {
 
         } else {
             LOG.debug("Unknown record type: {}:{}", dataFormat.enterpriseNumber, dataFormat.formatNumber);
+            System.out.println("Unknown record type: " + dataFormat.enterpriseNumber + " / " + dataFormat.formatNumber);
             this.data = new Opaque(buffer, Optional.empty(), Opaque::parseUnknown);
         }
     }
@@ -120,8 +129,10 @@ public class Record<T> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("dataFormat", dataFormat)
-                .add("data", data)
+                .add("dataFormat", this.dataFormat)
+                .add("data", this.data)
                 .toString();
     }
+
+    public abstract void writeBson(final BsonWriter bsonWriter);
 }

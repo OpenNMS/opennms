@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
@@ -53,8 +55,17 @@ public class Extended80211Payload implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ciphersuite", ciphersuite)
-                .add("data", data)
+                .add("ciphersuite", this.ciphersuite)
+                .add("data", this.data)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("ciphersuite");
+        this.ciphersuite.writeBson(bsonWriter);
+        bsonWriter.writeBinaryData("data", new BsonBinary(this.data.value));
+        bsonWriter.writeEndDocument();
     }
 }

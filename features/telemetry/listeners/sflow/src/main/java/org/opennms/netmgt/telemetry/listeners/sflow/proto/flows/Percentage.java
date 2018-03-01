@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -47,7 +48,11 @@ public class Percentage {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("percentage", percentage)
+                .add("percentage", this.percentage)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt32(this.percentage);
     }
 }

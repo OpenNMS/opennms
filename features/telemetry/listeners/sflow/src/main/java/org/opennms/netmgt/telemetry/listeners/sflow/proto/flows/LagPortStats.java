@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
@@ -90,18 +92,39 @@ public class LagPortStats {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("dot3adAggPortActorSystemID", dot3adAggPortActorSystemID)
-                .add("dot3adAggPortPartnerOperSystemID", dot3adAggPortPartnerOperSystemID)
-                .add("dot3adAggPortAttachedAggID", dot3adAggPortAttachedAggID)
-                .add("dot3adAggPortState", dot3adAggPortState)
-                .add("dot3adAggPortStatsLACPDUsRx", dot3adAggPortStatsLACPDUsRx)
-                .add("dot3adAggPortStatsMarkerPDUsRx", dot3adAggPortStatsMarkerPDUsRx)
-                .add("dot3adAggPortStatsMarkerResponsePDUsRx", dot3adAggPortStatsMarkerResponsePDUsRx)
-                .add("dot3adAggPortStatsUnknownRx", dot3adAggPortStatsUnknownRx)
-                .add("dot3adAggPortStatsIllegalRx", dot3adAggPortStatsIllegalRx)
-                .add("dot3adAggPortStatsLACPDUsTx", dot3adAggPortStatsLACPDUsTx)
-                .add("dot3adAggPortStatsMarkerPDUsTx", dot3adAggPortStatsMarkerPDUsTx)
-                .add("dot3adAggPortStatsMarkerResponsePDUsTx", dot3adAggPortStatsMarkerResponsePDUsTx)
+                .add("dot3adAggPortActorSystemID", this.dot3adAggPortActorSystemID)
+                .add("dot3adAggPortPartnerOperSystemID", this.dot3adAggPortPartnerOperSystemID)
+                .add("dot3adAggPortAttachedAggID", this.dot3adAggPortAttachedAggID)
+                .add("dot3adAggPortState", this.dot3adAggPortState)
+                .add("dot3adAggPortStatsLACPDUsRx", this.dot3adAggPortStatsLACPDUsRx)
+                .add("dot3adAggPortStatsMarkerPDUsRx", this.dot3adAggPortStatsMarkerPDUsRx)
+                .add("dot3adAggPortStatsMarkerResponsePDUsRx", this.dot3adAggPortStatsMarkerResponsePDUsRx)
+                .add("dot3adAggPortStatsUnknownRx", this.dot3adAggPortStatsUnknownRx)
+                .add("dot3adAggPortStatsIllegalRx", this.dot3adAggPortStatsIllegalRx)
+                .add("dot3adAggPortStatsLACPDUsTx", this.dot3adAggPortStatsLACPDUsTx)
+                .add("dot3adAggPortStatsMarkerPDUsTx", this.dot3adAggPortStatsMarkerPDUsTx)
+                .add("dot3adAggPortStatsMarkerResponsePDUsTx", this.dot3adAggPortStatsMarkerResponsePDUsTx)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("dot3adAggPortActorSystemID");
+        this.dot3adAggPortActorSystemID.writeBson(bsonWriter);
+        bsonWriter.writeName("dot3adAggPortPartnerOperSystemID");
+        this.dot3adAggPortPartnerOperSystemID.writeBson(bsonWriter);
+        bsonWriter.writeInt64("dot3adAggPortAttachedAggID", this.dot3adAggPortAttachedAggID);
+        bsonWriter.writeBinaryData("dot3adAggPortState", new BsonBinary(this.dot3adAggPortState.value));
+        bsonWriter.writeInt64("dot3adAggPortStatsLACPDUsRx", this.dot3adAggPortStatsLACPDUsRx);
+        bsonWriter.writeInt64("dot3adAggPortStatsMarkerPDUsRx", this.dot3adAggPortStatsMarkerPDUsRx);
+        bsonWriter.writeInt64("dot3adAggPortStatsMarkerResponsePDUsRx", this.dot3adAggPortStatsMarkerResponsePDUsRx);
+        bsonWriter.writeInt64("dot3adAggPortStatsUnknownRx", this.dot3adAggPortStatsUnknownRx);
+        bsonWriter.writeInt64("dot3adAggPortStatsIllegalRx", this.dot3adAggPortStatsIllegalRx);
+        bsonWriter.writeInt64("dot3adAggPortStatsLACPDUsTx", this.dot3adAggPortStatsLACPDUsTx);
+        bsonWriter.writeInt64("dot3adAggPortStatsMarkerPDUsTx", this.dot3adAggPortStatsMarkerPDUsTx);
+        bsonWriter.writeInt64("dot3adAggPortStatsMarkerResponsePDUsTx", this.dot3adAggPortStatsMarkerResponsePDUsTx);
+        bsonWriter.writeEndDocument();
+    }
+
+
 }

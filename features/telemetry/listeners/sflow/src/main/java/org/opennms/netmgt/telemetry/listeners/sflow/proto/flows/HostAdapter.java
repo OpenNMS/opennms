@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -57,8 +58,19 @@ public class HostAdapter {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ifIndex", ifIndex)
-                .add("mac_address", mac_address)
+                .add("ifIndex", this.ifIndex)
+                .add("mac_address", this.mac_address)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64(this.ifIndex);
+        bsonWriter.writeStartArray("mac_address");
+        for (final Mac mac : this.mac_address) {
+            mac.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

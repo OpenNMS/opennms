@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -54,11 +55,11 @@ public class ExtendedSocketIpv6 implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("protocol", protocol)
-                .add("local_ip", local_ip)
-                .add("remote_ip", remote_ip)
-                .add("local_port", local_port)
-                .add("remote_port", remote_port)
+                .add("protocol", this.protocol)
+                .add("local_ip", this.local_ip)
+                .add("remote_ip", this.remote_ip)
+                .add("local_port", this.local_port)
+                .add("remote_port", this.remote_port)
                 .toString();
     }
 
@@ -68,5 +69,18 @@ public class ExtendedSocketIpv6 implements FlowData {
         this.remote_ip = new IpV6(buffer);
         this.local_port = BufferUtils.uint32(buffer);
         this.remote_port = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("protocol", this.protocol);
+        bsonWriter.writeName("local_ip");
+        this.local_ip.writeBson(bsonWriter);
+        bsonWriter.writeName("remote_ip");
+        this.remote_ip.writeBson(bsonWriter);
+        bsonWriter.writeInt64("local_port", this.local_port);
+        bsonWriter.writeInt64("remote_port", this.remote_port);
+        bsonWriter.writeEndDocument();
     }
 }

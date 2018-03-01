@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -75,11 +76,26 @@ public class SampleDatagramV5 {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("agent_address", agent_address)
-                .add("sub_agent_id", sub_agent_id)
-                .add("sequence_number", sequence_number)
-                .add("uptime", uptime)
-                .add("samples", samples)
+                .add("agent_address", this.agent_address)
+                .add("sub_agent_id", this.sub_agent_id)
+                .add("sequence_number", this.sequence_number)
+                .add("uptime", this.uptime)
+                .add("samples", this.samples)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("agent_address");
+        this.agent_address.writeBson(bsonWriter);
+        bsonWriter.writeInt64("sub_agent_id", this.sub_agent_id);
+        bsonWriter.writeInt64("sequence_number", this.sequence_number);
+        bsonWriter.writeInt64("uptime", this.uptime);
+        bsonWriter.writeStartArray("samples");
+        for (final SampleRecord sampleRecord : this.samples) {
+            sampleRecord.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

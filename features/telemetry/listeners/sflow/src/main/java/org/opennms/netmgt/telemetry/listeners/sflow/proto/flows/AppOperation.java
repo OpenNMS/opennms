@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -68,12 +69,37 @@ public class AppOperation implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("context", context)
-                .add("status_descr", status_descr)
-                .add("req_bytes", req_bytes)
-                .add("resp_bytes", resp_bytes)
-                .add("uS", uS)
-                .add("status", status)
+                .add("context", this.context)
+                .add("status_descr", this.status_descr)
+                .add("req_bytes", this.req_bytes)
+                .add("resp_bytes", this.resp_bytes)
+                .add("uS", this.uS)
+                .add("", this.status)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+
+        bsonWriter.writeName("context");
+        this.context.writeBson(bsonWriter);
+
+        bsonWriter.writeStartArray("status_descr");
+        for (final Utf8string utf8string : this.status_descr) {
+            utf8string.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeInt64("req_bytes", this.req_bytes.longValue());
+
+        bsonWriter.writeInt64("resp_bytes", this.resp_bytes.longValue());
+
+        bsonWriter.writeInt64("uS", this.uS);
+
+        bsonWriter.writeName("status");
+        this.status.writeBson(bsonWriter);
+
+        bsonWriter.writeEndDocument();
     }
 }

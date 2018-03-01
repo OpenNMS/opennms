@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -67,9 +68,28 @@ public class Address {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("type", type)
-                .add("ipV4", ipV4)
-                .add("ipV6", ipV6)
+                .add("type", this.type)
+                .add("ipV4", this.ipV4)
+                .add("ipV6", this.ipV6)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+
+        switch (this.type) {
+            case IP_V4:
+                bsonWriter.writeName("ipv4");
+                this.ipV4.writeBson(bsonWriter);
+                break;
+            case IP_V6:
+                bsonWriter.writeName("ipv6");
+                this.ipV6.writeBson(bsonWriter);
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+
+        bsonWriter.writeEndDocument();
     }
 }

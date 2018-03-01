@@ -28,5 +28,8 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
+import org.bson.BsonWriter;
+
 public interface CounterData {
+    void writeBson(final BsonWriter bsonWriter);
 }

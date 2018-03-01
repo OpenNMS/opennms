@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
@@ -52,10 +54,10 @@ public class ExtendedUser implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("src_charset", src_charset)
-                .add("src_user", src_user)
-                .add("dst_charset", dst_charset)
-                .add("dst_user", dst_user)
+                .add("src_charset", this.src_charset)
+                .add("src_user", this.src_user)
+                .add("dst_charset", this.dst_charset)
+                .add("dst_user", this.dst_user)
                 .toString();
     }
 
@@ -64,5 +66,19 @@ public class ExtendedUser implements FlowData {
         this.src_user = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
         this.dst_charset = new Charset(buffer);
         this.dst_user = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("src_charset");
+        this.src_charset.writeBson(bsonWriter);
+        bsonWriter.writeName("src_user");
+        bsonWriter.writeBinaryData(new BsonBinary(this.src_user.value));
+        bsonWriter.writeName("dst_charset");
+        this.dst_charset.writeBson(bsonWriter);
+        bsonWriter.writeName("dst_user");
+        bsonWriter.writeBinaryData(new BsonBinary(this.dst_user.value));
+        bsonWriter.writeEndDocument();
     }
 }

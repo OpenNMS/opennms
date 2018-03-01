@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -73,21 +74,21 @@ public class HttpCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("method_option_count", method_option_count)
-                .add("method_get_count", method_get_count)
-                .add("method_head_count", method_head_count)
-                .add("method_post_count", method_post_count)
-                .add("method_put_count", method_put_count)
-                .add("method_delete_count", method_delete_count)
-                .add("method_trace_count", method_trace_count)
-                .add("method_connect_count", method_connect_count)
-                .add("method_other_count", method_other_count)
-                .add("status_1XX_count", status_1XX_count)
-                .add("status_2XX_count", status_2XX_count)
-                .add("status_3XX_count", status_3XX_count)
-                .add("status_4XX_count", status_4XX_count)
-                .add("status_5XX_count", status_5XX_count)
-                .add("status_other_count", status_other_count)
+                .add("method_option_count", this.method_option_count)
+                .add("method_get_count", this.method_get_count)
+                .add("method_head_count", this.method_head_count)
+                .add("method_post_count", this.method_post_count)
+                .add("method_put_count", this.method_put_count)
+                .add("method_delete_count", this.method_delete_count)
+                .add("method_trace_count", this.method_trace_count)
+                .add("method_connect_count", this.method_connect_count)
+                .add("method_other_count", this.method_other_count)
+                .add("status_1XX_count", this.status_1XX_count)
+                .add("status_2XX_count", this.status_2XX_count)
+                .add("status_3XX_count", this.status_3XX_count)
+                .add("status_4XX_count", this.status_4XX_count)
+                .add("status_5XX_count", this.status_5XX_count)
+                .add("status_other_count", this.status_other_count)
                 .toString();
     }
 
@@ -107,5 +108,26 @@ public class HttpCounters implements CounterData {
         this.status_4XX_count = BufferUtils.uint32(buffer);
         this.status_5XX_count = BufferUtils.uint32(buffer);
         this.status_other_count = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("method_option_count", this.method_option_count);
+        bsonWriter.writeInt64("method_get_count", this.method_get_count);
+        bsonWriter.writeInt64("method_head_count", this.method_head_count);
+        bsonWriter.writeInt64("method_post_count", this.method_post_count);
+        bsonWriter.writeInt64("method_put_count", this.method_put_count);
+        bsonWriter.writeInt64("method_delete_count", this.method_delete_count);
+        bsonWriter.writeInt64("method_trace_count", this.method_trace_count);
+        bsonWriter.writeInt64("method_connect_count", this.method_connect_count);
+        bsonWriter.writeInt64("method_other_count", this.method_other_count);
+        bsonWriter.writeInt64("status_1XX_count", this.status_1XX_count);
+        bsonWriter.writeInt64("status_2XX_count", this.status_2XX_count);
+        bsonWriter.writeInt64("status_3XX_count", this.status_3XX_count);
+        bsonWriter.writeInt64("status_4XX_count", this.status_4XX_count);
+        bsonWriter.writeInt64("status_5XX_count", this.status_5XX_count);
+        bsonWriter.writeInt64("status_other_count", this.status_other_count);
+        bsonWriter.writeEndDocument();
     }
 }

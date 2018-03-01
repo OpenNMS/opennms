@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -48,9 +49,9 @@ public class ExtendedMpls implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("nexthop", nexthop)
-                .add("in_stack", in_stack)
-                .add("out_stack", out_stack)
+                .add("nexthop", this.nexthop)
+                .add("in_stack", this.in_stack)
+                .add("out_stack", this.out_stack)
                 .toString();
     }
 
@@ -58,5 +59,17 @@ public class ExtendedMpls implements FlowData {
         this.nexthop = new NextHop(buffer);
         this.in_stack = new LabelStack(buffer);
         this.out_stack = new LabelStack(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("nexthop");
+        this.nexthop.writeBson(bsonWriter);
+        bsonWriter.writeName("in_stack");
+        this.in_stack.writeBson(bsonWriter);
+        bsonWriter.writeName("out_stack");
+        this.out_stack.writeBson(bsonWriter);
+        bsonWriter.writeEndDocument();
     }
 }

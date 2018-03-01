@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -47,7 +48,11 @@ public class Charset {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("charset", charset)
+                .add("charset", this.charset)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt64(this.charset);
     }
 }

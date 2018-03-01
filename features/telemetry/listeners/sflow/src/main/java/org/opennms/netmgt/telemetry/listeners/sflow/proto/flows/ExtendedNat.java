@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -51,8 +52,18 @@ public class ExtendedNat implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("src_address", src_address)
-                .add("dst_address", dst_address)
+                .add("src_address", this.src_address)
+                .add("dst_address", this.dst_address)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("src_address");
+        this.src_address.writeBson(bsonWriter);
+        bsonWriter.writeName("dst_address");
+        this.dst_address.writeBson(bsonWriter);
+        bsonWriter.writeEndDocument();
     }
 }

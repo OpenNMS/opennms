@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
@@ -53,21 +55,34 @@ public class HostDescr implements CounterData {
     public final AsciiString os_release;
 
     public HostDescr(final ByteBuffer buffer) throws InvalidPacketException {
-        this.hostname = new AsciiString(buffer, Optional.empty());
-        this.uuid = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+        this.hostname = new AsciiString(buffer);
+        this.uuid = new Opaque(buffer, Optional.of(16), Opaque::parseBytes);
         this.machine_type = MachineType.from(buffer);
         this.os_name = OsName.from(buffer);
-        this.os_release = new AsciiString(buffer, Optional.empty());
+        this.os_release = new AsciiString(buffer);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("hostname", hostname)
-                .add("uuid", uuid)
-                .add("machine_type", machine_type)
-                .add("os_name", os_name)
-                .add("os_release", os_release)
+                .add("hostname", this.hostname)
+                .add("uuid", this.uuid)
+                .add("machine_type", this.machine_type)
+                .add("os_name", this.os_name)
+                .add("os_release", this.os_release)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("hostname", this.hostname.value);
+        bsonWriter.writeBinaryData("uuid", new BsonBinary(this.uuid.value));
+        bsonWriter.writeName("machine_type");
+        this.machine_type.writeBson(bsonWriter);
+        bsonWriter.writeName("os_name");
+        this.os_name.writeBson(bsonWriter);
+        bsonWriter.writeString("os_release", this.os_release.value);
+        bsonWriter.writeEndDocument();
     }
 }

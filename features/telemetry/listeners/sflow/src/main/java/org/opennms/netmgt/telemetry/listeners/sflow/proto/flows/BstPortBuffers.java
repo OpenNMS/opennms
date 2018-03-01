@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -59,19 +60,43 @@ public class BstPortBuffers implements CounterData {
         this.ingress_mc_pc = BufferUtils.sint32(buffer);
         this.egress_uc_pc = BufferUtils.sint32(buffer);
         this.egress_mc_pc = BufferUtils.sint32(buffer);
-        this.egress_queue_uc_pc = new Array(buffer, Optional.empty(), BufferUtils::sint32);
-        this.egress_queue_mc_pc = new Array(buffer, Optional.empty(), BufferUtils::sint32);
+        this.egress_queue_uc_pc = new Array(buffer, Optional.of(8), BufferUtils::sint32);
+        this.egress_queue_mc_pc = new Array(buffer, Optional.of(8), BufferUtils::sint32);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ingress_uc_pc", ingress_uc_pc)
-                .add("ingress_mc_pc", ingress_mc_pc)
-                .add("egress_uc_pc", egress_uc_pc)
-                .add("egress_mc_pc", egress_mc_pc)
-                .add("egress_queue_uc_pc", egress_queue_uc_pc)
-                .add("egress_queue_mc_pc", egress_queue_mc_pc)
+                .add("ingress_uc_pc", this.ingress_uc_pc)
+                .add("ingress_mc_pc", this.ingress_mc_pc)
+                .add("egress_uc_pc", this.egress_uc_pc)
+                .add("egress_mc_pc", this.egress_mc_pc)
+                .add("egress_queue_uc_pc", this.egress_queue_uc_pc)
+                .add("egress_queue_mc_pc", this.egress_queue_mc_pc)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+
+        bsonWriter.writeInt32("ingress_uc_pc", this.ingress_uc_pc);
+        bsonWriter.writeInt32("ingress_mc_pc", this.ingress_mc_pc);
+        bsonWriter.writeInt32("egress_uc_pc", this.egress_uc_pc);
+        bsonWriter.writeInt32("egress_mc_pc", this.egress_mc_pc);
+
+        bsonWriter.writeStartArray("egress_queue_uc_pc");
+        for (final int i : this.egress_queue_uc_pc) {
+            bsonWriter.writeInt32(i);
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeStartArray("egress_queue_mc_pc");
+        for (final int i : this.egress_queue_mc_pc) {
+            bsonWriter.writeInt32(i);
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeEndDocument();
     }
 }

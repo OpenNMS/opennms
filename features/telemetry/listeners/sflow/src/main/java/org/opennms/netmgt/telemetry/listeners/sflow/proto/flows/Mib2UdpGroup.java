@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -67,13 +68,27 @@ public class Mib2UdpGroup implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("udpInDatagrams", udpInDatagrams)
-                .add("udpNoPorts", udpNoPorts)
-                .add("udpInErrors", udpInErrors)
-                .add("udpOutDatagrams", udpOutDatagrams)
-                .add("udpRcvbufErrors", udpRcvbufErrors)
-                .add("udpSndbufErrors", udpSndbufErrors)
-                .add("udpInCsumErrors", udpInCsumErrors)
+                .add("udpInDatagrams", this.udpInDatagrams)
+                .add("udpNoPorts", this.udpNoPorts)
+                .add("udpInErrors", this.udpInErrors)
+                .add("udpOutDatagrams", this.udpOutDatagrams)
+                .add("udpRcvbufErrors", this.udpRcvbufErrors)
+                .add("udpSndbufErrors", this.udpSndbufErrors)
+                .add("udpInCsumErrors", this.udpInCsumErrors)
                 .toString();
     }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("udpInDatagrams", this.udpInDatagrams);
+        bsonWriter.writeInt64("udpNoPorts", this.udpNoPorts);
+        bsonWriter.writeInt64("udpInErrors", this.udpInErrors);
+        bsonWriter.writeInt64("udpOutDatagrams", this.udpOutDatagrams);
+        bsonWriter.writeInt64("udpRcvbufErrors", this.udpRcvbufErrors);
+        bsonWriter.writeInt64("udpSndbufErrors", this.udpSndbufErrors);
+        bsonWriter.writeInt64("udpInCsumErrors", this.udpInCsumErrors);
+        bsonWriter.writeEndDocument();
+    }
+
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -57,9 +58,19 @@ public class ExtendedRouter implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("nexthop", nexthop)
-                .add("src_mask_len", src_mask_len)
-                .add("dst_mask_len", dst_mask_len)
+                .add("nexthop", this.nexthop)
+                .add("src_mask_len", this.src_mask_len)
+                .add("dst_mask_len", this.dst_mask_len)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("nexthop");
+        this.nexthop.writeBson(bsonWriter);
+        bsonWriter.writeInt64("src_mask_len", this.src_mask_len);
+        bsonWriter.writeInt64("dst_mask_len", this.dst_mask_len);
+        bsonWriter.writeEndDocument();
     }
 }

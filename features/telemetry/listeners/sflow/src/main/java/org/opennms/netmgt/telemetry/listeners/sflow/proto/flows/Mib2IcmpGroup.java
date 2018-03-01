@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -121,31 +122,62 @@ public class Mib2IcmpGroup implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("icmpInMsgs", icmpInMsgs)
-                .add("icmpInErrors", icmpInErrors)
-                .add("icmpInDestUnreachs", icmpInDestUnreachs)
-                .add("icmpInTimeExcds", icmpInTimeExcds)
-                .add("icmpInParamProbs", icmpInParamProbs)
-                .add("icmpInSrcQuenchs", icmpInSrcQuenchs)
-                .add("icmpInRedirects", icmpInRedirects)
-                .add("icmpInEchos", icmpInEchos)
-                .add("icmpInEchoReps", icmpInEchoReps)
-                .add("icmpInTimestamps", icmpInTimestamps)
-                .add("icmpInAddrMasks", icmpInAddrMasks)
-                .add("icmpInAddrMaskReps", icmpInAddrMaskReps)
-                .add("icmpOutMsgs", icmpOutMsgs)
-                .add("icmpOutErrors", icmpOutErrors)
-                .add("icmpOutDestUnreachs", icmpOutDestUnreachs)
-                .add("icmpOutTimeExcds", icmpOutTimeExcds)
-                .add("icmpOutParamProbs", icmpOutParamProbs)
-                .add("icmpOutSrcQuenchs", icmpOutSrcQuenchs)
-                .add("icmpOutRedirects", icmpOutRedirects)
-                .add("icmpOutEchos", icmpOutEchos)
-                .add("icmpOutEchoReps", icmpOutEchoReps)
-                .add("icmpOutTimestamps", icmpOutTimestamps)
-                .add("icmpOutTimestampReps", icmpOutTimestampReps)
-                .add("icmpOutAddrMasks", icmpOutAddrMasks)
-                .add("icmpOutAddrMaskReps", icmpOutAddrMaskReps)
+                .add("icmpInMsgs", this.icmpInMsgs)
+                .add("icmpInErrors", this.icmpInErrors)
+                .add("icmpInDestUnreachs", this.icmpInDestUnreachs)
+                .add("icmpInTimeExcds", this.icmpInTimeExcds)
+                .add("icmpInParamProbs", this.icmpInParamProbs)
+                .add("icmpInSrcQuenchs", this.icmpInSrcQuenchs)
+                .add("icmpInRedirects", this.icmpInRedirects)
+                .add("icmpInEchos", this.icmpInEchos)
+                .add("icmpInEchoReps", this.icmpInEchoReps)
+                .add("icmpInTimestamps", this.icmpInTimestamps)
+                .add("icmpInAddrMasks", this.icmpInAddrMasks)
+                .add("icmpInAddrMaskReps", this.icmpInAddrMaskReps)
+                .add("icmpOutMsgs", this.icmpOutMsgs)
+                .add("icmpOutErrors", this.icmpOutErrors)
+                .add("icmpOutDestUnreachs", this.icmpOutDestUnreachs)
+                .add("icmpOutTimeExcds", this.icmpOutTimeExcds)
+                .add("icmpOutParamProbs", this.icmpOutParamProbs)
+                .add("icmpOutSrcQuenchs", this.icmpOutSrcQuenchs)
+                .add("icmpOutRedirects", this.icmpOutRedirects)
+                .add("icmpOutEchos", this.icmpOutEchos)
+                .add("icmpOutEchoReps", this.icmpOutEchoReps)
+                .add("icmpOutTimestamps", this.icmpOutTimestamps)
+                .add("icmpOutTimestampReps", this.icmpOutTimestampReps)
+                .add("icmpOutAddrMasks", this.icmpOutAddrMasks)
+                .add("icmpOutAddrMaskReps", this.icmpOutAddrMaskReps)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("icmpInMsgs", this.icmpInMsgs);
+        bsonWriter.writeInt64("icmpInErrors", this.icmpInErrors);
+        bsonWriter.writeInt64("icmpInDestUnreachs", this.icmpInDestUnreachs);
+        bsonWriter.writeInt64("icmpInTimeExcds", this.icmpInTimeExcds);
+        bsonWriter.writeInt64("icmpInParamProbs", this.icmpInParamProbs);
+        bsonWriter.writeInt64("icmpInSrcQuenchs", this.icmpInSrcQuenchs);
+        bsonWriter.writeInt64("icmpInRedirects", this.icmpInRedirects);
+        bsonWriter.writeInt64("icmpInEchos", this.icmpInEchos);
+        bsonWriter.writeInt64("icmpInEchoReps", this.icmpInEchoReps);
+        bsonWriter.writeInt64("icmpInTimestamps", this.icmpInTimestamps);
+        bsonWriter.writeInt64("icmpInAddrMasks", this.icmpInAddrMasks);
+        bsonWriter.writeInt64("icmpInAddrMaskReps", this.icmpInAddrMaskReps);
+        bsonWriter.writeInt64("icmpOutMsgs", this.icmpOutMsgs);
+        bsonWriter.writeInt64("icmpOutErrors", this.icmpOutErrors);
+        bsonWriter.writeInt64("icmpOutDestUnreachs", this.icmpOutDestUnreachs);
+        bsonWriter.writeInt64("icmpOutTimeExcds", this.icmpOutTimeExcds);
+        bsonWriter.writeInt64("icmpOutParamProbs", this.icmpOutParamProbs);
+        bsonWriter.writeInt64("icmpOutSrcQuenchs", this.icmpOutSrcQuenchs);
+        bsonWriter.writeInt64("icmpOutRedirects", this.icmpOutRedirects);
+        bsonWriter.writeInt64("icmpOutEchos", this.icmpOutEchos);
+        bsonWriter.writeInt64("icmpOutEchoReps", this.icmpOutEchoReps);
+        bsonWriter.writeInt64("icmpOutTimestamps", this.icmpOutTimestamps);
+        bsonWriter.writeInt64("icmpOutTimestampReps", this.icmpOutTimestampReps);
+        bsonWriter.writeInt64("icmpOutAddrMasks", this.icmpOutAddrMasks);
+        bsonWriter.writeInt64("icmpOutAddrMaskReps", this.icmpOutAddrMaskReps);
+        bsonWriter.writeEndDocument();
     }
 }

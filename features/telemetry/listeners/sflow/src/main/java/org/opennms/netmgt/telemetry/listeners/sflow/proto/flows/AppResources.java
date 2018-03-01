@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -73,14 +74,28 @@ public class AppResources implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("user_time", user_time)
-                .add("system_time", system_time)
-                .add("mem_used", mem_used)
-                .add("mem_max", mem_max)
-                .add("fd_open", fd_open)
-                .add("fd_max", fd_max)
-                .add("conn_open", conn_open)
-                .add("conn_max", conn_max)
+                .add("user_time", this.user_time)
+                .add("system_time", this.system_time)
+                .add("mem_used", this.mem_used)
+                .add("mem_max", this.mem_max)
+                .add("fd_open", this.fd_open)
+                .add("fd_max", this.fd_max)
+                .add("conn_open", this.conn_open)
+                .add("conn_max", this.conn_max)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("user_time", this.user_time);
+        bsonWriter.writeInt64("system_time", this.system_time);
+        bsonWriter.writeInt64("mem_used", this.mem_used.longValue());
+        bsonWriter.writeInt64("mem_max", this.mem_max.longValue());
+        bsonWriter.writeInt64("fd_open", this.fd_open);
+        bsonWriter.writeInt64("fd_max", this.fd_max);
+        bsonWriter.writeInt64("conn_open", this.conn_open);
+        bsonWriter.writeInt64("conn_max", this.conn_max);
+        bsonWriter.writeEndDocument();
     }
 }

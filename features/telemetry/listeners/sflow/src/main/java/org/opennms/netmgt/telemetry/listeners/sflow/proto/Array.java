@@ -31,15 +31,19 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public class Array<T> {
+public class Array<T> implements Iterable<T> {
     @FunctionalInterface
     public interface Parser<T> {
         T parse(final ByteBuffer buffer) throws InvalidPacketException;
@@ -64,8 +68,13 @@ public class Array<T> {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("size", size)
-                .add("values", values)
+                .add("size", this.size)
+                .add("values", this.values)
                 .toString();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return values.iterator();
     }
 }

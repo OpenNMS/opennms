@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -85,19 +86,38 @@ public class EthernetCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("dot3StatsAlignmentErrors", dot3StatsAlignmentErrors)
-                .add("dot3StatsFCSErrors", dot3StatsFCSErrors)
-                .add("dot3StatsSingleCollisionFrames", dot3StatsSingleCollisionFrames)
-                .add("dot3StatsMultipleCollisionFrames", dot3StatsMultipleCollisionFrames)
-                .add("dot3StatsSQETestErrors", dot3StatsSQETestErrors)
-                .add("dot3StatsDeferredTransmissions", dot3StatsDeferredTransmissions)
-                .add("dot3StatsLateCollisions", dot3StatsLateCollisions)
-                .add("dot3StatsExcessiveCollisions", dot3StatsExcessiveCollisions)
-                .add("dot3StatsInternalMacTransmitErrors", dot3StatsInternalMacTransmitErrors)
-                .add("dot3StatsCarrierSenseErrors", dot3StatsCarrierSenseErrors)
-                .add("dot3StatsFrameTooLongs", dot3StatsFrameTooLongs)
-                .add("dot3StatsInternalMacReceiveErrors", dot3StatsInternalMacReceiveErrors)
-                .add("dot3StatsSymbolErrors", dot3StatsSymbolErrors)
+                .add("dot3StatsAlignmentErrors", this.dot3StatsAlignmentErrors)
+                .add("dot3StatsFCSErrors", this.dot3StatsFCSErrors)
+                .add("dot3StatsSingleCollisionFrames", this.dot3StatsSingleCollisionFrames)
+                .add("dot3StatsMultipleCollisionFrames", this.dot3StatsMultipleCollisionFrames)
+                .add("dot3StatsSQETestErrors", this.dot3StatsSQETestErrors)
+                .add("dot3StatsDeferredTransmissions", this.dot3StatsDeferredTransmissions)
+                .add("dot3StatsLateCollisions", this.dot3StatsLateCollisions)
+                .add("dot3StatsExcessiveCollisions", this.dot3StatsExcessiveCollisions)
+                .add("dot3StatsInternalMacTransmitErrors", this.dot3StatsInternalMacTransmitErrors)
+                .add("dot3StatsCarrierSenseErrors", this.dot3StatsCarrierSenseErrors)
+                .add("dot3StatsFrameTooLongs", this.dot3StatsFrameTooLongs)
+                .add("dot3StatsInternalMacReceiveErrors", this.dot3StatsInternalMacReceiveErrors)
+                .add("dot3StatsSymbolErrors", this.dot3StatsSymbolErrors)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("dot3StatsAlignmentErrors", this.dot3StatsAlignmentErrors);
+        bsonWriter.writeInt64("dot3StatsFCSErrors", this.dot3StatsFCSErrors);
+        bsonWriter.writeInt64("dot3StatsSingleCollisionFrames", this.dot3StatsSingleCollisionFrames);
+        bsonWriter.writeInt64("dot3StatsMultipleCollisionFrames", this.dot3StatsMultipleCollisionFrames);
+        bsonWriter.writeInt64("dot3StatsSQETestErrors", this.dot3StatsSQETestErrors);
+        bsonWriter.writeInt64("dot3StatsDeferredTransmissions", this.dot3StatsDeferredTransmissions);
+        bsonWriter.writeInt64("dot3StatsLateCollisions", this.dot3StatsLateCollisions);
+        bsonWriter.writeInt64("dot3StatsExcessiveCollisions", this.dot3StatsExcessiveCollisions);
+        bsonWriter.writeInt64("dot3StatsInternalMacTransmitErrors", this.dot3StatsInternalMacTransmitErrors);
+        bsonWriter.writeInt64("dot3StatsCarrierSenseErrors", this.dot3StatsCarrierSenseErrors);
+        bsonWriter.writeInt64("dot3StatsFrameTooLongs", this.dot3StatsFrameTooLongs);
+        bsonWriter.writeInt64("dot3StatsInternalMacReceiveErrors", this.dot3StatsInternalMacReceiveErrors);
+        bsonWriter.writeInt64("dot3StatsSymbolErrors", this.dot3StatsSymbolErrors);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -30,9 +30,11 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.primitives.UnsignedLong;
 
 // struct processor {
@@ -58,7 +60,28 @@ public class Processor implements CounterData {
         this.free_memory = BufferUtils.uint64(buffer);
     }
 
-    public Percentage getCpu_5s() {
-        return cpu_5s;
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("cpu_5s", this.cpu_5s)
+                .add("cpu_1m", this.cpu_1m)
+                .add("cpu_5m", this.cpu_5m)
+                .add("total_memory", this.total_memory)
+                .add("free_memory", this.free_memory)
+                .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("cpu_5s");
+        this.cpu_5s.writeBson(bsonWriter);
+        bsonWriter.writeName("cpu_1m");
+        this.cpu_1m.writeBson(bsonWriter);
+        bsonWriter.writeName("cpu_5m");
+        this.cpu_5m.writeBson(bsonWriter);
+        bsonWriter.writeInt64("total_memory", this.total_memory.longValue());
+        bsonWriter.writeInt64("free_memory", this.free_memory.longValue());
+        bsonWriter.writeEndDocument();
     }
 }

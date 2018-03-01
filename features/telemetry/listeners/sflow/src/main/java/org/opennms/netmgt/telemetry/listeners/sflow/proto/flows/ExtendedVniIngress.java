@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -45,11 +46,16 @@ public class ExtendedVniIngress implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("vni", vni)
+                .add("vni", this.vni)
                 .toString();
     }
 
     public ExtendedVniIngress(final ByteBuffer buffer) throws InvalidPacketException {
         this.vni = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt64(this.vni);
     }
 }

@@ -31,6 +31,8 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonBinary;
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
@@ -93,10 +95,21 @@ public class SampledHeader implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("protocol", protocol)
-                .add("frame_length", frame_length)
-                .add("stripped", stripped)
-                .add("header", header)
+                .add("protocol", this.protocol)
+                .add("frame_length", this.frame_length)
+                .add("stripped", this.stripped)
+                .add("header", this.header)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("protocol");
+        this.protocol.writeBson(bsonWriter);
+        bsonWriter.writeInt64("frame_length", this.frame_length);
+        bsonWriter.writeInt64("stripped", this.stripped);
+        bsonWriter.writeBinaryData("header", new BsonBinary(this.header.value));
+        bsonWriter.writeEndDocument();
     }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -52,8 +53,16 @@ public class BstDeviceBuffers implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("uc_pc", uc_pc)
-                .add("mc_pc", mc_pc)
+                .add("uc_pc", this.uc_pc)
+                .add("mc_pc", this.mc_pc)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt32("uc_pc", this.uc_pc);
+        bsonWriter.writeInt32("mc_pc", this.mc_pc);
+        bsonWriter.writeEndDocument();
     }
 }

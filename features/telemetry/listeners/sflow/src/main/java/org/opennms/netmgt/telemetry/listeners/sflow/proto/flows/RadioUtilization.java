@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -56,9 +57,18 @@ public class RadioUtilization implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("elapsed_time", elapsed_time)
-                .add("on_channel_time", on_channel_time)
-                .add("on_channel_busy_time", on_channel_busy_time)
+                .add("elapsed_time", this.elapsed_time)
+                .add("on_channel_time", this.on_channel_time)
+                .add("on_channel_busy_time", this.on_channel_busy_time)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("elapsed_time", this.elapsed_time);
+        bsonWriter.writeInt64("on_channel_time", this.on_channel_time);
+        bsonWriter.writeInt64("on_channel_busy_time", this.on_channel_busy_time);
+        bsonWriter.writeEndDocument();
     }
 }

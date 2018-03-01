@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -66,9 +67,26 @@ public class CountersSampleExpanded implements SampleData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("sequence_number", sequence_number)
-                .add("source_id", source_id)
-                .add("counters", counters)
+                .add("sequence_number", this.sequence_number)
+                .add("source_id", this.source_id)
+                .add("counters", this.counters)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("sequence_number", this.sequence_number);
+
+        bsonWriter.writeName("source_id");
+        this.source_id.writeBson(bsonWriter);
+
+        bsonWriter.writeStartArray("counters");
+        for (final CounterRecord counterRecord : this.counters) {
+            counterRecord.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeEndDocument();
     }
 }

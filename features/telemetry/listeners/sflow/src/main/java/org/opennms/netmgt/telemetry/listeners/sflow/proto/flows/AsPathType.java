@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -68,9 +69,36 @@ public class AsPathType {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("type", type)
-                .add("asSet", asSet)
-                .add("asSequence", asSequence)
+                .add("type", this.type)
+                .add("asSet", this.asSet)
+                .add("asSequence", this.asSequence)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("type");
+        this.type.writeBson(bsonWriter);
+
+        switch (this.type) {
+            case AS_SET:
+                bsonWriter.writeStartArray("asSet");
+                for (final Long longValue : this.asSet) {
+                    bsonWriter.writeInt64(longValue);
+                }
+                bsonWriter.writeEndArray();
+                break;
+            case AS_SEQUENCE:
+                bsonWriter.writeStartArray("asSequence");
+                for (final Long longValue : this.asSequence) {
+                    bsonWriter.writeInt64(longValue);
+                }
+                bsonWriter.writeEndArray();
+                break;
+            default:
+                throw new IllegalStateException();
+        }
+
+        bsonWriter.writeEndDocument();
     }
 }

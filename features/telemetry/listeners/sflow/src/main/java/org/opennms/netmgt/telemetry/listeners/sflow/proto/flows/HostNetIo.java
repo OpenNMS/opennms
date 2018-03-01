@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -71,14 +72,28 @@ public class HostNetIo implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("bytes_in", bytes_in)
-                .add("pkts_in", pkts_in)
-                .add("errs_in", errs_in)
-                .add("drops_in", drops_in)
-                .add("bytes_out", bytes_out)
-                .add("packets_out", packets_out)
-                .add("errs_out", errs_out)
-                .add("drops_out", drops_out)
+                .add("bytes_in", this.bytes_in)
+                .add("pkts_in", this.pkts_in)
+                .add("errs_in", this.errs_in)
+                .add("drops_in", this.drops_in)
+                .add("bytes_out", this.bytes_out)
+                .add("packets_out", this.packets_out)
+                .add("errs_out", this.errs_out)
+                .add("drops_out", this.drops_out)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("bytes_in", this.bytes_in.longValue());
+        bsonWriter.writeInt64("pkts_in", this.pkts_in);
+        bsonWriter.writeInt64("errs_in", this.errs_in);
+        bsonWriter.writeInt64("drops_in", this.drops_in);
+        bsonWriter.writeInt64("bytes_out", this.bytes_out.longValue());
+        bsonWriter.writeInt64("packets_out", this.packets_out);
+        bsonWriter.writeInt64("errs_out", this.errs_out);
+        bsonWriter.writeInt64("drops_out", this.drops_out);
+        bsonWriter.writeEndDocument();
     }
 }

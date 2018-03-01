@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -76,16 +77,31 @@ public class Lane {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("index", index)
-                .add("tx_bias_current", tx_bias_current)
-                .add("tx_power", tx_power)
-                .add("tx_power_min", tx_power_min)
-                .add("tx_power_max", tx_power_max)
-                .add("tx_wavelength", tx_wavelength)
-                .add("rx_power", rx_power)
-                .add("rx_power_min", rx_power_min)
-                .add("rx_power_max", rx_power_max)
-                .add("rx_wavelength", rx_wavelength)
+                .add("index", this.index)
+                .add("tx_bias_current", this.tx_bias_current)
+                .add("tx_power", this.tx_power)
+                .add("tx_power_min", this.tx_power_min)
+                .add("tx_power_max", this.tx_power_max)
+                .add("tx_wavelength", this.tx_wavelength)
+                .add("rx_power", this.rx_power)
+                .add("rx_power_min", this.rx_power_min)
+                .add("rx_power_max", this.rx_power_max)
+                .add("rx_wavelength", this.rx_wavelength)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("index", this.index);
+        bsonWriter.writeInt64("tx_bias_current", this.tx_bias_current);
+        bsonWriter.writeInt64("tx_power", this.tx_power);
+        bsonWriter.writeInt64("tx_power_min", this.tx_power_min);
+        bsonWriter.writeInt64("tx_power_max", this.tx_power_max);
+        bsonWriter.writeInt64("tx_wavelength", this.tx_wavelength);
+        bsonWriter.writeInt64("rx_power", this.rx_power);
+        bsonWriter.writeInt64("rx_power_min", this.rx_power_min);
+        bsonWriter.writeInt64("rx_power_max", this.rx_power_max);
+        bsonWriter.writeInt64("rx_wavelength", this.rx_wavelength);
+        bsonWriter.writeEndDocument();
     }
 }

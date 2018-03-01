@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow;
 
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
+import org.bson.json.JsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleDatagram;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleRecord;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultAddressedEnvelope;
@@ -48,7 +48,11 @@ public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
         System.out.println(buffer);
         final SampleDatagram packet = new SampleDatagram(buffer);
-        System.out.println(packet);
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(stringWriter);
+        packet.writeBson(jsonWriter);
+        System.out.println(stringWriter.toString());
+
 
         out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }

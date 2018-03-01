@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -52,8 +53,15 @@ public class InterfaceExpanded {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("format", format)
-                .add("value", value)
+                .add("format", this.format)
+                .add("value", this.value)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("format", this.format);
+        bsonWriter.writeInt64("value", this.value);
+        bsonWriter.writeEndDocument();
     }
 }

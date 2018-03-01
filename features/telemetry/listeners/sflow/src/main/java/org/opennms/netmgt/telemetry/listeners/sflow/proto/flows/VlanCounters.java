@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -65,12 +66,24 @@ public class VlanCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("vlan_id", vlan_id)
-                .add("octets", octets)
-                .add("ucastPkts", ucastPkts)
-                .add("multicastPkts", multicastPkts)
-                .add("broadcastPkts", broadcastPkts)
-                .add("discards", discards)
+                .add("vlan_id", this.vlan_id)
+                .add("octets", this.octets)
+                .add("ucastPkts", this.ucastPkts)
+                .add("multicastPkts", this.multicastPkts)
+                .add("broadcastPkts", this.broadcastPkts)
+                .add("discards", this.discards)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("vlan_id", this.vlan_id);
+        bsonWriter.writeInt64("octets", this.octets.longValue());
+        bsonWriter.writeInt64("ucastPkts", this.ucastPkts);
+        bsonWriter.writeInt64("multicastPkts", this.multicastPkts);
+        bsonWriter.writeInt64("broadcastPkts", this.broadcastPkts);
+        bsonWriter.writeInt64("discards", this.discards);
+        bsonWriter.writeEndDocument();
+    }
+
 }

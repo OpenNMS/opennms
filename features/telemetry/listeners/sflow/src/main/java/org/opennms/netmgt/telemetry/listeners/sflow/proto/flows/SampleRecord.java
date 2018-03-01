@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
@@ -52,5 +53,20 @@ public class SampleRecord extends Record<SampleData> {
 
     public SampleRecord(final ByteBuffer buffer) throws InvalidPacketException {
         super(buffer, sampleDataFormats);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+
+        bsonWriter.writeName("dataFormat");
+        this.dataFormat.writeBson(bsonWriter);
+
+        if (data.value == null) {
+            bsonWriter.writeName("data");
+            this.data.value.writeBson(bsonWriter);
+        }
+
+        bsonWriter.writeEndDocument();
     }
 }

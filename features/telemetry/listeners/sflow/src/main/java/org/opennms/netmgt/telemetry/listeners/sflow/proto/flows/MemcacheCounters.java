@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -140,37 +141,74 @@ public class MemcacheCounters implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("cmd_set", cmd_set)
-                .add("cmd_touch", cmd_touch)
-                .add("cmd_flush", cmd_flush)
-                .add("get_hits", get_hits)
-                .add("get_misses", get_misses)
-                .add("delete_hits", delete_hits)
-                .add("delete_misses", delete_misses)
-                .add("incr_hits", incr_hits)
-                .add("incr_misses", incr_misses)
-                .add("decr_hits", decr_hits)
-                .add("decr_misses", decr_misses)
-                .add("cas_hits", cas_hits)
-                .add("cas_misses", cas_misses)
-                .add("cas_badval", cas_badval)
-                .add("auth_cmds", auth_cmds)
-                .add("auth_errors", auth_errors)
-                .add("threads", threads)
-                .add("conn_yields", conn_yields)
-                .add("listen_disabled_num", listen_disabled_num)
-                .add("curr_connections", curr_connections)
-                .add("rejected_connections", rejected_connections)
-                .add("total_connections", total_connections)
-                .add("connection_structures", connection_structures)
-                .add("evictions", evictions)
-                .add("reclaimed", reclaimed)
-                .add("curr_items", curr_items)
-                .add("total_items", total_items)
-                .add("bytes_read", bytes_read)
-                .add("bytes_written", bytes_written)
-                .add("bytes", bytes)
-                .add("limit_maxbytes", limit_maxbytes)
+                .add("cmd_set", this.cmd_set)
+                .add("cmd_touch", this.cmd_touch)
+                .add("cmd_flush", this.cmd_flush)
+                .add("get_hits", this.get_hits)
+                .add("get_misses", this.get_misses)
+                .add("delete_hits", this.delete_hits)
+                .add("delete_misses", this.delete_misses)
+                .add("incr_hits", this.incr_hits)
+                .add("incr_misses", this.incr_misses)
+                .add("decr_hits", this.decr_hits)
+                .add("decr_misses", this.decr_misses)
+                .add("cas_hits", this.cas_hits)
+                .add("cas_misses", this.cas_misses)
+                .add("cas_badval", this.cas_badval)
+                .add("auth_cmds", this.auth_cmds)
+                .add("auth_errors", this.auth_errors)
+                .add("threads", this.threads)
+                .add("conn_yields", this.conn_yields)
+                .add("listen_disabled_num", this.listen_disabled_num)
+                .add("curr_connections", this.curr_connections)
+                .add("rejected_connections", this.rejected_connections)
+                .add("total_connections", this.total_connections)
+                .add("connection_structures", this.connection_structures)
+                .add("evictions", this.evictions)
+                .add("reclaimed", this.reclaimed)
+                .add("curr_items", this.curr_items)
+                .add("total_items", this.total_items)
+                .add("bytes_read", this.bytes_read)
+                .add("bytes_written", this.bytes_written)
+                .add("bytes", this.bytes)
+                .add("limit_maxbytes", this.limit_maxbytes)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("cmd_set", this.cmd_set);
+        bsonWriter.writeInt64("cmd_touch", this.cmd_touch);
+        bsonWriter.writeInt64("cmd_flush", this.cmd_flush);
+        bsonWriter.writeInt64("get_hits", this.get_hits);
+        bsonWriter.writeInt64("get_misses", this.get_misses);
+        bsonWriter.writeInt64("delete_hits", this.delete_hits);
+        bsonWriter.writeInt64("delete_misses", this.delete_misses);
+        bsonWriter.writeInt64("incr_hits", this.incr_hits);
+        bsonWriter.writeInt64("incr_misses", this.incr_misses);
+        bsonWriter.writeInt64("decr_hits", this.decr_hits);
+        bsonWriter.writeInt64("decr_misses", this.decr_misses);
+        bsonWriter.writeInt64("cas_hits", this.cas_hits);
+        bsonWriter.writeInt64("cas_misses", this.cas_misses);
+        bsonWriter.writeInt64("cas_badval", this.cas_badval);
+        bsonWriter.writeInt64("auth_cmds", this.auth_cmds);
+        bsonWriter.writeInt64("auth_errors", this.auth_errors);
+        bsonWriter.writeInt64("threads", this.threads);
+        bsonWriter.writeInt64("conn_yields", this.conn_yields);
+        bsonWriter.writeInt64("listen_disabled_num", this.listen_disabled_num);
+        bsonWriter.writeInt64("curr_connections", this.curr_connections);
+        bsonWriter.writeInt64("rejected_connections", this.rejected_connections);
+        bsonWriter.writeInt64("total_connections", this.total_connections);
+        bsonWriter.writeInt64("connection_structures", this.connection_structures);
+        bsonWriter.writeInt64("evictions", this.evictions);
+        bsonWriter.writeInt64("reclaimed", this.reclaimed);
+        bsonWriter.writeInt64("curr_items", this.curr_items);
+        bsonWriter.writeInt64("total_items", this.total_items);
+        bsonWriter.writeInt64("bytes_read", this.bytes_read.longValue());
+        bsonWriter.writeInt64("bytes_written", this.bytes_written.longValue());
+        bsonWriter.writeInt64("bytes", this.bytes.longValue());
+        bsonWriter.writeInt64("limit_maxbytes", this.limit_maxbytes.longValue());
+        bsonWriter.writeEndDocument();
     }
 }

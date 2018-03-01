@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -71,14 +72,28 @@ public class VirtNetIo implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("rx_bytes", rx_bytes)
-                .add("rx_packets", rx_packets)
-                .add("rx_errs", rx_errs)
-                .add("rx_drop", rx_drop)
-                .add("tx_bytes", tx_bytes)
-                .add("tx_packets", tx_packets)
-                .add("tx_errs", tx_errs)
-                .add("tx_drop", tx_drop)
+                .add("rx_bytes", this.rx_bytes)
+                .add("rx_packets", this.rx_packets)
+                .add("rx_errs", this.rx_errs)
+                .add("rx_drop", this.rx_drop)
+                .add("tx_bytes", this.tx_bytes)
+                .add("tx_packets", this.tx_packets)
+                .add("tx_errs", this.tx_errs)
+                .add("tx_drop", this.tx_drop)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("rx_bytes", this.rx_bytes.longValue());
+        bsonWriter.writeInt64("rx_packets", this.rx_packets);
+        bsonWriter.writeInt64("rx_errs", this.rx_errs);
+        bsonWriter.writeInt64("rx_drop", this.rx_drop);
+        bsonWriter.writeInt64("tx_bytes", this.tx_bytes.longValue());
+        bsonWriter.writeInt64("tx_packets", this.tx_packets);
+        bsonWriter.writeInt64("tx_errs", this.tx_errs);
+        bsonWriter.writeInt64("tx_drop", this.tx_drop);
+        bsonWriter.writeEndDocument();
+    }
+
 }

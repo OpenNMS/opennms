@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -57,7 +58,7 @@ public enum Ieee80211Version {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("value", value)
+                .add("value", this.value)
                 .toString();
     }
 
@@ -75,5 +76,9 @@ public enum Ieee80211Version {
             default:
                 throw new InvalidPacketException(buffer, "Unknown value: {}", value);
         }
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt32(this.value);
     }
 }

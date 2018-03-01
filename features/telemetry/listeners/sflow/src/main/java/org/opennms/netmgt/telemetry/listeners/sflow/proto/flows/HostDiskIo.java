@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -74,15 +75,31 @@ public class HostDiskIo implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("disk_total", disk_total)
-                .add("disk_free", disk_free)
-                .add("part_max_used", part_max_used)
-                .add("reads", reads)
-                .add("bytes_read", bytes_read)
-                .add("read_time", read_time)
-                .add("writes", writes)
-                .add("bytes_written", bytes_written)
-                .add("write_time", write_time)
+                .add("disk_total", this.disk_total)
+                .add("disk_free", this.disk_free)
+                .add("part_max_used", this.part_max_used)
+                .add("reads", this.reads)
+                .add("bytes_read", this.bytes_read)
+                .add("read_time", this.read_time)
+                .add("writes", this.writes)
+                .add("bytes_written", this.bytes_written)
+                .add("write_time", this.write_time)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("disk_total", this.disk_total.longValue());
+        bsonWriter.writeInt64("disk_free", this.disk_free.longValue());
+        bsonWriter.writeName("part_max_used");
+        this.part_max_used.writeBson(bsonWriter);
+        bsonWriter.writeInt64("reads", this.reads);
+        bsonWriter.writeInt64("bytes_read", this.bytes_read.longValue());
+        bsonWriter.writeInt64("read_time", this.read_time);
+        bsonWriter.writeInt64("writes", this.writes);
+        bsonWriter.writeInt64("bytes_written", this.bytes_written.longValue());
+        bsonWriter.writeInt64("write_time", this.write_time);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
+import java.net.Inet4Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Throwables;
 
 // typedef opaque ip_v4[4];
 
@@ -48,7 +53,15 @@ public class IpV4 {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ip_v4", ip_v4)
+                .add("ip_v4", this.ip_v4)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        try {
+            bsonWriter.writeString(Inet4Address.getByAddress(this.ip_v4.value).getHostAddress());
+        } catch (UnknownHostException e) {
+            Throwables.propagate(e);
+        }
     }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -83,31 +84,6 @@ public class IfCounters implements CounterData {
     public final long ifOutErrors;
     public final long ifPromiscuousMode;
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("ifIndex", ifIndex)
-                .add("ifType", ifType)
-                .add("ifSpeed", ifSpeed)
-                .add("ifDirection", ifDirection)
-                .add("ifStatus", ifStatus)
-                .add("ifInOctets", ifInOctets)
-                .add("ifInUcastPkts", ifInUcastPkts)
-                .add("ifInMulticastPkts", ifInMulticastPkts)
-                .add("ifInBroadcastPkts", ifInBroadcastPkts)
-                .add("ifInDiscards", ifInDiscards)
-                .add("ifInErrors", ifInErrors)
-                .add("ifInUnknownProtos", ifInUnknownProtos)
-                .add("ifOutOctets", ifOutOctets)
-                .add("ifOutUcastPkts", ifOutUcastPkts)
-                .add("ifOutMulticastPkts", ifOutMulticastPkts)
-                .add("ifOutBroadcastPkts", ifOutBroadcastPkts)
-                .add("ifOutDiscards", ifOutDiscards)
-                .add("ifOutErrors", ifOutErrors)
-                .add("ifPromiscuousMode", ifPromiscuousMode)
-                .toString();
-    }
-
     public IfCounters(final ByteBuffer buffer) throws InvalidPacketException {
         this.ifIndex = BufferUtils.uint32(buffer);
         this.ifType = BufferUtils.uint32(buffer);
@@ -128,5 +104,55 @@ public class IfCounters implements CounterData {
         this.ifOutDiscards = BufferUtils.uint32(buffer);
         this.ifOutErrors = BufferUtils.uint32(buffer);
         this.ifPromiscuousMode = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("ifIndex", this.ifIndex)
+                .add("ifType", this.ifType)
+                .add("ifSpeed", this.ifSpeed)
+                .add("ifDirection", this.ifDirection)
+                .add("ifStatus", this.ifStatus)
+                .add("ifInOctets", this.ifInOctets)
+                .add("ifInUcastPkts", this.ifInUcastPkts)
+                .add("ifInMulticastPkts", this.ifInMulticastPkts)
+                .add("ifInBroadcastPkts", this.ifInBroadcastPkts)
+                .add("ifInDiscards", this.ifInDiscards)
+                .add("ifInErrors", this.ifInErrors)
+                .add("ifInUnknownProtos", this.ifInUnknownProtos)
+                .add("ifOutOctets", this.ifOutOctets)
+                .add("ifOutUcastPkts", this.ifOutUcastPkts)
+                .add("ifOutMulticastPkts", this.ifOutMulticastPkts)
+                .add("ifOutBroadcastPkts", this.ifOutBroadcastPkts)
+                .add("ifOutDiscards", this.ifOutDiscards)
+                .add("ifOutErrors", this.ifOutErrors)
+                .add("ifPromiscuousMode", this.ifPromiscuousMode)
+                .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("ifIndex", this.ifIndex);
+        bsonWriter.writeInt64("ifType", this.ifType);
+        bsonWriter.writeInt64("ifSpeed", this.ifSpeed.longValue());
+        bsonWriter.writeInt64("ifDirection", this.ifDirection);
+        bsonWriter.writeInt64("ifStatus", this.ifStatus);
+        bsonWriter.writeInt64("ifInOctets", this.ifInOctets.longValue());
+        bsonWriter.writeInt64("ifInUcastPkts", this.ifInUcastPkts);
+        bsonWriter.writeInt64("ifInMulticastPkts", this.ifInMulticastPkts);
+        bsonWriter.writeInt64("ifInBroadcastPkts", this.ifInBroadcastPkts);
+        bsonWriter.writeInt64("ifInDiscards", this.ifInDiscards);
+        bsonWriter.writeInt64("ifInErrors", this.ifInErrors);
+        bsonWriter.writeInt64("ifInUnknownProtos", this.ifInUnknownProtos);
+        bsonWriter.writeInt64("ifOutOctets", this.ifOutOctets.longValue());
+        bsonWriter.writeInt64("ifOutUcastPkts", this.ifOutUcastPkts);
+        bsonWriter.writeInt64("ifOutMulticastPkts", this.ifOutMulticastPkts);
+        bsonWriter.writeInt64("ifOutBroadcastPkts", this.ifOutBroadcastPkts);
+        bsonWriter.writeInt64("ifOutDiscards", this.ifOutDiscards);
+        bsonWriter.writeInt64("ifOutErrors", this.ifOutErrors);
+        bsonWriter.writeInt64("ifPromiscuousMode", this.ifPromiscuousMode);
+        bsonWriter.writeEndDocument();
     }
 }

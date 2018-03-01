@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -60,10 +61,22 @@ public class SampledEthernet implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("length", length)
-                .add("src_mac", src_mac)
-                .add("dst_mac", dst_mac)
-                .add("type", type)
+                .add("length", this.length)
+                .add("src_mac", this.src_mac)
+                .add("dst_mac", this.dst_mac)
+                .add("type", this.type)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("length", this.length);
+        bsonWriter.writeName("src_mac");
+        this.src_mac.writeBson(bsonWriter);
+        bsonWriter.writeName("dst_mac");
+        this.dst_mac.writeBson(bsonWriter);
+        bsonWriter.writeInt64("type", this.type);
+        bsonWriter.writeEndDocument();
     }
 }

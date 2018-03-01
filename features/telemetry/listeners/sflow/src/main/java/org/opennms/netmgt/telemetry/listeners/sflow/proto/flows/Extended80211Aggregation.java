@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
@@ -50,7 +51,18 @@ public class Extended80211Aggregation implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("pdus", pdus)
+                .add("pdus", this.pdus)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartArray();
+
+        for (final Pdu pdu : this.pdus) {
+            pdu.writeBson(bsonWriter);
+        }
+
+        bsonWriter.writeEndArray();
     }
 }

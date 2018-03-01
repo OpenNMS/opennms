@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -47,7 +48,12 @@ public class CipherSuite {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("cipher_suite", cipher_suite)
+                .add("cipher_suite", this.cipher_suite)
                 .toString();
     }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeInt64(this.cipher_suite);
+    }
+
 }

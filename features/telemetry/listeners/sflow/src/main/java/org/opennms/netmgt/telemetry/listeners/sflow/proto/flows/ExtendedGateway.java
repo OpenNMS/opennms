@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -71,13 +72,38 @@ public class ExtendedGateway implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("nexthop", nexthop)
-                .add("as", as)
-                .add("src_as", src_as)
-                .add("src_peer_as", src_peer_as)
-                .add("dst_as_path", dst_as_path)
-                .add("communities", communities)
-                .add("localpref", localpref)
+                .add("nexthop", this.nexthop)
+                .add("as", this.as)
+                .add("src_as", this.src_as)
+                .add("src_peer_as", this.src_peer_as)
+                .add("dst_as_path", this.dst_as_path)
+                .add("communities", this.communities)
+                .add("localpref", this.localpref)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("nexthop");
+        this.nexthop.writeBson(bsonWriter);
+        bsonWriter.writeInt64("as", this.as);
+        bsonWriter.writeInt64("src_as", this.src_as);
+        bsonWriter.writeInt64("src_peer_as", this.src_peer_as);
+
+        bsonWriter.writeStartArray("dst_as_path");
+        for (final AsPathType asPathType : this.dst_as_path) {
+            asPathType.writeBson(bsonWriter);
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeStartArray("communities");
+        for (final UnsignedInteger unsignedInteger : this.communities) {
+            bsonWriter.writeInt64(unsignedInteger.longValue());
+        }
+        bsonWriter.writeEndArray();
+
+        bsonWriter.writeInt64("localpref", this.localpref);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -82,18 +83,37 @@ public class AppOperations implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("application", application)
-                .add("success", success)
-                .add("other", other)
-                .add("timeout", timeout)
-                .add("internal_error", internal_error)
-                .add("bad_request", bad_request)
-                .add("forbidden", forbidden)
-                .add("too_large", too_large)
-                .add("not_implemented", not_implemented)
-                .add("not_found", not_found)
-                .add("unavailable", unavailable)
-                .add("unauthorized", unauthorized)
+                .add("application", this.application)
+                .add("success", this.success)
+                .add("other", this.other)
+                .add("timeout", this.timeout)
+                .add("internal_error", this.internal_error)
+                .add("bad_request", this.bad_request)
+                .add("forbidden", this.forbidden)
+                .add("too_large", this.too_large)
+                .add("not_implemented", this.not_implemented)
+                .add("not_found", this.not_found)
+                .add("unavailable", this.unavailable)
+                .add("unauthorized", this.unauthorized)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("application");
+        this.application.writeBson(bsonWriter);
+        bsonWriter.writeInt64("success", this.success);
+        bsonWriter.writeInt64("other", this.other);
+        bsonWriter.writeInt64("timeout", this.timeout);
+        bsonWriter.writeInt64("internal_error", this.internal_error);
+        bsonWriter.writeInt64("bad_request", this.bad_request);
+        bsonWriter.writeInt64("forbidden", this.forbidden);
+        bsonWriter.writeInt64("too_large", this.too_large);
+        bsonWriter.writeInt64("not_implemented", this.not_implemented);
+        bsonWriter.writeInt64("not_found", this.not_found);
+        bsonWriter.writeInt64("unavailable", this.unavailable);
+        bsonWriter.writeInt64("unauthorized", this.unauthorized);
+        bsonWriter.writeEndDocument();
     }
 }

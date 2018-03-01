@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -61,7 +61,7 @@ public class MemcacheOperation implements CounterData {
     public MemcacheOperation(final ByteBuffer buffer) throws InvalidPacketException {
         this.protocol = MemcacheProtocol.from(buffer);
         this.cmd = MemcacheCmd.from(buffer);
-        this.key = new AsciiString(buffer, Optional.empty());
+        this.key = new AsciiString(buffer);
         this.nkeys = BufferUtils.uint32(buffer);
         this.value_bytes = BufferUtils.uint32(buffer);
         this.uS = BufferUtils.uint32(buffer);
@@ -71,13 +71,29 @@ public class MemcacheOperation implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("protocol", protocol)
-                .add("cmd", cmd)
-                .add("key", key)
-                .add("nkeys", nkeys)
-                .add("value_bytes", value_bytes)
-                .add("uS", uS)
-                .add("status", status)
+                .add("protocol", this.protocol)
+                .add("cmd", this.cmd)
+                .add("key", this.key)
+                .add("nkeys", this.nkeys)
+                .add("value_bytes", this.value_bytes)
+                .add("uS", this.uS)
+                .add("status", this.status)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("protocol");
+        this.protocol.writeBson(bsonWriter);
+        bsonWriter.writeName("cmd");
+        this.cmd.writeBson(bsonWriter);
+        bsonWriter.writeString("key", this.key.value);
+        bsonWriter.writeInt64("nkeys", this.nkeys);
+        bsonWriter.writeInt64("value_bytes", this.value_bytes);
+        bsonWriter.writeInt64("uS", this.uS);
+        bsonWriter.writeName("status");
+        this.status.writeBson(bsonWriter);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -28,13 +28,18 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
+import java.net.Inet4Address;
+import java.net.Inet6Address;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Throwables;
 
 // typedef opaque ip_v6[16];
 
@@ -44,11 +49,18 @@ public class IpV6 {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ip_v6", ip_v6)
+                .add("ip_v6", this.ip_v6)
                 .toString();
     }
 
     public IpV6(final ByteBuffer buffer) throws InvalidPacketException {
         this.ip_v6 = new Opaque(buffer, Optional.of(16), Opaque::parseBytes);
     }
-}
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        try {
+            bsonWriter.writeString(Inet6Address.getByAddress(this.ip_v6.value).getHostAddress());
+        } catch (UnknownHostException e) {
+            Throwables.propagate(e);
+        }
+    }}

@@ -69,7 +69,7 @@ public enum AddressType {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("value", value)
+                .add("value", this.value)
                 .toString();
     }
 }

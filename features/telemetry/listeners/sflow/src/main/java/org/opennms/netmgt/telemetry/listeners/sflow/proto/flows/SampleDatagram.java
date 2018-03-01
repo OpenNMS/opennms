@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -48,7 +49,12 @@ public class SampleDatagram {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("version", version)
+                .add("version", this.version)
                 .toString();
+    }
+
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        this.version.writeBson(bsonWriter);
     }
 }

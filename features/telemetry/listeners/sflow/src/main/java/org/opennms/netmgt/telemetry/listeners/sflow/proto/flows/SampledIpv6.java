@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -72,14 +73,30 @@ public class SampledIpv6 implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("length", length)
-                .add("protocol", protocol)
-                .add("src_ip", src_ip)
-                .add("dst_ip", dst_ip)
-                .add("src_port", src_port)
-                .add("dst_port", dst_port)
-                .add("tcp_flags", tcp_flags)
-                .add("priority", priority)
+                .add("length", this.length)
+                .add("protocol", this.protocol)
+                .add("src_ip", this.src_ip)
+                .add("dst_ip", this.dst_ip)
+                .add("src_port", this.src_port)
+                .add("dst_port", this.dst_port)
+                .add("tcp_flags", this.tcp_flags)
+                .add("priority", this.priority)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("length", this.length);
+        bsonWriter.writeInt64("protocol", this.protocol);
+        bsonWriter.writeName("src_ip");
+        this.src_ip.writeBson(bsonWriter);
+        bsonWriter.writeName("dst_ip");
+        this.dst_ip.writeBson(bsonWriter);
+        bsonWriter.writeInt64("src_port", this.src_port);
+        bsonWriter.writeInt64("dst_port", this.dst_port);
+        bsonWriter.writeInt64("tcp_flags", this.tcp_flags);
+        bsonWriter.writeInt64("priority", this.priority);
+        bsonWriter.writeEndDocument();
     }
 }

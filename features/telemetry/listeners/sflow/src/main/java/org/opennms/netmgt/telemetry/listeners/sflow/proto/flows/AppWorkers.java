@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -63,11 +64,22 @@ public class AppWorkers implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("workers_active", workers_active)
-                .add("workers_idle", workers_idle)
-                .add("workers_max", workers_max)
-                .add("req_delayed", req_delayed)
-                .add("req_dropped", req_dropped)
+                .add("workers_active", this.workers_active)
+                .add("workers_idle", this.workers_idle)
+                .add("workers_max", this.workers_max)
+                .add("req_delayed", this.req_delayed)
+                .add("req_dropped", this.req_dropped)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("workers_active", this.workers_active);
+        bsonWriter.writeInt64("workers_idle", this.workers_idle);
+        bsonWriter.writeInt64("workers_max", this.workers_max);
+        bsonWriter.writeInt64("req_delayed", this.req_delayed);
+        bsonWriter.writeInt64("req_dropped", this.req_dropped);
+        bsonWriter.writeEndDocument();
     }
 }

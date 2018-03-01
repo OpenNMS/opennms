@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
 
@@ -51,7 +52,17 @@ public class Pdu {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("flow_records", flow_records)
+                .add("flow_records", this.flow_records)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartArray();
+
+        for (final FlowRecord flowRecord : this.flow_records) {
+            flowRecord.writeBson(bsonWriter);
+        }
+
+        bsonWriter.writeEndArray();
     }
 }

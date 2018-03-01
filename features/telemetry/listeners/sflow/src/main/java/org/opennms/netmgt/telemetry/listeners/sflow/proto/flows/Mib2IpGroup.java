@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -103,25 +104,51 @@ public class Mib2IpGroup implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ipForwarding", ipForwarding)
-                .add("ipDefaultTTL", ipDefaultTTL)
-                .add("ipInReceives", ipInReceives)
-                .add("ipInHdrErrors", ipInHdrErrors)
-                .add("ipInAddrErrors", ipInAddrErrors)
-                .add("ipForwDatagrams", ipForwDatagrams)
-                .add("ipInUnknownProtos", ipInUnknownProtos)
-                .add("ipInDiscards", ipInDiscards)
-                .add("ipInDelivers", ipInDelivers)
-                .add("ipOutRequests", ipOutRequests)
-                .add("ipOutDiscards", ipOutDiscards)
-                .add("ipOutNoRoutes", ipOutNoRoutes)
-                .add("ipReasmTimeout", ipReasmTimeout)
-                .add("ipReasmReqds", ipReasmReqds)
-                .add("ipReasmOKs", ipReasmOKs)
-                .add("ipReasmFails", ipReasmFails)
-                .add("ipFragOKs", ipFragOKs)
-                .add("ipFragFails", ipFragFails)
-                .add("ipFragCreates", ipFragCreates)
+                .add("ipForwarding", this.ipForwarding)
+                .add("ipDefaultTTL", this.ipDefaultTTL)
+                .add("ipInReceives", this.ipInReceives)
+                .add("ipInHdrErrors", this.ipInHdrErrors)
+                .add("ipInAddrErrors", this.ipInAddrErrors)
+                .add("ipForwDatagrams", this.ipForwDatagrams)
+                .add("ipInUnknownProtos", this.ipInUnknownProtos)
+                .add("ipInDiscards", this.ipInDiscards)
+                .add("ipInDelivers", this.ipInDelivers)
+                .add("ipOutRequests", this.ipOutRequests)
+                .add("ipOutDiscards", this.ipOutDiscards)
+                .add("ipOutNoRoutes", this.ipOutNoRoutes)
+                .add("ipReasmTimeout", this.ipReasmTimeout)
+                .add("ipReasmReqds", this.ipReasmReqds)
+                .add("ipReasmOKs", this.ipReasmOKs)
+                .add("ipReasmFails", this.ipReasmFails)
+                .add("ipFragOKs", this.ipFragOKs)
+                .add("ipFragFails", this.ipFragFails)
+                .add("ipFragCreates", this.ipFragCreates)
                 .toString();
     }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("ipForwarding", this.ipForwarding);
+        bsonWriter.writeInt64("ipDefaultTTL", this.ipDefaultTTL);
+        bsonWriter.writeInt64("ipInReceives", this.ipInReceives);
+        bsonWriter.writeInt64("ipInHdrErrors", this.ipInHdrErrors);
+        bsonWriter.writeInt64("ipInAddrErrors", this.ipInAddrErrors);
+        bsonWriter.writeInt64("ipForwDatagrams", this.ipForwDatagrams);
+        bsonWriter.writeInt64("ipInUnknownProtos", this.ipInUnknownProtos);
+        bsonWriter.writeInt64("ipInDiscards", this.ipInDiscards);
+        bsonWriter.writeInt64("ipInDelivers", this.ipInDelivers);
+        bsonWriter.writeInt64("ipOutRequests", this.ipOutRequests);
+        bsonWriter.writeInt64("ipOutDiscards", this.ipOutDiscards);
+        bsonWriter.writeInt64("ipOutNoRoutes", this.ipOutNoRoutes);
+        bsonWriter.writeInt64("ipReasmTimeout", this.ipReasmTimeout);
+        bsonWriter.writeInt64("ipReasmReqds", this.ipReasmReqds);
+        bsonWriter.writeInt64("ipReasmOKs", this.ipReasmOKs);
+        bsonWriter.writeInt64("ipReasmFails", this.ipReasmFails);
+        bsonWriter.writeInt64("ipFragOKs", this.ipFragOKs);
+        bsonWriter.writeInt64("ipFragFails", this.ipFragFails);
+        bsonWriter.writeInt64("ipFragCreates", this.ipFragCreates);
+        bsonWriter.writeEndDocument();
+    }
+
 }

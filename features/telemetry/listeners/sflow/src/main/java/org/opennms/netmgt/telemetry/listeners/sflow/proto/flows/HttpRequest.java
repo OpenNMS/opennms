@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -74,13 +74,13 @@ public class HttpRequest implements FlowData {
     public HttpRequest(final ByteBuffer buffer) throws InvalidPacketException {
         this.method = HttpMethod.from(buffer);
         this.protocol = new Version(buffer);
-        this.uri = new AsciiString(buffer, Optional.empty());
-        this.host = new AsciiString(buffer, Optional.empty());
-        this.referer = new AsciiString(buffer, Optional.empty());
-        this.useragent = new AsciiString(buffer, Optional.empty());
-        this.xff = new AsciiString(buffer, Optional.empty());
-        this.authuser = new AsciiString(buffer, Optional.empty());
-        this.mime_type = new AsciiString(buffer, Optional.empty());
+        this.uri = new AsciiString(buffer);
+        this.host = new AsciiString(buffer);
+        this.referer = new AsciiString(buffer);
+        this.useragent = new AsciiString(buffer);
+        this.xff = new AsciiString(buffer);
+        this.authuser = new AsciiString(buffer);
+        this.mime_type = new AsciiString(buffer);
         this.req_bytes = BufferUtils.uint64(buffer);
         this.resp_bytes = BufferUtils.uint64(buffer);
         this.uS = BufferUtils.uint32(buffer);
@@ -90,19 +90,40 @@ public class HttpRequest implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("method", method)
-                .add("protocol", protocol)
-                .add("uri", uri)
-                .add("host", host)
-                .add("referer", referer)
-                .add("useragent", useragent)
-                .add("xff", xff)
-                .add("authuser", authuser)
-                .add("mime_type", mime_type)
-                .add("req_bytes", req_bytes)
-                .add("resp_bytes", resp_bytes)
-                .add("uS", uS)
-                .add("status", status)
+                .add("method", this.method)
+                .add("protocol", this.protocol)
+                .add("uri", this.uri)
+                .add("host", this.host)
+                .add("referer", this.referer)
+                .add("useragent", this.useragent)
+                .add("xff", this.xff)
+                .add("authuser", this.authuser)
+                .add("mime_type", this.mime_type)
+                .add("req_bytes", this.req_bytes)
+                .add("resp_bytes", this.resp_bytes)
+                .add("uS", this.uS)
+                .add("status", this.status)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeName("method");
+        this.method.writeBson(bsonWriter);
+        bsonWriter.writeName("protocol");
+        this.protocol.writeBson(bsonWriter);
+        bsonWriter.writeString("uri", this.uri.value);
+        bsonWriter.writeString("host", this.host.value);
+        bsonWriter.writeString("referer", this.referer.value);
+        bsonWriter.writeString("useragent", this.useragent.value);
+        bsonWriter.writeString("xff", this.xff.value);
+        bsonWriter.writeString("authuser", this.authuser.value);
+        bsonWriter.writeString("mime_type", this.mime_type.value);
+        bsonWriter.writeInt64("req_bytes", this.req_bytes.longValue());
+        bsonWriter.writeInt64("resp_bytes", this.resp_bytes.longValue());
+        bsonWriter.writeInt64("uS", this.uS);
+        bsonWriter.writeInt32("status", this.status);
+        bsonWriter.writeEndDocument();
     }
 }

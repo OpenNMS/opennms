@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -53,8 +54,16 @@ public class OfPort implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("datapath_id", datapath_id)
-                .add("port_no", port_no)
+                .add("datapath_id", this.datapath_id)
+                .add("port_no", this.port_no)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("datapath_id", this.datapath_id.longValue());
+        bsonWriter.writeInt64("port_no", this.port_no);
+        bsonWriter.writeEndDocument();
     }
 }

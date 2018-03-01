@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Array;
@@ -49,7 +50,15 @@ public class LabelStack {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("label_stack", label_stack)
+                .add("label_stack", this.label_stack)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartArray();
+        for (final int i : this.label_stack) {
+            bsonWriter.writeInt32(i);
+        }
+        bsonWriter.writeEndArray();
     }
 }

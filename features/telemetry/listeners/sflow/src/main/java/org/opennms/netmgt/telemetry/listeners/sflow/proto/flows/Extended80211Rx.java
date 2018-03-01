@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -63,7 +63,7 @@ public class Extended80211Rx implements FlowData {
     public final DurationUs packet_duration;
 
     public Extended80211Rx(final ByteBuffer buffer) throws InvalidPacketException {
-        this.ssid = new AsciiString(buffer, Optional.empty());
+        this.ssid = new AsciiString(buffer);
         this.bssid = new Mac(buffer);
         this.version = Ieee80211Version.from(buffer);
         this.channel = BufferUtils.uint32(buffer);
@@ -76,14 +76,34 @@ public class Extended80211Rx implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("ssid", ssid)
-                .add("bssid", bssid)
-                .add("version", version)
-                .add("channel", channel)
-                .add("speed", speed)
-                .add("rsni", rsni)
-                .add("rcpi", rcpi)
-                .add("packet_duration", packet_duration)
+                .add("ssid", this.ssid)
+                .add("bssid", this.bssid)
+                .add("version", this.version)
+                .add("channel", this.channel)
+                .add("speed", this.speed)
+                .add("rsni", this.rsni)
+                .add("rcpi", this.rcpi)
+                .add("packet_duration", this.packet_duration)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("ssid", this.ssid.value);
+
+        bsonWriter.writeName("bssid");
+        this.bssid.writeBson(bsonWriter);
+        bsonWriter.writeName("version");
+        this.version.writeBson(bsonWriter);
+
+        bsonWriter.writeInt64("channel", this.channel);
+        bsonWriter.writeInt64("speed", this.speed.longValue());
+        bsonWriter.writeInt64("rsni", this.rsni);
+        bsonWriter.writeInt64("rcpi", this.rcpi);
+
+        bsonWriter.writeName("packet_duration");
+        this.packet_duration.writeBson(bsonWriter);
+        bsonWriter.writeEndDocument();
     }
 }

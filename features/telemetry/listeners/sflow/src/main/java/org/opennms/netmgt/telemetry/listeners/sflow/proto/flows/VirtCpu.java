@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -55,9 +56,17 @@ public class VirtCpu implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("state", state)
-                .add("cpuTime", cpuTime)
-                .add("nrVirtCpu", nrVirtCpu)
+                .add("state", this.state)
+                .add("cpuTime", this.cpuTime)
+                .add("nrVirtCpu", this.nrVirtCpu)
                 .toString();
+    }
+
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("state", this.state);
+        bsonWriter.writeInt64("cpuTime", this.cpuTime);
+        bsonWriter.writeInt64("nrVirtCpu", this.nrVirtCpu);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -58,10 +59,20 @@ public class ExtendedSwitch implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("src_vlan", src_vlan)
-                .add("src_priority", src_priority)
-                .add("dst_vlan", dst_vlan)
-                .add("dst_priority", dst_priority)
+                .add("src_vlan", this.src_vlan)
+                .add("src_priority", this.src_priority)
+                .add("dst_vlan", this.dst_vlan)
+                .add("dst_priority", this.dst_priority)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("src_vlan", this.src_vlan);
+        bsonWriter.writeInt64("src_priority", this.src_priority);
+        bsonWriter.writeInt64("dst_vlan", this.dst_vlan);
+        bsonWriter.writeInt64("dst_priority", this.dst_priority);
+        bsonWriter.writeEndDocument();
     }
 }

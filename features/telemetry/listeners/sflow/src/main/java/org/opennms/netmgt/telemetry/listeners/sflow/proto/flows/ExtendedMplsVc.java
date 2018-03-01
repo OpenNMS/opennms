@@ -29,8 +29,8 @@
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
-import java.util.Optional;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.AsciiString;
@@ -49,7 +49,7 @@ public class ExtendedMplsVc implements FlowData {
     public final long vc_label_cos;
 
     public ExtendedMplsVc(final ByteBuffer buffer) throws InvalidPacketException {
-        this.vc_instance_name = new AsciiString(buffer, Optional.empty());
+        this.vc_instance_name = new AsciiString(buffer);
         this.vll_vc_id = BufferUtils.uint32(buffer);
         this.vc_label_cos = BufferUtils.uint32(buffer);
     }
@@ -57,9 +57,18 @@ public class ExtendedMplsVc implements FlowData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("vc_instance_name", vc_instance_name)
-                .add("vll_vc_id", vll_vc_id)
-                .add("vc_label_cos", vc_label_cos)
+                .add("vc_instance_name", this.vc_instance_name)
+                .add("vll_vc_id", this.vll_vc_id)
+                .add("vc_label_cos", this.vc_label_cos)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("vc_instance_name", this.vc_instance_name.value);
+        bsonWriter.writeInt64("vll_vc_id", this.vll_vc_id);
+        bsonWriter.writeInt64("vc_label_cos", this.vc_label_cos);
+        bsonWriter.writeEndDocument();
     }
 }

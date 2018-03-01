@@ -31,10 +31,10 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
-import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 
 // struct counter_record {
@@ -87,5 +87,20 @@ public class CounterRecord extends Record<CounterData> {
 
     public CounterRecord(final ByteBuffer buffer) throws InvalidPacketException {
         super(buffer, counterDataFormats);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+
+        bsonWriter.writeName("dataFormat");
+        this.dataFormat.writeBson(bsonWriter);
+
+        if (data.value == null) {
+            bsonWriter.writeName("data");
+            this.data.value.writeBson(bsonWriter);
+        }
+
+        bsonWriter.writeEndDocument();
     }
 }

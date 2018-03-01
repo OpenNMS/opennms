@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -77,23 +78,23 @@ public class HostCpu implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("load_one", load_one)
-                .add("load_five", load_five)
-                .add("load_fifteen", load_fifteen)
-                .add("proc_run", proc_run)
-                .add("proc_total", proc_total)
-                .add("cpu_num", cpu_num)
-                .add("cpu_speed", cpu_speed)
-                .add("uptime", uptime)
-                .add("cpu_user", cpu_user)
-                .add("cpu_nice", cpu_nice)
-                .add("cpu_system", cpu_system)
-                .add("cpu_idle", cpu_idle)
-                .add("cpu_wio", cpu_wio)
-                .add("cpu_intr", cpu_intr)
-                .add("cpu_sintr", cpu_sintr)
-                .add("interrupts", interrupts)
-                .add("contexts", contexts)
+                .add("load_one", this.load_one)
+                .add("load_five", this.load_five)
+                .add("load_fifteen", this.load_fifteen)
+                .add("proc_run", this.proc_run)
+                .add("proc_total", this.proc_total)
+                .add("cpu_num", this.cpu_num)
+                .add("cpu_speed", this.cpu_speed)
+                .add("uptime", this.uptime)
+                .add("cpu_user", this.cpu_user)
+                .add("cpu_nice", this.cpu_nice)
+                .add("cpu_system", this.cpu_system)
+                .add("cpu_idle", this.cpu_idle)
+                .add("cpu_wio", this.cpu_wio)
+                .add("cpu_intr", this.cpu_intr)
+                .add("cpu_sintr", this.cpu_sintr)
+                .add("interrupts", this.interrupts)
+                .add("contexts", this.contexts)
                 .toString();
     }
 
@@ -115,5 +116,28 @@ public class HostCpu implements CounterData {
         this.cpu_sintr = BufferUtils.uint32(buffer);
         this.interrupts = BufferUtils.uint32(buffer);
         this.contexts = BufferUtils.uint32(buffer);
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeDouble("load_one", this.load_one);
+        bsonWriter.writeDouble("load_five", this.load_five);
+        bsonWriter.writeDouble("load_fifteen", this.load_fifteen);
+        bsonWriter.writeInt64("proc_run", this.proc_run);
+        bsonWriter.writeInt64("proc_total", this.proc_total);
+        bsonWriter.writeInt64("cpu_num", this.cpu_num);
+        bsonWriter.writeInt64("cpu_speed", this.cpu_speed);
+        bsonWriter.writeInt64("uptime", this.uptime);
+        bsonWriter.writeInt64("cpu_user", this.cpu_user);
+        bsonWriter.writeInt64("cpu_nice", this.cpu_nice);
+        bsonWriter.writeInt64("cpu_system", this.cpu_system);
+        bsonWriter.writeInt64("cpu_idle", this.cpu_idle);
+        bsonWriter.writeInt64("cpu_wio", this.cpu_wio);
+        bsonWriter.writeInt64("cpu_intr", this.cpu_intr);
+        bsonWriter.writeInt64("cpu_sintr", this.cpu_sintr);
+        bsonWriter.writeInt64("interrupts", this.interrupts);
+        bsonWriter.writeInt64("contexts", this.contexts);
+        bsonWriter.writeEndDocument();
     }
 }

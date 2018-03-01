@@ -30,6 +30,7 @@ package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
 import java.nio.ByteBuffer;
 
+import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
@@ -80,17 +81,34 @@ public class HostMemory implements CounterData {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("mem_total", mem_total)
-                .add("mem_free", mem_free)
-                .add("mem_shared", mem_shared)
-                .add("mem_buffers", mem_buffers)
-                .add("mem_cached", mem_cached)
-                .add("swap_total", swap_total)
-                .add("swap_free", swap_free)
-                .add("page_in", page_in)
-                .add("page_out", page_out)
-                .add("swap_in", swap_in)
-                .add("swap_out", swap_out)
+                .add("mem_total", this.mem_total)
+                .add("mem_free", this.mem_free)
+                .add("mem_shared", this.mem_shared)
+                .add("mem_buffers", this.mem_buffers)
+                .add("mem_cached", this.mem_cached)
+                .add("swap_total", this.swap_total)
+                .add("swap_free", this.swap_free)
+                .add("page_in", this.page_in)
+                .add("page_out", this.page_out)
+                .add("swap_in", this.swap_in)
+                .add("swap_out", this.swap_out)
                 .toString();
+    }
+
+    @Override
+    public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("mem_total", this.mem_total.longValue());
+        bsonWriter.writeInt64("mem_free", this.mem_free.longValue());
+        bsonWriter.writeInt64("mem_shared", this.mem_shared.longValue());
+        bsonWriter.writeInt64("mem_buffers", this.mem_buffers.longValue());
+        bsonWriter.writeInt64("mem_cached", this.mem_cached.longValue());
+        bsonWriter.writeInt64("swap_total", this.swap_total.longValue());
+        bsonWriter.writeInt64("swap_free", this.swap_free.longValue());
+        bsonWriter.writeInt64("page_in", this.page_in);
+        bsonWriter.writeInt64("page_out", this.page_out);
+        bsonWriter.writeInt64("swap_in", this.swap_in);
+        bsonWriter.writeInt64("swap_out", this.swap_out);
+        bsonWriter.writeEndDocument();
     }
 }
