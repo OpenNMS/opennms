@@ -5,7 +5,7 @@
   <!-- definition of the licensed product such that the feature can be installed using -->
   <!-- features:install name/version (version is optional) (Karaf 2.4.3) -->
   <!-- Karaf features can reference dependent features with a range of versions -->
-  <!-- e.g. feature version="[2.5.6,4)" -->
+  <!-- e.g. feature version="[2.5.6,4)"  -->
   <!-- so this allows us to have a single licence which can cover a range of releases of the -->
   <!-- feature which implements the product. -->
   <productId>${project.artifactId}/${project.version}</productId>
