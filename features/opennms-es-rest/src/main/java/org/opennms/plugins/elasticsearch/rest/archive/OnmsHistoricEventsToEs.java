@@ -28,11 +28,15 @@
 
 package org.opennms.plugins.elasticsearch.rest.archive;
 
+import java.util.Date;
 import java.util.List;
-import java.util.ListIterator;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Events;
+import org.opennms.netmgt.xml.event.Header;
+import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Parm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +51,6 @@ import org.slf4j.LoggerFactory;
 public class OnmsHistoricEventsToEs {
 	private static final Logger LOG = LoggerFactory.getLogger(OnmsHistoricEventsToEs.class);
 
-	private static final int EVENT_RETREIVAL_LIMIT=10; // retrieve and process max 10 events at a time
-
 	private String onmsUrl="http://localhost:8980";
 
 	private String onmsUserName="admin";
@@ -62,6 +64,8 @@ public class OnmsHistoricEventsToEs {
 	private EventForwarder eventForwarder=null;
 	
 	private boolean useNodeLabel=true;
+
+	private int logSize = 100;
 
 	public String getOnmsUrl() {
 		return onmsUrl;
@@ -119,50 +123,54 @@ public class OnmsHistoricEventsToEs {
 		this.useNodeLabel = useCache;
 	}
 
+	public void setLogSize(int logSize) {
+		this.logSize = logSize;
+	}
+
 	/**
 	 * sends events to Elasticsearch returns true if successful
 	 * @return
 	 */
 	public String sendEventsToEs(){
-
 		final OnmsRestEventsClient onmsRestEventsClient = new OnmsRestEventsClient(onmsUrl, onmsPassWord, onmsUserName);
-		Event firstEvent=null;
-		Event lastEvent=null;
+		Event firstEvent = null;
+		Event lastEvent = null;
 
-		boolean endofEvents=false;
-		int eventsSent=0;
+		boolean endofEvents = false;
+		int eventsSent = 0;
 
 		int eventOffset=offset;
 
-		while (!endofEvents && eventsSent<=limit){
-
-			List<Event> events = onmsRestEventsClient.getEvents(EVENT_RETREIVAL_LIMIT, eventOffset);
-
+		while (!endofEvents && eventsSent <= limit){
+			final List<Event> events = onmsRestEventsClient.getEvents(logSize, eventOffset);
 			endofEvents = events.isEmpty();
-
-			for(Event event:events){
-				if(firstEvent==null) firstEvent=event;
-				lastEvent=event;
-				eventsSent++;
-				
-				// remove node label param if included in event
-				if (! useNodeLabel){
-					List<Parm> parmCollection = event.getParmCollection();
-					ListIterator<Parm> iter = parmCollection.listIterator();
-					while(iter.hasNext()){
-					    if(OnmsRestEventsClient.NODE_LABEL.equals(iter.next().getParmName())){
-					        iter.remove();
-					    }
-					}
-					
+			if (!endofEvents) {
+				if (firstEvent == null) {
+					firstEvent = events.get(0);
 				}
-				
-				LOG.debug("sending event to es: eventid="+event.getDbid());
-				getEventForwarder().sendNow(event);
+
+				// remove node label param if included in event
+				if (!useNodeLabel) {
+					events.forEach(event -> {
+						final Parm parm = event.getParm(OnmsRestEventsClient.NODE_LABEL);
+						if (parm != null) {
+							event.getParmCollection().remove(parm);
+						}
+					});
+				}
+
+				if (LOG.isDebugEnabled()) {
+					events.forEach(event -> {
+						LOG.debug("sending event to es: eventid={}", event.getDbid());
+					});
+				}
+				lastEvent = events.get(events.size() - 1);
+
+				final Log log = createLog(events);
+				getEventForwarder().sendNow(log);
+				eventsSent += log.getEvents().getEventCount();
+				eventOffset = eventOffset + events.size();
 			}
-
-			eventOffset=eventOffset+EVENT_RETREIVAL_LIMIT;
-
 		}
 
 		return "Dispatched "+eventsSent
@@ -171,10 +179,17 @@ public class OnmsHistoricEventsToEs {
 				+ " last event id="+((lastEvent!=null) ? lastEvent.getDbid() : "lastEvent null");
 	}
 
+	private Log createLog(List<Event> eventList) {
+		final Header header = new Header();
+		header.setCreated(StringUtils.toStringEfficiently(new Date()));
 
+		final Events events = new Events();
+		events.setEvent(eventList);
 
-
-
-
+		final Log log = new Log();
+		log.setEvents(events);
+		log.setHeader(header);
+		return log;
+	}
 
 }

@@ -78,6 +78,9 @@ public class SendEventsToEsCommand implements Action {
 	@Option(name = "--use-node-label", description = "If false local node cache will get nodelabel for nodeid. If true will use remote nodelabel")
 	boolean useNodelabel = false;
 
+	@Option(name ="--log-size", description = "The size of the number of events to dispatch at once to elastic.")
+	int logSize = 200;
+
 	@Override
 	public Object execute() {
 		try {
@@ -100,14 +103,17 @@ public class SendEventsToEsCommand implements Action {
 			if (this.useNodelabel) {
 				onmsHistoryEventsToEs.setUseNodeLabel(useNodelabel);
 			}
-			
+			if (logSize > 0) {
+				onmsHistoryEventsToEs.setLogSize(logSize);
+			}
 			final String msg = "Sending events to Elasticsearch. "
 					+ "\n Limit: "+onmsHistoryEventsToEs.getLimit()
 					+ "\n Offset: "+onmsHistoryEventsToEs.getOffset()
 					+ "\n Retrieving events from OpenNMS URL: "+onmsHistoryEventsToEs.getOnmsUrl()
 					+ "\n OpenNMS Username: "+onmsHistoryEventsToEs.getOnmsUserName()
 					+ "\n OpenNMS Password: "+onmsHistoryEventsToEs.getOnmsPassWord()
-			        + "\n Use Node Label: "+onmsHistoryEventsToEs.getUseNodeLabel();
+			        + "\n Use Node Label: "+onmsHistoryEventsToEs.getUseNodeLabel()
+					+ "\n Log Size: " + logSize;
 			LOG.info(msg);
 			System.out.println(msg);
 			
