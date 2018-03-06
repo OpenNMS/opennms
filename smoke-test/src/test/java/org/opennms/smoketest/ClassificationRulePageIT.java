@@ -275,6 +275,38 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
     }
 
+    // See NMS-9880
+    @Test
+    public void verifyErrorMessageReset() {
+        final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
+        classificationRequest.setIpAddress("127.0.0.1");
+        classificationRequest.setPort("x"); // invalid
+        classificationRequest.setProtocol("tcp");
+
+        // try classification, should fail
+        uiPage.classify(classificationRequest);
+
+        // Error should be displayed, but response should not
+        assertThat(true, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+
+        // fix classification request and retry
+        classificationRequest.setPort("80");
+        uiPage.classify(classificationRequest);
+
+        // Verify visibility is inverted
+        assertThat(false, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(true, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+
+        // make an invalid request and try again
+        classificationRequest.setPort("x");
+        uiPage.classify(classificationRequest);
+
+        // Error should be displayed, but response should not
+        assertThat(true, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
+    }
+
     private class Page {
         private final String url;
 
