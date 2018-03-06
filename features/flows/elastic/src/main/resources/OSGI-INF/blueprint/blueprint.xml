@@ -29,6 +29,9 @@
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
 
+            <!-- Bulk Action Retry settings -->
+            <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
+
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
             <cm:property name="settings.index.number_of_shards" value="" />
@@ -44,7 +47,7 @@
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="flowRequestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
+    <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
@@ -57,7 +60,7 @@
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
         <property name="proxy" value="${proxy}" />
         <property name="credentials" ref="credentialsProvider" />
-        <property name="requestExecutorFactory" ref="flowRequestExecutorFactory" />
+        <property name="requestExecutorFactory" ref="requestExecutorFactory" />
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
         <property name="retries" value="${retries}" />
@@ -110,6 +113,7 @@
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
+        <argument value="${bulkRetryCount}" />
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

@@ -98,6 +98,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
+    private final int bulkRetryCount;
+
     /**
      * Flows/second throughput
      */
@@ -118,10 +120,11 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Histogram flowsPerLog;
 
-    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher) {
+    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher, int bulkRetryCount) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
+        this.bulkRetryCount = bulkRetryCount;
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logEnrichementTimer = metricRegistry.timer("logEnrichment");
@@ -165,7 +168,7 @@ public class ElasticFlowRepository implements FlowRepository {
                     bulkBuilder.addAction(indexBuilder.build());
                 }
                 return new BulkWrapper(bulkBuilder);
-            }, 5);
+            }, bulkRetryCount);
             try {
                 final BulkResultWrapper result = bulkRequest.execute();
                 if (!result.isSucceeded()) { // if the bulk request failed, it considered retries

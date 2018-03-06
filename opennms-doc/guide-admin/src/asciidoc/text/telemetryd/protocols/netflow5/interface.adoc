@@ -119,6 +119,12 @@ The following configuration properties can be set:
 | optional
 | `30000`
 
+| _bulkRetryCount_
+| Defines the number of retries performed before a bulk operation is considered as failed.
+When bulk operations fail, only the failed items are retried.
+| optional
+| `5`
+
 | _settings.index.number_of_shards_
 | The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
 | optional

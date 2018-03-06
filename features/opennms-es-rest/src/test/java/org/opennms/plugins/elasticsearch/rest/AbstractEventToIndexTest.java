@@ -41,7 +41,7 @@ public abstract class AbstractEventToIndexTest {
     @Before
     public void setUp() throws Exception {
         this.jestClient = new RestClientFactory("http://localhost:9200", "", "").createClient();
-        this.eventToIndex = new EventToIndex(jestClient);
+        this.eventToIndex = new EventToIndex(jestClient, 3);
     }
 
     @After

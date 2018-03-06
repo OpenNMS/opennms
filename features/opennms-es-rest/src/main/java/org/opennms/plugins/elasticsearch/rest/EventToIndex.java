@@ -167,6 +167,8 @@ public class EventToIndex implements AutoCloseable {
 
 	private final JestClient jestClient;
 
+	private final int bulkRetryCount;
+
 	private int threads = DEFAULT_NUMBER_OF_THREADS;
 
 	private IndexStrategy indexStrategy = IndexStrategy.MONTHLY;
@@ -187,8 +189,9 @@ public class EventToIndex implements AutoCloseable {
 		new ThreadPoolExecutor.CallerRunsPolicy()
 	);
 
-	public EventToIndex(JestClient jestClient) {
+	public EventToIndex(JestClient jestClient, int bulkRetryCount) {
 		this.jestClient = Objects.requireNonNull(jestClient);
+		this.bulkRetryCount = bulkRetryCount;
 	}
 
 	public void setIndexStrategy(IndexStrategy indexStrategy) {
@@ -261,7 +264,7 @@ public class EventToIndex implements AutoCloseable {
 	private void sendEvents(final List<Event> allEvents) {
 		final BulkRequest<Event> request = new BulkRequest<>(jestClient, allEvents,
 				(events) -> new BulkWrapper(new Bulk.Builder().addAction(convertEventsToEsActions(events))),
-				10);
+				bulkRetryCount);
 		try {
 			final BulkResultWrapper resultWrapper = request.execute();
 			final BulkResult result = resultWrapper.getRawResult();
