@@ -26,11 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic;
+package org.opennms.plugins.elasticsearch.rest.executors;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
-
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -45,18 +45,18 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
+import org.mockito.Mockito;
 import org.opennms.plugins.elasticsearch.rest.OnmsJestClient;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.Index;
 
-public class FlowRequestExecutorIT {
+public class DefaultRequestExecutorIT {
 
     @Rule
     public Timeout timeout = new Timeout(30, TimeUnit.SECONDS);
@@ -69,18 +69,19 @@ public class FlowRequestExecutorIT {
         // Create client manually, as we want to spy on it
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://192.168.2.0:9200").build()); // 192.168.2.0 should not be reachable
-        JestClient clientDelegate = spy(factory.getObject());
-        final JestClient client = spy(new OnmsJestClient(clientDelegate, new FlowRequestExecutor(1000)));
+        JestClient clientDelegate = Mockito.spy(factory.getObject());
+        final JestClient client = Mockito.spy(new OnmsJestClient(clientDelegate, new DefaultRequestExecutor(1000)));
 
         // action to run, we need this to interrupt it after n-seconds
         final Runnable runMe = () -> {
             try {
                 startTime.set(System.currentTimeMillis());
                 try {
-                    final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
-                    final ElasticFlowRepository repository = new ElasticFlowRepository(new MetricRegistry(),
-                            client, IndexStrategy.MONTHLY, documentEnricher);
-                    repository.persistNetFlow5Packets(Lists.newArrayList(FlowDocumentTest.getMockNetflow5Packet()), FlowDocumentTest.getMockFlowSource());
+                    final Map<String, String> object = new HashMap<>();
+                    object.put("name", "Ulf");
+                    object.put("location", "Pittsboro");
+                    final Index action = new Index.Builder(object).index(IndexStrategy.MONTHLY.getIndex("dummy", new Date())).type("persons").build();
+                    client.execute(action);
                     Assert.fail("The execution of persistNetFlow5Packets() should not have finished. Failing.");
                 } finally {
                     client.close();

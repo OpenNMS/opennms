@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,6 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -54,6 +52,8 @@ import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,25 +73,29 @@ public class EventToIndex implements AutoCloseable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(EventToIndex.class);
 
-	public enum Indices {
-		ALARMS,
-		ALARM_EVENTS,
-		EVENTS
+	public static class IndexAndType {
+		private String indexPrefix;
+		private String type;
+
+		public IndexAndType(String indexPrefix, String type) {
+			this.indexPrefix = indexPrefix;
+			this.type = type;
+		}
+
+		public String getIndexPrefix() {
+			return indexPrefix;
+		}
+
+		public String getType() {
+			return type;
+		}
 	}
 
-	@SuppressWarnings("serial")
-	public static final EnumMap<Indices,String> INDEX_NAMES = new EnumMap<Indices,String>(Indices.class) {{
-		this.put(Indices.ALARMS, "opennms-alarms");
-		this.put(Indices.ALARM_EVENTS, "opennms-events-alarmchange");
-		this.put(Indices.EVENTS, "opennms-events-raw");
-	}};
-
-	@SuppressWarnings("serial")
-	public static final EnumMap<Indices,String> INDEX_TYPES = new EnumMap<Indices,String>(Indices.class) {{
-		this.put(Indices.ALARMS, "alarmdata");
-		this.put(Indices.ALARM_EVENTS, "eventdata");
-		this.put(Indices.EVENTS, "eventdata");
-	}};
+	public interface Indices {
+		IndexAndType ALARMS = new IndexAndType("opennms-alarms", "alarmdata");
+		IndexAndType EVENTS = new IndexAndType("opennms-events-raw", "eventdata");
+		IndexAndType ALARM_EVENTS = new IndexAndType("opennms-events-alarmchange", "eventdata");
+	}
 
 
 	// stem of all alarm change notification uei's
@@ -238,10 +242,6 @@ public class EventToIndex implements AutoCloseable {
 		this.archiveNewAlarmValues = archiveNewAlarmValues;
 	}
 
-	private JestClient getJestClient(){
-		return jestClient;
-	}
-
 	@Override
 	public void close(){
 		// Shutdown the thread pool
@@ -250,91 +250,36 @@ public class EventToIndex implements AutoCloseable {
 
 	public void forwardEvents(final List<Event> events) {
 		CompletableFuture.completedFuture(events)
-			// Convert the events to ES actions
-			.thenApplyAsync(this::convertEventsToEsActions, executor)
-			// Log any uncaught exceptions
-			.exceptionally(e -> {
-				LOG.error("Unexpected exception during task execution: " + e.getMessage(), e);
-				return null;
-			})
 			// Send the events to Elasticsearch
 			.thenAcceptAsync(this::sendEvents, executor)
-			// Log any uncaught exceptions
 			.exceptionally(e -> {
 				LOG.error("Unexpected exception during task completion: " + e.getMessage(), e);
 				return null;
 			});
 	}
 
-	private void sendEvents(final List<BulkableAction<DocumentResult>> actions) {
-		if (actions != null && actions.size() > 0) {
-			// Split the actions up by index
-			for (Map.Entry<String,List<BulkableAction<DocumentResult>>> entry : actions.stream().collect(Collectors.groupingBy(BulkableAction::getIndex)).entrySet()) {
-
-				try {
-					final List<BulkableAction<DocumentResult>> actionList = entry.getValue();
-
-					// The type will be identical for all events in the same index
-					final String type = actionList.get(0).getType();
-					final Bulk.Builder builder = new Bulk.Builder()
-							.defaultIndex(entry.getKey())
-							.defaultType(type);
-
-					// Add all actions to the bulk operation
-					builder.addAction(actionList);
-
-					// Execute
-					final Bulk bulk = builder.build();
-					BulkResult result = getJestClient().execute(bulk);
-					final BulkResultWrapper resultWrapper = new BulkResultWrapper(result);
-					final List<FailedItem<BulkableAction<DocumentResult>>> failedItems = resultWrapper.getFailedItems(actionList);
-
-					// If the bulk command fails completely...
-					if (!resultWrapper.isSucceeded()) {
-						logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-
-						// Try and issue the bulk actions individually as a fallback for each failed item
-						for (FailedItem<BulkableAction<DocumentResult>> item : failedItems) {
-							executeSingleAction(jestClient, item.getItem());
-						}
-						continue;
+	private void sendEvents(final List<Event> allEvents) {
+		final BulkRequest<Event> request = new BulkRequest<>(jestClient, allEvents,
+				(events) -> new BulkWrapper(new Bulk.Builder().addAction(convertEventsToEsActions(events))),
+				10);
+		try {
+			final BulkResultWrapper resultWrapper = request.execute();
+			final BulkResult result = resultWrapper.getRawResult();
+			if (!resultWrapper.isSucceeded()) {
+				LOG.error("Bulk API action failed. Error response was: {}", result.getErrorMessage());
+			}
+			// Log any unsuccessful completions as errors
+			if (LOG.isDebugEnabled()) {
+				for (BulkResultItem item : result.getItems()) {
+					if (item.status >= 200 && item.status < 300) {
+						logEsDebug(item.operation, item.index, item.type, "none", item.status, item.error);
+					} else {
+						logEsError(item.operation, item.index, item.type, "none", item.status, item.error);
 					}
-
-					// All items failed
-					if(actionList.size() == failedItems.size()) {
-						// index doesn't exist for upsert command so create new index and try again
-						LOG.debug("index name {} doesn't exist, creating new index", entry.getKey());
-
-						createIndex(getJestClient(), entry.getKey(), type);
-						result = getJestClient().execute(bulk);
-					}
-
-					// If the bulk command fails completely...
-					if (!resultWrapper.isSucceeded()) {
-						logEsError("Bulk API action", entry.getKey(), type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-
-						// Try and issue the bulk actions individually as a fallback for each failed item
-						for (FailedItem<BulkableAction<DocumentResult>> item : failedItems) {
-							executeSingleAction(jestClient, item.getItem());
-						}
-						continue;
-					}
-
-					// Log any unsuccessful completions as errors
-					for (BulkResultItem item : result.getItems()) {
-						if(item.status >= 200 && item.status < 300){
-							if (LOG.isDebugEnabled()) {
-								// If debug is enabled, log all completions
-								logEsDebug(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
-							}
-						} else {
-							logEsError(item.operation, entry.getKey(), item.type, "none", item.status, item.error);
-						}
-					}
-				} catch (Throwable ex){
-					LOG.error("Unexpected problem sending event to Elasticsearch", ex);
 				}
 			}
+		} catch (IOException ex) {
+			LOG.error("Bulk API action failed. An exception occurred: {}", ex.getMessage(), ex);
 		}
 	}
 
@@ -374,14 +319,14 @@ public class EventToIndex implements AutoCloseable {
 
 					if(archiveAlarms){
 						// if an alarm change event, use the alarm change fields to update the alarm index
-						final Update alarmUpdate = createAlarmIndexFromAlarmChangeEvent(event, INDEX_NAMES.get(Indices.ALARMS), INDEX_TYPES.get(Indices.ALARMS));
+						final Update alarmUpdate = createAlarmIndexFromAlarmChangeEvent(event, Indices.ALARMS);
 						retval.add(alarmUpdate);
 					}
 				}
 
 				// save all Alarm Change Events including memo change events
 				if(archiveAlarmChangeEvents){
-					final Index eventIndex = createEventIndexFromEvent(event, INDEX_NAMES.get(Indices.ALARM_EVENTS), INDEX_TYPES.get(Indices.ALARM_EVENTS));
+					final Index eventIndex = createEventIndexFromEvent(event, Indices.ALARM_EVENTS);
 					retval.add(eventIndex);
 				}
 
@@ -390,7 +335,7 @@ public class EventToIndex implements AutoCloseable {
 				if(archiveRawEvents){
 					// only send events to ES if they are persisted to database or logAllEvents is set to true
 					if(logAllEvents || (event.getDbid() !=null && event.getDbid()!=0)) {
-						Index eventIndex = createEventIndexFromEvent(event, INDEX_NAMES.get(Indices.EVENTS), INDEX_TYPES.get(Indices.EVENTS));
+						Index eventIndex = createEventIndexFromEvent(event, Indices.EVENTS);
 						retval.add(eventIndex);
 					} else {
 						LOG.debug("Not Sending Event to ES. Event is not persisted to database, or logAllEvents is false. Event: {}", event);
@@ -405,7 +350,7 @@ public class EventToIndex implements AutoCloseable {
 	/**
 	 * Utility method to populate a Map with the most import event attributes
 	 */
-	private Index createEventIndexFromEvent(final Event event, String rootIndexName, String indexType) {
+	private Index createEventIndexFromEvent(final Event event, final IndexAndType indexAndType) {
 		final Map<String,String> body = new HashMap<String,String>();
 
 		final Integer id = event.getDbid();
@@ -473,12 +418,12 @@ public class EventToIndex implements AutoCloseable {
 			}
 		}
 
-		String completeIndexName = indexStrategy.getIndex(rootIndexName, cal.getTime());
+		String completeIndexName = indexStrategy.getIndex(indexAndType.getIndexPrefix(), cal.getTime());
 
 		if (LOG.isDebugEnabled()){
 			String str = "populateEventIndexBodyFromEvent - index:"
 					+ "/"+completeIndexName
-					+ "/"+indexType
+					+ "/"+indexAndType.getType()
 					+ "/"+id
 					+ "\n   body: ";
 			for (String key:body.keySet()){
@@ -489,7 +434,7 @@ public class EventToIndex implements AutoCloseable {
 
 		Index.Builder builder = new Index.Builder(body)
 				.index(completeIndexName)
-				.type(indexType);
+				.type(indexAndType.getType());
 
 		// NMS-9015: If the event is a database event, set the ID of the
 		// document to the event's database ID. Otherwise, allow ES to
@@ -510,7 +455,7 @@ public class EventToIndex implements AutoCloseable {
 	 * "oldalarmvalues" json string will be used
 	 * If cannot parse event into alarm then null index is returned
 	 */
-	private Update createAlarmIndexFromAlarmChangeEvent(Event event, String rootIndexName, String indexType) {
+	private Update createAlarmIndexFromAlarmChangeEvent(Event event, IndexAndType indexAndType) {
 
 		Update update=null;
 
@@ -713,12 +658,12 @@ public class EventToIndex implements AutoCloseable {
 			body.put("dom", Integer.toString(alarmCreationCal.get(Calendar.DAY_OF_MONTH))); 
 
 			alarmCreationDate = alarmCreationCal.getTime();
-			String completeIndexName= indexStrategy.getIndex(rootIndexName, alarmCreationDate);
+			String completeIndexName= indexStrategy.getIndex(indexAndType.getIndexPrefix(), alarmCreationDate);
 
 			if (LOG.isDebugEnabled()){
 				String str = "populateAlarmIndexBodyFromAlarmChangeEvent - index:"
 						+ "/"+completeIndexName
-						+ "/"+indexType
+						+ "/"+indexAndType.getType()
 						+ "/"+id
 						+ "\n   body: ";
 				for (String key:body.keySet()){
@@ -740,7 +685,7 @@ public class EventToIndex implements AutoCloseable {
 			if (LOG.isDebugEnabled())LOG.debug("update query sent:"+updateQuery.toJSONString());
 
 			update= new Update.Builder(updateQuery.toJSONString()).index(completeIndexName)
-					.type(indexType).id(id).build();
+					.type(indexAndType.getType()).id(id).build();
 
 		}
 

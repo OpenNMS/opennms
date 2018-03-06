@@ -44,7 +44,7 @@
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="flowRequestExecutorFactory" class="org.opennms.netmgt.flows.elastic.FlowRequestExecutor">
+    <bean id="flowRequestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">

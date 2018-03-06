@@ -50,7 +50,7 @@ public class ClientRecoveryTest {
 
 		try {
 
-			String rootIndexName = EventToIndex.INDEX_NAMES.get(EventToIndex.Indices.ALARMS);
+			String rootIndexName = EventToIndex.Indices.ALARMS.getIndexPrefix();
 			String indexName = IndexStrategy.MONTHLY.getIndex(rootIndexName , new Date());
 			
 			// Get Jest client

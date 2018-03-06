@@ -44,7 +44,7 @@ import io.searchbox.client.JestClientFactory;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 
-public class DefaultRequestExecutorTest {
+public class LimitedRetriesRequestExecutorTest {
 
     @Test
     public void verifyRetryHandling() throws IOException {
@@ -53,7 +53,7 @@ public class DefaultRequestExecutorTest {
         final int timeout = 1000;
 
         // Spy on the executor
-        final DefaultRequestExecutor originalRequestExecutor = new DefaultRequestExecutor(timeout, retryCount);
+        final LimitedRetriesRequestExecutor originalRequestExecutor = new LimitedRetriesRequestExecutor(timeout, retryCount);
         final RequestExecutor requestExecutor = spy(originalRequestExecutor);
 
         // Create client manually as we want to spy on it

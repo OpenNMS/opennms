@@ -68,6 +68,10 @@ public class BulkResultWrapper {
         return failedItems;
     }
 
+    public BulkResult getRawResult() {
+        return result;
+    }
+
     protected static Exception convertToException(String error) {
         // Read error data
         final JsonObject errorObject = new JsonParser().parse(error).getAsJsonObject();
