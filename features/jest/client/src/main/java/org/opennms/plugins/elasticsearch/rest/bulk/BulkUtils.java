@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest;
+package org.opennms.plugins.elasticsearch.rest.bulk;
 
-import java.util.Objects;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-public class FailedItem<T> {
-    private final T item;
-    private final Exception cause;
+public abstract class BulkUtils {
 
-    public FailedItem(T failedItem, Exception cause) {
-        this.item = Objects.requireNonNull(failedItem);
-        this.cause = cause;
-    }
+    private BulkUtils() {}
 
-    public T getItem() {
-        return item;
-    }
+    protected static Exception convertToException(String error) {
+        // Read error data
+        final JsonObject errorObject = new JsonParser().parse(error).getAsJsonObject();
+        final String errorType = errorObject.get("type").getAsString();
+        final String errorReason = errorObject.get("reason").getAsString();
+        final JsonElement errorCause = errorObject.get("caused_by");
 
-    public Exception getCause() {
-        return cause;
+        // Create Exception
+        final String errorMessage = String.format("%s: %s", errorType, errorReason);
+        if (errorCause != null) {
+            return new Exception(errorMessage, convertToException(errorCause.toString()));
+        }
+        return new Exception(errorMessage);
     }
 }

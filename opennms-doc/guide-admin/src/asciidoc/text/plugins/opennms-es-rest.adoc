@@ -74,12 +74,12 @@ The following options are available to configure the forwarding of events from O
 | If changed to true, then archive all events even if they have not been persisted in the _{opennms-product-name}_ database.
 
 |`batchSize`
-| 1
+| 200
 | optional
 | Increase this value to enable batch inserts into _Elasticsearch_. This is the maximum size of a batch of events that is sent to _Elasticsearch_ in a single connection.
 
 |`batchInterval`
-| 0
+| 500
 | optional
 | The maximum time interval in milliseconds between batch events (recommended: 500ms) when a `batchSize` value greater than 1 is being used.
 

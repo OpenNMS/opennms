@@ -26,23 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest;
+package org.opennms.plugins.elasticsearch.rest.bulk;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Objects;
 
-public class BulkResultWrapperTest {
+public class FailedItem<T> {
+    private final T item;
+    private final Exception cause;
+    private final int index;
 
-    @Test
-    public void verifyExceptionParsing() {
-        // Parse Error
-        final String error = "{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}";
-        final Exception exception = BulkResultWrapper.convertToException(error);
+    public FailedItem(int index, T failedItem, Exception cause) {
+        this.index = index;
+        this.item = Objects.requireNonNull(failedItem);
+        this.cause = cause;
+    }
 
-        // Manually verify exception
-        Assert.assertEquals("mapper_parsing_exception: failed to parse [timestamp]", exception.getMessage());
-        Assert.assertNotNull(exception.getCause());
-        Assert.assertEquals("number_format_exception: For input string: \"XXX\"", exception.getCause().getMessage());
-        Assert.assertNull(exception.getCause().getCause());
+    public T getItem() {
+        return item;
+    }
+
+    public Exception getCause() {
+        return cause;
+    }
+
+    public int getIndex() {
+        return index;
     }
 }

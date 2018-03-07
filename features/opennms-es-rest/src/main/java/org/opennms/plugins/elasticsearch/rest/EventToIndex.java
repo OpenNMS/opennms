@@ -53,6 +53,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkResultWrapper;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
@@ -272,7 +273,7 @@ public class EventToIndex implements AutoCloseable {
 				LOG.error("Bulk API action failed. Error response was: {}", result.getErrorMessage());
 			}
 			// Log any unsuccessful completions as errors
-			if (LOG.isDebugEnabled()) {
+			if (LOG.isDebugEnabled() && result != null) {
 				for (BulkResultItem item : result.getItems()) {
 					if (item.status >= 200 && item.status < 300) {
 						logEsDebug(item.operation, item.index, item.type, "none", item.status, item.error);

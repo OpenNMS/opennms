@@ -26,64 +26,52 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest;
+package org.opennms.plugins.elasticsearch.rest.bulk;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 import io.searchbox.core.BulkResult;
 
-public class BulkResultWrapper {
+public class DefaultBulkResult<T> implements BulkResultWrapper {
 
-    private final BulkResult result;
+    private final BulkResult rawResult;
 
-    public BulkResultWrapper(BulkResult result) {
-        this.result = Objects.requireNonNull(result);
+    private final List<T> documents;
+
+    public DefaultBulkResult(BulkResult raw, List<T> documents) {
+        this.rawResult = Objects.requireNonNull(raw);
+        this.documents = Objects.requireNonNull(documents);
     }
 
+    @Override
     public boolean isSucceeded() {
-        return result.isSucceeded();
+        return rawResult.isSucceeded();
     }
 
+    @Override
     public String getErrorMessage() {
-        return result.getErrorMessage();
+        return rawResult.getErrorMessage();
     }
 
-    public <T> List<FailedItem<T>> getFailedItems(List<T> items) {
+    @Override
+    public List<FailedItem<T>> getFailedItems() {
         final List<FailedItem<T>> failedItems = new ArrayList<>();
-        for (int i=0; i<result.getItems().size(); i++) {
-            final BulkResult.BulkResultItem bulkResultItem = result.getItems().get(i);
+        for (int i = 0; i< rawResult.getItems().size(); i++) {
+            final BulkResult.BulkResultItem bulkResultItem = rawResult.getItems().get(i);
             if (bulkResultItem.error != null && !bulkResultItem.error.isEmpty()) {
-                final Exception cause = convertToException(bulkResultItem.error);
-                final T failedObject = items.get(i);
-                final FailedItem failedItem = new FailedItem(failedObject, cause);
+                final Exception cause = BulkUtils.convertToException(bulkResultItem.error);
+                final T failedObject = documents.get(i);
+                final FailedItem failedItem = new FailedItem(i, failedObject, cause);
                 failedItems.add(failedItem);
             }
         }
         return failedItems;
     }
 
+    @Override
     public BulkResult getRawResult() {
-        return result;
-    }
-
-    protected static Exception convertToException(String error) {
-        // Read error data
-        final JsonObject errorObject = new JsonParser().parse(error).getAsJsonObject();
-        final String errorType = errorObject.get("type").getAsString();
-        final String errorReason = errorObject.get("reason").getAsString();
-        final JsonElement errorCause = errorObject.get("caused_by");
-
-        // Create Exception
-        final String errorMessage = String.format("%s: %s", errorType, errorReason);
-        if (errorCause != null) {
-            return new Exception(errorMessage, convertToException(errorCause.toString()));
-        }
-        return new Exception(errorMessage);
+        return rawResult;
     }
 }

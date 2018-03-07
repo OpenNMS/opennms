@@ -30,8 +30,8 @@
       <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
 
       <!-- Plugin Settings -->
-      <cm:property name="batchSize" value="1" /> <!-- Disable batching by default -->
-      <cm:property name="batchInterval" value="0" /> <!-- Disable batching by default -->
+      <cm:property name="batchSize" value="200" /> <!-- Disable batching by default -->
+      <cm:property name="batchInterval" value="500" /> <!-- Disable batching by default -->
       <cm:property name="threads" value="0" /> <!-- Use the default number of threads -->
       <cm:property name="cache_max_ttl" value="0" /> <!-- Set to zero to disable TTL -->
       <cm:property name="cache_max_size" value="10000" /> <!-- Set to zero to disable max size -->

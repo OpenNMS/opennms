@@ -52,8 +52,8 @@ import org.opennms.netmgt.flows.api.NF5Packet;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkResultWrapper;
+import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -172,7 +172,7 @@ public class ElasticFlowRepository implements FlowRepository {
             try {
                 final BulkResultWrapper result = bulkRequest.execute();
                 if (!result.isSucceeded()) { // if the bulk request failed, it considered retries
-                    final List<FailedItem<FlowDocument>> failedFlows = result.getFailedItems(flowDocuments);
+                    final List<FailedItem<FlowDocument>> failedFlows = result.getFailedItems();
                     throw new PersistenceException(result.getErrorMessage(), failedFlows);
                 }
             } catch (IOException ex) {

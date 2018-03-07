@@ -28,27 +28,21 @@
 
 package org.opennms.plugins.elasticsearch.rest.bulk;
 
-import java.util.ArrayList;
-import java.util.List;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest.SLEEP_TIME;
+import static org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest.getSleepTime;
 
-import io.searchbox.action.BulkableAction;
-import io.searchbox.core.Bulk;
+import org.junit.Test;
 
-public class BulkWrapper extends Bulk {
+public class BulkRequestTest {
 
-    public BulkWrapper(Builder builder) {
-        super(builder);
+    @Test
+    public void testSleepTime() {
+        for (int i=0; i<SLEEP_TIME.length; i++) {
+            assertThat(SLEEP_TIME[i], is(getSleepTime(i)));
+        }
+        assertThat(SLEEP_TIME[SLEEP_TIME.length - 1], is(getSleepTime(100)));
     }
 
-    public List<BulkableAction> getActions() {
-        return new ArrayList<>(bulkableActions);
-    }
-
-    public int size() {
-        return bulkableActions.size();
-    }
-
-    public boolean isEmpty() {
-        return bulkableActions.isEmpty();
-    }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,27 +28,21 @@
 
 package org.opennms.plugins.elasticsearch.rest.bulk;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 
-import io.searchbox.action.BulkableAction;
-import io.searchbox.core.Bulk;
+public class BulkUtilsTest {
 
-public class BulkWrapper extends Bulk {
+    @Test
+    public void verifyExceptionParsing() {
+        // Parse Error
+        final String error = "{\"type\":\"mapper_parsing_exception\",\"reason\":\"failed to parse [timestamp]\",\"caused_by\":{\"type\":\"number_format_exception\",\"reason\":\"For input string: \\\"XXX\\\"\"}}";
+        final Exception exception = BulkUtils.convertToException(error);
 
-    public BulkWrapper(Builder builder) {
-        super(builder);
-    }
-
-    public List<BulkableAction> getActions() {
-        return new ArrayList<>(bulkableActions);
-    }
-
-    public int size() {
-        return bulkableActions.size();
-    }
-
-    public boolean isEmpty() {
-        return bulkableActions.isEmpty();
+        // Manually verify exception
+        Assert.assertEquals("mapper_parsing_exception: failed to parse [timestamp]", exception.getMessage());
+        Assert.assertNotNull(exception.getCause());
+        Assert.assertEquals("number_format_exception: For input string: \"XXX\"", exception.getCause().getMessage());
+        Assert.assertNull(exception.getCause().getCause());
     }
 }

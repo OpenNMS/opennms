@@ -29,34 +29,34 @@
 package org.opennms.plugins.elasticsearch.rest.bulk;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
 import io.searchbox.core.BulkResult;
 
 public class BulkRequest<T> {
 
-    private static int[] SLEEP_TIME = new int[]{ 1000, 5000, 10000, 30000, 60000 };
+    public static long[] SLEEP_TIME = new long[]{ 500, 1000, 5000, 10000, 30000, 60000 };
 
     private static final Logger LOG = LoggerFactory.getLogger(BulkRequest.class);
     private final JestClient client;
     private final List<T> documents;
     private final Function<List<T>, BulkWrapper> transformer;
-    private int retryCount;
+    private final int retryCount;
+    private int retries = 0;
+    private BulkWrapper bulkAction;
 
     public BulkRequest(final JestClient client, final List<T> documents, final Function<List<T>, BulkWrapper> documentToBulkTransformer, int retryCount) {
         this.client = Objects.requireNonNull(client);
         this.transformer = Objects.requireNonNull(documentToBulkTransformer);
-        this.documents = Objects.requireNonNull(documents);
+        this.documents = new ArrayList<>(Objects.requireNonNull(documents));
         this.retryCount = retryCount;
     }
 
@@ -65,57 +65,66 @@ public class BulkRequest<T> {
         do {
             try {
                 final BulkResultWrapper bulkResultWrapper = executeRequest();
-                if (!bulkResultWrapper.isSucceeded()) {
-                    final List<FailedItem<T>> failedItems = bulkResultWrapper.getFailedItems(documents);
-                    final List<T> failedDocuments = getFailedPages(failedItems);
-
-                    // Log error
-                    logError(bulkResultWrapper.getErrorMessage());
-
-                    // Update documents if only some failed
-                    if (failedDocuments.size() != documents.size()) {
-                        documents.clear();
-                        documents.addAll(failedDocuments);
-                    }
+                if (bulkResultWrapper.isSucceeded()) {
+                    return bulkResultWrapper;
                 }
-                return bulkResultWrapper;
+                // Handle errors
+                final List<FailedItem<T>> failedItems = bulkResultWrapper.getFailedItems();
+                final List<T> failedDocuments = getFailedDocuments(failedItems);
+                logError(bulkResultWrapper.getErrorMessage());
+
+                // Update documents if only some failed
+                if (!failedDocuments.isEmpty() && failedDocuments.size() != documents.size()) {
+                    documents.clear();
+                    documents.addAll(failedDocuments);
+                }
             } catch (IOException ex) {
                 logError(ex.getMessage());
                 exception = ex;
             }
-            retryCount--;
-            waitBeforeRetrying(retryCount);
+            retries++;
+            waitBeforeRetrying(retries);
             LOG.info("Retrying now ...");
-        } while(retryCount > 0);
+        } while(retries != retryCount);
         throw new IOException("Could not perform bulk operation.", exception);
     }
 
 
     private BulkResultWrapper executeRequest() throws IOException {
-        final BulkWrapper bulk = transformer.apply(documents);
+        // Create bulk action
+        bulkAction = createBulk(bulkAction, documents);
 
-        // Handle single execution
-        if (bulk.size() == 1) {
-            final JestResult result = client.execute(bulk.getActions().get(0));
-            return new BulkResultWrapper(new BulkResult(result));
+        // The bulk action list may be empty.
+        // In this case, we do not send any request to elastic, as this would raise an exception
+        // Instead we fake an EMPTY / SUCCESS result
+        if (bulkAction.isEmpty()) {
+            return new EmptyResult();
         }
 
         // Handle bulk execute
-        final BulkResult bulkResult = client.execute(bulk);
-        final BulkResultWrapper bulkResultWrapper = new BulkResultWrapper(bulkResult);
+        final BulkResult bulkResult = client.execute(bulkAction);
+        final BulkResultWrapper bulkResultWrapper = new DefaultBulkResult<>(bulkResult, documents);
         return bulkResultWrapper;
     }
 
-    private List<T> getFailedPages(List<FailedItem<T>> failedItems) {
+    private List<T> getFailedDocuments(List<FailedItem<T>> failedItems) {
         final List<T> failedPages = failedItems.stream().map(item -> item.getItem()).collect(Collectors.toList());
         return failedPages;
     }
 
+    // This creates a new (smaller) bulk action if the new document list is smaller than the bulk.actions
+    // This can only be the case if less than all documents failed.
+    private BulkWrapper createBulk(BulkWrapper bulk, List<T> documents) {
+        if (bulk == null || bulk.size() != documents.size()) {
+            return transformer.apply(documents);
+        }
+        return bulk;
+    }
 
-    private static void waitBeforeRetrying(int retryCount) {
+    private static void waitBeforeRetrying(int retries) {
         // Wait a bit, before actually retrying
         try {
-            long sleepTime = getSleepTime(retryCount);
+            long sleepTime = getSleepTime(retries);
             if (sleepTime > 0) {
                 LOG.info("Waiting {} ms before retrying", sleepTime);
                 Thread.sleep(sleepTime);
@@ -129,11 +138,8 @@ public class BulkRequest<T> {
         LOG.info("An error occurred while executing the bulk request: {}.", errorMessage);
     }
 
-    private static long getSleepTime(int retry) {
-        if (retry == 0) return 0;
-        if ((retry - 1) > SLEEP_TIME.length - 1) {
-            return SLEEP_TIME[SLEEP_TIME.length - 1];
-        }
-        return SLEEP_TIME[retry - 1];
+    public static long getSleepTime(int retry) {
+        int index = Math.min(retry, SLEEP_TIME.length - 1);
+        return SLEEP_TIME[index];
     }
 }

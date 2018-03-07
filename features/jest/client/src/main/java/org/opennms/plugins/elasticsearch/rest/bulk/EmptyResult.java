@@ -31,24 +31,26 @@ package org.opennms.plugins.elasticsearch.rest.bulk;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.searchbox.action.BulkableAction;
-import io.searchbox.core.Bulk;
+import io.searchbox.core.BulkResult;
 
-public class BulkWrapper extends Bulk {
-
-    public BulkWrapper(Builder builder) {
-        super(builder);
+public class EmptyResult implements BulkResultWrapper {
+    @Override
+    public boolean isSucceeded() {
+        return true;
     }
 
-    public List<BulkableAction> getActions() {
-        return new ArrayList<>(bulkableActions);
+    @Override
+    public String getErrorMessage() {
+        return null;
     }
 
-    public int size() {
-        return bulkableActions.size();
+    @Override
+    public List getFailedItems() {
+        return new ArrayList<>();
     }
 
-    public boolean isEmpty() {
-        return bulkableActions.isEmpty();
+    @Override
+    public BulkResult getRawResult() {
+        return null;
     }
 }
