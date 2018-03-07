@@ -28,51 +28,62 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
 import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
 
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.Field;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
 
-public class FieldValue {
+import com.google.common.base.MoreObjects;
+
+public final class FlowSetHeader {
 
     /*
       0                   1                   2                   3
       0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     | Length (< 255)|          Information Field                  |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                      ... continuing as needed                 |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-      0                   1                   2                   3
-      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |      255      |      Length (0 to 65535)      |       IE      |
-     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     |                      ... continuing as needed                 |
+     |          Set ID               |          Length               |
      +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     */
 
-    public static final int VARIABLE_SIZED = 0xFFFF;
-    public static final int VARIABLE_SIZED_EXTENDED = 0xFF;
+    public static final int TEMPLATE_SET_ID = 2;
+    public static final int OPTIONS_TEMPLATE_SET_ID = 3;
 
-    public final Value value;
+    public enum Type {
+        TEMPLATE_SET,
+        OPTIONS_TEMPLATE_SET,
+        DATA_SET
+    }
 
-    public FieldValue(final TemplateManager.TemplateResolver templateResolver, final Field templateField, final ByteBuffer buffer) throws InvalidPacketException {
-        int length = templateField.length;
-        if (length == VARIABLE_SIZED) {
-            length = uint8(buffer);
-            if (length == VARIABLE_SIZED_EXTENDED) {
-                length = uint16(buffer);
-            }
+    public static final int SIZE = 4;
+
+    public final int setId; // uint16
+    public final int length; // uint16
+
+    public FlowSetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+        this.setId = uint16(buffer);
+        if (this.setId < 256 && this.setId != TEMPLATE_SET_ID && this.setId != OPTIONS_TEMPLATE_SET_ID) {
+            // The Set ID values of 0 and 1 are not used, for historical reasons [RFC3954], values from 4 to 255 are
+            // reserved for future use.
+            throw new InvalidPacketException(buffer, "Invalid set ID: %d", this.setId);
         }
 
-        value = templateField.parse(templateResolver, slice(buffer, length));
+        this.length = uint16(buffer);
+    }
+
+    public Type getType() {
+        if (this.setId == TEMPLATE_SET_ID) return Type.TEMPLATE_SET;
+        if (this.setId == OPTIONS_TEMPLATE_SET_ID) return Type.OPTIONS_TEMPLATE_SET;
+        if (this.setId >= 256) return Type.DATA_SET;
+
+        return null;
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("setId", setId)
+                .add("length", length)
+                .toString();
     }
 }

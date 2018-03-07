@@ -31,23 +31,5 @@ package org.opennms.netmgt.telemetry.listeners.flow.ie;
 import java.util.stream.Stream;
 
 public interface RecordProvider {
-
-    class Record {
-        public final long observationDomainId;
-        public final long exportTime;
-        public final int scopeFieldCount;
-        public final Iterable<Value> values;
-
-        public Record(final long observationDomainId,
-                      final long exportTime,
-                      final int scopeFieldCount,
-                      final Iterable<Value> values) {
-            this.observationDomainId = observationDomainId;
-            this.exportTime = exportTime;
-            this.scopeFieldCount = scopeFieldCount;
-            this.values = values;
-        }
-    }
-
-    Stream<Record> getRecords();
+    Stream<Iterable<Value<?>>> getRecords();
 }

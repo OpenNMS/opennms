@@ -40,12 +40,17 @@ import com.google.common.base.MoreObjects;
 
 public final class TemplateRecord implements Record {
 
+    public final TemplateSet set;  // Enclosing set
+
     public final TemplateRecordHeader header;
 
     public final List<FieldSpecifier> fields;
 
-    public TemplateRecord(final TemplateRecordHeader header,
+    public TemplateRecord(final TemplateSet set,
+                          final TemplateRecordHeader header,
                           final ByteBuffer buffer) throws InvalidPacketException {
+        this.set = Objects.requireNonNull(set);
+
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();
@@ -63,20 +68,5 @@ public final class TemplateRecord implements Record {
                 .add("header", header)
                 .add("fields", fields)
                 .toString();
-    }
-
-    public static FlowSet.RecordParser<TemplateRecord> parser() {
-        return new FlowSet.RecordParser<TemplateRecord>() {
-            @Override
-            public TemplateRecord parse(final ByteBuffer buffer) throws InvalidPacketException {
-                final TemplateRecordHeader header = new TemplateRecordHeader(buffer);
-                return new TemplateRecord(header, buffer);
-            }
-
-            @Override
-            public int getMinimumRecordLength() {
-                return TemplateRecordHeader.SIZE;
-            }
-        };
     }
 }

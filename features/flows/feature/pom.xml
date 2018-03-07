@@ -22,6 +22,7 @@
             </bundles>
             <features>
               <feature>opennms-jest</feature>
+              <feature>quartz</feature>
             </features>
           </configuration>
         </plugin>
@@ -32,6 +33,10 @@
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-api</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.flows.rest</groupId>
@@ -62,6 +67,10 @@
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <version>${guavaVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>bson</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>

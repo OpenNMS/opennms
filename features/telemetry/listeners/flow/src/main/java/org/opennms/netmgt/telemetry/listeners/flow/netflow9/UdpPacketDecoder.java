@@ -32,10 +32,10 @@ import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Objects;
 
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto.Packet;
-import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSession;
+import org.opennms.netmgt.telemetry.listeners.flow.session.UdpSessionManager;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -44,15 +44,15 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
 public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
-    private final UdpSession session;
+    private final UdpSessionManager sessionManager;
 
-    public UdpPacketDecoder(final UdpSession session) {
-        this.session = Objects.requireNonNull(session);
+    public UdpPacketDecoder(final UdpSessionManager sessionManager) {
+        this.sessionManager = Objects.requireNonNull(sessionManager);
     }
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {
-        final TemplateManager templateManager = this.session.getTemplateManager(msg.sender(), msg.recipient());
+        final Session session = this.sessionManager.getSession(msg.sender(), msg.recipient());
 
         final ByteBuf buf = msg.content();
 
@@ -60,7 +60,7 @@ public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
         final Header header = new Header(headerBuffer);
 
         final ByteBuffer payloadBuffer = buf.nioBuffer();
-        final Packet packet = new Packet(templateManager, header, payloadBuffer);
+        final Packet packet = new Packet(session, header, payloadBuffer);
 
         out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }

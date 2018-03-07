@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.netflow9.proto;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint16;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint32;
+
 import java.nio.ByteBuffer;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
@@ -65,20 +67,20 @@ public class Header {
     public final long sourceId; // uint32
 
     public Header(final ByteBuffer buffer) throws InvalidPacketException {
-        this.versionNumber = BufferUtils.uint16(buffer);
+        this.versionNumber = uint16(buffer);
         if (this.versionNumber != VERSION) {
             throw new InvalidPacketException(buffer, "Invalid version number: 0x%04X", versionNumber);
         }
 
-        this.count = BufferUtils.uint16(buffer);
+        this.count = uint16(buffer);
         if (this.count <= 0) {
             throw new InvalidPacketException(buffer, "Empty packet");
         }
 
-        this.sysUpTime = BufferUtils.uint32(buffer);
-        this.unixSecs = BufferUtils.uint32(buffer);
-        this.sequenceNumber = BufferUtils.uint32(buffer);
-        this.sourceId = BufferUtils.uint32(buffer);
+        this.sysUpTime = uint32(buffer);
+        this.unixSecs = uint32(buffer);
+        this.sequenceNumber = uint32(buffer);
+        this.sourceId = uint32(buffer);
     }
 
     @Override

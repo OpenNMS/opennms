@@ -32,13 +32,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
-import org.opennms.netmgt.telemetry.adapters.netflow.v5.NetflowPacket;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +47,13 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
-public class Netflow5Adapter implements Adapter {
+public abstract class AbstractAdapter<P> implements Adapter {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Netflow5Adapter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractAdapter.class);
 
     private final FlowRepository flowRepository;
+
+    private final Converter<P> converter;
 
     /**
      * Time taken to parse a log
@@ -63,8 +65,11 @@ public class Netflow5Adapter implements Adapter {
      */
     private final Histogram packetsPerLogHistogram;
 
-    public Netflow5Adapter(MetricRegistry metricRegistry, FlowRepository flowRepository) {
+    public AbstractAdapter(final MetricRegistry metricRegistry,
+                           final FlowRepository flowRepository,
+                           final Converter<P> converter) {
         this.flowRepository = Objects.requireNonNull(flowRepository);
+        this.converter = Objects.requireNonNull(converter);
 
         logParsingTimer = metricRegistry.timer("logParsing");
         packetsPerLogHistogram = metricRegistry.histogram("packetsPerLog");
@@ -79,11 +84,11 @@ public class Netflow5Adapter implements Adapter {
     public void handleMessageLog(TelemetryMessageLog messageLog) {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
-        final List<NetflowPacket> flowPackets = new LinkedList<>();
+        final List<P> flowPackets = new LinkedList<>();
         try (Timer.Context ctx = logParsingTimer.time()) {
             for (TelemetryMessage eachMessage : messageLog.getMessageList()) {
                 LOG.trace("Parsing packet: {}", eachMessage);
-                final NetflowPacket flowPacket = parse(eachMessage);
+                final P flowPacket = parse(eachMessage);
                 if (flowPacket != null) {
                     flowPackets.add(flowPacket);
                 }
@@ -94,7 +99,7 @@ public class Netflow5Adapter implements Adapter {
         try {
             LOG.debug("Persisting {} packets.", flowPackets.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
-            flowRepository.persistNetFlow5Packets(flowPackets, source);
+            flowRepository.persist(flowPackets, source, this.converter);
         } catch (FlowException ex) {
             LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
         }
@@ -103,29 +108,5 @@ public class Netflow5Adapter implements Adapter {
                 messageLog.getMessageList().size());
     }
 
-    private NetflowPacket parse(TelemetryMessage message) {
-        // Create NetflowPacket which delegates all calls to the byte array
-        final NetflowPacket flowPacket = new NetflowPacket(message.getByteArray());
-
-        // Version must match for now. Otherwise we drop the packet
-        if (flowPacket.getVersion() != NetflowPacket.VERSION) {
-            LOG.warn("Invalid Version. Expected {}, received {}. Dropping flow packet.", NetflowPacket.VERSION, flowPacket.getVersion());
-            return null;
-        }
-
-        // Empty flows are dropped for now
-        if (flowPacket.getCount() == 0) {
-            LOG.warn("Received packet has no content. Dropping flow packet.");
-            return null;
-        }
-
-        // Validates the parsed packeet and drops it when not valid
-        if (!flowPacket.isValid()) {
-            // TODO MVR an invalid packet is skipped for now, but we may want to persist it anyways
-            LOG.warn("Received packet is not valid. Dropping flow packet.");
-            return null;
-        }
-
-        return flowPacket;
-    }
+    protected abstract P parse(TelemetryMessage message);
 }

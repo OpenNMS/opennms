@@ -30,8 +30,10 @@ package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.slice;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
@@ -42,11 +44,10 @@ import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.listeners.flow.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
@@ -72,7 +73,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        final TemplateManager templateManager = new TcpSession();
+        final Session session = new TcpSession();
 
         for (final String file : this.files) {
             try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
@@ -81,8 +82,8 @@ public class BlackboxTest {
                 buffer.flip();
 
                 do {
-                    final Header header = new Header(BufferUtils.slice(buffer, Header.SIZE));
-                    final Packet packet = new Packet(templateManager, header, BufferUtils.slice(buffer, header.length - Header.SIZE));
+                    final Header header = new Header(slice(buffer, Header.SIZE));
+                    final Packet packet = new Packet(session, InetSocketAddress.createUnresolved("localhost", 4711), header, slice(buffer, header.length - Header.SIZE));
 
                     assertThat(packet.header.versionNumber, is(0x000a));
 

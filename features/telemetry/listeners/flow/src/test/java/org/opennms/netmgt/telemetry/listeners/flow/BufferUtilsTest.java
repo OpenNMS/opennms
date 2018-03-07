@@ -28,11 +28,14 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.sint;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint64;
+
 import java.nio.ByteBuffer;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.UnsignedLong;
@@ -41,30 +44,30 @@ public class BufferUtilsTest {
 
     @Test
     public void testSignedInteger() throws Exception {
-        Assert.assertEquals(Long.valueOf(0), BufferUtils.sint(ByteBuffer.wrap(new byte[]{0, 0, 0}), 3));
-        Assert.assertEquals(Long.valueOf(-1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 255}), 3));
-        Assert.assertEquals(Long.valueOf(-2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 254}), 3));
-        Assert.assertEquals(Long.valueOf(1), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 1}), 3));
-        Assert.assertEquals(Long.valueOf(2), BufferUtils.sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 2}), 3));
+        Assert.assertEquals(Long.valueOf(0), sint(ByteBuffer.wrap(new byte[]{0, 0, 0}), 3));
+        Assert.assertEquals(Long.valueOf(-1), sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 255}), 3));
+        Assert.assertEquals(Long.valueOf(-2), sint(ByteBuffer.wrap(new byte[]{(byte) 255, (byte) 255, (byte) 254}), 3));
+        Assert.assertEquals(Long.valueOf(1), sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 1}), 3));
+        Assert.assertEquals(Long.valueOf(2), sint(ByteBuffer.wrap(new byte[]{(byte) 0, (byte) 0, (byte) 2}), 3));
     }
 
     @Test
     public void testUnsignedInteger32() throws Exception {
-        Assert.assertEquals(0L, BufferUtils.uint32(from("00000000")));
-        Assert.assertEquals(1L, BufferUtils.uint32(from("00000001")));
-        Assert.assertEquals(1024L, BufferUtils.uint32(from("00000400")));
-        Assert.assertEquals(65536L - 1, BufferUtils.uint32(from("0000FFFF")));
-        Assert.assertEquals(65536L * 65536L - 1L, BufferUtils.uint32(from("FFFFFFFF")));
+        Assert.assertEquals(0L, uint32(from("00000000")));
+        Assert.assertEquals(1L, uint32(from("00000001")));
+        Assert.assertEquals(1024L, uint32(from("00000400")));
+        Assert.assertEquals(65536L - 1, uint32(from("0000FFFF")));
+        Assert.assertEquals(65536L * 65536L - 1L, uint32(from("FFFFFFFF")));
     }
 
     @Test
     public void testUnsignedInteger64() throws Exception {
-        Assert.assertEquals(UnsignedLong.valueOf(0L), BufferUtils.uint64(from("0000000000000000")));
-        Assert.assertEquals(UnsignedLong.valueOf(1L), BufferUtils.uint64(from("0000000000000001")));
-        Assert.assertEquals(UnsignedLong.valueOf(1024L), BufferUtils.uint64(from("0000000000000400")));
-        Assert.assertEquals(UnsignedLong.valueOf(65536L -1L), BufferUtils.uint64(from("000000000000FFFF")));
-        Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), BufferUtils.uint64(from("00000000FFFFFFFF")));
-        Assert.assertEquals(UnsignedLong.MAX_VALUE, BufferUtils.uint64(from("FFFFFFFFFFFFFFFF")));
+        Assert.assertEquals(UnsignedLong.valueOf(0L), uint64(from("0000000000000000")));
+        Assert.assertEquals(UnsignedLong.valueOf(1L), uint64(from("0000000000000001")));
+        Assert.assertEquals(UnsignedLong.valueOf(1024L), uint64(from("0000000000000400")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L -1L), uint64(from("000000000000FFFF")));
+        Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), uint64(from("00000000FFFFFFFF")));
+        Assert.assertEquals(UnsignedLong.MAX_VALUE, uint64(from("FFFFFFFFFFFFFFFF")));
     }
 
 

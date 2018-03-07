@@ -28,15 +28,16 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
+import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint8;
+
 import java.nio.ByteBuffer;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 import com.google.common.base.MoreObjects;
 
@@ -61,9 +62,9 @@ public class BooleanValue extends Value<Boolean> {
     public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+            public Value<?> parse(final Session.Resolver resolver,
                                   final ByteBuffer buffer) throws InvalidPacketException {
-                final int value = BufferUtils.uint8(buffer);
+                final int value = uint8(buffer);
                 if (value < 1 || value > 2) {
                     throw new InvalidPacketException(buffer, "Illegal value '%d' for boolean type (only 1/true and 2/false allowed)", value);
                 }

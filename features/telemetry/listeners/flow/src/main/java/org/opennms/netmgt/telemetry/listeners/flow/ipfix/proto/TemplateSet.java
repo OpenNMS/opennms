@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,57 +33,34 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
 
 import com.google.common.base.MoreObjects;
 
-public final class Set<R extends Record> implements Iterable<R> {
+public class TemplateSet extends FlowSet<TemplateRecord> {
+    public final List<TemplateRecord> records;
 
-    public interface RecordParser<R extends Record> {
-        R parse(final ByteBuffer buffer) throws InvalidPacketException;
+    public TemplateSet(final Packet packet,
+                       final FlowSetHeader header,
+                       final ByteBuffer buffer) throws InvalidPacketException {
+        super(packet, header);
 
-        int getMinimumRecordLength();
-    }
+        final List<TemplateRecord> records = new LinkedList();
+        while (buffer.remaining() >= TemplateRecordHeader.SIZE) {
+            final TemplateRecordHeader recordHeader = new TemplateRecordHeader(buffer);
+            records.add(new TemplateRecord(recordHeader, buffer));
+        }
 
-    /*
-     +--------------------------------------------------+
-     | Set Header                                       |
-     +--------------------------------------------------+
-     | record                                           |
-     +--------------------------------------------------+
-     | record                                           |
-     +--------------------------------------------------+
-      ...
-     +--------------------------------------------------+
-     | record                                           |
-     +--------------------------------------------------+
-     | Padding (opt.)                                   |
-     +--------------------------------------------------+
-    */
-
-    public final SetHeader header;
-    public final List<R> records;
-
-    public Set(final SetHeader header,
-               final RecordParser<R> parser,
-               final ByteBuffer buffer) throws InvalidPacketException {
-        this.header = Objects.requireNonNull(header);
-
-        final List<R> records = new LinkedList<>();
-        while (buffer.remaining() >= parser.getMinimumRecordLength()) {
-            records.add(parser.parse(buffer));
+        if (records.size() == 0) {
+            throw new InvalidPacketException(buffer, "Empty set");
         }
 
         this.records = Collections.unmodifiableList(records);
-        if (this.records.size() == 0) {
-            throw new InvalidPacketException(buffer, "Empty set");
-        }
     }
 
     @Override
-    public Iterator<R> iterator() {
+    public Iterator<TemplateRecord> iterator() {
         return this.records.iterator();
     }
 

@@ -31,11 +31,11 @@ package org.opennms.netmgt.telemetry.listeners.flow.ie;
 import java.nio.ByteBuffer;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TemplateManager;
+import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
 
 public interface InformationElement {
 
-    Value<?> parse(final TemplateManager.TemplateResolver templateResolver,
+    Value<?> parse(final Session.Resolver resolver,
                    final ByteBuffer buffer) throws InvalidPacketException;
 
     String getName();

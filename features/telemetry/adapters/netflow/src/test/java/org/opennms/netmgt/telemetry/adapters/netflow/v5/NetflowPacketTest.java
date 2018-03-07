@@ -42,6 +42,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 
 import org.junit.Test;
+import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowPacket;
 
 import com.google.common.base.Strings;
 

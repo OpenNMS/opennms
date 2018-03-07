@@ -25,8 +25,29 @@
          <parameter key="port" value="8877"/>
      </listener>
 
-     <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+     <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
      </adapter>
+  </protocol>
+
+  <protocol name="Netflow-9" description="Listener for Netflow 9 UDP packets" enabled="false">
+    <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.flow.netflow9.UdpListener">
+      <parameter key="port" value="4729"/>
+    </listener>
+
+    <adapter name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter">
+    </adapter>
+  </protocol>
+
+  <protocol name="IPFIX" description="Listener for IPFIX UDP and TCP packets" enabled="false">
+    <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.flow.ipfix.UdpListener">
+      <parameter key="port" value="4730"/>
+    </listener>
+    <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.flow.ipfix.TcpListener">
+      <parameter key="port" value="4730"/>
+    </listener>
+
+    <adapter name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter">
+    </adapter>
   </protocol>
 
   <protocol name="NXOS" description="Cisco NX-OS Telemetry" enabled="false">
