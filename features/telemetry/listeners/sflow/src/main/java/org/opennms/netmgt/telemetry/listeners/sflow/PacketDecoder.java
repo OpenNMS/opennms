@@ -40,7 +40,7 @@ import io.netty.channel.DefaultAddressedEnvelope;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
 
-public class UdpPacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
+public class PacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
 
     @Override
     protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {

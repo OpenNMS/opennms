@@ -62,7 +62,7 @@ public class SampleRecord extends Record<SampleData> {
         bsonWriter.writeName("dataFormat");
         this.dataFormat.writeBson(bsonWriter);
 
-        if (data.value == null) {
+        if (data.value != null) {
             bsonWriter.writeName("data");
             this.data.value.writeBson(bsonWriter);
         }

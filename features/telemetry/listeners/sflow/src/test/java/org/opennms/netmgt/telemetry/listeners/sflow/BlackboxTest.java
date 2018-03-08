@@ -38,7 +38,6 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
 
 import org.bson.json.JsonWriter;
 import org.junit.Test;
@@ -51,14 +50,14 @@ public class BlackboxTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
 
     @Parameterized.Parameters(name = "file: {0}")
-    public static Iterable<Object[]> data() throws IOException {
-        return Arrays.<Object[]>asList(new Object[]{Arrays.asList("sflow.dat")});
+    public static Iterable<String> data() throws IOException {
+        return Arrays.<String>asList("sflow1.dat", "sflow2.dat", "sflow3.dat", "sflow4.dat");
     }
 
-    private final List<String> files;
+    private final String file;
 
-    public BlackboxTest(final List<String> files) {
-        this.files = files;
+    public BlackboxTest(final String file) {
+        this.file = file;
     }
 
     private void dumpPacket(SampleDatagram packet) {
@@ -70,8 +69,7 @@ public class BlackboxTest {
 
     @Test
     public void testFiles() throws Exception {
-        for (final String file : this.files) {
-            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(file))) {
+            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(this.file))) {
                 final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
                 channel.read(buffer);
                 buffer.flip();
@@ -82,6 +80,5 @@ public class BlackboxTest {
                     assertThat(packet.version.version.value, is(0x0005));
                 } while (buffer.hasRemaining());
             }
-        }
     }
 }

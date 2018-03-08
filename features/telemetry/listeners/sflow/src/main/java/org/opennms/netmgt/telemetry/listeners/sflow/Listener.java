@@ -29,7 +29,6 @@
 package org.opennms.netmgt.telemetry.listeners.sflow;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +44,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 
-public class UdpListener implements Listener {
+public class Listener implements org.opennms.netmgt.telemetry.listeners.api.Listener {
 
-    private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Listener.class);
 
     private String name;
 
@@ -59,7 +58,7 @@ public class UdpListener implements Listener {
     private EventLoopGroup bossGroup;
     private ChannelFuture socketFuture;
 
-    public UdpListener() {
+    public Listener() {
     }
 
     public void start() throws InterruptedException {
@@ -73,7 +72,8 @@ public class UdpListener implements Listener {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
                         ch.pipeline()
-                                .addLast(new UdpPacketDecoder())
+                                .addLast(new PacketDecoder())
+                                .addLast(new PacketHandler(Listener.this.dispatcher))
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
@@ -129,7 +129,7 @@ public class UdpListener implements Listener {
     }
 
     public static void main(final String... args) throws Exception {
-        final UdpListener l = new UdpListener();
+        final Listener l = new Listener();
         l.setName("sflow-test");
         l.start();
 
