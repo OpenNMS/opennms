@@ -36,6 +36,9 @@ import org.bson.BsonWriter;
 import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.headers.EthernetHeader;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.headers.Inet4Header;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.headers.Inet6Header;
 
 import com.google.common.base.MoreObjects;
 
@@ -83,13 +86,46 @@ public class SampledHeader implements FlowData {
     public final HeaderProtocol protocol;
     public final long frame_length;
     public final long stripped;
-    public final Opaque<byte[]> header;
+
+    public final EthernetHeader ethernetHeader;
+    public final Inet4Header inet4Header;
+    public final Inet6Header inet6Header;
+
+    public final byte[] rawHeader;
 
     public SampledHeader(final ByteBuffer buffer) throws InvalidPacketException {
         this.protocol = HeaderProtocol.from(buffer);
         this.frame_length = BufferUtils.uint32(buffer);
         this.stripped = BufferUtils.uint32(buffer);
-        this.header = new Opaque(buffer, Optional.empty(), Opaque::parseBytes);
+
+        switch (this.protocol) {
+            case ETHERNET_ISO88023:
+                this.ethernetHeader = new Opaque<>(buffer, Optional.empty(), EthernetHeader::new).value;
+                this.inet4Header = this.ethernetHeader.inet4Header;
+                this.inet6Header = this.ethernetHeader.inet6Header;
+                this.rawHeader = this.ethernetHeader.rawHeader;
+                break;
+
+            case IPv4:
+                this.ethernetHeader = null;
+                this.inet4Header = new Opaque<>(buffer, Optional.empty(), Inet4Header::new).value;
+                this.inet6Header = null;
+                this.rawHeader = null;
+                break;
+
+            case IPv6:
+                this.ethernetHeader = null;
+                this.inet4Header = null;
+                this.inet6Header = new Opaque<>(buffer, Optional.empty(), Inet6Header::new).value;
+                this.rawHeader = null;
+                break;
+
+            default:
+                this.ethernetHeader = null;
+                this.inet4Header = null;
+                this.inet6Header = null;
+                this.rawHeader = new Opaque<>(buffer, Optional.empty(), Opaque::parseBytes).value;
+        }
     }
 
     @Override
@@ -98,7 +134,7 @@ public class SampledHeader implements FlowData {
                 .add("protocol", this.protocol)
                 .add("frame_length", this.frame_length)
                 .add("stripped", this.stripped)
-                .add("header", this.header)
+                .add("header", this.rawHeader)
                 .toString();
     }
 
@@ -109,7 +145,26 @@ public class SampledHeader implements FlowData {
         this.protocol.writeBson(bsonWriter);
         bsonWriter.writeInt64("frame_length", this.frame_length);
         bsonWriter.writeInt64("stripped", this.stripped);
-        bsonWriter.writeBinaryData("header", new BsonBinary(this.header.value));
+
+        if (this.ethernetHeader != null) {
+            bsonWriter.writeName("ethernet");
+            this.ethernetHeader.writeBson(bsonWriter);
+        }
+
+        if (this.inet4Header != null) {
+            bsonWriter.writeName("ipv4");
+            this.inet4Header.writeBson(bsonWriter);
+        }
+
+        if (this.inet6Header != null) {
+            bsonWriter.writeName("ipv6");
+            this.inet6Header.writeBson(bsonWriter);
+        }
+
+        if (this.rawHeader != null) {
+            bsonWriter.writeBinaryData("raw", new BsonBinary(this.rawHeader));
+        }
+
         bsonWriter.writeEndDocument();
     }
 }

@@ -81,11 +81,12 @@ public class CountersSampleExpanded implements SampleData {
         bsonWriter.writeName("source_id");
         this.source_id.writeBson(bsonWriter);
 
-        bsonWriter.writeStartArray("counters");
+        bsonWriter.writeStartDocument("counters");
         for (final CounterRecord counterRecord : this.counters) {
+            bsonWriter.writeName(counterRecord.dataFormat.toId());
             counterRecord.writeBson(bsonWriter);
         }
-        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
 
         bsonWriter.writeEndDocument();
     }

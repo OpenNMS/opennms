@@ -101,11 +101,8 @@ public abstract class Record<T> {
                     .toString();
         }
 
-        public void writeBson(final BsonWriter bsonWriter) {
-            bsonWriter.writeStartDocument();
-            bsonWriter.writeInt32("enterpriseNumber", this.enterpriseNumber);
-            bsonWriter.writeInt32("formatNumber", this.formatNumber);
-            bsonWriter.writeEndDocument();
+        public String toId() {
+            return String.format("%s:%s", this.enterpriseNumber, this.formatNumber);
         }
     }
 

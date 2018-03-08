@@ -119,11 +119,12 @@ public class FlowSampleExpanded implements SampleData {
         this.input.writeBson(bsonWriter);
         bsonWriter.writeName("output");
         this.output.writeBson(bsonWriter);
-        bsonWriter.writeStartArray("flow_records");
+        bsonWriter.writeStartDocument("flows");
         for (final FlowRecord flowRecord : this.flow_records) {
+            bsonWriter.writeName(flowRecord.dataFormat.toId());
             flowRecord.writeBson(bsonWriter);
         }
-        bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
         bsonWriter.writeEndDocument();
     }
 }

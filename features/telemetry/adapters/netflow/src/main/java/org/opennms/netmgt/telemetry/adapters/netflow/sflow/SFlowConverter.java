@@ -28,17 +28,33 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.sflow;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.bson.BsonDocument;
+import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
+
+import com.google.common.collect.Lists;
 
 public class SFlowConverter implements Converter<BsonDocument> {
 
     @Override
     public List<Flow> convert(final BsonDocument packet) {
-        return Collections.singletonList(new SFlow(packet));
+        final List<Flow> result = Lists.newLinkedList();
+
+        final SFlow.Header header = new SFlow.Header(packet);
+
+        for (final BsonValue sample : packet.getDocument("data").getArray("samples")) {
+            final BsonDocument sampleDocument = sample.asDocument();
+
+            if ("0:1".equals(sampleDocument.get("format").asString()) ||
+                "0:3".equals(sampleDocument.get("format").asString())) {
+                // Handle only (expanded) flow samples
+                result.add(new SFlow(header, sampleDocument.get("data").asDocument()));
+            }
+        }
+
+        return result;
     }
 }

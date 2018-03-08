@@ -91,16 +91,10 @@ public class CounterRecord extends Record<CounterData> {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartDocument();
-
-        bsonWriter.writeName("dataFormat");
-        this.dataFormat.writeBson(bsonWriter);
-
         if (data.value != null) {
-            bsonWriter.writeName("data");
             this.data.value.writeBson(bsonWriter);
+        } else {
+            bsonWriter.writeNull();
         }
-
-        bsonWriter.writeEndDocument();
     }
 }

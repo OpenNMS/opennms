@@ -26,44 +26,60 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
+package org.opennms.netmgt.telemetry.listeners.sflow.proto.headers;
 
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 import org.bson.BsonWriter;
+import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.Opaque;
 
-import com.google.common.collect.ImmutableMap;
+public class EthernetHeader {
 
-// struct sample_record {
-//    data_format sample_type;       /* Specifies the type of sample data */
-//    opaque sample_data<>;          /* A structure corresponding to the
-//                                      sample_type */
-// };
+    public final Integer vlan;
 
-public class SampleRecord extends Record<SampleData> {
-    private static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<SampleData>>builder()
-            .put(DataFormat.from(1), FlowSample::new)
-            .put(DataFormat.from(2), CountersSample::new)
-            .put(DataFormat.from(3), FlowSampleExpanded::new)
-            .put(DataFormat.from(4), CountersSampleExpanded::new)
-            .build();
+    public final Inet4Header inet4Header;
+    public final Inet6Header inet6Header;
 
-    public SampleRecord(final ByteBuffer buffer) throws InvalidPacketException {
-        super(buffer, sampleDataFormats);
+    public final byte[] rawHeader;
+
+    public EthernetHeader(final ByteBuffer buffer) throws InvalidPacketException {
+        BufferUtils.skip(buffer, 6); // dstMAC
+        BufferUtils.skip(buffer, 6); // srcMAC
+
+        int type = BufferUtils.uint16(buffer);
+        if (type == 0x8100) {
+            // 802.1Q (VLAN-Tagging)
+            this.vlan = BufferUtils.uint16(buffer) & 0x0fff;
+            type = BufferUtils.uint16(buffer);
+        } else {
+            this.vlan = null;
+        }
+
+        switch (type) {
+            case 0x0800: // IPv4
+                this.inet4Header = new Inet4Header(buffer);
+                this.inet6Header = null;
+                this.rawHeader = null;
+                break;
+
+            case 0x86DD: // IPv6
+                this.inet4Header = null;
+                this.inet6Header = new Inet6Header(buffer);
+                this.rawHeader = null;
+                break;
+
+            default:
+                this.inet4Header = null;
+                this.inet6Header = null;
+                this.rawHeader = BufferUtils.bytes(buffer, buffer.remaining());
+        }
     }
 
-    @Override
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
-
-        bsonWriter.writeString("format", this.dataFormat.toId());
-
-        if (data.value != null) {
-            bsonWriter.writeName("data");
-            this.data.value.writeBson(bsonWriter);
+        if (this.vlan != null) {
+            bsonWriter.writeInt32("vlan", this.vlan);
         }
 
         bsonWriter.writeEndDocument();
