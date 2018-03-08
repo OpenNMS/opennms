@@ -80,7 +80,7 @@
       <plugin>
         <groupId>com.github.alexcojocaru</groupId>
         <artifactId>elasticsearch-maven-plugin</artifactId>
-        <version>2.2</version>
+        <version>6.1</version>
         <configuration>
           <clusterName>test</clusterName>
           <!-- set not to clash with normal ES ports 9300 9200 -->
@@ -97,19 +97,8 @@
             <!-- <phase>pre-integration-test</phase> -->
             <phase>test-compile</phase>
             <goals>
-              <goal>start</goal>
+              <goal>runforked</goal>
             </goals>
-          </execution>
-          <execution>
-            <id>deploy-json</id>
-            <!-- <phase>pre-integration-test</phase> -->
-            <phase>test-compile</phase>
-            <goals>
-              <goal>load</goal>
-            </goals>
-            <configuration>
-              <scriptFile>src/test/resources/elasticsearch.script</scriptFile>
-            </configuration>
           </execution>
           <execution>
             <id>stop-elasticsearch</id>
@@ -125,7 +114,7 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <!-- REPLACE THE FOLLOWING WITH THE ES VERSION USED IN TESTS -->
-            <version>2.4.0</version>
+            <version>6.2.2</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -231,6 +220,18 @@
     </dependency>
 
     <!-- Test Scope -->
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpasyncclient</artifactId>
+      <version>${httpasyncclientVersion}</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-logging</groupId>
+          <artifactId>commons-logging</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
