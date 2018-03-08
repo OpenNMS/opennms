@@ -33,8 +33,6 @@ import static io.restassured.RestAssured.preemptive;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.net.InetSocketAddress;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,12 +89,12 @@ public abstract class AbstractNodeRestServiceTest extends OpenNMSSeleniumTestCas
                 .then().assertThat()
                 .statusCode(201);
 
-        // Get dao to verify only one asset was created
-        final InetSocketAddress pgsql = new InetSocketAddress("localhost", 5432);
-        final HibernateDaoFactory daoFactory = new HibernateDaoFactory(pgsql);
+        // Verify that only one asset record has been created
+        final HibernateDaoFactory daoFactory = new HibernateDaoFactory(getPostgresService());
         final AssetRecordDao dao = daoFactory.getDao(AssetRecordDaoHibernate.class);
         assertThat(dao.countAll(), is(1));
 
+        // Ensure we can get nodes with asset records attached
         given().get()
                 .then()
                 .log().all()
