@@ -97,7 +97,7 @@ public class AlarmElasticsearch5IT {
         installElasticsearchFeaturesOnOpenNMS(opennmsSshAddr);
 
         // There should be no alarms in ES currently
-        assertThat(getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI), equalTo(0));
+        assertThat(getNumberOfAlarmsInEsWithUei(esRestAddr, EventConstants.IMPORT_FAILED_UEI), equalTo(0L));
 
         // Now send some event that will in turn trigger an alarm
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "test");
