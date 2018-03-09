@@ -54,8 +54,8 @@ public class TcpListener implements Listener {
 
     private String name;
 
-    private String bindHost = "::";
-    private int bindPort = 4739;
+    private String host = "::";
+    private int port = 4739;
 
     private AsyncDispatcher<TelemetryMessage> dispatcher;
 
@@ -92,7 +92,7 @@ public class TcpListener implements Listener {
                                 });
                     }
                 })
-                .bind(this.bindHost, this.bindPort)
+                .bind(this.host, this.port)
                 .sync();
     }
 
@@ -114,20 +114,20 @@ public class TcpListener implements Listener {
         this.name = name;
     }
 
-    public String getBindHost() {
-        return this.bindHost;
+    public String getHost() {
+        return this.host;
     }
 
-    public void setBindHost(final String bindHost) {
-        this.bindHost = bindHost;
+    public void setHost(final String host) {
+        this.host = host;
     }
 
-    public int getBindPort() {
-        return this.bindPort;
+    public int getPort() {
+        return this.port;
     }
 
-    public void setBindPort(final int bindPort) {
-        this.bindPort = bindPort;
+    public void setPort(final int port) {
+        this.port = port;
     }
 
     @Override
