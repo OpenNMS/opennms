@@ -28,22 +28,14 @@
 
 package org.opennms.smoketest.flow;
 
-import static com.jayway.awaitility.Awaitility.await;
-import static com.jayway.awaitility.Awaitility.with;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.io.ByteStreams;
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.JestResult;
+import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+import io.searchbox.indices.template.GetTemplate;
 import org.apache.cxf.jaxrs.client.JAXRSClientFactory;
 import org.junit.Assume;
 import org.junit.Before;
@@ -60,15 +52,21 @@ import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.io.ByteStreams;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetSocketAddress;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
+import static com.jayway.awaitility.Awaitility.await;
+import static com.jayway.awaitility.Awaitility.with;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 
 public class FlowStackIT {
 
@@ -77,6 +75,7 @@ public class FlowStackIT {
     private static int NETFLOW5_LISTENER_UDP_PORT = 50000;
     private static int NETFLOW9_LISTENER_UDP_PORT = 50001;
     private static int IPFIX_LISTENER_UDP_PORT = 50002;
+    private static int SFLOW_LISTENER_UDP_PORT = 50003;
 
     private static final String TEMPLATE_NAME = "netflow";
 
@@ -93,13 +92,9 @@ public class FlowStackIT {
             return new NullTestEnvironment();
         }
         try {
-            final TestEnvironmentBuilder builder = TestEnvironment
-                    .builder()
-                    .opennms()
-                    .es5();
+            final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().es5();
             // Enable flow adapter
-            builder.withOpenNMSEnvironment()
-                    .addFile(getClass().getResource("/flows/telemetryd-configuration.xml"), "etc/telemetryd-configuration.xml");
+            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/telemetryd-configuration.xml"), "etc/telemetryd-configuration.xml");
 
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
@@ -124,11 +119,11 @@ public class FlowStackIT {
         final InetSocketAddress opennmsNetflow5AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW5_LISTENER_UDP_PORT, "udp");
         final InetSocketAddress opennmsNetflow9AdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, NETFLOW9_LISTENER_UDP_PORT, "udp");
         final InetSocketAddress opennmsIpfixAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, IPFIX_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress opennmsSflowAdapterAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, SFLOW_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         // Proxy the REST service
-        flowRestService = JAXRSClientFactory.create(String.format("http://%s:%d/opennms/rest",
-                opennmsWebAddress.getHostString(), opennmsWebAddress.getPort()), FlowRestService.class, "admin", "admin", null);
+        flowRestService = JAXRSClientFactory.create(String.format("http://%s:%d/opennms/rest", opennmsWebAddress.getHostString(), opennmsWebAddress.getPort()), FlowRestService.class, "admin", "admin", null);
 
         // Configure OpenNMS
         setupOnmsContainer(opennmsSshAddress);
@@ -138,14 +133,13 @@ public class FlowStackIT {
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
-        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl)
-                .multiThreaded(true)
-                .build());
+        factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
         try (final JestClient client = factory.getObject()) {
             // Send packets
-           sendNetflowPacket(opennmsNetflow5AdapterAddress, "/flows/netflow5.dat");
-           sendNetflowPacket(opennmsNetflow9AdapterAddress, "/flows/netflow9.dat");
-           sendNetflowPacket(opennmsIpfixAdapterAddress, "/flows/ipfix.dat");
+            sendNetflowPacket(opennmsNetflow5AdapterAddress, "/flows/netflow5.dat");
+            sendNetflowPacket(opennmsNetflow9AdapterAddress, "/flows/netflow9.dat");
+            sendNetflowPacket(opennmsIpfixAdapterAddress, "/flows/ipfix.dat");
+            sendNetflowPacket(opennmsSflowAdapterAddress, "/flows/sflow.dat");
 
             // Ensure that the template has been created
             verify(client, (jestClient) -> {
@@ -156,12 +150,11 @@ public class FlowStackIT {
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 16;
+                return response.isSucceeded() && response.getTotal() == 21;
             });
 
             // Verify the flow count via the REST API
-            with().pollInterval(15, SECONDS).await().atMost(1, MINUTES)
-                    .until(() -> flowRestService.getFlowCount(0, System.currentTimeMillis()), equalTo(16L));
+            with().pollInterval(15, SECONDS).await().atMost(1, MINUTES).until(() -> flowRestService.getFlowCount(0, System.currentTimeMillis()), equalTo(21L));
         }
     }
 
@@ -175,8 +168,7 @@ public class FlowStackIT {
     private void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
         final byte[] bytes = getNetflowPacketContent(filename);
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
-            final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length,
-                    destinationAddress.getAddress(), destinationAddress.getPort());
+            final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
             serverSocket.send(sendPacket);
         }
     }
