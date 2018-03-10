@@ -770,11 +770,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.taglibs</groupId>
-      <artifactId>taglibs-standard-impl</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>${onmsLibScope}</scope>

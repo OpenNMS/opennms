@@ -3430,7 +3430,7 @@
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
+        <version>1.2</version>
       </dependency>
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
@@ -3559,11 +3559,6 @@
         <version>${jettyVersion}</version>
       </dependency>
       <!-- Make sure that this version matches the version from Jetty -->
-      <dependency>
-        <groupId>org.apache.taglibs</groupId>
-        <artifactId>taglibs-standard-impl</artifactId>
-        <version>1.2.5</version>
-      </dependency>
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>javax.servlet-api</artifactId>
