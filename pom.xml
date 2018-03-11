@@ -2584,6 +2584,11 @@
         <scope>test</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.features</groupId>
+        <artifactId>jstl-support</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-reporting</artifactId>
         <version>${project.version}</version>
