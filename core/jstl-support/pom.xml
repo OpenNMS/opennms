@@ -2,7 +2,7 @@
 <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.core</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>19.0.0-SNAPSHOT</version>
 </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core</groupId>
@@ -11,15 +11,14 @@
   
   <dependencies>
   <dependency>
-	<groupId>javax.servlet.jsp</groupId>
-	<artifactId>jsp-api</artifactId>
-	<version>2.2</version>
-	<scope>provided</scope>
+    <groupId>javax.servlet.jsp</groupId>
+    <artifactId>jsp-api</artifactId>
+    <scope>provided</scope>
   </dependency>
   <dependency>
     <groupId>javax.servlet</groupId>
     <artifactId>javax.servlet-api</artifactId>
-	<scope>provided</scope>
+    <scope>provided</scope>
   </dependency>
   <dependency>
 	<groupId>javax.el</groupId>
@@ -29,19 +28,13 @@
   </dependency>
   </dependencies>
   <build>
-	<resources>
-        <resource>
-            <directory>src/main/java</directory>
-            <includes>
-                <include>**/*.properties</include>
-            </includes>
-        </resource>
-        <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>**/*.tld</include>
-            </includes>
-        </resource>
+    <resources>
+      <resource>
+        <directory>src/main/java</directory>
+          <includes>
+            <include>**/*.properties</include>
+          </includes>
+      </resource>
     </resources>
-	</build>       
+  </build>
 </project>

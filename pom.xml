@@ -3446,7 +3446,7 @@
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
-        <version>99.99.99-exclude-and-use-opennms-servlet-instead</version>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
