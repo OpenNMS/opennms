@@ -8,7 +8,7 @@ The _Elasticsearch ReST plugin_ provides an interface to forward events, alarms 
 The events and alarms in _Elasticsearch_can be used for indexing, long time archival, plotting with _Grafana_ and browsing with _Kibana_.
  
 This plugin uses the _Elasticsearch_ ReST interface and can interact with cloud-hosted Elasticsearch instances. 
-The interface has been tested with _Elasticsearch_ 2.4, 5.0, and 5.1. 
+The interface has been tested with _Elasticsearch_ 5.0, and 5.1.
 
 NOTE: If you use _Kibana_, make sure you are using the version that is compatible with your version of _Elasticsearch_.
 
