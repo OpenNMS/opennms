@@ -31,6 +31,7 @@ package org.opennms.plugins.elasticsearch.rest.bulk;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import io.searchbox.core.BulkResult;
 
@@ -42,7 +43,7 @@ public class DefaultBulkResult<T> implements BulkResultWrapper {
 
     public DefaultBulkResult(BulkResult raw, List<T> documents) {
         this.rawResult = Objects.requireNonNull(raw);
-        this.documents = Objects.requireNonNull(documents);
+        this.documents = new ArrayList<>(Objects.requireNonNull(documents));
     }
 
     @Override
@@ -73,5 +74,10 @@ public class DefaultBulkResult<T> implements BulkResultWrapper {
     @Override
     public BulkResult getRawResult() {
         return rawResult;
+    }
+
+    @Override
+    public List<T> getFailedDocuments() {
+        return getFailedItems().stream().map(item -> item.getItem()).collect(Collectors.toList());
     }
 }

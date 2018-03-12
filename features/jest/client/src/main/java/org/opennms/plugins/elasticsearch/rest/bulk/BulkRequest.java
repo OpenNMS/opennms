@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,6 @@ public class BulkRequest<T> {
     }
 
     public BulkResultWrapper execute() throws IOException {
-        IOException exception = null;
         do {
             try {
                 final BulkResultWrapper bulkResultWrapper = executeRequest();
@@ -69,9 +67,13 @@ public class BulkRequest<T> {
                     return bulkResultWrapper;
                 }
                 // Handle errors
-                final List<FailedItem<T>> failedItems = bulkResultWrapper.getFailedItems();
-                final List<T> failedDocuments = getFailedDocuments(failedItems);
+                final List<T> failedDocuments = bulkResultWrapper.getFailedDocuments();
                 logError(bulkResultWrapper.getErrorMessage());
+
+                // bail if retry is not possible
+                if (!canRetry()) {
+                    throw new BulkException(bulkResultWrapper);
+                }
 
                 // Update documents if only some failed
                 if (!failedDocuments.isEmpty() && failedDocuments.size() != documents.size()) {
@@ -79,14 +81,26 @@ public class BulkRequest<T> {
                     documents.addAll(failedDocuments);
                 }
             } catch (IOException ex) {
+                // Prevent wrapping the BulkException
+                // in an IOException and log twice
+                if (ex instanceof BulkException) {
+                    throw ex;
+                }
+                // Probably ConnectionTimeout, log and bail if no retries are left
                 logError(ex.getMessage());
-                exception = ex;
+                if (!canRetry()) {
+                    throw new BulkException(ex);
+                }
             }
             retries++;
             waitBeforeRetrying(retries);
             LOG.info("Retrying now ...");
         } while(retries != retryCount);
-        throw new IOException("Could not perform bulk operation.", exception);
+        throw new IllegalStateException("The execution of the bulk request should have failed.");
+    }
+
+    private boolean canRetry() {
+        return retries < retryCount -1;
     }
 
 
@@ -105,11 +119,6 @@ public class BulkRequest<T> {
         final BulkResult bulkResult = client.execute(bulkAction);
         final BulkResultWrapper bulkResultWrapper = new DefaultBulkResult<>(bulkResult, documents);
         return bulkResultWrapper;
-    }
-
-    private List<T> getFailedDocuments(List<FailedItem<T>> failedItems) {
-        final List<T> failedPages = failedItems.stream().map(item -> item.getItem()).collect(Collectors.toList());
-        return failedPages;
     }
 
     // This creates a new (smaller) bulk action if the new document list is smaller than the bulk.actions

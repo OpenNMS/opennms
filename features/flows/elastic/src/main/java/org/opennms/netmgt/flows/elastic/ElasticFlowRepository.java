@@ -52,8 +52,7 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.bulk.BulkResultWrapper;
-import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -179,16 +178,14 @@ public class ElasticFlowRepository implements FlowRepository {
                 return new BulkWrapper(bulkBuilder);
             }, bulkRetryCount);
             try {
-                final BulkResultWrapper result = bulkRequest.execute();
-                if (!result.isSucceeded()) { // if the bulk request failed, it considered retries
-                    final List<FailedItem<FlowDocument>> failedFlows = result.getFailedItems();
-                    throw new PersistenceException(result.getErrorMessage(), failedFlows);
-                }
+                // the bulk request considers retries
+                bulkRequest.execute();
+            } catch (BulkException ex) {
+                throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
             } catch (IOException ex) {
                 LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
                 throw new FlowException(ex.getMessage(), ex);
             }
-
             flowsPersistedMeter.mark(flowDocuments.size());
         }
     }

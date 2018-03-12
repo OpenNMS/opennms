@@ -32,13 +32,14 @@ import java.util.List;
 
 import io.searchbox.core.BulkResult;
 
-public interface BulkResultWrapper {
+public interface BulkResultWrapper<T> {
     boolean isSucceeded();
 
     String getErrorMessage();
 
-    List getFailedItems();
-
     BulkResult getRawResult();
 
+    List<FailedItem<T>> getFailedItems();
+
+    List<T> getFailedDocuments();
 }

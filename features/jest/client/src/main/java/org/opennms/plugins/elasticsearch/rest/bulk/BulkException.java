@@ -28,34 +28,29 @@
 
 package org.opennms.plugins.elasticsearch.rest.bulk;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
+import java.util.Objects;
 
-import io.searchbox.core.BulkResult;
+public class BulkException extends IOException {
 
-public class EmptyResult<T> implements BulkResultWrapper<T> {
-    @Override
-    public boolean isSucceeded() {
-        return true;
+    private static final String ERROR_MESSAGE = "Could not perform bulk operation";
+
+    private BulkResultWrapper bulkResult;
+
+    public BulkException(BulkResultWrapper bulkResultWrapper) {
+        super(ERROR_MESSAGE);
+        this.bulkResult = Objects.requireNonNull(bulkResultWrapper);
     }
 
-    @Override
-    public String getErrorMessage() {
-        return null;
+    public BulkException() {
+        super(ERROR_MESSAGE);
     }
 
-    @Override
-    public List<FailedItem<T>> getFailedItems() {
-        return new ArrayList<>();
+    public BulkException(IOException ex) {
+        super(ERROR_MESSAGE, ex);
     }
 
-    @Override
-    public BulkResult getRawResult() {
-        return null;
-    }
-
-    @Override
-    public List<T> getFailedDocuments() {
-        return new ArrayList<>();
+    public BulkResultWrapper getBulkResult() {
+        return bulkResult;
     }
 }
