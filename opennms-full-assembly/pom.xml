@@ -672,10 +672,6 @@
       <type>xml</type>
       <classifier>minion</classifier>
     </dependency>
-     <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>jstl-support</artifactId>
-      </dependency>
 
     <!-- Test dependencies -->
     <dependency>

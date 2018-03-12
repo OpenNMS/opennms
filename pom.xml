@@ -2259,6 +2259,12 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jstl-dependencies</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
         <artifactId>pax-exam-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
@@ -2584,8 +2590,8 @@
         <scope>test</scope>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>jstl-support</artifactId>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.jstl-support</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
