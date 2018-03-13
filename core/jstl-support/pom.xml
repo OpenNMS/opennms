@@ -10,22 +10,16 @@
   <name>JSTL Support</name>
   
   <dependencies>
-  <dependency>
-    <groupId>javax.servlet.jsp</groupId>
-    <artifactId>jsp-api</artifactId>
-    <scope>provided</scope>
-  </dependency>
-  <dependency>
-    <groupId>javax.servlet</groupId>
-    <artifactId>javax.servlet-api</artifactId>
-    <scope>provided</scope>
-  </dependency>
-  <dependency>
-	<groupId>javax.el</groupId>
-	<artifactId>javax.el-api</artifactId>
-	<version>3.0.0</version>
-	<scope>test</scope>
-  </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>apache-jsp</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.el</groupId>
+      <artifactId>javax.el-api</artifactId>
+      <version>3.0.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <resources>
