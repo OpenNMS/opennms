@@ -118,9 +118,8 @@ public class AlarmElasticsearch5IT {
 
             // Configure and install the Elasticsearch REST event forwarder
             pipe.println("config:edit org.opennms.plugin.elasticsearch.rest.forwarder");
-            // Retry enough times that all events are eventually sent
-            // even if transient ES outages occur
-            pipe.println("config:property-set retries 200");
+            pipe.println("config:property-set elasticUrl http://elasticsearch:9200");
+            pipe.println("config:property-set retries 10");
             pipe.println("config:update");
             pipe.println("feature:install opennms-es-rest");
             pipe.println("feature:install alarm-change-notifier");
