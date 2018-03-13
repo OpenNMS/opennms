@@ -15,11 +15,19 @@
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
     <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
 
+  <!-- Configuration properties -->
+	<cm:property-placeholder id="flowGraphUrlProperties" persistent-id="org.opennms.netmgt.flows.rest.internal" update-strategy="reload">
+	  <cm:default-properties>
+	    <cm:property name="flowGraphUrl" value="http://localhost:3000/dashboard/flows?node=${nodeId}&amp;interface=${ifIndex}"/>
+	  </cm:default-properties>
+	</cm:property-placeholder>
+
     <bean id="flowRestService" class="org.opennms.netmgt.flows.rest.internal.FlowRestServiceImpl">
         <argument ref="flowRepository" />
         <argument ref="nodeDao" />
         <argument ref="snmpInterfaceDao" />
         <argument ref="transactionOperations" />
+        <property name="flowGraphUrl" value="${flowGraphUrl}" />
     </bean>
 
     <service interface="org.opennms.netmgt.flows.rest.FlowRestService" ref="flowRestService" >

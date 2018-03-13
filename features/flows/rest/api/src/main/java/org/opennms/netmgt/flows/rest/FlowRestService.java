@@ -40,6 +40,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
 import org.opennms.netmgt.flows.rest.model.FlowNodeSummary;
 import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
@@ -138,15 +139,8 @@ public interface FlowRestService {
             @Context final UriInfo uriInfo
     );
 
-    /**
-     * Retrieves the deep dive tool url from configured properties.
-     *
-     *
-     * @param uriInfo JAX-RS context
-     * @return url to deep dive tool
-     */
     @GET
-    @Path("deepDiveUrl")
-    String getDeepDiveToolUrl(@Context final UriInfo uriInfo);
+    @Path("flowGraphUrl")
+    FlowGraphUrlInfo getFlowGraphUrlInfo(@Context final UriInfo uriInfo);
 
 }

@@ -48,7 +48,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -61,6 +60,7 @@ import org.opennms.netmgt.flows.filter.api.NodeCriteria;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.rest.FlowRestService;
+import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
 import org.opennms.netmgt.flows.rest.model.FlowNodeSummary;
 import org.opennms.netmgt.flows.rest.model.FlowSeriesColumn;
@@ -76,12 +76,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
 public class FlowRestServiceImpl implements FlowRestService {
-
-
     private final FlowRepository flowRepository;
     private final NodeDao nodeDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
     private final TransactionOperations transactionOperations;
+    private String flowGraphUrl;
 
     public FlowRestServiceImpl(FlowRepository flowRepository, NodeDao nodeDao,
                                SnmpInterfaceDao snmpInterfaceDao, TransactionOperations transactionOperations) {
@@ -330,25 +329,31 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public String getDeepDiveToolUrl(UriInfo uriInfo) {
+    public FlowGraphUrlInfo getFlowGraphUrlInfo(UriInfo uriInfo) {
 
-        long count = waitForFuture(
+        long flowCount = waitForFuture(
                 flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
-
-        if (count > 0) {
+        FlowGraphUrlInfo graphUrlInfo = new FlowGraphUrlInfo();
+        if (flowCount > 0) {
             // If there are valid flows then generate URL from template.
-            String deepDiveToolUrl = System.getProperty("org.opennms.netmgt.flows.deepDiveUrl");
-            if (StringUtils.isBlank(deepDiveToolUrl)) {
-                throw new BadRequestException("deepDiveUrl not configured in opennms.properties");
-            }
             MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-            deepDiveToolUrl = deepDiveToolUrl.replaceAll("\\$nodeId", queryParams.getFirst("exporterNode"))
-                                             .replaceAll("\\$ifIndex", queryParams.getFirst("ifIndex"))
-                                             .replaceAll("\\$start", queryParams.getFirst("start"))
-                                             .replaceAll("\\$end", queryParams.getFirst("end"));
-            return deepDiveToolUrl;
+            String flowUrl = getFlowGraphUrl();
+            final String formattedGraphUrl = flowUrl.replaceAll("\\$\\{nodeId\\}", queryParams.getFirst("exporterNode"))
+                    .replaceAll("\\$\\{ifIndex\\}", queryParams.getFirst("ifIndex"))
+                    .replaceAll("\\$\\{start\\}", queryParams.getFirst("start"))
+                    .replaceAll("\\$\\{end\\}", queryParams.getFirst("end"));
+            graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
         }
-        return null;
+        graphUrlInfo.setFlowCount(flowCount);
+        return graphUrlInfo;
+    }
+
+    public String getFlowGraphUrl() {
+        return flowGraphUrl;
+    }
+
+    public void setFlowGraphUrl(String flowGraphUrl) {
+        this.flowGraphUrl = flowGraphUrl;
     }
 
 }

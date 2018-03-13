@@ -220,7 +220,7 @@
                   <c:set var="nodeId" value="${attribute.value}"/>
                 </c:if>
               </c:forEach>
-              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowCount(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
+              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowInfo(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>
@@ -254,7 +254,7 @@
                         <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP Interface')}">
                           <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
                               <div style="display: inline" ng-if="hasFlows">
-                                <a ng-href="{{deepDiveUrl}}" target="_blank" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}">
+                                <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}">
                                 <span> <button type="button" class="btn btn-default btn-xs">
                                   <i class="fa fa-bar-chart" aria-hidden="true"></i>
                                   </button>
