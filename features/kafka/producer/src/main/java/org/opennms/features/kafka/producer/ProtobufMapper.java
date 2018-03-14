@@ -202,10 +202,15 @@ public class ProtobufMapper {
     }
 
     public OpennmsModelProtos.NodeCriteria.Builder toNodeCriteria(OnmsNode node) {
-        return OpennmsModelProtos.NodeCriteria.newBuilder()
-                .setId(node.getId())
-                .setForeignSource(node.getForeignSource())
-                .setForeignId(node.getForeignId());
+        final OpennmsModelProtos.NodeCriteria.Builder builder = OpennmsModelProtos.NodeCriteria.newBuilder()
+                .setId(node.getId());
+        if (node.getForeignSource() != null) {
+            builder.setForeignSource(node.getForeignSource());
+        }
+        if (node.getForeignId() != null) {
+            builder.setForeignId(node.getForeignId());
+        }
+        return builder;
     }
 
     public OpennmsModelProtos.Severity toSeverity(OnmsSeverity sev) {
