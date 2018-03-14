@@ -251,18 +251,14 @@
 		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
-                        <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP Interface')}">
-                          <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-                              <div style="display: inline" ng-if="hasFlows">
-                                <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="Open Flows for ${resultSet.resource.label}">
-                                <span> <button type="button" class="btn btn-default btn-xs">
-                                  <i class="fa fa-bar-chart" aria-hidden="true"></i>
+                              <div style="display: inline" ng-if="flowsEnabled">
+                                <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="{{ hasFlows ? 'Open flow graphs' : 'No flows were found in current time range'}}">
+                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-default btn-xs">
+                                  <i class="fa fa-exchange" aria-hidden="true"></i>
                                   </button>
                                 </span>
                               </a>
                             </div>
-                          </c:if>
-                         </c:if>
 	                    </div> <!-- graph-aux-controls -->
 	                    <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                     </div>

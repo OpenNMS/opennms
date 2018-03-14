@@ -72,6 +72,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
@@ -331,19 +332,21 @@ public class FlowRestServiceImpl implements FlowRestService {
     @Override
     public FlowGraphUrlInfo getFlowGraphUrlInfo(UriInfo uriInfo) {
 
+        if (Strings.isNullOrEmpty(flowGraphUrl)) {
+            return null;
+        }
+
         long flowCount = waitForFuture(
                 flowRepository.getFlowCount(getFiltersFromQueryString(uriInfo.getQueryParameters())));
         FlowGraphUrlInfo graphUrlInfo = new FlowGraphUrlInfo();
-        if (flowCount > 0) {
-            // If there are valid flows then generate URL from template.
-            MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
-            String flowUrl = getFlowGraphUrl();
-            final String formattedGraphUrl = flowUrl.replaceAll("\\$\\{nodeId\\}", queryParams.getFirst("exporterNode"))
-                    .replaceAll("\\$\\{ifIndex\\}", queryParams.getFirst("ifIndex"))
-                    .replaceAll("\\$\\{start\\}", queryParams.getFirst("start"))
-                    .replaceAll("\\$\\{end\\}", queryParams.getFirst("end"));
-            graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
-        }
+
+        MultivaluedMap<String, String> queryParams = uriInfo.getQueryParameters();
+        String flowUrl = getFlowGraphUrl();
+        final String formattedGraphUrl = flowUrl.replaceAll("\\$nodeId", queryParams.getFirst("exporterNode"))
+                .replaceAll("\\$ifIndex", queryParams.getFirst("ifIndex"))
+                .replaceAll("\\$start", queryParams.getFirst("start"))
+                .replaceAll("\\$end", queryParams.getFirst("end"));
+        graphUrlInfo.setFlowGraphUrl(formattedGraphUrl);
         graphUrlInfo.setFlowCount(flowCount);
         return graphUrlInfo;
     }

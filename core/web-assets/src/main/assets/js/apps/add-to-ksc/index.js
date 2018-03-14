@@ -138,6 +138,7 @@ angular.module('onms-ksc', [
 .controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
 
   $scope.flowCount = 0;
+  $scope.flowsEnabled = false;
   $scope.hasFlows = false;
   $scope.flowGraphUrl = '';
   $scope.getFlowInfo = function(nodeId, ifIndex , start, end) {
@@ -148,9 +149,15 @@ angular.module('onms-ksc', [
       .then(function (data) {
         $scope.flowGraphUrl = data.flowGraphUrl;
         $scope.flowCount = data.flowCount;
-        if ( $scope.flowCount > 0) {
-                 $scope.hasFlows = true;
+        if ($scope.flowGraphUrl) {
+            $scope.flowsEnabled = true;
+            if ( $scope.flowCount > 0) {
+                     $scope.hasFlows = true;
+            } else {
+              $scope.flowGraphUrl = null;
+            }
         }
+
       });
   };
 }]);

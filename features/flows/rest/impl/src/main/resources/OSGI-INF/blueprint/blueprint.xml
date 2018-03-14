@@ -16,9 +16,9 @@
     <reference id="classificationService" interface="org.opennms.netmgt.flows.classification.ClassificationService" availability="mandatory"/>
 
   <!-- Configuration properties -->
-	<cm:property-placeholder id="flowGraphUrlProperties" persistent-id="org.opennms.netmgt.flows.rest.internal" update-strategy="reload">
+	<cm:property-placeholder id="flowGraphUrlProperties" persistent-id="org.opennms.netmgt.flows.rest" update-strategy="reload">
 	  <cm:default-properties>
-	    <cm:property name="flowGraphUrl" value="http://localhost:3000/dashboard/flows?node=${nodeId}&amp;interface=${ifIndex}"/>
+	    <cm:property name="flowGraphUrl" value=""/>
 	  </cm:default-properties>
 	</cm:property-placeholder>
 
