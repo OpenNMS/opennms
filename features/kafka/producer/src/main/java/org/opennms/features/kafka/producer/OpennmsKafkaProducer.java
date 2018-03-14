@@ -135,7 +135,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             maybeUpdateNode(event.getNodeid());
         }
         sendRecord(() -> {
+
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
+            LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
             return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
         });
     }
@@ -143,7 +145,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
         if (alarm == null) {
             // The alarm was deleted, push a null record to the reduction key
-            sendRecord(() -> new ProducerRecord<>(alarmTopic, reductionKey, null));
+            sendRecord(() -> {
+                LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
+                return new ProducerRecord<>(alarmTopic, reductionKey, null);
+            });
             return;
         }
 
@@ -152,6 +157,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
         sendRecord(() -> {
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
+            LOG.debug("Sending alarm with reduction key: {}", reductionKey);
             return new ProducerRecord<>(alarmTopic, reductionKey, mappedAlarm.toByteArray());
         });
     }
@@ -167,12 +173,16 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
 
             if (node == null) {
                 // The node was deleted, push a null record
-                sendRecord(() -> new ProducerRecord<>(nodeTopic, nodeCriteria, null));
+                sendRecord(() -> {
+                    LOG.debug("Deleting node with criteria: {}", nodeCriteria);
+                    return new ProducerRecord<>(nodeTopic, nodeCriteria, null);
+                });
                 return;
             }
 
             sendRecord(() -> {
                 final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
+                LOG.debug("Sending node with criteria: {}", nodeCriteria);
                 return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
             });
         });
