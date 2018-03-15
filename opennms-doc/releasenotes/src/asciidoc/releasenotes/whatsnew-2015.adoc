@@ -1,6 +1,19 @@
 [releasenotes-2015]
 === OpenNMS Meridian 2015
 
+[releasenotes-changelog-Meridian-2015.1.9]
+==== Release Meridian-2015.1.9
+
+Release 2015.1.9 is the tenth release of OpenNMS Meridian 2015.
+It contains a keyboard-navigation fix and a few documentation/date updates.
+The codename for 2015.1.9 is _MIST_.
+
+===== Bug
+
+* Tweak Mattermost notification docs not to specify a channel (Issue http://issues.opennms.org/browse/NMS-9362[NMS-9362])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+* Copyright dates need a bump for 2018 (Issue http://issues.opennms.org/browse/NMS-9871[NMS-9871])
+
 [releasenotes-changelog-Meridian-2015.1.8]
 ==== Release Meridian-2015.1.8
 
