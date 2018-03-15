@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>21.0.4</version>
+    <version>21.0.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-jetty</artifactId>
@@ -82,8 +82,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.eclipse.jetty</groupId>
-      <artifactId>apache-jstl</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jstl-dependencies</artifactId>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
