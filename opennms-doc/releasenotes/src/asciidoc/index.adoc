@@ -13,7 +13,7 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-== OpenNMS Meridian Development Team
+== {opennms-product-name} Development Team
 [options="header"]
 |===
 | Tarus Balog <tarus@opennms.org>
