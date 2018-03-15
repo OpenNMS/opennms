@@ -172,10 +172,7 @@ public class ProtobufMapper {
             builder.setClearKey(alarm.getClearKey());
         }
         if (alarm.getNodeId() != null) {
-            builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                    .setId(alarm.getNodeId())
-                    .setForeignSource(alarm.getNode().getForeignSource())
-                    .setForeignId(alarm.getNode().getForeignId()));
+            builder.setNodeCriteria(toNodeCriteria(alarm.getNode()));
         }
 
         OpennmsModelProtos.Alarm.Type type = OpennmsModelProtos.Alarm.Type.UNRECOGNIZED;
