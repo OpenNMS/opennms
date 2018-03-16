@@ -61,7 +61,7 @@ public class RestInfoIT extends OpenNMSSeleniumTestCase {
         final String json = response.getResponseText();
 
         // The expected payload looks like:
-        //  {"packageDescription":"OpenNMS","displayVersion":"21.0.5","packageName":"opennms","version":"21.0.4", "ticketerConfig":{"enabled":false, "plugin": null}}
+        //  {"packageDescription":"OpenNMS","displayVersion":"21.0.6-SNAPSHOT","packageName":"opennms","version":"21.0.6", "ticketerConfig":{"enabled":false, "plugin": null}}
         final ObjectMapper mapper = new ObjectMapper();
         final JsonNode infoObject = mapper.readTree(json);
 
