@@ -884,6 +884,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.telemetry.listeners</groupId>
+      <artifactId>org.opennms.features.telemetry.listeners.sflow</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.listeners</groupId>
       <artifactId>org.opennms.features.telemetry.listeners.udp</artifactId>
       <version>${project.version}</version>
     </dependency>
