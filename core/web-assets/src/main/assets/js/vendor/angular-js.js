@@ -1,5 +1,5 @@
 /* Angular Core */
-require('angular');
+const angular = require('angular');
 require('angular-animate');
 require('angular-cookies');
 require('angular-route');
@@ -20,4 +20,4 @@ require('angular-ui-bootstrap');
 
 console.log('init: angular-js'); // eslint-disable-line no-console
 
-module.exports = window.angular;
+module.exports = window['angular'] = angular;

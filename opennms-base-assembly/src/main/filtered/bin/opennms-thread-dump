@@ -1,0 +1,174 @@
+#!/bin/sh
+
+# Wrapper script for making a thread dump from a running OpenNMS
+# Copyright (c) 2018 The OpenNMS Group
+# 14 February 2018
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU Affero General Public License as published
+# by # the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Affero General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+# For more information contact:
+#      OpenNMS Licensing       <license@opennms.org>
+#      http://www.opennms.org/
+#      http://www.opennms.com/
+#
+# put an '@' here so we don't break maven substition
+
+opennms_home='${install.dir}'
+if [ ! -d "${opennms_home}" ]; then
+    opennms_home="$OPENNMS_HOME"
+fi
+
+default_date_pattern="%Y%m%d_%H%M%S"
+default_oldest_survivor="120"
+default_output_dir="${opennms_home}/logs"
+default_base_filename="opennms-thread-dump"
+
+java_conf="$opennms_home/etc/java.conf"
+basename="`basename $0`"
+
+die(){
+    echo "${basename}: $*" >&2
+    exit 1
+}
+warn(){
+    echo "${basename}: $*" >&2
+}
+tell(){
+    echo "${basename}: $*" >&3
+}
+
+#
+# Function: printHelp()
+# Give the user some basic help.
+#
+printHelp() {
+    echo "usage: $basename [-d] [-b] [-p] [-o]"
+    echo ""
+    echo "Options:"
+    echo ""
+    echo "  -d  Write the thread dump into this directory, instead"
+    echo "      of ${default_output_dir}."
+    echo ""
+    echo "  -b  Use a different base filename for the output files, instead"
+    echo "      of ${default_base_filename}"
+    echo ""
+    echo "  -p  Use a custom date pattern for the date / time portion of"
+    echo "      output filenames. The default is ${default_date_pattern}."
+    echo "      See the date(1) man page for format options."
+    echo ""
+    echo "  -o  Age, in minutes, of the oldest thread dump file that should"
+    echo "      be allowed to survive the cleanup step which runs at the"
+    echo "      start of each run of this command. Default is ${default_oldest_survivor}."
+    echo ""
+    echo ""
+}
+
+
+find_jstack_bin() {
+    if [ ! -e ${opennms_home}/etc/java.conf ]; then
+        die "FATAL: File ${opennms_home} does not exist."
+    fi
+    java_bin=`head -n 1 ${opennms_home}/etc/java.conf`
+    java_bin_actual=`readlink -f ${java_bin}`
+    echo ${java_bin_actual} | egrep -q 'jre/bin/java'
+    if [ $? -eq 0 ]; then
+        java_home_actual=`readlink -f ${java_bin_actual}/../..`
+    else
+        java_home_actual=`readlink -f ${java_bin_actual}/..`
+    fi
+    if [ ! -x ${java_home_actual}/bin/jstack ]; then
+        die "FATAL: ${java_home_actual}/bin/jstack does not exist or is not executable."
+    fi
+}
+
+find_opennms_pid() {
+    if [ -r ${opennms_home}/logs/opennms.pid ]; then
+        opennms_pid=`head -n 1 ${opennms_home}/logs/opennms.pid`
+    elif [ -r ${opennms_home}/logs/karaf.pid ]; then
+        opennms_pid=`head -n 1 ${opennms_home}/logs/karaf.pid`
+    else
+        die "FATAL: Unable to determine OpenNMS PID. Tried opennms.pid and karaf.pid."
+    fi
+}
+
+parseArgs() {
+    output_dir="${default_output_dir}"
+    base_filename="${default_base_filename}"
+    date_pattern="${default_date_pattern}"
+    oldest_survivor="${default_oldest_survivor}"
+
+    while getopts hd:b:p:o: c
+    do
+      case $c in
+          d)
+              output_dir="$OPTARG"
+              ;;
+
+          b)
+              base_filename="$OPTARG"
+              ;;
+    
+          p)
+              date_pattern="$OPTARG"
+              ;;
+
+          o)
+              oldest_survivor="$OPTARG"
+              ;;
+
+          h)
+              printHelp
+              exit 0
+              ;;
+      esac
+    done
+    shift `expr $OPTIND - 1`
+}
+
+deleteOldThreadDumps() {
+    find ${output_dir}/ -name ${base_filename}.'*' -a -mmin +${oldest_survivor} -delete
+}
+
+writeThreadDump() {
+    dump_file="${output_dir}/${base_filename}.`date +${date_pattern}`"
+    "${java_home_actual}/bin/jstack" -l ${opennms_pid} > "${dump_file}" || die "FATAL: Failed to write thread dump. Exiting with no cleanup."
+    chmod 0666 ${dump_file}
+}
+
+RUNAS=root
+# Load opennms.conf, if it exists, to override configuration options.
+if [ -f "${opennms_home}/etc/opennms.conf" ]; then
+	. "${opennms_home}/etc/opennms.conf"
+fi
+
+# Load ~/.opennms-dev/opennms.conf if it exists, to override configuration options.
+if [ -f "${HOME}/.opennms-dev/opennms.conf" ]; then
+	. "${HOME}/.opennms-dev/opennms.conf"
+fi
+
+parseArgs "$@"
+
+myuser="`id -u -n`"
+if [ x"$myuser" = x"$RUNAS" ]; then
+	true # all is well
+else
+	warn "FATAL: you must run this script as $RUNAS, not '$myuser'" >&2
+	exit 4	# According to LSB: 4 - user had insufficient privileges
+fi
+
+find_jstack_bin
+find_opennms_pid
+writeThreadDump
+deleteOldThreadDumps

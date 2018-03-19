@@ -46,7 +46,7 @@ public abstract class DBTools {
      * 
      * @see #constructUrl
      */
-    private static final String JDBC_HOST = "OPENNMS_JDBC_HOSTNAME";
+    private static final String JDBC_HOST = "localhost:5432";
 
     /**
      * Minimal port range
@@ -62,7 +62,7 @@ public abstract class DBTools {
      * Default Sybase JDBC driver to use. Defaults to
      * 'com.sybase.jdbc2.jdbc.SybDriver'
      */
-    public static final String DEFAULT_JDBC_DRIVER = "com.sybase.jdbc2.jdbc.SybDriver";
+    public static final String DEFAULT_JDBC_DRIVER = "org.postgresql.Driver";
 
     /**
      * PostgreSQL JDBC driver
@@ -72,7 +72,7 @@ public abstract class DBTools {
     /**
      * Default user to use when connecting to the database. Defaults to 'sa'
      */
-    public static final String DEFAULT_DATABASE_USER = "sa";
+    public static final String DEFAULT_DATABASE_USER = "postgres";
 
     /**
      * Default database password. Should be empty. You should not put a database
@@ -84,7 +84,7 @@ public abstract class DBTools {
     /**
      * Default vendor protocol, like jdbc:sybase:Tds:
      */
-    public static final String DEFAULT_URL = "jdbc:sybase:Tds:" + JDBC_HOST + "/tempdb";
+    public static final String DEFAULT_URL = "jdbc:postgresql://" + JDBC_HOST + "/opennms";
 
     // Pattern for the JDBC_HOST
     private static final Pattern _pattern = Pattern.compile(JDBC_HOST);

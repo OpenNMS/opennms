@@ -2,6 +2,57 @@
 
 === Changelog
 
+[[releasenotes-changelog-21.0.5]]
+
+==== Release 21.0.5
+
+Release 21.0.5 is the latest stable release of OpenNMS.
+It contains mostly small bug fixes.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.5 is _link:https://bladerunner.wikia.com/wiki/Do_Androids_Dream_of_Electric_Sheep%3F[Electric Sheep]_.
+
+===== Bug
+
+* PostgreSQL jdbc detector fails with: java.lang.ClassNotFoundException: org.postgresql.Driver not found (Issue http://issues.opennms.org/browse/NMS-9829[NMS-9829])
+* It is not possible to see Statsd results on the WebUI (Issue http://issues.opennms.org/browse/NMS-9861[NMS-9861])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+* Minion RPM spec doesn't build enough projects (Issue http://issues.opennms.org/browse/NMS-9869[NMS-9869])
+* Admin guide needs updating for SQS parameters on sink and rpc queues (Issue http://issues.opennms.org/browse/NMS-9870[NMS-9870])
+* Missing Plug-in Manager in Windows installation (Issue http://issues.opennms.org/browse/HZN-1260[HZN-1260])
+
+===== Enhancement
+
+* Allow xml config to be accessed from karaf (Issue http://issues.opennms.org/browse/HZN-1269[HZN-1269])
+
+[[releasenotes-changelog-21.0.4]]
+
+==== Release 21.0.4
+
+Release 21.0.4 is the latest stable release of OpenNMS.
+It contains bug fixes and a few performance enhancements.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.4 is _link:https://bladerunner.wikia.com/wiki/Priscilla_Stratton[Priscilla Stratton]_.
+
+===== Bug
+
+* ClassNotFoundException for org.apache.logging.log4j.core.util.ExecutorServices in output.log (Issue http://issues.opennms.org/browse/NMS-9695[NMS-9695])
+* logging does not work for OSGI bundles (Issue http://issues.opennms.org/browse/NMS-9773[NMS-9773])
+* Event parameter refactor breaks Auto-Acknowledgements for Notifications (Issue http://issues.opennms.org/browse/NMS-9799[NMS-9799])
+* Commands asset-topology: in Karaf console take no arguments (Issue http://issues.opennms.org/browse/NMS-9824[NMS-9824])
+* Plugin install fails (Issue http://issues.opennms.org/browse/NMS-9830[NMS-9830])
+* Change links to docs in help page using https (Issue http://issues.opennms.org/browse/NMS-9832[NMS-9832])
+* Minion RPM and DEB packaging completely removes Karaf data directory (Issue http://issues.opennms.org/browse/NMS-9833[NMS-9833])
+* AMQP forwarders do not support AMQP 1.0.0 (Issue http://issues.opennms.org/browse/NMS-9836[NMS-9836])
+* Copyright dates need a bump for 2018 (Issue http://issues.opennms.org/browse/NMS-9871[NMS-9871])
+
+===== Enhancement
+
+* ES REST plugin not doing preemptive basic auth (Issue http://issues.opennms.org/browse/NMS-9699[NMS-9699])
+* bsmd: avoid processing alarm lifecycle events when no rules are defined (Issue http://issues.opennms.org/browse/NMS-9835[NMS-9835])
+* Improve event processing rate in alarmd (for databases with high latency) (Issue http://issues.opennms.org/browse/NMS-9846[NMS-9846])
+
 [[releasenotes-changelog-21.0.3]]
 
 ==== Release 21.0.3

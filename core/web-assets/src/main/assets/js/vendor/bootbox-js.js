@@ -1,6 +1,6 @@
 require('./jquery-ui-js');
-require('bootbox');
+const bootbox = require('bootbox');
 
 console.log('init: bootbox-js'); // eslint-disable-line no-console
 
-module.exports = window.bootbox;
+module.exports = window['bootbox'] = bootbox;

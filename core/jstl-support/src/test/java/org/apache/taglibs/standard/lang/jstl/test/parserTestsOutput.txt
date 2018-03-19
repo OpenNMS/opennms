@@ -1,0 +1,260 @@
+# testing mixture of strings and expressions
+Attribute value: abc
+Parses to: abc
+Attribute value: ${ 3}
+Parses to: ${3}
+Attribute value: a${
+Causes an error: An error occurred while parsing custom action attribute "test" with value "a${": Encountered "<EOF>", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+Attribute value: a${ 5 }
+Parses to: a${5}
+Attribute value: ${ 3 }b
+Parses to: ${3}b
+Attribute value: ${ 1 }${ 2 }
+Parses to: ${1}${2}
+Attribute value: abc ${ 1} ${ 2} def
+Parses to: abc ${1} ${2} def
+
+# testing values that end with or contain "$"
+Attribute value: $
+Parses to: $
+Attribute value: \$
+Parses to: \$
+Attribute value:   $  
+Parses to:   $  
+Attribute value: test$
+Parses to: test$
+Attribute value: $test
+Parses to: $test
+Attribute value: test$test
+Parses to: test$test
+Attribute value: test$$$
+Parses to: test$$$
+Attribute value: test$$${ 34 }
+Parses to: test$$${34}
+Attribute value: test$$${ 34 }$$
+Parses to: test$$${34}$$
+Attribute value: test$${ 34 }
+Parses to: test$${34}
+Attribute value: $${ 34 }
+Parses to: $${34}
+Attribute value: $$
+Parses to: $$
+Attribute value: test$$
+Parses to: test$$
+Attribute value: test$$test
+Parses to: test$$test
+Attribute value: ${ 34 }$${ 34 }
+Parses to: ${34}$${34}
+
+# literals
+Attribute value: ${1}
+Parses to: ${1}
+Attribute value: ${-12}
+Parses to: ${(- 12)}
+Attribute value: ${true}
+Parses to: ${true}
+Attribute value: ${false}
+Parses to: ${false}
+Attribute value: ${null}
+Parses to: ${null}
+Attribute value: ${4.2}
+Parses to: ${4.2}
+Attribute value: ${-21.3}
+Parses to: ${(- 21.3)}
+Attribute value: ${4.}
+Parses to: ${4.0}
+Attribute value: ${.21}
+Parses to: ${0.21}
+Attribute value: ${3e-1}
+Parses to: ${0.3}
+Attribute value: ${.2222222222}
+Parses to: ${0.2222222222}
+
+# string literals with "
+Attribute value: ${"abc"}
+Parses to: ${"abc"}
+Attribute value: ${""}
+Parses to: ${""}
+Attribute value: ${"a"}
+Parses to: ${"a"}
+Attribute value: ${"         "}
+Parses to: ${"         "}
+Attribute value: ${" some string ''' "}
+Parses to: ${" some string ''' "}
+Attribute value: ${" with escaping \\"}
+Parses to: ${" with escaping \\"}
+Attribute value: ${" with escaping \""}
+Parses to: ${" with escaping \""}
+Attribute value: ${" with escaping \"\\\""}
+Parses to: ${" with escaping \"\\\""}
+Attribute value: ${" bad \ escaping"}
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${" bad \ escaping"}": Encountered "" bad \ ", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+Attribute value: ${" bad \' escaping"}
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${" bad \' escaping"}": Encountered "" bad \'", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+
+# string literals with '
+Attribute value: ${'abc'}
+Parses to: ${"abc"}
+Attribute value: ${''}
+Parses to: ${""}
+Attribute value: ${'a'}
+Parses to: ${"a"}
+Attribute value: ${'         '}
+Parses to: ${"         "}
+Attribute value: ${' some string """ '}
+Parses to: ${" some string \"\"\" "}
+Attribute value: ${' with escaping \\'}
+Parses to: ${" with escaping \\"}
+Attribute value: ${' with escaping \''}
+Parses to: ${" with escaping '"}
+Attribute value: ${' with escaping \'\\\''}
+Parses to: ${" with escaping '\\'"}
+Attribute value: ${' bad \ escaping'}
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${' bad \ escaping'}": Encountered "' bad \ ", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+Attribute value: ${' bad \" escaping'}
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${' bad \" escaping'}": Encountered "' bad \"", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+
+# identifiers
+Attribute value: ${abc}
+Parses to: ${abc}
+Attribute value: ${abc123}
+Parses to: ${abc123}
+Attribute value: ${abc_123}
+Parses to: ${abc_123}
+Attribute value: ${bad*identifier}
+Parses to: ${(bad * identifier)}
+
+# property accessors
+Attribute value: ${a .b .c}
+Parses to: ${a.b.c}
+Attribute value: ${ abc . 'def.ghi' . ghi . "jkl \"" }
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${ abc . 'def.ghi' . ghi . "jkl \"" }": Encountered "'def.ghi'", expected one of [<IDENTIFIER>]
+
+# array accessors
+Attribute value: ${ a[14] }
+Parses to: ${a[14]}
+Attribute value: ${ abc [def]}
+Parses to: ${abc[def]}
+Attribute value: ${ def ["yesthisisallowed"]}
+Parses to: ${def["yesthisisallowed"]}
+
+# mixed property/array accessors
+Attribute value: ${ a.b.c[d. e.  f]}
+Parses to: ${a.b.c[d.e.f]}
+Attribute value: ${ a[14].b[32].c[24][ 261] [24]}
+Parses to: ${a[14].b[32].c[24][261][24]}
+Attribute value: ${ a[b[c[d[e[f]]]].g] }
+Parses to: ${a[b[c[d[e[f]]]].g]}
+
+# mixed operators
+Attribute value: ${ 1 + 3 - 2 * 1 == 4}
+Parses to: ${((1 + 3 - (2 * 1)) == 4)}
+Attribute value: ${ 1 + 3 - 2 * 1 == 4 / 1.2}
+Parses to: ${((1 + 3 - (2 * 1)) == (4 / 1.2))}
+Attribute value: ${ 1 + 3 - 2 * 1 == 4 / 1.2 and abc}
+Parses to: ${(((1 + 3 - (2 * 1)) == (4 / 1.2)) and abc)}
+Attribute value: ${ 1 + 3 - 2 * 1 == 4 / 1.2 and abc or def or ghi and true}
+Parses to: ${((((1 + 3 - (2 * 1)) == (4 / 1.2)) and abc) or def or (ghi and true))}
+
+# unary operators
+Attribute value: ${ --not abc.def }
+Parses to: ${(- - not abc.def)}
+
+# array accessors of non-integer types
+Attribute value: ${  a ["hello"]."12" [17.5] }
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${  a ["hello"]."12" [17.5] }": Encountered ""12"", expected one of [<IDENTIFIER>]
+
+# making sure unicode escapes are not recognized
+Attribute value: \u0040
+Parses to: \u0040
+Attribute value: "\u0040"
+Parses to: "\u0040"
+
+# relational operators
+Attribute value: ${ a > b }
+Parses to: ${(a > b)}
+Attribute value: ${ a gt b }
+Parses to: ${(a > b)}
+Attribute value: ${ a < b }
+Parses to: ${(a < b)}
+Attribute value: ${ a lt b }
+Parses to: ${(a < b)}
+Attribute value: ${ a >= b }
+Parses to: ${(a >= b)}
+Attribute value: ${ a ge b }
+Parses to: ${(a >= b)}
+Attribute value: ${ a <= b }
+Parses to: ${(a <= b)}
+Attribute value: ${ a le b }
+Parses to: ${(a <= b)}
+Attribute value: ${ a == b }
+Parses to: ${(a == b)}
+Attribute value: ${ a eq b }
+Parses to: ${(a == b)}
+Attribute value: ${ a != b }
+Parses to: ${(a != b)}
+Attribute value: ${ a ne b }
+Parses to: ${(a != b)}
+
+# logical operators
+Attribute value: ${ a and b}
+Parses to: ${(a and b)}
+Attribute value: ${ a && b}
+Parses to: ${(a and b)}
+Attribute value: ${ a or b}
+Parses to: ${(a or b)}
+Attribute value: ${ a || b}
+Parses to: ${(a or b)}
+Attribute value: ${ !a }
+Parses to: ${(not a)}
+Attribute value: ${ not a }
+Parses to: ${(not a)}
+
+# empty operator
+Attribute value: ${ empty "A"}
+Parses to: ${(empty "A")}
+Attribute value: ${ empty "" }
+Parses to: ${(empty "")}
+Attribute value: ${ empty null }
+Parses to: ${(empty null)}
+Attribute value: ${ empty false}
+Parses to: ${(empty false)}
+Attribute value: ${ empty 0}
+Parses to: ${(empty 0)}
+Attribute value: ${ not empty 0}
+Parses to: ${(not empty 0)}
+Attribute value: ${ not empty empty 0}
+Parses to: ${(not empty empty 0)}
+Attribute value: ${ empty }
+Causes an error: An error occurred while parsing custom action attribute "test" with value "${ empty }": Encountered "}", expected one of [<INTEGER_LITERAL>, <FLOATING_POINT_LITERAL>, <STRING_LITERAL>, "true", "false", "null", "(", "-", "not", "!", "empty", <IDENTIFIER>]
+
+# functions
+Attribute value: ${a()}
+Parses to: ${a()}
+Attribute value: ${ a() }
+Parses to: ${a()}
+Attribute value: ${a(b)}
+Parses to: ${a(b)}
+Attribute value: ${ a(b) }
+Parses to: ${a(b)}
+Attribute value: ${a(b,c)}
+Parses to: ${a(b, c)}
+Attribute value: ${a(b,c,d)}
+Parses to: ${a(b, c, d)}
+Attribute value: ${a:b(c)}
+Parses to: ${a:b(c)}
+Attribute value: ${a:b(c,d)}
+Parses to: ${a:b(c, d)}
+Attribute value: ${a:b(c,d,e)}
+Parses to: ${a:b(c, d, e)}
+Attribute value: ${a(b).c}
+Parses to: ${a(b).c}
+Attribute value: ${a(b)[c]}
+Parses to: ${a(b)[c]}
+Attribute value: ${a[b()]}
+Parses to: ${a[b()]}
+
+# non-ascii input - the parser automatically translates the @@non-ascii
+# into a UNICODE string with value \u1111
+Attribute value: ?
+Parses to: ?

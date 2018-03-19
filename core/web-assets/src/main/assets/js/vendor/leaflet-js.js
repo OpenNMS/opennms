@@ -1,4 +1,4 @@
-require('leaflet/dist/leaflet-src');
+const L = require('leaflet/dist/leaflet-src');
 require('leaflet.markercluster/dist/leaflet.markercluster-src');
 require('../../static/legacy/openlayers-2.10/OpenLayers');
 
@@ -6,4 +6,4 @@ require('../../static/legacy/openlayers-2.10/OpenLayers');
 
 console.log('init: leaflet-js'); // eslint-disable-line no-console
 
-module.exports = window.L;
+module.exports = window['L'] = L;
