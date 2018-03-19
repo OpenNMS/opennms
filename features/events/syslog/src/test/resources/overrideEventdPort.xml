@@ -15,10 +15,11 @@
     <constructor-arg value="6837"/>
   </bean>
 
-  <!-- Override the Eventd listener ports -->
-  <bean id="eventdProperties" class="org.opennms.netmgt.eventd.EventdConfigManagerPropertiesConverter" factory-method="getProperties">
-    <constructor-arg ref="eventdConfigManager"/>
-    <!-- Override some of the Eventd properties -->
+  <!--
+    Define CustomEventdConfigManager to override default one and allow possibility to provide custom eventd-configuration.xml properties
+    without providing a custom xml file
+  -->
+  <bean id="eventdConfigManager" class="org.opennms.netmgt.syslogd.CustomEventdConfigManager">
     <constructor-arg>
       <map>
         <entry key="tcpIpAddress" value="127.0.0.1"/>
