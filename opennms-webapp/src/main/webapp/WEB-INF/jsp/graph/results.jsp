@@ -107,7 +107,7 @@
                         </c:choose>
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
-                </select>          
+                </select>
               </div> <!-- form-group -->
               </div> <!-- row -->
 
@@ -143,7 +143,7 @@
                         </c:choose>
                         <option value="${hour.key}" ${selected}>${hour.value}</option>
                     </c:forEach>
-                </select>          
+                </select>
             </div> <!-- form-group -->
             </div> <!-- row -->
             <button type="submit" class="btn btn-default">Apply Custom Time Period</button>
@@ -158,6 +158,7 @@
 </div> <!-- row -->
 
 <c:set var="showFootnote1" value="false"/>
+
 
 <div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
 
@@ -208,7 +209,18 @@
         </script>
 
         <c:choose>
-            <c:when test="${!empty resultSet.graphs}"> 
+            <c:when test="${!empty resultSet.graphs}">
+              <c:set var="nodeId" value="0"/>
+              <c:set var="ifIndex" value="0"/>
+              <c:forEach var="attribute" items="${resultSet.resource.attributes}">
+                <c:if test="${fn:contains(attribute.name, 'ifIndex')}">
+                  <c:set var="ifIndex" value="${attribute.value}"/>
+                </c:if>
+                <c:if test="${fn:contains(attribute.name, 'nodeId')}">
+                  <c:set var="nodeId" value="${attribute.value}"/>
+                </c:if>
+              </c:forEach>
+              <div style="display: inline" ng-controller="checkFlowsCtrl" ng-init="getFlowInfo(${nodeId}, ${ifIndex}, ${results.start.time}, ${results.end.time})">
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>
@@ -236,14 +248,23 @@
                                     <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
+                              <div style="display: inline" ng-if="flowsEnabled">
+                                <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="{{ hasFlows ? 'Open flow graphs' : 'No flows were found in current time range'}}">
+                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-default btn-xs">
+                                  <i class="fa fa-exchange" aria-hidden="true"></i>
+                                  </button>
+                                </span>
+                              </a>
+                            </div>
 	                    </div> <!-- graph-aux-controls -->
 	                    <div class="graph-container" data-graph-zoomable="true" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}" data-graph-title="${graph.title}" data-graph-start="${results.start.time}" data-graph-end="${results.end.time}" data-graph-zooming="${param.zoom}"></div>
                     </div>
                     <br/><br/>
                 </c:forEach>
+              </div>
             </c:when>
 
             <c:otherwise>
@@ -266,7 +287,7 @@
                 <a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${results.graphResultMap[resourceType][0].index}" data-target="#panel-resource${results.graphResultMap[resourceType][0].index}">${resourceType}</a>
                 <ul class="nav">
                     <c:forEach var="resultSet" items="${results.graphResultMap[resourceType]}">
-                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li> 
+                    <li><a href="${requestScope['javax.servlet.forward.request_uri']}?${pageContext.request.queryString}#panel-resource${resultSet.index}" data-target="#panel-resource${resultSet.index}">${resultSet.resource.label}</a></li>
                     </c:forEach>
                 </ul>
             </li>
@@ -296,11 +317,11 @@
                     document.getElementById("customTimeForm").style.display = "block";
                 } else {
                     goRelativeTime(value);
-                }  
+                }
             }
         }
     }
-  
+
     /*
      * This is used by the relative time form to reload the page with a new
      * time period.
