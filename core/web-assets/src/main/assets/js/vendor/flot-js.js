@@ -14,4 +14,4 @@ require('flot-datatable/jquery.flot.datatable.js');
 
 console.log('init: flot-js'); // eslint-disable-line no-console
 
-module.exports = jQuery.plot;
+module.exports = jQuery;
