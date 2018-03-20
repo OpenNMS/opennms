@@ -12,6 +12,7 @@ TODO
 * All detectors using the `JBossDetector` or `MX4JDetector` must be migrated to use the `Jsr160Detector` instead.
 * The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
+* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
 
 [[releasenotes-22-opennms-es-rest]]
 ==== Configuration of the _Elasticsearch ReST plugin_
@@ -94,6 +95,7 @@ For more details please refer to link:../guide-admin/index.html#configure-elasti
 * `JBossDetector` and `MX4JDetector` have been removed. Use the `Jsr160Detector` instead.
 * The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
+* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
 
 === New Features
 
