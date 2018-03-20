@@ -45,14 +45,13 @@ public class PacketDecoder extends MessageToMessageDecoder<DatagramPacket> {
     @Override
     protected void decode(final ChannelHandlerContext ctx, final DatagramPacket msg, final List<Object> out) throws Exception {
         final ByteBuffer buffer = msg.content().nioBuffer();
-
-        System.out.println(buffer);
         final SampleDatagram packet = new SampleDatagram(buffer);
-        StringWriter stringWriter = new StringWriter();
-        JsonWriter jsonWriter = new JsonWriter(stringWriter);
+        /*
+        final StringWriter stringWriter = new StringWriter();
+        final JsonWriter jsonWriter = new JsonWriter(stringWriter);
         packet.writeBson(jsonWriter);
         System.out.println(stringWriter.toString());
-
+        */
 
         out.add(new DefaultAddressedEnvelope<>(packet, msg.recipient(), msg.sender()));
     }

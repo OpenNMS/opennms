@@ -150,6 +150,7 @@ public class FlowStackIT {
             // Verify directly at elastic that the flows have been created
             verify(client, jestClient -> {
                 SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+                LOG.info("Response: {} {} ", response.isSucceeded() ? "Success" : "Failure", response.getTotal());
                 return response.isSucceeded() && response.getTotal() == 21;
             });
 

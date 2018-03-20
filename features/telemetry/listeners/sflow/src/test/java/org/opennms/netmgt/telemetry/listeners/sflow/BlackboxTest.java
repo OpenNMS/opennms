@@ -28,8 +28,13 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import org.bson.json.JsonWriter;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.Record;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleDatagram;
+import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleRecord;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -39,15 +44,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
-import org.bson.json.JsonWriter;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.opennms.netmgt.telemetry.listeners.sflow.proto.flows.SampleDatagram;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
 public class BlackboxTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
+    private final static Record.DataFormat DATA_FORMAT0_1 = Record.DataFormat.from(0, 1);
+    private final static Record.DataFormat DATA_FORMAT0_3 = Record.DataFormat.from(0, 3);
 
     @Parameterized.Parameters(name = "file: {0}")
     public static Iterable<String> data() throws IOException {
@@ -63,22 +67,32 @@ public class BlackboxTest {
     private void dumpPacket(SampleDatagram packet) {
         final StringWriter stringWriter = new StringWriter();
         final JsonWriter jsonWriter = new JsonWriter(stringWriter);
+        int total = 0;
         packet.writeBson(jsonWriter);
         System.out.println(stringWriter.toString());
+
+        for (SampleRecord sampleRecord : packet.version.datagram.samples.values) {
+            if (DATA_FORMAT0_1.equals(sampleRecord.dataFormat) || DATA_FORMAT0_3.equals(sampleRecord.dataFormat)) {
+                total++;
+            }
+        }
+
+        System.out.printf("%d total flow(s)\n", total);
     }
 
     @Test
     public void testFiles() throws Exception {
-            try (final FileChannel channel = FileChannel.open(FOLDER.resolve(this.file))) {
-                final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
-                channel.read(buffer);
-                buffer.flip();
+        try (final FileChannel channel = FileChannel.open(FOLDER.resolve(this.file))) {
+            final ByteBuffer buffer = ByteBuffer.allocate((int) channel.size());
+            channel.read(buffer);
+            buffer.flip();
 
-                do {
-                    final SampleDatagram packet = new SampleDatagram(buffer);
-                    dumpPacket(packet);
-                    assertThat(packet.version.version.value, is(0x0005));
-                } while (buffer.hasRemaining());
-            }
+            do {
+                final SampleDatagram packet = new SampleDatagram(buffer);
+
+                dumpPacket(packet);
+                assertThat(packet.version.version.value, is(0x0005));
+            } while (buffer.hasRemaining());
+        }
     }
 }
