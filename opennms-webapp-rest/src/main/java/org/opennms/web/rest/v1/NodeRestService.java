@@ -215,6 +215,11 @@ public class NodeRestService extends OnmsRestService {
                 throw getException(Status.BAD_REQUEST, "Node type must be set.");
             }
 
+            // see NMS-9855
+            if (node.getAssetRecord() != null && node.getAssetRecord().getNode() == null) {
+                node.getAssetRecord().setNode(node);
+            }
+
             LOG.debug("addNode: Adding node {}", node);
             m_nodeDao.save(node);
             sendEvent(EventConstants.NODE_ADDED_EVENT_UEI, node.getId(), node.getLabel());
