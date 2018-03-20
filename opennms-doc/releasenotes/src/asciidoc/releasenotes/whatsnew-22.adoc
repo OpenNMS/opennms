@@ -10,12 +10,90 @@ TODO
 * All collectors using the `JMXSecureCollector`, `MX4JCollector` or `JBossCollector` must be migrated to use the `Jsr160Collector` instead.
 * All monitors using the `JBossMonitor` or `JMXSecureMonitor` must be migrated to use the `Jsr160Monitor` instead.
 * All detectors using the `JBossDetector` or `MX4JDetector` must be migrated to use the `Jsr160Detector` instead.
+* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
+* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
+
+[[releasenotes-22-opennms-es-rest]]
+==== Configuration of the _Elasticsearch ReST plugin_
+
+The configuration of the _Elasticsearch ReST plugin_ has been changed.
+Some properties have new defaults and have been renamed.
+It is now also possible to define index settings and provide a index strategy to have more control over the index creation.
+
+[[releasenotes-22-opennms-es-rest-properties]]
+===== Changed Properties with new defaults
+
+Some properties of the plugin have changed.
+The following table shows the old (no longer supported) and the new property name, as well as the new default, which is used if the configuration is not updated manually.
+Please update the configuration file `etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg` accordingly.
+For more details on how to configure the plugin to use elasticsearch refer to link:../guide-admin/index.html#configure-elasticsearch-persistence[Configure ElasticSearch Persistence].
+
+[options="header, autowidth"]
+|===
+| Old parameter | New parameter | Default Value
+
+| `elasticsearchUrl`
+| `elasticUrl`
+| `http://localhost:9200`
+
+| `esusername`
+| `globalElasticUser`
+| `-`
+
+| `espassword`
+| `globalElasticPassword`
+| `-`
+
+| `timeout`
+| `connTimeout`
+| `5000`
+
+| `socketTimeout`
+| `readTimeout`
+| `30000`
+
+|===
+
+Besides that the following default values have been changed:
+
+[options="header, autowidth"]
+|===
+| Parameter | Old default | New default
+
+| `batchSize`
+| `1
+| `200`
+
+| `batchInterval`
+| `0`
+| `500`
+
+|`connTimeout`
+| `3000`
+| `5000`
+
+| `readTimeout`
+| `3000`
+| `30000`
+
+|===
+
+[[releasenotes-22-opennms-es-rest-index-properties]]
+===== Index Properties
+
+It is now possible to define index-related properties, e.g. the number of shards and replicas.
+It is also possible to define a property  `elasticIndexStrategy` to determine if a `hourly`, `daily`, `monthly` or `yearly` index should be created.
+It defaults to `monthly`.
+
+For more details please refer to link:../guide-admin/index.html#configure-elasticsearch-persistence[Configure ElasticSearch Persistence].
 
 === Breaking Changes
 
 * `JMXSecureCollector`, `MX4JCollector` and `JBossCollector` have been removed. Please use the `Jsr160Collector` instead.
 * `JBossMonitor` and `JMXSecureMonitor` have been. Removed. Use the `Jsr160Monitor` instead.
 * `JBossDetector` and `MX4JDetector` have been removed. Use the `Jsr160Detector` instead.
+* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
+* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
 
 === New Features
 
