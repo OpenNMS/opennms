@@ -449,6 +449,15 @@
         <mibObj oid=".1.3.6.1.4.1.9.9.383.1.4.14" instance="0" alias="cidsHlthMemCritical" type="Gauge32" />
       </group>
 
+      <!-- Stats from the CISCO-REMOTE-ACCESS-MONITOR-MIB -->
+      <group name="cisco-remote-access" ifType="ignore">
+        <mibObj oid=".1.3.6.1.4.1.9.9.392.1.3.1"  instance="0" alias="crasNumSessions" type="Gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.392.1.3.26" instance="0" alias="ipsecNumSess" type="Gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.392.1.3.35" instance="0" alias="svcNumSess" type="Gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.392.1.3.38" instance="0" alias="webvpnNumSess" type="Gauge32"/>
+        <mibObj oid=".1.3.6.1.4.1.9.9.392.1.3.29" instance="0" alias="l2lNumSess" type="Gauge32"/>
+      </group>
+
       <systemDef name="Cisco Altiga">
         <sysoidMask>.1.3.6.1.4.1.3076.</sysoidMask>
         <collect>
@@ -857,6 +866,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -867,6 +877,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -877,6 +888,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -887,6 +899,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -897,6 +910,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -907,6 +921,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -917,6 +932,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -927,6 +943,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -937,6 +954,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -947,6 +965,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -957,6 +976,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -967,6 +987,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -977,6 +998,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -987,6 +1009,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -997,6 +1020,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -1007,6 +1031,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -1017,6 +1042,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
@@ -1027,6 +1053,7 @@
           <includeGroup>cisco-cike</includeGroup>
           <includeGroup>cisco-cipsec</includeGroup>
           <includeGroup>cisco-memory</includeGroup>
+          <includeGroup>cisco-remote-access</includeGroup>
         </collect>
       </systemDef>
 
