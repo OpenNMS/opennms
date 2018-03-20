@@ -152,6 +152,7 @@ include::text/performance-data-collection/stress-testing.adoc[]
 [[ga-events]]
 == Events
 include::text/events/events.adoc[]
+include::text/events/event-configuration.adoc[]
 
 [[ga-alarms]]
 == Alarms
