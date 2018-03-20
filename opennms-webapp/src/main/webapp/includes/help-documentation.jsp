@@ -65,7 +65,7 @@
                             href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/guide-admin/guide-admin.html"
                             target="_blank" class="btn btn-default" role="button"
                             style="width: 100%">Admin Guide</a></td>
-                    <td style="border-top: none;">Have a look into the Admin Guid to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
+                    <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a
@@ -104,7 +104,7 @@
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-admin/index.html" target="_blank"
                                                      class="btn btn-default" role="button" style="width: 100%">Admin Guide</a></td>
-                    <td style="border-top: none;">Have a look into the Admin Guid to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
+                    <td style="border-top: none;">Have a look into the Admin Guide to find instructions how to configure OpenNMS to monitor your infrastructure and services.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="docs/guide-user/index.html" target="_blank"
