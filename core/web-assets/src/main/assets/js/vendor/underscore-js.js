@@ -1,5 +1,5 @@
-require('underscore');
+const _ = require('underscore');
 
 console.log('init: underscore-js'); // eslint-disable-line no-console
 
-module.exports = window._;
+module.exports = window['_'] = _;

@@ -166,10 +166,10 @@ public class ElasticFlowRepository implements FlowRepository {
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
         try (final Timer.Context ctx = logPersistingTimer.time()) {
-            final String index = indexStrategy.getIndex("netflow", new Date());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
+                   final String index = indexStrategy.getIndex("netflow", new Date(flowDocument.getTimestamp()));
                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                         .index(index)
                         .type(TYPE);

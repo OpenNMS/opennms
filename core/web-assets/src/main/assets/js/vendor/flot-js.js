@@ -1,4 +1,4 @@
-require('vendor/jquery-js');
+const jQuery = require('vendor/jquery-js');
 require('vendor/d3-js');
 
 require('flot');

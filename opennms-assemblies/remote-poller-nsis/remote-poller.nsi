@@ -261,7 +261,7 @@ VIAddVersionKey FileDescription  "${PROJECT_NAME} Installer"
 VIAddVersionKey FileVersion      1
 VIAddVersionKey ProductName      "${PROJECT_NAME}"
 VIAddVersionKey ProductVersion   "${PROJECT_VERSION}"
-VIAddVersionKey LegalCopyright   "Copyright 2008-2017 The OpenNMS Group, Inc."
+VIAddVersionKey LegalCopyright   "Copyright 2008-2018 The OpenNMS Group, Inc."
 VIAddVersionKey Comments         ""
 VIAddVersionKey CompanyName      "The OpenNMS Group, Inc."
 
@@ -277,7 +277,7 @@ RequestExecutionLevel admin
 # Include an XP manifest
 XPStyle On
 
-BrandingText "Copyright 2008-2017 The OpenNMS Group, Inc.  Installer made with NSIS."
+BrandingText "Copyright 2008-2018 The OpenNMS Group, Inc.  Installer made with NSIS."
 
 #AddBrandingImage top 110
 

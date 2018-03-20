@@ -274,7 +274,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
                 label = descr.toString();
             }
 
-            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName, label, ifSpeed, ifSpeedFriendly);
+            OnmsResource resource = getResourceByParentPathAndInterface(parent, intfName, label, snmpInterface);
             if (snmpInterface != null) {
                 Set<OnmsIpInterface> ipInterfaces = snmpInterface.getIpInterfaces();
                 if (ipInterfaces.size() > 0) {
@@ -329,9 +329,9 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return new OnmsResource(intf, intf, this, set, path);
     }
 
-    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf, String label, Long ifSpeed, String ifSpeedFriendly) throws DataAccessException {
+    private OnmsResource getResourceByParentPathAndInterface(ResourcePath parent, String intf, String label, OnmsSnmpInterface snmpInterface) throws DataAccessException {
         final ResourcePath path = ResourcePath.get(parent, intf);
-        final AttributeLoader loader = new AttributeLoader(m_resourceStorageDao, path, ifSpeed, ifSpeedFriendly);
+        final AttributeLoader loader = new AttributeLoader(m_resourceStorageDao, path, snmpInterface);
         final Set<OnmsAttribute> set = new LazySet<OnmsAttribute>(loader);
         return new OnmsResource(intf, label, this, set, path);
     }
@@ -339,24 +339,26 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
     private static class AttributeLoader implements LazySet.Loader<OnmsAttribute> {
         private final ResourceStorageDao m_resourceStorageDao;
         private final ResourcePath m_path;
-        private final Long m_ifSpeed;
-        private final String m_ifSpeedFriendly;
+        private final OnmsSnmpInterface m_snmpInterface;
 
-        public AttributeLoader(ResourceStorageDao resourceStorageDao, ResourcePath path, Long ifSpeed, String ifSpeedFriendly) {
+        public AttributeLoader(ResourceStorageDao resourceStorageDao, ResourcePath path,
+                OnmsSnmpInterface snmpInterface) {
             m_resourceStorageDao = resourceStorageDao;
             m_path = path;
-            m_ifSpeed = ifSpeed;
-            m_ifSpeedFriendly = ifSpeedFriendly;
+            m_snmpInterface = snmpInterface;
         }
 
         @Override
         public Set<OnmsAttribute> load() {
             Set<OnmsAttribute> attributes = m_resourceStorageDao.getAttributes(m_path);
-            if (m_ifSpeed != null) {
-                attributes.add(new ExternalValueAttribute("ifSpeed", m_ifSpeed.toString()));
-            }
-            if (m_ifSpeedFriendly != null) {
-                attributes.add(new ExternalValueAttribute("ifSpeedFriendly", m_ifSpeedFriendly));
+            if (m_snmpInterface != null) {
+                attributes.add(new ExternalValueAttribute("nodeId", m_snmpInterface.getNodeId().toString()));
+                attributes.add(new ExternalValueAttribute("ifIndex", m_snmpInterface.getIfIndex().toString()));
+                if (m_snmpInterface.getIfSpeed() != null) {
+                    String ifSpeedFriendly = SIUtils.getHumanReadableIfSpeed(m_snmpInterface.getIfSpeed());
+                    attributes.add(new ExternalValueAttribute("ifSpeed", m_snmpInterface.getIfSpeed().toString()));
+                    attributes.add(new ExternalValueAttribute("ifSpeedFriendly", ifSpeedFriendly));
+                }
             }
             return attributes;
         }
