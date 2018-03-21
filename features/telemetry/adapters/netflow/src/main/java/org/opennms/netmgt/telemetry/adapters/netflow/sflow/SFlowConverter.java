@@ -48,8 +48,8 @@ public class SFlowConverter implements Converter<BsonDocument> {
         for (final BsonValue sample : packet.getDocument("data").getArray("samples")) {
             final BsonDocument sampleDocument = sample.asDocument();
 
-            if ("0:1".equals(sampleDocument.get("format").asString()) ||
-                "0:3".equals(sampleDocument.get("format").asString())) {
+            if ("0:1".equals(sampleDocument.get("format").asString().getValue()) ||
+                "0:3".equals(sampleDocument.get("format").asString().getValue())) {
                 // Handle only (expanded) flow samples
                 result.add(new SFlow(header, sampleDocument.get("data").asDocument()));
             }
