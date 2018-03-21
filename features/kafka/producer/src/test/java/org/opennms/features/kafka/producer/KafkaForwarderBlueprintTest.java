@@ -46,7 +46,7 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author jwhite
  */
-@Ignore
+//@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
                                     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",

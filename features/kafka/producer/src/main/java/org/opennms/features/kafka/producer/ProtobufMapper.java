@@ -107,8 +107,10 @@ public class ProtobufMapper {
                 .setUei(event.getUei())
                 .setSource(event.getSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getSeverity())))
-                .setLabel(eventConfDao.getEventLabel(event.getUei()))
-                .setDescription(event.getDescr());
+                .setLabel(eventConfDao.getEventLabel(event.getUei()));
+        if (event.getDescr() != null) {
+            builder.setDescription(event.getDescr());
+        }
 
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
