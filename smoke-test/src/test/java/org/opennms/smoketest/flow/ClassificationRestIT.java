@@ -188,6 +188,14 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .get("/groups/1").then()
                 .assertThat().statusCode(400);
 
+        // CSV specified in header
+        given().header("Accept", "text/comma-separated-values")
+                .get("/groups/1").then()
+                .assertThat().statusCode(200)
+                .assertThat().contentType("text/comma-separated-values")
+                .assertThat().header("Content-Disposition","attachment; filename=\"1_rules.csv\"" );
+
+
         // JSON
         given().param("format", "json").get("/groups/1").then()
                 .assertThat().statusCode(200)
