@@ -7,8 +7,8 @@
  * @author jwhite
  */
 
-const $j = require('vendor/jquery-ui-js');
-require('vendor/flot-js');
+require('vendor/jquery-ui-js');
+const $j = require('vendor/flot-js');
 
 const Backshift = require('vendor/backshift-js');
 const holder = require('vendor/holder-js');
