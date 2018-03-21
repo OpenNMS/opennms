@@ -115,10 +115,6 @@
         <argument ref="jestClient" />
         <argument ref="indexSettings" />
     </bean>
-    <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository">
-        <service-properties>
-            <entry key="registration.export" value="true" />
-        </service-properties>
-    </service>
+    <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
 
 </blueprint>
