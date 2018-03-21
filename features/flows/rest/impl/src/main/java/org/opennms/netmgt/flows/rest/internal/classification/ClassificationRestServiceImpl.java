@@ -201,15 +201,18 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response getGroup(int groupId, String format, String requestedFilename) {
+    public Response getGroup(int groupId, String format, String requestedFilename, String acceptHeader) {
 
-        if(StringUtils.equalsIgnoreCase( "csv", format)
+        boolean isCsvRequested = StringUtils.contains(acceptHeader, "text/comma-separated-values")
+                || StringUtils.equalsIgnoreCase( "csv", format);
+
+        if(isCsvRequested
                 && requestedFilename != null
                 && !new FilenameHelper().isValidFileName(requestedFilename)) {
           return Response.status(Response.Status.BAD_REQUEST).entity("parameter filename should follow this regex pattern: "
                   + FilenameHelper.REGEX_ALLOWED_CHAR).build();
 
-        } else if(StringUtils.equalsIgnoreCase( "csv", format)) {
+        } else if(isCsvRequested) {
             final String csvContent = classificationService.exportRules(groupId);
             final String filename = new FilenameHelper().createFilenameForGroupExport(groupId, requestedFilename);
             return Response.ok()
@@ -219,14 +222,17 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
                     .build();
 
         } else {
-            final Group group = classificationService.getGroup(groupId);
-            return Response.ok(convert(group))
-                    .header("Content-Type", MediaType.APPLICATION_JSON)
-                    .build();
+            return getGroupAsJson(groupId);
         }
     }
 
 
+    private Response getGroupAsJson(int groupId){
+        final Group group = classificationService.getGroup(groupId);
+        return Response.ok(convert(group))
+                .header("Content-Type", MediaType.APPLICATION_JSON)
+                .build();
+    }
 
     @Override
     public Response deleteGroup(int groupId) {
