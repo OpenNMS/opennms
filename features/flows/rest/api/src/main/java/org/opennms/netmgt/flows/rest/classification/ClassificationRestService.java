@@ -33,11 +33,13 @@ import java.io.InputStream;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -80,7 +82,11 @@ public interface ClassificationRestService {
 
     @GET
     @Path("groups/{id}")
-    Response getGroup(@PathParam("id") int groupId);
+    @Produces({MediaType.APPLICATION_JSON, "text/comma-separated-values"})
+    Response getGroup(@PathParam("id") int groupId,
+                      @QueryParam("format") String format,
+                      @QueryParam("filename") String requestedFilename,
+                      @HeaderParam("Accept") String acceptHeader);
 
     @DELETE
     @Path("groups/{id}")
@@ -93,11 +99,6 @@ public interface ClassificationRestService {
     @POST
     @Consumes("text/comma-separated-values")
     Response importRules(@Context UriInfo uriInfo, InputStream inputStream);
-
-    @GET
-    @Path("groups/{id}")
-    @Produces("text/comma-separated-values")
-    Response exportRules(@PathParam("id") int groupId);
 
     @GET
     @Path("protocols")
