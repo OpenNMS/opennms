@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.elastic;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory;
 
 public class IndexStrategyFactoryTest {
     @Test

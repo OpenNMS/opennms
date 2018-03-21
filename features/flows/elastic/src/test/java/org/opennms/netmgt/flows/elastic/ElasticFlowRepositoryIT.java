@@ -38,6 +38,7 @@ import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
@@ -71,7 +72,7 @@ public class ElasticFlowRepositoryIT {
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher);
+                    client, IndexStrategy.MONTHLY, documentEnricher, 3);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty

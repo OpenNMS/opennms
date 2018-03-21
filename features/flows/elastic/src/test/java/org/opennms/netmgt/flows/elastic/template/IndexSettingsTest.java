@@ -32,6 +32,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 public class IndexSettingsTest {
 

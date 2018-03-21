@@ -41,9 +41,9 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.netmgt.flows.elastic.template.IndexSettings;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.netmgt.flows.filter.api.NodeCriteria;
+import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
 
@@ -58,17 +58,17 @@ public class InitializingFlowRepository implements FlowRepository {
     private final ElasticFlowRepositoryInitializer initializer;
     private final FlowRepository delegate;
 
-    public InitializingFlowRepository(final FlowRepository delegate, final JestClient client, final IndexSettings indexSettings) {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(delegate);
-        Objects.requireNonNull(indexSettings);
-
-        this.initializer = new ElasticFlowRepositoryInitializer(client, indexSettings);
-        this.delegate = delegate;
+    public InitializingFlowRepository(final BundleContext bundleContext, final FlowRepository delegate, final JestClient client, final IndexSettings indexSettings) {
+        this(delegate, new ElasticFlowRepositoryInitializer(bundleContext, client, indexSettings));
     }
 
     protected InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
-        this(delegate, client, new IndexSettings());
+        this(delegate, new ElasticFlowRepositoryInitializer(client));
+    }
+
+    private InitializingFlowRepository(final FlowRepository delegate, final ElasticFlowRepositoryInitializer initializer) {
+        this.delegate = Objects.requireNonNull(delegate);
+        this.initializer = Objects.requireNonNull(initializer);
     }
 
     @Override

@@ -27,6 +27,10 @@
             <cm:property name="retryCooldown" value="500" />
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
+            <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+
+            <!-- Bulk Action Retry settings -->
+            <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
 
             <!-- Index settings -->
             <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
@@ -43,7 +47,7 @@
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
-    <bean id="flowRequestExecutorFactory" class="org.opennms.netmgt.flows.elastic.FlowRequestExecutor">
+    <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
     <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
@@ -56,19 +60,20 @@
         <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
         <property name="proxy" value="${proxy}" />
         <property name="credentials" ref="credentialsProvider" />
-        <property name="requestExecutorFactory" ref="flowRequestExecutorFactory" />
+        <property name="requestExecutorFactory" ref="requestExecutorFactory" />
         <property name="connTimeout" value="${connTimeout}" />
         <property name="readTimeout" value="${readTimeout}" />
+        <property name="retries" value="${retries}" />
     </bean>
 
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
-    <bean id="indexStrategy" class="org.opennms.netmgt.flows.elastic.IndexStrategyFactory" factory-method="createIndexStrategy">
+    <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
     </bean>
 
-    <bean id="indexSettings" class="org.opennms.netmgt.flows.elastic.template.IndexSettings">
+    <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
         <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
@@ -108,9 +113,11 @@
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
+        <argument value="${bulkRetryCount}" />
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">
+        <argument ref="blueprintBundleContext" />
         <argument ref="elasticFlowRepository" />
         <argument ref="jestClient" />
         <argument ref="indexSettings" />

@@ -52,8 +52,10 @@ import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
-import org.opennms.plugins.elasticsearch.rest.BulkResultWrapper;
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,6 +95,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
+    private final int bulkRetryCount;
+
     /**
      * Flows/second throughput
      */
@@ -118,10 +122,11 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Histogram flowsPerLog;
 
-    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher) {
+    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher, int bulkRetryCount) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
+        this.bulkRetryCount = bulkRetryCount;
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -161,21 +166,26 @@ public class ElasticFlowRepository implements FlowRepository {
 
         LOG.debug("Persisting {} flow documents.", flowDocuments.size());
         try (final Timer.Context ctx = logPersistingTimer.time()) {
-            final Bulk.Builder bulkBuilder = new Bulk.Builder();
-            for (FlowDocument flowDocument : flowDocuments) {
-                final String index = indexStrategy.getIndex(new Date(flowDocument.getTimestamp()));
-                final Index.Builder indexBuilder = new Index.Builder(flowDocument)
+            final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
+                final Bulk.Builder bulkBuilder = new Bulk.Builder();
+                for (FlowDocument flowDocument : documents) {
+                   final String index = indexStrategy.getIndex("netflow", new Date(flowDocument.getTimestamp()));
+                   final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                         .index(index)
                         .type(TYPE);
-                bulkBuilder.addAction(indexBuilder.build());
+                    bulkBuilder.addAction(indexBuilder.build());
+                }
+                return new BulkWrapper(bulkBuilder);
+            }, bulkRetryCount);
+            try {
+                // the bulk request considers retries
+                bulkRequest.execute();
+            } catch (BulkException ex) {
+                throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedDocuments());
+            } catch (IOException ex) {
+                LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
+                throw new FlowException(ex.getMessage(), ex);
             }
-            final Bulk bulk = bulkBuilder.build();
-            final BulkResultWrapper result = new BulkResultWrapper(executeRequest(bulk));
-            if (!result.isSucceeded()) {
-                final List<FailedItem<FlowDocument>> failedFlows = result.getFailedItems(flowDocuments);
-                throw new PersistenceException(result.getErrorMessage(), failedFlows);
-            }
-
             flowsPersistedMeter.mark(flowDocuments.size());
         }
     }
@@ -437,15 +447,6 @@ public class ElasticFlowRepository implements FlowRepository {
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String directionTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
                 .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, directionTerm, keyForMissingTerm, includeOther, filters));
-    }
-
-    private <T extends JestResult> T executeRequest(Action<T> clientRequest) throws FlowException {
-        try {
-            return client.execute(clientRequest);
-        } catch (IOException ex) {
-            LOG.error("An error occurred while executing the given request: {}", clientRequest, ex);
-            throw new FlowException(ex.getMessage(), ex);
-        }
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query) {

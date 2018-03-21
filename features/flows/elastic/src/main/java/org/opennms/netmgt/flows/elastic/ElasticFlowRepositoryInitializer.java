@@ -28,81 +28,29 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.opennms.netmgt.flows.elastic.template.CachingTemplateLoader;
-import org.opennms.netmgt.flows.elastic.template.DefaultTemplateLoader;
-import org.opennms.netmgt.flows.elastic.template.IndexSettings;
-import org.opennms.netmgt.flows.elastic.template.MergingTemplateLoader;
-import org.opennms.netmgt.flows.elastic.template.TemplateLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer;
+import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
+import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.indices.template.PutTemplate;
 
-public class ElasticFlowRepositoryInitializer {
+public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer {
 
     public static final String TEMPLATE_RESOURCE = "/netflow-template.json";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowRepositoryInitializer.class);
-
     private static final String FLOW_TEMPLATE_NAME = "netflow";
-    private static final long[] COOL_DOWN_TIMES_IN_MS = {250, 500, 1000, 5000, 10000, 60000};
 
-    private boolean initialized;
-    private final AtomicInteger retryCount = new AtomicInteger(0);
-    private final JestClient client;
-    private final TemplateLoader templateLoader;
-
-    public ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
-        this.client = Objects.requireNonNull(client);
-        this.templateLoader = new CachingTemplateLoader(
-                new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
+    public ElasticFlowRepositoryInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
+        super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    public synchronized void initialize() {
-        while(!initialized && !Thread.interrupted()) {
-            try {
-                LOG.debug("ElasticFlowRepository is not initialized. Initializing...");
-                doInitialize();
-                initialized = true;
-            } catch (Exception ex) {
-                LOG.error("An error occurred while initializing the ElasticFlowRepository: {}.", ex.getMessage(), ex);
-                long coolDownTimeInMs = COOL_DOWN_TIMES_IN_MS[retryCount.get()];
-                LOG.debug("Retrying in {} ms", coolDownTimeInMs);
-                waitBeforeRetrying(coolDownTimeInMs);
-                if (retryCount.get() != COOL_DOWN_TIMES_IN_MS.length - 1) {
-                    retryCount.incrementAndGet();
-                }
-            }
-        }
+    protected ElasticFlowRepositoryInitializer(JestClient client, IndexSettings indexSettings) {
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings));
     }
 
-    public synchronized boolean isInitialized() {
-        return initialized;
-    }
-    
-    private void waitBeforeRetrying(long cooldown) {
-        try {
-            Thread.sleep(cooldown);
-        } catch (InterruptedException e) {
-            LOG.warn("Sleep was interrupted", e);
-        }
-    }
-
-    private void doInitialize() throws IOException {
-        final String template = templateLoader.load(TEMPLATE_RESOURCE);
-
-        // Post it to elastic
-        final PutTemplate putTemplate = new PutTemplate.Builder(FLOW_TEMPLATE_NAME, template).build();
-        final JestResult result = client.execute(putTemplate);
-        if (!result.isSucceeded()) {
-            // In case the template could not be created, we bail
-            throw new IllegalStateException("Template '" + FLOW_TEMPLATE_NAME + "' could not be persisted. Reason: " + result.getErrorMessage());
-        }
+    protected ElasticFlowRepositoryInitializer(JestClient client) {
+        super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader());
     }
 }

@@ -47,7 +47,7 @@ import org.apache.http.auth.Credentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsParser;
 import org.opennms.plugins.elasticsearch.rest.credentials.CredentialsProvider;
-import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
+import org.opennms.plugins.elasticsearch.rest.executors.LimitedRetriesRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.executors.RequestExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +83,7 @@ public class RestClientFactory {
 	private int m_timeout = 0;
 	private int m_retries = 0;
 	private JestClient client;
-	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new DefaultRequestExecutor(m_timeout, m_retries);
+	private Supplier<RequestExecutor> requestExecutorSupplier = () -> new LimitedRetriesRequestExecutor(m_timeout, m_retries);
 
 	public RestClientFactory(final String elasticSearchURL) throws MalformedURLException {
 		this(elasticSearchURL, null, null);
