@@ -41,7 +41,7 @@ class FilenameHelper {
         if(filename == null
                 || filename.startsWith(" " )
                 || filename.endsWith(" ")
-                || filename.matches("^[ ]$")){
+                || filename.trim().isEmpty()){
             return false;
         }
         Matcher m = p.matcher(filename);
