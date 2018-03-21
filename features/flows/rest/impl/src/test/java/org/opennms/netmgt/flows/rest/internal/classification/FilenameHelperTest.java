@@ -50,6 +50,7 @@ public class FilenameHelperTest {
         assertFalse(h.isValidFileName(null));
         assertFalse(h.isValidFileName(""));
         assertFalse(h.isValidFileName(" "));
+        assertFalse(h.isValidFileName("          "));
         assertFalse(h.isValidFileName("ä"));
         assertFalse(h.isValidFileName("a%"));
         assertFalse(h.isValidFileName("%"));

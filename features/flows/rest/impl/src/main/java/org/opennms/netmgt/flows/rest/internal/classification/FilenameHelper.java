@@ -28,12 +28,8 @@
 
 package org.opennms.netmgt.flows.rest.internal.classification;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.lang3.StringUtils;
 
 class FilenameHelper {
 
@@ -42,9 +38,10 @@ class FilenameHelper {
     private Pattern p = Pattern.compile(REGEX_ALLOWED_CHAR);
 
     boolean isValidFileName(String filename){
-        if(StringUtils.isBlank(filename)
-                || StringUtils.startsWith(filename, " " )
-                || StringUtils.endsWith(filename, " ")){
+        if(filename == null
+                || filename.startsWith(" " )
+                || filename.endsWith(" ")
+                || filename.matches("^[ ]$")){
             return false;
         }
         Matcher m = p.matcher(filename);
@@ -52,6 +49,6 @@ class FilenameHelper {
     }
 
     String createFilenameForGroupExport(int groupId, String requestedFilename){
-        return StringUtils.isBlank(requestedFilename)?groupId + "_rules.csv": requestedFilename;
+        return isValidFileName(requestedFilename) ? requestedFilename: groupId + "_rules.csv";
     }
 }

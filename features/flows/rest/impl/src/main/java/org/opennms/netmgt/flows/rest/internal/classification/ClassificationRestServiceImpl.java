@@ -43,7 +43,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
-import org.apache.commons.lang3.StringUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -203,29 +202,33 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     @Override
     public Response getGroup(int groupId, String format, String requestedFilename, String acceptHeader) {
 
-        boolean isCsvRequested = StringUtils.contains(acceptHeader, "text/comma-separated-values")
-                || StringUtils.equalsIgnoreCase( "csv", format);
+        boolean isCsvRequested =
+                (acceptHeader != null && acceptHeader.contains("text/comma-separated-values"))
+                || "csv".equalsIgnoreCase(format);
 
         if(isCsvRequested
-                && requestedFilename != null
+                && requestedFilename != null // this means filename parameter was present
                 && !new FilenameHelper().isValidFileName(requestedFilename)) {
           return Response.status(Response.Status.BAD_REQUEST).entity("parameter filename should follow this regex pattern: "
                   + FilenameHelper.REGEX_ALLOWED_CHAR).build();
 
         } else if(isCsvRequested) {
-            final String csvContent = classificationService.exportRules(groupId);
-            final String filename = new FilenameHelper().createFilenameForGroupExport(groupId, requestedFilename);
-            return Response.ok()
-                    .header("Content-Disposition", "attachment; filename=\""+filename+"\"")
-                    .header("Content-Type", "text/comma-separated-values")
-                    .entity(csvContent)
-                    .build();
+            return getGroupAsCsv(groupId, requestedFilename);
 
         } else {
             return getGroupAsJson(groupId);
         }
     }
 
+    private Response getGroupAsCsv(int groupId, String requestedFilename){
+        final String csvContent = classificationService.exportRules(groupId);
+        final String filename = new FilenameHelper().createFilenameForGroupExport(groupId, requestedFilename);
+        return Response.ok()
+                .header("Content-Disposition", "attachment; filename=\""+filename+"\"")
+                .header("Content-Type", "text/comma-separated-values")
+                .entity(csvContent)
+                .build();
+    }
 
     private Response getGroupAsJson(int groupId){
         final Group group = classificationService.getGroup(groupId);
