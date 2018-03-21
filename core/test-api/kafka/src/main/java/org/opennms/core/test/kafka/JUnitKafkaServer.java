@@ -95,7 +95,7 @@ public class JUnitKafkaServer extends ExternalResource {
         final Properties properties = new Properties();
         properties.put("broker.id", "1");
         properties.put("auto.create.topics.enable", "true");
-        properties.put("num.partitions", "100");
+        properties.put("num.partitions", "10");
         properties.put("enable.zookeeper", "true");
         properties.put("host.name", localhost);
         properties.put("log.dir", "target/kafka-log");
