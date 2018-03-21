@@ -38,10 +38,12 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.lang3.StringUtils;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -145,15 +147,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response exportRules(int groupId) {
-        final String csvContent = classificationService.exportRules(groupId);
-        return Response.ok()
-                .header("Content-Disposition", "attachment; filename=\"" + groupId +  "_rules.csv\"")
-                .entity(csvContent)
-                .build();
-    }
-
-    @Override
     public Response deleteRules(UriInfo uriInfo) {
         String groupId = UriInfoUtils.getValue(uriInfo, "groupId", null);
         if (groupId != null) {
@@ -208,10 +201,32 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     }
 
     @Override
-    public Response getGroup(int groupId) {
-        final Group group = classificationService.getGroup(groupId);
-        return Response.ok(convert(group)).build();
+    public Response getGroup(int groupId, String format, String requestedFilename) {
+
+        if(StringUtils.equalsIgnoreCase( "csv", format)
+                && requestedFilename != null
+                && !new FilenameHelper().isValidFileName(requestedFilename)) {
+          return Response.status(Response.Status.BAD_REQUEST).entity("parameter filename should follow this regex pattern: "
+                  + FilenameHelper.REGEX_ALLOWED_CHAR).build();
+
+        } else if(StringUtils.equalsIgnoreCase( "csv", format)) {
+            final String csvContent = classificationService.exportRules(groupId);
+            final String filename = new FilenameHelper().createFilenameForGroupExport(groupId, requestedFilename);
+            return Response.ok()
+                    .header("Content-Disposition", "attachment; filename=\""+filename+"\"")
+                    .header("Content-Type", "text/comma-separated-values")
+                    .entity(csvContent)
+                    .build();
+
+        } else {
+            final Group group = classificationService.getGroup(groupId);
+            return Response.ok(convert(group))
+                    .header("Content-Type", MediaType.APPLICATION_JSON)
+                    .build();
+        }
     }
+
+
 
     @Override
     public Response deleteGroup(int groupId) {

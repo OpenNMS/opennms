@@ -168,6 +168,39 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
+    public void verifyExportGroup(){
+
+        // CSV & Name was not specified
+        given().param("format", "csv").get("/groups/1").then()
+                .assertThat().statusCode(200)
+                .assertThat().contentType("text/comma-separated-values")
+                .assertThat().header("Content-Disposition","attachment; filename=\"1_rules.csv\"" );
+
+        // CSV & valid Name was specified
+        given().param("format", "csv").param("").param("filename", "a b.csv")
+                .get("/groups/1").then()
+                .assertThat().statusCode(200)
+                .assertThat().contentType("text/comma-separated-values")
+                .assertThat().header("Content-Disposition","attachment; filename=\"a b.csv\"" );
+
+        // CSV & invalid Name was specified
+        given().param("format", "csv").param("").param("filename", "$b.csv")
+                .get("/groups/1").then()
+                .assertThat().statusCode(400);
+
+        // JSON
+        given().param("format", "json").get("/groups/1").then()
+                .assertThat().statusCode(200)
+                .assertThat().contentType("application/json");
+
+        // Default: JSON
+        given().get("/groups/1").then()
+                .assertThat().statusCode(200)
+                .assertThat().contentType("application/json");
+
+    }
+
+    @Test
     public void verifyCreateNull() {
         given().contentType(ContentType.JSON)
                 .body("{}")
