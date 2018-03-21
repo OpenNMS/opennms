@@ -127,6 +127,11 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return getConfig().isEnabled();
+    }
+
     /* (non-Javadoc)
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */

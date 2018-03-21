@@ -68,4 +68,9 @@ public class AlarmNorthbounder extends AbstractNorthbounder {
     public void setAlarmForwarder(DefaultAlarmForwarder alarmForwarder) {
         this.alarmForwarder = alarmForwarder;
     }
+
+    @Override
+    public boolean isReady() {
+        return true;
+    }
 }

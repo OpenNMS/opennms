@@ -43,8 +43,9 @@ public interface AlarmPersister {
      * <p>persist</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
+     * @param eagerlyLoadAlarm <code>true</code> if all fields on the returned alarlm should be early loaded, <code>false</code> otherwise
      * @return 
      */
-    OnmsAlarm persist(Event event);
+    OnmsAlarm persist(Event event, boolean eagerlyLoadAlarm);
 
 }

@@ -20,7 +20,7 @@ if (locator == null) {
     final boolean defer = Boolean.valueOf(request.getParameter("asset-defer"));
     final String async = request.getParameter("asset-async");
 
-    boolean minified = true;
+    Boolean minified = null;
     final String minifiedString = request.getParameter("minified");
     if (minifiedString != null && !"".equals(minifiedString.trim())) {
         minified = Boolean.valueOf(minifiedString);
@@ -31,7 +31,7 @@ if (locator == null) {
 
     for (final String assetParam : assets) {
         LOG.debug("load-assets.jsp: asset={}, type={}, media={}", assetParam, type, media);
-        final Optional<Collection<AssetResource>> resources = locator.getResources(assetParam, minified);
+        final Optional<Collection<AssetResource>> resources = minified == null? locator.getResources(assetParam) : locator.getResources(assetParam, minified);
         if (!resources.isPresent()) {
             LOG.warn("load-assets.jsp: resources not found for asset {}", assetParam);
         } else {

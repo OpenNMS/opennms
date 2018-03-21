@@ -40,6 +40,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.opennms.netmgt.flows.rest.model.FlowGraphUrlInfo;
 import org.opennms.netmgt.flows.rest.model.FlowNodeDetails;
 import org.opennms.netmgt.flows.rest.model.FlowNodeSummary;
 import org.opennms.netmgt.flows.rest.model.FlowSeriesResponse;
@@ -137,5 +138,9 @@ public interface FlowRestService {
             @DefaultValue(DEFAULT_TOP_N) @QueryParam("N") final int N,
             @Context final UriInfo uriInfo
     );
+
+    @GET
+    @Path("flowGraphUrl")
+    FlowGraphUrlInfo getFlowGraphUrlInfo(@Context final UriInfo uriInfo);
 
 }
