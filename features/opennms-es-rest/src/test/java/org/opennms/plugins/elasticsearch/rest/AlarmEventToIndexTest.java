@@ -52,6 +52,9 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
@@ -160,14 +163,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
             } catch (InterruptedException e) { }
 			
 			// search for resulting alarm change event
-			String eventquery = "{\n" 
-					+"\n       \"query\": {"
-					+ "\n         \"match\": {"
-					+ "\n         \"id\": \"100\""
-					+ "\n          }"
-					+ "\n        }"
-					+ "\n     }";
-			
+			final String eventquery = buildSearchQuery(100);
 			LOG.debug("event check search query: "+eventquery);
 
 			Search eventsearch = new Search.Builder(eventquery)
@@ -214,13 +210,8 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 	// SEE NMS-9831 for more information
 	@Test
 	public void verifyOidMapping() throws InterruptedException, IOException {
-		final Event event = new Event();
-		event.setUei(EventConstants.ALARM_CLEARED_UEI);
-		event.setCreationTime(new Date());
-		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
-		event.setDescr("Dummy Event");
-		event.setSeverity(OnmsSeverity.WARNING.getLabel());
-		event.setDbid(13);
+		int eventId = 13;
+		final Event event = createDummyEvent(eventId);
 
 		IntStream.range(1, 100).forEach(i -> {
 			Parm parm = new Parm();
@@ -232,18 +223,73 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
 
-		final String query = "{\n"
-				+"\n       \"query\": {"
-				+ "\n         \"match\": {"
-				+ "\n         \"id\": \"13\""
-				+ "\n          }"
-				+ "\n        }"
-				+ "\n     }";
+		final String query = buildSearchQuery(eventId);
 		final Search search = new Search.Builder(query)
 				.addIndex("opennms-events-raw-*")
 				.build();
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
 		assertEquals(Long.valueOf(1), result.getTotal());
+	}
+
+	// See HZN-1272
+	@Test
+	public void verifyJsonEventParameters() throws InterruptedException, IOException {
+		final int eventId = 17;
+		final Event event = createDummyEvent(eventId);
+
+		final JsonObject addressObject = new JsonObject();
+		addressObject.addProperty("street", "950 Windy Rd, Ste 300");
+		addressObject.addProperty("city", "Apex");
+		addressObject.addProperty("state", "NC");
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.add("address", addressObject);
+		jsonObject.addProperty("name", "The OpenNMS Group");
+
+		// Create Event Parameter, which carries a json representation
+		final Value value = new Value();
+		value.setType("json");
+		value.setEncoding("text");
+		value.setContent(jsonObject.toString());
+		final Parm p = new Parm();
+		p.setValue(value);
+		p.setParmName("name");
+		event.addParm(p);
+
+		// Forward event...
+		getEventToIndex().forwardEvents(Arrays.asList(event));
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		// ... and verify that the json was actually persisted as json and not as string
+		final String query = buildSearchQuery(eventId);
+		final Search search = new Search.Builder(query)
+				.addIndex("opennms-events-raw-*")
+				.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Long.valueOf(1), result.getTotal());
+		final JsonArray jsonArray = result.getJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
+	}
+
+	private static Event createDummyEvent(int eventId) {
+		final Event event = new Event();
+		event.setUei(EventConstants.ALARM_CLEARED_UEI);
+		event.setCreationTime(new Date());
+		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		event.setDescr("Dummy Event");
+		event.setSeverity(OnmsSeverity.WARNING.getLabel());
+		event.setDbid(eventId);
+		return event;
+	}
+
+	private static String buildSearchQuery(int eventId) {
+		return "{\n"
+				+"\n       \"query\": {"
+				+ "\n         \"match\": {"
+				+ "\n         \"id\": \"" + eventId + "\""
+				+ "\n          }"
+				+ "\n        }"
+				+ "\n     }";
 	}
 }
