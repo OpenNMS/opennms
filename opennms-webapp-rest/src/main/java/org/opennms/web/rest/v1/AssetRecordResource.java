@@ -92,7 +92,6 @@ public class AssetRecordResource extends OnmsRestService {
         }
         return getAssetRecord(node);
     }
-    
     /**
      * <p>updateAssetRecord</p>
      *
@@ -129,6 +128,7 @@ public class AssetRecordResource extends OnmsRestService {
         }
         if (modified) {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
+            assetRecord.setNode(node);
             m_assetRecordDao.saveOrUpdate(assetRecord);
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
@@ -144,7 +144,6 @@ public class AssetRecordResource extends OnmsRestService {
     private static OnmsAssetRecord getAssetRecord(OnmsNode node) {
         return node.getAssetRecord();
     }
-    
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
         EventBuilder bldr = new EventBuilder(uei, "ReST");
