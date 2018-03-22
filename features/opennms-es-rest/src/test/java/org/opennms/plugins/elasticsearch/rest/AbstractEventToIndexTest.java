@@ -53,4 +53,8 @@ public abstract class AbstractEventToIndexTest {
             eventToIndex.close();
         }
     }
+
+    protected EventToIndex getEventToIndex() {
+        return eventToIndex;
+    }
 }

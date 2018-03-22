@@ -30,15 +30,24 @@ package org.opennms.plugins.elasticsearch.rest;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Test;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,5 +211,39 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 		LOG.debug("***************** end of test jestClientAlarmToESTest");
 	}
 
+	// SEE NMS-9831 for more information
+	@Test
+	public void verifyOidMapping() throws InterruptedException, IOException {
+		final Event event = new Event();
+		event.setUei(EventConstants.ALARM_CLEARED_UEI);
+		event.setCreationTime(new Date());
+		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		event.setDescr("Dummy Event");
+		event.setSeverity(OnmsSeverity.WARNING.getLabel());
+		event.setDbid(13);
 
+		IntStream.range(1, 100).forEach(i -> {
+			Parm parm = new Parm();
+			parm.setParmName(i + ".0.0.0.0.0.0.0.0.0"); // 10 * 100 -> 1000 fields at least
+			parm.setValue(new Value("dummy value"));
+			event.addParm(parm);
+		});
+		getEventToIndex().forwardEvents(Arrays.asList(event));
+
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		final String query = "{\n"
+				+"\n       \"query\": {"
+				+ "\n         \"match\": {"
+				+ "\n         \"id\": \"13\""
+				+ "\n          }"
+				+ "\n        }"
+				+ "\n     }";
+		final Search search = new Search.Builder(query)
+				.addIndex("opennms-events-raw-*")
+				.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Long.valueOf(1), result.getTotal());
+	}
 }
