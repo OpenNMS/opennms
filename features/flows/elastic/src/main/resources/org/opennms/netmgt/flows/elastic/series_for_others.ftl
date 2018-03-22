@@ -22,7 +22,7 @@
   "aggs": {
     "direction": {
       "terms": {
-        "field": "${directionTerm?json_string}",
+        "field": "netflow.direction",
         "size": 2
       },
       "aggs": {

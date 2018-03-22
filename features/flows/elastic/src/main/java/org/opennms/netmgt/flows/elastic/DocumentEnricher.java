@@ -136,9 +136,7 @@ public class DocumentEnricher {
                 }
 
                 // Conversation tagging
-                if (document.isInitiator() != null) {
-                    document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
-                }
+                document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
 
                 // Apply Application mapping
                 if (document.isInitiator() != null) {

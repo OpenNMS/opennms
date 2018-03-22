@@ -100,13 +100,11 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     }
 
     public String getSeriesFromTopNQuery(List<String> topN, long step, long start, long end,
-                                         String groupByTerm, String directionTerm,
-                                         List<Filter> filters) {
+                                         String groupByTerm, List<Filter> filters) {
         return render("series_for_terms.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("topN", topN)
                 .put("groupByTerm", groupByTerm)
-                .put("directionTerm", directionTerm)
                 .put("step", step)
                 .put("start", start)
                 .put("end", end)
@@ -114,12 +112,10 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     }
 
     public String getSeriesFromMissingQuery(long step, long start, long end, String groupByTerm,
-                                            String directionTerm, String keyForMissingTerm,
-                                            List<Filter> filters) {
+                                            String keyForMissingTerm, List<Filter> filters) {
         return render("series_for_missing.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("groupByTerm", groupByTerm)
-                .put("directionTerm", directionTerm)
                 .put("keyForMissingTerm", keyForMissingTerm)
                 .put("step", step)
                 .put("start", start)
@@ -128,13 +124,12 @@ public class SearchQueryProvider implements FilterVisitor<String> {
     }
 
     public String getSeriesFromOthersQuery(List<String> topN, long step, long start, long end,
-                                           String groupByTerm, String directionTerm,
-                                           boolean excludeMissing, List<Filter> filters) {
+                                           String groupByTerm, boolean excludeMissing,
+                                           List<Filter> filters) {
         return render("series_for_others.ftl", ImmutableMap.builder()
                 .put("filters", getFilterQueries(filters))
                 .put("topN", topN)
                 .put("groupByTerm", groupByTerm)
-                .put("directionTerm", directionTerm)
                 .put("excludeMissing", excludeMissing)
                 .put("step", step)
                 .put("start", start)

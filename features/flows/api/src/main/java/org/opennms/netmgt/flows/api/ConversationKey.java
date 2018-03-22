@@ -45,9 +45,9 @@ public class ConversationKey {
     public ConversationKey(String location, Integer protocol, String srcIp, Integer srcPort, String dstIp, Integer dstPort) {
         this.location = location;
         this.protocol = protocol;
-        this.srcIp = Objects.requireNonNull(srcIp);
+        this.srcIp = srcIp;
         this.srcPort = srcPort;
-        this.dstIp = Objects.requireNonNull(dstIp);
+        this.dstIp = dstIp;
         this.dstPort = dstPort;
     }
 
@@ -55,7 +55,7 @@ public class ConversationKey {
         return location;
     }
 
-    public int getProtocol() {
+    public Integer getProtocol() {
         return protocol;
     }
 
@@ -91,5 +91,17 @@ public class ConversationKey {
     @Override
     public int hashCode() {
         return Objects.hash(location, protocol, srcIp, dstIp, srcPort, dstPort);
+    }
+
+    @Override
+    public String toString() {
+        return "ConversationKey{" +
+                "location='" + location + '\'' +
+                ", protocol=" + protocol +
+                ", srcIp='" + srcIp + '\'' +
+                ", dstIp='" + dstIp + '\'' +
+                ", srcPort=" + srcPort +
+                ", dstPort=" + dstPort +
+                '}';
     }
 }

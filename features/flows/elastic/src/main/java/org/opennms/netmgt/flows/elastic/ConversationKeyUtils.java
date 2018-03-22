@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.elastic;
 
+import java.io.StringWriter;
+
 import org.opennms.netmgt.flows.api.ConversationKey;
 
 import com.google.gson.Gson;
@@ -37,15 +39,14 @@ import com.google.gson.GsonBuilder;
  * Utility class for building the {@link ConversationKey} from
  * a {@link FlowDocument} and converting it to/from a string
  * so that it can be used in group-by statements when querying.
+ *
+ * These methods are optimized for speed when generating the key,
+ * with the constraint that we must also be able to decode the key.
+ *
+ * @author jwhite
  */
 public class ConversationKeyUtils {
     private static final Gson gson = new GsonBuilder().create();
-
-    public static String toJsonString(ConversationKey key) {
-        return gson.toJson(new Object[]{key.getLocation(), key.getProtocol(),
-                key.getSrcIp(), key.getSrcPort(),
-                key.getDstIp(), key.getDstPort()});
-    }
 
     public static ConversationKey fromJsonString(String json) {
         final Object[] array = gson.fromJson(json, Object[].class);
@@ -57,20 +58,43 @@ public class ConversationKeyUtils {
                 (String)array[4], ((Number)array[5]).intValue());
     }
 
-    private static ConversationKey egressKeyFor(FlowDocument document) {
-        return new ConversationKey(document.getLocation(), document.getProtocol(),
-                document.getSrcAddr(), document.getSrcPort(),
-                document.getDstAddr(), document.getDstPort());
-    }
-
-    private static ConversationKey ingressKeyFor(FlowDocument document) {
-        return new ConversationKey(document.getLocation(), document.getProtocol(),
-                document.getDstAddr(), document.getDstPort(),
-                document.getSrcAddr(), document.getSrcPort());
-    }
-
     public static String getConvoKeyAsJsonString(FlowDocument document) {
-        final ConversationKey convoKey = document.isInitiator() ? egressKeyFor(document) : ingressKeyFor(document);
-        return toJsonString(convoKey);
+        // Only generate the key if all of the required fields are set
+        if (document.getLocation() != null
+                && document.getProtocol() != null
+                && document.getSrcAddr() != null
+                && document.getSrcPort() != null
+                && document.getDstAddr() != null
+                && document.getDstPort() != null) {
+            // Build the JSON string manually
+            // This is faster than creating some new object on which we can use gson.toJson or similar
+            final StringWriter writer = new StringWriter();
+            writer.write("[");
+            // Use GSON to encode the location, since this may contain characters that need to be escape
+            writer.write(gson.toJson(document.getLocation()));
+            writer.write(",");
+            writer.write(Integer.toString(document.getProtocol()));
+            writer.write(",\"");
+            if (Direction.INGRESS.equals(document.getDirection())) {
+                writer.write(document.getSrcAddr());
+                writer.write("\",");
+                writer.write(Integer.toString(document.getSrcPort()));
+                writer.write(",\"");
+                writer.write(document.getDstAddr());
+                writer.write("\",");
+                writer.write(Integer.toString(document.getDstPort()));
+            } else {
+                writer.write(document.getDstAddr());
+                writer.write("\",");
+                writer.write(Integer.toString(document.getDstPort()));
+                writer.write(",\"");
+                writer.write(document.getSrcAddr());
+                writer.write("\",");
+                writer.write(Integer.toString(document.getSrcPort()));
+            }
+            writer.write("]");
+            return writer.toString();
+        }
+        return null;
     }
 }
