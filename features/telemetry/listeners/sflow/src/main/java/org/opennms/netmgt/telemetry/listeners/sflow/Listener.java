@@ -84,8 +84,6 @@ public class Listener implements org.opennms.netmgt.telemetry.listeners.api.List
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
-                                        cause.printStackTrace();
-
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
                                     }
@@ -133,15 +131,5 @@ public class Listener implements org.opennms.netmgt.telemetry.listeners.api.List
     @Override
     public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
-    }
-
-    public static void main(final String... args) throws Exception {
-        final Listener l = new Listener();
-        l.setName("sflow-test");
-        l.start();
-
-        while (true) {
-            Thread.sleep(1000);
-        }
     }
 }
