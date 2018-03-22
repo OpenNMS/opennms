@@ -47,12 +47,14 @@ public class HelpPageIT extends OpenNMSSeleniumTestCase {
         final String[] links = new String[] {
                 // Online Links
                 "Installation Guide",
+                "Admin Guide",
                 "Users Guide",
                 "Developers Guide",
                 "OpenNMS Wiki",
                 "Welcome Guide",
                 // Offline Links
                 "Installation Guide",
+                "Admin Guide",
                 "Users Guide",
                 "Developers Guide",
                 "OpenNMS Wiki",
