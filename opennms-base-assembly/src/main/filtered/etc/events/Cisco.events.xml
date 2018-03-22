@@ -4446,7 +4446,6 @@
  </descr>
 <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: FRU Inserted.&lt;/p&gt;</logmsg>
  <severity>Normal</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Cisco/traps/cefcFRURemoved:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
 </event>
 
 <event>
@@ -4476,7 +4475,6 @@
  </descr>
  <logmsg dest='logndisplay'>&lt;p&gt;Cisco Event: FRU Removed.&lt;/p&gt;</logmsg>
  <severity>Warning</severity>
- <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
 </event>
 <!-- End of Cisco MIB: CISCO-ENTITY-FRU-CONTROL-MIB -->
 <!-- Start of Cisco MIB: CISCO-ENTITY-SENSOR-MIB -->
