@@ -61,14 +61,12 @@ import org.slf4j.LoggerFactory;
 
 import io.searchbox.action.BulkableAction;
 import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
 import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
 import io.searchbox.core.Update;
-import io.searchbox.indices.CreateIndex;
 
 public class EventToIndex implements AutoCloseable {
 
@@ -707,19 +705,6 @@ public class EventToIndex implements AutoCloseable {
 		}
 	}
 
-	private static void createIndex(JestClient client, String name, String type) throws IOException {
-		// create new index
-		CreateIndex createIndex = new CreateIndex.Builder(name).build();
-		JestResult result = new OnmsJestResult(client.execute(createIndex));
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("created new alarm index: {} type: {}" +
-					"\n   received search result: {}" +
-					"\n   response code: {}" + 
-					"\n   error message: {}", 
-					name, type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-		}
-	}
-
 	private static final void logEsError(String operation, String index, String type, String result, int responseCode, String errorMessage) {
 		LOG.error("Error while performing {} on Elasticsearch index: {}, type: {}\n" +
 						"   received result: {}\n" +
@@ -737,42 +722,4 @@ public class EventToIndex implements AutoCloseable {
 				operation, index, type, result, responseCode, errorMessage
 		);
 	}
-
-	/**
-	 * This executes single Elasticsearch actions, creating indices as needed.
-	 *
-	 * @param client
-	 * @param action
-	 * @throws IOException
-	 */
-	private static void executeSingleAction(JestClient client, BulkableAction<DocumentResult> action) throws IOException {
-
-		DocumentResult result = client.execute(action);
-
-		if(result == null || result.getResponseCode() == 404){
-			// index doesn't exist for upsert command so create new index and try again
-
-			if(LOG.isDebugEnabled()) {
-				if (result == null) {
-					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
-				} else {
-					logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-				}
-				LOG.debug("index name "+action.getIndex() + " doesn't exist, creating new index");
-			}
-
-			createIndex(client, action.getIndex(), action.getType());
-
-			result = client.execute(action);
-		}
-
-		if (result == null) {
-			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), null, -1, null);
-		} else if (!result.isSucceeded()){
-			logEsError(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-		} else if(LOG.isDebugEnabled()) {
-			logEsDebug(action.getRestMethodName(), action.getIndex(), action.getType(), result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
-		}
-	}
-
 }
