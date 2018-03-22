@@ -34,7 +34,6 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -69,7 +68,7 @@ public final class FieldSpecifier implements Field {
         this.fieldLength = uint16(buffer);
 
         this.informationElement = InformationElementDatabase.instance
-                .lookup(Protocol.NETFLOW9, this.fieldType).orElseGet(() -> {
+                .lookup(this.fieldType).orElseGet(() -> {
                     LOG.warn("Undeclared field type: {}", UndeclaredValue.nameFor(Optional.empty(), this.fieldType));
                     return UndeclaredValue.parser(this.fieldType);
                 });

@@ -32,21 +32,17 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.NullValue;
 
 import com.google.common.collect.ImmutableMap;
 
 public class InformationElementDatabase {
     public static class Key {
-        private final Protocol protocol;
         private final Optional<Long> enterpriseNumber;
         private final Integer informationElementIdentifier;
 
-        public Key(final Protocol protocol,
-                   final Optional<Long> enterpriseNumber,
+        public Key(final Optional<Long> enterpriseNumber,
                    final Integer informationElementNumber) {
-            this.protocol = Objects.requireNonNull(protocol);
             this.enterpriseNumber = Objects.requireNonNull(enterpriseNumber);
             this.informationElementIdentifier = Objects.requireNonNull(informationElementNumber);
         }
@@ -56,14 +52,13 @@ public class InformationElementDatabase {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             Key that = (Key) o;
-            return Objects.equals(this.protocol, that.protocol) &&
-                    Objects.equals(this.enterpriseNumber, that.enterpriseNumber) &&
+            return Objects.equals(this.enterpriseNumber, that.enterpriseNumber) &&
                     Objects.equals(this.informationElementIdentifier, that.informationElementIdentifier);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(this.protocol, this.enterpriseNumber, this.informationElementIdentifier);
+            return Objects.hash(this.enterpriseNumber, this.informationElementIdentifier);
         }
     }
 
@@ -75,29 +70,26 @@ public class InformationElementDatabase {
     public interface Adder {
         void add(final InformationElementDatabase.Key key, final InformationElement element);
 
-        default void add(final Protocol protocol,
-                         final Optional<Long> enterpriseNumber,
+        default void add(final Optional<Long> enterpriseNumber,
                          final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Optional<Semantics> semantics) {
-            this.add(new InformationElementDatabase.Key(protocol, enterpriseNumber, informationElementNumber), parserFactory.parser(name, semantics));
+            this.add(new InformationElementDatabase.Key(enterpriseNumber, informationElementNumber), parserFactory.parser(name, semantics));
         }
 
-        default void add(final Protocol protocol,
-                         final int informationElementNumber,
+        default void add(final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Optional<Semantics> semantics) {
-            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, semantics);
+            this.add(Optional.empty(), informationElementNumber, parserFactory, name, semantics);
         }
 
-        default void add(final Protocol protocol,
-                         final int informationElementNumber,
+        default void add(final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
                          final Semantics semantics) {
-            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, Optional.of(semantics));
+            this.add(Optional.empty(), informationElementNumber, parserFactory, name, Optional.of(semantics));
         }
     }
 
@@ -106,8 +98,8 @@ public class InformationElementDatabase {
     }
 
     public static final InformationElementDatabase instance = new InformationElementDatabase(
-            new org.opennms.netmgt.telemetry.listeners.flow.ipfix.InformationElementProvider(),
-            new org.opennms.netmgt.telemetry.listeners.flow.netflow9.InformationElementProvider());
+            new IANAInformationElementProvider()
+    );
 
     private final Map<Key, InformationElement> elements;
 
@@ -115,8 +107,7 @@ public class InformationElementDatabase {
         final AdderImpl adder = new AdderImpl();
 
         // Add null element - this derives from the standard but is required by some exporters
-        adder.add(Protocol.NETFLOW9, 0, NullValue::parser, "null", Optional.empty());
-        adder.add(Protocol.IPFIX, 0, NullValue::parser, "null", Optional.empty());
+        adder.add(0, NullValue::parser, "null", Optional.empty());
 
         // Load providers
         for (final Provider provider : providers) {
@@ -126,12 +117,12 @@ public class InformationElementDatabase {
         this.elements = adder.build();
     }
 
-    public Optional<InformationElement> lookup(final Protocol protocol, final Optional<Long> enterpriseNumber, final int informationElementIdentifier) {
-        return Optional.ofNullable(this.elements.get(new Key(protocol, enterpriseNumber, informationElementIdentifier)));
+    public Optional<InformationElement> lookup(final Optional<Long> enterpriseNumber, final int informationElementIdentifier) {
+        return Optional.ofNullable(this.elements.get(new Key(enterpriseNumber, informationElementIdentifier)));
     }
 
-    public Optional<InformationElement> lookup(final Protocol protocol, final int informationElementIdentifier) {
-        return lookup(protocol, Optional.empty(), informationElementIdentifier);
+    public Optional<InformationElement> lookup(final int informationElementIdentifier) {
+        return lookup(Optional.empty(), informationElementIdentifier);
     }
 
     private static class AdderImpl implements Adder {

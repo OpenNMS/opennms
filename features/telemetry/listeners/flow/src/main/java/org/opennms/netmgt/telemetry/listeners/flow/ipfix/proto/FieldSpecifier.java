@@ -35,7 +35,6 @@ import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.listeners.flow.InvalidPacketException;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElement;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.Value;
@@ -82,7 +81,7 @@ public final class FieldSpecifier implements Field, Scope {
         }
 
         this.informationElement = InformationElementDatabase.instance
-                .lookup(Protocol.IPFIX, this.enterpriseNumber, this.informationElementId).orElseGet(() -> {
+                .lookup(this.enterpriseNumber, this.informationElementId).orElseGet(() -> {
                     LOG.warn("Undeclared information element: {}", UndeclaredValue.nameFor(this.enterpriseNumber, this.informationElementId));
                     return UndeclaredValue.parser(this.enterpriseNumber, this.informationElementId);
                 });

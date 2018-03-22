@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
+package org.opennms.netmgt.telemetry.listeners.flow.ie;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -36,9 +36,6 @@ import java.util.Optional;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.InformationElementDatabase;
-import org.opennms.netmgt.telemetry.listeners.flow.ie.Semantics;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.BooleanValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.DateTimeValue;
 import org.opennms.netmgt.telemetry.listeners.flow.ie.values.FloatValue;
@@ -54,7 +51,7 @@ import org.opennms.netmgt.telemetry.listeners.flow.ie.values.UnsignedValue;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
-public class InformationElementProvider implements InformationElementDatabase.Provider {
+public class IANAInformationElementProvider implements InformationElementDatabase.Provider {
     private static final String COLUMN_ID = "ElementID";
     private static final String COLUMN_NAME = "Name";
     private static final String COLUMN_TYPE = "Abstract Data Type";
@@ -76,14 +73,14 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
 
     private static final Map<String, InformationElementDatabase.ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, InformationElementDatabase.ValueParserFactory>builder()
             .put("octetArray", OctetArrayValue::parser)
-            .put("unsigned8", UnsignedValue::parserWith8Bit)
-            .put("unsigned16", UnsignedValue::parserWith16Bit)
-            .put("unsigned32", UnsignedValue::parserWith32Bit)
-            .put("unsigned64", UnsignedValue::parserWith64Bit)
-            .put("signed8", SignedValue::parserWith8Bit)
-            .put("signed16", SignedValue::parserWith16Bit)
-            .put("signed32", SignedValue::parserWith32Bit)
-            .put("signed64", SignedValue::parserWith64Bit)
+            .put("unsigned8", UnsignedValue::parser)
+            .put("unsigned16", UnsignedValue::parser)
+            .put("unsigned32", UnsignedValue::parser)
+            .put("unsigned64", UnsignedValue::parser)
+            .put("signed8", SignedValue::parser)
+            .put("signed16", SignedValue::parser)
+            .put("signed32", SignedValue::parser)
+            .put("signed64", SignedValue::parser)
             .put("float32", FloatValue::parserWith32Bit)
             .put("float64", FloatValue::parserWith64Bit)
             .put("boolean", BooleanValue::parser)
@@ -121,7 +118,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
 
                 final Optional<Semantics> semantics = Optional.ofNullable(SEMANTICS_LOOKUP.get(record.get(COLUMN_SEMANTICS)));
 
-                adder.add(Protocol.IPFIX, id, valueParserFactory, name, semantics);
+                adder.add(id, valueParserFactory, name, semantics);
             }
         } catch (final IOException e) {
             // TODO: Log me
