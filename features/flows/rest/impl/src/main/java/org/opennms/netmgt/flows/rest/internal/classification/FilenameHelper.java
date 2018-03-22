@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 class FilenameHelper {
 
-    public final static String REGEX_ALLOWED_CHAR = "^[a-zA-Z_ .-]{1,}$";
+    public final static String REGEX_ALLOWED_CHAR = "^[a-zA-Z1-9_ .-]{1,}$";
 
     private Pattern p = Pattern.compile(REGEX_ALLOWED_CHAR);
 
