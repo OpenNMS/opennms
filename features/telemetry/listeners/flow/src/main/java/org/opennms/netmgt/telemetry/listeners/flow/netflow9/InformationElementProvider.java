@@ -150,5 +150,31 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
         adder.add(Protocol.NETFLOW9, 103, UnsignedValue::parserWith32Bit, "layer2packetSectionSize", Semantics.DEFAULT);
         adder.add(Protocol.NETFLOW9, 104, OctetArrayValue::parser, "layer2packetSectionData", Semantics.DEFAULT);
         // 105-127 reserved for future use by cisco
+
+        // *** Additional NSEL definitions ***
+
+        adder.add(Protocol.NETFLOW9, 148, UnsignedValue::parserWith32Bit, "NF_F_CONN_ID", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 176, UnsignedValue::parserWith8Bit, "NF_F_ICMP_TYPE", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 177, UnsignedValue::parserWith8Bit, "NF_F_ICMP_CODE", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 178, UnsignedValue::parserWith8Bit, "NF_F_ICMP_TYPE_IPV6", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 179, UnsignedValue::parserWith8Bit, "NF_F_ICMP_CODE_IPV6", Semantics.IDENTIFIER);
+
+        adder.add(Protocol.NETFLOW9, 225, IPv4AddressValue::parser, "NF_F_XLATE_SRC_ADDR_IPV4", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 226, IPv4AddressValue::parser, "NF_F_XLATE_DST_ADDR_IPV4", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 227, UnsignedValue::parserWith16Bit, "NF_F_XLATE_SRC_PORT", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 228, UnsignedValue::parserWith16Bit, "NF_F_XLATE_DST_PORT", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 281, IPv6AddressValue::parser, "NF_F_XLATE_SRC_ADDR_IPV6", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 282, IPv6AddressValue::parser, "NF_F_XLATE_DST_ADDR_IPV6", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 233, UnsignedValue::parserWith8Bit, "NF_F_FW_EVENT", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 33002, UnsignedValue::parserWith16Bit, "NF_F_FW_EXT_EVENT", Semantics.IDENTIFIER);
+
+        adder.add(Protocol.NETFLOW9, 323, UnsignedValue::parserWith64Bit, "NF_F_EVENT_TIME_MSEC", Optional.empty());
+        adder.add(Protocol.NETFLOW9, 152, UnsignedValue::parserWith64Bit, "NF_F_FLOW_CREATE_TIME_MSEC", Optional.empty());
+        adder.add(Protocol.NETFLOW9, 231, UnsignedValue::parserWith32Bit, "NF_F_FWD_FLOW_DELTA_BYTES", Semantics.DELTA_COUNTER);
+        adder.add(Protocol.NETFLOW9, 232, UnsignedValue::parserWith32Bit, "NF_F_REV_FLOW_DELTA_BYTES", Semantics.DELTA_COUNTER);
+        adder.add(Protocol.NETFLOW9, 33000, OctetArrayValue::parser, "NF_F_INGRESS_ACL_ID", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 33001, OctetArrayValue::parser, "NF_F_EGRESS_ACL_ID", Semantics.IDENTIFIER);
+        adder.add(Protocol.NETFLOW9, 40000, StringValue::parser, "NF_F_USERNAME", Semantics.DEFAULT);
+        adder.add(Protocol.NETFLOW9, 40000, StringValue::parser, "NF_F_USERNAME_MAX", Semantics.DEFAULT);
     }
 }
