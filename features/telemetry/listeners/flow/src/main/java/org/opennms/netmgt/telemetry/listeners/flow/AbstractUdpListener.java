@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow;
 
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
@@ -50,6 +51,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.ScheduledFuture;
+import io.netty.util.internal.SocketUtils;
 
 public abstract class AbstractUdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractUdpListener.class);
@@ -60,7 +62,7 @@ public abstract class AbstractUdpListener implements Listener {
 
     private String name;
 
-    private String host = "::";
+    private String host = null;
     private int port = 4738;
 
     private Duration templateTimeout = Duration.ofMinutes(30);
@@ -86,6 +88,10 @@ public abstract class AbstractUdpListener implements Listener {
 
         this.housekeepingFuture = this.bossGroup.scheduleAtFixedRate(this.sessionManager::doHousekeeping, HOUSEKEEPING_INTERVAL, HOUSEKEEPING_INTERVAL, TimeUnit.MILLISECONDS);
 
+        final InetSocketAddress address = this.host != null
+                ? SocketUtils.socketAddress(this.host, this.port)
+                : new InetSocketAddress(this.port);
+
         this.socketFuture = new Bootstrap()
                 .group(this.bossGroup)
                 .channel(NioDatagramChannel.class)
@@ -106,7 +112,7 @@ public abstract class AbstractUdpListener implements Listener {
                                 });
                     }
                 })
-                .bind(this.host, this.port)
+                .bind(address)
                 .sync();
     }
 

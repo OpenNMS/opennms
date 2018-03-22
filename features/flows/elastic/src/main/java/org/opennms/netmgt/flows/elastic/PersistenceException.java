@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.opennms.netmgt.flows.api.FlowException;
-import org.opennms.plugins.elasticsearch.rest.FailedItem;
+import org.opennms.plugins.elasticsearch.rest.bulk.FailedItem;
 
 public class PersistenceException extends FlowException {
 

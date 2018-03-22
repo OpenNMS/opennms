@@ -389,8 +389,10 @@ var config = {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
-  /*
     new webpack.ProvidePlugin({
+      jQuery: 'vendor/jquery-js',
+      $: 'vendor/jquery-js'
+      /*,
       angular: 'angular',
       Backshift: 'backshift/dist/backshift.onms',
       bootbox: 'bootbox',
@@ -398,12 +400,10 @@ var config = {
       d3: 'd3',
       Holder: 'holderjs',
       holder: 'holderjs',
-      jQuery: 'jquery',
-      $: 'jquery',
       L: 'leaflet',
       _: 'underscore'
+      */
     }),
-    */
     new WebpackMd5Hash(),
     new StringReplacePlugin()
   ]

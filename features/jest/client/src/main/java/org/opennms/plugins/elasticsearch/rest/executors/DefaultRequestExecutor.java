@@ -29,57 +29,61 @@
 package org.opennms.plugins.elasticsearch.rest.executors;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.opennms.core.utils.TimeoutTracker;
+import org.opennms.plugins.elasticsearch.rest.RequestExecutorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
+import io.searchbox.client.config.exception.CouldNotConnectException;
 
-public class DefaultRequestExecutor implements RequestExecutor {
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultRequestExecutor.class);
-    private int timeout;
-    private int retryCount;
+public class DefaultRequestExecutor implements RequestExecutor, RequestExecutorFactory {
 
-    public DefaultRequestExecutor(int timeout, int retryCount) {
-        this.timeout = timeout;
-        this.retryCount = retryCount;
+    private static Logger LOG = LoggerFactory.getLogger(DefaultRequestExecutor.class);
+
+    private final long cooldownInMs;
+
+    public DefaultRequestExecutor(long cooldownInMs) {
+        if (cooldownInMs < 0) {
+            LOG.warn("Retry cooldown must be >= 0. Using a value of 0 instead.");
+        }
+        this.cooldownInMs = Math.max(0, cooldownInMs);
     }
 
-    /**
-     * Perform the REST operation and retry in case of exceptions.
-     */
     @Override
-    public <T extends JestResult> T execute(JestClient client, Action<T> clientRequest) throws IOException {
-        // 'strict-timeout' will enforce that the timeout time elapses between subsequent
-        // attempts even if the operation returns more quickly than the timeout
-        final Map<String,Object> params = new HashMap<>();
-        params.put("strict-timeout", Boolean.TRUE);
+    public <T extends JestResult> T execute(JestClient client, Action<T> clientRequest) {
+        try {
+            T result = client.execute(clientRequest);
+            return result;
+        } catch (CouldNotConnectException connectException) {
+            return retry(client, clientRequest);
+        } catch (IOException ex) {
+            return retry(client, clientRequest);
+        } catch (com.google.gson.JsonSyntaxException gsonException) {
+            return retry(client, clientRequest);
+        }
+    }
 
-        final TimeoutTracker timeoutTracker = new TimeoutTracker(params, retryCount, timeout);
-        for (timeoutTracker.reset(); timeoutTracker.shouldRetry(); timeoutTracker.nextAttempt()) {
-            timeoutTracker.startAttempt();
+    public <T extends JestResult> T retry(JestClient client, Action<T> clientRequest) {
+        LOG.debug("Retry request");
+        if (cooldownInMs > 0) {
+            LOG.debug("Sleep " + cooldownInMs + " before retrying");
             try {
-                T result = client.execute(clientRequest);
-                return result;
-            } catch (Exception exception) {
-                // shouldRetry would return true because nextAttempt has not yet been invoked.
-                // Therefore we manually verify instead of calling shouldRetry()
-                if (timeoutTracker.getAttempt() + 1 <= retryCount) {
-                    LOG.warn("Exception while trying to execute REST operation (attempt {}/{}). Retrying.", timeoutTracker.getAttempt() + 1, retryCount + 1, exception);
-                } else {
-                    // we are out of retries, forward exception
-                    throw new IOException("Could not perform request. Tried " + (timeoutTracker.getAttempt() + 1) + " times and gave up", exception);
-                }
+                Thread.sleep(cooldownInMs);
+            } catch (InterruptedException e) {
+                throw new RuntimeException("Thread interrupted.", e);
             }
         }
+        LOG.debug("Retrying now");
+        final T result = execute(client, clientRequest);
+        return result;
+    }
 
-        // In order to proper handle error cases, we must bail in this case, as m_delegate was never invoked.
-        // In theory this should never happen.
-        throw new IllegalStateException("The request never produced a valid result. This should not have happened. Bailing.");
+    @Override
+    public RequestExecutor createExecutor(int timeout, int retryCount) {
+        return new DefaultRequestExecutor(cooldownInMs);
     }
 }
+

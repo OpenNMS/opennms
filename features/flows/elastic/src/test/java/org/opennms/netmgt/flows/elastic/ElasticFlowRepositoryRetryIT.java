@@ -42,6 +42,8 @@ import org.opennms.core.test.elastic.ExecutionTime;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Throwables;
@@ -90,14 +92,14 @@ public class ElasticFlowRepositoryRetryIT {
         Objects.requireNonNull(consumer);
 
         final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT);
-        restClientFactory.setRequestExecutorSupplier(() -> new FlowRequestExecutor(RETRY_COOLDOWN));
+        restClientFactory.setRequestExecutorSupplier(() -> new DefaultRequestExecutor(RETRY_COOLDOWN));
         try (JestClient client = restClientFactory.createClient()) {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 
             final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher), client);
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher, 3), client);
 
             consumer.accept(elasticFlowRepository);
 
