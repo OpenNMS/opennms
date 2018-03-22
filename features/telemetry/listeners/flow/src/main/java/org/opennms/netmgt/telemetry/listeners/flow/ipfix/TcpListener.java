@@ -28,13 +28,15 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ipfix;
 
+import java.net.InetSocketAddress;
+
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.flow.PacketHandler;
 import org.opennms.netmgt.telemetry.listeners.flow.Protocol;
-import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
 import org.opennms.netmgt.telemetry.listeners.flow.session.Session;
+import org.opennms.netmgt.telemetry.listeners.flow.session.TcpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +50,14 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.internal.SocketUtils;
 
 public class TcpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(TcpListener.class);
 
     private String name;
 
-    private String host = "::";
+    private String host = null;
     private int port = 4739;
 
     private AsyncDispatcher<TelemetryMessage> dispatcher;
@@ -67,6 +70,10 @@ public class TcpListener implements Listener {
     public void start() throws InterruptedException {
         this.bossGroup = new NioEventLoopGroup();
         this.workerGroup = new NioEventLoopGroup();
+
+        final InetSocketAddress address = this.host != null
+                ? SocketUtils.socketAddress(this.host, this.port)
+                : new InetSocketAddress(this.port);
 
         this.socketFuture = new ServerBootstrap()
                 .group(this.bossGroup, this.workerGroup)
@@ -92,7 +99,7 @@ public class TcpListener implements Listener {
                                 });
                     }
                 })
-                .bind(this.host, this.port)
+                .bind(address)
                 .sync();
     }
 

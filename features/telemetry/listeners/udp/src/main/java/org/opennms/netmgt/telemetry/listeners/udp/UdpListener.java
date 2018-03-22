@@ -28,6 +28,17 @@
 
 package org.opennms.netmgt.telemetry.listeners.udp;
 
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.opennms.core.ipc.sink.api.AsyncDispatcher;
+import org.opennms.netmgt.telemetry.listeners.api.Listener;
+import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelFuture;
@@ -42,15 +53,7 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import org.opennms.core.ipc.sink.api.AsyncDispatcher;
-import org.opennms.netmgt.telemetry.listeners.api.Listener;
-import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import io.netty.util.internal.SocketUtils;
 
 public class UdpListener implements Listener {
     private static final Logger LOG = LoggerFactory.getLogger(UdpListener.class);
@@ -60,12 +63,17 @@ public class UdpListener implements Listener {
     private EventLoopGroup bossGroup;
     private ChannelFuture future;
 
-    private String host = "0.0.0.0";
+    private String host = null;
     private int port = 50000;
     private int maxPacketSize = 8096;
 
     public void start() throws InterruptedException {
         bossGroup = new NioEventLoopGroup();
+
+        final InetSocketAddress address = this.host != null
+                ? SocketUtils.socketAddress(this.host, this.port)
+                : new InetSocketAddress(this.port);
+
         final Bootstrap b = new Bootstrap()
                 .group(bossGroup)
                 .channel(NioDatagramChannel.class)
@@ -93,7 +101,7 @@ public class UdpListener implements Listener {
                         });
                     }
                 });
-        future = b.bind(host, port).await();
+        future = b.bind(address).await();
     }
 
     public void stop() throws InterruptedException {
