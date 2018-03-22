@@ -174,6 +174,22 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.7]
+==== Release Meridian-2017.1.7
+
+Release 2017.1.7 is a small update to OpenNMS Meridian 2017.1.6.
+It contains a few bug fixes and minor enhancements.
+
+The codename for 2017.1.7 is _Undefined_.
+
+.Configuration Update
+[NOTE]
+Some updates to Cisco data collection and graph configuration has been made since 2017.1.6.
+They add collection from `CISCO-REMOTE-ACCESS-MONITOR-MIB` on a number of ASAxxxx devices, as well as alarm reduction keys for FRU insertion and removal.
+Additionally, graphs for tunnel sessions have been added.
+To avoid configuration conflicts, however, the updated files have been written with the extension `.xml-2017.1.7`.
+If you wish to use these new configurations, rename the `.xml-2017.1.7` files to `.xml`, overwriting the existing files.
+
 [releasenotes-changelog-Meridian-2017.1.6]
 ==== Release Meridian-2017.1.6
 
