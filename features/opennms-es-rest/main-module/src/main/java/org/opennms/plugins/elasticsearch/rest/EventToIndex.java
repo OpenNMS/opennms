@@ -589,7 +589,7 @@ public class EventToIndex implements AutoCloseable {
 	 */
 	public Index populateEventIndexBodyFromEvent( Event event, String rootIndexName, String indexType) {
 
-		Map<String,String> body=new HashMap<String,String>();
+		final JSONObject body = new JSONObject();
 
 		Integer id=(event.getDbid()==null ? null: event.getDbid());
 
@@ -622,15 +622,30 @@ public class EventToIndex implements AutoCloseable {
 
 		body.put("host",event.getHost());
 
-		//get params from event
+		// Parse event parameters
+		final JSONParser jsonParser = new JSONParser();
 		for(Parm parm : event.getParmCollection()) {
 			// We have to handle oid parameters differently, as elastic would consider a containing "." as a sub
 			// field, e.g. ".1.2" results in a mapping of { 1: properties: { 2 } } which may exceed the maximum allowed
 			// fields for a mapping, see NMS-9831. Initially an array was used, to store the oids in the fashion:
 			// { "oid": "1.1.1", "value": "dummy value" } but elastic has some limitations on accessing objects in an
 			// array. Therefore we replace all existing . with an _
-			final String parmName = parm.getParmName().replaceAll("\\.", "_");
-			body.put("p_" + parmName, parm.getValue().getContent());
+			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
+			// Some parameter values are of type json and should be decoded properly.
+			// See HZN-1272
+			if ("json".equalsIgnoreCase(parm.getValue().getType())) {
+				try {
+					JSONObject tmpJson = (JSONObject) jsonParser.parse(parm.getValue().getContent());
+					body.put(parmName, tmpJson); 
+				} catch (ParseException ex) {
+					LOG.error("Cannot parse parameter content '{}' of parameter '{}' from eventid {} to json: {}",
+									parm.getValue().getContent(), parm.getParmName(), event.getDbid(), ex.getMessage(), ex);
+					// To not lose the data, just use as is
+					body.put(parmName, parm.getValue().getContent());
+					}
+				} else {
+					body.put(parmName, parm.getValue().getContent());
+				}
 		}
 
 		// remove old and new alarm values parms if not needed
@@ -672,10 +687,7 @@ public class EventToIndex implements AutoCloseable {
 					+ "/"+completeIndexName
 					+ "/"+indexType
 					+ "/"+id
-					+ "\n   body: ";
-			for (String key:body.keySet()){
-				str=str+"["+ key+" : "+body.get(key)+"]";
-			}
+					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
 

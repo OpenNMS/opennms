@@ -29,6 +29,9 @@
 package org.opennms.plugins.dbnotifier.alarmnotifier;
 
 
+import static org.opennms.plugins.dbnotifier.alarmnotifier.AlarmChangeNotificationClient.ENCODING_TEXT;
+import static org.opennms.plugins.dbnotifier.alarmnotifier.AlarmChangeNotificationClient.TYPE_JSON;
+
 import java.sql.Timestamp;
 import java.util.Calendar;
 
@@ -110,7 +113,7 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder( AlarmChangeEventConstants.STICKY_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 					eb.addParam(AlarmChangeEventConstants.MEMO_ALARMID_PARAM, alarmId );
 					eb.addParam(AlarmChangeEventConstants.MEMO_BODY_PARAM, body );
 					eb.addParam(AlarmChangeEventConstants.MEMO_AUTHOR_PARAM, author );
@@ -121,7 +124,7 @@ public class MemosChangeNotificationClient implements NotificationClient {
 					EventBuilder eb= new EventBuilder(AlarmChangeEventConstants.JOURNAL_MEMO_EVENT, EVENT_SOURCE_NAME);
 
 					//copy in all values as json in params
-					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.MEMO_VALUES_PARAM,memoJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 					eb.addParam(AlarmChangeEventConstants.MEMO_ALARMID_PARAM, alarmId );
 					eb.addParam(AlarmChangeEventConstants.MEMO_BODY_PARAM, body );
 					eb.addParam(AlarmChangeEventConstants.MEMO_AUTHOR_PARAM, author );
