@@ -133,6 +133,10 @@ public final class RadiusAuthMonitor extends AbstractServiceMonitor {
      */
     public static final String DEFAULT_TTLS_INNER_AUTH_TYPE= "pap";
 
+    static {
+        RadiusUtils.loadSecurityProvider();
+    }
+
     /**
      * Class constructor.
      *
