@@ -6,11 +6,13 @@
 'use strict';
 
 const angular = require('vendor/angular-js');
+require('lib/onms-http');
 
 const configTemplate = require('../templates/template.config.html');
 const sortTemplate = require('../templates/template.sort.html');
 
 angular.module('onms-interfaces-config', [
+  'onms.http',
   'ui.bootstrap',
   'angular-growl'
 ])

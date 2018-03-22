@@ -6,12 +6,15 @@
 'use strict';
 
 const angular = require('vendor/angular-js');
+require('lib/onms-http');
+
 const kscTemplate = require('./template.ksc.html');
 const nodesTemplate = require('./template.nodes.html');
 
 import Util from 'lib/util';
 
 angular.module('onms-search', [
+  'onms.http',
   'ui.bootstrap'
 ])
 

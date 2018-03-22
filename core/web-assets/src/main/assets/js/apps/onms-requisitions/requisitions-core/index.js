@@ -1,3 +1,4 @@
+require('lib/onms-http');
 require('../lib/scripts/controllers/Asset.js');
 require('../lib/scripts/controllers/CloneForeignSource.js');
 require('../lib/scripts/controllers/Detector.js');

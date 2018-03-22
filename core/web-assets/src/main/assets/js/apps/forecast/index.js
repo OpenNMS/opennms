@@ -1,4 +1,5 @@
 const angular = require('vendor/angular-js');
+require('lib/onms-http');
 
 const Backshift = require('vendor/backshift-js');
 const $ = require('vendor/jquery-js');
@@ -10,7 +11,7 @@ function getBaseHref() {
     return window.getBaseHref();
 }
 
-var app = angular.module('forecast', []);
+var app = angular.module('forecast', ['onms.http']);
 
 app.directive('integer', function() {
   return {
@@ -121,6 +122,9 @@ app.controller('forecastCtrl', function($scope) {
         // Pull in the graph definition
         $.ajax({
             url: url,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             dataType: 'json'
         }).done(function (graphDef) {
             // Save the pristine definition in the scope

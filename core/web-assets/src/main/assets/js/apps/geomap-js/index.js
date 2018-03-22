@@ -90,6 +90,9 @@ const render = function(options) {
         $.ajax({
             method: 'GET',
             url: restEndpoint + '/config',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             contentType: 'application/json',
             dataType: 'json',
             success: function(config) {
@@ -109,6 +112,9 @@ const render = function(options) {
         $.ajax({
             method: 'POST',
             url: restEndpoint,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            },
             contentType: 'application/json',
             dataType: 'json',
             data: JSON.stringify(query),

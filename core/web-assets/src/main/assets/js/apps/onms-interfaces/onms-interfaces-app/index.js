@@ -6,6 +6,7 @@
 'use strict';
 
 const angular = require('vendor/angular-js');
+require('lib/onms-http');
 
 const mainTemplate = require('../templates/template.main.html');
 const sortTemplate = require('../templates/template.sort.html');
@@ -13,6 +14,7 @@ const sortTemplate = require('../templates/template.sort.html');
 require('./styles.css');
 
 angular.module('onms-interfaces', [
+  'onms.http',
   'ui.bootstrap'
 ])
 
