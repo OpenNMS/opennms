@@ -379,6 +379,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                     var requestedFileName = $scope.export.requestedFileName.trim();
                     $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='
                         +requestedFileName+'&format=csv';
+                    $uibModalInstance.close();
             };
 
         }])
