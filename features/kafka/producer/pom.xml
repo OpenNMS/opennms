@@ -76,6 +76,7 @@
           <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
@@ -118,11 +119,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-api</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-alarmd</artifactId>
     </dependency>
 
     <!-- Test -->

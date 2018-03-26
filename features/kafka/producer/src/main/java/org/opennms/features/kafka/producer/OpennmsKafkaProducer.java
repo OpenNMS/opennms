@@ -69,13 +69,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String eventTopic;
     private String alarmTopic;
     private String nodeTopic;
+    private String eventFilter;
 
     private boolean forwardEvents;
     private boolean forwardAlarms;
     private boolean forwardNodes;
     private boolean filterEvents;
-    
-    private String eventFilter;
 
     private KafkaProducer<String, byte[]> producer;
 

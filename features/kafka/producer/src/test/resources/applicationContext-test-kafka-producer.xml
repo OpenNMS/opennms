@@ -14,13 +14,13 @@
   <context:annotation-config />
 
 	<bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
-		<constructor-arg ref="eventConfDao" />
+	  <constructor-arg ref="eventConfDao" />
 	</bean>
-	
-	  <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
-	    <constructor-arg ref="nodeDao"/>
-	    <constructor-arg ref="transactionTemplate"/>
-	    <property name="timeoutInMs" value="300000"/>
-	  </bean>
+
+	<bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
+	  <constructor-arg ref="nodeDao" />
+	  <constructor-arg ref="transactionTemplate" />
+	  <property name="timeoutInMs" value="300000" />
+	</bean>
 
 </beans>
