@@ -41,6 +41,7 @@ import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -138,6 +139,15 @@ public class ProtobufMapper {
 
         if (event.getNodeId() != null) {
             builder.setNodeCriteria(toNodeCriteria(event.getNode()));
+        }
+
+        for (OnmsEventParameter param : event.getEventParameters()) {
+            if (param.getName() == null || param.getValue() == null) {
+                continue;
+            }
+            builder.addParameters(OpennmsModelProtos.EventParameter.newBuilder()
+                    .setName(param.getName())
+                    .setValue(param.getValue()));
         }
 
         setTimeIfNotNull(event.getEventTime(), builder::setTime);
