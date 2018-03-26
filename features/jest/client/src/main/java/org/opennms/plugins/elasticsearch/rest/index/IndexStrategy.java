@@ -49,6 +49,6 @@ public enum IndexStrategy {
     }
 
     public String getIndex(String indexPrefix, Date date) {
-        return String.format("%s-$s", indexPrefix, dateFormat.format(date));
+        return String.format("%s-%s", indexPrefix, dateFormat.format(date));
     }
 }
