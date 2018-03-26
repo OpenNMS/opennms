@@ -140,6 +140,11 @@
       <artifactId>json-simple</artifactId>
       <version>${json-simpleVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Provided Scope -->
     <dependency>

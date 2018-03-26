@@ -46,6 +46,11 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>

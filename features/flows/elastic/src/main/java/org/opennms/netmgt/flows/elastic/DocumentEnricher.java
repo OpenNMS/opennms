@@ -34,10 +34,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.cache.CacheConfig;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -53,7 +53,6 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
@@ -74,17 +73,14 @@ public class DocumentEnricher {
     private final Timer nodeLoadTimer;
 
     public DocumentEnricher(MetricRegistry metricRegistry, NodeDao nodeDao, InterfaceToNodeCache interfaceToNodeCache,
-                            TransactionOperations transactionOperations, ClassificationEngine classificationEngine) {
+                            TransactionOperations transactionOperations, ClassificationEngine classificationEngine,
+                            CacheConfig cacheConfig) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
 
-        // TODO MVR make this configurable, when it is actually an osgi-module
-        nodeInfoCache = CacheBuilder.newBuilder()
-                .maximumSize(1000)
-                .expireAfterWrite(300, TimeUnit.SECONDS) // 5 Minutes
-                .recordStats()
+        this.nodeInfoCache = Objects.requireNonNull(cacheConfig).createBuilder()
                 .build(new CacheLoader<NodeInfoKey, Optional<NodeDocument>>() {
                     @Override
                     public Optional<NodeDocument> load(NodeInfoKey key) {
@@ -94,9 +90,14 @@ public class DocumentEnricher {
         this.nodeLoadTimer = metricRegistry.timer("nodeLoadTime");
 
         // Expose cache statistics
-        metricRegistry.register(MetricRegistry.name("cache.nodes.evictionCount"),       (Gauge) () -> nodeInfoCache.stats().evictionCount());
-        metricRegistry.register(MetricRegistry.name("cache.nodes.hitRate"),             (Gauge) () -> nodeInfoCache.stats().hitRate());
-        metricRegistry.register(MetricRegistry.name("cache.nodes.loadExceptionCount"),  (Gauge) () -> nodeInfoCache.stats().loadExceptionCount());
+        if (cacheConfig.isRecordStats()) {
+            LOG.debug("Recording of \"cache.nodes\" cache statistics is enabled.");
+            metricRegistry.register(MetricRegistry.name("cache.nodes.evictionCount"), (Gauge) () -> nodeInfoCache.stats().evictionCount());
+            metricRegistry.register(MetricRegistry.name("cache.nodes.hitRate"), (Gauge) () -> nodeInfoCache.stats().hitRate());
+            metricRegistry.register(MetricRegistry.name("cache.nodes.loadExceptionCount"), (Gauge) () -> nodeInfoCache.stats().loadExceptionCount());
+        } else {
+            LOG.warn("Recording of \"cache.nodes\" cache statistics is disabled.");
+        }
     }
 
     public void enrich(final List<FlowDocument> documents, final FlowSource source) {

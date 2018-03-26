@@ -28,25 +28,16 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-public class CacheConfig {
+import java.util.concurrent.TimeUnit;
 
-    private long maxSize;
+/**
+ * @deprecated  use {org.opennms.netmgt.cache.CacheConfig} instead.
+ */
+@Deprecated
+public class CacheConfig extends org.opennms.netmgt.cache.CacheConfig {
 
-    private long maxTTL; // minutes
-
-    public long getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(long maxSize) {
-        this.maxSize = maxSize;
-    }
-
-    public long getMaxTTL() {
-        return maxTTL;
-    }
-
+    // value in minutes
     public void setMaxTTL(long maxTTL) {
-        this.maxTTL = maxTTL;
+        setExpireAfterWrite(TimeUnit.SECONDS.convert(maxTTL, TimeUnit.MINUTES));
     }
 }

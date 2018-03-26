@@ -66,7 +66,7 @@
 
   <bean id="cacheConfig" class="org.opennms.plugins.elasticsearch.rest.CacheConfig">
     <property name="maxTTL" value="${cache_max_ttl}" />
-    <property name="maxSize" value="${cache_max_size}" />
+    <property name="maximumSize" value="${cache_max_size}" />
   </bean>
 
   <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager" />

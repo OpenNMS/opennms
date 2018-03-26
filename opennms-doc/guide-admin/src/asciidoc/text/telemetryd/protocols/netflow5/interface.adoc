@@ -161,6 +161,33 @@ elasticGlobalUser=elastic
 elasticGlobalPassword=changeme
 ----
 
+====== Configure Node Cache
+
+By default each _Flow Document_ is - if known by _{opennms-product-name}_ - enriched with node information.
+To reduce the number of queries to the database, the data is cached.
+The following cache properties are available:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| `nodeCache.maximumSize`
+| The maximum size of the cache
+| `false`
+| `1000`
+
+| `nodeCache.expireAfterWrite`
+| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+| `false`
+| `300`
+
+| `nodeCache.recordStats`
+| Defines if cache statistics are exposed via jmx. Set to `false` to disable statistic recording.
+| `false`
+| `true`
+
+|===
+
 ====== Configure ElasticSearch Credentials
 
 It is possible to define credentials for each ElasticSearch node individually.

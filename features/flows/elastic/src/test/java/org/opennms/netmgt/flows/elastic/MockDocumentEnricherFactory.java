@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mockito.Mockito;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
+import org.opennms.netmgt.cache.CacheConfig;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -75,7 +76,7 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("http").withPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withPort("443").withProtocol("tcp,udp").build()
         ));
-        enricher = new DocumentEnricher(new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
+        enricher = new DocumentEnricher(new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine, new CacheConfig());
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);
