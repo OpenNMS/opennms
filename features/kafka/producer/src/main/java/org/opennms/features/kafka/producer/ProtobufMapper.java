@@ -46,6 +46,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.xml.event.Event;
 
 public class ProtobufMapper {
@@ -85,7 +86,6 @@ public class ProtobufMapper {
         node.getSnmpInterfaces().forEach(s -> builder.addSnmpInterface(toSnmpInterface(s)));
         node.getIpInterfaces().forEach(i -> builder.addIpInterface(toIpInterface(i)));
 
-
         // Add all of the categories, sorting them by name first
         node.getCategories()
                 .stream()
@@ -105,7 +105,7 @@ public class ProtobufMapper {
         final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
                 .setId(event.getDbid())
                 .setUei(event.getUei())
-                .setSoure(event.getSource())
+                .setSource(event.getSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getSeverity())))
                 .setLabel(eventConfDao.getEventLabel(event.getUei()))
                 .setDescription(event.getDescr());
@@ -131,12 +131,13 @@ public class ProtobufMapper {
         final OpennmsModelProtos.Event.Builder builder = OpennmsModelProtos.Event.newBuilder()
                 .setId(event.getId())
                 .setUei(event.getEventUei())
-                .setSoure(event.getEventSource())
+                .setSource(event.getEventSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
                 .setLabel(eventConfDao.getEventLabel(event.getEventUei()))
                 .setDescription(event.getEventDescr())
-                .setLogMessage(event.getEventLogMsg());
-
+                .setLogMessage(event.getEventLogMsg())
+                .setLog("Y".equalsIgnoreCase(event.getEventLog()))
+                .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
         if (event.getNodeId() != null) {
             builder.setNodeCriteria(toNodeCriteria(event.getNode()));
         }
@@ -145,12 +146,13 @@ public class ProtobufMapper {
             if (param.getName() == null || param.getValue() == null) {
                 continue;
             }
-            builder.addParameters(OpennmsModelProtos.EventParameter.newBuilder()
+            builder.addParameter(OpennmsModelProtos.EventParameter.newBuilder()
                     .setName(param.getName())
                     .setValue(param.getValue()));
         }
 
         setTimeIfNotNull(event.getEventTime(), builder::setTime);
+        setTimeIfNotNull(event.getEventCreateTime(), builder::setTime);
 
         return builder;
     }
@@ -256,7 +258,20 @@ public class ProtobufMapper {
         }
 
         final OpennmsModelProtos.IpInterface.Builder builder = OpennmsModelProtos.IpInterface.newBuilder()
+                .setId(ipInterface.getId())
                 .setIpAddress(InetAddressUtils.toIpAddrString(ipInterface.getIpAddress()));
+        final OnmsSnmpInterface snmpInterface = ipInterface.getSnmpInterface();
+        if (snmpInterface != null && snmpInterface.getIfIndex() != null) {
+            builder.setIfIndex(snmpInterface.getIfIndex());
+        }
+        final PrimaryType primaryType = ipInterface.getIsSnmpPrimary();
+        if (PrimaryType.PRIMARY.equals(primaryType)) {
+            builder.setPrimaryType(OpennmsModelProtos.IpInterface.PrimaryType.PRIMARY);
+        } else if (PrimaryType.SECONDARY.equals(primaryType)) {
+            builder.setPrimaryType(OpennmsModelProtos.IpInterface.PrimaryType.SECONDARY);
+        } else if (PrimaryType.NOT_ELIGIBLE.equals(primaryType)) {
+            builder.setPrimaryType(OpennmsModelProtos.IpInterface.PrimaryType.NOT_ELIGIBLE);
+        }
         ipInterface.getMonitoredServices().forEach(svc -> builder.addService(svc.getServiceName()));
 
         return builder;
@@ -267,10 +282,34 @@ public class ProtobufMapper {
             return null;
         }
 
-        return OpennmsModelProtos.SnmpInterface.newBuilder()
-                .setIfIndex(snmpInterface.getIfIndex())
-                .setIfDescr(snmpInterface.getIfDescr())
-                .setIfName(snmpInterface.getIfName());
+        final OpennmsModelProtos.SnmpInterface.Builder builder = OpennmsModelProtos.SnmpInterface.newBuilder()
+                .setId(snmpInterface.getId())
+                .setIfIndex(snmpInterface.getIfIndex());
+        if (snmpInterface.getIfDescr() != null) {
+            builder.setIfDescr(snmpInterface.getIfDescr());
+        }
+        if (snmpInterface.getIfType() != null) {
+            builder.setIfType(snmpInterface.getIfType());
+        }
+        if (snmpInterface.getIfName() != null) {
+            builder.setIfName(snmpInterface.getIfName());
+        }
+        if (snmpInterface.getIfSpeed() != null) {
+            builder.setIfSpeed(snmpInterface.getIfSpeed());
+        }
+        if (snmpInterface.getPhysAddr() != null) {
+            builder.setIfPhysAddress(snmpInterface.getPhysAddr());
+        }
+        if (snmpInterface.getIfAdminStatus() != null) {
+            builder.setIfAdminStatus(snmpInterface.getIfAdminStatus());
+        }
+        if (snmpInterface.getIfOperStatus() != null) {
+            builder.setIfOperStatus(snmpInterface.getIfOperStatus());
+        }
+        if (snmpInterface.getIfAlias() != null) {
+            builder.setIfAlias(snmpInterface.getIfAlias());
+        }
+        return builder;
     }
 
     private static void setTimeIfNotNull(Date date, Consumer<Long> setter) {
