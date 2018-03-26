@@ -795,6 +795,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setAssetRecord(OnmsAssetRecord asset) {
         m_assetRecord = asset;
+        if (m_assetRecord != null) {
+            m_assetRecord.setNode(this);
+        }
     }
 
     /**

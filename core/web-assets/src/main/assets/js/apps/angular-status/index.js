@@ -5,6 +5,7 @@ const MODULE_NAME = 'onms.status';
 const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
 require('lib/onms-pagination');
+require('lib/onms-http');
 
 const filterTemplate            = require('./templates/filter.html');
 const severityFilterTemplate    = require('./templates/severity-filter.html');
@@ -27,8 +28,16 @@ const toList = (severityFilter) => {
     return list;
 };
 
-angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngRoute', 'ngResource', 'ui.checkbox', 'ui.bootstrap', 'onms.elementList', 'onms.pagination' ])
-    .directive('onmsStatusList', () => {
+angular.module(MODULE_NAME, [
+    'onms.http',
+    'angular-loading-bar',
+    'ngRoute',
+    'ngResource',
+    'ui.checkbox',
+    'ui.bootstrap',
+    'onms.elementList',
+    'onms.pagination'
+]).directive('onmsStatusList', () => {
         return {
             restrict: 'E',
             transclude: true,

@@ -22,7 +22,14 @@ const donutSize = {
 };
 
 const loadChartData = function(graph) {
-	$.getJSON(graph.url, function(data) {
+	$.ajax({
+		method: 'GET',
+		url: graph.url,
+		headers: {
+			'X-Requested-With': 'XMLHttpRequest'
+		},
+		dataType: 'json',
+		success: function(data) {
 		var columns = [];
 
 		// Only include values > 0
@@ -76,6 +83,7 @@ const loadChartData = function(graph) {
 					.append('svg:title')
 					.text(description);
 			}
+		}
 		}
 	});
 };

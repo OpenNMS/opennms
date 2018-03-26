@@ -7,8 +7,10 @@
 
 const angular = require('vendor/angular-js');
 const _ = require('underscore');
+require('lib/onms-http');
 
 angular.module('onms-resources', [
+  'onms.http',
   'ui.bootstrap',
   'angular-growl'
 ])
