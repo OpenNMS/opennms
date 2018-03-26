@@ -31,72 +31,81 @@ message Event {
   string uei = 2;
   string label = 3;
   uint64 time = 4;
-  string soure = 5;
-  repeated EventParameter parameters = 6;
+  string source = 5;
+  repeated EventParameter parameter = 6;
   uint64 create_time = 7;
   string description = 8;
   string log_message = 9;
   Severity severity = 10;
   bool log = 11;
   bool display = 12;
-  string location = 13;
-  NodeCriteria node_criteria = 14;
+  NodeCriteria node_criteria = 13;
 }
 
 message Alarm {
   uint64 id = 1;
   string uei = 2;
-  string location = 3;
-  NodeCriteria node_criteria = 4;
-  string node_label = 5;
-  string ip_address = 6;
-  string service_name = 8;
-  string reduction_key = 9;
+  NodeCriteria node_criteria = 3;
+  string ip_address = 4;
+  string service_name = 5;
+  string reduction_key = 6;
   enum Type {
     PROBLEM_WITH_CLEAR = 0;
     CLEAR = 1;
     PROBLEM_WITHOUT_CLEAR = 2;
   }
-  Type type = 10;
-  uint64 count = 11;
-  Severity severity = 12;
-  uint64 first_event_time = 13;
-  string description = 14;
-  string log_message = 15;
-  uint64 supressed_until = 16;
-  uint64 supressed_time = 17;
-  string ack_user = 18;
-  uint64 ack_time = 19;
-  Event last_event = 20;
-  uint64 last_event_time = 21;
-  uint32 if_index = 22;
-  string operator_instructions = 23;
-  string clear_key = 24;
+  Type type = 7;
+  uint64 count = 8;
+  Severity severity = 9;
+  uint64 first_event_time = 10;
+  string description = 11;
+  string log_message = 12;
+  string ack_user = 13;
+  uint64 ack_time = 14;
+  Event last_event = 15;
+  uint64 last_event_time = 16;
+  uint32 if_index = 17;
+  string operator_instructions = 18;
+  string clear_key = 19;
 }
 
 message IpInterface {
- string ip_address = 1;
- repeated string service = 2;
+  uint64 id = 1;
+  string ip_address = 2;
+  uint32 if_index = 3;
+  enum PrimaryType {
+    PRIMARY = 0;
+    SECONDARY = 1;
+    NOT_ELIGIBLE = 2;
+  }
+  PrimaryType primary_type = 4;
+  repeated string service = 5;
 }
 
 message SnmpInterface {
-  uint32 if_index = 1;
-  string if_descr = 2;
-  string if_name = 3;
+  uint64 id = 1;
+  uint32 if_index = 2;
+  string if_descr = 3;
+  uint32 if_type = 4;
+  string if_name = 5;
+  uint64 if_speed = 6;
+  string if_phys_address = 7;
+  uint32 if_admin_status = 8;
+  uint32 if_oper_status = 9;
+  string if_alias = 10;
 }
 
 message Node {
   uint64 id = 1;
   string foreign_source = 2;
   string foreign_id = 3;
-  string type = 4; // TODO: Enum
-  string location = 5;
-  repeated string category = 6;
-  string label = 7;
-  uint64 create_time = 8;
-  string sys_contact = 9;
-  string sys_description = 10;
-  string sys_object_id = 11;
-  repeated IpInterface ip_interface = 12;
-  repeated SnmpInterface snmp_interface = 13;
+  string location = 4;
+  repeated string category = 5;
+  string label = 6;
+  uint64 create_time = 7;
+  string sys_contact = 8;
+  string sys_description = 9;
+  string sys_object_id = 10;
+  repeated IpInterface ip_interface = 11;
+  repeated SnmpInterface snmp_interface = 12;
 }
