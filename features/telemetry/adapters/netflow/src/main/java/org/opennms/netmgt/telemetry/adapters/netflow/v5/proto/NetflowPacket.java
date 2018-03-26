@@ -89,8 +89,6 @@ public class NetflowPacket {
         boolean valid = this.version == VERSION
                 && this.count >= MIN_COUNT && this.count <= MAX_COUNT
                 && getRecords().size() == this.count;
-        //TODO MVR I noticed some packets are longer than they should be. May worth investigating
-        //          && data.array().length == getHeader().getSize() + getHeader().getBodySize() * getHeader().getCount();
         return valid;
     }
 

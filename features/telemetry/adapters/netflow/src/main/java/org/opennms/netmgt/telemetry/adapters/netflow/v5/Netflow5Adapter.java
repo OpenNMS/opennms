@@ -65,7 +65,6 @@ public class Netflow5Adapter extends AbstractAdapter<NetflowPacket> {
 
         // Validates the parsed packeet and drops it when not valid
         if (!flowPacket.isValid()) {
-            // TODO MVR an invalid packet is skipped for now, but we may want to persist it anyways
             LOG.warn("Received packet is not valid. Dropping flow packet.");
             return null;
         }
