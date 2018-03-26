@@ -161,14 +161,14 @@ class SFlow implements Flow {
     @Override
     public Integer getInputSnmp() {
         return get(document, "input")
-                .map(v -> (int) v.asInt64().getValue())
+                .map(v -> v.asInt64().getValue()==0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
         return get(document, "output")
-                .map(v -> (int) v.asInt64().getValue())
+                .map(v -> v.asInt64().getValue()==0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 

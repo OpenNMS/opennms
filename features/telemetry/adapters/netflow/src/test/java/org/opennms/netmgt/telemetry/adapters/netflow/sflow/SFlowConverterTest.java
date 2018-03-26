@@ -36,6 +36,7 @@ import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.junit.Before;
@@ -63,6 +64,32 @@ public class SFlowConverterTest {
 
         final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
 
+        assertThat(flows.size(), is(5));
+    }
+
+    private boolean compareValues(final List<Flow> flows, final Integer in, final Integer out) {
+        for (final Flow flow : flows) {
+            if (Objects.equals(flow.getInputSnmp(), in) && Objects.equals(flow.getOutputSnmp(), out)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Test
+    public void checkSnmpInputOutputValues() throws Exception {
+        assertThat(bsonDocument.getDocument("data"), notNullValue());
+        assertThat(bsonDocument.getInt64("time"), notNullValue());
+        assertThat(bsonDocument.getInt64("time").getValue(), is(1521618510235L));
+        assertThat(bsonDocument.getDocument("data").getArray("samples"), notNullValue());
+        assertThat(bsonDocument.getDocument("data").getArray("samples").size(), is(5));
+
+        final List<Flow> flows = new SFlowConverter().convert(bsonDocument);
+
+        assertThat(compareValues(flows, 4, 17), is(true));
+        assertThat(compareValues(flows, 17, 4), is(true));
+        assertThat(compareValues(flows, 5, null), is(true));
+        assertThat(compareValues(flows, null, 18), is(true));
         assertThat(flows.size(), is(5));
     }
 }

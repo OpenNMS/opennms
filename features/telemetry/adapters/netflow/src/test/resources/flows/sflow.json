@@ -95,10 +95,10 @@
             "$numberLong": "0"
           },
           "input": {
-            "$numberLong": "4"
+            "$numberLong": "5"
           },
           "output": {
-            "$numberLong": "17"
+            "$numberLong": "1073741823"
           },
           "flows": {
             "0:1001": {
@@ -219,10 +219,10 @@
             "$numberLong": "0"
           },
           "input": {
-            "$numberLong": "4"
+            "$numberLong": "1073741823"
           },
           "output": {
-            "$numberLong": "17"
+            "$numberLong": "18"
           },
           "flows": {
             "0:1001": {
