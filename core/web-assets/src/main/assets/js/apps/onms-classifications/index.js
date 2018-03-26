@@ -12,6 +12,7 @@ const groupTemplate  = require('./views/group.html');
 
 const newRuleModalTemplate = require('./views/modals/new-rule-modal.html');
 const importModalTemplate  = require('./views/modals/import-modal.html');
+const exportModalTemplate  = require('./views/modals/export-modal.html');
 
 (function() {
     'use strict';
@@ -177,16 +178,21 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
                     $scope.refresh();
                 });
             };
-            $scope.download = function() {
-                return $http({
-                    method: 'GET',
-                    url: 'rest/classifications/groups/' + $scope.group.id,
-                    headers: {
-                        'Accept': 'text/comma-separated-values'
+
+            $scope.showExportRulesDialog = function() {
+                var modalInstance = $uibModal.open({
+                    backdrop: false,
+                    controller: 'ClassificationExportController',
+                    templateUrl: exportModalTemplate,
+                    resolve: {
+                        group: function () {
+                            return $scope.group;
+                        }
                     }
-                }).then(function(response) {
-                    var uri = 'data:text/csv;charset=UTF-8,' + encodeURIComponent(response.data);
-                    $window.location = uri;
+                });
+                modalInstance.result.then(function () {
+                    $scope.refreshTabs();
+                    $scope.refresh();
                 });
             };
 
@@ -363,6 +369,19 @@ const importModalTemplate  = require('./views/modals/import-modal.html');
                 reader.readAsText($scope.fileToUpload);
             };
             $scope.resetInput();
+        }])
+        .controller('ClassificationExportController', ['$scope', '$http', '$uibModalInstance', 'group', '$window',
+            function($scope, $http, $uibModalInstance, group, $window) {
+                $scope.group = group;
+                $scope.export = {};
+                $scope.export.requestedFileName = group.id + "_rules.csv";
+                $scope.exportGroup = function() {
+                    var requestedFileName = $scope.export.requestedFileName.trim();
+                    $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='
+                        +requestedFileName+'&format=csv';
+                    $uibModalInstance.close();
+            };
+
         }])
         .controller('ClassificationModalController', ['$scope', '$uibModalInstance', 'ProtocolService', 'ClassificationRuleService', 'classification', function($scope, $uibModalInstance, ProtocolService, ClassificationRuleService, classification) {
             $scope.classification = classification || {};

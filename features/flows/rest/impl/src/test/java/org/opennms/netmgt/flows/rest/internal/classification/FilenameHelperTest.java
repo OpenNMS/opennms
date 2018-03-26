@@ -45,6 +45,8 @@ public class FilenameHelperTest {
         assertTrue(h.isValidFileName("x_Y-"));
         assertTrue(h.isValidFileName("x_Y -"));
         assertTrue(h.isValidFileName("aa.csv"));
+        assertTrue(h.isValidFileName("9"));
+        assertTrue("Default Filename should be accepted", h.isValidFileName(h.createFilenameForGroupExport(1, null)));
         assertFalse(h.isValidFileName(" aa.csv"));
         assertFalse(h.isValidFileName("aa "));
         assertFalse(h.isValidFileName(null));
@@ -54,7 +56,7 @@ public class FilenameHelperTest {
         assertFalse(h.isValidFileName("ä"));
         assertFalse(h.isValidFileName("a%"));
         assertFalse(h.isValidFileName("%"));
-        assertFalse(h.isValidFileName("9"));
+
     }
 
     @Test
