@@ -26,7 +26,6 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-
 package org.opennms.features.kafka.producer;
 
 import static com.jayway.awaitility.Awaitility.await;
@@ -41,7 +40,9 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -77,11 +78,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-
-
 /**
- * Test that matches event forwarded to kafka by consuming from kafka
- * Also verifies event filtering.
+ * Test that matches events forwarded to kafka by consuming from kafka
+ * Also verifies event filtering and nodes.
  *
  * @author cgorantla
  */
@@ -99,7 +98,6 @@ import org.springframework.test.context.ContextConfiguration;
 public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     private static final String KAFKA_PRODUCER_CLIENT_PID = "org.opennms.features.kafka.producer.client";
-    
     private static final int NODE_ID_ONE = 1;
 
     @Rule
@@ -116,7 +114,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     @Autowired
     private AlarmLifecycleListenerManager alarmLifecycleListenerManager;
-    
+
     @Autowired
     private MonitoringLocationDao m_locationDao;
 
@@ -126,9 +124,8 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
     private OpennmsKafkaProducer kafkaProducer;
 
     private KafkaMessageConsumerRunner kafkaConsumer;
-    
-    private MockDatabase m_database;
 
+    private MockDatabase m_database;
 
     @Before
     public void setup() throws IOException, InterruptedException {
@@ -140,11 +137,8 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         final OnmsNode node = new OnmsNode(location, "node1");
         node.setId(NODE_ID_ONE);
         m_nodeDao.save(node);
-        
+
         Hashtable<String, Object> producerConfig = new Hashtable<String, Object>();
-        producerConfig.put("eventTopic", "events");
-        producerConfig.put("nodeTopic", "nodes");
-        producerConfig.put("eventFilter", "getUei().equals(\"uei.opennms.org/internal/discovery/newSuspect\")");
         producerConfig.put("group.id", "OpenNMS");
         producerConfig.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
@@ -156,8 +150,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
         kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, m_eventdIpcMgr,
                 alarmLifecycleListenerManager);
-        // It is sufficient to update in config when using karaf. Need to
-        // explicitly set here to enable booleans for events and filtering events
+
         kafkaProducer.setEventTopic("events");
         kafkaProducer.setEventFilter("getUei().equals(\"uei.opennms.org/internal/discovery/newSuspect\")");
         kafkaProducer.setNodeTopic("nodes");
@@ -172,23 +165,27 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         EventBuilder builder = MockEventUtil.createNewSuspectEventBuilder("_test",
                 EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "192.168.1.1");
         m_eventdIpcMgr.send(builder.getEvent());
-        
+
         sendNodeUpEvent(NODE_ID_ONE);
 
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS).untilAtomic(kafkaConsumer.getCount(),
                 is(2));
 
-        OpennmsModelProtos.Event newSuspectEvent = OpennmsModelProtos.Event.parseFrom(kafkaConsumer.getEventResult());
+        OpennmsModelProtos.Event newSuspectEvent = OpennmsModelProtos.Event
+                .parseFrom(kafkaConsumer.getResult().get("events"));
         // This should only receive newSuspectEvent as filter disallows nodeUp event
         assertEquals(builder.getEvent().getUei(), newSuspectEvent.getUei());
         assertEquals(builder.getEvent().getSource(), newSuspectEvent.getSoure());
-        
-        OpennmsModelProtos.Node nodeData = OpennmsModelProtos.Node.parseFrom(kafkaConsumer.getNodeResult());
+
+        OpennmsModelProtos.Node nodeData = OpennmsModelProtos.Node.parseFrom(kafkaConsumer.getResult().get("nodes"));
         assertEquals(nodeData.getId(), NODE_ID_ONE);
 
-
     }
-  
+
+    @Override
+    public void setTemporaryDatabase(MockDatabase database) {
+        m_database = database;
+    }
 
     private void sendNodeUpEvent(long nodeId) throws EventProxyException {
         EventBuilder builder = new EventBuilder(EventConstants.NODE_UP_EVENT_UEI, "_test");
@@ -203,20 +200,13 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
     public void tearDown() throws Exception {
         kafkaConsumer.shutdown();
     }
-    
-    
-    @Override
-    public void setTemporaryDatabase(MockDatabase database) {
-        m_database = database;   
-    }
 
     private class KafkaMessageConsumerRunner implements Runnable {
 
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private KafkaConsumer<String, byte[]> consumer;
         private String kafkaServer;
-        private byte[] eventResult;
-        private byte[] nodeResult;
+        private Map<String, byte[]> result = new HashMap<>();
         private AtomicInteger count = new AtomicInteger(0);
 
         public KafkaMessageConsumerRunner(String bootstrapServer) {
@@ -238,10 +228,10 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
                 ConsumerRecords<String, byte[]> records = consumer.poll(100);
                 for (ConsumerRecord<String, byte[]> record : records) {
                     if (record.topic().equals("events")) {
-                        setEventResult(record.value());
+                        result.put("events", record.value());
                     }
                     if (record.topic().equals("nodes")) {
-                        setNodeResult(record.value());
+                        result.put("nodes", record.value());
                     }
                     count.incrementAndGet();
                 }
@@ -256,23 +246,10 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
             return count;
         }
 
-        public byte[] getEventResult() {
-            return this.eventResult;
+        public Map<String, byte[]> getResult() {
+            return result;
         }
 
-        public void setEventResult(byte[] result) {
-            this.eventResult = result;
-        }
-
-        public byte[] getNodeResult() {
-            return this.nodeResult;
-        }
-
-        public void setNodeResult(byte[] nodeResult) {
-            this.nodeResult = nodeResult;
-        }
-
-        // Shutdown hook which can be called from a separate thread
         public void shutdown() {
             closed.set(true);
             if (consumer != null) {
@@ -280,6 +257,5 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
             }
         }
     }
-
 
 }

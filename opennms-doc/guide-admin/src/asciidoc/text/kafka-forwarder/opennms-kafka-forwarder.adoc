@@ -1,0 +1,55 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Kafka as data store for events/alarms/nodes
+Events, alarms and nodes from _{opennms-product-name}_ can be stored in kafka apart from storing in database.
+
+===== Enable kafka forwarder features
+
+Kafka forwarder is not enabled by default. Configure and enable features in karaf console.
+
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer.client
+admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
+admin@opennms()> config:update
+admin@opennms()> feature:install kafka-streams
+admin@opennms()> feature:instal opennms-kafka-producer
+----
+Additional _kafka_ producer options can be set directly in the `org.opennms.features.kafka.producer.client.cfg` file in $OPENNMS_HOME/etc.
+A list of all the available options can be found here in link:https://kafka.apache.org/0100/documentation.html#producerconfigs[Producer Configs].
+
+===== Enable filtering on events
+
+Events can be filtered so that only events that match the filter can be sent to Kafka data store.
+
+Filtering is enabled by Spring SpEL expressions link:https://docs.spring.io/spring/docs/4.3.12.RELEASE/spring-framework-reference/html/expressions.html[SpEL]
+
+For ex:
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set eventFilter 'getUei().equals("uei.opennms.org/internal/discovery/newSuspect")'
+admin@opennms()> config:update
+----
+
+===== Configure topics
+
+By default three topics are created i.e. `events`, `alarms`, `nodes`.  Topic names can be changed from karaf console.
+
+For ex:
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set eventTopic "events"
+admin@opennms()> config:property-set alarmTopic "alarms"
+admin@opennms()> config:property-set nodeTopic "nodes"
+admin@opennms()> config:update
+----
