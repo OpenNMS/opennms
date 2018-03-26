@@ -54,31 +54,31 @@ public class DefaultRequestExecutor implements RequestExecutor, RequestExecutorF
 
     @Override
     public <T extends JestResult> T execute(JestClient client, Action<T> clientRequest) {
-        try {
-            T result = client.execute(clientRequest);
-            return result;
-        } catch (CouldNotConnectException connectException) {
-            return retry(client, clientRequest);
-        } catch (IOException ex) {
-            return retry(client, clientRequest);
-        } catch (com.google.gson.JsonSyntaxException gsonException) {
-            return retry(client, clientRequest);
-        }
-    }
-
-    public <T extends JestResult> T retry(JestClient client, Action<T> clientRequest) {
-        LOG.debug("Retry request");
-        if (cooldownInMs > 0) {
-            LOG.debug("Sleep " + cooldownInMs + " before retrying");
+        do {
+            LOG.debug("Executing request {}", clientRequest);
             try {
-                Thread.sleep(cooldownInMs);
-            } catch (InterruptedException e) {
-                throw new RuntimeException("Thread interrupted.", e);
+                T result = client.execute(clientRequest);
+                return result;
+            } catch (CouldNotConnectException connectException) {
+                LOG.error("Could not connect to elastic endpoint: {}", connectException.getHost(), connectException);
+            } catch (IOException ex) {
+                LOG.error("Could not perform request {}: {}", clientRequest, ex.getMessage(), ex);
+            } catch (com.google.gson.JsonSyntaxException gsonException) {
+                LOG.error("A Json error occurred: {}", gsonException.getMessage(), gsonException);
             }
-        }
-        LOG.debug("Retrying now");
-        final T result = execute(client, clientRequest);
-        return result;
+
+            // Retry-Logic
+            LOG.debug("Request was not executed properly. Attempting Retry...");
+            if (cooldownInMs > 0) {
+                LOG.debug("Sleep " + cooldownInMs + " before retrying");
+                try {
+                    Thread.sleep(cooldownInMs);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("Thread interrupted.", e);
+                }
+            }
+            LOG.debug("Retrying now");
+        } while (true);
     }
 
     @Override
