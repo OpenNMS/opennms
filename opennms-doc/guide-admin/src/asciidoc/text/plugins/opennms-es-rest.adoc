@@ -68,6 +68,11 @@ The following options are available to configure the forwarding of events from O
 
 (asset-latitude,asset-longitude,asset-region,asset-building,asset-floor,asset-room,asset-rack,asset-slot,asset-port,asset-category,asset-displaycategory,asset-notifycategory,asset-pollercategory,asset-thresholdcategory,asset-managedobjecttype,asset-managedobjectinstance,asset-manufacturer,asset-vendor,asset-modelnumber,parent-nodelabel,parent-nodeid,parent-foreignsource,parent-foreignid)
 
+|`groupOidParameters`
+| false
+| optional
+| If `true` all oid from the event parameters are stored in a single array `p_oids` instead of a flattened structue.
+
 |`logAllEvents`
 | false
 | optional
