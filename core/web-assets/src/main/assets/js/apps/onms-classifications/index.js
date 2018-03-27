@@ -1,6 +1,7 @@
 const angular = require('vendor/angular-js');
 const elementList = require('../onms-elementList/lib/elementList');
 require('../../lib/onms-pagination');
+require('../../lib/onms-http');
 require('angular-bootstrap-confirm');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle');
 require('angular-bootstrap-toggle/dist/angular-bootstrap-toggle.css');
@@ -20,7 +21,19 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
     var MODULE_NAME = 'onms.classifications';
 
 
-    angular.module(MODULE_NAME, [ 'angular-loading-bar', 'ngResource', 'ui.router', 'ui.bootstrap', 'ui.checkbox', 'ui.toggle', 'onms.elementList', 'mwl.confirm', 'onms.pagination'])
+    angular.module(MODULE_NAME, [
+            'angular-loading-bar',
+            'ngResource',
+            'ui.router',
+            'ui.bootstrap',
+            'ui.checkbox',
+            'ui.toggle',
+            'onms.http',
+            'onms.elementList',
+            'mwl.confirm',
+            'onms.pagination'
+        ])
+
         .config( ['$locationProvider', function ($locationProvider) {
             $locationProvider.hashPrefix('!');
             $locationProvider.html5Mode(false);
