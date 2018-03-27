@@ -70,11 +70,8 @@ public class PacketHandler extends SimpleChannelInboundHandler<DefaultAddressedE
             bsonWriter.writeEndDocument();
         }
 
-        // Build the message to dispatch
+        // Build the message to be sent
         final TelemetryMessage msg = new TelemetryMessage(packet.sender(), output.getByteBuffers().get(0).asNIO());
-
-        // Dispatch and retain a reference to the packet
-        // in the case that we are sharing the underlying byte array
         final CompletableFuture<TelemetryMessage> future = dispatcher.send(msg);
 
         // Pass exception if dispatching fails

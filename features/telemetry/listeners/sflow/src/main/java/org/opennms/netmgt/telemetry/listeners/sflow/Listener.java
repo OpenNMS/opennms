@@ -42,6 +42,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -61,6 +62,8 @@ public class Listener implements org.opennms.netmgt.telemetry.listeners.api.List
     private EventLoopGroup bossGroup;
     private ChannelFuture socketFuture;
 
+    private int maxPacketSize = 8096;
+
     public Listener() {
     }
 
@@ -68,13 +71,15 @@ public class Listener implements org.opennms.netmgt.telemetry.listeners.api.List
         this.bossGroup = new NioEventLoopGroup();
 
         final InetSocketAddress address = this.host != null
-                                ? SocketUtils.socketAddress(this.host, this.port)
-                                : new InetSocketAddress(this.port);
+                ? SocketUtils.socketAddress(this.host, this.port)
+                : new InetSocketAddress(this.port);
 
         this.socketFuture = new Bootstrap()
                 .group(this.bossGroup)
                 .channel(NioDatagramChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.SO_RCVBUF, Integer.MAX_VALUE)
+                .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(this.maxPacketSize))
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
@@ -126,6 +131,14 @@ public class Listener implements org.opennms.netmgt.telemetry.listeners.api.List
 
     public void setPort(final int port) {
         this.port = port;
+    }
+
+    public int getMaxPacketSize() {
+        return maxPacketSize;
+    }
+
+    public void setMaxPacketSize(int maxPacketSize) {
+        this.maxPacketSize = maxPacketSize;
     }
 
     @Override

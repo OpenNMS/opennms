@@ -46,6 +46,7 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.FixedRecvByteBufAllocator;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
@@ -72,6 +73,7 @@ public abstract class AbstractUdpListener implements Listener {
 
     private UdpSessionManager sessionManager;
     private ScheduledFuture<?> housekeepingFuture;
+    private int maxPacketSize = 8096;
 
     protected abstract ChannelHandler buildDecoder(final UdpSessionManager sessionManager);
 
@@ -90,6 +92,8 @@ public abstract class AbstractUdpListener implements Listener {
                 .group(this.bossGroup)
                 .channel(NioDatagramChannel.class)
                 .option(ChannelOption.SO_REUSEADDR, true)
+                .option(ChannelOption.SO_RCVBUF, Integer.MAX_VALUE)
+                .option(ChannelOption.RCVBUF_ALLOCATOR, new FixedRecvByteBufAllocator(this.maxPacketSize))
                 .handler(new ChannelInitializer<DatagramChannel>() {
                     @Override
                     protected void initChannel(final DatagramChannel ch) throws Exception {
@@ -144,6 +148,14 @@ public abstract class AbstractUdpListener implements Listener {
 
     public void setPort(final int port) {
         this.port = port;
+    }
+
+    public int getMaxPacketSize() {
+        return maxPacketSize;
+    }
+
+    public void setMaxPacketSize(int maxPacketSize) {
+        this.maxPacketSize = maxPacketSize;
     }
 
     public Duration getTemplateTimeout() {
