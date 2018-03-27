@@ -139,19 +139,19 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             maybeUpdateNode(event.getNodeid());
         }
 
-        boolean result = true;
+        boolean shouldForwardEvent = true;
 
         if (filterEvents) {
             ExpressionParser parser = new SpelExpressionParser();
             Expression exp = parser.parseExpression(eventFilter);
             try {
-                result = exp.getValue(event, Boolean.class);
+                shouldForwardEvent = exp.getValue(event, Boolean.class);
             } catch (Exception e) {
                 LOG.error(" Event filter : {} didn't evaluate any result on Event {}", eventFilter,
                         event.toStringSimple(), e);
             }
         }
-        if (result) {
+        if (shouldForwardEvent) {
             sendRecord(() -> {
 
                 final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
@@ -159,7 +159,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                 return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
             });
         } else {
-            LOG.debug("Event {} not forwarded based on filter {} ", event.toStringSimple(), eventFilter);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Event {} not forwarded based on filter {} ", event.toStringSimple(), eventFilter);
+            }
             return;
         }
 
