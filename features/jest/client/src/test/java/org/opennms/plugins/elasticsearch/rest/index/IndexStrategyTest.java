@@ -31,6 +31,8 @@ package org.opennms.plugins.elasticsearch.rest.index;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.junit.Test;
 
@@ -49,6 +51,10 @@ public class IndexStrategyTest {
         cal.set(Calendar.MONTH, Calendar.MARCH);
         cal.set(Calendar.DAY_OF_MONTH, 1);
         cal.set(Calendar.HOUR_OF_DAY, 18);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // Verify each strategy
         final IndexStrategy[] strategies = IndexStrategy.values();
@@ -57,5 +63,18 @@ public class IndexStrategyTest {
             final String expectedValue = "opennms-" + expectedValues[i];
             assertEquals(expectedValue, actualValue);
         }
+    }
+
+    // See HZN-1278
+    @Test
+    public void verifyIsUsingUTC() {
+        // First set time zone to EST, to ensure the IndexStrategy is using UTC instead of local time
+        TimeZone.setDefault(TimeZone.getTimeZone("EST"));
+
+        // Set date to "Wednesday, March 28, 2018 2:55:05 AM UTC"
+        // This is "Tuesday March 27, 2018 21:55:05 EST"
+        final Date date = new Date(1522205705000L);
+        assertEquals("opennms-2018-03-28", IndexStrategy.DAILY.getIndex("opennms", date));
+        assertEquals("opennms-2018-03-28-02", IndexStrategy.HOURLY.getIndex("opennms", date));
     }
 }
