@@ -615,6 +615,9 @@
                         }
                     }
                 },
+                "p_oids": {
+                    "type": "nested"
+                },
                 "operatingsystem": {
                     "index": true,
                     "type": "keyword",
