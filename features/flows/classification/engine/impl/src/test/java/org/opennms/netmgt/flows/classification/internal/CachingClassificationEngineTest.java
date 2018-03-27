@@ -34,6 +34,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.core.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
@@ -43,12 +45,18 @@ import com.google.common.collect.Lists;
 
 public class CachingClassificationEngineTest {
 
+    private static final CacheConfig CACHE_CONFIG = new CacheConfigBuilder()
+            .withName("classification")
+            .withExpireAfterRead(60)
+            .withMaximumSize(5000)
+            .build();
+
     @Test
     public void verifyCaching() {
         // Create caching engine and spy o original engine
         final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("TEST", "0-10000")));
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
-        final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine);
+        final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine, CACHE_CONFIG);
 
         // Create Request
         final ClassificationRequest request = new ClassificationRequest("Default", 80, "192.168.2.1", ProtocolType.TCP);
@@ -70,7 +78,7 @@ public class CachingClassificationEngineTest {
         // Create caching engine and spy o original engine
         final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> rules);
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
-        final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine);
+        final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine, CACHE_CONFIG);
 
         // Verify no rule defined
         final ClassificationRequest request = new ClassificationRequest("Default", 80, "192.168.2.1", ProtocolType.TCP);

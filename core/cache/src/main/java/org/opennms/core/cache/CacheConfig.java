@@ -28,8 +28,10 @@
 
 package org.opennms.core.cache;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 
@@ -41,6 +43,10 @@ import com.google.common.cache.CacheBuilder;
  */
 public class CacheConfig {
 
+    private String name;
+
+    private boolean enabled;
+
     private Long maximumSize;
 
     private Long expireAfterWrite; // Seconds
@@ -48,6 +54,16 @@ public class CacheConfig {
     private Long expireAfterRead; // Seconds
 
     private boolean recordStats;
+
+    private MetricRegistry metricRegistry;
+
+    protected CacheConfig() {
+
+    }
+
+    public CacheConfig(String cacheName) {
+        this.name = Objects.requireNonNull(cacheName);
+    }
 
     public Long getMaximumSize() {
         return maximumSize;
@@ -81,7 +97,31 @@ public class CacheConfig {
         this.expireAfterRead = expireAfterRead;
     }
 
-    public <K, V> CacheBuilder<K,V> createBuilder() {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public MetricRegistry getMetricRegistry() {
+        return metricRegistry;
+    }
+
+    public void setMetricRegistry(MetricRegistry metricRegistry) {
+        this.metricRegistry = metricRegistry;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    protected <K, V> CacheBuilder<K,V> createBuilder() {
         CacheBuilder cacheBuilder = CacheBuilder.newBuilder();
         if (getMaximumSize() != null && getMaximumSize() > 0) {
             cacheBuilder.maximumSize(getMaximumSize());
@@ -101,10 +141,20 @@ public class CacheConfig {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(getClass())
+                .add("name", name)
                 .add("maximumSize", maximumSize)
                 .add("expireAfterWrite", expireAfterWrite != null ? expireAfterWrite + " sec" : null)
                 .add("expireAfterRead", expireAfterRead != null ? expireAfterRead + " sec" : null)
                 .add("recordStats", recordStats)
                 .toString();
+    }
+
+    public void validate() {
+        if (name == null || "".equals(name.trim())) {
+            throw new IllegalStateException("Cache has no name");
+        }
+        if (recordStats && metricRegistry == null) {
+            throw new IllegalStateException("Cache '" + name + "' should record statistics, but no MetricRegistry is provided");
+        }
     }
 }

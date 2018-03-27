@@ -32,7 +32,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -45,7 +48,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * Created:
@@ -59,7 +61,7 @@ public class NodeCacheImpl implements NodeCache {
     private final TransactionOperations transactionOperations;
     private final boolean archiveAssetData;
 
-    private final LoadingCache<Long, Map<String,String>> cache;
+    private final Cache<Long, Map<String,String>> cache;
 
     public NodeCacheImpl(final NodeDao nodeDao, final TransactionOperations transactionOperations, final CacheConfig cacheConfig, final boolean archiveAssetData) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
@@ -68,17 +70,23 @@ public class NodeCacheImpl implements NodeCache {
 
         // Initialize cache
         LOG.info("initializing node data cache (archiveAssetData={}, cacheConfig={})", archiveAssetData, cacheConfig);
-        cache = cacheConfig.createBuilder().build(new CacheLoader<Long, Map<String, String>>() {
-                                     @Override
-                                     public Map<String,String> load(Long nodeId) {
-                                         return loadNodeAndCategoryInfo(nodeId);
-                                     }
-                                 }
-        );
+        cache = new CacheBuilder()
+                .withConfig(cacheConfig)
+                .withCacheLoader(new CacheLoader<Long, Map<String, String>>() {
+                     @Override
+                     public Map<String,String> load(Long nodeId) {
+                         return loadNodeAndCategoryInfo(nodeId);
+                     }
+                 })
+                .build();
     }
 
     public Map<String,String> getEntry(Long nodeId) {
-        return cache.getUnchecked(nodeId);
+        try {
+            return cache.get(nodeId);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Error loading entry with key " + nodeId + " from cache", e);
+        }
     }
 
     public void refreshEntry(Long nodeId) {

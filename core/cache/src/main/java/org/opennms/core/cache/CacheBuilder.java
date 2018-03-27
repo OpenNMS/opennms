@@ -26,22 +26,31 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.plugins.elasticsearch.rest;
+package org.opennms.core.cache;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
 
-/**
- * @deprecated  use {org.opennms.netmgt.cache.CacheConfig} instead.
- */
-@Deprecated
-public class CacheConfig extends org.opennms.core.cache.CacheConfig {
+import com.google.common.cache.CacheLoader;
 
-    public CacheConfig() {
-        super("es-rest.node");
+public class CacheBuilder<K, V> {
+
+    private CacheConfig config;
+    private CacheLoader<K, V> loader;
+
+    public CacheBuilder withConfig(CacheConfig config) {
+        this.config = config;
+        return this;
     }
 
-    // value in minutes
-    public void setMaxTTL(long maxTTL) {
-        setExpireAfterWrite(TimeUnit.SECONDS.convert(maxTTL, TimeUnit.MINUTES));
+    public CacheBuilder withCacheLoader(CacheLoader<K, V> loader) {
+        this.loader = loader;
+        return this;
     }
+
+    public Cache<K, V> build() {
+        Objects.requireNonNull(config);
+        Objects.requireNonNull(loader);
+        return new Cache(config, loader);
+    }
+
 }

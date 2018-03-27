@@ -22,6 +22,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cache</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>
