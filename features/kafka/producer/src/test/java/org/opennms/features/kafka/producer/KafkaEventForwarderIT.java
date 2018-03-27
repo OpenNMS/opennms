@@ -79,8 +79,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Test that matches events forwarded to kafka by consuming from kafka
- * Also verifies event filtering and nodes.
+ * Test that matches events forwarded to kafka by consuming from kafka Also
+ * verifies event filtering and nodes.
  *
  * @author cgorantla
  */
@@ -123,7 +123,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     private OpennmsKafkaProducer kafkaProducer;
 
-    private KafkaMessageConsumerRunner kafkaConsumer;
+    private KafkaMessageConsumerRunner kafkaConsumerRunner;
 
     private MockDatabase m_database;
 
@@ -145,8 +145,8 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         when(configAdmin.getConfiguration(KAFKA_PRODUCER_CLIENT_PID).getProperties()).thenReturn(producerConfig);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        kafkaConsumer = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
-        executor.execute(kafkaConsumer);
+        kafkaConsumerRunner = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
+        executor.execute(kafkaConsumerRunner);
 
         kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, m_eventdIpcMgr,
                 alarmLifecycleListenerManager);
@@ -155,8 +155,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         kafkaProducer.setEventFilter("getUei().equals(\"uei.opennms.org/internal/discovery/newSuspect\")");
         kafkaProducer.setNodeTopic("nodes");
         kafkaProducer.init();
-        // 2 second delay for kafka producer to initialize
-        Thread.sleep(2000);
+        waitUntilTopicsAreInitialized();
     }
 
     @Test
@@ -168,16 +167,18 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
         sendNodeUpEvent(NODE_ID_ONE);
 
-        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS).untilAtomic(kafkaConsumer.getCount(),
-                is(2));
+        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
+                .untilAtomic(kafkaConsumerRunner.getCount(), is(2));
 
         OpennmsModelProtos.Event newSuspectEvent = OpennmsModelProtos.Event
-                .parseFrom(kafkaConsumer.getResult().get("events"));
-        // This should only receive newSuspectEvent as filter disallows nodeUp event
+                .parseFrom(kafkaConsumerRunner.getResult().get("events"));
+        // This should only receive newSuspectEvent as filter disallows nodeUp
+        // event
         assertEquals(builder.getEvent().getUei(), newSuspectEvent.getUei());
         assertEquals(builder.getEvent().getSource(), newSuspectEvent.getSoure());
 
-        OpennmsModelProtos.Node nodeData = OpennmsModelProtos.Node.parseFrom(kafkaConsumer.getResult().get("nodes"));
+        OpennmsModelProtos.Node nodeData = OpennmsModelProtos.Node
+                .parseFrom(kafkaConsumerRunner.getResult().get("nodes"));
         assertEquals(nodeData.getId(), NODE_ID_ONE);
 
     }
@@ -198,7 +199,19 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     @After
     public void tearDown() throws Exception {
-        kafkaConsumer.shutdown();
+        kafkaConsumerRunner.shutdown();
+    }
+
+    private void waitUntilTopicsAreInitialized() {
+        Properties props = new Properties();
+        props.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
+        props.put("group.id", "OpenNMS");
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
+        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
+                .until(() -> kafkaConsumer.listTopics().keySet().contains("events"));
+        kafkaConsumer.close();
     }
 
     private class KafkaMessageConsumerRunner implements Runnable {
@@ -223,7 +236,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
             props.put("enable.auto.commit", "true");
             props.put("auto.commit.interval.ms", "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("events", "alarms", "nodes"));
+            consumer.subscribe(Arrays.asList("events", "nodes"));
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(100);
                 for (ConsumerRecord<String, byte[]> record : records) {

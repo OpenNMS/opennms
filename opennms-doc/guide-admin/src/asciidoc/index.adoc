@@ -324,3 +324,7 @@ include::text/telemetryd/protocols/jti-adapter.adoc[]
 [[ga-telemetryd-listener]]
 === Listener Reference
 include::text/telemetryd/listener/udp-listener.adoc[]
+
+[[ga-kafka-forwarder]]
+== Kafka forwarder
+include::text/kafka-forwarder/opennms-kafka-forwarder.adoc[]
