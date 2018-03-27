@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mockito.Mockito;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
-import org.opennms.netmgt.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;

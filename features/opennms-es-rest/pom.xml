@@ -141,8 +141,8 @@
       <version>${json-simpleVersion}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.cache</artifactId>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.cache</artifactId>
       <version>${project.version}</version>
     </dependency>
 

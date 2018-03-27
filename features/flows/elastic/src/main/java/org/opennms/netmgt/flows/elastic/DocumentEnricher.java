@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfig;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.flows.api.FlowSource;

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.cache;
+package org.opennms.core.cache;
 
 import java.util.concurrent.TimeUnit;
 

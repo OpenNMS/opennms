@@ -50,7 +50,7 @@
     </bean>
 
     <!-- Configure node cache -->
-    <bean id="nodeCacheConfig" class="org.opennms.netmgt.cache.CacheConfig">
+    <bean id="nodeCacheConfig" class="org.opennms.core.cache.CacheConfig">
         <property name="maximumSize" value="${nodeCache.maximumSize}" />
         <property name="expireAfterWrite" value="${nodeCache.expireAfterWrite}" />
         <property name="recordStats" value="${nodeCache.recordStats}" />

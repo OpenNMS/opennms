@@ -23,9 +23,6 @@
     <!-- OpenNMS Polling API -->
     <module>poller</module>
 
-    <!-- Cache -->
-    <module>cache</module>
-
     <!-- Events -->
     <module>events</module>
 

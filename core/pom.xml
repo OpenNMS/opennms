@@ -25,6 +25,7 @@
   <modules>
     <module>api</module>
     <module>build</module>
+    <module>cache</module>
     <module>camel</module>
     <module>config</module>
     <module>criteria</module>

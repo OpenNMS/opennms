@@ -34,7 +34,7 @@ import java.util.concurrent.TimeUnit;
  * @deprecated  use {org.opennms.netmgt.cache.CacheConfig} instead.
  */
 @Deprecated
-public class CacheConfig extends org.opennms.netmgt.cache.CacheConfig {
+public class CacheConfig extends org.opennms.core.cache.CacheConfig {
 
     // value in minutes
     public void setMaxTTL(long maxTTL) {
