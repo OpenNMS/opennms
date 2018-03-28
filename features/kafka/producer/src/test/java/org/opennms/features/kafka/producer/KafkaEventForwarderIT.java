@@ -175,7 +175,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         // This should only receive newSuspectEvent as filter disallows nodeUp
         // event
         assertEquals(builder.getEvent().getUei(), newSuspectEvent.getUei());
-        assertEquals(builder.getEvent().getSource(), newSuspectEvent.getSoure());
+        assertEquals(builder.getEvent().getSource(), newSuspectEvent.getSource());
 
         OpennmsModelProtos.Node nodeData = OpennmsModelProtos.Node
                 .parseFrom(kafkaConsumerRunner.getResult().get("nodes"));
