@@ -38,7 +38,9 @@ public enum NetflowVersion {
     @SerializedName("Netflow v9")
     V9,
     @SerializedName("IPFIX")
-    IPFIX;
+    IPFIX,
+    @SerializedName("SFLOW")
+    SFLOW;
 
     public static NetflowVersion from(Flow.NetflowVersion version) {
         if (version == null) return null;
@@ -50,6 +52,8 @@ public enum NetflowVersion {
                 return V9;
             case IPFIX:
                 return IPFIX;
+            case SFLOW:
+                return SFLOW;
             default:
                 throw new IllegalArgumentException("Unknown protocol version: " + version.name());
         }

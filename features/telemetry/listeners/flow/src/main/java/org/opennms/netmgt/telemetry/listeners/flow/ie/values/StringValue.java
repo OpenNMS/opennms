@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow.ie.values;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.bytes;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.bytes;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;

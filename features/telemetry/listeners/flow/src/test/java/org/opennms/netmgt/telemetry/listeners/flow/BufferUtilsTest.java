@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.telemetry.listeners.flow;
 
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.sint;
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint32;
-import static org.opennms.netmgt.telemetry.listeners.flow.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.sint;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint32;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint64;
 
 import java.nio.ByteBuffer;
 

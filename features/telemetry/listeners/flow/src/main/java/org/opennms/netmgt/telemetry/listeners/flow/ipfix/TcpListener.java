@@ -92,6 +92,8 @@ public class TcpListener implements Listener {
                                 .addLast(new ChannelInboundHandlerAdapter() {
                                     @Override
                                     public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) throws Exception {
+                                        cause.printStackTrace();
+
                                         LOG.warn("Invalid packet: {}", cause.getMessage());
                                         LOG.debug("", cause);
                                         ctx.close();
@@ -140,5 +142,15 @@ public class TcpListener implements Listener {
     @Override
     public void setDispatcher(final AsyncDispatcher<TelemetryMessage> dispatcher) {
         this.dispatcher = dispatcher;
+    }
+
+    public static void main(final String... args) throws Exception {
+        final UdpListener l = new UdpListener();
+        l.setName("sflow-test");
+        l.start();
+
+        while (true) {
+            Thread.sleep(1000);
+        }
     }
 }

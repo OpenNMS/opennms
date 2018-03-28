@@ -29,4 +29,14 @@
         <adapter name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter">
         </adapter>
     </protocol>
+
+    <protocol name="SFlow" description="Listener for SFlow UDP packets" enabled="true">
+        <listener name="SFlow-UDP-50003" class-name="org.opennms.netmgt.telemetry.listeners.sflow.Listener">
+            <parameter key="port" value="50003"/>
+            <parameter key="host" value="0.0.0.0"/>
+        </listener>
+
+        <adapter name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter">
+        </adapter>
+    </protocol>
 </telemetryd-config>
