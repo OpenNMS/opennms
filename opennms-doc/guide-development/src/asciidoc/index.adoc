@@ -82,6 +82,7 @@ include::text/docs/writing.adoc[]
 include::text/docs/images.adoc[]
 include::text/docs/include-source.adoc[]
 include::text/docs/cheat-sheets.adoc[]
+include::text/docs/migrating-from-wiki.adoc[]
 
 == AMQP Integration
 include::text/amqp/introduction.adoc[]
