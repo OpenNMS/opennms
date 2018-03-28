@@ -62,7 +62,7 @@ public interface ClassificationService {
 
     void updateGroup(Group group);
 
-    void importRules(InputStream inputStream, boolean hasHeader) throws CSVImportException;
+    void importRules(InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException;
 
     String exportRules(int groupId);
 

@@ -32,7 +32,7 @@
         </div>
         <div class="checkbox">
           <label>
-            <input type="checkbox" ng-model="confirmImport"> Delete existing rules
+            <input type="checkbox" ng-model="deleteExistingRules"> Delete existing rules
           </label>
         </div>
       </div>
@@ -62,7 +62,7 @@
 </div>
 <div class="modal-footer">
   <div style="display: inline" title="Please confirm deletion">
-    <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" ng-disabled="!confirmImport" title="Upload Rule">Upload</button>
+    <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" title="Upload Rule">Upload</button>
   </div>
   <button type="button" class="btn btn-default" ng-click="$dismiss('cancelled by user')" >Cancel</button>
 </div>

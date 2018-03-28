@@ -310,7 +310,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 $scope.error = undefined;
                 $scope.failedRows = [];
                 $scope.containsHeader = true;
-                $scope.confirmImport = false;
+                $scope.deleteExistingRules = false;
                 $scope.pagination = {
                     page: 1,
                     totalItems: 0,
@@ -335,7 +335,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                         url: 'rest/classifications',
                         method: 'POST',
                         data: reader.result,
-                        params: {'hasHeader': $scope.containsHeader},
+                        params: {'hasHeader': $scope.containsHeader, 'deleteExistingRules' : $scope.deleteExistingRules},
                         headers: {'Content-Type': 'text/comma-separated-values'}
                     }).success(function (response) {
                         $uibModalInstance.close();

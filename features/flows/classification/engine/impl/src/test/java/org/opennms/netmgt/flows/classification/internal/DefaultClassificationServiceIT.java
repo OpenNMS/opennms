@@ -40,11 +40,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.internal.provider.DaoClassificationRuleProvider;
-import org.opennms.netmgt.flows.classification.internal.validation.RuleValidator;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
@@ -104,7 +102,7 @@ public class DefaultClassificationServiceIT {
 
         // Import
         final InputStream inputStream = new ByteArrayInputStream(builder.toString().getBytes());
-        classificationService.importRules(inputStream, true);
+        classificationService.importRules(inputStream, true, true);
 
         // Verify
         assertThat(ruleDao.countAll(), is(2));
@@ -126,7 +124,7 @@ public class DefaultClassificationServiceIT {
 
         // Import
         final InputStream inputStream = new ByteArrayInputStream(builder.toString().getBytes());
-        classificationService.importRules(inputStream, false);
+        classificationService.importRules(inputStream, false, true);
 
         // Verify
         assertThat(ruleDao.countAll(), is(2));
@@ -156,10 +154,33 @@ public class DefaultClassificationServiceIT {
         // define csv and import
         final StringBuilder builder = new StringBuilder();
         builder.append("http2;127.0.0.1;;TCP,UDP");
-        classificationService.importRules(new ByteArrayInputStream(builder.toString().getBytes()), false);
+        classificationService.importRules(new ByteArrayInputStream(builder.toString().getBytes()), false, true);
 
         // Verify original one is deleted, but count is still 1
         assertThat(ruleDao.findByDefinition(rule), hasSize(0));
         assertThat(ruleDao.countAll(), is(1));
+    }
+
+    @Test
+    public void verifyCsvImportWithoutDeletingExistingRules() {
+        // Save a rule
+        final Group userGroup = groupDao.findByName(Groups.USER_DEFINED);
+        Rule rule = new RuleBuilder()
+                .withGroup(userGroup)
+                .withName("http")
+                .withProtocol("tcp,udp")
+                .build();
+        ruleDao.save(rule);
+
+        // verify it is created
+        assertThat(ruleDao.countAll(), is(1));
+
+        // define csv and import
+        final String csv = "http2;127.0.0.1;;TCP,UDP";
+        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), false, true);
+
+        // Verify original one is retained, and new one was added
+        assertThat(ruleDao.findByDefinition(rule), hasSize(1));
+        assertThat(ruleDao.countAll(), is(2));
     }
 }
