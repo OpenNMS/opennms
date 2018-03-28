@@ -43,6 +43,7 @@
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
       <cm:property name="archiveAssetData" value="true" />
+      <cm:property name="groupOidParameters" value="false" />
 
       <!-- Bulk Action Retry settings -->
       <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
@@ -134,6 +135,7 @@
     <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
     <property name="archiveOldAlarmValues" value="${archiveOldAlarmValues}" />
     <property name="archiveNewAlarmValues" value="${archiveNewAlarmValues}" />
+    <property name="groupOidParameters" value="${groupOidParameters}" />
   </bean>
 
   <bean id="elasticSearchInitializer" class="org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer">

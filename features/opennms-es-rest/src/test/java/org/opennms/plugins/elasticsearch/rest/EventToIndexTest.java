@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,36 +25,22 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.plugins.elasticsearch.rest;
 
-import org.junit.After;
-import org.junit.Before;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.opennms.plugins.elasticsearch.rest.EventToIndex.*;
 
-import io.searchbox.client.JestClient;
+import org.junit.Test;
 
-public abstract class AbstractEventToIndexTest {
+public class EventToIndexTest {
 
-    protected JestClient jestClient;
-    protected EventToIndex eventToIndex;
-
-    @Before
-    public void setUp() throws Exception {
-        this.jestClient = new RestClientFactory("http://localhost:9200", "", "").createClient();
-        this.eventToIndex = new EventToIndex(jestClient, 3);
-    }
-
-    @After
-    public void tearDown() {
-        if (jestClient != null) {
-            jestClient.shutdownClient();
-        }
-        if (eventToIndex != null) {
-            eventToIndex.close();
-        }
-    }
-
-    protected EventToIndex getEventToIndex() {
-        return eventToIndex;
+    @Test
+    public void verifyIsOID() {
+        assertThat(isOID(".3"), is(true));
+        assertThat(isOID(".3.1.2"), is(true));
+        assertThat(isOID("..3.."), is(false));
+        assertThat(isOID("192.168.0.1"), is(false));
+        assertThat(isOID("nodeLabel"), is(false));
     }
 }

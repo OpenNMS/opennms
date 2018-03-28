@@ -42,9 +42,11 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -162,6 +164,8 @@ public class EventToIndex implements AutoCloseable {
 
 	private boolean archiveNewAlarmValues = true;
 
+	private boolean groupOidParameters = false;
+
 	private NodeCache nodeCache = null;
 
 	private final JestClient jestClient;
@@ -242,6 +246,10 @@ public class EventToIndex implements AutoCloseable {
 
 	public void setArchiveNewAlarmValues(boolean archiveNewAlarmValues) {
 		this.archiveNewAlarmValues = archiveNewAlarmValues;
+	}
+
+	public void setGroupOidParameters(boolean groupOidParameters) {
+		this.groupOidParameters = groupOidParameters;
 	}
 
 	@Override
@@ -352,7 +360,7 @@ public class EventToIndex implements AutoCloseable {
 	 * Utility method to populate a Map with the most import event attributes
 	 */
 	private Index createEventIndexFromEvent(final Event event, final IndexAndType indexAndType) {
-		final Map<String,String> body = new HashMap<String,String>();
+		final JSONObject body = new JSONObject();
 
 		final Integer id = event.getDbid();
 		body.put("id", Integer.toString(id));
@@ -382,10 +390,8 @@ public class EventToIndex implements AutoCloseable {
 
 		body.put("host",event.getHost());
 
-		//get params from event
-		for(Parm parm : event.getParmCollection()) {
-			body.put("p_" + parm.getParmName(), parm.getValue().getContent());
-		}
+		// Parse event parameters
+		handleParameters(event, body);
 
 		// remove old and new alarm values parms if not needed
 		if(! archiveNewAlarmValues){
@@ -426,10 +432,7 @@ public class EventToIndex implements AutoCloseable {
 					+ "/"+completeIndexName
 					+ "/"+indexAndType.getType()
 					+ "/"+id
-					+ "\n   body: ";
-			for (String key:body.keySet()){
-				str=str+"["+ key+" : "+body.get(key)+"]";
-			}
+					+ "\n   body: \n" + body.toJSONString();
 			LOG.debug(str);
 		}
 
@@ -447,6 +450,56 @@ public class EventToIndex implements AutoCloseable {
 		Index index = builder.build();
 
 		return index;
+	}
+
+	private void handleParameters(Event event, JSONObject body) {
+		// Decide if oids should be grouped in a single JsonArray or flattened
+		if (groupOidParameters) {
+			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName())).collect(Collectors.toList());
+			final List<Parm> normalParameters = event.getParmCollection();
+			normalParameters.removeAll(oidParameters);
+
+			// Handle non oid paramaters as always
+			handleParameters(event, normalParameters, body);
+
+			// Special treatment for oid parameters
+			if (!oidParameters.isEmpty()) {
+				final JSONArray jsonArray = new JSONArray();
+				for (Parm eachOid : oidParameters) {
+					final JSONObject eachOidObject = new JSONObject();
+					eachOidObject.put("oid", eachOid.getParmName());
+					eachOidObject.put("value", eachOid.getValue().getContent());
+					jsonArray.add(eachOidObject);
+				}
+				body.put("p_oids", jsonArray);
+			}
+
+		} else { // flattened
+			handleParameters(event, event.getParmCollection(), body);
+		}
+	}
+
+	private void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
+		final JSONParser jsonParser = new JSONParser();
+		for(Parm parm : parameters) {
+			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
+
+			// Some parameter values are of type json and should be decoded properly.
+			// See HZN-1272
+			if ("json".equalsIgnoreCase(parm.getValue().getType())) {
+				try {
+					JSONObject tmpJson = (JSONObject) jsonParser.parse(parm.getValue().getContent());
+					body.put(parmName, tmpJson);
+				} catch (ParseException ex) {
+					LOG.error("Cannot parse parameter content '{}' of parameter '{}' from eventid {} to json: {}",
+							parm.getValue().getContent(), parm.getParmName(), event.getDbid(), ex.getMessage(), ex);
+					// To not lose the data, just use as is
+					body.put(parmName, parm.getValue().getContent());
+				}
+			} else {
+				body.put(parmName, parm.getValue().getContent());
+			}
+		}
 	}
 
 	/**
@@ -721,5 +774,9 @@ public class EventToIndex implements AutoCloseable {
 						"   error message: {}",
 				operation, index, type, result, responseCode, errorMessage
 		);
+	}
+
+	protected static boolean isOID(String input) {
+		return input.matches("^(\\.[0-9]+)+$");
 	}
 }
