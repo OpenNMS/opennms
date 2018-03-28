@@ -45,7 +45,7 @@ public class CacheConfig {
 
     private String name;
 
-    private boolean enabled;
+    private boolean enabled = true;
 
     private Long maximumSize;
 
