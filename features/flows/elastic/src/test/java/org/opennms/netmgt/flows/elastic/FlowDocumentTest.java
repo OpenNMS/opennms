@@ -44,7 +44,6 @@ import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -128,13 +127,5 @@ public class FlowDocumentTest {
         category.setName("SomeCategory");
         node.setCategories(Sets.newHashSet(category));
         return node;
-    }
-
-
-    public static class NopConverter implements Converter<Flow> {
-        @Override
-        public List<Flow> convert(final Flow packet) {
-            return Collections.singletonList(packet);
-        }
     }
 }

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.Converter;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -85,12 +86,13 @@ public abstract class AbstractAdapter<P> implements Adapter {
         LOG.debug("Received {} telemetry messages", messageLog.getMessageList().size());
 
         final List<P> flowPackets = new LinkedList<>();
+        final List<Flow> flows = new LinkedList<>();
         try (Timer.Context ctx = logParsingTimer.time()) {
             for (TelemetryMessage eachMessage : messageLog.getMessageList()) {
                 LOG.trace("Parsing packet: {}", eachMessage);
                 final P flowPacket = parse(eachMessage);
                 if (flowPacket != null) {
-                    flowPackets.add(flowPacket);
+                    flows.addAll(converter.convert(flowPacket));
                 }
             }
             packetsPerLogHistogram.update(flowPackets.size());
@@ -99,7 +101,7 @@ public abstract class AbstractAdapter<P> implements Adapter {
         try {
             LOG.debug("Persisting {} packets.", flowPackets.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
-            flowRepository.persist(flowPackets, source, this.converter);
+            flowRepository.persist(flows, source);
         } catch (FlowException ex) {
             LOG.error("Failed to persist one or more packets: {}", ex.getMessage());
         }
