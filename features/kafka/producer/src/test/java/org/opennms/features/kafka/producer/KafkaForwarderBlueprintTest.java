@@ -30,47 +30,42 @@ package org.opennms.features.kafka.producer;
 
 import java.util.Properties;
 
-import org.apache.camel.BeanInject;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.test.JUnitConfigurationEnvironment;
+import org.springframework.test.context.ContextConfiguration;
 
-/**
- * Simple test that verifies the Blueprint syntax.
- *
- * NOTE: These tests do not run reliably and tend to fail fairly
- * often so they are disabled by default.
- *
- * @author jwhite
- */
-@Ignore
+
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+                                    "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+                                    "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+                                    "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
+                                    "classpath:/META-INF/opennms/applicationContext-daemon.xml",
+                                    "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+                                    "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
+                                  })
+@JUnitConfigurationEnvironment
 public class KafkaForwarderBlueprintTest extends CamelBlueprintTest {
 
     @Override
     protected String getBlueprintDescriptor() {
-        return "OSGI-INF/blueprint/blueprint-kafka-producer.xml";
+        return "OSGI-INF/blueprint/blueprint-kafka-producer.xml,blueprint-empty-camel-context.xml";
     }
 
     @Override
     protected String setConfigAdminInitialConfiguration(Properties props) {
-        props.put("destination", "mock:destination");
+        props.put("bootstrap.servers", "127.0.0.1:9092");
 
         // Return the PID
-        return "org.opennms.features.amqp.alarmnorthbounder";
+        return "org.opennms.features.kafka.producer.client";
     }
 
     @Test
-    public void canForwardAlarm() throws Exception {
-        /*
-        getMockEndpoint("mock:destination").expectedMessageCount(1);
+    public void canLoadBlueprint() throws Exception {
 
-        // Forward a single alarm
-        OnmsAlarm alarm = new OnmsAlarm();
-        NorthboundAlarm northboundAlarm = new NorthboundAlarm(alarm);
-        List<NorthboundAlarm> northboundAlarms = Lists.newArrayList(northboundAlarm);
-        alarmNorthbounder.forwardAlarms(northboundAlarms);
-
-        assertMockEndpointsSatisfied();
-        */
     }
+
 }

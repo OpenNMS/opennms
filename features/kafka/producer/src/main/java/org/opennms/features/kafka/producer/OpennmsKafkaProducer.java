@@ -45,11 +45,13 @@ import org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.xml.event.Event;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import com.google.common.base.Strings;
 
@@ -67,10 +69,12 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private String eventTopic;
     private String alarmTopic;
     private String nodeTopic;
+    private String eventFilter;
 
     private boolean forwardEvents;
     private boolean forwardAlarms;
     private boolean forwardNodes;
+    private boolean filterEvents;
 
     private KafkaProducer<String, byte[]> producer;
 
@@ -134,12 +138,33 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         if (forwardNodes && event.getNodeid() != null && event.getNodeid() != 0) {
             maybeUpdateNode(event.getNodeid());
         }
-        sendRecord(() -> {
 
-            final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
-            LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
-            return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
-        });
+        boolean shouldForwardEvent = true;
+
+        if (filterEvents) {
+            ExpressionParser parser = new SpelExpressionParser();
+            Expression exp = parser.parseExpression(eventFilter);
+            try {
+                shouldForwardEvent = exp.getValue(event, Boolean.class);
+            } catch (Exception e) {
+                LOG.error(" Event filter : {} didn't evaluate any result on Event {}", eventFilter,
+                        event.toStringSimple(), e);
+            }
+        }
+        if (shouldForwardEvent) {
+            sendRecord(() -> {
+
+                final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
+                LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
+                return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
+            });
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Event {} not forwarded based on filter {} ", event.toStringSimple(), eventFilter);
+            }
+            return;
+        }
+
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
@@ -242,4 +267,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         this.nodeTopic = nodeTopic;
         forwardNodes = !Strings.isNullOrEmpty(nodeTopic);
     }
+
+    public void setEventFilter(String eventFilter) {
+        this.eventFilter = eventFilter;
+        filterEvents = !Strings.isNullOrEmpty(eventFilter);
+    }
+
 }

@@ -29,15 +29,12 @@
 package org.opennms.features.kafka.producer;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.config.categories.Category;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
@@ -107,8 +104,10 @@ public class ProtobufMapper {
                 .setUei(event.getUei())
                 .setSource(event.getSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getSeverity())))
-                .setLabel(eventConfDao.getEventLabel(event.getUei()))
-                .setDescription(event.getDescr());
+                .setLabel(eventConfDao.getEventLabel(event.getUei()));
+        if (event.getDescr() != null) {
+            builder.setDescription(event.getDescr());
+        }
 
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
