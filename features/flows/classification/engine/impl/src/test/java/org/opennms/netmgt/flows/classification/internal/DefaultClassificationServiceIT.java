@@ -167,8 +167,9 @@ public class DefaultClassificationServiceIT {
         final Group userGroup = groupDao.findByName(Groups.USER_DEFINED);
         Rule rule = new RuleBuilder()
                 .withGroup(userGroup)
-                .withName("http")
+                .withName("rule1")
                 .withProtocol("tcp,udp")
+                .withPort(111)
                 .build();
         ruleDao.save(rule);
 
@@ -176,11 +177,21 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.countAll(), is(1));
 
         // define csv and import
-        final String csv = "http2;127.0.0.1;;TCP,UDP";
-        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), false, true);
+        final String csv = "rule2;127.0.0.1;222;TCP,UDP";
+        boolean hasHeader = false;
+        boolean deleteExistingRules = false;
+        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
+        assertThat(ruleDao.countAll(), is(2));
 
         // Verify original one is retained, and new one was added
         assertThat(ruleDao.findByDefinition(rule), hasSize(1));
-        assertThat(ruleDao.countAll(), is(2));
+        Rule rule2 = new RuleBuilder()
+                .withGroup(userGroup)
+                .withName("rule2")
+                .withProtocol("tcp,udp")
+                .withPort(222)
+                .build();
+        assertThat(ruleDao.findByDefinition(rule2), hasSize(1));
+
     }
 }
