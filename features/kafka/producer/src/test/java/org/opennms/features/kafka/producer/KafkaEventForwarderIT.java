@@ -62,6 +62,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataView;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -70,13 +71,17 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.mock.MockEventUtil;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.protobuf.InvalidProtocolBufferException;
 
 /**
  * Test that matches events forwarded to kafka by consuming from kafka Also
@@ -105,7 +110,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     @Autowired
     private MockEventIpcManager m_eventdIpcMgr;
-
+    
     @Autowired
     private ProtobufMapper protobufMapper;
 
@@ -122,6 +127,8 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
     private NodeDao m_nodeDao;
 
     private OpennmsKafkaProducer kafkaProducer;
+    
+    private KafkaAlarmDataView alarmDataView;
 
     private KafkaMessageConsumerRunner kafkaConsumerRunner;
 
@@ -143,17 +150,21 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         producerConfig.put("bootstrap.servers", kafkaServer.getKafkaConnectString());
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KAFKA_PRODUCER_CLIENT_PID).getProperties()).thenReturn(producerConfig);
-
+   
         ExecutorService executor = Executors.newSingleThreadExecutor();
         kafkaConsumerRunner = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
         executor.execute(kafkaConsumerRunner);
 
+/*        alarmDataView = new KafkaAlarmDataView(configAdmin);
+        alarmDataView.setAlarmTopic("alarms");
+        alarmDataView.init();*/
         kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, m_eventdIpcMgr,
                 alarmLifecycleListenerManager);
 
         kafkaProducer.setEventTopic("events");
         kafkaProducer.setEventFilter("getUei().equals(\"uei.opennms.org/internal/discovery/newSuspect\")");
         kafkaProducer.setNodeTopic("nodes");
+        kafkaProducer.setAlarmTopic("alarms");
         kafkaProducer.init();
         waitUntilTopicsAreInitialized();
     }
@@ -183,6 +194,31 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     }
 
+    @Test
+    public void matchAlarmsFromKafka() throws InvalidProtocolBufferException {
+        kafkaConsumerRunner.resetCount();
+        sendAlarmDataToKafka();
+        await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
+                .untilAtomic(kafkaConsumerRunner.getCount(), is(2));
+        OpennmsModelProtos.Alarm alarmData = OpennmsModelProtos.Alarm
+                .parseFrom(kafkaConsumerRunner.getResult().get("alarms"));
+        assertEquals(alarmData.getUei(), EventConstants.NODE_UP_EVENT_UEI);
+    }
+
+    private void sendAlarmDataToKafka() {
+        OnmsAlarm alarm = new OnmsAlarm();
+        alarm.setId(2);
+        alarm.setUei(EventConstants.NODE_UP_EVENT_UEI);
+        alarm.setNode(m_nodeDao.get(NODE_ID_ONE));
+        alarm.setCounter(1);
+        alarm.setDescription("test_Alarm");
+        alarm.setAlarmType(1);
+        alarm.setLogMsg("test-log");
+        alarm.setSeverity(OnmsSeverity.NORMAL);
+        alarm.setReductionKey(String.format("%s:%d", EventConstants.NODE_UP_EVENT_UEI, NODE_ID_ONE));
+        kafkaProducer.handleNewOrUpdatedAlarm(alarm);
+    }
+    
     @Override
     public void setTemporaryDatabase(MockDatabase database) {
         m_database = database;
@@ -236,7 +272,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
             props.put("enable.auto.commit", "true");
             props.put("auto.commit.interval.ms", "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList("events", "nodes"));
+            consumer.subscribe(Arrays.asList("events", "nodes", "alarms"));
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(100);
                 for (ConsumerRecord<String, byte[]> record : records) {
@@ -245,6 +281,9 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
                     }
                     if (record.topic().equals("nodes")) {
                         result.put("nodes", record.value());
+                    }
+                    if (record.topic().equals("alarms")) {
+                        result.put("alarms", record.value());
                     }
                     count.incrementAndGet();
                 }
@@ -256,9 +295,12 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         }
 
         public AtomicInteger getCount() {
-            return count;
+            return this.count;
         }
 
+        public void resetCount() {
+            this.count.set(0);
+        }
         public Map<String, byte[]> getResult() {
             return result;
         }
