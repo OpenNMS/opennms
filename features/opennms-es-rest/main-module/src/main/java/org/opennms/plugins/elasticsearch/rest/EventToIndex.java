@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.json.JSONArray;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -676,7 +676,7 @@ public class EventToIndex implements AutoCloseable {
 			LOG.debug(str);
 		}
 
-		Index.Builder builder = new Index.Builder(body.toJSONString())
+		Index.Builder builder = new Index.Builder(body)
 				.index(completeIndexName)
 				.type(indexType);
 
@@ -709,7 +709,7 @@ public class EventToIndex implements AutoCloseable {
 					final JSONObject eachOidObject = new JSONObject();
 					eachOidObject.put("oid", eachOid.getParmName());
 					eachOidObject.put("value", eachOid.getValue().getContent());
-					jsonArray.put(eachOidObject);
+					jsonArray.add(eachOidObject);
 				}
 				body.put("p_oids", jsonArray);
 			}
