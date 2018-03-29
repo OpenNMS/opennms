@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
+import java.util.TimeZone;
 
 /**
  * Defines a strategy on how to define the index when persisting.
@@ -46,6 +47,8 @@ public enum IndexStrategy {
 
     IndexStrategy(DateFormat dateFormat) {
         this.dateFormat = Objects.requireNonNull(dateFormat);
+        // Ensure all dates are formatted in UTC. See HZN-1278.
+        this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     public String getIndex(String indexPrefix, Date date) {
