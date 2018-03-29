@@ -32,23 +32,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsGeolocation;
 import org.opennms.netmgt.model.OnmsNode;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 
 /**
  * Created:
@@ -62,7 +61,7 @@ public class NodeCacheImpl implements NodeCache {
     private final TransactionOperations transactionOperations;
     private final boolean archiveAssetData;
 
-    private final LoadingCache<Long, Map<String,String>> cache;
+    private final Cache<Long, Map<String,String>> cache;
 
     public NodeCacheImpl(final NodeDao nodeDao, final TransactionOperations transactionOperations, final CacheConfig cacheConfig, final boolean archiveAssetData) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
@@ -70,25 +69,24 @@ public class NodeCacheImpl implements NodeCache {
         this.archiveAssetData = archiveAssetData;
 
         // Initialize cache
-        LOG.info("initializing node data cache (archiveAssetData={}, TTL={}m, MAX_SIZE={})", archiveAssetData, cacheConfig.getMaxTTL(), cacheConfig.getMaxSize());
-        final CacheBuilder cacheBuilder = CacheBuilder.newBuilder();
-        if(cacheConfig.getMaxTTL() > 0) {
-            cacheBuilder.expireAfterWrite(cacheConfig.getMaxTTL(), TimeUnit.MINUTES);
-        }
-        if(cacheConfig.getMaxSize() > 0) {
-            cacheBuilder.maximumSize(cacheConfig.getMaxSize());
-        }
-        cache = cacheBuilder.build(new CacheLoader<Long, Map<String, String>>() {
-                                     @Override
-                                     public Map<String,String> load(Long nodeId) {
-                                         return loadNodeAndCategoryInfo(nodeId);
-                                     }
-                                 }
-        );
+        LOG.info("initializing node data cache (archiveAssetData={}, cacheConfig={})", archiveAssetData, cacheConfig);
+        cache = new CacheBuilder()
+                .withConfig(cacheConfig)
+                .withCacheLoader(new CacheLoader<Long, Map<String, String>>() {
+                     @Override
+                     public Map<String,String> load(Long nodeId) {
+                         return loadNodeAndCategoryInfo(nodeId);
+                     }
+                 })
+                .build();
     }
 
     public Map<String,String> getEntry(Long nodeId) {
-        return cache.getUnchecked(nodeId);
+        try {
+            return cache.get(nodeId);
+        } catch (ExecutionException e) {
+            throw new RuntimeException("Error loading entry with key " + nodeId + " from cache", e);
+        }
     }
 
     public void refreshEntry(Long nodeId) {

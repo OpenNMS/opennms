@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.mockito.Mockito;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.dao.api.AssetRecordDao;
 import org.opennms.netmgt.dao.api.CategoryDao;
@@ -48,9 +49,8 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
-import com.google.common.collect.Lists;
-
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 
 public class MockDocumentEnricherFactory {
 
@@ -75,7 +75,13 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("http").withPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withPort("443").withProtocol("tcp,udp").build()
         ));
-        enricher = new DocumentEnricher(new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine);
+        enricher = new DocumentEnricher(
+                new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine,
+                new CacheConfigBuilder()
+                    .withName("flows.node")
+                    .withMaximumSize(1000)
+                    .withExpireAfterWrite(300)
+                    .build());
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);

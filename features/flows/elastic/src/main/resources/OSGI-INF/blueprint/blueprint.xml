@@ -28,6 +28,10 @@
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
 
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
@@ -44,6 +48,16 @@
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
     <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
         <argument value="elastic-credentials.xml" />
+    </bean>
+
+    <!-- Configure node cache -->
+    <bean id="nodeCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="nodes"/>
+        <property name="metricRegistry" ref="flowRepositoryMetricRegistry" />
+        <property name="enabled" value="${nodeCache.enabled}" />
+        <property name="maximumSize" value="${nodeCache.maximumSize}" />
+        <property name="expireAfterWrite" value="${nodeCache.expireAfterWrite}" />
+        <property name="recordStats" value="${nodeCache.recordStats}" />
     </bean>
 
     <!-- Proxy for the JestClientFactory -->
@@ -91,6 +105,7 @@
         <argument ref="nodeDao" />
         <argument ref="interfaceToNodeCache" />
         <argument ref="transactionOperations" />
+        <argument ref="nodeCacheConfig" />
     </bean>
 
     <!-- Metrics -->
