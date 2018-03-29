@@ -169,6 +169,7 @@ public class ProtobufMapper {
         if (toEvent(alarm.getLastEvent()) != null) {
             builder.setLastEvent(toEvent(alarm.getLastEvent()));
         }
+
         if (alarm.getIpAddr() != null) {
             builder.setIpAddress(InetAddressUtils.toIpAddrString(alarm.getIpAddr()));
         }

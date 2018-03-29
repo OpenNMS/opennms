@@ -57,7 +57,8 @@ public class KafkaForwarderBlueprintTest extends CamelBlueprintTest {
 
     @Override
     protected String setConfigAdminInitialConfiguration(Properties props) {
-        props.put("bootstrap.servers", "kafka:9092");
+
+        props.put("bootstrap.servers", "127.0.0.1:9092");
 
         // Return the PID
         return "org.opennms.features.kafka.producer.client";

@@ -2,6 +2,29 @@
 
 === Changelog
 
+[[releasenotes-changelog-21.0.5]]
+
+==== Release 21.0.5
+
+Release 21.0.5 is the latest stable release of OpenNMS.
+It contains mostly small bug fixes.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.0.5 is _link:https://bladerunner.wikia.com/wiki/Do_Androids_Dream_of_Electric_Sheep%3F[Electric Sheep]_.
+
+===== Bug
+
+* PostgreSQL jdbc detector fails with: java.lang.ClassNotFoundException: org.postgresql.Driver not found (Issue http://issues.opennms.org/browse/NMS-9829[NMS-9829])
+* It is not possible to see Statsd results on the WebUI (Issue http://issues.opennms.org/browse/NMS-9861[NMS-9861])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+* Minion RPM spec doesn't build enough projects (Issue http://issues.opennms.org/browse/NMS-9869[NMS-9869])
+* Admin guide needs updating for SQS parameters on sink and rpc queues (Issue http://issues.opennms.org/browse/NMS-9870[NMS-9870])
+* Missing Plug-in Manager in Windows installation (Issue http://issues.opennms.org/browse/HZN-1260[HZN-1260])
+
+===== Enhancement
+
+* Allow xml config to be accessed from karaf (Issue http://issues.opennms.org/browse/HZN-1269[HZN-1269])
+
 [[releasenotes-changelog-21.0.4]]
 
 ==== Release 21.0.4
@@ -11,8 +34,6 @@ It contains bug fixes and a few performance enhancements.
 For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
 
 The codename for 21.0.4 is _link:https://bladerunner.wikia.com/wiki/Priscilla_Stratton[Priscilla Stratton]_.
-
-=== Changelog
 
 ===== Bug
 

@@ -121,62 +121,14 @@
         init-method="start"
         destroy-method="stop" />
 
-  <!-- Camel processor that receives XML events and sends them to an EventForwarder -->
-  <bean id="xmlEventProcessor" class="org.opennms.netmgt.eventd.XmlEventProcessor">
-    <property name="eventForwarder" ref="eventIpcManagerImpl"/>
+  <bean id="tcpListener" class="org.opennms.netmgt.eventd.listener.TcpListener" init-method="start" destroy-method="stop">
+    <constructor-arg ref="eventdConfigManager" />
+    <constructor-arg ref="eventIpcManagerImpl" />
   </bean>
 
-  <!-- Create a set of Properties that can be used as propertyPlaceholders for Camel -->
-  <bean id="eventdProperties" class="org.opennms.netmgt.eventd.EventdConfigManagerPropertiesConverter" factory-method="getProperties">
-    <constructor-arg ref="eventdConfigManager"/>
+  <bean id="udpListener" class="org.opennms.netmgt.eventd.listener.UdpListener" init-method="start" destroy-method="stop">
+    <constructor-arg ref="eventdConfigManager" />
+    <constructor-arg ref="eventIpcManagerImpl" />
   </bean>
-
-  <!-- Create a Camel PropertiesComponent -->
-  <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
-    <property name="initialProperties" ref="eventdProperties"/>
-  </bean>
-
-  <bean id="tcpXmlFrameDecoder" class="org.opennms.core.camel.XmlFrameDecoderFactory"/>
-
-  <bean id="udpXmlFrameDecoder" class="org.opennms.core.camel.XmlFrameDecoderFactory"/>
-
-  <!-- Reduces the graceful shutdown time from 300 to 15 seconds -->
-  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
-      <property name="timeout" value="15"/>
-  </bean>
-
-  <camelContext id="eventdCamelContext" xmlns="http://camel.apache.org/schema/spring">
-
-    <onException>
-      <exception>org.opennms.netmgt.events.api.EventProcessorException</exception>
-      <handled>
-        <constant>true</constant>
-      </handled>
-      <log loggingLevel="WARN" message="Unable to process event in route ID ${routeId}; not processing with any later processors"/>
-      <log loggingLevel="WARN" message="${exception.stacktrace}"/>
-    </onException>
-
-    <onException>
-      <exception>java.lang.Throwable</exception>
-      <handled>
-        <constant>true</constant>
-      </handled>
-      <log loggingLevel="ERROR" message="Unexpected exception while processing event in route ID ${routeId}; not processing with any later processors"/>
-      <log loggingLevel="ERROR" message="${exception.stacktrace}"/>
-    </onException>
-
-    <route id="tcpEventReceiver">
-        <from uri="netty4:tcp://{{tcpIpAddress}}:{{tcpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#tcpXmlFrameDecoder"/>
-        <log message="Receiving OpenNMS event over TCP port {{tcpPort}}"/>
-        <process ref="xmlEventProcessor"/>
-    </route>
-
-    <route id="udpEventReceiver">
-        <from uri="netty4:udp://{{udpIpAddress}}:{{udpPort}}?receiveBufferSize=2147483647&amp;sync=true&amp;allowDefaultCodec=false&amp;decoders=#udpXmlFrameDecoder"/>
-        <log message="Receiving OpenNMS event over UDP port {{udpPort}}"/>
-        <process ref="xmlEventProcessor"/>
-    </route>
-
-  </camelContext>
 
 </beans>
