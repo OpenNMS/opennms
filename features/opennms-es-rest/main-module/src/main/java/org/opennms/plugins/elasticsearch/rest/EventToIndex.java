@@ -624,7 +624,13 @@ public class EventToIndex implements AutoCloseable {
 
 		//get params from event
 		for(Parm parm : event.getParmCollection()) {
-			body.put("p_" + parm.getParmName(), parm.getValue().getContent());
+			// We have to handle oid parameters differently, as elastic would consider a containing "." as a sub
+			// field, e.g. ".1.2" results in a mapping of { 1: properties: { 2 } } which may exceed the maximum allowed
+			// fields for a mapping, see NMS-9831. Initially an array was used, to store the oids in the fashion:
+			// { "oid": "1.1.1", "value": "dummy value" } but elastic has some limitations on accessing objects in an
+			// array. Therefore we replace all existing . with an _
+			final String parmName = parm.getParmName().replaceAll("\\.", "_");
+			body.put("p_" + parmName, parm.getValue().getContent());
 		}
 
 		// remove old and new alarm values parms if not needed
