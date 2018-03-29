@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -156,6 +157,8 @@ public class EventToIndex implements AutoCloseable {
 	private boolean archiveOldAlarmValues=true;
 
 	private boolean archiveNewAlarmValues=true;
+
+	private boolean groupOidParameters = false;
 
 	private NodeCache nodeCache=null;
 
@@ -276,6 +279,10 @@ public class EventToIndex implements AutoCloseable {
 
 	public void setArchiveNewAlarmValues(boolean archiveNewAlarmValues) {
 		this.archiveNewAlarmValues = archiveNewAlarmValues;
+	}
+
+	public void setGroupOidParameters(boolean groupOidParameters) {
+		this.groupOidParameters = groupOidParameters;
 	}
 
 
@@ -624,29 +631,7 @@ public class EventToIndex implements AutoCloseable {
 
 		// Parse event parameters
 		final JSONParser jsonParser = new JSONParser();
-		for(Parm parm : event.getParmCollection()) {
-			// We have to handle oid parameters differently, as elastic would consider a containing "." as a sub
-			// field, e.g. ".1.2" results in a mapping of { 1: properties: { 2 } } which may exceed the maximum allowed
-			// fields for a mapping, see NMS-9831. Initially an array was used, to store the oids in the fashion:
-			// { "oid": "1.1.1", "value": "dummy value" } but elastic has some limitations on accessing objects in an
-			// array. Therefore we replace all existing . with an _
-			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
-			// Some parameter values are of type json and should be decoded properly.
-			// See HZN-1272
-			if ("json".equalsIgnoreCase(parm.getValue().getType())) {
-				try {
-					JSONObject tmpJson = (JSONObject) jsonParser.parse(parm.getValue().getContent());
-					body.put(parmName, tmpJson); 
-				} catch (ParseException ex) {
-					LOG.error("Cannot parse parameter content '{}' of parameter '{}' from eventid {} to json: {}",
-									parm.getValue().getContent(), parm.getParmName(), event.getDbid(), ex.getMessage(), ex);
-					// To not lose the data, just use as is
-					body.put(parmName, parm.getValue().getContent());
-					}
-				} else {
-					body.put(parmName, parm.getValue().getContent());
-				}
-		}
+		handleParameters(event, body);
 
 		// remove old and new alarm values parms if not needed
 		if(! archiveNewAlarmValues){
@@ -691,7 +676,7 @@ public class EventToIndex implements AutoCloseable {
 			LOG.debug(str);
 		}
 
-		Index.Builder builder = new Index.Builder(body)
+		Index.Builder builder = new Index.Builder(body.toJSONString())
 				.index(completeIndexName)
 				.type(indexType);
 
@@ -705,6 +690,55 @@ public class EventToIndex implements AutoCloseable {
 		Index index = builder.build();
 
 		return index;
+	}
+
+	private void handleParameters(Event event, JSONObject body) {
+		// Decide if oids should be grouped in a single JsonArray or flattened
+		if (groupOidParameters) {
+			final List<Parm> oidParameters = event.getParmCollection().stream().filter(p -> isOID(p.getParmName())).collect(Collectors.toList());
+			final List<Parm> normalParameters = event.getParmCollection();
+			normalParameters.removeAll(oidParameters);
+
+			// Handle non oid paramaters as always
+			handleParameters(event, normalParameters, body);
+
+			// Special treatment for oid parameters
+			if (!oidParameters.isEmpty()) {
+				final JSONArray jsonArray = new JSONArray();
+				for (Parm eachOid : oidParameters) {
+					final JSONObject eachOidObject = new JSONObject();
+					eachOidObject.put("oid", eachOid.getParmName());
+					eachOidObject.put("value", eachOid.getValue().getContent());
+					jsonArray.put(eachOidObject);
+				}
+				body.put("p_oids", jsonArray);
+			}
+		} else { // flattened
+			handleParameters(event, event.getParmCollection(), body);
+		}
+	}
+
+	private void handleParameters(Event event, List<Parm> parameters, JSONObject body) {
+		final JSONParser jsonParser = new JSONParser();
+		for(Parm parm : parameters) {
+			final String parmName = "p_" + parm.getParmName().replaceAll("\\.", "_");
+
+			// Some parameter values are of type json and should be decoded properly.
+			// See HZN-1272
+			if ("json".equalsIgnoreCase(parm.getValue().getType())) {
+				try {
+					JSONObject tmpJson = (JSONObject) jsonParser.parse(parm.getValue().getContent());
+					body.put(parmName, tmpJson);
+				} catch (ParseException ex) {
+					LOG.error("Cannot parse parameter content '{}' of parameter '{}' from eventid {} to json: {}",
+									parm.getValue().getContent(), parm.getParmName(), event.getDbid(), ex.getMessage(), ex);
+					// To not lose the data, just use as is
+					body.put(parmName, parm.getValue().getContent());
+				}
+			} else {
+				body.put(parmName, parm.getValue().getContent());
+			}
+		}
 	}
 
 	/**
@@ -980,6 +1014,10 @@ public class EventToIndex implements AutoCloseable {
 					"\n   error message: {}", 
 					name, type, result.getJsonString(), result.getResponseCode(), result.getErrorMessage());
 		}
+	}
+
+	public static boolean isOID(String input) {
+		return input.matches("^(\\.[0-9]+)+$");
 	}
 
 }

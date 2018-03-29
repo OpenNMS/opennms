@@ -29,6 +29,7 @@
 package org.opennms.plugins.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -271,18 +272,11 @@ public class AlarmEventToIndexTest {
 		LOG.debug("***************** end of test jestClientAlarmToESTest");
 	}
 
-	// SEE NMS-9831 for more information
+	// See NMS-9831 for more information
 	@Test
 	public void verifyOidMapping() throws InterruptedException, IOException {
 		int eventId = 13;
-		final Event event = createDummyEvent(eventId);
-		
-		IntStream.range(1, 100).forEach(i -> {
-			Parm parm = new Parm();
-			parm.setParmName(i + ".0.0.0.0.0.0.0.0.0"); // 10 * 100 -> 1000 fields at least
-			parm.setValue(new Value("dummy value"));
-			event.addParm(parm);
-		});
+		final Event event = createDummyEventWithOids(eventId);
 		eventToIndex.forwardEvents(Arrays.asList(event));
 
 		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
@@ -294,6 +288,35 @@ public class AlarmEventToIndexTest {
 		final SearchResult result = jestClient.execute(search);
 		assertEquals(200, result.getResponseCode());
 		assertEquals(Integer.valueOf(1), result.getTotal());
+	}
+
+	// See NMS-9831 for more information
+	@Test
+	public void verifyOidGrouping() throws InterruptedException, IOException {
+		int eventId = 15;
+		final Event event = createDummyEventWithOids(eventId);
+		eventToIndex.setGroupOidParameters(true);
+		eventToIndex.forwardEvents(Arrays.asList(event));
+
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		final String query = buildSearchQuery(eventId);
+		final Search search = new Search.Builder(query)
+				.addIndex("opennms-events-raw-*")
+				.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Integer.valueOf(1), result.getTotal());
+
+		// Verify oids
+		final JsonArray oids = result.getJsonObject()
+				.get("hits").getAsJsonObject()
+					.get("hits").getAsJsonArray()
+						.get(0).getAsJsonObject()
+							.get("_source").getAsJsonObject()
+								.get("p_oids").getAsJsonArray();
+		assertNotNull(oids);
+		assertEquals(99, oids.size());
 	}
 
 	// See HZN-1272
@@ -346,6 +369,18 @@ public class AlarmEventToIndexTest {
 		event.setDbid(eventId);
 		return event;
 	}
+
+	private static Event createDummyEventWithOids(int eventId) {
+		final Event event = createDummyEvent(eventId);
+		IntStream.range(1, 100).forEach(i -> {
+			Parm parm = new Parm();
+			parm.setParmName("." + i + ".0.0.0.0.0.0.0.0.0"); // 10 * 100 -> 1000 fields at least
+			parm.setValue(new Value("dummy value"));
+			event.addParm(parm);
+		});
+		return event;
+	}
+
 
 	private static String buildSearchQuery(int eventId) {
 		return "{\n"
