@@ -8,7 +8,7 @@
 :numbered:
 
 = Developers Guide
-:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -79,6 +79,7 @@ include::text/docs/writing.adoc[]
 include::text/docs/images.adoc[]
 include::text/docs/include-source.adoc[]
 include::text/docs/cheat-sheets.adoc[]
+include::text/docs/migrating-from-wiki.adoc[]
 
 == AMQP Integration
 include::text/amqp/introduction.adoc[]
