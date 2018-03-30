@@ -28,7 +28,18 @@
 
 package org.opennms.netmgt.telemetry.itests;
 
-import com.google.common.io.Resources;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -39,7 +50,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
@@ -60,20 +70,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionOperations;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static com.jayway.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertTrue;
+import com.google.common.io.Resources;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -88,6 +86,7 @@ import static org.junit.Assert.assertTrue;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml",
+        "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
 @JUnitConfigurationEnvironment
@@ -106,15 +105,10 @@ public class JtiIT {
     @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    @Autowired
-    private TransactionOperations transOperation;
-
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
 
     private File rrdBaseDir;
-
-    private AtomicReference<CollectionSet> collectionSetRef = new AtomicReference<>();
 
     @Before
     public void setUp() throws IOException {
@@ -151,10 +145,9 @@ public class JtiIT {
         DatagramSocket socket = new DatagramSocket();
         socket.send(packet);
 
-        // Wait until our reference is set
-        await().atMost(30, TimeUnit.SECONDS).until(() -> {
-            return rrdBaseDir.toPath().resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead();
-        }, equalTo(true));
+        // Wait until the JRB archive is created
+        await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
+                .resolve(Paths.get("1", "ge_0_0_3", "ifOutOctets.jrb")).toFile().canRead(), equalTo(true));
     }
 
     private void updateDaoWithConfig(TelemetrydConfiguration config) throws IOException {
