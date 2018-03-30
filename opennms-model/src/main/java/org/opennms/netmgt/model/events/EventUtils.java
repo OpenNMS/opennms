@@ -572,7 +572,7 @@ public abstract class EventUtils {
         		return false;
         }
     
-        if (e1.getNodeid() != e2.getNodeid()) {
+        if (!e1.getNodeid().equals(e2.getNodeid())) {
             return false;
         }
         if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
