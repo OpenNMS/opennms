@@ -76,7 +76,7 @@ $MVN = $ENV{'MVN'};
 if (not defined $MVN or not -x $MVN) {
 	$MVN = File::Spec->catfile($PREFIX, 'maven', 'bin', 'mvn');
 	if ($^O =~ /(mswin|msys)/i) {
-		$MVN .= '.bat';
+		$MVN .= '.cmd';
 	}
 }
 
