@@ -102,7 +102,7 @@ public class HttpCollectionHandler extends AbstractXmlCollectionHandler {
     private String getResourceName(Elements elements, XmlGroup group) {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using selector {}", key);
                 Elements el = elements.select(key);

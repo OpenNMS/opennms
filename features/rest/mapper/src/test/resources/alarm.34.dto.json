@@ -1,0 +1,59 @@
+{
+	"id": 34,
+	"uei": "uei.opennms.org/nodes/interfaceDown",
+	"location": "Default",
+	"nodeId": 1,
+	"nodeLabel": "n1",
+	"ipAddress": "10.8.0.30",
+	"serviceType" : {
+		"id" : 3,
+		"name" : "ICMP"
+	},
+	"reductionKey": "uei.opennms.org/nodes/interfaceDown::1:10.8.0.30",
+	"type": 1,
+	"count" : 1,
+	"severity": "MINOR",
+	"firstEventTime": 1503412443118,
+	"description": "All services are down on interface 10.8.0.30.",
+	"logMessage": "Interface 10.8.0.30 is down.",
+	"suppressedUntil": 1503412443118,
+	"suppressedTime": 1503412443118,
+	"lastEvent": {
+		"id": 2035,
+		"uei": "uei.opennms.org/nodes/interfaceDown",
+		"label": "OpenNMS-defined node event: interfaceDown",
+		"time": 1503412443118,
+		"host": "noise",
+		"source": "OpenNMS.Poller.DefaultPollContext",
+		"ipAddress": "10.8.0.30",
+		"serviceType" : {
+			"id" : 3,
+			"name" : "ICMP"
+		},
+		"parameters" : [ {
+			"name" : "test",
+			"value" : "testVal",
+			"type" : "string"
+		} ],
+		"createTime": 1503412443118,
+		"description": "All services are down on interface 10.8.0.30.",
+		"logMessage": "Interface 10.8.0.30 is down.",
+		"severity": "MINOR",
+		"log": "Y",
+		"display": "Y",
+		"nodeId": 1,
+		"nodeLabel": "n1",
+		"location": "Default"
+	},
+	"parameters" : [ {
+		"name" : "test",
+		"value" : "testVal",
+		"type" : "string"
+	} ],
+	"lastEventTime": 1503412443118,
+	"x733ProbableCause": 0,
+	"ifIndex": null,
+	"troubleTicket": "NMS-9587",
+	"troubleTicketState": 0,
+	"troubleTicketLink": "https://issues.opennms.org/browse/NMS-9587"
+}

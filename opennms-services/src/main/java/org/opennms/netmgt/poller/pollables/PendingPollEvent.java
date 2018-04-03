@@ -53,7 +53,7 @@ public class PendingPollEvent extends PollEvent {
     private final Date m_date;
     private long m_expirationTimeInMillis;
     private final AtomicBoolean m_pending = new AtomicBoolean(true);
-    private final Queue<Runnable> m_pendingOutages = new ConcurrentLinkedQueue<Runnable>();
+    private final Queue<Runnable> m_pendingOutages = new ConcurrentLinkedQueue<>();
 
     /**
      * <p>Constructor for PendingPollEvent.</p>

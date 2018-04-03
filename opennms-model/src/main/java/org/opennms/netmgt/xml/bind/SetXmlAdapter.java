@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 public class SetXmlAdapter extends XmlAdapter<List<?>,Set<?>> {
     @Override
     public Set<?> unmarshal(final List<?> v) throws Exception {
-        if (v == null || "".equals(v)) {
+        if (v == null) {
             return null;
         }
         return new LinkedHashSet<>(v);

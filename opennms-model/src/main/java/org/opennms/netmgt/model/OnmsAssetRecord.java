@@ -437,7 +437,7 @@ public class OnmsAssetRecord implements Serializable {
      */
     @XmlIDREF
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "nodeId")
+    @JoinColumn(name = "nodeId", unique = true)
     @JsonBackReference
     public OnmsNode getNode() {
         return m_node;
@@ -1654,12 +1654,12 @@ public class OnmsAssetRecord implements Serializable {
     @Transient
     @Deprecated
     @XmlElement
-    public Float getLongitude() {
+    public Double getLongitude() {
         return m_geolocation == null ? null : m_geolocation.getLongitude();
     }
 
     @Deprecated
-    public void setLongitude(final Float longitude) {
+    public void setLongitude(final Double longitude) {
         if (m_geolocation != null)
             m_geolocation.setLongitude(longitude);
     }
@@ -1670,12 +1670,12 @@ public class OnmsAssetRecord implements Serializable {
     @Transient
     @Deprecated
     @XmlElement
-    public Float getLatitude() {
+    public Double getLatitude() {
         return m_geolocation == null ? null : m_geolocation.getLatitude();
     }
 
     @Deprecated
-    public void setLatitude(final Float latitude) {
+    public void setLatitude(final Double latitude) {
         if (m_geolocation != null)
             m_geolocation.setLatitude(latitude);
     }

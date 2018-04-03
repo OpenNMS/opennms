@@ -84,7 +84,7 @@ public abstract class CollectionTracker implements Collectable, ProxiableTracker
         m_finished = finished;
     }
 
-    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder);
+    public abstract ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException;
 
     protected void reportTooBigErr(String msg) {
         if (m_parent != null) {

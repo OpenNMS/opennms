@@ -33,43 +33,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.xml.StringTrimAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 @XmlRootElement(name = "user")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("users.xsd")
+@XmlType(propOrder={"m_userId", "m_fullName", "m_userComments", "m_password", "contacts", "dutySchedules", "roles", "m_tuiPin"})
 public class User implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     @XmlElement(name = "user-id", required = true)
+    @XmlJavaTypeAdapter(StringTrimAdapter.class)
     private String m_userId;
 
     @XmlElement(name = "full-name")
+    @XmlJavaTypeAdapter(StringTrimAdapter.class)
     private String m_fullName;
 
     @XmlElement(name = "user-comments")
+    @XmlJavaTypeAdapter(StringTrimAdapter.class)
     private String m_userComments;
 
     @XmlElement(name = "password", required = true)
     private Password m_password;
 
-    @XmlElement(name = "contact")
     private List<Contact> m_contacts = new ArrayList<>();
 
-    @XmlElement(name = "duty-schedule")
     private List<String> m_dutySchedules = new ArrayList<>();
 
-    @XmlElement(name = "role")
     private List<String> m_roles = new ArrayList<>();
 
     @XmlElement(name = "tui-pin")
+    @XmlJavaTypeAdapter(StringTrimAdapter.class)
     private String m_tuiPin;
 
     public User() {
@@ -123,6 +129,7 @@ public class User implements Serializable {
         m_password = new Password(password, salt);
     }
 
+    @XmlElement(name = "contact")
     public List<Contact> getContacts() {
         return m_contacts;
     }
@@ -141,6 +148,7 @@ public class User implements Serializable {
         m_contacts.clear();
     }
 
+    @XmlElement(name = "duty-schedule")
     public List<String> getDutySchedules() {
         return m_dutySchedules;
     }
@@ -148,7 +156,7 @@ public class User implements Serializable {
     public void setDutySchedules(final List<String> dutySchedules) {
         if (m_dutySchedules == dutySchedules) return;
         m_dutySchedules.clear();
-        if (dutySchedules != null) m_dutySchedules.addAll(dutySchedules);
+        if (dutySchedules != null) m_dutySchedules.addAll(dutySchedules.stream().map(ConfigUtils::normalizeAndTrimString).collect(Collectors.toList()));
     }
 
     public void addDutySchedule(final String dutySchedule) {
@@ -159,6 +167,7 @@ public class User implements Serializable {
         m_dutySchedules.clear();
     }
 
+    @XmlElement(name = "role")
     public List<String> getRoles() {
         return m_roles;
     }
@@ -166,7 +175,7 @@ public class User implements Serializable {
     public void setRoles(final List<String> roles) {
         if (roles == m_roles) return;
         m_roles.clear();
-        if (roles != null) m_roles.addAll(roles);
+        if (roles != null) m_roles.addAll(roles.stream().map(ConfigUtils::normalizeAndTrimString).collect(Collectors.toList()));
     }
 
     public void addRole(final String role) {

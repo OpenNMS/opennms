@@ -66,7 +66,7 @@ public class ManagedInterface {
      * <p>Constructor for ManagedInterface.</p>
      */
     public ManagedInterface() {
-        services = new ArrayList<ManagedService>();
+        services = new ArrayList<>();
     }
 
     /**

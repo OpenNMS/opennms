@@ -42,8 +42,8 @@ import org.opennms.features.topology.api.topo.VertexRef;
 import org.slf4j.LoggerFactory;
 
 public class DefaultSelectionManager implements SelectionManager {
-	private Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<SelectionListener>();
-	private final Set<SelectionListener> m_addedListeners = new CopyOnWriteArraySet<SelectionListener>();
+	private Set<SelectionListener> m_listeners = new CopyOnWriteArraySet<>();
+	private final Set<SelectionListener> m_addedListeners = new CopyOnWriteArraySet<>();
 	private final SelectionContext m_context;
 
 	public DefaultSelectionManager(GraphContainer graphContainer) {

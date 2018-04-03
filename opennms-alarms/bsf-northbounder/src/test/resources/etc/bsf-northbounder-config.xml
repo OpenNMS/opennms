@@ -1,0 +1,23 @@
+<bsf-northbounder-config>
+
+	<enabled>true</enabled>
+	<nagles-delay>1000</nagles-delay>
+	<batch-size>100</batch-size>
+	<queue-size>300000</queue-size>
+
+	<engine>
+		<name>JUnit</name>
+		<onStart>
+		log = bsf.lookupBean("log");
+		log.info("starting...");
+		</onStart>
+		<onStop>
+		log.info("stopping...");
+		</onStop>
+		<onAlarm>
+		a = bsf.lookupBean("alarm");
+		log.info("processing alarm " + a);
+		</onAlarm>
+	</engine>
+
+</bsf-northbounder-config>

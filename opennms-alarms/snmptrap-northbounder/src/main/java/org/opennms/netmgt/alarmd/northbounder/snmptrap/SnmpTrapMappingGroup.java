@@ -66,7 +66,7 @@ public class SnmpTrapMappingGroup {
 
     /** The varbind mappings. */
     @XmlElement(name = "mapping", required = true)
-    private List<SnmpTrapMapping> m_mappings = new ArrayList<SnmpTrapMapping>();
+    private List<SnmpTrapMapping> m_mappings = new ArrayList<>();
 
     /**
      * Gets the name.

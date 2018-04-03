@@ -28,25 +28,24 @@
 
 package org.opennms.netmgt.poller.shell;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;
 
 @Command(scope = "poller", name = "list-monitors", description = "Lists all of the available monitors ")
-public class ListMonitors extends OsgiCommandSupport{
-    
-    private ServiceMonitorRegistry registry;
+@Service
+public class ListMonitors implements Action {
+
+    @Reference
+    public ServiceMonitorRegistry registry;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         registry.getMonitorClassNames().stream().forEachOrdered(e -> {
             System.out.printf("%s\n", e);
         });
         return null;
     }
-
-    public void setRegistry(ServiceMonitorRegistry registry) {
-        this.registry = registry;
-    }
-
 }

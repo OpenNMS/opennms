@@ -62,7 +62,7 @@ public class AddGroupDutySchedulesServlet extends HttpServlet {
 
         Group group = (Group) userSession.getAttribute("group.modifyGroup.jsp");
 
-        Vector<Object> newSchedule = new Vector<Object>();
+        Vector<Object> newSchedule = new Vector<>();
 
         int dutyAddCount = WebSecurityUtils.safeParseInt(request.getParameter("numSchedules"));
 

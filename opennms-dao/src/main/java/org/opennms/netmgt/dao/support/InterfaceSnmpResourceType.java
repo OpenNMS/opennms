@@ -40,9 +40,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LazySet;
 import org.opennms.core.utils.SIUtils;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ExternalValueAttribute;
@@ -160,38 +160,55 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resource;
     }
 
+    protected static String[] getKeysFor(OnmsSnmpInterface snmpInterface) {
+        /*
+         * When Cisco Express Forwarding (CEF) or some ATM encapsulations
+         * (AAL5) are used on Cisco routers, an additional entry might be
+         * in the ifTable for these sub-interfaces, but there is no
+         * performance data available for collection.  This check excludes
+         * ifTable entries where ifDescr contains "-cef".  See bug #803.
+         */
+        if (snmpInterface.getIfDescr() != null) {
+            if (Pattern.matches(".*-cef.*", snmpInterface.getIfDescr())) {
+                return new String[0];
+            }
+        }
+
+        String replacedIfName = AlphaNumeric.parseAndReplace(snmpInterface.getIfName(), '_');
+        String replacedIfDescr = AlphaNumeric.parseAndReplace(snmpInterface.getIfDescr(), '_');
+
+        return new String[] {
+                replacedIfName + "-",
+                replacedIfDescr + "-",
+                replacedIfName + "-" + snmpInterface.getPhysAddr(),
+                replacedIfDescr + "-" + snmpInterface.getPhysAddr()
+        };
+    }
+
+    private static String getKeyFor(String intfName) {
+        String desc = intfName;
+        String mac = "";
+
+        // Strip off the MAC address from the end, if there is one
+        int dashIndex = intfName.lastIndexOf('-');
+
+        if (dashIndex >= 0) {
+            desc = intfName.substring(0, dashIndex);
+            mac = intfName.substring(dashIndex + 1, intfName.length());
+        }
+
+        return desc + "-" + mac;
+    }
+
     private List<OnmsResource> getNodeResources(ResourcePath parent, Set<String> intfNames, OnmsNode node) {
             
-        ArrayList<OnmsResource> resources = new ArrayList<OnmsResource>();
+        ArrayList<OnmsResource> resources = new ArrayList<>();
 
         Set<OnmsSnmpInterface> snmpInterfaces = node.getSnmpInterfaces();
         Map<String, OnmsSnmpInterface> intfMap = new HashMap<String, OnmsSnmpInterface>();
 
         for (OnmsSnmpInterface snmpInterface : snmpInterfaces) {
-            /*
-             * When Cisco Express Forwarding (CEF) or some ATM encapsulations
-             * (AAL5) are used on Cisco routers, an additional entry might be 
-             * in the ifTable for these sub-interfaces, but there is no
-             * performance data available for collection.  This check excludes
-             * ifTable entries where ifDescr contains "-cef".  See bug #803.
-             */
-            if (snmpInterface.getIfDescr() != null) {
-                if (Pattern.matches(".*-cef.*", snmpInterface.getIfDescr())) {
-                    continue;
-                }
-            }
-
-            String replacedIfName = AlphaNumeric.parseAndReplace(snmpInterface.getIfName(), '_');
-            String replacedIfDescr = AlphaNumeric.parseAndReplace(snmpInterface.getIfDescr(), '_');
-            
-            String[] keys = new String[] {
-                    replacedIfName + "-",
-                    replacedIfDescr + "-",
-                    replacedIfName + "-" + snmpInterface.getPhysAddr(),
-                    replacedIfDescr + "-" + snmpInterface.getPhysAddr()
-            };
-            
-            for (String key : keys) {
+            for (String key : getKeysFor(snmpInterface)) {
                 if (!intfMap.containsKey(key)) {
                     intfMap.put(key, snmpInterface);
                 }
@@ -199,18 +216,7 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         }
 
         for (String intfName : intfNames) {
-            String desc = intfName;
-            String mac = "";
-
-            // Strip off the MAC address from the end, if there is one
-            int dashIndex = intfName.lastIndexOf('-');
-
-            if (dashIndex >= 0) {
-                desc = intfName.substring(0, dashIndex);
-                mac = intfName.substring(dashIndex + 1, intfName.length());
-            }
-
-            String key = desc + "-" + mac; 
+            String key = getKeyFor(intfName);
             OnmsSnmpInterface snmpInterface = intfMap.get(key);
             
             String label;
@@ -306,13 +312,13 @@ public class InterfaceSnmpResourceType implements OnmsResourceType {
         return resources;
     }
 
-    private Set<String> getQueryableInterfaces(OnmsResource parent) {
+    protected Set<String> getQueryableInterfaces(OnmsResource parent) {
         if (!NodeResourceType.isNode(parent) && !DomainResourceType.isDomain(parent)) {
             return Collections.emptySet();
         }
 
         return m_resourceStorageDao.children(parent.getPath(), 1).stream()
-                .map(rp -> rp.getName())
+                .map(ResourcePath::getName)
                 .collect(Collectors.toSet());
     }
 

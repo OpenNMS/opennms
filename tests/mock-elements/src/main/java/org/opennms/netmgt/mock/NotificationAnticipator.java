@@ -42,10 +42,10 @@ import org.opennms.test.mock.MockUtil;
  */
 public class NotificationAnticipator {
 
-    List<MockNotification> m_anticipated = new ArrayList<MockNotification>();
-    List<MockNotification> m_unanticipated = new ArrayList<MockNotification>();
-    List<MockNotification[]> m_earlyArrival = new ArrayList<MockNotification[]>();
-    List<MockNotification[]> m_lateBloomers = new ArrayList<MockNotification[]>();
+    List<MockNotification> m_anticipated = new ArrayList<>();
+    List<MockNotification> m_unanticipated = new ArrayList<>();
+    List<MockNotification[]> m_earlyArrival = new ArrayList<>();
+    List<MockNotification[]> m_lateBloomers = new ArrayList<>();
 
     long m_expectedDiff = 1000;
 
@@ -115,8 +115,8 @@ public class NotificationAnticipator {
     }
 
     public void reset() {
-        m_anticipated = new ArrayList<MockNotification>();
-        m_unanticipated = new ArrayList<MockNotification>();
+        m_anticipated = new ArrayList<>();
+        m_unanticipated = new ArrayList<>();
     }
 
     /**

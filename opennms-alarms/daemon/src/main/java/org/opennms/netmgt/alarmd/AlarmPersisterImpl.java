@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+
+import org.hibernate.Hibernate;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -45,6 +52,9 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
+import com.google.common.base.Supplier;
+import com.google.common.util.concurrent.Striped;
+
 /**
  * Singleton to persist OnmsAlarms.
  *
@@ -54,10 +64,13 @@ import org.springframework.util.Assert;
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
 
+    protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
+
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
     private EventForwarder m_eventForwarder;
     private TransactionOperations m_transactionOperations;
+    private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
     private static class OnmsAlarmAndLifecycleEvent {
         private final OnmsAlarm m_alarm;
@@ -80,7 +93,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     /** {@inheritDoc} 
      * @return */
     @Override
-    public OnmsAlarm persist(Event event) {
+    public OnmsAlarm persist(Event event, boolean eagerlyLoadAlarm) {
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
@@ -89,13 +102,18 @@ public class AlarmPersisterImpl implements AlarmPersister {
             LOG.debug("process: {}; nodeid: {}; ipaddr: {}; serviceid: {}", event.getUei(), event.getNodeid(), event.getInterface(), event.getService());
         }
 
-        // Process the alarm inside a transaction
-        OnmsAlarmAndLifecycleEvent alarmAndEvent = m_transactionOperations.execute(new TransactionCallback<OnmsAlarmAndLifecycleEvent>() {
-            @Override
-            public OnmsAlarmAndLifecycleEvent doInTransaction(TransactionStatus arg0) {
-                return addOrReduceEventAsAlarm(event);
-            }
-        });
+        // Lock both the reduction and clear keys (if set) using a fair striped lock
+        // We do this to ensure that clears and triggers are processed in the same order
+        // as the calls are made
+        final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
+        final OnmsAlarmAndLifecycleEvent alarmAndEvent;
+        try {
+            locks.forEach(Lock::lock);
+            // Process the alarm inside a transaction
+            alarmAndEvent = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event, eagerlyLoadAlarm));
+        } finally {
+            locks.forEach(Lock::unlock);
+        }
 
         // Send the event outside of the database transaction
         m_eventForwarder.sendNow(alarmAndEvent.getEvent());
@@ -103,22 +121,22 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarmAndEvent.getAlarm();
     }
 
-    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event) {
+    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event, boolean eagerlyLoadAlarm) {
         // 2012-03-11 pbrane: for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
         OnmsEvent e = m_eventDao.get(event.getDbid());
         Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
 
-        String reductionKey = event.getAlarmData().getReductionKey();
+        final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
 
-        EventBuilder ebldr = null;
+        final EventBuilder ebldr;
         if (alarm == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
             alarm = createNewAlarm(e, event);
-            
+
             //FIXME: this should be a cascaded save
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
@@ -139,8 +157,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
             ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
         }
 
-        if (alarm.getNodeId() != null) {
-            alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
+        if (eagerlyLoadAlarm) {
+            // Load fields which are known to be used by the NBIs
+            if (alarm.getServiceType() != null) {
+                alarm.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
+            }
+            if (alarm.getNodeId() != null) {
+                alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
+            }
+            Hibernate.initialize(alarm.getEventParameters());
         }
 
         ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
@@ -160,7 +185,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
             
             //We always set these even if there are not update fields specified
             alarm.setLogMsg(e.getEventLogMsg());
-            alarm.setEventParms(e.getEventParms());
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
@@ -171,13 +195,6 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 } else {
                     alarm.setLogMsg(e.getEventLogMsg());
                 }
-
-                if (fieldName.equalsIgnoreCase("Parms") && field.isUpdateOnReduction() == false) {
-                    continue;
-                } else {
-                    alarm.setEventParms(e.getEventParms());
-                }
-
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
@@ -219,16 +236,12 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
-        if (e.getServiceType() != null) {
-            e.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
-        }
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
         alarm.setDescription(e.getEventDescr());
         alarm.setDistPoller(e.getDistPoller());
-        alarm.setEventParms(e.getEventParms());
         alarm.setFirstEventTime(e.getEventTime());
         alarm.setIfIndex(e.getIfIndex());
         alarm.setIpAddr(e.getIpAddr());
@@ -272,6 +285,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
         Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
 
         return true;
+    }
+
+    private static Collection<String> getLockKeys(Event event) {
+        if (event.getAlarmData().getClearKey() == null) {
+            return Collections.singletonList(event.getAlarmData().getReductionKey());
+        } else {
+            return Arrays.asList(event.getAlarmData().getReductionKey(), event.getAlarmData().getClearKey());
+        }
     }
 
     public TransactionOperations getTransactionOperations() {

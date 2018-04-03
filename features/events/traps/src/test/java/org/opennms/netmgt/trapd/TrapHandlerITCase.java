@@ -55,6 +55,9 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -65,6 +68,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.SnmpValueFactory;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,7 +112,7 @@ public class TrapHandlerITCase implements InitializingBean {
 
     private static final InetAddress m_ip = InetAddressUtils.ONE_TWENTY_SEVEN;
     
-    private static final int m_nodeId = 1;
+    private static int m_nodeId;
 
     @BeforeClass
     public static void setUpLogging() {
@@ -122,6 +126,14 @@ public class TrapHandlerITCase implements InitializingBean {
 
     @Before
     public void setUp() throws Exception {
+        final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
+        final OnmsIpInterface iface = new OnmsIpInterface();
+        iface.setIpAddress(m_ip);
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node.addIpInterface(iface);
+
+        m_nodeId = m_dbPopulator.getNodeDao().save(node);
+
         m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_ip, m_nodeId);
 
         m_trapd.start();
@@ -410,13 +422,26 @@ public class TrapHandlerITCase implements InitializingBean {
     @Test
     @DirtiesContext
     public void testInterfaceReparentedModifiesIpMgr() throws Exception {
-        long nodeId = 1;
+        final OnmsNode node = new OnmsNode(m_dbPopulator.getMonitoringLocationDao().getDefaultLocation(), "test123");
+        final OnmsIpInterface iface = new OnmsIpInterface();
+        iface.setIpAddress(m_ip);
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node.addIpInterface(iface);
+        int nodeId = m_dbPopulator.getNodeDao().save(node);
 
         anticipateEvent("uei.opennms.org/default/trap", m_ip, nodeId);
 
         Event event =
             anticipateEvent(EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
                     m_ip, nodeId);
+        event.addParm(new Parm() {{
+            this.setParmName(EventConstants.PARM_OLD_NODEID);
+            this.setValue(new Value(Integer.toString(m_nodeId)));
+        }});
+        event.addParm(new Parm() {{
+            this.setParmName(EventConstants.PARM_NEW_NODEID);
+            this.setValue(new Value(Integer.toString(nodeId)));
+        }});
         m_eventMgr.sendNow(event);
 
         try {

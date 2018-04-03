@@ -103,7 +103,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
            return;
        }
         
-       List<CdpLink> links = new ArrayList<CdpLink>();
+       List<CdpLink> links = new ArrayList<>();
         CdpCacheTableTracker cdpCacheTable = new CdpCacheTableTracker() {
 
             public void processCdpCacheRow(final CdpCacheRow row) {

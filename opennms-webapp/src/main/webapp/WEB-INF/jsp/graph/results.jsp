@@ -48,13 +48,11 @@
     <c:param name="scrollSpy" value="#results-sidebar" />
     <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
     <c:param name="renderGraphs" value="true" />
-
-    <c:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="lib/angular-growl-v2/build/angular-growl.js"></script>' />
-    <c:param name="script" value='<script type="text/javascript" src="js/onms-ksc/add-to-ksc.js"></script>' />
 </c:import>
+
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="add-to-ksc" />
+</jsp:include>
 
 <div id="graph-results">
 
@@ -161,7 +159,7 @@
 
 <c:set var="showFootnote1" value="false"/>
 
-<div class="row">
+<div class="row" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
@@ -200,12 +198,12 @@
             </c:if>
         </h3>
      </div> <!-- panel-heading -->
-     <div class="panel-body" ng-app="onms-ksc" ng-controller="AddToKscCtrl">
+     <div class="panel-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
-            function nrtgPopUp(resourceId, report) {
-                window.open( getBaseHref() +'graph/nrtg.jsp?resourceId='+resourceId+'&report='+report, '', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
+            function popUp(url) {
+                window.open(getBaseHref() + url, '', 'width=1280, height=650, resizable=yes, scrollbars=yes, toolbar=no, location=no, directories=no, status=no, menubar=no' );
             }
         </script>
 
@@ -214,6 +212,10 @@
                 <c:forEach var="graph" items="${resultSet.graphs}">
                     <c:url var="specificGraphUrl" value="${requestScope.relativeRequestPath}">
                         <c:param name="reports" value="${graph.name}"/>
+                        <c:param name="resourceId" value="${resultSet.resource.id}"/>
+                    </c:url>
+                    <c:url var="nrtgGraphUrl" value="graph/nrtg.jsp">
+                        <c:param name="report" value="${graph.name}"/>
                         <c:param name="resourceId" value="${resultSet.resource.id}"/>
                     </c:url>
                     <c:url var="forecastGraphUrl" value="graph/forecast.jsp">
@@ -231,10 +233,10 @@
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
 		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>
-                                    <a href="${forecastGraphUrl}" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
+                                    <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-default btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:nrtgPopUp('${resultSet.resource.id}','${graph.name}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-default btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a><br/>
 		                        </c:if>
 		                    </c:if>
 	                    </div> <!-- graph-aux-controls -->
@@ -336,10 +338,9 @@
         }
     </script>
 
-    <script src="graph/cropper/lib/prototype.js" type="text/javascript"></script>      
-    <script src="graph/cropper/lib/scriptaculous.js" type="text/javascript"></script>
-    <script src="graph/cropper/cropper.js" type="text/javascript"></script>
-    <script src="graph/cropper/zoom.js" type="text/javascript"></script>
+    <jsp:include page="/assets/load-assets.jsp" flush="false">
+        <jsp:param name="asset" value="cropper-js" />
+    </jsp:include>
 
     <script type="text/javascript">
     var myCropper; // zoom.js expects this global

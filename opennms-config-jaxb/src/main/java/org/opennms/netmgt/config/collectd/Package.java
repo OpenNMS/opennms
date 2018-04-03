@@ -77,19 +77,19 @@ public class Package implements Serializable {
      * Addresses in this package
      */
     @XmlElement(name="specific")
-    private List<String> m_specifics = new ArrayList<String>();
+    private List<String> m_specifics = new ArrayList<>();
 
     /**
      * Range of addresses in this package
      */
     @XmlElement(name="include-range")
-    private List<IncludeRange> m_includeRanges = new ArrayList<IncludeRange>();
+    private List<IncludeRange> m_includeRanges = new ArrayList<>();
 
     /**
      * Range of addresses to be excluded from this package
      */
     @XmlElement(name="exclude-range")
-    private List<ExcludeRange> m_excludeRanges = new ArrayList<ExcludeRange>();
+    private List<ExcludeRange> m_excludeRanges = new ArrayList<>();
 
     /**
      * A file URL holding specific addresses to be polled. Each line in the
@@ -98,7 +98,7 @@ public class Package implements Serializable {
      * characters after a '&lt;space&gt;#' in a line.
      */
     @XmlElement(name="include-url")
-    private List<String> m_includeUrls = new ArrayList<String>();
+    private List<String> m_includeUrls = new ArrayList<>();
 
     /**
      * Flag for storing collected data by domain/ifAlias. Defaults to false.
@@ -143,14 +143,14 @@ public class Package implements Serializable {
      * Services for which data is to be collected in this package
      */
     @XmlElement(name="service")
-    private List<Service> m_services = new ArrayList<Service>();
+    private List<Service> m_services = new ArrayList<>();
 
     /**
      * Scheduled outages - data collection is not performed during scheduled
      * outages
      */
     @XmlElement(name="outage-calendar")
-    private List<String> m_outageCalendar = new ArrayList<String>();
+    private List<String> m_outageCalendar = new ArrayList<>();
 
     public Package() {
         super();

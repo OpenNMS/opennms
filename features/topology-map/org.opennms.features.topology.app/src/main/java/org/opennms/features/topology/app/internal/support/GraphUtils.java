@@ -62,8 +62,8 @@ public class GraphUtils {
 
         VisualizationImageServer<VertexRef, Edge> vv = new VisualizationImageServer<>(jungLayout, jungLayout.getSize());
         vv.setPreferredSize(new Dimension(2000,2000)); // Viewing area size
-        vv.getRenderContext().setVertexLabelTransformer(vertex -> vertex.getLabel());
-        vv.getRenderContext().setEdgeLabelTransformer(edge -> edge.getLabel());
+        vv.getRenderContext().setVertexLabelTransformer(VertexRef::getLabel);
+        vv.getRenderContext().setEdgeLabelTransformer(Edge::getLabel);
         vv.getRenderContext().setVertexFillPaintTransformer(vertexRef -> {
             if (roots.contains(vertexRef)) {
                 return Color.RED;

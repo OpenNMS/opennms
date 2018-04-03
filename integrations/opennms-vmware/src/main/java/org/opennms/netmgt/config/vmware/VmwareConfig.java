@@ -51,7 +51,7 @@ public class VmwareConfig implements java.io.Serializable {
 
     public VmwareConfig() {
         super();
-        this._vmwareServerList = new java.util.ArrayList<org.opennms.netmgt.config.vmware.VmwareServer>();
+        this._vmwareServerList = new java.util.ArrayList<>();
     }
 
     /**

@@ -70,8 +70,8 @@ public class Tl1d extends AbstractServiceDaemon {
     private volatile EventForwarder m_eventForwarder;
 	private volatile Tl1ConfigurationDao m_configurationDao;
 
-    private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<Tl1AutonomousMessage>();
-    private final List<Tl1Client> m_tl1Clients = new ArrayList<Tl1Client>();
+    private final BlockingQueue<Tl1AutonomousMessage> m_tl1Queue = new LinkedBlockingQueue<>();
+    private final List<Tl1Client> m_tl1Clients = new ArrayList<>();
 
     /**
      * <p>Constructor for Tl1d.</p>

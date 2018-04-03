@@ -57,7 +57,7 @@ public class DefaultServiceRegistryTest {
     
     public static class Listener<T> implements RegistrationListener<T> {
         
-        Set<T> m_providers = new LinkedHashSet<T>();
+        Set<T> m_providers = new LinkedHashSet<>();
 
         @Override
         public void providerRegistered(Registration registration, T provider) {
@@ -208,8 +208,8 @@ public class DefaultServiceRegistryTest {
     @Test
     public void testRegistrationListener() {
         
-        Listener<Hello> helloListener = new Listener<Hello>();
-        Listener<Goodbye> goodbyeListener = new Listener<Goodbye>();
+        Listener<Hello> helloListener = new Listener<>();
+        Listener<Goodbye> goodbyeListener = new Listener<>();
         
         m_registry.addListener(Hello.class, helloListener);
         m_registry.addListener(Goodbye.class, goodbyeListener);

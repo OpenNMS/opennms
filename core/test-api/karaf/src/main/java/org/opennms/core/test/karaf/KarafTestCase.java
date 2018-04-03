@@ -35,16 +35,19 @@ import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.debugConf
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.editConfigurationFilePut;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.karafDistributionConfiguration;
 import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.logLevel;
+import static org.ops4j.pax.exam.karaf.options.KarafDistributionOption.replaceConfigurationFile;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.URI;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -91,8 +94,8 @@ public abstract class KarafTestCase {
     public static final String MIN_SSH_PORT = "8101";
     public static final String MAX_SSH_PORT = "8888";
 
-    private static String getKarafVersion() {
-        final String karafVersion = System.getProperty("karafVersion", "4.0.8");
+    protected static String getKarafVersion() {
+        final String karafVersion = System.getProperty("karafVersion", "4.1.2");
         Objects.requireNonNull(karafVersion, "Please define a system property 'karafVersion'.");
         return karafVersion;
     }
@@ -182,6 +185,14 @@ public abstract class KarafTestCase {
         String rmiServerPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_RMI_SERVER_PORT), Integer.parseInt(MAX_RMI_SERVER_PORT)));
         String sshPort = Integer.toString(getAvailablePort(Integer.parseInt(MIN_SSH_PORT), Integer.parseInt(MAX_SSH_PORT)));
 
+        // Create a new empty file
+        File emptyFile = new File("target/emptyFile");
+        try {
+            emptyFile.createNewFile();
+        } catch (IOException e) {
+            LOG.warn("Could not create empty file");
+        }
+
         Option[] options = new Option[]{
             // Use Karaf as the container
             karafDistributionConfiguration().frameworkUrl(
@@ -229,6 +240,7 @@ public abstract class KarafTestCase {
                     // These repositories are unpacked by the opennms-full-assembly project's build
                     // for final integration testing
                     "file:${karaf.home}/../../opennms-repo@snapshots@id=opennms-repo",
+                    "file:${karaf.home}/../../experimental-repo@snapshots@id=experimental-repo",
                     "file:${karaf.home}/../../minion-core-repo@snapshots@id=minion-core-repo",
                     "file:${karaf.home}/../../minion-default-repo@snapshots@id=minion-default-repo"
                 })
@@ -249,9 +261,26 @@ public abstract class KarafTestCase {
             editConfigurationFilePut("etc/org.apache.karaf.management.cfg", "rmiServerPort", rmiServerPort),
             editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
 
+            // Work around bug KARAF-5251
+            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna/4.4.0", "5"),
+            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna-platform/4.4.0", "5"),
+
             // This port is already being allocated according to an org.ops4j.net.FreePort call
             //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),
+
+            // Work around bug KARAF-5223, should be unnecessary once we upgrade past Karaf 4.1.1
+            replaceConfigurationFile("etc/shell.init.script", emptyFile),
         };
+
+        // Work around bug KARAF-5384
+        // If there is a MINA JAR available, then add MINA to the startup classpath
+        // TODO: Don't hardcode the version number here
+        File minaJar = new File("target/dependency/mina-core-2.0.16.jar");
+        if (minaJar.exists()) {
+            options = Arrays.copyOf(options, options.length + 2);
+            options[options.length - 2] = replaceConfigurationFile("system/org/apache/mina/mina-core/2.0.16/mina-core-2.0.16.jar", minaJar);
+            options[options.length - 1] = editConfigurationFilePut("etc/startup.properties", "mvn:org.apache.mina/mina-core/2.0.16", "10");
+        }
 
         if (Boolean.valueOf(System.getProperty("debug"))) {
             options = Arrays.copyOf(options, options.length + 1);
@@ -298,6 +327,15 @@ public abstract class KarafTestCase {
         try {
             LOG.info("Installing feature {}", featureName);
             featuresService.installFeature(featureName);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected void installFeature(String featureName, EnumSet<FeaturesService.Option> options) {
+        try {
+            LOG.info("Installing feature {}", featureName);
+            featuresService.installFeature(featureName, options);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

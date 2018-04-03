@@ -160,7 +160,7 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
                 dao.afterPropertiesSet();
                 m_configDaosByPath.put(xmlFile, dao);
             } else {
-                xmlFilesWithUnusedDaos.remove(xmlFilesWithUnusedDaos);
+                xmlFilesWithUnusedDaos.remove(xmlFile);
             }
         }
 
@@ -179,11 +179,11 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
         final List<File> xmlFiles = new LinkedList<>();
         try (Stream<Path> stream = Files.walk(m_opennmsHome.resolve(m_includeFolder), 1)) {
             stream.map(Path::toFile)
-                .filter(f -> f.isFile())
-                .filter(f -> f.canRead())
+                .filter(File::isFile)
+                .filter(File::canRead)
                 .filter(f -> f.getName().endsWith(".xml"))
                 .sorted()
-                .forEach(f -> xmlFiles.add(f));
+                .forEach(xmlFiles::add);
         } catch (IOException e) {
             LOG.error("Failed to walk {} for {} ({})", m_includeFolder, m_entityClass, m_description);
         }

@@ -95,17 +95,68 @@ On evaulation, this expression should return either true, persist index to stora
 .Storage Strategies
 [options="header, autowidth"]
 |===
-| Class                                                        | Storage Path Value
-| org.opennms.netmgt.collection.support.IndexStorageStrategy   | Index
-| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy     | interface label + '.' + dlci
-| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy  | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
-| org.opennms.protocols.xml.collector.XmlStorageStrategy       | Index, but cleaned up for unix filesystems.
+| Class                                                           | Storage Path Value
+| org.opennms.netmgt.collection.support.IndexStorageStrategy      | Index
+| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy  | Value after JexlExpression evaluation
+| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy | Value after JexlExpression evaluation
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy        | interface label + '.' + dlci
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.
 |===
 
 ====== IndexStorageStrategy
 
 The IndexStorageStrategy takes no parameters.
+
+====== JexlIndexStorageStrategy
+
+The JexlIndexStorageStrategy takes two parameters, `index-format` which is required, and `clean-output` which is optional.
+
+[options="header, autowidth"]
+|===
+| Parameter    | Description
+| index-format | The JexlExpression to evaluate
+| clean-output | Boolean to indicate whether the index value is cleaned up.
+|===
+
+If the index value will be cleaned up, then it will have all whitespace, colons, forward and back slashes, and vertical bars replaced with underscores. All equal signs are removed.
+
+This class can be extended to create custom storage strategies by overriding the `updateContext` method to set additional key/value pairs to use in your `index-format` template.
+[source, java]
+----
+public class ExampleStorageStrategy extends JexlIndexStorageStrategy {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExampleStorageStrategy.class);
+    public ExampleStorageStrategy() {
+        super();
+    }
+
+    @Override
+    public void updateContext(JexlContext context, CollectionResource resource) {
+        context.set("Example", resource.getInstance());
+    }
+}
+----
+
+====== ObjectNameStorageStrategy
+
+The ObjectNameStorageStrategy extends the JexlIndexStorageStrategy, so its requirements are the same. Extra key/values pairs are added to the JexlContext which can then be used in the `index-format` template.
+The original index string is converted to an ObjectName and can be referenced as `${ObjectName}`. The _domain_ from the ObjectName can be referenced as `${domain}`. All _key properties_
+from the ObjectName can also be referenced by `${key}`.
+
+This storage strategy is meant to be used with JMX MBean datacollections where multiple MBeans can return the same set of attributes. As of OpenNMS Horizon 20, this is only supported using a HTTP to JMX proxy and using the XmlCollector as the JmxCollector does not yet support indexed groups.
+
+Given an MBean like `java.lang:type=MemoryPool,name=Survivor Space`, and a storage strategy like this:
+[source, xml]
+----
+<storageStrategy class="org.opennms.netmgt.collection.support.ObjectNameStorageStragegy">
+  <parameter key="index-format" value="${domain}_${type}_${name}" />
+  <parameter key="clean-output" value="true" />
+</storageStrategy>
+----
+Then the index value would be `java_lang_MemoryPool_Survivor_Space`.
 
 ====== FrameRelayStorageStrategy
 

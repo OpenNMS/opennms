@@ -30,26 +30,8 @@ package org.opennms.plugins.dbnotifier.test.manual;
 
 import static org.junit.Assert.*;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.net.URL;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.junit.Test;
 import org.opennms.plugins.dbnotifier.DbNotifierDataSourceFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
-
 import com.impossibl.postgres.jdbc.PGDataSource;
 
 public class TestLoadDbNotifierDataSourceFactory {

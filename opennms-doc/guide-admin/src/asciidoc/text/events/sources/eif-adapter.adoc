@@ -22,10 +22,10 @@ NOTE: By default the _EIF Adapter_ is configured to listen on TCP port 1828 on a
 ----
 [root@localhost /root]# $ ssh -p 8101 admin@localhost
 ...
-opennms> features:install eif-adapter
+opennms> feature:install eif-adapter
 opennms> config:edit org.opennms.features.eifadapter
-opennms> config:propset interface 0.0.0.0
-opennms> config:propset port 1828
+opennms> config:property-set interface 0.0.0.0
+opennms> config:property-set port 1828
 opennms> config:update
 ----
 

@@ -27,6 +27,18 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui;
 
+import java.util.List;
+
+import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
+import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewGraphComponent;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
+import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
+import org.opennms.netmgt.config.surveillanceViews.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.data.Property;
 import com.vaadin.event.UIEvents;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -37,17 +49,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.NativeSelect;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.surveillanceviews.config.SurveillanceViewProvider;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
-import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewAlarmTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewGraphComponent;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNodeRtcTable;
-import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewNotificationTable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * This class is the base component for displaying a surveillance view and the dashboard.

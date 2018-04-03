@@ -1,0 +1,51 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+    xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+    xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+		http://camel.apache.org/schema/blueprint
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
+">
+
+    <cm:property-placeholder id="ipcProperties"
+        persistent-id="org.opennms.core.ipc" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="body.debug" value="-1" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- Provided by minion-core -->
+    <reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity" />
+
+    <!-- Provided by minion-core -->
+    <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
+
+    <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+    <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+        <property name="timeout" value="15"/>
+    </bean>
+
+    <camelContext id="rpcServer" xmlns="http://camel.apache.org/schema/blueprint">
+        <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
+        <properties>
+            <property key="CamelLogDebugBodyMaxChars" value="{{body.debug}}"/>
+        </properties>
+
+        <!-- The routes are managed by the CamelRpcServerRouteManager  -->
+    </camelContext>
+
+    <bean id="jmsRpcServerRouteManager" class="org.opennms.core.rpc.jms.JmsRpcServerRouteManager" >
+        <argument ref="rpcServer"/>
+        <argument ref="minionIdentity"/>
+    </bean>
+
+    <reference-list id="rpcModulesRef" interface="org.opennms.core.rpc.api.RpcModule" availability="optional">
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="jmsRpcServerRouteManager"/>
+    </reference-list>
+</blueprint>

@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Marcus Hellberg (marcus@vaadin.com)
@@ -153,5 +154,31 @@ public class MapNode implements Serializable {
 
     public void setCategories(List<String> categories) {
         this.categories = categories;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final MapNode mapNode = (MapNode) o;
+        return Double.compare(mapNode.latitude, latitude) == 0 &&
+                Double.compare(mapNode.longitude, longitude) == 0 &&
+                unackedCount == mapNode.unackedCount &&
+                Objects.equals(nodeId, mapNode.nodeId) &&
+                Objects.equals(nodeLabel, mapNode.nodeLabel) &&
+                Objects.equals(foreignSource, mapNode.foreignSource) &&
+                Objects.equals(foreignId, mapNode.foreignId) &&
+                Objects.equals(description, mapNode.description) &&
+                Objects.equals(maintcontract, mapNode.maintcontract) &&
+                Objects.equals(ipAddress, mapNode.ipAddress) &&
+                Objects.equals(severity, mapNode.severity) &&
+                Objects.equals(severityLabel, mapNode.severityLabel) &&
+                Objects.equals(categories, mapNode.categories);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(latitude, longitude, nodeId, nodeLabel, foreignSource, foreignId, description,
+                maintcontract, ipAddress, severity, severityLabel, unackedCount, categories);
     }
 }

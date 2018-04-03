@@ -125,6 +125,6 @@ public class OpenNMSConfiguration extends Configuration {
     }
 
     public void refresh() {
-        m_delegates.stream().forEach(c -> c.refresh());
+        m_delegates.stream().forEach(Configuration::refresh);
     }
 }

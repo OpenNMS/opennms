@@ -77,6 +77,56 @@ Once added to `etc/jmx-datacollection-config.xml` you can test it using the `col
 collection:collect org.opennms.netmgt.collectd.Jsr160Collector 127.0.0.1 collection=opennms-poller port=18980
 ----
 
+===== Generic Resource Type
+
+In order to support wildcard (*) in objectname, JMX collector supports generic resource types.
+Two changes needed to jmx configuration for this to work.
+
+* Create a custom resource type in `etc/resource-types.d/`
+for ex: there is already a definition in `jmx-resource.xml` which defines a custom resource for kafka lag
+
+[source, xml]
+----
+<resource-types>
+    <resourceType name="kafkaLag" label="Kafka Lag"
+                  resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="name" />
+      </storageStrategy>
+    </resourceType>
+</resource-types>
+----
+* Match the resourceType name as `resource-type` in mbean definition
+
+[source, xml]
+----
+<mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=OpenNMS.Sink.*.Lag">
+   <attrib name="Value" alias="Lag" type="gauge"/>
+</mbean>
+----
+====== Resource definition
+
+JMX objectname is the full name of Mbean in form of `( domain:key=value, key=value, ..)`.
+Wildcard `(*)` can exist anywhere in the objectname.
+
+Depending on wildcard definition, use `SiblingColumnStorageStrategy` to extract resource label.
+If wildcard exists in the value ( usual case), use corresponding `key` as the `sibling-column-name` parameter. for ex:
+`org.apache.activemq:BrokerName=*,Type=Queue,Destination=com.mycompany.myqueue`
+
+Here `BrokerName` can be defined as parameter for SiblingColumnStorageStrategy
+----
+   <parameter key="sibling-column-name" value="BrokerName" />
+----
+The extracted BrokerNames from the wildcard will be the resource folders in the form of `nodeId/resourceTypeName/{resource-label}`
+
+Wildcard may exist in domain as well, for ex: `org.apache.*:BrokerName=trap, Type=Queue`.
+Then `domain` can be defined as the `sibling-column-name` parameter.
+----
+  <parameter key="sibling-column-name" value="domain" />
+----
+The `objectname` itself can be used as resource label, simply use `IndexStorageStrategy` as storageStrategy in `resource-type` definition.
+
 ===== 3rd Party JMX Services
 
 Some java applications provide their own JMX implementation and require certain libraries to be present on the classpath, e.g. the java application server Wildfly.

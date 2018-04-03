@@ -33,7 +33,6 @@ import java.util.Set;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.StorageStrategyService;
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
 /**
  * <p>CollectionAgent interface.</p>
@@ -69,14 +68,6 @@ public interface SnmpCollectionAgent extends CollectionAgent, StorageStrategySer
      * @throws CollectionInitializationException 
      */
     void validateAgent() throws CollectionInitializationException;
-
-    /**
-     * <p>getAgentConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
-     */
-    @Override
-    SnmpAgentConfig getAgentConfig();
 
     /**
      * <p>getSnmpInterfaceInfo</p>

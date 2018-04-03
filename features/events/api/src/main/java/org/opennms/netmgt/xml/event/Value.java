@@ -34,6 +34,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -61,18 +63,21 @@ public class Value implements Serializable {
      * internal content storage
      */
 	@XmlValue
+	@NotNull
     private java.lang.String _content = "";
 
     /**
      * Field _type.
      */
 	@XmlAttribute(name="type")
+	@Pattern(regexp="(int|string|Int32|OctetString|Null|ObjectIdentifier|Sequence|IpAddress|Counter32|Gauge32|TimeTicks|Opaque|Counter64)")
     private java.lang.String _type = "string";
 
     /**
      * Field _encoding.
      */
 	@XmlAttribute(name="encoding")
+	@Pattern(regexp="(text|base64)")
     private java.lang.String _encoding = "text";
 
 	@XmlTransient

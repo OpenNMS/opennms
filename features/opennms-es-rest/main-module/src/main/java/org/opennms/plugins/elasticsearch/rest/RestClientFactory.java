@@ -29,15 +29,21 @@
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.http.HttpHost;
 import org.opennms.core.utils.TimeoutTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 import io.searchbox.action.Action;
 import io.searchbox.client.JestClient;
@@ -52,8 +58,10 @@ import io.searchbox.client.config.HttpClientConfig;
  */
 public class RestClientFactory {
 
+	private static final Logger LOG = LoggerFactory.getLogger(RestClientFactory.class);
+
 	private final JestClientFactory factory;
-	private HttpClientConfig config;
+	private final HttpClientConfig.Builder configBuilder;
 
 	private AtomicInteger m_socketTimeout = new AtomicInteger(0);
 	private AtomicInteger m_timeout = new AtomicInteger(0);
@@ -122,17 +130,25 @@ public class RestClientFactory {
 	 * @param esusername Optional HTTP username
 	 * @param espassword Optional HTTP password
 	 */
-	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ){
+	public RestClientFactory(String elasticSearchURL, String esusername, String espassword ) throws MalformedURLException {
 
 		// If multiple URLs are specified in a comma-separated string, split them up
-		config = new HttpClientConfig.Builder(Arrays.asList(elasticSearchURL.split(",")))
-				.multiThreaded(true)
-				.defaultCredentials(esusername, espassword)
-				.build();
+		final List<String> targetHosts = Arrays.asList(elasticSearchURL.split(","));
+		configBuilder = new HttpClientConfig.Builder(targetHosts).multiThreaded(true);
+		if (!Strings.isNullOrEmpty(esusername) && !Strings.isNullOrEmpty(espassword)) {
+			final URL targetUrl = new URL(targetHosts.get(0));
+
+			if (targetHosts.size() > 1) {
+				LOG.warn("Credentials have been defined, but multiple target hosts were found. " +
+						"Each host will use the same credentials. Preemptive auth is only enabled for host {}", targetHosts.get(0));
+			}
+
+			configBuilder.defaultCredentials(esusername, espassword);
+			configBuilder.setPreemptiveAuth(new HttpHost(targetUrl.getHost(), targetUrl.getPort(), targetUrl.getProtocol()));
+		}
 
 		factory = new JestClientFactory();
-
-		factory.setHttpClientConfig(config);
+		factory.setHttpClientConfig(configBuilder.build());
 
 	}
 
@@ -164,8 +180,7 @@ public class RestClientFactory {
 	 */
 	public void setSocketTimeout(int timeout) {
 		m_socketTimeout.set(timeout);
-		config = new HttpClientConfig.Builder(config).readTimeout(timeout).build();
-		factory.setHttpClientConfig(config);
+		factory.setHttpClientConfig(configBuilder.readTimeout(timeout).build());
 	}
 
 	public int getTimeout() {
@@ -183,8 +198,7 @@ public class RestClientFactory {
 	 */
 	public void setTimeout(int timeout) {
 		m_timeout.set(timeout);
-		config = new HttpClientConfig.Builder(config).connTimeout(timeout).build();
-		factory.setHttpClientConfig(config);
+		factory.setHttpClientConfig(configBuilder.connTimeout(timeout).build());
 	}
 
 	public JestClient getJestClient(){

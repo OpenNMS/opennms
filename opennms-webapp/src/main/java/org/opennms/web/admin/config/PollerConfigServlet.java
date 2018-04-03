@@ -154,8 +154,8 @@ public class PollerConfigServlet extends HttpServlet {
 
         String query = request.getQueryString();
         if (query != null) {
-            java.util.List<String> checkedList = new ArrayList<String>();
-            java.util.List<String> deleteList = new ArrayList<String>();
+            java.util.List<String> checkedList = new ArrayList<>();
+            java.util.List<String> deleteList = new ArrayList<>();
 
             StringTokenizer strTok = new StringTokenizer(query, "&");
             while (strTok.hasMoreTokens()) {

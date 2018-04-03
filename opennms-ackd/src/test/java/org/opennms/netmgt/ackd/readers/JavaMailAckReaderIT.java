@@ -165,7 +165,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
      */
     @Test
     public void workingWithMultiPartMessages() throws JavaMailerException, MessagingException {
-        List<Message> msgs = new ArrayList<Message>();
+        List<Message> msgs = new ArrayList<>();
         Properties props = new Properties();
         Message msg = new MimeMessage(Session.getDefaultInstance(props));
         Address[] addrs = new Address[1];
@@ -286,7 +286,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
 
         @Override
         public List<End2endMailConfig> getEnd2EndConfigs() {
-            List<End2endMailConfig> list = new ArrayList<End2endMailConfig>();
+            List<End2endMailConfig> list = new ArrayList<>();
             list.add(m_e2eConfig);
             return list;
         }
@@ -298,7 +298,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
 
         @Override
         public List<ReadmailConfig> getReadmailConfigs() {
-            List<ReadmailConfig> list = new ArrayList<ReadmailConfig>();
+            List<ReadmailConfig> list = new ArrayList<>();
             list.add(m_readConfig);
             return list;
         }
@@ -310,7 +310,7 @@ public class JavaMailAckReaderIT implements InitializingBean {
 
         @Override
         public List<SendmailConfig> getSendmailConfigs() {
-            List<SendmailConfig> list = new ArrayList<SendmailConfig>();
+            List<SendmailConfig> list = new ArrayList<>();
             list.add(m_sendConfig);
             return list;
         }

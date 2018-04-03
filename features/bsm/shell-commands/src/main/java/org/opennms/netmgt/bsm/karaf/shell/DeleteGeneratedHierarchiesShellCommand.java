@@ -28,27 +28,25 @@
 
 package org.opennms.netmgt.bsm.karaf.shell;
 
-import java.util.Objects;
-
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 
 @Command(scope = "bsm", name = "delete-generated-hierarchies", description="Deletes generated hierarchies.")
-public class DeleteGeneratedHierarchiesShellCommand extends OsgiCommandSupport {
+@Service
+public class DeleteGeneratedHierarchiesShellCommand implements Action {
 
-    private BusinessServiceManager businessServiceManager;
+    @Reference
+    public BusinessServiceManager businessServiceManager;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         System.out.println("Deleting generated business services...");
         businessServiceManager.getAllBusinessServices().stream()
             .filter(b -> "true".equals(b.getAttributes().get("generated")))
             .forEach(b -> businessServiceManager.deleteBusinessService(b));
         return null;
-    }
-
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
     }
 }

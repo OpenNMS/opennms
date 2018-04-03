@@ -72,7 +72,7 @@ public class ServiceTemplate implements Serializable, Comparable<ServiceTemplate
     protected String m_status;
 
     @XmlElement(name = "parameter")
-    protected List<Parameter> m_parameters = new ArrayList<Parameter>();
+    protected List<Parameter> m_parameters = new ArrayList<>();
 
     public ServiceTemplate() {
 

@@ -56,7 +56,7 @@ public class RRA extends AbstractRRA {
     private Parameters parameters = new Parameters();
 
     /** The CDP Data. */
-    private List<RRADS> dataSources = new ArrayList<RRADS>();
+    private List<RRADS> dataSources = new ArrayList<>();
 
     /**
      * Gets the consolidation function.

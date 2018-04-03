@@ -67,9 +67,9 @@ public class SecurityHelper {
         if (securityContext.isUserInRole(Authentication.ROLE_REST) ||
                 securityContext.isUserInRole(Authentication.ROLE_USER) ||
                 securityContext.isUserInRole(Authentication.ROLE_MOBILE)) {
-            if (ackUser.equals(currentUser)) {
+            if (ackUser.equals(currentUser) || (!ackUser.equals(currentUser) && securityContext.isUserInRole(Authentication.ROLE_DELEGATE))) {
                 // ROLE_REST and ROLE_MOBILE are allowed to modify things as long as it's as the
-                // same user as they're logging in with.
+                // same user as they're logging in with, or if they also have ROLE_DELEGATE.
                 return;
             }
         }

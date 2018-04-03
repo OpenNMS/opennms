@@ -270,7 +270,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     }
 
     private List<OutageSummary> getOutageSummary(List<OnmsOutage> onmsOutages) {
-        List<OutageSummary> outages = new ArrayList<OutageSummary>();
+        List<OutageSummary> outages = new ArrayList<>();
         
         if(onmsOutages.size() > 0){
             Iterator<OnmsOutage> outageIt = onmsOutages.iterator();
@@ -308,7 +308,7 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     @Transactional
     @Override
     public Outage[] getMatchingOutages(final OutageCriteria criteria) {
-        final List<Outage> outages = new ArrayList<Outage>();
+        final List<Outage> outages = new ArrayList<>();
         final List<OnmsOutage> onmsOutages = m_outageDao.findMatching(getOnmsCriteria(criteria));
         
         for (final OnmsOutage outage : onmsOutages) {

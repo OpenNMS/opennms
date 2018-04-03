@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 class Server implements Runnable {
 
-    private AtomicReference<Throwable> m_exception = new AtomicReference<Throwable>();
+    private AtomicReference<Throwable> m_exception = new AtomicReference<>();
     private AtomicBoolean m_stopped = new AtomicBoolean(false);
     private CountDownLatch m_latch = new CountDownLatch(1);
     private Thread m_thread;

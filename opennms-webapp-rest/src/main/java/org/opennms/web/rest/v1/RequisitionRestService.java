@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -468,6 +468,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addOrReplaceNode(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, RequisitionNode node) {
+        try {
+            node.validate();
+        } catch (final ValidationException e) {
+            LOG.debug("error validating incoming node '{}'", node, e);
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
         debug("addOrReplaceNode: Adding node %s to requisition %s", node.getForeignId(), foreignSource);
         m_accessService.addOrReplaceNode(foreignSource, node);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, node.getForeignId())).build();
@@ -486,6 +492,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addOrReplaceInterface(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionInterface iface) {
+        try {
+            iface.validate();
+        } catch (final ValidationException e) {
+            LOG.debug("error validating incoming interface '{}'", iface, e);
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
         debug("addOrReplaceInterface: Adding interface %s to node %s/%s", iface, foreignSource, foreignId);
         m_accessService.addOrReplaceInterface(foreignSource, foreignId, iface);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, iface.getIpAddr())).build();
@@ -505,6 +517,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addOrReplaceService(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, @PathParam("ipAddress") String ipAddress, RequisitionMonitoredService service) {
+        try {
+            service.validate();
+        } catch (final ValidationException e) {
+            LOG.debug("error validating incoming service '{}'", service, e);
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
         debug("addOrReplaceService: Adding service %s to node %s/%s, interface %s", service.getServiceName(), foreignSource, foreignId, ipAddress);
         m_accessService.addOrReplaceService(foreignSource, foreignId, ipAddress, service);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, service.getServiceName())).build();
@@ -523,6 +541,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addOrReplaceNodeCategory(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionCategory category) {
+        try {
+            category.validate();
+        } catch (final ValidationException e) {
+            LOG.debug("error validating incoming category '{}'", category, e);
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
         debug("addOrReplaceNodeCategory: Adding category %s to node %s/%s", category.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeCategory(foreignSource, foreignId, category);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, category.getName())).build();
@@ -541,6 +565,12 @@ public class RequisitionRestService extends OnmsRestService {
     @Consumes({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON, MediaType.APPLICATION_ATOM_XML})
     @Transactional
     public Response addOrReplaceNodeAssetParameter(@Context final UriInfo uriInfo, @PathParam("foreignSource") String foreignSource, @PathParam("foreignId") String foreignId, RequisitionAsset asset) {
+        try {
+            asset.validate();
+        } catch (final ValidationException e) {
+            LOG.debug("error validating incoming asset '{}'", asset, e);
+            throw getException(Status.BAD_REQUEST, e.getMessage());
+        }
         debug("addOrReplaceNodeCategory: Adding asset %s to node %s/%s", asset.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeAssetParameter(foreignSource, foreignId, asset);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, asset.getName())).build();

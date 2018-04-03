@@ -40,20 +40,11 @@ import com.vaadin.ui.AbstractJavaScriptComponent;
  *
  * @author jwhite
  */
-// Vaadin doensn't allow us to reference .js files outside of the application using relative paths
-// so we resort to copying the minimal dependencies into the target .jar and importing them here.
-// The resources are copied using the maven-resources-plugin definition in this module's pom.xml.
-// Only resources required to bootstrap graph.js should be included here - others should
-// be loaded dynamically.
 @JavaScript({
-    "require.js",
-    "global.js",
-    "jquery.js",
-    "graph.js",
-    "graphcontainer-connector.js"
+    "theme://../opennms/assets/graphcontainer_connector.vaadin.js"
 })
 public class GraphContainer extends AbstractJavaScriptComponent {
-    private static final long serialVersionUID = 3363043899957566308L;
+    private static final long serialVersionUID = 2L;
 
     public GraphContainer(final String graphName, final String resourceId) {
         final GraphContainerState state = getState();

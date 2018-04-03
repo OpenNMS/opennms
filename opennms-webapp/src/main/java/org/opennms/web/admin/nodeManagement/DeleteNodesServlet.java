@@ -132,7 +132,7 @@ public class DeleteNodesServlet extends HttpServlet {
     }
 
     private List<String> getIpAddrsForNode(Integer nodeId) throws ServletException {
-        List<String> ipAddrs = new ArrayList<String>();
+        List<String> ipAddrs = new ArrayList<>();
         final DBUtils d = new DBUtils(getClass());
 
         try {

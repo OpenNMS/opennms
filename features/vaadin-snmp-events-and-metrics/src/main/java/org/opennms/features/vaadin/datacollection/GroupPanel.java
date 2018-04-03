@@ -90,7 +90,7 @@ public class GroupPanel extends Panel {
         addStyleName("light");
 
         // Adding all resource types already defined on this source
-        final List<String> resourceTypes = new ArrayList<String>();
+        final List<String> resourceTypes = new ArrayList<>();
         for (ResourceType type : source.getResourceTypes()) {
             resourceTypes.add(type.getName());
         }
@@ -228,7 +228,7 @@ public class GroupPanel extends Panel {
      * @return the parent system definitions.
      */
     private Set<String> getParentSystemDefs(final DataCollectionConfigDao dataCollectionConfigDao, String groupName) {
-        Set<String> systemDefMap = new TreeSet<String>();
+        Set<String> systemDefMap = new TreeSet<>();
         for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
             for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
                 for (final String group : systemDef.getCollect().getIncludeGroups()) {

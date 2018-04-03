@@ -61,7 +61,7 @@ import org.springframework.util.ClassUtils;
  * @author brozow
  * @version $Id: $
  */
-public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, InitializingBean, DisposableBean {
+public class AnnotationBasedEventListenerAdapter implements StoppableEventListener, ThreadAwareEventListener, InitializingBean, DisposableBean {
     
 	
 	private static final Logger LOG = LoggerFactory.getLogger(AnnotationBasedEventListenerAdapter.class);
@@ -69,11 +69,12 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     private volatile String m_name = null;
     private volatile Object m_annotatedListener;
     private volatile String m_logPrefix = null;
+    private volatile int m_threads = 1;
     private volatile EventSubscriptionService m_subscriptionService;
 
     private final Map<String, Method> m_ueiToHandlerMap = new HashMap<String, Method>();
-    private final List<Method> m_eventPreProcessors = new LinkedList<Method>();
-    private final List<Method> m_eventPostProcessors = new LinkedList<Method>();
+    private final List<Method> m_eventPreProcessors = new LinkedList<>();
+    private final List<Method> m_eventPostProcessors = new LinkedList<>();
     private final SortedSet<Method> m_exceptionHandlers = new TreeSet<Method>(createExceptionHandlerComparator());
     
     /**
@@ -293,7 +294,9 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
                 m_logPrefix = m_name;
             }
         }
-        
+
+        m_threads = listenerInfo.threads();
+
         populatePreProcessorList();
         
         populateUeiToHandlerMap();
@@ -334,6 +337,17 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
         Assert.state(ClassUtils.isAssignable(Throwable.class, method.getParameterTypes()[1]), "Second parameter of incorrect type. EventExceptionHandler second paramenter must be of type ? extends Throwable");
     }
 
+    @Override
+    public int getNumThreads() {
+        // If the listener is thread aware, then use the value provided by
+        // the thread aware interface, otherwise fall back to the value
+        // provided in the annotation
+        if (m_annotatedListener instanceof ThreadAwareEventListener) {
+            return ((ThreadAwareEventListener) m_annotatedListener).getNumThreads();
+        }
+        return m_threads;
+    }
+
     private static class ClassComparator<T> implements Comparator<Class<? extends T>> {
         @Override
         public int compare(Class<? extends T> lhsType, Class<? extends T> rhsType) {
@@ -342,7 +356,7 @@ public class AnnotationBasedEventListenerAdapter implements StoppableEventListen
     }
 
     private Comparator<Method> createExceptionHandlerComparator() {
-        final ClassComparator<Throwable> classComparator = new ClassComparator<Throwable>();
+        final ClassComparator<Throwable> classComparator = new ClassComparator<>();
         
         Comparator<Method> comparator = new Comparator<Method>() {
 

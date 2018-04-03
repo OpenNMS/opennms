@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -11,7 +11,7 @@
   <name>OpenNMS :: Protocols :: Selenium</name>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <seleniumVersion>2.44.0</seleniumVersion>
+    <seleniumVersion>2.53.1</seleniumVersion>
   </properties>
   <packaging>bundle</packaging>
   <build>

@@ -1,4 +1,5 @@
-<%--
+<%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
+<%@ page import="org.opennms.web.api.Util" %><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
@@ -76,24 +77,24 @@
         }
     }
 
-    url += mode + "/" + heatmap + "/";
+    url += Util.encode(mode) + "/" + Util.encode(heatmap) + "/";
 
     if ("nodesByForeignSource".equals(heatmap)) {
         foreignSource = request.getParameter("foreignSource");
-        url += foreignSource;
+        url += Util.encode(foreignSource);
         title += " (Nodes by ForeignSource '" + foreignSource + "')";
     }
 
     if ("nodesByCategory".equals(heatmap)) {
         category = request.getParameter("category");
-        url += category;
+        url += Util.encode(category);
         title += " (Nodes by Category '" + category + "')";
     }
 
     if ("nodesByMonitoredService".equals(heatmap)) {
         monitoredService = request.getParameter("monitoredService");
-        url += monitoredService;
-        title += " (Nodes by Service '" +monitoredService + "')";
+        url += Util.encode(monitoredService);
+        title += " (Nodes by Service '" + monitoredService + "')";
     }
 
     if ("foreignSources".equals(heatmap)) {
@@ -126,9 +127,13 @@
     }
 </style>
 
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="jquery-ui-js" />
+</jsp:include>
+
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=mode%>&amp;heatmap=<%=heatmap%>&amp;foreignSource=<%=foreignSource%>&amp;category=<%=category%>&amp;monitoredService=<%=monitoredService%>"><%=title%>
+        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
         </a></h3>
     </div>
 
@@ -153,124 +158,121 @@
         }
 
         addOnLoadEvent(function() {
-            require(['jquery', 'jquery-ui-treemap'], function( $ ) {
+            var tooltipDelay = 500;
+            var tooltipFadeIn = 500;
+            var tooltipTimeout;
 
-                var tooltipDelay = 500;
-                var tooltipFadeIn = 500;
-                var tooltipTimeout;
+            function clearAndHideTooltip() {
+                clearTimeout(tooltipTimeout);
+                $(".tooltipbox").hide();
+            }
 
-                function clearAndHideTooltip() {
-                    clearTimeout(tooltipTimeout);
-                    $(".tooltipbox").hide();
+            var mousemoveHandler = function(e, data) {
+                clearAndHideTooltip();
+
+                $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
+
+                var tooltipWidth = $("#tooltipbox").width();
+                var tooltipHeight = $("#tooltipbox").height();
+                var treemapWidth = $("#treemap").width();
+                var treemapHeight = $("#treemap").height();
+
+                if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
+                  $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
+                } else {
+                  $("#tooltipbox").css({ "left" : e.offsetX + 16 });
                 }
 
-                var mousemoveHandler = function(e, data) {
-                    clearAndHideTooltip();
-
-                    $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
-
-                    var tooltipWidth = $("#tooltipbox").width();
-                    var tooltipHeight = $("#tooltipbox").height();
-                    var treemapWidth = $("#treemap").width();
-                    var treemapHeight = $("#treemap").height();
-
-                    if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
-                      $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
-                    } else {
-                      $("#tooltipbox").css({ "left" : e.offsetX + 16 });
-                    }
-
-                    if (e.offsetY + tooltipHeight > treemapHeight) {
-                      $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
-                    } else {
-                      $("#tooltipbox").css({ "top" : e.offsetY });
-                    }
-
-                    tooltipTimeout = setTimeout(function(event){
-                        $("#tooltipbox").fadeIn(tooltipFadeIn);
-                    }, tooltipDelay);
-                };
-
-                var mouseleaveHandler = function (e, data) {
-                    clearAndHideTooltip();
+                if (e.offsetY + tooltipHeight > treemapHeight) {
+                  $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
+                } else {
+                  $("#tooltipbox").css({ "top" : e.offsetY });
                 }
 
+                tooltipTimeout = setTimeout(function(event){
+                    $("#tooltipbox").fadeIn(tooltipFadeIn);
+                }, tooltipDelay);
+            };
 
-                var mouseclickHandler = function (e, data) {
-                    var nodes = data.nodes;
-                    var ids = data.ids;
-                    <%
-                      if ("foreignSources".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByForeignSource&foreignSource=" + nodes[0].id;
-                    <%
-                      }
+            var mouseleaveHandler = function (e, data) {
+                clearAndHideTooltip();
+            }
 
-                      if ("categories".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByCategory&category=" + nodes[0].id;
-                    <%
-                      }
 
-                      if ("monitoredServices".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=mode%>&heatmap=nodesByMonitoredService&monitoredService=" + nodes[0].id;
-                    <%
-                      }
+            var mouseclickHandler = function (e, data) {
+                var nodes = data.nodes;
+                var ids = data.ids;
+                <%
+                  if ("foreignSources".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                      if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
-                    %>
-                    location.href = "/opennms/element/node.jsp?node=" + nodes[0].elementId
-                    <%
-                      }
-                    %>
-                };
+                  if ("categories".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                var url = "<%=url%>";
-                var children;
+                  if ("monitoredServices".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                function refresh() {
-                    clearAndHideTooltip();
+                  if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
+                %>
+                location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
+                <%
+                  }
+                %>
+            };
 
-                    var height = $(window).height() - 105 - $("#treemap").offset().top;
+            var url = "<%=url%>";
+            var children;
 
-                    if (height < 0) {
-                        height = $(window).width();
-                    }
+            function refresh() {
+                clearAndHideTooltip();
 
-                    height = Math.min(height, $(window).width());
+                var height = $(window).height() - 105 - $("#treemap").offset().top;
 
-                    $("#treemap").treemap({
-                        "dimensions": [
-                            $("#treemap").width(),
-                            height
-                        ],
-                        "colorStops": [
-                            {"val": 1.0, "color": "#CC0000"},
-                            {"val": 0.4, "color": "#FF3300"},
-                            {"val": 0.2, "color": "#FF9900"},
-                            {"val": 0.1, "color": "#FFCC00"},
-                            {"val": 0.0, "color": "#336600"}
-                        ],
-                        "labelsEnabled": true,
-                        "nodeData": {
-                            "id": "<%=heatmap%>",
-                            "children": children
-                        }
-                    }).bind('treemapmousemove', mousemoveHandler)
-                      .bind('treemapclick', mouseclickHandler)
-                      .mouseleave(function(){mouseleaveHandler()});
+                if (height < 0) {
+                    height = $(window).width();
                 }
 
-                $(window).resize(function() {
+                height = Math.min(height, $(window).width());
+
+                $("#treemap").treemap({
+                    "dimensions": [
+                        $("#treemap").width(),
+                        height
+                    ],
+                    "colorStops": [
+                        {"val": 1.0, "color": "#CC0000"},
+                        {"val": 0.4, "color": "#FF3300"},
+                        {"val": 0.2, "color": "#FF9900"},
+                        {"val": 0.1, "color": "#FFCC00"},
+                        {"val": 0.0, "color": "#336600"}
+                    ],
+                    "labelsEnabled": true,
+                    "nodeData": {
+                        "id": "<%=Util.encode(heatmap)%>",
+                        "children": children
+                    }
+                }).bind('treemapmousemove', mousemoveHandler)
+                  .bind('treemapclick', mouseclickHandler)
+                  .mouseleave(function(){mouseleaveHandler()});
+            }
+
+            $(window).resize(function() {
+                refresh();
+            });
+
+            $(document).ready(function () {
+                $.getJSON(url, function (data) {
+                    children = data.children;
                     refresh();
-                });
-
-                $(document).ready(function () {
-                    $.getJSON(url, function (data) {
-                        children = data.children;
-                        refresh();
-                    });
                 });
             });
         });
@@ -283,11 +285,11 @@
                     <%
                         if ("outages".equals(mode)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Alarms</a> / <b>Outages</b>
+                    <a href="<%=request.getRequestURI()%>?mode=alarms&amp;heatmap=<%=Util.encode(heatmap)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>">Alarms</a> / <b>Outages</b>
                     <%
                     } else {
                     %>
-                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=heatmap%>&amp;category=<%=category%>&amp;foreignSource=<%=foreignSource%>&amp;monitoredService=<%=monitoredService%>">Outages</a>
+                    <b>Alarms</b> / <a href="<%=request.getRequestURI()%>?mode=outages&amp;heatmap=<%=Util.encode(heatmap)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>">Outages</a>
                     <%
                         }
                     %>
@@ -298,16 +300,16 @@
                     <%
                         if ("foreignSources".equals(heatmap) || "nodesByForeignSource".equals(heatmap)) {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=categories">Categories</a> / <b>Foreign Sources</b> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                         if ("categories".equals(heatmap) ||"nodesByCategory".equals(heatmap)) {
                     %>
-                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=monitoredServices">Services</a>
+                    <b>Categories</b> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=foreignSources">Foreign Sources</a> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=monitoredServices">Services</a>
                     <%
                     } else {
                     %>
-                    <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=mode%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
+                    <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=categories">Categories</a> / <a href="<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&amp;heatmap=foreignSources">Foreign Sources</a> / <b>Services</b>
                     <%
                             }
                         }

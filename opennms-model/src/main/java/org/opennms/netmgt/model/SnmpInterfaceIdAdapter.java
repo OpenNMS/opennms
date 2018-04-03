@@ -38,7 +38,7 @@ public class SnmpInterfaceIdAdapter extends XmlAdapter<ArrayList<Integer>, Set<O
 
     @Override
     public ArrayList<Integer> marshal(final Set<OnmsIpInterface> ifaces) throws Exception {
-        final ArrayList<Integer> ret = new ArrayList<Integer>();
+        final ArrayList<Integer> ret = new ArrayList<>();
         for (final OnmsIpInterface iface : ifaces) {
             ret.add(iface.getId());
         }
@@ -47,7 +47,7 @@ public class SnmpInterfaceIdAdapter extends XmlAdapter<ArrayList<Integer>, Set<O
 
     @Override
     public Set<OnmsIpInterface> unmarshal(final ArrayList<Integer> ids) throws Exception {
-        final Set<OnmsIpInterface> ret = new TreeSet<OnmsIpInterface>();
+        final Set<OnmsIpInterface> ret = new TreeSet<>();
         for (final Integer id : ids) {
             final OnmsIpInterface iface = new OnmsIpInterface();
             iface.setId(id);

@@ -56,7 +56,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     private String m_name;
 
-    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<OnmsMonitoredService>();
+    private Set<OnmsMonitoredService> m_monitoredServices = new LinkedHashSet<>();
 
     /**
      * <p>getId</p>

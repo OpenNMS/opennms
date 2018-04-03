@@ -45,7 +45,7 @@ public class SnmpConfigTest extends XmlTestNoCastor<SnmpConfig> {
 
     @Parameters
     public static Collection<Object[]> data() throws ParseException {
-        final List<Definition> definitionList = new ArrayList<Definition>();
+        final List<Definition> definitionList = new ArrayList<>();
 
         final Range range = new Range();
         range.setBegin("192.168.0.1");

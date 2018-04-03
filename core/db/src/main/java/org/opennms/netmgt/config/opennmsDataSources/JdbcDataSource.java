@@ -73,7 +73,7 @@ public class JdbcDataSource implements java.io.Serializable {
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
 
     public JdbcDataSource() {
-        this.paramList = new java.util.ArrayList<org.opennms.netmgt.config.opennmsDataSources.Param>();
+        this.paramList = new java.util.ArrayList<>();
     }
 
     /**

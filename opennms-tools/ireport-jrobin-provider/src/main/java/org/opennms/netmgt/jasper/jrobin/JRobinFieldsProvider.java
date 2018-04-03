@@ -67,7 +67,7 @@ public class JRobinFieldsProvider implements FieldsProvider  {
             return new JRField[0];
         }
         
-        List<JRField> fields = new ArrayList<JRField>();
+        List<JRField> fields = new ArrayList<>();
         
         //Add timestamp field
         addTimestampField(fields);

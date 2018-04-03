@@ -59,7 +59,7 @@ public class ManagedNode {
      * <p>Constructor for ManagedNode.</p>
      */
     public ManagedNode() {
-        interfaces = new ArrayList<ManagedInterface>();
+        interfaces = new ArrayList<>();
     }
 
     /**

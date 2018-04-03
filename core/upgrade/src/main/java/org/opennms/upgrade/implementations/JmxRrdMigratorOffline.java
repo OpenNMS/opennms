@@ -85,10 +85,10 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
     private List<File> jmxResourceDirectories;
 
     /** The list of bad metrics. */
-    protected List<String> badMetrics = new ArrayList<String>();
+    protected List<String> badMetrics = new ArrayList<>();
 
     /** Backup files. */
-    protected List<File> backupFiles = new ArrayList<File>();
+    protected List<File> backupFiles = new ArrayList<>();
 
     /**
      * Instantiates a new JMX RRD migrator offline.
@@ -238,7 +238,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             FileWriter w = new FileWriter(outputFile);
             Pattern extRegex = Pattern.compile("import-mbeans[>](.+)[<]");
             Pattern aliasRegex = Pattern.compile("alias=\"([^\"]+\\.[^\"]+)\"");
-            List<File> externalFiles = new ArrayList<File>();
+            List<File> externalFiles = new ArrayList<>();
             LineIterator it = FileUtils.lineIterator(jmxConfigFile);
             while (it.hasNext()) {
                 String line = it.next();
@@ -288,7 +288,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             Pattern defRegex = Pattern.compile("DEF:.+:(.+\\..+):");
             Pattern colRegex = Pattern.compile("\\.columns=(.+)$");
             Pattern incRegex = Pattern.compile("^include.directory=(.+)$");
-            List<File> externalFiles = new ArrayList<File>();
+            List<File> externalFiles = new ArrayList<>();
             boolean override = false;
             LineIterator it = FileUtils.lineIterator(jmxTemplateFile);
             while (it.hasNext()) {
@@ -365,7 +365,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      */
     private List<File> getJmxResourceDirectories() throws OnmsUpgradeException {
         if (jmxResourceDirectories == null) {
-            jmxResourceDirectories = new ArrayList<File>();
+            jmxResourceDirectories = new ArrayList<>();
             CollectdConfiguration config;
             try {
                 config = new CollectdConfigFactory().getCollectdConfig();
@@ -374,7 +374,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
             }
             List<String> services = getJmxServices(config);
             log("JMX services found: %s\n", services);
-            List<String> jmxFriendlyNames = new ArrayList<String>();
+            List<String> jmxFriendlyNames = new ArrayList<>();
             for (String service : services) {
                 Service svc = getServiceObject(config, service);
                 if (svc != null) {
@@ -608,7 +608,7 @@ public class JmxRrdMigratorOffline extends AbstractOnmsUpgrade {
      * @return the list of JMX services
      */
     private List<String> getJmxServices(CollectdConfiguration config) {
-        List<String> services = new ArrayList<String>();
+        List<String> services = new ArrayList<>();
         for (Collector c : config.getCollectors()) {
             // The following code has been made that way to avoid a dependency with opennms-services
             // TODO Depends on opennms-services is not that bad, considering that some customers could have different implementations.

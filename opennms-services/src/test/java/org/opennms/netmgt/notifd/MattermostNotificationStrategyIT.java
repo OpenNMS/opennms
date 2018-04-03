@@ -35,8 +35,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +74,7 @@ public class MattermostNotificationStrategyIT {
         try {
 
             final NotificationStrategy ns = new MattermostNotificationStrategy();
-            final List<Argument> arguments = new ArrayList<Argument>();
+            final List<Argument> arguments = new ArrayList<>();
 
             // Set these properties. We will override them with Args on the first run.
             System.setProperty("org.opennms.netmgt.notifd.mattermost.webhookURL", "http://localhost:" + port + "/hooks/abunchofstuffthatidentifiesawebhook");
@@ -99,7 +97,7 @@ public class MattermostNotificationStrategyIT {
             JSONObject inputJson = MattermostNotificationStrategyTestServlet.getInputJson();
             assertNotNull(inputJson);
             assertEquals("opennms", inputJson.get("username"));
-            assertEquals("#### Test\nThis is only a test", inputJson.get("text"));
+            assertEquals("**Test**\nThis is only a test", inputJson.get("text"));
             assertEquals("integrationtests", inputJson.get("channel"));
             assertEquals("http://opennms.org/logo.png", inputJson.get("icon_url"));
             assertEquals(":shipit:", inputJson.get("icon_emoji"));
@@ -116,7 +114,7 @@ public class MattermostNotificationStrategyIT {
             inputJson = MattermostNotificationStrategyTestServlet.getInputJson();
             assertNotNull(inputJson);
             assertEquals("opennmsXX", inputJson.get("username"));
-            assertEquals("#### Test again\nThis is only a second test", inputJson.get("text"));
+            assertEquals("**Test again**\nThis is only a second test", inputJson.get("text"));
             assertEquals("integrationtestsXX", inputJson.get("channel"));
             assertEquals("http://opennms.org/logo.pngXX", inputJson.get("icon_url"));
             assertEquals(":shipitXX:", inputJson.get("icon_emoji"));

@@ -1,825 +1,762 @@
-<!--
-Clarent Command Center Trap Events for OpenNMS
-Created 09-01-2004
-mlwilson@acegroup.cc
-mikew@isphone.net
--->
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9901</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gatewayIsDown</uei>
+      <event-label>CLARENT-MIB defined trap event: gatewayIsDown</event-label>
+      <descr>&lt;p>Clarent Gateway is down&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: gatewayIsDown trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9902</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartGWSuccess</uei>
+      <event-label>CLARENT-MIB defined trap event: restartGWSuccess</event-label>
+      <descr>&lt;p>Clarent Gateway restarted successfully&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartGWSuccess trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9903</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartGWFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: restartGWFailed</event-label>
+      <descr>&lt;p>Clarent Gateway failed to restart&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartGWFailed trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9904</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/ccIsDown</uei>
+      <event-label>CLARENT-MIB defined trap event: ccIsDown</event-label>
+      <descr>&lt;p>Clarent Command Center is down&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: ccIsDown trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9905</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartCCSuccess</uei>
+      <event-label>CLARENT-MIB defined trap event: restartCCSuccess</event-label>
+      <descr>&lt;p>Clarent Command Center restarted successfully&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartCCSuccess trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9906</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartCCFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: restartCCFailed</event-label>
+      <descr>&lt;p>Clarent Command Center failed to restart&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartCCFailed trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9907</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/lostCC</uei>
+      <event-label>CLARENT-MIB defined trap event: lostCC</event-label>
+      <descr>&lt;p>Clarent Gateway lost its connection to the specified Command Center&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-<!-- Start of auto generated data from MIB: CLARENT-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9901</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gatewayIsDown</uei>
-	<event-label>CLARENT-MIB defined trap event: gatewayIsDown</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: gatewayIsDown trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9902</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartGWSuccess</uei>
-	<event-label>CLARENT-MIB defined trap event: restartGWSuccess</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartGWSuccess trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9903</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartGWFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: restartGWFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartGWFailed trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9904</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/ccIsDown</uei>
-	<event-label>CLARENT-MIB defined trap event: ccIsDown</event-label>
-	<descr>
-&lt;p&gt;Clarent Command Center is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: ccIsDown trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9905</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartCCSuccess</uei>
-	<event-label>CLARENT-MIB defined trap event: restartCCSuccess</event-label>
-	<descr>
-&lt;p&gt;Clarent Command Center restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartCCSuccess trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9906</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartCCFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: restartCCFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent Command Center failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartCCFailed trap received&lt;/p&gt;
-		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9907</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/lostCC</uei>
-	<event-label>CLARENT-MIB defined trap event: lostCC</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway lost its connection to the specified Command Center&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
-
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: lostCC trap received 
-			serverIpAddr=%parm[#1]%&lt;/p&gt;
+			serverIpAddr=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9908</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/connectCCFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: connectCCFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway cannot connect to the specified Command Center&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9908</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/connectCCFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: connectCCFailed</event-label>
+      <descr>&lt;p>Clarent Gateway cannot connect to the specified Command Center&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: connectCCFailed trap received 
-			serverIpAddr=%parm[#1]%&lt;/p&gt;
+			serverIpAddr=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9911</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/portOutOfService</uei>
-	<event-label>CLARENT-MIB defined trap event: portOutOfService</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway port is out of service&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9911</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/portOutOfService</uei>
+      <event-label>CLARENT-MIB defined trap event: portOutOfService</event-label>
+      <descr>&lt;p>Clarent Gateway port is out of service&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	portIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	portIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: portOutOfService trap received 
-			portIndex=%parm[#1]%&lt;/p&gt;
+			portIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9912</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/portInService</uei>
-	<event-label>CLARENT-MIB defined trap event: portInService</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway port is back in service&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9912</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/portInService</uei>
+      <event-label>CLARENT-MIB defined trap event: portInService</event-label>
+      <descr>&lt;p>Clarent Gateway port is back in service&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	portIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	portIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: portInService trap received 
-			portIndex=%parm[#1]%&lt;/p&gt;
+			portIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9913</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/dialUpNoVoicePort</uei>
-	<event-label>CLARENT-MIB defined trap event: dialUpNoVoicePort</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway cannot dial number; no voice port is available&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: dialUpNoVoicePort trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9913</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/dialUpNoVoicePort</uei>
+      <event-label>CLARENT-MIB defined trap event: dialUpNoVoicePort</event-label>
+      <descr>&lt;p>Clarent Gateway cannot dial number; no voice port is available&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: dialUpNoVoicePort trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9914</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/connectNoVoicePort</uei>
-	<event-label>CLARENT-MIB defined trap event: connectNoVoicePort</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway cannot connect to another gateway; not responding&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: connectNoVoicePort trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9914</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/connectNoVoicePort</uei>
+      <event-label>CLARENT-MIB defined trap event: connectNoVoicePort</event-label>
+      <descr>&lt;p>Clarent Gateway cannot connect to another gateway; not responding&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: connectNoVoicePort trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9915</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gatewayConnect</uei>
-	<event-label>CLARENT-MIB defined trap event: gatewayConnect</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway, at the specified IP address, connected to Command Center&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9915</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gatewayConnect</uei>
+      <event-label>CLARENT-MIB defined trap event: gatewayConnect</event-label>
+      <descr>&lt;p>Clarent Gateway, at the specified IP address, connected to Command Center&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gatewayConnect trap received 
-			serverIpAddr=%parm[#1]%&lt;/p&gt;
+			serverIpAddr=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9916</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gatewayDisconnect</uei>
-	<event-label>CLARENT-MIB defined trap event: gatewayDisconnect</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway, at the specified IP address, disconnected from Command Center&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9916</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gatewayDisconnect</uei>
+      <event-label>CLARENT-MIB defined trap event: gatewayDisconnect</event-label>
+      <descr>&lt;p>Clarent Gateway, at the specified IP address, disconnected from Command Center&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gatewayDisconnect trap received 
-			serverIpAddr=%parm[#1]%&lt;/p&gt;
+			serverIpAddr=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9917</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gwNotRegistered</uei>
-	<event-label>CLARENT-MIB defined trap event: gwNotRegistered</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway is  not registered&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9917</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gwNotRegistered</uei>
+      <event-label>CLARENT-MIB defined trap event: gwNotRegistered</event-label>
+      <descr>&lt;p>Clarent Gateway is  not registered&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	gwId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	gwId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gwNotRegistered trap received 
-			gwId=%parm[#1]%&lt;/p&gt;
+			gwId=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9918</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/callRatingFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: callRatingFailed</event-label>
-	<descr>
-&lt;p&gt;Call rating failed&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9918</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/callRatingFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: callRatingFailed</event-label>
+      <descr>&lt;p>Call rating failed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: callRatingFailed trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9919</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/invalidCCLicense</uei>
-	<event-label>CLARENT-MIB defined trap event: invalidCCLicense</event-label>
-	<descr>
-&lt;p&gt;Invalid Command Center license&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: invalidCCLicense trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9919</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/invalidCCLicense</uei>
+      <event-label>CLARENT-MIB defined trap event: invalidCCLicense</event-label>
+      <descr>&lt;p>Invalid Command Center license&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: invalidCCLicense trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9920</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/validCCTmpLicense</uei>
-	<event-label>CLARENT-MIB defined trap event: validCCTmpLicense</event-label>
-	<descr>
-&lt;p&gt;Valid temporary Command Center license&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: validCCTmpLicense trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9920</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/validCCTmpLicense</uei>
+      <event-label>CLARENT-MIB defined trap event: validCCTmpLicense</event-label>
+      <descr>&lt;p>Valid temporary Command Center license&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: validCCTmpLicense trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9921</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/ss7LinkUp</uei>
-	<event-label>CLARENT-MIB defined trap event: ss7LinkUp</event-label>
-	<descr>
-&lt;p&gt;SS7 link is up&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: ss7LinkUp trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9921</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/ss7LinkUp</uei>
+      <event-label>CLARENT-MIB defined trap event: ss7LinkUp</event-label>
+      <descr>&lt;p>SS7 link is up&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: ss7LinkUp trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9922</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/ss7LinkDown</uei>
-	<event-label>CLARENT-MIB defined trap event: ss7LinkDown</event-label>
-	<descr>
-&lt;p&gt;SS7 link is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: ss7LinkDown trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9922</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/ss7LinkDown</uei>
+      <event-label>CLARENT-MIB defined trap event: ss7LinkDown</event-label>
+      <descr>&lt;p>SS7 link is down&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: ss7LinkDown trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9927</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gwAppShutdown</uei>
-	<event-label>CLARENT-MIB defined trap event: gwAppShutdown</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway shut down&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9927</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gwAppShutdown</uei>
+      <event-label>CLARENT-MIB defined trap event: gwAppShutdown</event-label>
+      <descr>&lt;p>Clarent Gateway shut down&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gwAppShutdown trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9928</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/resettingDSPBrd</uei>
-	<event-label>CLARENT-MIB defined trap event: resettingDSPBrd</event-label>
-	<descr>
-&lt;p&gt;Resetting DSP board&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9928</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/resettingDSPBrd</uei>
+      <event-label>CLARENT-MIB defined trap event: resettingDSPBrd</event-label>
+      <descr>&lt;p>Resetting DSP board&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: resettingDSPBrd trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9929</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/clrHseCreditSChg</uei>
-	<event-label>CLARENT-MIB defined trap event: clrHseCreditSChg</event-label>
-	<descr>
-&lt;p&gt;Clarent Connect clearinghouse credit status changed&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9929</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/clrHseCreditSChg</uei>
+      <event-label>CLARENT-MIB defined trap event: clrHseCreditSChg</event-label>
+      <descr>&lt;p>Clarent Connect clearinghouse credit status changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: clrHseCreditSChg trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9930</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/ccCreditSChg</uei>
-	<event-label>CLARENT-MIB defined trap event: ccCreditSChg</event-label>
-	<descr>
-&lt;p&gt;Clarent Connect credit status changed&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9930</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/ccCreditSChg</uei>
+      <event-label>CLARENT-MIB defined trap event: ccCreditSChg</event-label>
+      <descr>&lt;p>Clarent Connect credit status changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: ccCreditSChg trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9931</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/validateEGErr</uei>
-	<event-label>CLARENT-MIB defined trap event: validateEGErr</event-label>
-	<descr>
-&lt;p&gt;Clarent Gateway validate egress error&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9931</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/validateEGErr</uei>
+      <event-label>CLARENT-MIB defined trap event: validateEGErr</event-label>
+      <descr>&lt;p>Clarent Gateway validate egress error&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: validateEGErr trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9932</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/licRollBack</uei>
-	<event-label>CLARENT-MIB defined trap event: licRollBack</event-label>
-	<descr>
-&lt;p&gt;Clarent Command Center license key change rolled back&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: licRollBack trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9932</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/licRollBack</uei>
+      <event-label>CLARENT-MIB defined trap event: licRollBack</event-label>
+      <descr>&lt;p>Clarent Command Center license key change rolled back&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: licRollBack trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9933</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/clarentInfo</uei>
-	<event-label>CLARENT-MIB defined trap event: clarentInfo</event-label>
-	<descr>
-&lt;p&gt;Generic Clarent error trap: 
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9933</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/clarentInfo</uei>
+      <event-label>CLARENT-MIB defined trap event: clarentInfo</event-label>
+      <descr>&lt;p>Generic Clarent error trap: 
 Severity:
 	Critical(0), Major(1), Minor(2), Warning(3), or Information(4)
 Class:
 	Configuration(0), Hardware(1), or Software(2)
 Number of trap
 Count of total number of traps per class
-Descriptive text string&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Descriptive text string&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapClass&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		configuration(0)
 		hardware(1)
 		software(2)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: clarentInfo trap received 
 			trapSeverity=%parm[#1]% 
 			trapClass=%parm[#2]% 
 			trapNumber=%parm[#3]% 
 			trapCount=%parm[#4]% 
-			trapText=%parm[#5]%&lt;/p&gt;
+			trapText=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9934</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/softwareUpdate</uei>
-	<event-label>CLARENT-MIB defined trap event: softwareUpdate</event-label>
-	<descr>
-&lt;p&gt;Software update:
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9934</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/softwareUpdate</uei>
+      <event-label>CLARENT-MIB defined trap event: softwareUpdate</event-label>
+      <descr>&lt;p>Software update:
 Name of package
 Package operation: Download(0), Unpack(1), Install(2), Prepare(3), Commit(4), Abort(5), Delete(8)
 Package operation status
-Error count&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Error count&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	packageName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	packageName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	packageOperation&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	packageOperation&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>
 		download(0)
 		unpack(1)
 		install(2)
@@ -828,154 +765,144 @@ Error count&lt;/p&gt;&lt;table&gt;
 		abort(5)
 		load(6)
 		delete(8)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	packageStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	packageStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
 		phaseComplete(0)
 		phaseError(1)
 		phaseStarted(2)
 		phaseNotStarted(3)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	errorCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	errorCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: softwareUpdate trap received 
 			packageName=%parm[#1]% 
 			packageOperation=%parm[#2]% 
 			packageStatus=%parm[#3]% 
-			errorCount=%parm[#4]%&lt;/p&gt;
+			errorCount=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9935</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/numberIntercept</uei>
-	<event-label>CLARENT-MIB defined trap event: numberIntercept</event-label>
-	<descr>
-&lt;p&gt;Call placed to the intercept number&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9935</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/numberIntercept</uei>
+      <event-label>CLARENT-MIB defined trap event: numberIntercept</event-label>
+      <descr>&lt;p>Call placed to the intercept number&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: numberIntercept trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9936</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/tpIsDown</uei>
-	<event-label>CLARENT-MIB defined trap event: tpIsDown</event-label>
-	<descr>
-&lt;p&gt;Clarent ThroughPacket server is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: tpIsDown trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9936</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/tpIsDown</uei>
+      <event-label>CLARENT-MIB defined trap event: tpIsDown</event-label>
+      <descr>&lt;p>Clarent ThroughPacket server is down&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: tpIsDown trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9937</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartTPFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: restartTPFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent ThroughPacket server failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartTPFailed trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9937</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartTPFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: restartTPFailed</event-label>
+      <descr>&lt;p>Clarent ThroughPacket server failed to restart&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartTPFailed trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9938</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/tpRestarted</uei>
-	<event-label>CLARENT-MIB defined trap event: tpRestarted</event-label>
-	<descr>
-&lt;p&gt;Clarent ThroughPacket server restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: tpRestarted trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9938</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/tpRestarted</uei>
+      <event-label>CLARENT-MIB defined trap event: tpRestarted</event-label>
+      <descr>&lt;p>Clarent ThroughPacket server restarted successfully&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: tpRestarted trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9939</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/threshHoldTrap</uei>
-	<event-label>CLARENT-MIB defined trap event: threshHoldTrap</event-label>
-	<descr>
-&lt;p&gt;Clarent ThreshHold Trap, indicates that a particular Threshold
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9939</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/threshHoldTrap</uei>
+      <event-label>CLARENT-MIB defined trap event: threshHoldTrap</event-label>
+      <descr>&lt;p>Clarent ThreshHold Trap, indicates that a particular Threshold
 has been exceeded or rearmed by the named Application. This trap contains
 1) The Severity of the Threshold (Critical, Major, Minor, Warning, Information)
 2) the name of the Application (e.g. ThroughPacket)
@@ -984,891 +911,845 @@ has been exceeded or rearmed by the named Application. This trap contains
 5) the current value of the variable being sampled. ( e.g. BytesPerSecond 355043 )
 6) the Action, Exceeded or Rearmed. Thresholds are rearmed when the moving
    average of the variable being measured is at 75% of the ThreshHold.
-&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapAppName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapAppName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	threshHoldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	threshHoldName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	threshHoldValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	threshHoldValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	currentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	currentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	threshHoldAction&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	threshHoldAction&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
 		exceeded(0)
 		rearmed(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: threshHoldTrap trap received 
 			trapSeverity=%parm[#1]% 
 			trapAppName=%parm[#2]% 
 			threshHoldName=%parm[#3]% 
 			threshHoldValue=%parm[#4]% 
 			currentValue=%parm[#5]% 
-			threshHoldAction=%parm[#6]%&lt;/p&gt;
+			threshHoldAction=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9940</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/systemReboot</uei>
-	<event-label>CLARENT-MIB defined trap event: systemReboot</event-label>
-	<descr>
-&lt;p&gt;The system is rebooting in response to a startShutdown command&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9940</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/systemReboot</uei>
+      <event-label>CLARENT-MIB defined trap event: systemReboot</event-label>
+      <descr>&lt;p>The system is rebooting in response to a startShutdown command&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: systemReboot trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9941</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/rebootCommand</uei>
-	<event-label>CLARENT-MIB defined trap event: rebootCommand</event-label>
-	<descr>
-&lt;p&gt;The system has been enabled to receive a startShutdown command&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9941</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/rebootCommand</uei>
+      <event-label>CLARENT-MIB defined trap event: rebootCommand</event-label>
+      <descr>&lt;p>The system has been enabled to receive a startShutdown command&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: rebootCommand trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9942</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/cDiskSpaceLow</uei>
-	<event-label>CLARENT-MIB defined trap event: cDiskSpaceLow</event-label>
-	<descr>
-&lt;p&gt;Drive has less than 50MB of free space available. This trap is issued on an hourly basis
-if the condition persists.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9942</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/cDiskSpaceLow</uei>
+      <event-label>CLARENT-MIB defined trap event: cDiskSpaceLow</event-label>
+      <descr>&lt;p>Drive has less than 50MB of free space available. This trap is issued on an hourly basis
+if the condition persists.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: cDiskSpaceLow trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9943</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/cNoConnectRoute</uei>
-	<event-label>CLARENT-MIB defined trap event: cNoConnectRoute</event-label>
-	<descr>
-&lt;p&gt;Clarent Connect partner does not have a route for this call. This trap is issued
-no more than once every 5 minutes.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9943</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/cNoConnectRoute</uei>
+      <event-label>CLARENT-MIB defined trap event: cNoConnectRoute</event-label>
+      <descr>&lt;p>Clarent Connect partner does not have a route for this call. This trap is issued
+no more than once every 5 minutes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: cNoConnectRoute trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9944</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/dbError</uei>
-	<event-label>CLARENT-MIB defined trap event: dbError</event-label>
-	<descr>
-&lt;p&gt;Clarent DB error trap contains the following information
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9944</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/dbError</uei>
+      <event-label>CLARENT-MIB defined trap event: dbError</event-label>
+      <descr>&lt;p>Clarent DB error trap contains the following information
 Severity:
 	Critical(0), Major(1), Minor(2), Warning(3), or Information(4)
 Database error number 
 Descriptive error text string
-Count of total number of database error traps sent since machine power up&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Count of total number of database error traps sent since machine power up&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: dbError trap received 
 			trapSeverity=%parm[#1]% 
 			trapNumber=%parm[#2]% 
 			trapText=%parm[#3]% 
-			trapCount=%parm[#4]%&lt;/p&gt;
+			trapCount=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9945</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/dbClerkStarted</uei>
-	<event-label>CLARENT-MIB defined trap event: dbClerkStarted</event-label>
-	<descr>
-&lt;p&gt;A new database clerk was started. The value of trapNumber represents the total number of 
-clerks running.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9945</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/dbClerkStarted</uei>
+      <event-label>CLARENT-MIB defined trap event: dbClerkStarted</event-label>
+      <descr>&lt;p>A new database clerk was started. The value of trapNumber represents the total number of 
+clerks running.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: dbClerkStarted trap received 
-			trapNumber=%parm[#1]%&lt;/p&gt;
+			trapNumber=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9946</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/restartDMFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: restartDMFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent Distribution Service failed to restart&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: restartDMFailed trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9946</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/restartDMFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: restartDMFailed</event-label>
+      <descr>&lt;p>Clarent Distribution Service failed to restart&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: restartDMFailed trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9947</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/dmRestarted</uei>
-	<event-label>CLARENT-MIB defined trap event: dmRestarted</event-label>
-	<descr>
-&lt;p&gt;Clarent Distribution Service restarted successfully&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: dmRestarted trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9947</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/dmRestarted</uei>
+      <event-label>CLARENT-MIB defined trap event: dmRestarted</event-label>
+      <descr>&lt;p>Clarent Distribution Service restarted successfully&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: dmRestarted trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9948</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/dmIsDown</uei>
-	<event-label>CLARENT-MIB defined trap event: dmIsDown</event-label>
-	<descr>
-&lt;p&gt;Clarent Distribution Service is down&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			Clarent Event: dmIsDown trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9948</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/dmIsDown</uei>
+      <event-label>CLARENT-MIB defined trap event: dmIsDown</event-label>
+      <descr>&lt;p>Clarent Distribution Service is down&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Clarent Event: dmIsDown trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9949</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/sigGWMTPPause</uei>
-	<event-label>CLARENT-MIB defined trap event: sigGWMTPPause</event-label>
-	<descr>
-&lt;p&gt;The Message Transfer Protocol paused&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9949</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/sigGWMTPPause</uei>
+      <event-label>CLARENT-MIB defined trap event: sigGWMTPPause</event-label>
+      <descr>&lt;p>The Message Transfer Protocol paused&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: sigGWMTPPause trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9950</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/sigGWMTPResume</uei>
-	<event-label>CLARENT-MIB defined trap event: sigGWMTPResume</event-label>
-	<descr>
-&lt;p&gt;The Message Transfer Protocol resumed&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9950</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/sigGWMTPResume</uei>
+      <event-label>CLARENT-MIB defined trap event: sigGWMTPResume</event-label>
+      <descr>&lt;p>The Message Transfer Protocol resumed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: sigGWMTPResume trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9951</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/sigGWTaskActive</uei>
-	<event-label>CLARENT-MIB defined trap event: sigGWTaskActive</event-label>
-	<descr>
-&lt;p&gt;A signaling task started&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9951</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/sigGWTaskActive</uei>
+      <event-label>CLARENT-MIB defined trap event: sigGWTaskActive</event-label>
+      <descr>&lt;p>A signaling task started&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: sigGWTaskActive trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.4</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9952</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/pinSuspended</uei>
-	<event-label>CLARENT-MIB defined trap event: pinSuspended</event-label>
-	<descr>
-&lt;p&gt;An account was suspended&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9952</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/pinSuspended</uei>
+      <event-label>CLARENT-MIB defined trap event: pinSuspended</event-label>
+      <descr>&lt;p>An account was suspended&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: pinSuspended trap received 
-			trapText=%parm[#1]%&lt;/p&gt;
+			trapText=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkIsDown</uei>
-	<event-label>CLARENT-MIB defined trap event: gkIsDown</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper is down&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkIsDown</uei>
+      <event-label>CLARENT-MIB defined trap event: gkIsDown</event-label>
+      <descr>&lt;p>Clarent Gatekeeper is down&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkIsDown trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkRestartFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: gkRestartFailed</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper failed to restart&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkRestartFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: gkRestartFailed</event-label>
+      <descr>&lt;p>Clarent Gatekeeper failed to restart&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkRestartFailed trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkRestarted</uei>
-	<event-label>CLARENT-MIB defined trap event: gkRestarted</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper restarted successfully&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkRestarted</uei>
+      <event-label>CLARENT-MIB defined trap event: gkRestarted</event-label>
+      <descr>&lt;p>Clarent Gatekeeper restarted successfully&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkRestarted trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkNotRegistered</uei>
-	<event-label>CLARENT-MIB defined trap event: gkNotRegistered</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper cannot register with the Command Center&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkNotRegistered</uei>
+      <event-label>CLARENT-MIB defined trap event: gkNotRegistered</event-label>
+      <descr>&lt;p>Clarent Gatekeeper cannot register with the Command Center&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkNotRegistered trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkOpStateChg</uei>
-	<event-label>CLARENT-MIB defined trap event: gkOpStateChg</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper changed operational state. Operational states are: 
-disabled (0), enabled (1).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkOpStateChg</uei>
+      <event-label>CLARENT-MIB defined trap event: gkOpStateChg</event-label>
+      <descr>&lt;p>Clarent Gatekeeper changed operational state. Operational states are: 
+disabled (0), enabled (1).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	gkOpState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	gkOpState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
 		disabled(0)
 		enabled(1)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkOpStateChg trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
 			gkOpState=%parm[#3]% 
-			trapCount=%parm[#4]%&lt;/p&gt;
+			trapCount=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkLoadStateCritical</uei>
-	<event-label>CLARENT-MIB defined trap event: gkLoadStateCritical</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper load state is critical. Load states are: 
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkLoadStateCritical</uei>
+      <event-label>CLARENT-MIB defined trap event: gkLoadStateCritical</event-label>
+      <descr>&lt;p>Clarent Gatekeeper load state is critical. Load states are: 
 Minimal (0), Light (1), Medium (2), Heavy (3), 
-Dangerously Heavy (4), and Critical (5).&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+Dangerously Heavy (4), and Critical (5).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkLoadStateCritical trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkIsRejectingRasMsg</uei>
-	<event-label>CLARENT-MIB defined trap event: gkIsRejectingRasMsg</event-label>
-	<descr>
-&lt;p&gt;Clarent Gatekeeper started rejecting H.225 RAS messages.
-Clarent::For Future Release&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkIsRejectingRasMsg</uei>
+      <event-label>CLARENT-MIB defined trap event: gkIsRejectingRasMsg</event-label>
+      <descr>&lt;p>Clarent Gatekeeper started rejecting H.225 RAS messages.
+Clarent::For Future Release&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkIsRejectingRasMsg trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
-			trapCount=%parm[#3]%&lt;/p&gt;
+			trapCount=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkEndpointUnreachable</uei>
-	<event-label>CLARENT-MIB defined trap event: gkEndpointUnreachable</event-label>
-	<descr>
-&lt;p&gt;Endpoint stopped sending keepalive messages to Clarent Gatekeeper&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkEndpointUnreachable</uei>
+      <event-label>CLARENT-MIB defined trap event: gkEndpointUnreachable</event-label>
+      <descr>&lt;p>Endpoint stopped sending keepalive messages to Clarent Gatekeeper&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkEndpointUnreachable trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
 			serverIpAddr=%parm[#3]% 
-			trapCount=%parm[#4]%&lt;/p&gt;
+			trapCount=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/Clarent/traps/gkEndPointURQFailed</uei>
-	<event-label>CLARENT-MIB defined trap event: gkEndPointURQFailed</event-label>
-	<descr>
-&lt;p&gt;Endpoint attempted to unregister but has active calls&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2858.100.20.100</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Clarent/traps/gkEndPointURQFailed</uei>
+      <event-label>CLARENT-MIB defined trap event: gkEndPointURQFailed</event-label>
+      <descr>&lt;p>Endpoint attempted to unregister but has active calls&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+	trapSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>
 		critical(0)
 		major(1)
 		minor(2)
 		warning(3)
 		information(4)
-	&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapText&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	trapText&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	serverIpAddr&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	serverIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	trapCount&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	trapCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			Clarent Event: gkEndPointURQFailed trap received 
 			trapSeverity=%parm[#1]% 
 			trapText=%parm[#2]% 
 			serverIpAddr=%parm[#3]% 
-			trapCount=%parm[#4]%&lt;/p&gt;
+			trapCount=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: CLARENT-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

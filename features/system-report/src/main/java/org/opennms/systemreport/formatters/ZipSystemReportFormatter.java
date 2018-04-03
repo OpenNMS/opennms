@@ -51,7 +51,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
     private static final Logger LOG = LoggerFactory.getLogger(ZipSystemReportFormatter.class);
     private File m_tempFile;
     private ZipOutputStream m_zipOutputStream;
-    private Set<String> m_directories = new HashSet<String>();
+    private Set<String> m_directories = new HashSet<>();
 
     public ZipSystemReportFormatter() {
         super();

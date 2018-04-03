@@ -73,7 +73,7 @@ public class Nbisinglenode implements java.io.Serializable {
     private java.util.List<InventoryElement2RP> inventoryElement2RPList;
 
     public Nbisinglenode() {
-        this.inventoryElement2RPList = new java.util.ArrayList<InventoryElement2RP>();
+        this.inventoryElement2RPList = new java.util.ArrayList<>();
     }
 
     /**

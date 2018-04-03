@@ -30,8 +30,6 @@ package org.opennms.netmgt.alarmd.api.support;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -421,7 +419,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
         public EventParms () {
             super();
         }
-        private List<OnmsEventParameter> m_eventParm = new ArrayList<OnmsEventParameter>();
+        private List<OnmsEventParameter> m_eventParm = new ArrayList<>();
         
         public EventParms(List<OnmsEventParameter> eventParm) {
             this.m_eventParm = eventParm;

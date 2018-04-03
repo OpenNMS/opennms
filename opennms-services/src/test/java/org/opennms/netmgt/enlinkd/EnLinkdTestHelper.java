@@ -255,13 +255,13 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementC = new BridgeElement();
         BridgeElement elementD = new BridgeElement();
         BridgeElement elementE = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftC = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftD = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftE = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
+        List<BridgeMacLink> bftC = new ArrayList<>();
+        List<BridgeMacLink> bftD = new ArrayList<>();
+        List<BridgeMacLink> bftE = new ArrayList<>();
 
         String[] macsonAport4= {
                 "00a2ee425191"
@@ -744,11 +744,11 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementB = new BridgeElement();
         BridgeElement elementC = new BridgeElement();
 
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftC = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
+        List<BridgeMacLink> bftC = new ArrayList<>();
 
 
         Integer portA = 1;
@@ -1176,15 +1176,15 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementI = new BridgeElement();
         BridgeElement elementL = new BridgeElement();
 
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
-        List<BridgeMacLink> bftD = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftE = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftF = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftG = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftH = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftI = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftL = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftD = new ArrayList<>();
+        List<BridgeMacLink> bftE = new ArrayList<>();
+        List<BridgeMacLink> bftF = new ArrayList<>();
+        List<BridgeMacLink> bftG = new ArrayList<>();
+        List<BridgeMacLink> bftH = new ArrayList<>();
+        List<BridgeMacLink> bftI = new ArrayList<>();
+        List<BridgeMacLink> bftL = new ArrayList<>();
 
         /*
          *         -----------------     -----------------
@@ -1925,9 +1925,9 @@ public abstract class EnLinkdTestHelper {
         
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         public TwoNodeTopology() {
             nodeA.setId(nodeAId);
@@ -2103,8 +2103,8 @@ public abstract class EnLinkdTestHelper {
 
         OnmsNode nodeA= new OnmsNode();
         BridgeElement element = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
         
         public OneBridgeOnePortOneMacTopology() {
             nodeA.setId(nodeAId);
@@ -2154,8 +2154,8 @@ public abstract class EnLinkdTestHelper {
         Integer nodeAId  = 20;
         OnmsNode nodeA= new OnmsNode();
         BridgeElement element = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
 
         Integer portA1 = 1;
 
@@ -2237,8 +2237,8 @@ public abstract class EnLinkdTestHelper {
         Integer nodeAId = 30;
         OnmsNode nodeA= new OnmsNode();
         BridgeElement element = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
 
         public OneBridgeCompleteTopology() {
             nodeA.setId(nodeAId);
@@ -2352,11 +2352,11 @@ public abstract class EnLinkdTestHelper {
         Integer nodeBId = 2222;
         OnmsNode nodeA= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementB = new BridgeElement();
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
 
         public TwoConnectedBridgeTopology() {
             nodeA.setId(nodeAId);
@@ -2456,7 +2456,7 @@ public abstract class EnLinkdTestHelper {
     }
     
     class TwoMergeBridgeTopology {
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
 
         Integer portA8 = 8;
         Integer portAB = 16;
@@ -2476,8 +2476,8 @@ public abstract class EnLinkdTestHelper {
         Integer nodeBId  = 2222;
         OnmsNode nodeA= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
+        List<BridgeElement> elemlist = new ArrayList<>();
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementB = new BridgeElement();
 
@@ -2604,11 +2604,11 @@ public abstract class EnLinkdTestHelper {
 
         OnmsNode nodeA= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementB = new BridgeElement();
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
 
         public TwoBridgeWithBackbonePortsTopology() {
 
@@ -2742,11 +2742,11 @@ public abstract class EnLinkdTestHelper {
         String macB   = "bbbbbbbbbbbb"; // portAB
         OnmsNode nodeA= new OnmsNode();
         BridgeElement elementA = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-        List<BridgeMacLink> bftA = new ArrayList<BridgeMacLink>();
+        List<BridgeElement> elemlist = new ArrayList<>();
+        List<BridgeMacLink> bftA = new ArrayList<>();
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementB = new BridgeElement();
-        List<BridgeMacLink> bftB = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bftB = new ArrayList<>();
 
         public TwoBridgeWithBackbonePortsTopologyWithBridgeinBft() {
             nodeA.setId(nodeAId);

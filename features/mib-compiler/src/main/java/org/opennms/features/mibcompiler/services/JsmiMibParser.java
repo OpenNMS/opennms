@@ -106,7 +106,7 @@ public class JsmiMibParser implements MibParser, Serializable {
     private OnmsProblemEventHandler errorHandler;
 
     /** The missing dependencies. */
-    private List<String> missingDependencies = new ArrayList<String>();
+    private List<String> missingDependencies = new ArrayList<>();
 
     /**
      * Instantiates a new JLIBSMI MIB parser.
@@ -139,7 +139,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         missingDependencies.clear();
 
         // Set UP the MIB Queue MIB to be parsed
-        List<URL> queue = new ArrayList<URL>();
+        List<URL> queue = new ArrayList<>();
         parser.getFileParserPhase().setInputUrls(queue);
 
         // Create a cache of filenames to do case-insensitive lookups
@@ -282,7 +282,7 @@ public class JsmiMibParser implements MibParser, Serializable {
             return null;
         }
         final String color = System.getProperty("org.opennms.snmp.mib-compiler.default-graph-template.color", "#00ccff");
-        List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
+        List<PrefabGraph> graphs = new ArrayList<>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
         try {
@@ -603,10 +603,12 @@ public class JsmiMibParser implements MibParser, Serializable {
      */
     protected String getTrapEventDescr(Notification trap) {
         String description = trap.getDescription();
+        if (description == null) {
+            LOG.warn("The trap {} doesn't have a description field", trap.getOidStr());
+        }
         // FIXME There a lot of detail here (like removing the last \n) that can go away when we don't need to match mib2opennms exactly
-        final String descrStartingNewlines = description.replaceAll("^", "\n<p>");
-        final String descrEndingNewlines = descrStartingNewlines.replaceAll("$", "</p>\n");
-        final StringBuilder dbuf = new StringBuilder(descrEndingNewlines);
+        final String descrEndingNewlines = description == null ? "No Description." : description.replaceAll("^", "\n<p>").replaceAll("$", "</p>\n");
+        final StringBuffer dbuf = new StringBuffer(descrEndingNewlines);
         if (dbuf.charAt(dbuf.length() - 1) == '\n') {
             dbuf.deleteCharAt(dbuf.length() - 1); // delete the \n at the end
         }

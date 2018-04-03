@@ -32,7 +32,6 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetri
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -198,7 +197,7 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
         try {
             stringAttributes.get().entrySet().stream()
                 .map(e -> new StringPropertyAttribute(e.getKey(), e.getValue()))
-                .forEach(attr -> attributes.add(attr));
+                .forEach(attributes::add);
         } catch (InterruptedException|ExecutionException e) {
             throw Throwables.propagate(e);
         }

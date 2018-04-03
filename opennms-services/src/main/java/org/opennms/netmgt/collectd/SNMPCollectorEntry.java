@@ -86,7 +86,7 @@ public final class SNMPCollectorEntry extends AbstractSnmpStore {
 
 
     private List<SnmpAttributeType> findAttributeTypeForOid(SnmpObjId base, SnmpInstId inst) {
-        List<SnmpAttributeType> matching = new LinkedList<SnmpAttributeType>();
+        List<SnmpAttributeType> matching = new LinkedList<>();
         for (SnmpAttributeType attrType : m_attrList) {
             if (attrType.matches(base, inst)) {
                 matching.add(attrType);

@@ -48,7 +48,7 @@ public class MultilineOrientedResponse {
     private static final Logger LOG = LoggerFactory.getLogger(MultilineOrientedResponse.class);
     private BufferedReader m_in;
     
-    private List<String> m_responseList = new ArrayList<String>();
+    private List<String> m_responseList = new ArrayList<>();
     
     /**
      * <p>Constructor for MultilineOrientedResponse.</p>

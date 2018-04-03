@@ -95,7 +95,7 @@ public class NotificationInfo implements Cloneable {
         m_numericalPin = "";
         m_textService = "";
         m_textPin = "";
-        m_dutySchedules = new ArrayList<DutySchedule>();
+        m_dutySchedules = new ArrayList<>();
     }
 
     /**

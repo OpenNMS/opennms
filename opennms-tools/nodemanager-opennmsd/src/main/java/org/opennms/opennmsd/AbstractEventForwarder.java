@@ -40,7 +40,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public abstract class AbstractEventForwarder implements EventForwarder, Runnable {
     
-    BlockingQueue<NNMEvent> m_queue = new LinkedBlockingQueue<NNMEvent>();
+    BlockingQueue<NNMEvent> m_queue = new LinkedBlockingQueue<>();
     Thread m_thread;
     
     public AbstractEventForwarder() {
@@ -76,7 +76,7 @@ public abstract class AbstractEventForwarder implements EventForwarder, Runnable
             while(true) {
                 NNMEvent event = (NNMEvent)m_queue.take();
                 
-                List<NNMEvent> events = new LinkedList<NNMEvent>();
+                List<NNMEvent> events = new LinkedList<>();
                 events.add(event);
             
                 m_queue.drainTo(events);

@@ -30,22 +30,24 @@ package org.opennms.netmgt.provision.detector.command;
 
 import java.util.List;
 
-import org.apache.karaf.shell.console.Completer;
-import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 
+@Service
 public class ServiceNameCompleter implements Completer {
 
+    @Reference
     private ServiceDetectorRegistry serviceDetectorRegistry;
 
     @Override
-    public int complete(String buffer, int cursor, List<String> candidates) {
+    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
         StringsCompleter serviceNames = new StringsCompleter();
         serviceNames.getStrings().addAll(serviceDetectorRegistry.getServiceNames());
-        return serviceNames.complete(buffer, cursor, candidates);
-    }
-
-    public void setServiceDetectorRegistry(ServiceDetectorRegistry serviceDetectorRegistry) {
-        this.serviceDetectorRegistry = serviceDetectorRegistry;
+        return serviceNames.complete(session, commandLine, candidates);
     }
 }

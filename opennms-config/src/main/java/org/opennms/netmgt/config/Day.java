@@ -126,7 +126,7 @@ public class Day {
      */
     public CalendarEntry[] getEntries() {
         try {
-            List<CalendarEntry> entries = new ArrayList<CalendarEntry>();
+            List<CalendarEntry> entries = new ArrayList<>();
             
             OwnedIntervalSequence schedEntries = m_groupManager.getRoleScheduleEntries(m_role.getName(), getTime(0,0), getTime(24,0));
             

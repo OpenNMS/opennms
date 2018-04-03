@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.snmp.snmp4j;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CountDownLatch;
@@ -97,24 +98,34 @@ public class Snmp4JUtils {
 		dispatcher.addMessageProcessingModel(new MPv1());
 		dispatcher.addMessageProcessingModel(new MPv2c());
 
-		Snmp snmp = new Snmp(dispatcher, responder);
+		final Snmp snmp = new Snmp(dispatcher, responder);
+		Snmp4JStrategy.trackSession(snmp);
+		try {
+			snmp.listen();
 
-		snmp.listen();
+			CommunityTarget target = new CommunityTarget();
+			target.setCommunity(new OctetString(community));
+			if (pdu instanceof PDUv1) {
+				target.setVersion(SnmpConstants.version1);
+			} else {
+				target.setVersion(SnmpConstants.version2c);
+			}
+			target.setAddress(Snmp4JAgentConfig.convertAddress(address, port));
 
-		CommunityTarget target = new CommunityTarget();
-		target.setCommunity(new OctetString(community));
-		if (pdu instanceof PDUv1) {
-			target.setVersion(SnmpConstants.version1);
-		} else {
-			target.setVersion(SnmpConstants.version2c);
+			snmp.send(pdu, target, transport);
+
+			latch.await();
+
+			return bytes.get();
+		} finally {
+		    try {
+			snmp.close();
+		    } catch (final IOException e) {
+		        LOG.error("failed to close SNMP session", e);
+		    } finally {
+		        Snmp4JStrategy.reapSession(snmp);
+		    }
 		}
-		target.setAddress(Snmp4JAgentConfig.convertAddress(address, port));
-
-		snmp.send(pdu, target, transport);
-
-		latch.await();
-
-		return bytes.get();
 	}
 
 }

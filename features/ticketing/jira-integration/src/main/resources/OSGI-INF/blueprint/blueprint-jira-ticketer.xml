@@ -1,17 +1,17 @@
 <blueprint
  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
- xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+ xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+ xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
  xsi:schemaLocation="
   http://www.osgi.org/xmlns/blueprint/v1.0.0
-  http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+  https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
   
-  http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-  http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+  http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+  http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
   
-  http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-  http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+  http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+  http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
   <bean id="jiraTicketerPlugin" class="org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin" />
@@ -21,29 +21,29 @@
     </service-properties>
   </service>
 
-  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-    <command name="jira/list-components">
+  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ListComponentsCommand"/>
     </command>
-    <command name="jira/list-issue-types">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
-    </command>
-    <command name="jira/list-priorities">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
-    </command>
-    <command name="jira/list-projects">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
-    </command>
-    <command name="jira/list-versions">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
-    </command>
-    <command name="jira/list-fields">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ListFieldsCommand"/>
     </command>
-    <command name="jira/show-config">
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
+    </command>
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ShowConfigCommand"/>
     </command>
-    <command name="jira/verify">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.VerifyCommand"/>
     </command>
   </command-bundle>

@@ -27,14 +27,15 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.ui.dashboard;
 
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.vaadin.data.Property;
-import com.vaadin.server.Page;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.NativeSelect;
-import com.vaadin.ui.VerticalLayout;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.GregorianCalendar;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
@@ -46,15 +47,14 @@ import org.opennms.netmgt.model.ResourceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.vaadin.data.Property;
+import com.vaadin.server.Page;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.NativeSelect;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This component is used to display the available graphs for a surveillance view dashboard.
@@ -385,6 +385,6 @@ public class SurveillanceViewGraphComponent extends VerticalLayout implements Su
                     LOG.error("Exception in task", e.getCause());
                 }
             }
-        }, MoreExecutors.sameThreadExecutor());
+        }, MoreExecutors.directExecutor());
     }
 }

@@ -183,6 +183,15 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
     
+
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
+    
   <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeStpLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -462,8 +471,10 @@
       </bean>
     </property>
   </bean>
-  
+ 
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+  
+  <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/> 
 
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -480,12 +491,11 @@
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
 
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
-
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
-  </bean>
-
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
+
+  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory" />
+
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" ref="collectionAgentFactory" />
 
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory

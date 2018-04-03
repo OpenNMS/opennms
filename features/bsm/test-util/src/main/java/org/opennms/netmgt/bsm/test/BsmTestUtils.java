@@ -134,9 +134,9 @@ public class BsmTestUtils {
         response.setOperationalStatus(Status.INDETERMINATE); // we assume INDETERMINATE
         response.setAttributes(input.getAttributes());
         response.setLocation(ResourceLocationFactory.createBusinessServiceLocation(input.getId().toString()));
-        response.setReductionKeys(input.getReductionKeyEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
-        response.setIpServices(input.getIpServiceEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
-        response.setChildren(input.getChildEdges().stream().map(it -> toResponseDTO(it)).collect(Collectors.toList()));
+        response.setReductionKeys(input.getReductionKeyEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
+        response.setIpServices(input.getIpServiceEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
+        response.setChildren(input.getChildEdges().stream().map(BsmTestUtils::toResponseDTO).collect(Collectors.toList()));
         response.setParentServices(Sets.newHashSet()); // do not know that here
         return response;
     }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Leaflet debug page</title>
+
+
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../css/screen.css" />
+
+	<script type="text/javascript" src="../../build/deps.js"></script>
+	<script src="../leaflet-include.js"></script>
+</head>
+<body>
+
+	<p>Test for propagation of events to interactive and non-interactive layers, #3937</p>
+
+	<div id="map"></div>
+
+	<script type="text/javascript">
+
+		var somewhere = L.latLng([51.505, -0.09]);
+		var somewhere2 = L.latLng([51.503, -0.08]);
+		var map = new L.Map('map', {center: somewhere, zoom: 15});
+
+		var positron = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+			attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'
+		}).addTo(map);
+
+		var logo = L.imageOverlay(
+			'http://leafletjs.com/docs/images/logo.png',
+			L.latLngBounds(somewhere, somewhere2),
+			{
+				opacity: 0.8,
+				interactive: true
+			}
+		).addTo(map);
+
+		var circle = L.circle(somewhere, {
+			radius: 1000,
+			renderer: canvas,
+// 			fillColor: 'blue',
+// 			color: 'blue',
+			interactive: false
+		})
+// 		.addTo(map);
+		var marker = L.marker(somewhere, {
+// 			interactive: false
+		}).addTo(map);
+
+
+		var canvas = L.canvas();
+		var circle2 = L.circle(somewhere2, {
+			radius: 500,
+			renderer: canvas,
+			fillColor: 'red',
+			color: 'red',
+// 			interactive: false
+		})
+// 		.addTo(map);
+
+
+		map.toString = function(){ return "map"; };
+		circle.toString = function(){ return "circle"; };
+		circle2.toString = function(){ return "circle2"; };
+		logo.toString = function(){ return "logo"; };
+
+		function logEvent(ev) {
+			console.log(ev.type + ' fired on ' + ev.target, performance.now());
+		}
+
+		map.on('click', logEvent);
+		circle.on('click', logEvent);
+		circle2.on('click', logEvent);
+		logo.on('click', logEvent);
+
+
+		L.control.layers({},{
+			marker: marker,
+			svgCcircle: circle,
+			canvasCircle: circle2,
+			logo: logo
+		}).addTo(map);
+
+	</script>
+</body>
+</html>

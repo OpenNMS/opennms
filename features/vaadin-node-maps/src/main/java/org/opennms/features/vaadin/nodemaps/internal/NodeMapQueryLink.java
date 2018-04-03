@@ -62,7 +62,7 @@ public class NodeMapQueryLink implements Operation {
         sb.append(VaadinServlet.getCurrent().getServletContext().getContextPath());
         sb.append("/node-maps#search/nodeId%20in%20");
 
-        final List<String> nodeIds = new ArrayList<String>();
+        final List<String> nodeIds = new ArrayList<>();
         for (final VertexRef ref : targets) {
             if (availableNodes.contains(ref)) {
                 nodeIds.add(ref.getId());

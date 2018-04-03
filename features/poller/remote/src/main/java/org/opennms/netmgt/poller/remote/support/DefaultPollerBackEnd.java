@@ -160,7 +160,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             if (pollerConfigurations == null || pollerConfigurations.length < 1) {
                 return new PolledService[0];
             }
-            Set<PolledService> retval = new TreeSet<PolledService>();
+            Set<PolledService> retval = new TreeSet<>();
             for (SimplePollerConfiguration config : pollerConfigurations) {
                 PolledService[] services = config.getPolledServices();
                 retval.addAll(Arrays.asList(services == null ? new PolledService[0] : services));
@@ -197,7 +197,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
 
     private long m_minimumConfigurationReloadInterval;
 
-    private final AtomicReference<Date> m_configurationTimestamp = new AtomicReference<Date>();
+    private final AtomicReference<Date> m_configurationTimestamp = new AtomicReference<>();
     private final AtomicReference<ConcurrentHashMap<String, SimplePollerConfiguration>> m_configCache = new AtomicReference<ConcurrentHashMap<String,SimplePollerConfiguration>>();
 
     /**
@@ -383,7 +383,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
             List<String> pollingPackageNames = getPackageNameForLocation(location);
             LOG.debug("Location {} has polling packages: {}", location, pollingPackageNames);
 
-            List<SimplePollerConfiguration> addMe = new ArrayList<SimplePollerConfiguration>();
+            List<SimplePollerConfiguration> addMe = new ArrayList<>();
             for (String pollingPackageName : pollingPackageNames) {
                 ConcurrentHashMap<String, SimplePollerConfiguration> cache = m_configCache.get();
                 SimplePollerConfiguration pollerConfiguration = cache.get(pollingPackageName);
@@ -486,7 +486,7 @@ public class DefaultPollerBackEnd implements PollerBackEnd, SpringServiceDaemon 
     @Override
     public Collection<ServiceMonitorLocator> getServiceMonitorLocators(final DistributionContext context) {
         try {
-            final List<ServiceMonitorLocator> locators = new ArrayList<ServiceMonitorLocator>();
+            final List<ServiceMonitorLocator> locators = new ArrayList<>();
             final List<String> ex = Arrays.asList(System.getProperty("excludeServiceMonitorsFromRemotePoller", "").trim().split("\\s*,\\s*"));
 
             for (final ServiceMonitorLocator locator : m_pollerConfig.getServiceMonitorLocators(context)) {

@@ -28,20 +28,27 @@
 
 package org.opennms.netmgt.collectd;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Test;
 import org.opennms.core.test.MockPlatformTransactionManager;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.core.DefaultCollectionAgent;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.springframework.transaction.PlatformTransactionManager;
-
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
-
-import org.easymock.EasyMock;
 
 public class DefaultCollectionAgentTest {
 
@@ -71,7 +78,7 @@ public class DefaultCollectionAgentTest {
         when(ipIface.getNode().getLocation().getLocationName()).thenReturn("Ocracoke");
 
         // Retrieve the agent configuration
-        SnmpCollectionAgent agent = DefaultCollectionAgent.create(ifaceId, ifaceDao, transMgr);
+        SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(ifaceId, ifaceDao, transMgr);
         agent.getAgentConfig();
 
         // Verify
@@ -104,7 +111,7 @@ public class DefaultCollectionAgentTest {
 
         PlatformTransactionManager transMgr = new MockPlatformTransactionManager();
 
-        SnmpCollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+        CollectionAgent agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
 
         EasyMock.verify(ifaceDao);
 

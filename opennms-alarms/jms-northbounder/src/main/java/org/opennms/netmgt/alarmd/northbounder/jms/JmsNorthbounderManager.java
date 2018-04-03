@@ -109,7 +109,7 @@ public class JmsNorthbounderManager implements InitializingBean, Northbounder, D
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
     }
 
     /* (non-Javadoc)
@@ -118,6 +118,11 @@ public class JmsNorthbounderManager implements InitializingBean, Northbounder, D
     @Override
     public void start() throws NorthbounderException {
         // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
     }
 
     /* (non-Javadoc)
@@ -148,14 +153,14 @@ public class JmsNorthbounderManager implements InitializingBean, Northbounder, D
      * @see org.opennms.netmgt.alarmd.api.Northbounder#reloadConfig()
      */
     @Override
-    public void reloadConfig() {
+    public void reloadConfig() throws NorthbounderException {
         LOG.info("Reloading JMS northbound configuration.");
         try {
             m_configDao.reload();
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
             registerNorthnounders();
         } catch (Exception e) {
-            LOG.error("Can't reload the JMS northbound configuration", e);
+            throw new NorthbounderException("Can't reload the JMS northbound configuration", e);
         }
     }
 

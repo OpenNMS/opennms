@@ -8,7 +8,7 @@
 :numbered:
 
 = Developers Guide
-:author: Copyright (c) 2015-2017 The OpenNMS Group, Inc.
+:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
 :revnumber: {opennms-product-name} {opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
@@ -19,12 +19,14 @@
 == Setup a development system
 include::text/dev-guide.adoc[]
 
+ifndef::opennms-prime[]
 == Minion development
 include::text/minion/introduction.adoc[]
 include::text/minion/container.adoc[]
 include::text/minion/packaging.adoc[]
 include::text/minion/guidelines.adoc[]
 include::text/minion/testing.adoc[]
+endif::opennms-prime[]
 
 == Topology
 include::text/topology/introduction.adoc[]
@@ -36,6 +38,9 @@ include::text/rest/CORS.adoc[]
 
 == ReST API
 include::text/rest/rest-api.adoc[]
+
+// Expose ReST services via OSGi
+include::text/rest/osgi.adoc[]
 
 // Include section for all implemented ReST API resources
 === Currently Implemented Interfaces
@@ -77,6 +82,7 @@ include::text/docs/writing.adoc[]
 include::text/docs/images.adoc[]
 include::text/docs/include-source.adoc[]
 include::text/docs/cheat-sheets.adoc[]
+include::text/docs/migrating-from-wiki.adoc[]
 
 == AMQP Integration
 include::text/amqp/introduction.adoc[]

@@ -100,7 +100,7 @@ public class TaskTest {
     @Test
     public void testTaskWithSingleDependency() throws Exception {
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
         AbstractTask task1 = createTask(appender(sequence, "task1"));
         AbstractTask task2 = createTask(appender(sequence, "task2"));
@@ -129,7 +129,7 @@ public class TaskTest {
     public void testTaskWithCompletedDependencies() throws Exception {
         
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
         AbstractTask task1 = createTask(appender(sequence, "task1"));
         AbstractTask task2 = createTask(appender(sequence, "task2"));
@@ -249,7 +249,7 @@ public class TaskTest {
     @Test
     public void testSequenceTask() throws Exception {
         
-        final List<String> sequence = new Vector<String>();
+        final List<String> sequence = new Vector<>();
         
         SequenceTask seq = createSequence();
 
@@ -269,7 +269,7 @@ public class TaskTest {
     public void testSequenceWithDependencies() throws Exception {
         
         
-        List<String> sequence = new Vector<String>();
+        List<String> sequence = new Vector<>();
         
         AbstractTask task1 = createTask(appender(sequence, "task1"));
         AbstractTask task2 = createTask(appender(sequence, "task2"));

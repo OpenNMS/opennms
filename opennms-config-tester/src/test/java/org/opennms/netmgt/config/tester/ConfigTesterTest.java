@@ -54,8 +54,8 @@ import org.springframework.util.StringUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
-    private static Set<String> m_filesTested = new HashSet<String>();
-    private static Set<String> m_filesIgnored = new HashSet<String>();
+    private static Set<String> m_filesTested = new HashSet<>();
+    private static Set<String> m_filesIgnored = new HashSet<>();
     private ConfigTesterDataSource m_dataSource;
 
     @Before
@@ -98,6 +98,11 @@ public class ConfigTesterTest {
     @Test
     public void testAvailabilityReports() {
         testConfigFile("availability-reports.xml");
+    }
+
+    @Test
+    public void testBSFNorthbounderConfiguration() {
+        testConfigFile("bsf-northbounder-configuration.xml");
     }
 
     @Test
@@ -146,6 +151,11 @@ public class ConfigTesterTest {
     @Test
     public void testDiscoveryConfiguration() {
         testConfigFile("discovery-configuration.xml");
+    }
+
+    @Test
+    public void testDroolsNorthbounderConfiguration() {
+        testConfigFile("drools-northbounder-configuration.xml");
     }
 
     @Test
@@ -373,6 +383,11 @@ public class ConfigTesterTest {
     @Test
     public void testRwsConfiguration() {
         testConfigFile("rws-configuration.xml");
+    }
+
+    @Test
+    public void testTelemetrydConfiguration() {
+        testConfigFile("telemetryd-configuration.xml");
     }
 
     @Test

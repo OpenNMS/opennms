@@ -44,7 +44,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | alarm.description | String | Description
 | alarm.firstAutomationTime | Timestamp | First Automation Time
 | alarm.firstEventTime | Timestamp | First Event Time
-| alarm.id | String | ID
+| alarm.id | Integer | ID
 | alarm.ifIndex | Integer | SNMP Interface Index
 | alarm.ipAddr | IP Address | IP Address
 | alarm.lastAutomationTime | Timestamp | Last Automation Time
@@ -124,7 +124,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | assetRecord.lease | String | Lease
 | assetRecord.leaseExpires | String | Lease Expires
 | assetRecord.maintContractExpiration | String | Maintenance Contract Expiration
-| assetRecord.maintContractNumber | String | Maintenance Contract Number
 | assetRecord.maintcontract | String | Maintenance Contract
 | assetRecord.managedObjectInstance | String | Managed Object Instance
 | assetRecord.managedObjectType | String | Managed Object Type
@@ -176,6 +175,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | Name | Type | Description
 | distPoller.id | Integer | ID
 | distPoller.label | String | Label
+| distPoller.lastUpdated | Timestamp | Last Updated
 | distPoller.location | String | Monitoring Location
 |===
 
@@ -227,7 +227,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `7`: Critical
 | event.eventSnmp | String | SNMP
 | event.eventSnmpHost | String | SNMP Host
-| event.eventSource | String | Event Source
+| event.eventSource | String | Source
 | event.eventSuppressedCount | Integer | Suppressed Count
 | event.eventTTicket | String | Trouble Ticket ID
 | event.eventTTicketState | Integer | Trouble Ticket State
@@ -235,15 +235,38 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `0`: Off
 
 `1`: On
-| event.eventTime | Timestamp | Event Time
+| event.eventTime | Timestamp | Time
 | event.eventUei | String | UEI
 | event.id | Integer | ID
 | event.ifIndex | Integer | ifIndex
 | event.ipAddr | IP Address | IP Address
 |===
 
-[[ifServiceProperties]]
-.Interface Service Properties
+[[eventParameterProperties]]
+.Event Parameter Properties
+[options="header",width="99%",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| eventParameter.name | String | Name
+| eventParameter.type | String | Type
+| eventParameter.value | String | Value
+|===
+
+[[ipInterfaceProperties]]
+.IP Interface Properties
+[options="header",width="99%",cols="2m,1,3"]
+|===
+| Name | Type | Description
+| ipInterface.id | Integer | ID
+| ipInterface.ipAddress | IP Address | IP Address
+| ipInterface.netMask | IP Address | Network Mask
+| ipInterface.ipHostName | String | Hostname
+| ipInterface.ipLastCapsdPoll | Timestamp | Last Provisioning Scan
+| ipInterface.isManaged | String | Management Status
+|===
+
+[[monitoredServiceProperties]]
+.Monitored Service Properties
 [options="header",width="99%",cols="2m,1,3"]
 |===
 | Name | Type | Description
@@ -280,18 +303,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 `N`: Not Monitored
 |===
 
-[[ipInterfaceProperties]]
-.IP Interface Properties
-[options="header",width="99%",cols="2m,1,3"]
-|===
-| Name | Type | Description
-| ipInterface.id | Integer | ID
-| ipInterface.ipAddress | IP Address | IP Address
-| ipInterface.ipHostName | String | Hostname
-| ipInterface.ipLastCapsdPoll | Timestamp | Last Provisioning Scan
-| ipInterface.isManaged | String | Management Status
-|===
-
 [[locationProperties]]
 .Monitoring Location Properties
 [options="header",width="99%",cols="2m,1,3"]
@@ -302,7 +313,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | location.locationName | String | ID
 | location.longitude | Float | Longitude
 | location.monitoringArea | String | Monitoring Area
-| location.priority | Integer | Priority in UI
+| location.priority | Integer | UI Priority
 |===
 
 [[minionProperties]]
@@ -326,7 +337,7 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | node.foreignId | String | Foreign ID
 | node.foreignSource | String | Foreign Source
 | node.id | Integer | ID
-| node.label | String | Node Label
+| node.label | String | Label
 | node.labelSource | String | Label Source
 
 `A`: IP Address
@@ -412,13 +423,12 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 |===
 | Name | Type | Description
 | snmpInterface.id | Integer | ID
-| snmpInterface.ifAdminStatus | Integer | Admin status
-| snmpInterface.ifIndex | Integer | Interface index
-| snmpInterface.ifOperStatus | Integer | Operational status
-| snmpInterface.ifSpeed | Long | Bits-per-second Interface Speed
+| snmpInterface.ifAdminStatus | Integer | Admin Status
+| snmpInterface.ifIndex | Integer | Interface Index
+| snmpInterface.ifOperStatus | Integer | Operational Status
+| snmpInterface.ifSpeed | Long | Interface Speed (Bits per second)
 | snmpInterface.lastCapsdPoll | Timestamp | Last Provisioning Scan
 | snmpInterface.lastSnmpPoll | Timestamp | Last SNMP Interface Poll
-| snmpInterface.netMask | IP Address | Network Mask
 |===
 
 ////
@@ -436,6 +446,7 @@ Supported search/order properties:
 * <<assetProperties,`assetRecord.*`>>
 * <<categoryProperties,`category.*`>> (Only valid for search)
 * <<distPollerProperties,`distPoller.*`>>
+* <<eventParameterProperties,`eventParameter.*`>> (for parameters of `lastEvent`, only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * `lastEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)
 * <<locationProperties,`location.*`>>
@@ -464,6 +475,7 @@ Supported search/order properties:
 * <<distPollerProperties,`distPoller.*`>>
 * <<eventProperties,`event.*`>>
 ** `event.ipAddr` can be an iplike expression
+* <<eventParameterProperties,`eventParameter.*`>> (Only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
@@ -477,9 +489,9 @@ Interface: `/api/v2/ifservices`
 Supported search/order properties:
 
 * <<assetProperties,`assetRecord.*`>>
-* <<ifServiceProperties,`ifService.*`>>
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
+* <<monitoredServiceProperties,`monitoredService.*`>>
 * <<nodeProperties,`node.*`>>
 * <<serviceTypeProperties,`serviceType.*`>>
 * <<snmpInterfaceProperties,`snmpInterface.*`>>
@@ -513,7 +525,14 @@ Supported search/order properties:
 
 Interface: `/api/v2/nodes`
 
-WARNING: This interface is not complete.
+Supported search/order properties:
+
+* <<assetProperties,`assetRecord.*`>>
+* <<categoryProperties,`category.*`>> (Only valid for search)
+* <<ipInterfaceProperties,`ipInterface.*`>> (Only valid for search)
+* <<locationProperties,`location.*`>>
+* <<nodeProperties,`node.*`>>
+* <<snmpInterfaceProperties,`snmpInterface.*`>> (Only valid for search)
 
 === Notifications Interface
 
@@ -525,6 +544,7 @@ Supported search/order properties:
 * <<categoryProperties,`category.*`>> (Only valid for search)
 * <<distPollerProperties,`distPoller.*`>>
 * <<eventProperties,`event.*`>>
+* <<eventParameterProperties,`eventParameter.*`>> (Only valid for search)
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
 * <<nodeProperties,`node.*`>>
@@ -544,6 +564,7 @@ Supported search/order properties:
 * <<distPollerProperties,`distPoller.*`>>
 * <<ipInterfaceProperties,`ipInterface.*`>>
 * <<locationProperties,`location.*`>>
+* <<monitoredServiceProperties,`monitoredService.*`>>
 * <<nodeProperties,`node.*`>>
 * <<outageProperties,`outage.*`>>
 * `serviceLostEvent.\*` (with the same properties as <<eventProperties,`event.*`>>)

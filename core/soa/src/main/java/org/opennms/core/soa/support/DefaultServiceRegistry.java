@@ -137,7 +137,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     
     private MultivaluedMap<Class<?>, ServiceRegistration> m_registrationMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
     private MultivaluedMap<Class<?>, RegistrationListener<?>> m_listenerMap = MultivaluedMapImpl.synchronizedMultivaluedMap();
-    private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<RegistrationHook>();
+    private List<RegistrationHook> m_hooks = new CopyOnWriteArrayList<>();
     
     /** {@inheritDoc} */
     @Override
@@ -340,7 +340,7 @@ public class DefaultServiceRegistry implements ServiceRegistry {
 	}
 
 	private Set<ServiceRegistration> getAllRegistrations() {
-		Set<ServiceRegistration> registrations = new LinkedHashSet<ServiceRegistration>();
+		Set<ServiceRegistration> registrations = new LinkedHashSet<>();
 		
 		for(Set<ServiceRegistration> registrationSet: m_registrationMap.values()) {
 			registrations.addAll(registrationSet);

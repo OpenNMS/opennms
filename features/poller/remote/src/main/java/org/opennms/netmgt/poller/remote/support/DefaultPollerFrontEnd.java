@@ -238,9 +238,9 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
             }
             final String killSwitchFileName = System.getProperty("opennms.poller.killSwitch.resource");
             if (!"".equals(killSwitchFileName) && killSwitchFileName != null) {
-                final File killSwitch = new File(System.getProperty("opennms.poller.killSwitch.resource"));
+                final File killSwitch = new File(killSwitchFileName);
                 if (!killSwitch.exists()) {
-                    LOG.info("Kill-switch file {} does not exist; stopping.", killSwitch.getPath());
+                    LOG.info("Kill-switch file {} does not exist; stopping.", killSwitchFileName);
                     stop();
                 }
             }
@@ -317,11 +317,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private TimeAdjustment m_timeAdjustment;
 
     // listeners
-    private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
+    private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<>();
 
-    private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
+    private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<>();
 
-    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
+    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<>();
 
     // current configuration
     private PollerConfiguration m_pollerConfiguration;

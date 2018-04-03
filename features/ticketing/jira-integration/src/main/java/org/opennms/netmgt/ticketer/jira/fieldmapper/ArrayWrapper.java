@@ -42,7 +42,7 @@ public class ArrayWrapper {
 
     public Object map(Function<String, Object> itemFunction, String attributeValue) {
         return Arrays.stream(attributeValue.split(","))
-                .map(eachItem -> itemFunction.apply(eachItem))
+                .map(itemFunction::apply)
                 .collect(Collectors.toList());
     }
 }

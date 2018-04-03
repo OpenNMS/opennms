@@ -78,7 +78,7 @@ public class ReferenceListFactoryBeanTest {
         Registration reg1 = registry.register(new MyProvider("prov1"), Hello.class, Goodbye.class);
         Registration reg2 = registry.register(new MyProvider("prov2"), Hello.class, Goodbye.class);
         
-        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<Hello>();
+        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<>();
         bean.setServiceInterface(Hello.class);
         bean.setServiceRegistry(registry);
         bean.afterPropertiesSet();
@@ -114,7 +114,7 @@ public class ReferenceListFactoryBeanTest {
         Registration reg1 = registry.register(new MyProvider("prov1"), Hello.class, Goodbye.class);
         Registration reg2 = registry.register(new MyProvider("prov2"), Hello.class, Goodbye.class);
         
-        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<Hello>();
+        ReferenceListFactoryBean<Hello> bean = new ReferenceListFactoryBean<>();
         bean.setServiceInterface(Hello.class);
         bean.setServiceRegistry(registry);
         

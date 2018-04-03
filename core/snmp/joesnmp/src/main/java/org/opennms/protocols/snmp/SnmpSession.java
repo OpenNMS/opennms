@@ -603,7 +603,7 @@ public class SnmpSession extends Object {
      */
     public SnmpSession(InetAddress peer) throws SocketException {
         m_sync = new Object();
-        m_requests = new LinkedList<SnmpRequest>();
+        m_requests = new LinkedList<>();
         m_peer = new SnmpPeer(peer);
         m_timer = new SnmpTimer();
         m_defHandler = null;
@@ -629,7 +629,7 @@ public class SnmpSession extends Object {
      * 
      */
     public SnmpSession(SnmpPeer peer) throws SocketException {
-        m_requests = new LinkedList<SnmpRequest>();
+        m_requests = new LinkedList<>();
         m_timer = new SnmpTimer();
         m_defHandler = null;
 

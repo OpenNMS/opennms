@@ -65,7 +65,7 @@ public class RequisitionDef implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    private static final String DEFAULT_RESCAN_EXISTING = "true";
+    private static final String DEFAULT_RESCAN_EXISTING = System.getProperty("org.opennms.provisiond.scheduleRescanForUpdatedNodes", "true");
 
     @XmlAttribute(name = "import-url-resource", required = true)
     private String m_importUrlResource;

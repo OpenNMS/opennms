@@ -35,8 +35,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.ticketer.jira.JiraClientUtils;
 
 import com.atlassian.jira.rest.client.api.JiraRestClient;
@@ -45,8 +47,19 @@ import com.atlassian.jira.rest.client.api.domain.CimIssueType;
 import com.atlassian.jira.rest.client.api.domain.CimProject;
 import com.google.common.base.Strings;
 
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
 @Command(scope = "jira", name = "list-fields", description="Uses the JIRA ReST API to list all fields available")
-public class ListFieldsCommand extends AbstractJiraCommand {
+@org.apache.karaf.shell.commands.Command(scope = "jira", name = "list-fields", description="Uses the JIRA ReST API to list all fields available")
+@Service
+public class ListFieldsCommand extends AbstractJiraCommand implements Action {
 
     @Option(name="-k", aliases="--project-key", description = "The project key to filter for.")
     String projectKey;

@@ -141,7 +141,7 @@ public class SpikeHunter {
         m_rrdFileName = m_commandLine.getOptionValue("f");
         m_dsNames = m_commandLine.getOptionValue("d", null);
         
-        m_operands = new ArrayList<Double>();
+        m_operands = new ArrayList<>();
         for (String operandStr : m_commandLine.getOptionValue("o", "95,5").split(",")) {
         	m_operands.add(Double.parseDouble(operandStr));
         }

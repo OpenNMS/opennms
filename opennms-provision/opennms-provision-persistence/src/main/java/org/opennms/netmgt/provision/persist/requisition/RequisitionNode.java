@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.TreeSet;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -59,11 +60,11 @@ public class RequisitionNode {
     protected String m_location;
 
     @XmlElement(name = "interface")
-    protected List<RequisitionInterface> m_interfaces = new ArrayList<RequisitionInterface>();
+    protected List<RequisitionInterface> m_interfaces = new ArrayList<>();
     @XmlElement(name="category")
-    protected List<RequisitionCategory> m_categories = new ArrayList<RequisitionCategory>();
+    protected List<RequisitionCategory> m_categories = new ArrayList<>();
     @XmlElement(name="asset")
-    protected List<RequisitionAsset> m_assets = new ArrayList<RequisitionAsset>();
+    protected List<RequisitionAsset> m_assets = new ArrayList<>();
     
     @XmlAttribute(name = "building")
     protected String m_building;
@@ -123,7 +124,7 @@ public class RequisitionNode {
      */
     public void setInterfaces(Collection<RequisitionInterface> interfaces) {
         if (interfaces == null) {
-            interfaces = new TreeSet<RequisitionInterface>();
+            interfaces = new TreeSet<>();
         }
         if (m_interfaces == interfaces) return;
         m_interfaces.clear();
@@ -218,7 +219,7 @@ public class RequisitionNode {
      */
     public void setCategories(Collection<RequisitionCategory> categories) {
         if (categories == null) {
-            categories = new TreeSet<RequisitionCategory>();
+            categories = new TreeSet<>();
         }
         if (m_categories == categories) return;
         m_categories.clear();
@@ -315,7 +316,7 @@ public class RequisitionNode {
      */
     public void setAssets(Collection<RequisitionAsset> assets) {
         if (assets == null) {
-            assets = new TreeSet<RequisitionAsset>();
+            assets = new TreeSet<>();
         }
         if (m_assets == assets) return;
         m_assets.clear();
@@ -515,6 +516,33 @@ public class RequisitionNode {
      */
     public void setParentNodeLabel(String value) {
         m_parentNodeLabel = value != null && "".equals(value.trim()) ? null : value;
+    }
+
+    public void validate() throws ValidationException {
+        if (m_nodeLabel == null) {
+            throw new ValidationException("Requisition node 'node-label' is a required attribute!");
+        }
+        if (m_foreignId == null) {
+            throw new ValidationException("Requisition node 'foreign-id' is a required attribute!");
+        }
+        if (m_foreignId.contains("/")) {
+            throw new ValidationException("Node foreign ID (" + m_foreignId + ") contains invalid characters. ('/' is forbidden.)");
+        }
+        if (m_interfaces != null) {
+            for (final RequisitionInterface iface : m_interfaces) {
+                iface.validate();
+            }
+        }
+        if (m_categories != null) {
+            for (final RequisitionCategory cat : m_categories) {
+                cat.validate();
+            }
+        }
+        if (m_assets != null) {
+            for (final RequisitionAsset asset : m_assets) {
+                asset.validate();
+            }
+        }
     }
 
     @Override

@@ -30,23 +30,24 @@ package org.opennms.netmgt.provision.requisition.command;
 
 import java.util.List;
 
-import org.apache.karaf.shell.console.Completer;
-import org.apache.karaf.shell.console.completer.StringsCompleter;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.apache.karaf.shell.api.console.CommandLine;
+import org.apache.karaf.shell.api.console.Completer;
+import org.apache.karaf.shell.api.console.Session;
+import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.provision.persist.RequisitionProviderRegistry;
 
-public class ProviderTypeNameCompleter implements Completer{
+@Service
+public class ProviderTypeNameCompleter implements Completer {
 
-    private RequisitionProviderRegistry registry;
+    @Reference
+    public RequisitionProviderRegistry registry;
 
     @Override
-    public int complete(String buffer, int cursor, List<String> candidates) {
+    public int complete(Session session, CommandLine commandLine, List<String> candidates) {
         StringsCompleter serviceNames = new StringsCompleter();
         serviceNames.getStrings().addAll(registry.getTypes());
-        return serviceNames.complete(buffer, cursor, candidates);
+        return serviceNames.complete(session, commandLine, candidates);
     }
-
-    public void setRegistry(RequisitionProviderRegistry registry) {
-        this.registry = registry;
-    }
-
 }

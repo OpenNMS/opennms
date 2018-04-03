@@ -57,7 +57,7 @@ public class DefaultApplicationHandler implements ApplicationHandler {
     private EventExecutorService m_eventService;
 
     private Set<String> m_oldApplicationNames = null;
-    private Set<String> m_foundApplicationNames = new HashSet<String>();
+    private Set<String> m_foundApplicationNames = new HashSet<>();
 
     /**
      * <p>Constructor for DefaultApplicationHandler.</p>

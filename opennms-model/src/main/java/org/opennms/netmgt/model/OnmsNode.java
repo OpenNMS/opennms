@@ -188,10 +188,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private CdpElement m_cdpElement;
 
     /** persistent field */
-    private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
+    private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
     private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
@@ -795,6 +795,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setAssetRecord(OnmsAssetRecord asset) {
         m_assetRecord = asset;
+        if (m_assetRecord != null) {
+            m_assetRecord.setNode(this);
+        }
     }
 
     /**
@@ -1212,7 +1215,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @Transient
     @JsonIgnore
     public OnmsIpInterface getPrimaryInterface() {
-        List<OnmsIpInterface> primaryInterfaces = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> primaryInterfaces = new ArrayList<>();
         for(OnmsIpInterface iface : getIpInterfaces()) {
             if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
                 primaryInterfaces.add(iface);

@@ -29,17 +29,6 @@
   <onmsgi:reference id="eventProxy" interface="org.opennms.netmgt.events.api.EventProxy"/>
   <onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
-  <!-- TODO: Remove this bean after we stop using serialized object messages -->
-  <bean id="enableActiveMqObjectMessages" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-     <property name="staticMethod" value="java.lang.System.setProperty"/>
-     <property name="arguments">
-       <list>
-         <value>org.apache.activemq.SERIALIZABLE_PACKAGES</value>
-         <value>*</value>
-       </list>
-     </property>
-  </bean>
-
   <!-- Conditionally start a local ActiveMQ broker. -->
   <bean class="org.opennms.netmgt.daemon.ConditionalActiveMQContext"/>
 

@@ -104,7 +104,7 @@ public class WsmanDatacollectionConfig {
      */
     public List<Collection> getCollection() {
         if (collection == null) {
-            collection = new ArrayList<Collection>();
+            collection = new ArrayList<>();
         }
         return this.collection;
     }
@@ -137,7 +137,7 @@ public class WsmanDatacollectionConfig {
      */
     public List<Group> getGroup() {
         if (group == null) {
-            group = new ArrayList<Group>();
+            group = new ArrayList<>();
         }
         return this.group;
     }
@@ -170,7 +170,7 @@ public class WsmanDatacollectionConfig {
      */
     public List<SystemDefinition> getSystemDefinition() {
         if (systemDefinition == null) {
-            systemDefinition = new ArrayList<SystemDefinition>();
+            systemDefinition = new ArrayList<>();
         }
         return this.systemDefinition;
     }

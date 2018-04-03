@@ -41,6 +41,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.snmp.SnmpException;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.TrapInformation;
 import org.opennms.netmgt.snmp.TrapNotificationListener;
@@ -71,9 +72,18 @@ public class TrapListener implements TrapNotificationListener {
     @Override
     public void trapReceived(TrapInformation trapInformation) {
         try {
-            getMessageDispatcher().send(new TrapInformationWrapper(trapInformation));
-        } catch (IllegalArgumentException ex) {
-            LOG.error("Received trap {} is not valid and cannot be processed.", trapInformation, ex);
+            getMessageDispatcher().send(new TrapInformationWrapper(trapInformation))
+                    .whenComplete((t,ex) -> {
+                        if (ex != null) {
+                            LOG.error("An error occured while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
+                            // This trap will never reach the sink consumer
+                            TrapSinkConsumer.trapdInstrumentation.incErrorCount();
+                        }
+                    });
+        } catch (final SnmpException | IllegalArgumentException ex) {
+            LOG.error("Received trap {} is not valid and cannot be processed. The trap will be dropped.", trapInformation, ex);
+            // This trap will never reach the sink consumer
+            TrapSinkConsumer.trapdInstrumentation.incErrorCount();
         }
     }
 

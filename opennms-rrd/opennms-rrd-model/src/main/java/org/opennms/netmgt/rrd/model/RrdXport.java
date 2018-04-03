@@ -50,7 +50,7 @@ public class RrdXport {
     private XMeta meta;
 
     /** The rows. */
-    private List<XRow> rows = new ArrayList<XRow>();
+    private List<XRow> rows = new ArrayList<>();
 
     /**
      * Gets the meta data.

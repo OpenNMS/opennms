@@ -128,7 +128,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
                 xDelta *= distance;
                 yDelta *= distance;
 
-                currentForce = srcVertexData.getWeight() / (targetVertexData.getWeight() + srcVertexData.getWeight());
+                currentForce = (double)srcVertexData.getWeight() / (double)(targetVertexData.getWeight() + srcVertexData.getWeight());
                 targetVertexData.offset(-(xDelta * currentForce), -(yDelta * currentForce));
 
                 currentForce = 1 - currentForce;
@@ -234,7 +234,7 @@ public class D3TopoLayout<V, E> extends AbstractLayout<V, E> implements Iterativ
                 xDelta *= distance;
                 yDelta *= distance;
 
-                currentForce = srcVertexData.getWeight() / (targetVertexData.getWeight() + srcVertexData.getWeight());
+                currentForce = (double)srcVertexData.getWeight() / (double)(targetVertexData.getWeight() + srcVertexData.getWeight());
                 //currentForce = 0.5;
                 targetVertexData.offset(-(xDelta * currentForce), -(yDelta * currentForce));
 

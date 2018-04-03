@@ -40,8 +40,6 @@ import static org.opennms.netmgt.poller.monitors.DNSResolutionMonitor.PARM_LOOKU
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

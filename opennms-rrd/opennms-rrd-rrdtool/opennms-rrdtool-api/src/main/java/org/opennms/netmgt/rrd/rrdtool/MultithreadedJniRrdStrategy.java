@@ -36,7 +36,6 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.opennms.netmgt.rrd.jrrd2.api.FetchResults;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2;
 import org.opennms.netmgt.rrd.jrrd2.api.JRrd2Exception;
@@ -85,7 +84,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
 
     public static class UpdateCommand {
         private final String m_filename;
-        private final List<String> m_arguments = new LinkedList<String>();
+        private final List<String> m_arguments = new LinkedList<>();
 
         public UpdateCommand(String filename) {
             m_filename = filename;

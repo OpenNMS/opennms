@@ -35,7 +35,7 @@ import java.util.Set;
 public class NextDataReplacer implements DataReplacer {
 
 	public double[] replaceValues(double[] values, List<Integer> indices) {
-		Set<Integer> indexSet = new HashSet<Integer>();
+		Set<Integer> indexSet = new HashSet<>();
 		for (int i : indices) {
 			indexSet.add(i);
 		}

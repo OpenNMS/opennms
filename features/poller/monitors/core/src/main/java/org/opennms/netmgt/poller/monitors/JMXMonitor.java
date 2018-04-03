@@ -67,7 +67,7 @@ import com.google.common.collect.Maps;
  * @author <A HREF="http://www.opennms.org/">OpenNMS </A>
  */
 @Distributable
-public abstract class JMXMonitor extends AbstractServiceMonitor {
+public class JMXMonitor extends AbstractServiceMonitor {
 
     private static final Logger LOG = LoggerFactory.getLogger(JMXMonitor.class);
 
@@ -103,7 +103,9 @@ public abstract class JMXMonitor extends AbstractServiceMonitor {
 
     private final Supplier<JmxConfigDao> jmxConfigDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "jmxConfigDao", JmxConfigDao.class));
 
-    protected abstract JmxConnectors getConnectionName();
+    protected JmxConnectors getConnectionName() {
+        return JmxConnectors.DEFAULT;
+    }
 
     @Override
     public Map<String, Object> getRuntimeAttributes(MonitoredService svc, Map<String, Object> parameters) {

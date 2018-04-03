@@ -60,7 +60,7 @@ public abstract class AbstractPersister extends AbstractCollectionSetVisitor imp
     private boolean m_ignorePersist = false;
     private ServiceParameters m_params;
     private RrdRepository m_repository;
-    private final LinkedList<Boolean> m_stack = new LinkedList<Boolean>();
+    private final LinkedList<Boolean> m_stack = new LinkedList<>();
     private PersistOperationBuilder m_builder;
 
     protected abstract void persistStringAttribute(ResourcePath path, String key, String value) throws PersistException;

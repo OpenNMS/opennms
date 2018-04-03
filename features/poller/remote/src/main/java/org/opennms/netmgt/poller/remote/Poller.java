@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Date;
 
 import org.opennms.netmgt.poller.remote.PollerFrontEnd.PollerFrontEndStates;
-import org.quartz.JobBuilder;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.Trigger;

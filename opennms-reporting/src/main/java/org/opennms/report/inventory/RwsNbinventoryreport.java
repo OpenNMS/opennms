@@ -76,7 +76,7 @@ public class RwsNbinventoryreport implements java.io.Serializable {
     private java.util.List<GroupSet> groupSetList;
 
     public RwsNbinventoryreport() {
-        this.groupSetList = new java.util.ArrayList<GroupSet>();
+        this.groupSetList = new java.util.ArrayList<>();
     }
 
     /**

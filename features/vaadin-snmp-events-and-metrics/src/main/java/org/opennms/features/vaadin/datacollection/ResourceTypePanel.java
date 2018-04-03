@@ -217,7 +217,7 @@ public class ResourceTypePanel extends Panel {
      * @return the parent groups.
      */
     private Set<String> getParentGroups(final DataCollectionConfigDao dataCollectionConfigDao, String resourceTypeName) {
-        Set<String> groupMap = new TreeSet<String>();
+        Set<String> groupMap = new TreeSet<>();
         for (final SnmpCollection collection : dataCollectionConfigDao.getRootDataCollection().getSnmpCollections()) {
             for (final Group group : collection.getGroups().getGroups()) {
                 for (final MibObj mibObj : group.getMibObjs()) {

@@ -155,7 +155,7 @@ public class FasterFilesystemForeignSourceRepositoryTest {
     }
 
     private static Set<String> set(String... items) {
-        Set<String> set = new HashSet<String>();
+        Set<String> set = new HashSet<>();
         Collections.addAll(set, items);
         return set;
     }

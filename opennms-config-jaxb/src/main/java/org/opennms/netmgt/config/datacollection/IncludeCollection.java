@@ -69,7 +69,7 @@ public class IncludeCollection implements Serializable {
      * certain system definitions
      */
     @XmlElement(name="exclude-filter")
-    private List<String> m_excludeFilters = new ArrayList<String>();
+    private List<String> m_excludeFilters = new ArrayList<>();
 
     public IncludeCollection() {
         super();

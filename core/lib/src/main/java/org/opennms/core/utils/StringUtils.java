@@ -119,7 +119,7 @@ public abstract class StringUtils {
     }
 
     private static class CommandArrayGenerator {
-        private final ArrayList<String> m_segments = new ArrayList<String>();
+        private final ArrayList<String> m_segments = new ArrayList<>();
         private boolean m_isInQuotes = false;
         private StringBuilder m_segmentBuffer = new StringBuilder();
 
@@ -318,6 +318,14 @@ public abstract class StringUtils {
 
         // There are extra characters at the tail of A, that don't show up in B
         return false;
+    }
+
+    public static boolean isEmpty(final String text) {
+        return text == null || text.trim().length() == 0;
+    }
+
+    public static boolean hasText(final String text) {
+        return text != null && text.trim().length() > 0;
     }
 
     /**

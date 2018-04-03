@@ -352,7 +352,7 @@ public Map<String,Boolean> getUsers(Collection<Target> targets) throws ServletEx
     }
 
     public Collection<String> getTargetNames(Collection<Target> targets) {
-        Collection<String> targetNames = new ArrayList<String>();
+        Collection<String> targetNames = new ArrayList<>();
         for (Target target : targets) {
             targetNames.add(target.getName());
         }

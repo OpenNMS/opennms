@@ -45,8 +45,8 @@ import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkersMod
 import org.opennms.features.vaadin.nodemaps.internal.gwt.client.event.MarkersModelUpdatedEventHandler;
 
 public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandler, MarkersModelUpdatedEventHandler {
-    List<JSNodeMarker> m_markers         = new ArrayList<JSNodeMarker>();
-    List<JSNodeMarker> m_filteredMarkers = new ArrayList<JSNodeMarker>();
+    List<JSNodeMarker> m_markers         = new ArrayList<>();
+    List<JSNodeMarker> m_filteredMarkers = new ArrayList<>();
 
     private Logger logger = Logger.getLogger(getClass().getName());
     private final OpenNMSEventManager m_eventManager;
@@ -79,7 +79,7 @@ public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandle
     }
 
     public List<JSNodeMarker> getDisabledMarkers() {
-        final ArrayList<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
+        final ArrayList<JSNodeMarker> markers = new ArrayList<>();
         final List<JSNodeMarker> existingMarkers = getMarkers();
         if (existingMarkers != null) {
             for (final NodeMarker marker : existingMarkers) {
@@ -118,7 +118,7 @@ public class MarkerContainer implements MarkerProvider, FilterUpdatedEventHandle
     public void refresh() {
         logger.info("MarkerContainer.refresh()");
 
-        final List<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
+        final List<JSNodeMarker> markers = new ArrayList<>();
         final List<JSNodeMarker> existingMarkers = getAllMarkers();
         if (existingMarkers != null) {
             for (final JSNodeMarker marker : existingMarkers) {

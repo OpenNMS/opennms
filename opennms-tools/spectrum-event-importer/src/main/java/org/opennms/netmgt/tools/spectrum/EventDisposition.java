@@ -64,7 +64,7 @@ public class EventDisposition {
         m_uniqueAlarm = false;
         m_userClearable = true;
         m_persistent = true;
-        m_discriminators = new ArrayList<Integer>();
+        m_discriminators = new ArrayList<>();
     }
     
     public String toString() {

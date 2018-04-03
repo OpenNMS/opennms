@@ -29,6 +29,7 @@
 package org.opennms.netmgt.eventd;
 
 import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotEquals;
@@ -37,18 +38,24 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.Test;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventHandler;
 import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
+import org.opennms.test.ThreadLocker;
 import org.opennms.test.ThrowableAnticipator;
 import org.opennms.test.mock.EasyMockUtils;
 import org.slf4j.Logger;
@@ -704,7 +711,7 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
     }
 
     public class MockEventListener implements EventListener {
-        private List<Event> m_events = new ArrayList<Event>();
+        private List<Event> m_events = new ArrayList<>();
         
         @Override
         public String getName() {
@@ -756,5 +763,66 @@ public class EventIpcManagerDefaultImplTest extends TestCase {
         manager.broadcastNow(e, true);
         // broadcastNow() returned, so the counter should have been increased
         assertEquals(1, counter.get());
+    }
+
+    private static class MultiThreadedEventListener implements ThreadAwareEventListener, EventListener {
+        private final ThreadLocker locker;
+        private final int numThreads;
+
+        public MultiThreadedEventListener(int numThreads, ThreadLocker locker) {
+            this.numThreads = numThreads;
+            this.locker = Objects.requireNonNull(locker);
+        }
+
+        @Override
+        public String getName() {
+            return getClass().getCanonicalName();
+        }
+
+        @Override
+        public void onEvent(Event e) {
+            locker.park();
+        }
+
+        @Override
+        public int getNumThreads() {
+            return numThreads;
+        }
+    }
+
+    /**
+     * Verify that an event listener that implements the {@link ThreadAwareEventListener} interface
+     * receives event callbacks over mulitple threads.
+     *
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testMultiThreadedEventListener() throws ExecutionException, InterruptedException {
+        int N = 10;
+        ThreadLocker locker = new ThreadLocker();
+        MultiThreadedEventListener mtListener = new MultiThreadedEventListener(N, locker);
+        m_manager.addEventListener(mtListener);
+
+        // No threads waiting
+        CompletableFuture<Integer> lockedFuture = locker.waitForThreads(N);
+
+        // Send 2*N events
+        for (int k = 0; k < 2*N; k++) {
+            EventBuilder bldr = new EventBuilder("uei.opennms.org/foo", "testMultiThreadedEventListener");
+            m_manager.broadcastNow(bldr.getEvent(), false);
+        }
+
+        // Wait for N threads to be locked
+        lockedFuture.get();
+
+        // Sleep a little longer
+        Thread.sleep(500);
+
+        // No extra threads should be waiting
+        assertThat(locker.getNumExtraThreadsWaiting(), equalTo(0));
+
+        // Release
+        locker.release();
     }
 }

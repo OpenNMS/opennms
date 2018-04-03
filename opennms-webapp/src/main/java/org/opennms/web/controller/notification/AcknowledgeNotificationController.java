@@ -110,11 +110,11 @@ public class AcknowledgeNotificationController extends AbstractController implem
             currentUser = request.getRemoteUser();
         }
 
-        List<Integer> noticeIds = new ArrayList<Integer>();
+        List<Integer> noticeIds = new ArrayList<>();
         for (String noticeIdString : noticeIdStrings) {
             noticeIds.add(WebSecurityUtils.safeParseInt(noticeIdString));
         }
-        List<Filter> filters = new ArrayList<Filter>();
+        List<Filter> filters = new ArrayList<>();
         filters.add(new NotificationIdListFilter(noticeIds.toArray(new Integer[0])));
         NotificationCriteria criteria = new NotificationCriteria(filters.toArray(new Filter[0]));
         m_webNotificationRepository.acknowledgeMatchingNotification(currentUser, new Date(), criteria);

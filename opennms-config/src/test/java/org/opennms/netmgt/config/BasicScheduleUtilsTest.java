@@ -245,7 +245,7 @@ public class BasicScheduleUtilsTest extends IntervalTestCase {
         OwnedIntervalSequence intervals = BasicScheduleUtils.getIntervals(interval(6, 1, 0, 7, 1, 0), basicSchedule.getTime(0), owner);
         assertNotNull(intervals);
 
-        List<OwnedInterval> expected = new ArrayList<OwnedInterval>();
+        List<OwnedInterval> expected = new ArrayList<>();
         for (int i = 1; i < 31; i++) {
         	expected.add(owned(owner, jun(i, 11, i, 14)));
         }

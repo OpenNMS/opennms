@@ -114,7 +114,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
     private void createBARandomTopology(int numberOfNodes, double averageNumberofNeighboors) {
         Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
-        List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
+        List<AbstractEdge> edges = new ArrayList<>();
 
         for(int i=0; i<2*averageNumberofNeighboors; i++){
             LOG.debug("Creating First Cluster from: {}", i);
@@ -174,7 +174,7 @@ public class SFreeTopologyProvider extends AbstractTopologyProvider implements G
 
     private void createERRandomTopology(int numberOfNodes, double averageNumberofNeighboors) {
         Map<Integer,SimpleLeafVertex> nodes = new HashMap<Integer, SimpleLeafVertex>();
-        List<AbstractEdge> edges = new ArrayList<AbstractEdge>();
+        List<AbstractEdge> edges = new ArrayList<>();
         for (Integer i=0; i< numberOfNodes ;i++) {
             SimpleLeafVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_SFREE, Integer.toString(i), 0, 0);
             vertex.setIconKey("sfree.system");

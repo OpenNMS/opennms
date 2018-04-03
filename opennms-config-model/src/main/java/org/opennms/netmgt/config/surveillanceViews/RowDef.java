@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -46,8 +48,8 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name = "row-def")
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("surveillance-views.xsd")
-public class RowDef implements Serializable {
-    private static final long serialVersionUID = 2L;
+public class RowDef implements Def, Serializable {
+    private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "label", required = true)
     private String m_label;
@@ -114,6 +116,20 @@ public class RowDef implements Serializable {
 
     public boolean removeCategory(final Category category) {
         return m_categories.remove(category);
+    }
+
+    @Override
+    public Set<String> getCategoryNames() {
+        return getCategories().stream().map(cat -> {
+            return cat.getName();
+        }).collect(Collectors.toSet());
+    }
+
+    @Override
+    public boolean containsCategory(final String name) {
+        return getCategories().stream().anyMatch(cat -> {
+            return name.equals(cat.getName());
+        });
     }
 
     @Override

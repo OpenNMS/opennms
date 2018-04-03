@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.plugins</groupId>
     <artifactId>alarm-change-notifier.parent</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
 
   <!-- LicenceAuthenticator -->
@@ -93,13 +93,6 @@
     </dependency>
 
     <!-- ensures pgjdbc-ng is in repository before needed -->
-    <dependency>
-      <groupId>org.opennms.plugins</groupId>
-      <artifactId>alarm-change-notifier.rewrap-pgjdbc-ng</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-      <type>pom</type>
-    </dependency>
     <dependency>
       <!-- PostgreSQL Asychronous Notification JDBC driver -->
       <groupId>com.impossibl.pgjdbc-ng</groupId>

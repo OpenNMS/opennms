@@ -1,214 +1,200 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: TRIPPUPS-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>100</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsCritical</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsCritical</event-label>
-	<descr>
-&lt;p&gt;UPS Critical Alarm.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>100</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsCritical</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsCritical</event-label>
+      <descr>&lt;p>UPS Critical Alarm.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsCritical trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>101</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsWarning</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsWarning</event-label>
-	<descr>
-&lt;p&gt;UPS Warning.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>101</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsWarning</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsWarning</event-label>
+      <descr>&lt;p>UPS Warning.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsWarning trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>102</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsInformation</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsInformation</event-label>
-	<descr>
-&lt;p&gt;UPS Information.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>102</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsInformation</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsInformation</event-label>
+      <descr>&lt;p>UPS Information.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsInformation trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>103</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsAlarmCleared</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsAlarmCleared</event-label>
-	<descr>
-&lt;p&gt;UPS Alarm Cleared.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>103</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsAlarmCleared</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsAlarmCleared</event-label>
+      <descr>&lt;p>UPS Alarm Cleared.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsAlarmCleared trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>104</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStarted</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsAgentStarted</event-label>
-	<descr>
-&lt;p&gt;Agent started.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>104</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStarted</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsAgentStarted</event-label>
+      <descr>&lt;p>Agent started.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsAgentStarted trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.850</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>105</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStopped</uei>
-	<event-label>TRIPPUPS-MIB defined trap event: upsAgentStopped</event-label>
-	<descr>
-&lt;p&gt;Agent stopped.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.850</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>105</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/tripplite/traps/upsAgentStopped</uei>
+      <event-label>TRIPPUPS-MIB defined trap event: upsAgentStopped</event-label>
+      <descr>&lt;p>Agent stopped.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapCode&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	upsTrapCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	upsTrapDescription&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	upsTrapDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			upsAgentStopped trap received 
 			upsTrapCode=%parm[#1]% 
-			upsTrapDescription=%parm[#2]%&lt;/p&gt;
+			upsTrapDescription=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: TRIPPUPS-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

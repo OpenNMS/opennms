@@ -78,7 +78,7 @@ public class Interface extends StandardNamedObject {
      * Default Constructor.
      */
     public Interface() {
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
     }
 
     /**
@@ -92,7 +92,7 @@ public class Interface extends StandardNamedObject {
     public Interface(String name, List<Service> services) {
         setName(name);
         if (services == null)
-            m_services = new ArrayList<Service>();
+            m_services = new ArrayList<>();
         else
             m_services = services;
     }
@@ -109,7 +109,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service) {
         setName(name);
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -133,7 +133,7 @@ public class Interface extends StandardNamedObject {
     public Interface(String name, String service, long losttime) {
         setName(name);
         Service svc;
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         if (service != null) {
             svc = new Service(service);
             if (losttime > 0)
@@ -159,7 +159,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(String name, String service, long losttime, long regainedtime) {
         setName(name);
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         Service svc;
         if (service != null) {
             svc = new Service(service);
@@ -180,7 +180,7 @@ public class Interface extends StandardNamedObject {
      *            Name of the interface.
      */
     public Interface(String name) {
-        m_services = new ArrayList<Service>();
+        m_services = new ArrayList<>();
         setName(name);
     }
 
@@ -192,7 +192,7 @@ public class Interface extends StandardNamedObject {
      */
     public Interface(List<Service> services) {
         if (services == null)
-            m_services = new ArrayList<Service>();
+            m_services = new ArrayList<>();
         else
             m_services = services;
     }

@@ -48,7 +48,7 @@ public class Row implements java.io.Serializable {
     private java.util.List<Value> valueList;
 
     public Row() {
-        this.valueList = new java.util.ArrayList<Value>();
+        this.valueList = new java.util.ArrayList<>();
     }
 
     /**

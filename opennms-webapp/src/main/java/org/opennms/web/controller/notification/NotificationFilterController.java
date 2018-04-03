@@ -113,7 +113,7 @@ public class NotificationFilterController extends AbstractController implements 
 
         // handle the filter parameters
         String[] filterStrings = request.getParameterValues("filter");
-        List<Filter> filterList = new ArrayList<Filter>();
+        List<Filter> filterList = new ArrayList<>();
         if (filterStrings != null) {
             for (String filterString : filterStrings) {
                 Filter filter = NoticeUtil.getFilter(filterString, getServletContext());
@@ -175,7 +175,7 @@ public class NotificationFilterController extends AbstractController implements 
         int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
         final Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
         final Map<Integer,String[]> nodeLocations = new HashMap<Integer,String[]>();
-        Set<Integer> eventIds = new TreeSet<Integer>();
+        Set<Integer> eventIds = new TreeSet<>();
 
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {

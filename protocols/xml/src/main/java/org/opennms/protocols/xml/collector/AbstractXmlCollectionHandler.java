@@ -233,7 +233,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
     private String getResourceName(XPath xpath, XmlGroup group, Node resource) throws XPathExpressionException {
         // Processing multiple-key resource name.
         if (group.hasMultipleResourceKey()) {
-            List<String> keys = new ArrayList<String>();
+            List<String> keys = new ArrayList<>();
             for (String key : group.getXmlResourceKey().getKeyXpathList()) {
                 LOG.debug("getResourceName: getting key for resource's name using {}", key);
                 Node keyNode = (Node) xpath.evaluate(key, resource, XPathConstants.NODE);

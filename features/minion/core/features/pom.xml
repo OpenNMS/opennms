@@ -8,7 +8,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>core-parent</artifactId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>22.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -69,6 +69,11 @@
         <dependency>
             <groupId>org.opennms.features.minion</groupId>
             <artifactId>core-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>jms</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

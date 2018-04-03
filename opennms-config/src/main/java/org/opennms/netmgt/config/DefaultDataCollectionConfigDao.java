@@ -76,7 +76,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     
     private String m_configDirectory;
 
-    private List<String> dataCollectionGroups = new ArrayList<String>();
+    private List<String> dataCollectionGroups = new ArrayList<>();
     private Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>();
 
     public DefaultDataCollectionConfigDao() {
@@ -157,7 +157,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         if (aSysoid == null) {
             LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
-            return new ArrayList<MibObject>();
+            return new ArrayList<>();
         }
 
         // Retrieve the appropriate Collection object
@@ -205,7 +205,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         // NOTE: A SystemDef object which contains an empty IP list and
         // an empty Mask list matches ALL IP addresses (default is INCLUDE).
 
-        final List<SystemDef> systemList = new ArrayList<SystemDef>();
+        final List<SystemDef> systemList = new ArrayList<>();
 
         for (final SystemDef system : systems.getSystemDefs()) {
             if (systemDefMatches(system, aSysoid, anAddress)) {
@@ -215,7 +215,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
         }
 
         // Next build list of Mib objects to collect from the list of matching SystemDefs
-        final List<MibObject> mibObjectList = new ArrayList<MibObject>();
+        final List<MibObject> mibObjectList = new ArrayList<>();
 
         for (final SystemDef system : systemList) {
             // Next process each of the SystemDef's groups
@@ -233,7 +233,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
         if (aSysoid == null) {
             LOG.debug("getMibObjProperties: aSysoid parameter is NULL...");
-            return new ArrayList<MibObjProperty>();
+            return new ArrayList<>();
         }
 
         final SnmpCollection collection = getSnmpCollection(getContainer(), cName);
@@ -246,14 +246,14 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
             return Collections.emptyList();
         }
 
-        final List<SystemDef> systemList = new ArrayList<SystemDef>();
+        final List<SystemDef> systemList = new ArrayList<>();
         for (final SystemDef system : systems.getSystemDefs()) {
             if (systemDefMatches(system, aSysoid, anAddress)) {
                 systemList.add(system);
             }
         }
 
-        final List<MibObjProperty> mibProperties = new ArrayList<MibObjProperty>();
+        final List<MibObjProperty> mibProperties = new ArrayList<>();
         for (final SystemDef system : systemList) {
             for (final String grpName : system.getCollect().getIncludeGroups()) {
                 processGroupForProperties(cName, grpName, mibProperties);
@@ -661,7 +661,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public List<String> getAvailableSystemDefs() {
-        List<String> systemDefs = new ArrayList<String>();
+        List<String> systemDefs = new ArrayList<>();
         for (final SnmpCollection collection : getContainer().getObject().getSnmpCollections()) {
             if (collection.getSystems() != null) {
                 for (final SystemDef systemDef : collection.getSystems().getSystemDefs()) {
@@ -674,7 +674,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
 
     @Override
     public List<String> getAvailableMibGroups() {
-        List<String> groups = new ArrayList<String>();
+        List<String> groups = new ArrayList<>();
         for (final SnmpCollection collection : getContainer().getObject().getSnmpCollections()) {
             if (collection.getGroups() != null) {
                 for (final Group group : collection.getGroups().getGroups()) {

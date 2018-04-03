@@ -88,7 +88,7 @@ public class PooledJobPublisher implements JobPublisher, Runnable {
 
     private CollectionJob createTestJob() {
         if (this.job == null) {
-            TreeSet<String> destinationSet = new TreeSet<String>();
+            TreeSet<String> destinationSet = new TreeSet<>();
             destinationSet.add("NrtResults");
 
             CollectionJob snmpJob = new DefaultCollectionJob();

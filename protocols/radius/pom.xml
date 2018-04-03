@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -41,6 +41,12 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <!-- This adds support for MD4 digest used by mschapv2 - NMS-9763 -->
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jcifs-dependencies</artifactId>
       <type>pom</type>
     </dependency>
     <dependency>

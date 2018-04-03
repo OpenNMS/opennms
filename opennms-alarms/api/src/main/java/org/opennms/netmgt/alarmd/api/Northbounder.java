@@ -43,6 +43,19 @@ public interface Northbounder {
     public void start() throws NorthbounderException;
 
     /**
+     * Used to determine if the northbounder is ready to accept alarms.
+     *
+     * If no northbounders are ready, the caller can save resources by not creating and
+     * initializing the {@link NorthboundAlarm}s.
+     *
+     * This method is called once after northbounder is registered and started.
+     * If the status were to change sometime after, the northbounder must re-register itself.
+     *
+     * @return <code>true</code> if the northbounder is ready to accept alarms, <code>false</code> otherwise.
+     */
+    boolean isReady();
+
+    /**
      * On alarm.
      *
      * @param alarm the alarm
@@ -67,6 +80,6 @@ public interface Northbounder {
     /**
      * Reloads configuration.
      */
-    public void reloadConfig();
+    public void reloadConfig() throws NorthbounderException;
 
 }

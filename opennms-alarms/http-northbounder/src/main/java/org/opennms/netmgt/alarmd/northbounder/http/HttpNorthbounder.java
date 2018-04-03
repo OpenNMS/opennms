@@ -99,6 +99,10 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#forwardAlarms(java.util.List)
@@ -142,7 +146,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             HttpPost postMethod = new HttpPost(uri);
 
             //TODO: need to configure these
-            List<NameValuePair> postParms = new ArrayList<NameValuePair>();
+            List<NameValuePair> postParms = new ArrayList<>();
 
             //FIXME:do this for now
             NameValuePair p = new BasicNameValuePair("foo", "bar");

@@ -127,7 +127,7 @@ public class NodeRestService extends OnmsRestService {
 
         if (params.size() == 1 && params.getFirst("nodeId") != null && params.getFirst("nodeId").contains(",")) {
             // we've been specifically asked for a list of nodes by ID
-            final List<Integer> nodeIds = new ArrayList<Integer>();
+            final List<Integer> nodeIds = new ArrayList<>();
             for (final String id : params.getFirst("nodeId").split(",")) {
                 nodeIds.add(Integer.valueOf(id));
             }
@@ -213,6 +213,11 @@ public class NodeRestService extends OnmsRestService {
             // see NMS-8019
             if (node.getType() == null) {
                 throw getException(Status.BAD_REQUEST, "Node type must be set.");
+            }
+
+            // see NMS-9855
+            if (node.getAssetRecord() != null && node.getAssetRecord().getNode() == null) {
+                node.getAssetRecord().setNode(node);
             }
 
             LOG.debug("addNode: Adding node {}", node);

@@ -46,6 +46,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.collectd.CollectdConfiguration;
@@ -214,7 +215,7 @@ public class DuplicatePrimaryAddressIT {
 
         Assert.assertNotSame(ip1.getNode().getId(), ip2.getNode().getId());
 
-        List<OnmsIpInterface> initialIfs = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> initialIfs = new ArrayList<>();
         if (scheduleExistingNodes) {
             initialIfs.add(ip1);
             initialIfs.add(ip2);

@@ -59,7 +59,7 @@ public class MockPollContext implements PollContext, EventListener {
     private EventIpcManager m_eventMgr;
     private MockDatabase m_db;
     private MockNetwork m_mockNetwork;
-    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<PendingPollEvent>();
+    private List<PendingPollEvent> m_pendingPollEvents = new LinkedList<>();
     
 
     @Override

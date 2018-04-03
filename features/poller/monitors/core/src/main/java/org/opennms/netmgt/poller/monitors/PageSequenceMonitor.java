@@ -268,7 +268,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         private final HttpPageSequence m_parentSequence;
         private double m_responseTime;
 
-        private final List<NameValuePair> m_parms = new ArrayList<NameValuePair>();
+        private final List<NameValuePair> m_parms = new ArrayList<>();
 
         HttpPage(HttpPageSequence parent, Page page) {
             m_page = page;
@@ -425,7 +425,7 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
         }
 
         private List<NameValuePair> expandParms(MonitoredService svc) {
-            List<NameValuePair> expandedParms = new ArrayList<NameValuePair>();
+            List<NameValuePair> expandedParms = new ArrayList<>();
             Properties svcProps = getServiceProperties(svc);
             if (svcProps != null) {
                 LOG.debug("I have {} service properties.", svcProps.size());
@@ -492,8 +492,9 @@ public class PageSequenceMonitor extends AbstractServiceMonitor {
             ub.setHost(host);
             ub.setPort(getPort());
             ub.setPath(getPath(seqProps, svcProps));
-            final List<NameValuePair> params = URLEncodedUtils.parse(getQuery(seqProps, svcProps), StandardCharsets.UTF_8);
-            if (!params.isEmpty()) {
+            final String query = getQuery(seqProps, svcProps);
+            if (query != null) {
+                final List<NameValuePair> params = URLEncodedUtils.parse(query, StandardCharsets.UTF_8);
                 ub.setParameters(params);
             }
             ub.setFragment(getFragment(seqProps, svcProps));

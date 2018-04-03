@@ -45,9 +45,11 @@ import org.apache.commons.jexl2.Expression;
 import org.apache.commons.jexl2.JexlContext;
 import org.apache.commons.jexl2.JexlEngine;
 import org.apache.commons.jexl2.MapContext;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.EventBuilder;
@@ -69,12 +71,16 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  */
 @Command(scope = "events", name = "stress", description="Stress the event bus with generated events.",detailedDescription=
         "Generate newSuspect events with increasing IP addresses:\n"
-        + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"")
-public class StressCommand extends OsgiCommandSupport {
+        + "\tevents:stress -u uei.opennms.org/internal/discovery/newSuspect -e 10 -s 1 -j \"i=i+1\" -j \"eb.setInterface(iputils:int2ip(167837696 + i))\"\n"
+	+ "Trigger 100 alarms and reduce additional events against these:\n"
+	+ "\tevents:stress -x -t 10 -e 100 -u uei.opennms.org/alarms/trigger -j \"eb.addParam('node', math:floor(math:random() * 100))\"")
+@Service
+public class StressCommand implements Action {
 
     private static final String EVENT_SOURCE = "stress";
 
-    private EventForwarder eventForwarder;
+    @Reference
+    public EventForwarder eventForwarder;
 
     @Option(name="-e", aliases="--eps", description="events per seconds to generate per thread, defaults to 300", required=false, multiValued=false)
     int eventsPerSecondPerThread = 300;
@@ -102,6 +108,7 @@ public class StressCommand extends OsgiCommandSupport {
 
     @Option(name="-i", aliases="--interface", description="The ip interface to associate with the generated event")
     String eventIpInterface = null;
+
     @Option(name="-x", aliases="--sync", description="Use synchronous instead of asynchronous calls", required=false, multiValued = false)
     boolean isSynchronous = false;
 
@@ -118,6 +125,7 @@ public class StressCommand extends OsgiCommandSupport {
 
             Map<String, Object> functions = Maps.newHashMap();
             functions.put("iputils", IpUtils.class);
+            functions.put("math", Math.class);
             engine.setFunctions(functions);
 
             for (String jexlExpression : jexlExpressions) {
@@ -173,7 +181,7 @@ public class StressCommand extends OsgiCommandSupport {
     }
 
     @Override
-    protected Object doExecute() {
+    public Object execute() {
         // Apply sane lower bounds to all of the configurable options
         eventsPerSecondPerThread = Math.max(1, eventsPerSecondPerThread);
         numberOfThreads = Math.max(1, numberOfThreads);
@@ -183,7 +191,7 @@ public class StressCommand extends OsgiCommandSupport {
         boolean useJexl = jexlExpressions != null && jexlExpressions.size() > 0;
 
         // Display the effective settings and rates
-        double eventsPerSecond = eventsPerSecondPerThread * numberOfThreads;
+        double eventsPerSecond = (double)eventsPerSecondPerThread * (double)numberOfThreads;
         System.out.printf("Generating %d events per second accross %d threads for %d seconds\n",
                 eventsPerSecondPerThread, numberOfThreads, numSeconds);
         System.out.printf("\t with UEI: %s\n", eventUei);
@@ -244,10 +252,6 @@ public class StressCommand extends OsgiCommandSupport {
         // And display one last report...
         reporter.report();
         return null;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
     }
 
     /**

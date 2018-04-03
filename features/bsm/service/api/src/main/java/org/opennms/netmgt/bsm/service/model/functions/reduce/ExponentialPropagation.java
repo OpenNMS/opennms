@@ -65,14 +65,14 @@ public class ExponentialPropagation implements ReductionFunction {
         // Get the exponential sum of all child states
         final double sum = statuses.stream()
                                    .filter(si -> si.getStatus().ordinal() >= Status.WARNING.ordinal())                          // Ignore normal and indeterminate
-                                   .mapToDouble(si -> Math.pow(this.base, si.getStatus().ordinal() - Status.WARNING.ordinal())) // Offset to warning = n^0
+                                   .mapToDouble(si -> Math.pow(this.base, (double)(si.getStatus().ordinal() - Status.WARNING.ordinal()))) // Offset to warning = n^0
                                    .sum();
 
         // Grab the indices from all the statuses that contributed to the sum
         // since these contribute to the cause
         final List<Integer> contributingIndices = statuses.stream()
             .filter(si -> si.getStatus().ordinal() >= Status.WARNING.ordinal())
-            .map(si -> si.getIndex())
+            .map(StatusWithIndex::getIndex)
             .distinct()
             .sorted()
             .collect(Collectors.toList());

@@ -65,7 +65,7 @@ public class ThreadLocker {
 
         // Create a future that will be resolved once the barrier has
         // the desired number of threads
-        final CompletableFuture<Integer> future = new CompletableFuture<Integer>();
+        final CompletableFuture<Integer> future = new CompletableFuture<>();
 
         barrier = new CyclicBarrier(numThreads, new Runnable() {
             @Override

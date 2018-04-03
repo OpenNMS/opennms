@@ -28,16 +28,18 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
-
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 
 public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventDao {
 
@@ -68,4 +70,27 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> 
         });
     }
 
+    public List<OnmsEvent> getEventsForEventParameters(final Map<String, String> eventParameters) {
+        final StringBuffer hqlStringBuffer = new StringBuffer("From OnmsEvent e where ");
+        for (int i = 0; i < eventParameters.size(); i++) {
+            if (i > 0) {
+                hqlStringBuffer.append(" and ");
+            }
+            hqlStringBuffer.append("exists (select p.event from OnmsEventParameter p where e=p.event and p.name = :name" + i + " and p.value like :value" + i + ")");
+        }
+
+        return (List<OnmsEvent>) getHibernateTemplate().executeFind(new HibernateCallback<List<OnmsEvent>>() {
+            @Override
+            public List<OnmsEvent> doInHibernate(Session session) throws HibernateException, SQLException {
+                Query q = session.createQuery(hqlStringBuffer.toString());
+                int i = 0;
+                for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {
+                    q = q.setParameter("name" + i, entry.getKey()).setParameter("value" + i, entry.getValue());
+                    i++;
+                }
+
+                return q.list();
+            }
+        });
+    }
 }

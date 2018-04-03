@@ -33,7 +33,6 @@ import java.sql.SQLException;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.RrdLabelUtils;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 
 /**

@@ -60,9 +60,13 @@ public class ReportController {
         m_validator.validate(command, errors);
         try {
             StatisticsReportModel report = m_statisticsReportService.getReport(command, errors);
-            return new ModelAndView("statisticsReports/report", "model", report);
-        } catch (Throwable e) {
-            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), e);
+            if (report == null) {
+                throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), null);
+            } else {
+                return new ModelAndView("statisticsReports/report", "model", report);
+            }
+        } catch (org.springframework.orm.hibernate3.HibernateObjectRetrievalFailureException horfe) {
+            throw new StatisticsReportIdNotFoundException("No such report ID", command.getId().toString(), horfe);
         }
     }
 }

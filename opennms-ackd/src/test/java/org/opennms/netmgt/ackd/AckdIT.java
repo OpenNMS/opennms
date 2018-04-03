@@ -367,7 +367,7 @@ public class AckdIT implements InitializingBean {
         userNotif.setNotifyTime(event.getEventTime());
         userNotif.setUserId("me");
         
-        Set<OnmsUserNotification> usersnotifieds = new HashSet<OnmsUserNotification>();
+        Set<OnmsUserNotification> usersnotifieds = new HashSet<>();
         usersnotifieds.add(userNotif);
         m_userNotificationDao.save(userNotif);
         vo.m_userNotifId = userNotif.getId();

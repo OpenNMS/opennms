@@ -54,20 +54,20 @@ public class EventAnticipator implements EventListener {
      * This collection contains events that are expected to be received during the
      * given unit test.
      */
-    final List<EventWrapper> m_anticipatedEvents = new ArrayList<EventWrapper>();
+    final List<EventWrapper> m_anticipatedEvents = new ArrayList<>();
     
     /**
      * This collection contains events that have been received during the unit test.
      * These events are removed from {@link #m_anticipatedEvents} as they are received.
      */
-    final List<Event> m_anticipatedEventsReceived = new ArrayList<Event>();
+    final List<Event> m_anticipatedEventsReceived = new ArrayList<>();
 
     /**
      * This list contains events that were received during the test duration but were not
      * in the {@link #m_anticipatedEvents} list. The {@link #m_unanticipatedEvents} list is 
      * only populated if {@link #m_discardUnanticipated} is set to <code>false</code>.
      */
-    final List<Event> m_unanticipatedEvents = new ArrayList<Event>();
+    final List<Event> m_unanticipatedEvents = new ArrayList<>();
 
     /**
      */

@@ -53,7 +53,7 @@ public class NodeCategoryPolicyTest implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
-        m_nodes = new ArrayList<OnmsNode>();
+        m_nodes = new ArrayList<>();
         final OnmsNode node1 = new OnmsNode();
         node1.setNodeId("1");
         node1.setForeignSource("a");
@@ -86,8 +86,8 @@ public class NodeCategoryPolicyTest implements InitializingBean {
 
     private List<OnmsNode> matchPolicy(NodeCategorySettingPolicy p, String matchingId) {
         OnmsNode o;
-        final List<OnmsNode> populatedNodes = new ArrayList<OnmsNode>();
-        final List<OnmsNode> matchedNodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> populatedNodes = new ArrayList<>();
+        final List<OnmsNode> matchedNodes = new ArrayList<>();
 
         for (final OnmsNode node : m_nodes) {
             System.err.println(node);

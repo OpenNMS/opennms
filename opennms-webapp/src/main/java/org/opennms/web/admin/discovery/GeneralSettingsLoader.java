@@ -103,13 +103,13 @@ public abstract class GeneralSettingsLoader {
 		}
 		
 		if (timeoutStr!=null && (!"".equals(timeoutStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_TIMEOUT).equals(timeoutStr.trim()))) {
-			config.setTimeout(Long.valueOf(timeoutStr).longValue());
+			config.setTimeout(Long.parseLong(timeoutStr));
 		} else {
 			config.setTimeout(null);
 		}
 		
 		if (chunksizeStr!=null && (!"".equals(chunksizeStr.trim()) && !String.valueOf(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE).equals(chunksizeStr.trim()))) {
-			config.setChunkSize(Integer.valueOf(chunksizeStr));
+			config.setChunkSize(Integer.parseInt(chunksizeStr));
 		} else {
 			config.setChunkSize(null);
 		}

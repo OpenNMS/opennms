@@ -68,8 +68,8 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
     }
 
     @Override
-    public AggregationPolicy<TrapInformationWrapper, TrapLogDTO> getAggregationPolicy() {
-        return new AggregationPolicy<TrapInformationWrapper, TrapLogDTO>() {
+    public AggregationPolicy<TrapInformationWrapper, TrapLogDTO, TrapLogDTO> getAggregationPolicy() {
+        return new AggregationPolicy<TrapInformationWrapper, TrapLogDTO, TrapLogDTO>() {
             @Override
             public int getCompletionSize() {
                 return config.getBatchSize();
@@ -86,10 +86,10 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
             }
 
             @Override
-            public TrapLogDTO aggregate(TrapLogDTO oldBucket, TrapInformationWrapper newMessage) {
+            public TrapLogDTO aggregate(TrapLogDTO accumulator, TrapInformationWrapper newMessage) {
                 final TrapInformation trapInfo = newMessage.getTrapInformation();
-                if (oldBucket == null) { // no log created yet
-                    oldBucket = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind()));
+                if (accumulator == null) { // no log created yet
+                    accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind()));
                 }
                 final TrapDTO trapDTO = new TrapDTO(trapInfo);
 
@@ -101,8 +101,13 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
                     }
                 }
 
-                oldBucket.addMessage(trapDTO);
-                return oldBucket;
+                accumulator.addMessage(trapDTO);
+                return accumulator;
+            }
+
+            @Override
+            public TrapLogDTO build(TrapLogDTO accumulator) {
+                return accumulator;
             }
         };
     }

@@ -169,7 +169,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     @Override
     public List<String[]> getNodeServices(int nodeId){
-        final LinkedList<String[]> servicemap = new LinkedList<String[]>();
+        final LinkedList<String[]> servicemap = new LinkedList<>();
 
         Criteria criteria = new Criteria(OnmsMonitoredService.class);
         criteria.setAliases(Arrays.asList(new Alias[] {

@@ -1,0 +1,104 @@
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements. See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership. The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License. You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied. See the License for the
+// specific language governing permissions and limitations
+// under the License.
+
+option optimize_for = LITE_RUNTIME;
+
+// List of events currently available
+// New events can be added to this list
+enum lsp_event {
+    INITIATED = 0;
+    CONCLUDED_UP = 1;
+    CONCLUDED_TORN_DOWN = 2;
+    PROTECTION_AVAILABLE = 3;
+    PROTECTION_UNAVAILABLE = 4;    
+    AUTOBW_SUCCESS = 5;
+    AUTOBW_FAIL = 6;
+    RESV_TEAR_RECEIVED = 7;
+    DESELECT_ACTIVE_PATH = 8;
+    CHANGE_ACTIVE_PATH = 9;
+    DETOUR_UP = 10;
+    DETOUR_DOWN = 11;
+    ORIGINATE_MBB = 12;
+    SELECT_ACTIVE_PATH = 13;
+    CSPF_NO_ROUTE = 14;
+    CSPF_SUCCESS = 15;
+    RESTART_RECOVERY_FAIL = 16;
+    PATHERR_RECEIVED = 17;
+    PATH_MTU_CHANGE = 18;
+    TUNNEL_LOCAL_REPAIRED = 19;
+}
+
+enum event_subcode {
+    ADMISSION_CONTROL_FAILURE = 1;
+    SESSION_PREEMPTED = 2;
+    BAD_LOOSE_ROUTE = 3;
+    BAD_STRICT_ROUTE = 4;
+    LABEL_ALLOCATION_FAILURE = 5;
+    NON_RSVP_CAPABLE_ROUTER = 6;
+    TTL_EXPIRED = 7;
+    ROUTING_LOOP_DETECTED = 8;
+    REQUESTED_BANDWIDTH_UNAVAILABLE = 9;
+}    
+
+// Schema for key for GPB msg receiver
+message key {
+    required string name               = 1;
+    required int32 instance_identifier = 2;
+    required uint64 time_stampg       = 3;
+}
+
+// Schema for communicating lsp events
+message lsp_monitor_data_event {
+    required lsp_event event_identifier  = 1;
+    optional event_subcode subcode = 2;
+}
+
+message ero_type_entry {
+    required uint32 ip = 1;
+    optional string flags = 2;
+}
+
+message ero_ipv4_type {
+    repeated ero_type_entry entry = 1;
+}
+
+message rro_type_entry {
+    optional uint32 nodeid       = 1;        // node-id or loopback
+    optional uint32 flags         = 2;        // contains flags
+    optional uint32 intf_addr    = 3;        // interface-ip
+    optional uint32 label        = 4;        // may be using PHP
+}
+
+message rro_ipv4_type {
+    repeated rro_type_entry rro_entry = 1;
+}
+
+// Schema for communicating properties of LSPs
+message lsp_monitor_data_property {
+    optional uint64 bandwidth           = 1;
+    optional string path_name           = 2;
+    optional int32 metric               = 3;
+    optional float max_avg_bw           = 4;
+    optional ero_ipv4_type ero          = 5;
+    optional rro_ipv4_type rro          = 6;   
+}
+
+message lsp_mon {        
+    required key key_field = 1;
+    optional lsp_monitor_data_event event_field = 2;
+    optional lsp_monitor_data_property property_field = 3;
+}

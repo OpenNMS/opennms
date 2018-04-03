@@ -77,8 +77,8 @@ public class InfoPanel extends CssLayout {
     private void refreshInfoArea() {
         removeAllComponents();
         if (expanded) {
-            staticComponents.forEach(sc -> addComponent(sc));
-            dynamicComponents.forEach(c -> addComponent(c));
+            staticComponents.forEach(this::addComponent);
+            dynamicComponents.forEach(this::addComponent);
 
             // Add an empty component with width = 350px to always force the max length
             // This is required as otherwise the left area of the info panel would be empty, even if the info panel

@@ -1,103 +1,96 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/coldStart</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: coldStart</event-label>
-        <descr>
-            &lt;p>This trap signifies that the SonicWALL appliance is re-initializing itself
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/coldStart</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: coldStart</event-label>
+      <descr>&lt;p>This trap signifies that the SonicWALL appliance is re-initializing itself
             such that the agent's configuration or the appliance itself
-            implementation may be altered. &lt;/p>&lt;table>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            implementation may be altered. &lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             coldStart trap received&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/warmStart</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: warmStart</event-label>
-        <descr>
-            &lt;p>This trap signifies that the SonicWALL appliance is re-initializing itself
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/warmStart</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: warmStart</event-label>
+      <descr>&lt;p>This trap signifies that the SonicWALL appliance is re-initializing itself
             such that neither the agent configuration nor the appliance
-            implementation is altered. &lt;/p>&lt;table>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            implementation is altered. &lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             warmStart trap received&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>5</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/authenticationFailure</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: authenticationFailure</event-label>
-        <descr>
-            &lt;p>This trap signifies that the SonicWALL appliance is the addressee of
-            a protocol message that is not properly authenticated. &lt;/p>&lt;table>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.6.3.1.1.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/authenticationFailure</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: authenticationFailure</event-label>
+      <descr>&lt;p>This trap signifies that the SonicWALL appliance is the addressee of
+            a protocol message that is not properly authenticated. &lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             authenticationFailure trap received&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>1</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapAttack</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapAttack</event-label>
-        <descr>
-            &lt;p>This trap indicates that the firewall have detected a attack.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapAttack</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapAttack</event-label>
+      <descr>&lt;p>This trap indicates that the firewall have detected a attack.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -105,34 +98,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapAttack trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>2</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapSysError</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapSysError</event-label>
-        <descr>
-            &lt;p>This trap indicates that there is a system problem with the SonicWALL appliance.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapSysError</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapSysError</event-label>
+      <descr>&lt;p>This trap indicates that there is a system problem with the SonicWALL appliance.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -140,34 +131,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapSysError trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>3</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapBlkWebSite</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapBlkWebSite</event-label>
-        <descr>
-            &lt;p>This trap indicates that there is a web site was blocked by the firewall.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapBlkWebSite</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapBlkWebSite</event-label>
+      <descr>&lt;p>This trap indicates that there is a web site was blocked by the firewall.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -175,34 +164,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapBlkWebSite trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>4</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapIpsecTunnel</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapIpsecTunnel</event-label>
-        <descr>
-            &lt;p>This trap indicates that there has bee a change in the IPSec tunnel status along with
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapIpsecTunnel</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapIpsecTunnel</event-label>
+      <descr>&lt;p>This trap indicates that there has bee a change in the IPSec tunnel status along with
             the parameters required to indentify the tunnel .&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -240,9 +227,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoIsDHCPCentral&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapIpsecTunnel trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -256,27 +242,26 @@
             swTrapInfoGateway=%parm[#10]%
             swTrapInfoIsDHCPCentral=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>5</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapWlanIDS</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapWlanIDS</event-label>
-        <descr>
-            &lt;p>This trap indicates that there is a wireless intrusion detected by the firewall.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapWlanIDS</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapWlanIDS</event-label>
+      <descr>&lt;p>This trap indicates that there is a wireless intrusion detected by the firewall.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -284,34 +269,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapWlanIDS trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapSysEnv</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapSysEnv</event-label>
-        <descr>
-            &lt;p>This trap indicates that there is a system environment problem detected by the firewall.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapSysEnv</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapSysEnv</event-label>
+      <descr>&lt;p>This trap indicates that there is a system environment problem detected by the firewall.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -319,510 +302,480 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapSysEnv trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>100</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNone</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNone</event-label>
-        <descr>
-            &lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>100</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNone</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNone</event-label>
+      <descr>&lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhNone trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>101</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhUnused</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhUnused</event-label>
-        <descr>
-            &lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>101</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhUnused</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhUnused</event-label>
+      <descr>&lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhUnused trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>102</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemMaintenance</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemMaintenance</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for system maintenance.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>102</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemMaintenance</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemMaintenance</event-label>
+      <descr>&lt;p>This is a legacy trap for system maintenance.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacySystemMaintenance trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>103</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemErrors</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemErrors</event-label>
-        <descr>
-            &lt;p>Please see description for swFwTrapSysError trap.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>103</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemErrors</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemErrors</event-label>
+      <descr>&lt;p>Please see description for swFwTrapSysError trap.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacySystemErrors trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>104</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyBlockedWebSites</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyBlockedWebSites</event-label>
-        <descr>
-            &lt;p>Please see description for swFwTrapBlkWebSite trap.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>104</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyBlockedWebSites</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyBlockedWebSites</event-label>
+      <descr>&lt;p>Please see description for swFwTrapBlkWebSite trap.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyBlockedWebSites trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>105</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyBlockedJavaEtc</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyBlockedJavaEtc</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for blocked java and other blocked application activities.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>105</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyBlockedJavaEtc</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyBlockedJavaEtc</event-label>
+      <descr>&lt;p>This is a legacy trap for blocked java and other blocked application activities.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyBlockedJavaEtc trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>106</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyUserActivity</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyUserActivity</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for user activities.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>106</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyUserActivity</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyUserActivity</event-label>
+      <descr>&lt;p>This is a legacy trap for user activities.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyUserActivity trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>107</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDeniedLanIp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDeniedLanIp</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for denied LAN IP activities.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>107</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDeniedLanIp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDeniedLanIp</event-label>
+      <descr>&lt;p>This is a legacy trap for denied LAN IP activities.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyDeniedLanIp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>108</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyAttacks</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyAttacks</event-label>
-        <descr>
-            &lt;p>Please see description for swFwTrapAttack trap.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>108</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyAttacks</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyAttacks</event-label>
+      <descr>&lt;p>Please see description for swFwTrapAttack trap.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyAttacks trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>109</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedTcp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedTcp</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for dropped TCP event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>109</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedTcp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedTcp</event-label>
+      <descr>&lt;p>This is a legacy trap for dropped TCP event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyDroppedTcp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>110</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedUdp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedUdp</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for dropped UDP event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>110</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedUdp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedUdp</event-label>
+      <descr>&lt;p>This is a legacy trap for dropped UDP event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyDroppedUdp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>111</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedIcmp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedIcmp</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for dropped ICMP event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>111</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyDroppedIcmp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyDroppedIcmp</event-label>
+      <descr>&lt;p>This is a legacy trap for dropped ICMP event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyDroppedIcmp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>112</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyNetworkDebug</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyNetworkDebug</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for network debug event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>112</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyNetworkDebug</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyNetworkDebug</event-label>
+      <descr>&lt;p>This is a legacy trap for network debug event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyNetworkDebug trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>113</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemEnvironment</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemEnvironment</event-label>
-        <descr>
-            &lt;p>Please see description for swFwTrapSysEnv trap.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>113</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacySystemEnvironment</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacySystemEnvironment</event-label>
+      <descr>&lt;p>Please see description for swFwTrapSysEnv trap.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacySystemEnvironment trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>114</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyVpnTunnelStatus</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyVpnTunnelStatus</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for VPN tunnel status.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>114</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyVpnTunnelStatus</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyVpnTunnelStatus</event-label>
+      <descr>&lt;p>This is a legacy trap for VPN tunnel status.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
@@ -859,9 +812,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoIsDHCPCentral&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyVpnTunnelStatus trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -875,61 +827,58 @@
             swTrapInfoGateway=%parm[#10]%
             swTrapInfoIsDHCPCentral=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>115</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacy80211bManagement</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacy80211bManagement</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for 802.11 management event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>115</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacy80211bManagement</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacy80211bManagement</event-label>
+      <descr>&lt;p>This is a legacy trap for 802.11 management event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacy80211bManagement trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>116</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhAuthAccess</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhAuthAccess</event-label>
-        <descr>
-            &lt;p>This trap indicates an activity from log administrator, user and guest account.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>116</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhAuthAccess</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhAuthAccess</event-label>
+      <descr>&lt;p>This trap indicates an activity from log administrator, user and guest account.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -937,34 +886,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhAuthAccess trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>117</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhBootp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhBootp</event-label>
-        <descr>
-            &lt;p>This trap indicates an event happening from BOOTP.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>117</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhBootp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhBootp</event-label>
+      <descr>&lt;p>This trap indicates an event happening from BOOTP.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -972,34 +919,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhBootp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>118</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhCrypt</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhCrypt</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from crypto algorithm and hardware testing.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>118</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhCrypt</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhCrypt</event-label>
+      <descr>&lt;p>This trap indicates an event from crypto algorithm and hardware testing.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1007,34 +952,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhCrypt trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>119</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpc</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpc</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from DHCP Client protocol activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>119</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpc</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpc</event-label>
+      <descr>&lt;p>This trap indicates an event from DHCP Client protocol activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1042,34 +985,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDhcpc trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>120</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpr</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpr</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from DHCP central and gateway protocol activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>120</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpr</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpr</event-label>
+      <descr>&lt;p>This trap indicates an event from DHCP central and gateway protocol activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1077,34 +1018,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDhcpr trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>121</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwEvent</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwEvent</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from internal firewall activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>121</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwEvent</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwEvent</event-label>
+      <descr>&lt;p>This trap indicates an event from internal firewall activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1112,34 +1051,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhFwEvent trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>122</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwHardware</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwHardware</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from firewall hardware error.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>122</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwHardware</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwHardware</event-label>
+      <descr>&lt;p>This trap indicates an event from firewall hardware error.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1147,34 +1084,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhFwHardware trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>123</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwLogging</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwLogging</event-label>
-        <descr>
-            &lt;p>This trap indicates a general firewall event or error.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>123</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwLogging</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwLogging</event-label>
+      <descr>&lt;p>This trap indicates a general firewall event or error.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1182,34 +1117,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhFwLogging trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>124</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwRule</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwRule</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a firewall rule modification.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>124</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFwRule</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFwRule</event-label>
+      <descr>&lt;p>This trap indicates an event from a firewall rule modification.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1217,34 +1150,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhFwRule trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>125</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhGms</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhGms</event-label>
-        <descr>
-            &lt;p>This trap indicates a GMS status event.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>125</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhGms</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhGms</event-label>
+      <descr>&lt;p>This trap indicates a GMS status event.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1252,34 +1183,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhGms trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>126</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhHa</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhHa</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a high availability activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>126</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhHa</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhHa</event-label>
+      <descr>&lt;p>This trap indicates an event from a high availability activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1287,34 +1216,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhHa trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>127</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhIntrusionDetection</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhIntrusionDetection</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an intrusion prevention activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>127</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhIntrusionDetection</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhIntrusionDetection</event-label>
+      <descr>&lt;p>This trap indicates an event from an intrusion prevention activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1349,9 +1276,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoClientUserName&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhIntrusionDetection trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -1365,27 +1291,26 @@
             swTrapInfoDstResolvedHostName=%parm[#10]%
             swTrapInfoClientUserName=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>128</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhL2tpClient</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhL2tpClient</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an L2TP client activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>128</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhL2tpClient</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhL2tpClient</event-label>
+      <descr>&lt;p>This trap indicates an event from an L2TP client activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1393,34 +1318,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhL2tpClient trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>129</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhL2tpServer</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhL2tpServer</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an L2TP server activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>129</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhL2tpServer</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhL2tpServer</event-label>
+      <descr>&lt;p>This trap indicates an event from an L2TP server activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1428,34 +1351,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhL2tpServer trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>130</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetwork</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetwork</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from ARP, fragmentation or MTU activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>130</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetwork</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetwork</event-label>
+      <descr>&lt;p>This trap indicates an event from ARP, fragmentation or MTU activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1490,9 +1411,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoClientUserName&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhNetwork trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -1506,27 +1426,26 @@
             swTrapInfoDstResolvedHostName=%parm[#10]%
             swTrapInfoClientUserName=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>131</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkAccess</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkAccess</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from network and firewall protocol access activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>131</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkAccess</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkAccess</event-label>
+      <descr>&lt;p>This trap indicates an event from network and firewall protocol access activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1561,9 +1480,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoClientUserName&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhNetworkAccess trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -1577,27 +1495,26 @@
             swTrapInfoDstResolvedHostName=%parm[#10]%
             swTrapInfoClientUserName=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>132</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkTraffic</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkTraffic</event-label>
-        <descr>
-            &lt;p>This trap indicates a network traffic reporting event.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>132</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkTraffic</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkTraffic</event-label>
+      <descr>&lt;p>This trap indicates a network traffic reporting event.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1605,34 +1522,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhNetworkTraffic trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>133</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPppDialUp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPppDialUp</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a PPP dial-up activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>133</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPppDialUp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPppDialUp</event-label>
+      <descr>&lt;p>This trap indicates an event from a PPP dial-up activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1640,34 +1555,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhPppDialUp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>134</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPppoe</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPppoe</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a PPPoE activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>134</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPppoe</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPppoe</event-label>
+      <descr>&lt;p>This trap indicates an event from a PPPoE activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1675,34 +1588,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhPppoe trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>135</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPptp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPptp</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a PPTP activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>135</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPptp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPptp</event-label>
+      <descr>&lt;p>This trap indicates an event from a PPTP activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1710,34 +1621,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhPptp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>136</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRadius</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRadius</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a RADIUS or LDAP server activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>136</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRadius</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRadius</event-label>
+      <descr>&lt;p>This trap indicates an event from a RADIUS or LDAP server activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1745,34 +1654,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhRadius trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>137</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRip</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRip</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a RIP activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>137</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRip</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRip</event-label>
+      <descr>&lt;p>This trap indicates an event from a RIP activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1780,34 +1687,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhRip trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>138</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSecurityServices</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSecurityServices</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a security services activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>138</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSecurityServices</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSecurityServices</event-label>
+      <descr>&lt;p>This trap indicates an event from a security services activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1842,9 +1747,8 @@
             %parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoClientUserName&lt;/b>&lt;/td>&lt;td>
-            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhSecurityServices trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%
@@ -1858,27 +1762,26 @@
             swTrapInfoDstResolvedHostName=%parm[#10]%
             swTrapInfoClientUserName=%parm[#11]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>139</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVoip</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVoip</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VoIP H.323/RAS, H.323/H.225, and H.323/H.245 activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>139</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVoip</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVoip</event-label>
+      <descr>&lt;p>This trap indicates an event from a VoIP H.323/RAS, H.323/H.225, and H.323/H.245 activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1886,34 +1789,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVoip trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>140</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpn</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpn</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VPN activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>140</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpn</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpn</event-label>
+      <descr>&lt;p>This trap indicates an event from a VPN activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1921,34 +1822,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVpn trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>141</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnClient</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnClient</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VPN client activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>141</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnClient</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnClient</event-label>
+      <descr>&lt;p>This trap indicates an event from a VPN client activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1956,34 +1855,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVpnClient trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>142</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnIke</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnIke</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VPN IKE activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>142</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnIke</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnIke</event-label>
+      <descr>&lt;p>This trap indicates an event from a VPN IKE activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -1991,34 +1888,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVpnIke trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>143</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnIpsec</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnIpsec</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VPN IPSec ctivity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>143</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnIpsec</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnIpsec</event-label>
+      <descr>&lt;p>This trap indicates an event from a VPN IPSec ctivity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2026,34 +1921,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVpnIpsec trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>144</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnPki</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnPki</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a VPN PKI activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>144</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhVpnPki</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhVpnPki</event-label>
+      <descr>&lt;p>This trap indicates an event from a VPN PKI activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2061,34 +1954,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhVpnPki trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>145</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWanFailover</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWanFailover</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a WAN failover activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>145</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWanFailover</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWanFailover</event-label>
+      <descr>&lt;p>This trap indicates an event from a WAN failover activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2096,34 +1987,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhWanFailover trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>146</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWireless</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWireless</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a wireless activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>146</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWireless</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWireless</event-label>
+      <descr>&lt;p>This trap indicates an event from a wireless activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2131,34 +2020,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhWireless trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>147</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSonicPoint</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSonicPoint</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a SonicPoint activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>147</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSonicPoint</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSonicPoint</event-label>
+      <descr>&lt;p>This trap indicates an event from a SonicPoint activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2166,34 +2053,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhSonicPoint trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>148</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhMcast</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhMcast</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an IGMP activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>148</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhMcast</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhMcast</event-label>
+      <descr>&lt;p>This trap indicates an event from an IGMP activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2201,34 +2086,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhMcast trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>149</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWlanIds</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWlanIds</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a WLAN IDS activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>149</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWlanIds</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWlanIds</event-label>
+      <descr>&lt;p>This trap indicates an event from a WLAN IDS activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2236,68 +2119,64 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhWlanIds trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>150</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyModemDebug</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyModemDebug</event-label>
-        <descr>
-            &lt;p>This is a legacy trap for modem debug.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>150</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhLegacyModemDebug</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhLegacyModemDebug</event-label>
+      <descr>&lt;p>This is a legacy trap for modem debug.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhLegacyModemDebug trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>151</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhModemDebug</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhModemDebug</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from modem debug.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>151</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhModemDebug</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhModemDebug</event-label>
+      <descr>&lt;p>This trap indicates an event from modem debug.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2305,34 +2184,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhModemDebug trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>152</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPpp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPpp</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a generic PPP activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>152</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhPpp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhPpp</event-label>
+      <descr>&lt;p>This trap indicates an event from a generic PPP activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2340,34 +2217,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhPpp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>153</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhMsAd</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhMsAd</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an MsAD activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>153</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhMsAd</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhMsAd</event-label>
+      <descr>&lt;p>This trap indicates an event from an MsAD activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2375,34 +2250,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhMsAd trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>154</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDdns</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDdns</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from Dynamic DNS.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>154</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDdns</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDdns</event-label>
+      <descr>&lt;p>This trap indicates an event from Dynamic DNS.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2410,34 +2283,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDdns trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>155</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRbl</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRbl</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a real-time black list activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>155</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRbl</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRbl</event-label>
+      <descr>&lt;p>This trap indicates an event from a real-time black list activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2445,68 +2316,64 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhRbl trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>156</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhARS</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhARS</event-label>
-        <descr>
-            &lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>156</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhARS</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhARS</event-label>
+      <descr>&lt;p>This trap may be disabled at this time.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhARS trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>157</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhIpcomp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhIpcomp</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an IP compression activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>157</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhIpcomp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhIpcomp</event-label>
+      <descr>&lt;p>This trap indicates an event from an IP compression activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2514,34 +2381,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhIpcomp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>158</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhCia</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhCia</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a CIA activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>158</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhCia</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhCia</event-label>
+      <descr>&lt;p>This trap indicates an event from a CIA activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2549,34 +2414,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhCia trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>159</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRFManagement</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRFManagement</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from an RF management activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>159</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhRFManagement</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhRFManagement</event-label>
+      <descr>&lt;p>This trap indicates an event from an RF management activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2584,34 +2447,32 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhRFManagement trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>160</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDynAddrObjs</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDynAddrObjs</event-label>
-        <descr>
-            &lt;p>This trap indicates an event from a dynamic address object activity.
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>160</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDynAddrObjs</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDynAddrObjs</event-label>
+      <descr>&lt;p>This trap indicates an event from a dynamic address object activity.
             For futher information check your Sonicwall events: https://%ipAddr%&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
@@ -2619,353 +2480,332 @@
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDynAddrObjs trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>161</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhApplicationFirewall</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhApplicationFirewall</event-label>
-        <descr>
-            &lt;p>This trap indicates an application firewall event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>161</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhApplicationFirewall</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhApplicationFirewall</event-label>
+      <descr>&lt;p>This trap indicates an application firewall event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhApplicationFirewall trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>162</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSslvpn</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSslvpn</event-label>
-        <descr>
-            &lt;p>This trap indicates an SSL-VPN event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>162</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSslvpn</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSslvpn</event-label>
+      <descr>&lt;p>This trap indicates an SSL-VPN event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhSslvpn trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>163</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSonicPointN</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSonicPointN</event-label>
-        <descr>
-            &lt;p>This trap indicates a SonicPoint-N event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>163</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhSonicPointN</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhSonicPointN</event-label>
+      <descr>&lt;p>This trap indicates a SonicPoint-N event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhSonicPointN trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>164</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhAntispam</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhAntispam</event-label>
-        <descr>
-            &lt;p>This trap indicates an Anti-Spam event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>164</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhAntispam</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhAntispam</event-label>
+      <descr>&lt;p>This trap indicates an Anti-Spam event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhAntispam trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>165</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkMonitor</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkMonitor</event-label>
-        <descr>
-            &lt;p>This trap indicates a Network Monitor event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>165</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhNetworkMonitor</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhNetworkMonitor</event-label>
+      <descr>&lt;p>This trap indicates a Network Monitor event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhNetworkMonitor trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>166</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpServer</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpServer</event-label>
-        <descr>
-            &lt;p>This trap indicates a DHCP Server event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>166</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDhcpServer</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDhcpServer</event-label>
+      <descr>&lt;p>This trap indicates a DHCP Server event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDhcpServer trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>167</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFtp</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFtp</event-label>
-        <descr>
-            &lt;p>This trap indicates a FTP event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>167</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhFtp</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhFtp</event-label>
+      <descr>&lt;p>This trap indicates a FTP event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhFtp trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>168</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDPISSL</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDPISSL</event-label>
-        <descr>
-            &lt;p>This trap indicates a DPI SSL event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>168</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhDPISSL</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhDPISSL</event-label>
+      <descr>&lt;p>This trap indicates a DPI SSL event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhDPISSL trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>169</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhApplicationControl</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhApplicationControl</event-label>
-        <descr>
-            &lt;p>This trap indicates an Application Control event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>169</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhApplicationControl</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhApplicationControl</event-label>
+      <descr>&lt;p>This trap indicates an Application Control event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhApplicationControl trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
-    <event>
-        <mask>
-            <maskelement>
-                <mename>id</mename>
-                <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>generic</mename>
-                <mevalue>6</mevalue>
-            </maskelement>
-            <maskelement>
-                <mename>specific</mename>
-                <mevalue>170</mevalue>
-            </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWanAcceleration</uei>
-        <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWanAcceleration</event-label>
-        <descr>
-            &lt;p>This trap indicates a WAN Acceleration event.&lt;/p>&lt;table>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.8741.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>170</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/sonicwall/traps/swFwTrapEnhWanAcceleration</uei>
+      <event-label>SONICWALL-FIREWALL-TRAP-MIB defined trap event: swFwTrapEnhWanAcceleration</event-label>
+      <descr>&lt;p>This trap indicates a WAN Acceleration event.&lt;/p>&lt;table>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapType&lt;/b>&lt;/td>&lt;td>
             %parm[#1]%;&lt;/td>&lt;td>&lt;p>
             &lt;/p>&lt;/td>&lt;/tr>
             &lt;tr>&lt;td>&lt;b>
             swTrapInfoTrapDescription&lt;/b>&lt;/td>&lt;td>
-            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table>
-        </descr>
-        <logmsg dest="logndisplay">&lt;p>
+            %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
             swFwTrapEnhWanAcceleration trap received
             swTrapInfoTrapType=%parm[#1]%
             swTrapInfoTrapDescription=%parm[#2]%&lt;/p>
         </logmsg>
-        <severity>Indeterminate</severity>
-    </event>
+      <severity>Indeterminate</severity>
+   </event>
 </events>

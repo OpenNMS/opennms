@@ -54,7 +54,7 @@ public class Transaction {
 	
 	public static final Logger LOG = LoggerFactory.getLogger(Transaction.class);
 	
-	private static ThreadLocal<Transaction> s_threadTX = new ThreadLocal<Transaction>();
+	private static ThreadLocal<Transaction> s_threadTX = new ThreadLocal<>();
 
 	private static Transaction getTX() {
 		Transaction tx = s_threadTX.get();
@@ -138,8 +138,8 @@ public class Transaction {
 	}
     
     private Map<String, Connection> m_connections = new HashMap<String, Connection>();
-    private List<Statement> m_statements = new LinkedList<Statement>();
-    private List<ResultSet> m_resultSets = new LinkedList<ResultSet>();
+    private List<Statement> m_statements = new LinkedList<>();
+    private List<ResultSet> m_resultSets = new LinkedList<>();
     private boolean m_rollbackOnly = false;
     private DBUtils m_dbUtils = new DBUtils(Transaction.class);
 

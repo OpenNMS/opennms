@@ -64,7 +64,7 @@ public class TestEngine extends AbstractCorrelationEngine implements Initializin
     
     @Override
 	public List<String> getInterestingEvents() {
-		List<String> ueis = new ArrayList<String>();
+		List<String> ueis = new ArrayList<>();
 		ueis.add("testDown");
 		ueis.add("testUp");
         ueis.add("timed");

@@ -147,7 +147,7 @@ public class LLDPMibIT  {
             m_agent = MockSnmpAgent.createAgentAndRun(classPathResource("penrose-lldp-mib.properties"), str(InetAddressUtils.ONE_TWENTY_SEVEN) + "/0");
         }
 
-        m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
+        m_requestedVarbinds = new ArrayList<>();
     }
     
     @After

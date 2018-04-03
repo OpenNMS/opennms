@@ -1499,8 +1499,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         geolocation.setCity("Pittsboro");
         geolocation.setState("NC");
         geolocation.setZip("27312");
-        geolocation.setLatitude(35.715723f);
-        geolocation.setLongitude(-79.162261f);
+        geolocation.setLatitude(35.715723);
+        geolocation.setLongitude(-79.162261);
         node.getAssetRecord().setGeolocation(geolocation);
         nodeDao.saveOrUpdate(node);
         nodeDao.flush();
@@ -1888,8 +1888,8 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         protected int m_svcCategoryCompleted;
         protected int m_assetCount;
         protected int m_assetCompleted;
-        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<OnmsNodeRequisition>();
-        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<OnmsIpInterfaceRequisition>();
+        protected List<OnmsNodeRequisition> m_nodes = new ArrayList<>();
+        protected List<OnmsIpInterfaceRequisition> m_ifaces = new ArrayList<>();
 
         public List<OnmsNodeRequisition> getNodes() {
             return m_nodes;

@@ -35,8 +35,6 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -76,7 +74,7 @@ public class SlackNotificationStrategyIT {
         try {
 
             final NotificationStrategy ns = new SlackNotificationStrategy();
-            final List<Argument> arguments = new ArrayList<Argument>();
+            final List<Argument> arguments = new ArrayList<>();
 
             // Set these properties. We will override them with Args on the first run.
             System.setProperty("org.opennms.netmgt.notifd.slack.webhookURL", "http://localhost:" + port + "/hooks/abunchofstuffthatidentifiesawebhook");

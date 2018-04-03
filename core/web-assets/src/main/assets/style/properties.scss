@@ -1,0 +1,74 @@
+//colors
+$color_green_leaf_approx: #366903;
+$white: #fff;
+$color_mine_shaft_approx: #333;
+$black_50: rgba(0,0,0,0.5);
+$color_mountain_mist_approx: #999;
+$color_tundora_approx: #444;
+$color_suva_gray_approx: #888;
+$color_gallery_approx: #eee;
+$color_oyster_pink_approx: #f5cdcd;
+$color_guardsman_red_approx: #cc0000;
+$color_tuft_bush_approx: #ffd7cd;
+$color_scarlet_approx: #ff3300;
+$color_oasis_approx: #ffebcd;
+$color_california_approx: #ff9900;
+$color_barley_white_approx: #fff5cd;
+$color_supernova_approx: #ffcc00;
+$color_aths_special_approx: #ebebcd;
+$color_olive_approx: #999000;
+$color_moon_mist_approx: #d7e1cd;
+$color_dell_approx: #336600;
+$color_citron_approx: #999900;
+$color_celeste_approx: #ccc;
+$color_alto_approx: #ddd;
+$color_bright_red_approx: #a20200;
+$color_alizarin_crimson_approx: #a40000;
+$color_lima_approx: #4c9d29;
+
+$color_opennms: #4c9d29;
+$color_opennms_light: #5acc29;
+$color_opennms_lighter: lighten($color_opennms_light,10%);
+$color_opennms_dark: $color_green_leaf_approx;
+$color_opennms_darker: darken($color_opennms_dark,10%);
+
+$color_success: #94bf7c;
+$color_success_lighter: lighten($color_success,20%);
+$color_success_darker: darken($color_success,20%);
+
+/* for now just disable menu collapse */
+/* $grid-float-breakpoint: 300px; */
+
+$font-size-base:  12px;
+
+$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
+
+$navbar-logo-height: 64px;
+$navbar-margin-bottom: 0;
+$navbar-inverse-color: white;
+$navbar-inverse-bg: $color_mine_shaft_approx;
+
+$breadcrumb-bg: transparent;
+$breadcrumb-padding-horizontal: 0; /* container-fluid already gives us a good padding */
+$breadcrumb-padding-vertical: 0; /* container-fluid already gives us a good padding */
+
+$border-radius-base:  0;
+$border-radius-large: 0;
+$border-radius-small: 0;
+
+$table-border-color: $color_mountain_mist_approx;
+
+$panel-heading-padding: 6px;
+$panel-body-padding: 4px 6px;
+
+/* override bootstrap nav-tabs colors */
+/*
+$nav-link-hover-bg:                         $color_opennms_lighter;
+$nav-disabled-link-color:                   $color_opennms;
+$nav-disabled-link-hover-color:             $color_opennms;
+$nav-tabs-border-color:                     $color_opennms_darker;
+$nav-tabs-link-hover-border-color:          $color_opennms_lighter;
+$nav-tabs-active-link-hover-bg:             $body-bg !default;
+$nav-tabs-active-link-hover-border-color:   #ddd !default;
+*/
+$nav-tabs-active-link-hover-color:          $color_opennms_dark;

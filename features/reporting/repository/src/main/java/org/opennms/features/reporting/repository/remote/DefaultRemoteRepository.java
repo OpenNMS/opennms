@@ -96,11 +96,11 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getReports() {
-        List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> resultReports = new ArrayList<>();
         if (isConfigOk()) {
             WebTarget target = getTarget(m_remoteRepositoryDefintion.getURI() + "reports" + "/" + m_jasperReportsVersion);
 
-            List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
+            List<RemoteReportSDO> webCallResult = new ArrayList<>();
             try {
                 webCallResult = getBuilder(target).get(new GenericType<List<RemoteReportSDO>>() {});
             } catch (Exception e) {
@@ -121,8 +121,8 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     @Override
     public List<BasicReportDefinition> getOnlineReports() {
-        List<BasicReportDefinition> resultReports = new ArrayList<BasicReportDefinition>();
-        List<RemoteReportSDO> webCallResult = new ArrayList<RemoteReportSDO>();
+        List<BasicReportDefinition> resultReports = new ArrayList<>();
+        List<RemoteReportSDO> webCallResult = new ArrayList<>();
         if (isConfigOk()) {
             WebTarget target = getTarget(m_remoteRepositoryDefintion.getURI() + "onlineReports" + "/" + m_jasperReportsVersion);
             try {
@@ -276,7 +276,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     }
 
     private List<BasicReportDefinition> mapSDOListToBasicReportList(List<RemoteReportSDO> remoteReportSDOList) {
-        List<BasicReportDefinition> resultList = new ArrayList<BasicReportDefinition>();
+        List<BasicReportDefinition> resultList = new ArrayList<>();
         for (RemoteReportSDO report : remoteReportSDOList) {
             SimpleJasperReportDefinition result = new SimpleJasperReportDefinition();
             try {

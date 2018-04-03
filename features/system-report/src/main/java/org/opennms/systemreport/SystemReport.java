@@ -95,7 +95,7 @@ public class SystemReport {
         options.addOption("o", "output",         true,  "the file to write output to");
         
         final CommandLine line = parser.parse(options, args, false);
-        final Set<String> plugins = new LinkedHashSet<String>();
+        final Set<String> plugins = new LinkedHashSet<>();
         
         final SystemReport report = new SystemReport();
 
@@ -249,7 +249,7 @@ public class SystemReport {
 
     private void initializeSpring() {
         if (m_serviceRegistry == null) {
-            List<String> configs = new ArrayList<String>();
+            List<String> configs = new ArrayList<>();
             configs.add("classpath:/META-INF/opennms/applicationContext-soa.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-commonConfigs.xml");
             configs.add("classpath:/META-INF/opennms/applicationContext-dao.xml");

@@ -116,10 +116,10 @@ public class ManageNodeServlet extends HttpServlet {
         List<String> serviceList = (parameters == null ? Collections.<String>emptyList() : Arrays.asList(parameters));
 
         // the list of interfaces that need to be put into the URL file
-        List<String> addToURL = new ArrayList<String>();
+        List<String> addToURL = new ArrayList<>();
 
-        List<String> unmanageInterfacesList = new ArrayList<String>();
-        List<String> manageInterfacesList = new ArrayList<String>();
+        List<String> unmanageInterfacesList = new ArrayList<>();
+        List<String> manageInterfacesList = new ArrayList<>();
         
         Date curDate = new Date();
 

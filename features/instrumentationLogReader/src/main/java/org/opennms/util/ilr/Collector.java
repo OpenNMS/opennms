@@ -99,7 +99,7 @@ public class Collector {
     public static boolean getDurationsMs() {
         return s_durationsMs;   
     }
-    private Set<String> m_threads = new HashSet<String>();
+    private Set<String> m_threads = new HashSet<>();
 
     private LogMessage m_firstMessage;
     private LogMessage m_lastMessage;

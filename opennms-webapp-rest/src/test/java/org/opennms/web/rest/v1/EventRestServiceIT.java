@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import static org.junit.Assert.assertTrue;
 
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -103,10 +105,37 @@ public class EventRestServiceIT extends AbstractSpringJerseyRestTestCase {
         anticipator.anticipateEvent(e);
 
         // POST the event to the REST API
-        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), 204);
+        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.ACCEPTED.getStatusCode());
 
         // Verify
         m_eventMgr.finishProcessingEvents();
         anticipator.verifyAnticipated(1000, 0, 0, 0, 0);
+    }
+
+    @Test
+    public void testBadDbidEvent() throws Exception {
+        final Event e = new Event();
+        e.setDbid(-1);
+        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void testPostBadStateEvent() throws Exception {
+        final Event e = new Event();
+        final Operaction action = new Operaction();
+        action.setState("monkey");
+        e.addOperaction(action);
+        sendData(POST, MediaType.APPLICATION_XML, "/events", JaxbUtils.marshal(e), Status.BAD_REQUEST.getStatusCode());
+    }
+
+    @Test
+    public void testStrangeDate() throws Exception {
+        final String xml = "<event xmlns=\"http://xmlns.opennms.org/xsd/event\">\n" +
+                "   <uei>some.uei</uei>\n" +
+                // /* works */ "   <time>Thursday, January 1, 1970 12:00:00 AM GMT</time>\n" +
+                /* fails */ "   <time>Wednesday, November 08, 2017  3:07 PM EST</time>\n" +
+                "   <host>from-some-host</host>\n" +
+                "</event>";
+        sendData(POST, MediaType.APPLICATION_XML, "/events", xml, Status.INTERNAL_SERVER_ERROR.getStatusCode());
     }
 }

@@ -1,0 +1,84 @@
+
+=== Expose ReST services via OSGi
+
+In order to expose a ReST service via OSGi the following steps must be followed:
+
+1. Define an interface, containing java jax-rs annotations
+2. Define a class, implementing that interface
+3. Create an OSGi bundle which exports a service with the interface from above
+
+
+==== Define a ReST interface
+
+At first a public interface must be created which must contain jax-rs annotations.
+
+[source, java]
+----
+@Path("/datachoices") <1>
+public interface DataChoiceRestService {
+
+    @POST <2>
+    void updateCollectUsageStatisticFlag(@Context HttpServletRequest request, @QueryParam("action") String action);
+
+    @GET
+    @Produces(value={MediaType.APPLICATION_JSON})
+    UsageStatisticsReportDTO getUsageStatistics();
+}
+----
+<1>  Each ReST interface must either have a `@Path` or `@Provider` annotation.
+     Otherwise it is not considered a ReST service.
+<2>  Use jax-rs annotations, such as `@Post, @GET, @PUT, @Path`, etc. to define the ReST service.
+
+==== Implement a ReST interface
+
+A class must implement the ReST interface.
+
+NOTE:   The class may or may not repeat the jax-rs annotations from the interface.
+        This is purely for readability.
+        Changing or adding different jax-rs annotations on the class, won't have any effect.
+
+[source, java]
+----
+public class DataChoiceRestServiceImpl implements DataChoiceRestService {
+
+    @Override
+    public void updateCollectUsageStatisticFlag(HttpServletRequest request, String action) {
+       // do something
+    }
+
+    @Override
+    public UsageStatisticsReportDTO getUsageStatistics() {
+       return null;
+    }
+}
+----
+
+==== Export the ReST service
+
+At last the ReST service must be exported via the bundlecontext.
+This can be either achieved using an Activator or the blueprint mechanism.
+
+[source, xml]
+----
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	       xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+    <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl" /> <1>
+    <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService" > <2>
+        <service-properties>
+            <entry key="application-path" value="/rest" /> <3>
+        </service-properties>
+    </service>
+
+</blueprint>
+----
+<1>  Create the ReST implementation class
+<2>  Export the ReST service
+<3>  Define where the ReST service will be exported to, e.g. `/rest`, `/api/v2`, but also completely different paths can be used.
+     If not defined, `/services` is used.
+
+
+For a full working example refer to the link:https://github.com/OpenNMS/opennms/tree/develop/features/datachoices[datachoices feature].

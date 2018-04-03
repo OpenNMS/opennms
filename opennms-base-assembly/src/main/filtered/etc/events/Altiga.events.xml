@@ -1,81 +1,75 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.3076.1.2.1.1.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>0</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap</uei>
-	<event-label>ALTIGA trap event: Altiga Generic Trap</event-label>
-	<descr>
-&lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3076.1.2.1.1.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap</uei>
+      <event-label>ALTIGA trap event: Altiga Generic Trap</event-label>
+      <descr>&lt;p>This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 		Altiga Event: %parm[#1]%
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.3076.1.2.1.1.2.1</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>0</mevalue> 
-                </maskelement>
-                <varbind>
-                        <vbnumber>1</vbnumber> 
-                        <vbvalue>~.*\s+SEV=5\s+AUTH/\d+\s+RPT=\d+.*?User\s+.\s+SNMP\s+.\s+Protocol\s+.\s+SNMP\s+.\s+attempted.*?Status:\s+.ACCESS GRANTED.*</vbvalue> 
-                </varbind>
-        </mask>
-        <uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap2AnnoyingSnmpAccessGranted</uei>
-        <event-label>ALTIGA trap event: Altiga Generic Trap #2 describing SNMP access being granted</event-label>
-        <descr>
-&lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='discardtraps'>&lt;p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3076.1.2.1.1.2.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>~.*\s+SEV=5\s+AUTH/\d+\s+RPT=\d+.*?User\s+.\s+SNMP\s+.\s+Protocol\s+.\s+SNMP\s+.\s+attempted.*?Status:\s+.ACCESS GRANTED.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap2AnnoyingSnmpAccessGranted</uei>
+      <event-label>ALTIGA trap event: Altiga Generic Trap #2 describing SNMP access being granted</event-label>
+      <descr>&lt;p>This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="discardtraps">&lt;p>
                 Altiga Event: %parm[#1]%
                 </logmsg>
-        <severity>Indeterminate</severity>
-</event>
-<event>
-        <mask>
-                <maskelement>
-                        <mename>id</mename>
-                        <mevalue>.1.3.6.1.4.1.3076.1.2.1.1.2.1</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>generic</mename>
-                        <mevalue>6</mevalue>
-                </maskelement>
-                <maskelement>
-                        <mename>specific</mename>
-                        <mevalue>0</mevalue> 
-                </maskelement>
-        </mask>
-        <uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap2</uei>
-        <event-label>ALTIGA trap event: Altiga Generic Trap #2</event-label>
-        <descr>
-&lt;p&gt;This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-        </descr>
-                <logmsg dest='logndisplay'>&lt;p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3076.1.2.1.1.2.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vender/altiga/traps/altigaGenTrap2</uei>
+      <event-label>ALTIGA trap event: Altiga Generic Trap #2</event-label>
+      <descr>&lt;p>This is Altiga's (Cisco's) generic trap event. The event text is: %parm[#1]%.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
                 Altiga Event: %parm[#1]%
                 </logmsg>
-        <severity>Indeterminate</severity>
-</event>
+      <severity>Indeterminate</severity>
+   </event>
 </events>

@@ -179,7 +179,7 @@ public class BSFNotificationStrategy implements NotificationStrategy {
 
         OnmsNode node = null;
         OnmsAssetRecord assets = null;
-        final List<String> categories = new ArrayList<String>();
+        final List<String> categories = new ArrayList<>();
         String nodeLabel = null;
         String foreignSource = null;
         String foreignId = null;

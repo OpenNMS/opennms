@@ -64,7 +64,7 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
                 query.setParameter("childId", childId);
                 @SuppressWarnings("unchecked")
                 List<BusinessServiceEdgeEntity> list = query.list();
-                return list.stream().map(e -> e.getBusinessService()).collect(Collectors.toSet());
+                return list.stream().map(BusinessServiceEdgeEntity::getBusinessService).collect(Collectors.toSet());
             }
         });
         return parents;

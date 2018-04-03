@@ -49,7 +49,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 /**
  * @deprecated Replace this class with a Hibernate implementation instead of using JDBC.

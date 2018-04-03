@@ -439,7 +439,7 @@
 
 
     public String makeLink( NoticeQueryParms parms, Filter filter, boolean add ) {
-      List<Filter> newList = new ArrayList<Filter>();
+      List<Filter> newList = new ArrayList<>();
       if (parms.filters != null) {
           newList.addAll(parms.filters);
       }

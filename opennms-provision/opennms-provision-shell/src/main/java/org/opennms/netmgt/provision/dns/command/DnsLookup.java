@@ -33,14 +33,17 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
 @Command(scope = "dns", name = "lookup", description = "DNS lookup for the specified host")
-public class DnsLookup extends OsgiCommandSupport {
+@Service
+public class DnsLookup implements Action {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
@@ -51,10 +54,11 @@ public class DnsLookup extends OsgiCommandSupport {
     @Argument(index = 0, name = "host", description = "Hostname", required = true, multiValued = false)
     String m_host;
 
-    private LocationAwareDnsLookupClient client;
+    @Reference
+    public LocationAwareDnsLookupClient client;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
 
         final CompletableFuture<String> future = client.lookup(m_host, m_location, m_systemId);
         while (true) {
@@ -76,9 +80,4 @@ public class DnsLookup extends OsgiCommandSupport {
         }
         return null;
     }
-
-    public void setClient(LocationAwareDnsLookupClient client) {
-        this.client = client;
-    }
-
 }

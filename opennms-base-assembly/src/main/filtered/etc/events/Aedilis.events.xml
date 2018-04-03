@@ -1,368 +1,366 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of Aedilis Traps -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>0</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>0</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/coldStart</uei>
- <event-label>Aedilis-MIB defined trap event: coldStart</event-label>
- <descr>&lt;p&gt;This event is generated when the equipment is restarted or powered on.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;KSM-1 coldStart&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/high_Normal</uei>
- <event-label>Aedilis-MIB defined trap event: high_Normal</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to high and it's severity is set to Normal.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>2</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/high_Warning</uei>
- <event-label>Aedilis-MIB defined trap event: high_Warning</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to high and it's severity is set to Warning.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>3</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/high_Minor</uei>
- <event-label>Aedilis-MIB defined trap event: high_Minor</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to high and it's severity is set to Minor.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>4</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/high_Major</uei>
- <event-label>Aedilis-MIB defined trap event: high_Major</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to high and it's severity is set to Major.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Major</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>5</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/high_Critical</uei>
- <event-label>Aedilis-MIB defined trap event: high_Critical</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to high and it's severity is set to Critical.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Critical</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/low_Normal</uei>
- <event-label>Aedilis-MIB defined trap event: low_Normal</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to low and it's severity is set to Normal.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>7</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/low_Warning</uei>
- <event-label>Aedilis-MIB defined trap event: low_Warning</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to low and it's severity is set to Warning.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>8</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/low_Minor</uei>
- <event-label>Aedilis-MIB defined trap event: low_Minor</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to low and it's severity is set to Minor.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Minor</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>9</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/low_Major</uei>
- <event-label>Aedilis-MIB defined trap event: low_Major</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to low and it's severity is set to Major.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Major</severity>
-</event>
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.16187</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>10</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Aedilis/traps/low_Critical</uei>
- <event-label>Aedilis-MIB defined trap event: low_Critical</event-label>
- <descr>&lt;p&gt;This event is generated when the input state changes to low and it's severity is set to Critical.&lt;/p&gt;
- &lt;table&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputStateName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- InputSeverity&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- Location&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOn&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- TimeOff&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;</descr>
- <logmsg dest='logndisplay'>&lt;p&gt;%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p&gt;</logmsg>
- <severity>Critical</severity>
-</event>
-<!-- End of Aedilis Traps -->
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>0</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/coldStart</uei>
+      <event-label>Aedilis-MIB defined trap event: coldStart</event-label>
+      <descr>&lt;p>This event is generated when the equipment is restarted or powered on.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>KSM-1 coldStart&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/high_Normal</uei>
+      <event-label>Aedilis-MIB defined trap event: high_Normal</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Normal.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/high_Warning</uei>
+      <event-label>Aedilis-MIB defined trap event: high_Warning</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Warning.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/high_Minor</uei>
+      <event-label>Aedilis-MIB defined trap event: high_Minor</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Minor.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/high_Major</uei>
+      <event-label>Aedilis-MIB defined trap event: high_Major</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Major.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/high_Critical</uei>
+      <event-label>Aedilis-MIB defined trap event: high_Critical</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to high and it's severity is set to Critical.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/low_Normal</uei>
+      <event-label>Aedilis-MIB defined trap event: low_Normal</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Normal.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/low_Warning</uei>
+      <event-label>Aedilis-MIB defined trap event: low_Warning</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Warning.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/low_Minor</uei>
+      <event-label>Aedilis-MIB defined trap event: low_Minor</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Minor.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/low_Major</uei>
+      <event-label>Aedilis-MIB defined trap event: low_Major</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Major.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.16187</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Aedilis/traps/low_Critical</uei>
+      <event-label>Aedilis-MIB defined trap event: low_Critical</event-label>
+      <descr>&lt;p>This event is generated when the input state changes to low and it's severity is set to Critical.&lt;/p>
+ &lt;table>&lt;tr>&lt;td>&lt;b>
+ InputName&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputStateName&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ InputSeverity&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ Location&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOn&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ TimeOff&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>%parm[#4]% %parm[#1]% %parm[#2]%&lt;/p></logmsg>
+      <severity>Critical</severity>
+   </event>
 </events>

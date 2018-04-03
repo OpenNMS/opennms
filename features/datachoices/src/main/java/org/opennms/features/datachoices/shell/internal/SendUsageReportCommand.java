@@ -30,21 +30,43 @@ package org.opennms.features.datachoices.shell.internal;
 
 import java.util.Objects;
 
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.features.datachoices.internal.UsageStatisticsReporter;
 
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
 @Command(scope = "datachoices", name = "send-usage-report", description="Generate and upload the usage statistics report.")
-public class SendUsageReportCommand extends OsgiCommandSupport {
+@org.apache.karaf.shell.commands.Command(scope = "datachoices", name = "send-usage-report", description="Generate and upload the usage statistics report.")
+@Service
+public class SendUsageReportCommand extends OsgiCommandSupport implements Action {
 
-    private UsageStatisticsReporter m_usageStatisticsReporter;
+    @Reference
+    public UsageStatisticsReporter m_usageStatisticsReporter;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         m_usageStatisticsReporter.sendSync();
         return null;
     }
 
+    @Override
+    @Deprecated
+    protected Object doExecute() throws Exception {
+        return execute();
+    }
+
+    @Deprecated
     public void setUsageStatisticsReporter(UsageStatisticsReporter usageStatisticsReporter) {
         m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
     }

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+">
+
+  <context:annotation-config />
+
+  <bean id="identity" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="distPollerDao"/>
+    <property name="targetMethod" value="whoami"/>
+  </bean>
+
+  <bean id="location" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="identity"/>
+    <property name="targetMethod" value="getLocation"/>
+  </bean>
+
+  <bean id="camelRpcClientFactory" class="org.opennms.core.rpc.camel.CamelRpcClientFactory" primary="true" >
+     <property name="location" ref="location"/>
+  </bean>
+
+  <onmsgi:service ref="camelRpcClientFactory" interface="org.opennms.core.rpc.api.RpcClientFactory" />
+
+  <bean id="camelRpcClientPreProcessor" class="org.opennms.core.rpc.camel.CamelRpcClientPreProcessor"/>
+
+   <!-- Reduces the graceful shutdown time from 300 to 15 seconds. -->
+  <bean id="shutdownStrategy" class="org.apache.camel.impl.DefaultShutdownStrategy">
+      <property name="timeout" value="15"/>
+  </bean>
+
+  <camelContext id="rpcClient" xmlns="http://camel.apache.org/schema/spring">
+    <!-- Exchanges contain credentials i.e. SNMP community details, so avoid logging them -->
+    <properties>
+      <property key="CamelLogDebugBodyMaxChars" value="{{sys:org.opennms.ipc.camel.body.debug:-1}}"/>
+    </properties>
+
+    <!-- Define a default thread profile with the same defaults as Camel
+         (see http://camel.apache.org/threading-model.html), but allow
+         the number of threads and max queue size to overwritten using
+         system properties.
+     -->
+    <threadPoolProfile id="rpcClientProfile"
+                       defaultProfile="true"
+                       poolSize="{{sys:org.opennms.ipc.rpc.threads:10}}"
+                       maxPoolSize="{{sys:org.opennms.ipc.rpc.threads.max:20}}"
+                       maxQueueSize="{{sys:org.opennms.ipc.rpc.queue.max:1000}}"
+                        />
+
+    <route id="rpcClient">
+      <from uri="direct:executeRpc" />
+	  <bean ref="camelRpcClientPreProcessor"/>
+      <setExchangePattern pattern="InOut"/>
+      <recipientList>
+        <simple>queuingservice:${header.JmsQueueName}</simple>
+      </recipientList>
+    </route>
+  </camelContext>
+</beans>

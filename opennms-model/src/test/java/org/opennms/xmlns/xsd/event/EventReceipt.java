@@ -39,6 +39,7 @@ package org.opennms.xmlns.xsd.event;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -73,6 +74,7 @@ import javax.xml.bind.annotation.XmlType;
 public class EventReceipt {
 
     @XmlElement(required = true)
+    @Size(min=1)
     protected List<String> uuid;
 
     /**
@@ -99,7 +101,7 @@ public class EventReceipt {
      */
     public List<String> getUuid() {
         if (uuid == null) {
-            uuid = new ArrayList<String>();
+            uuid = new ArrayList<>();
         }
         return this.uuid;
     }

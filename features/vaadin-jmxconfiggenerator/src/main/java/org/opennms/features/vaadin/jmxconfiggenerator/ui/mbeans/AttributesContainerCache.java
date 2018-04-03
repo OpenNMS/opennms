@@ -28,13 +28,13 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
 
 /**
  * The MBeanTree shows all available MBeans. Each Mbean has one or more

@@ -166,7 +166,7 @@ public class MultivaluedMapImpl<K, V> extends LinkedHashMap<K, Set<V>>  implemen
     @Override
     public void add(final K key, final V value) {
         if (!containsKey(key)) {
-            final LinkedHashSet<V> valueList = new LinkedHashSet<V>();
+            final LinkedHashSet<V> valueList = new LinkedHashSet<>();
             valueList.add(value);
             put(key, valueList);
         } else {

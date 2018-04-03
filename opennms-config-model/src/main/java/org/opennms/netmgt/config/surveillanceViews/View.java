@@ -33,6 +33,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -48,7 +49,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("surveillance-views.xsd")
 public class View implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     private static final int DEFAULT_REFRESH_SECONDS = 300;
 
@@ -105,6 +106,12 @@ public class View implements Serializable {
         return m_rows.remove(row);
     }
 
+    public Optional<RowDef> getRowDef(final String label) {
+        return m_rows.stream().filter(row -> {
+            return label.equals(row.getLabel());
+        }).findFirst();
+    }
+
     public List<ColumnDef> getColumns() {
         return m_columns;
     }
@@ -126,6 +133,12 @@ public class View implements Serializable {
 
     public boolean removeColumn(final ColumnDef column) {
         return m_columns.remove(column);
+    }
+
+    public Optional<ColumnDef> getColumnDef(final String label) {
+        return m_columns.stream().filter(col -> {
+            return label.equals(col.getLabel());
+        }).findFirst();
     }
 
     @Override
@@ -151,5 +164,4 @@ public class View implements Serializable {
         }
         return false;
     }
-
 }

@@ -1,310 +1,290 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: RANCID-CUSTOM-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapGenericFailure</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGenericFailure</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid needs to notify a
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapGenericFailure</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGenericFailure</event-label>
+      <descr>&lt;p>This trap is sent each time rancid needs to notify a
 failure condition for which is not defined a more
-specific trap.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+specific trap.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidFailureMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidFailureMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapGenericFailure trap received 
-			rancidFailureMessage=%parm[#1]%&lt;/p&gt;
+			rancidFailureMessage=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapDownloadSuccess</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid successfully downloads
-the configuration from a device.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapDownloadSuccess</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapDownloadSuccess</event-label>
+      <descr>&lt;p>This trap is sent each time rancid successfully downloads
+the configuration from a device.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapDownloadSuccess trap received 
 			rancidGroupName=%parm[#1]% 
-			rancidDeviceName=%parm[#2]%&lt;/p&gt;
+			rancidDeviceName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapDownloadFailure</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid fails to download the
-configuration from a device.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapDownloadFailure</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapDownloadFailure</event-label>
+      <descr>&lt;p>This trap is sent each time rancid fails to download the
+configuration from a device.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapDownloadFailure trap received 
 			rancidGroupName=%parm[#1]% 
-			rancidDeviceName=%parm[#2]%&lt;/p&gt;
+			rancidDeviceName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupLocked</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupLocked</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid is not able to process
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupLocked</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupLocked</event-label>
+      <descr>&lt;p>This trap is sent each time rancid is not able to process
 a group of devices due to the existence of a group's lock
-file.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+file.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapGroupLocked trap received 
-			rancidGroupName=%parm[#1]%&lt;/p&gt;
+			rancidGroupName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapNodeAdded</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapNodeAdded</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid detects that a new
-device was added to a group's configuration file.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapNodeAdded</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapNodeAdded</event-label>
+      <descr>&lt;p>This trap is sent each time rancid detects that a new
+device was added to a group's configuration file.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapNodeAdded trap received 
 			rancidGroupName=%parm[#1]% 
-			rancidDeviceName=%parm[#2]%&lt;/p&gt;
+			rancidDeviceName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapNodeDeleted</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapNodeDeleted</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid detects that a device
-was deleted from a group's configuration file.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapNodeDeleted</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapNodeDeleted</event-label>
+      <descr>&lt;p>This trap is sent each time rancid detects that a device
+was deleted from a group's configuration file.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapNodeDeleted trap received 
 			rancidGroupName=%parm[#1]% 
-			rancidDeviceName=%parm[#2]%&lt;/p&gt;
+			rancidDeviceName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>7</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapConfigurationChanged</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapConfigurationChanged</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid detects that the
-configuration of a device has changed.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapConfigurationChanged</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapConfigurationChanged</event-label>
+      <descr>&lt;p>This trap is sent each time rancid detects that the
+configuration of a device has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapConfigurationChanged trap received 
 			rancidGroupName=%parm[#1]% 
-			rancidDeviceName=%parm[#2]%&lt;/p&gt;
+			rancidDeviceName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingStarted</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupProcessingStarted</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid acquires a group's
-lockfile and starts processing the corresponding devices.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingStarted</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupProcessingStarted</event-label>
+      <descr>&lt;p>This trap is sent each time rancid acquires a group's
+lockfile and starts processing the corresponding devices.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapGroupProcessingStarted trap received 
-			rancidGroupName=%parm[#1]%&lt;/p&gt;
+			rancidGroupName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted</uei>
-	<event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupProcessingCompleted</event-label>
-	<descr>
-&lt;p&gt;This trap is sent each time rancid releases a group's
-lockfile after having processed the corresponding devices.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.31543.1.1.2.1.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rancid/traps/rancidTrapGroupProcessingCompleted</uei>
+      <event-label>RANCID-CUSTOM-MIB defined trap event: rancidTrapGroupProcessingCompleted</event-label>
+      <descr>&lt;p>This trap is sent each time rancid releases a group's
+lockfile after having processed the corresponding devices.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	rancidGroupName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	rancidGroupName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			rancidTrapGroupProcessingCompleted trap received 
-			rancidGroupName=%parm[#1]%&lt;/p&gt;
+			rancidGroupName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: RANCID-CUSTOM-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

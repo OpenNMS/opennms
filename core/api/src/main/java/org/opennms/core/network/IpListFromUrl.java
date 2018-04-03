@@ -80,7 +80,7 @@ public abstract class IpListFromUrl {
      * @return list of IPs in the file
      */
     public static List<String> fetch(final String url) {
-        final List<String> iplist = new ArrayList<String>();
+        final List<String> iplist = new ArrayList<>();
 
         URL u = null;
         InputStream stream = null;

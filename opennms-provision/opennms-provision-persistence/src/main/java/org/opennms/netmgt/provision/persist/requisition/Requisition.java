@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -86,7 +86,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
     
     @XmlElement(name="node")
-    protected List<RequisitionNode> m_nodes = new ArrayList<RequisitionNode>();
+    protected List<RequisitionNode> m_nodes = new ArrayList<>();
     
     @XmlAttribute(name="date-stamp")
     protected XMLGregorianCalendar m_dateStamp;
@@ -466,10 +466,18 @@ public class Requisition implements Serializable, Comparable<Requisition> {
      */
     public void validate() throws ValidationException {
     	final Map<String,Integer> foreignSourceCounts = new HashMap<String,Integer>();
-    	final Set<String> errors = new HashSet<String>();
+    	final Set<String> errors = new HashSet<>();
+
+    	if (m_foreignSource == null) {
+    	    throw new ValidationException("Requisition 'foreign-source' must be set!");
+    	}
+    	if (m_foreignSource.contains("/")) {
+            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
+    	}
 
     	for (final RequisitionNode node : m_nodes) {
     		final String foreignId = node.getForeignId();
+    		node.validate();
 			Integer count = foreignSourceCounts.get(foreignId);
 			foreignSourceCounts.put(foreignId, count == null? 1 : ++count);
     	}

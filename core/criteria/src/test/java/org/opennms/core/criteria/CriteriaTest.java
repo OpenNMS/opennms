@@ -60,7 +60,7 @@ public class CriteriaTest {
 	
 	@Test
 	public void testOrder() {
-		final List<Order> orders = new ArrayList<Order>();
+		final List<Order> orders = new ArrayList<>();
 
 		final CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 
@@ -157,7 +157,7 @@ public class CriteriaTest {
 	public void testRestrictions() {
 		CriteriaBuilder cb = new CriteriaBuilder(OnmsAlarm.class);
 		
-		final List<Restriction> expected = new ArrayList<Restriction>();
+		final List<Restriction> expected = new ArrayList<>();
 		expected.add(Restrictions.isNull("tticketId"));
 		expected.add(Restrictions.isNotNull("severity"));
 		cb.isNull("tticketId").isNotNull("severity");
@@ -176,12 +176,12 @@ public class CriteriaTest {
 		expected.add(Restrictions.ilike("uei", "*bar*"));
 		assertEquals(expected, cb.toCriteria().getRestrictions());
 		
-		final List<String> inValues = new ArrayList<String>();
+		final List<String> inValues = new ArrayList<>();
 		inValues.add("a");
 		inValues.add("b");
 		cb.in("nodeLabel", inValues);
 		expected.add(Restrictions.in("nodeLabel", inValues));
-		final List<String> notInValues = new ArrayList<String>();
+		final List<String> notInValues = new ArrayList<>();
 		notInValues.add("c");
 		notInValues.add("d");
 		cb.not().in("nodeLabel", notInValues);

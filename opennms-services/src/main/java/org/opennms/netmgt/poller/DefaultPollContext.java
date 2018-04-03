@@ -47,6 +47,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
+import org.opennms.netmgt.icmp.proxy.PingSequence;
 import org.opennms.netmgt.icmp.proxy.PingSummary;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.poller.pollables.PendingPollEvent;
@@ -92,7 +93,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
-    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<PendingPollEvent>();
+    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<>();
 
     /**
      * <p>getEventManager</p>
@@ -464,7 +465,7 @@ public class DefaultPollContext implements PollContext, EventListener {
 
             // We consider the path to be available if any of the requests were successful
             available = pingSummary.getSequences().stream()
-                            .filter(s -> s.isSuccess())
+                            .filter(PingSequence::isSuccess)
                             .count() > 0;
         } catch (InterruptedException e) {
             LOG.warn("Interrupted while testing {}. Marking the path as available.", criticalPath);

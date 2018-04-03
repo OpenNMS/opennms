@@ -291,7 +291,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
     }
 
     protected static MockHttpServletResponse createResponse() {
-        return new MockHttpServletResponse();
+        final MockHttpServletResponse response = new MockHttpServletResponse();
+        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+        return response;
     }
 
     protected static MockHttpServletRequest createRequest(final ServletContext context, final String requestType, final String urlPath) {
@@ -444,6 +446,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
 
     protected String sendRequest(final String requestType, final String url, final Map<?,?> parameters, final int expectedStatus, final String expectedUrlSuffix) throws Exception {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
+        request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));

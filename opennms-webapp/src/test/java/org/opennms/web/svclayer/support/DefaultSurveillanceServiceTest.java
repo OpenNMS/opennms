@@ -89,7 +89,7 @@ public class DefaultSurveillanceServiceTest {
 
     private Collection<OnmsCategory> createCategoryNameCollection(List<String> categoryNames) {
         
-        Collection<OnmsCategory> categories = new ArrayList<OnmsCategory>();
+        Collection<OnmsCategory> categories = new ArrayList<>();
         for (String catName : categoryNames) {
             categories.add(m_categoryDao.findByName(catName));
         }

@@ -49,7 +49,7 @@ public class AttributeGroup implements CollectionVisitable, Persistable {
 
     // When persisting certain collection sets i.e. latency statistics it is important that attributes
     // are visited in the same order as they were added
-    private final Set<CollectionAttribute> m_attributes = new LinkedHashSet<CollectionAttribute>();
+    private final Set<CollectionAttribute> m_attributes = new LinkedHashSet<>();
 
     /**
      * <p>Constructor for AttributeGroup.</p>

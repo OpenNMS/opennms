@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.alarmd;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -96,11 +99,16 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     public class MockNorthbounder implements Northbounder {
 
         private boolean m_startCalled = false;
-        private List<NorthboundAlarm> m_alarms = new ArrayList<NorthboundAlarm>();
+        private List<NorthboundAlarm> m_alarms = new ArrayList<>();
 
         @Override
         public void start() throws NorthbounderException {
             m_startCalled = true;
+        }
+
+        @Override
+        public boolean isReady() {
+            return true;
         }
 
         @Override
@@ -273,7 +281,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         MockUtil.println("counterColumn is: "+counterColumn+", expected "+numberOfAlarmsToReduce);
         assertEquals(1, rowCount);
         if (numberOfAlarmsToReduce != counterColumn) {
-            final List<Integer> reducedEvents = new ArrayList<Integer>();
+            final List<Integer> reducedEvents = new ArrayList<>();
             m_jdbcTemplate.query("select eventid from events where alarmID is not null", new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
@@ -282,7 +290,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             });
             Collections.sort(reducedEvents);
 
-            final List<Integer> nonReducedEvents = new ArrayList<Integer>();
+            final List<Integer> nonReducedEvents = new ArrayList<>();
             m_jdbcTemplate.query("select eventid from events where alarmID is null", new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
@@ -313,7 +321,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
         try {
-            m_alarmd.getPersister().persist(null);
+            m_alarmd.getPersister().persist(null, true);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -323,7 +331,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     @Test
     public void testNorthbounder() throws Exception {
         assertTrue(m_northbounder.isInitialized());
-        assertTrue(m_northbounder.getAlarms().isEmpty());
+        assertThat(m_northbounder.getAlarms(), hasSize(0));
 
         final EventBuilder bldr = new EventBuilder("testNoLogmsg", "AlarmdTest");
         bldr.setAlarmData(new AlarmData());
@@ -336,7 +344,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         sendNodeDownEvent("%nodeid%", node);
 
         final List<NorthboundAlarm> alarms = m_northbounder.getAlarms();
-        assertTrue(alarms.size() > 0);
+        assertThat(alarms, hasSize(greaterThan(0)));
     }
     
 
@@ -348,7 +356,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent());
+            m_alarmd.getPersister().persist(bldr.getEvent(), false);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -360,7 +368,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         EventBuilder bldr = new EventBuilder("testNoAlarmData", "AlarmdTest");
         bldr.setLogMessage(null);
 
-        m_alarmd.getPersister().persist(bldr.getEvent());
+        m_alarmd.getPersister().persist(bldr.getEvent(), false);
     }
 
     @Test
@@ -372,7 +380,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent());
+            m_alarmd.getPersister().persist(bldr.getEvent(), false);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -472,7 +480,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("logMsg");
@@ -501,7 +509,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("logMsg");
@@ -529,7 +537,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             data.setAlarmType(1);
             data.setReductionKey(reductionKey);
             
-            List<UpdateField> fields = new ArrayList<UpdateField>();
+            List<UpdateField> fields = new ArrayList<>();
             
             UpdateField field = new UpdateField();
             field.setFieldName("Severity");

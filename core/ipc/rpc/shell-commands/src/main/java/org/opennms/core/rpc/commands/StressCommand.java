@@ -31,9 +31,11 @@ package org.opennms.core.rpc.commands;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.echo.EchoRequest;
@@ -47,9 +49,11 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 
 @Command(scope = "rpc", name = "stress", description="Generates RPC requests against the Echo module")
-public class StressCommand extends OsgiCommandSupport {
+@Service
+public class StressCommand implements Action {
 
-    private RpcClientFactory rpcClientFactory;
+    @Reference
+    public RpcClientFactory rpcClientFactory;
 
     @Option(name = "-l", aliases = "--location", description = "Location")
     String location = null;
@@ -73,7 +77,7 @@ public class StressCommand extends OsgiCommandSupport {
     int count = 1;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         // Create the client
         final RpcClient<EchoRequest, EchoResponse> client = rpcClientFactory.getClient(EchoRpcModule.INSTANCE);
 
@@ -144,9 +148,5 @@ public class StressCommand extends OsgiCommandSupport {
         request.setDelay(delay);
         request.shouldThrow(shouldThrow);
         return request;
-    }
-
-    public void setRpcClientFactory(RpcClientFactory rpcClientFactory) {
-        this.rpcClientFactory = rpcClientFactory;
     }
 }

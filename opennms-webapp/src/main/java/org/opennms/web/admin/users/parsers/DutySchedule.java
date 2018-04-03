@@ -242,7 +242,7 @@ public class DutySchedule implements Cloneable {
      * @deprecated call the individual getters
      */
     public Vector<Object> getAsVector() {
-        Vector<Object> vector = new Vector<Object>();
+        Vector<Object> vector = new Vector<>();
 
         for (int i = 0; i < 7; i++) {
             vector.add(Boolean.valueOf(m_days.get(i)));

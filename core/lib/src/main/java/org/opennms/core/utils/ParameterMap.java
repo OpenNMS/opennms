@@ -128,7 +128,7 @@ public abstract class ParameterMap {
      * @param defValue a int.
      */
     public static int getKeyedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
-        return new Long(ParameterMap.getKeyedLong(map, key, new Long(defValue))).intValue();
+        return new Long(ParameterMap.getKeyedLong(map, key, defValue)).intValue();
     }
 
     /**
@@ -191,7 +191,7 @@ public abstract class ParameterMap {
      * @param defValue a int.
      */
     public static int getKeyedDecodedInteger(@SuppressWarnings("rawtypes") final Map map, final String key, final int defValue) {
-        return new Long(ParameterMap.getKeyedDecodedLong(map, key, new Long(defValue))).intValue();
+        return new Long(ParameterMap.getKeyedDecodedLong(map, key, defValue)).intValue();
     }
 
     /**

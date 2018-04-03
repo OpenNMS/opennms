@@ -29,7 +29,7 @@
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
-import java.util.SortedSet;
+import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.UriInfo;
@@ -90,7 +90,7 @@ public class ApplicationRestService extends AbstractDaoRestService<OnmsApplicati
     }
 
     @Override
-    protected SortedSet<SearchProperty> getQueryProperties() {
+    protected Set<SearchProperty> getQueryProperties() {
         return SearchProperties.APPLICATION_SERVICE_PROPERTIES;
     }
 

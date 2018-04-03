@@ -1,49 +1,47 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of Xerox Traps -->
-<!-- Start of Xerox MIB: XEROX-HOST-RESOURCES-EXT-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.253.8.53.3.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevInfoV2Event</uei>
- <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevInfoV2Event</event-label>
- <descr>&lt;p&gt;This trap is sent whenever 'hrDeviceStatus' and/or
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.253.8.53.3.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevInfoV2Event</uei>
+      <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevInfoV2Event</event-label>
+      <descr>&lt;p>This trap is sent whenever 'hrDeviceStatus' and/or
  'xcmHrDevInfo[XStatus|Conditions|XConditions]' changes.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  Note:   The variable-bindings of this trap have been chosen to
  specify a complete device status change while keeping
  trap messages reasonably concise (generally a few hundred octets
  at most).
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This notification has the following special semantics:
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
         The device's 'hrDeviceIndex' field
         value shall ALWAYS be appended to this trap object ID,
         as a BER binary OID suffix.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This trap OID qualifier allows device management/monitoring
  applications to limit the alerts they receive to ones generated
- by devices of interest.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hrDeviceStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ by devices of interest.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ hrDeviceStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>
  unknown(1) running(2) warning(3) testing(4) down(5)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoXStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>
  commonNone(0) commonOther(1) commonUnknown(2) commonLast(99) otherNone(100) unknownNone(200) 
  processorNone(300) networkNone(400) printerNone(500) printerOther(501) printerUnknown(502) 
  printerIdle(503) printerPrinting(504) printerNeedsAttention(505) printerPaused(506) printerShutdown(507) 
@@ -52,61 +50,59 @@
  coprocessorNone(1200) keyboardNone(1300) modemNone(1400) parallelPortNone(1500) pointingNone(1600) 
  serialPortNone(1700) tapeNone(1800) clockNone(1900) volatileMemoryNone(2000) nonVolatileMemoryNone(2100) 
  hostSystemNone(10100) scannerNone(10200) copierNone(10300) faxNone(10400) mailboxNone(10500) reserved(40000)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoXConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Device Status Change Notification.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.253.8.53.5.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevMgmtV2Event</uei>
- <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevMgmtV2Event</event-label>
- <descr>&lt;p&gt;This trap is sent whenever an 'XcmHrDevMgmtCommandRequest'
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Xerox Event: Device Status Change Notification.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.253.8.53.5.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevMgmtV2Event</uei>
+      <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevMgmtV2Event</event-label>
+      <descr>&lt;p>This trap is sent whenever an 'XcmHrDevMgmtCommandRequest'
  completes, ie, when 'xcmHrDevMgmtCommandStatus' becomes the
  completed operation status and 'XcmHrDevMgmtCommandInProgress'
  goes from 'true' to 'false'.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  Note:   The variable-bindings of this trap have been chosen to
  specify a complete management operation result while keeping
  trap messages reasonably concise (generally a few hundred octets
  at most).
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This notification has the following special semantics:
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
         The device's 'hrDeviceIndex' field
         value shall ALWAYS be appended to this trap object ID,
         as a BER binary OID suffix.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This trap OID qualifier allows device management/monitoring
  applications to limit the alerts they receive to ones generated 
- by requests they have submitted.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hrDeviceStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ by requests they have submitted.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ hrDeviceStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>
  unknown(1) running(2) warning(3) testing(4) down(5)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoXStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoXStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>
  commonNone(0) commonOther(1) commonUnknown(2) commonLast(99) otherNone(100) unknownNone(200) processorNone(300) 
  networkNone(400) printerNone(500) printerOther(501) printerUnknown(502) printerIdle(503) printerPrinting(504) 
  printerNeedsAttention(505) printerPaused(506) printerShutdown(507) printerJobStartWait(508) printerJobEndWait(509) 
@@ -115,13 +111,13 @@
  parallelPortNone(1500) pointingNone(1600) serialPortNone(1700) tapeNone(1800) clockNone(1900) volatileMemoryNone(2000) 
  nonVolatileMemoryNone(2100) hostSystemNone(10100) scannerNone(10200) copierNone(10300) faxNone(10400) mailboxNone(10500) 
  reserved(40000)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#4]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevInfoXConditions&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#5]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevMgmtCommandRequest&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#6]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoConditions&lt;/b>&lt;/td>&lt;td>%parm[#4]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevInfoXConditions&lt;/b>&lt;/td>&lt;td>%parm[#5]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevMgmtCommandRequest&lt;/b>&lt;/td>&lt;td>%parm[#6]%
+ &lt;/td>&lt;td>&lt;p;>
  none(1) startup(2) resetWarning(3) test(4) shutdown(5) quiesce(6) resetCounters(7) resetWarm(8) resetCold(9) 
  resetFactory(10) flushInput(11) flushOutput(12) flushInOut(13) manage(14) refresh(15) warmUp(16) coolDown(17) 
  energySave(18) wakeUp(19) powerToReady(20) powerToStandby(21) powerToSleep(22) deviceCreate(1301) deviceDelete(1302) 
@@ -129,61 +125,59 @@
  deviceShutdown(1310) deviceQueueList(1311) deviceManage(2301) deviceRestart(2302) deviceInstall(2321) deviceUpgrade(2322) 
  deviceBackup(2323) deviceRestore(2324) deviceConfigure(2325) deviceDiagnose(2326) deviceResetCounters(2331) deviceResetWarm(2332) 
  deviceResetCold(2333) deviceResetFactory(2334) deviceLogin(2341) deviceLogout(2342)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevMgmtCommandStatus&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#7]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevMgmtCommandStatus&lt;/b>&lt;/td>&lt;td>%parm[#7]%
+ &lt;/td>&lt;td>&lt;p;>
  noError(0) tooBig(1) noSuchName(2) badValue(3) readOnly(4) genErr(5) noAccess(6) wrongType(7) wrongLength(8) wrongEncoding(9) 
  wrongValue(10) noCreation(11) inconsistentValue(12) resourceUnavailable(13) commitFailed(14) undoFailed(15) 
  authorizationError(16) notWritable(17) inconsistentName(18)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Command Completed Notification.&lt;/p&gt;</logmsg>
- <severity>Normal</severity>
-</event>
-
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.253.8.53.13.1</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>specific</mename>
-   <mevalue>1</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevDetailV2Event</uei>
- <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevDetailV2Event</event-label>
- <descr>&lt;p&gt;This trap is sent when 'xcmHrDevDetailIndex' is shared
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Xerox Event: Command Completed Notification.&lt;/p></logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.253.8.53.13.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Xerox/traps/xcmHrDevDetailV2Event</uei>
+      <event-label>XEROX-HOST-RESOURCES-EXT-MIB defined trap event: xcmHrDevDetailV2Event</event-label>
+      <descr>&lt;p>This trap is sent when 'xcmHrDevDetailIndex' is shared
  between a counter detail and a limit detail which are
  specified in 'xcmHrDevDetailValueInteger', OR
  when 'xcmHrDevDetailValueString' specifies a trigger date.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  Note:   The variable-bindings of this trap have been chosen to
  specify a complete device status change while keeping
  trap messages reasonably concise (generally a few hundred octets
  at most).
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This notification has the following special semantics:
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
         The detail's 'hrDeviceIndex' value,
         the detail's 'xcmHrDevDetailType' value, and
         the detail's 'xcmHrDevDetailIndex' value
         shall ALWAYS be appended to this trap object ID,
         as a BER binary OID suffix.
- &lt;/p&gt;&lt;p&gt;
+ &lt;/p>&lt;p>
  This trap OID qualifier allows device management/monitoring
  applications to limit the alerts they receive to ones generated
- by device details of interest.&lt;/p&gt;&lt;table&gt;
- &lt;tr&gt;&lt;td&gt;&lt;b&gt;
- hrDeviceIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#1]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevDetailType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#2]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;
+ by device details of interest.&lt;/p>&lt;table>
+ &lt;tr>&lt;td>&lt;b>
+ hrDeviceIndex&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevDetailType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+ &lt;/td>&lt;td>&lt;p;>
  other(1) unknown(2) deviceName(3) deviceAlias(4) deviceType(5) deviceDescription(6) deviceID(7) deviceTree(8) deviceContext(9) 
  deviceManufacturer(10) deviceModel(11) deviceSerialNumber(12) deviceVendor(13) deviceVersion(14) deviceServiceByCustomer(15) 
  deviceReplaceByCustomer(16) deviceServicePlanName(17) deviceServicePlanPassword(18) deviceReplaceByWarranty(19) 
@@ -207,39 +201,34 @@
  deviceNextWarmerModeIndex(123) deviceNextCoolerModeIndex(124) deviceProcessorFrwID(130) deviceNetworkIfIndex(140) 
  deviceDiskStorageAccess(160) deviceDiskStorageMedia(161) deviceDiskStorageRemovable(162) deviceDiskStorageCapacity(163) 
  deviceGuestJobPolicy(200) deviceAlienJobPolicy(201) deviceEventLogFullPolicy(202) deviceJobLogFullPolicy(203) deviceRequestLogFullPolicy(204)
- &lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;b&gt;
- xcmHrDevDetailIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;%parm[#3]%
- &lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
- </descr>
- <logmsg dest='logndisplay'>&lt;p&gt;Xerox Event: Detail Event Notification.&lt;/p&gt;</logmsg>
- <severity>Warning</severity>
-</event>
-<!-- End of Xerox MIB: XEROX-HOST-RESOURCES-EXT-MIB -->
-<event>
- <mask>
-  <maskelement>
-   <mename>id</mename>
-   <mevalue>.1.3.6.1.4.1.253.%</mevalue>
-  </maskelement>
-  <maskelement>
-   <mename>generic</mename>
-   <mevalue>6</mevalue>
-  </maskelement>
- </mask>
- <uei>uei.opennms.org/vendor/Xerox/traps/EnterpriseDefault</uei>
- <event-label>OpenNMS-defined trap event: Xerox EnterpriseDefault</event-label>
- <descr>
- &lt;p&gt;This is the default event format used when an
+ &lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+ xcmHrDevDetailIndex&lt;/b>&lt;/td>&lt;td>%parm[#3]%
+ &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>Xerox Event: Detail Event Notification.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.253.%</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Xerox/traps/EnterpriseDefault</uei>
+      <event-label>OpenNMS-defined trap event: Xerox EnterpriseDefault</event-label>
+      <descr>&lt;p>This is the default event format used when an
  enterprise specific event (trap) is received from a Xerox device for which no
  format has been configured (i.e. no event definition
- exists).&lt;/p&gt;
- </descr>
- <logmsg dest='logndisplay'>
+ exists).&lt;/p></descr>
+      <logmsg dest="logndisplay">
  Received unformatted enterprise event (enterprise:%id% generic:%generic%
  specific:%specific%). %parm[##]%
  args: %parm[all]%
  </logmsg>
- <severity>Indeterminate</severity>
-</event>
-<!-- End of Xerox Traps -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

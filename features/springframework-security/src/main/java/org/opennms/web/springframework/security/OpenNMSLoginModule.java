@@ -56,7 +56,7 @@ public class OpenNMSLoginModule implements LoginModule, LoginHandler, OpenNMSLog
     protected Map<String, ?> m_options;
 
     protected String m_user;
-    protected Set<Principal> m_principals = new HashSet<Principal>();
+    protected Set<Principal> m_principals = new HashSet<>();
 
     @Override
     public void initialize(final Subject subject, final CallbackHandler callbackHandler, final Map<String, ?> sharedState, final Map<String, ?> options) {

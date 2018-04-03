@@ -88,7 +88,7 @@ public class AmiConfig implements Serializable {
      * port...)
      */
     @XmlElement(name = "definition")
-    private List<Definition> m_definitions = new ArrayList<Definition>();
+    private List<Definition> m_definitions = new ArrayList<>();
 
     public AmiConfig() {
     }

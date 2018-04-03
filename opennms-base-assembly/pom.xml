@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>22.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -206,6 +206,14 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-bsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-alarm-northbounder-drools</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
       <artifactId>opennms-alarm-northbounder-jms</artifactId>
     </dependency>
     <dependency>
@@ -332,6 +340,11 @@
       <artifactId>opennms-jetty</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jstl-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
@@ -382,11 +395,6 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.tcp</artifactId>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>owasp-encoder-dependencies</artifactId>
-      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -570,7 +578,7 @@
       <version>20100506</version>
     </dependency>
     <dependency>
-      <groupId>ognl</groupId>
+      <groupId>opensymphony</groupId>
       <artifactId>ognl</artifactId>
     </dependency>
     <dependency>
@@ -580,6 +588,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-web-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
@@ -671,8 +685,8 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.rest-commons</artifactId>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.common</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -707,12 +721,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.camel-impl</artifactId>
+      <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.common</artifactId>
+      <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -723,6 +737,11 @@
     <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
       <artifactId>org.opennms.core.ipc.sink.kafka-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink</groupId>
+      <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -846,6 +865,11 @@
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.rest</groupId>
+      <artifactId>org.opennms.features.rest.mapper</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- dependency for ReST Elasticsearch integration -->
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -857,6 +881,22 @@
           </exclusion>
         </exclusions>
       </dependency>
+    <!-- Telemetryd -->
+    <dependency>
+      <groupId>org.opennms.features.telemetry.listeners</groupId>
+      <artifactId>org.opennms.features.telemetry.listeners.udp</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.jti</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.daemon</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <pluginRepositories>

@@ -149,6 +149,18 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     /** {@inheritDoc} */
     @Override
+    public List<OnmsNode> findByForeignId(String foreignId) {
+        return find("from OnmsNode as n where n.foreignId = ?", foreignId);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
+        return find("from OnmsNode as n where n.foreignId = ? and n.location.locationName = ?", foreignId, location);
+    }
+    
+    /** {@inheritDoc} */
+    @Override
     public OnmsNode getHierarchy(Integer id) {
         OnmsNode node = findUnique(
                                    "select distinct n from OnmsNode as n "
@@ -175,6 +187,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return find("from OnmsNode as n where n.label = ?", label);
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public List<OnmsNode> findByLabelForLocation(String label, String location) {
+        return find("from OnmsNode as n where n.label = ? and n.location.locationName = ?", label, location);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public List<OnmsNode> findAllByVarCharAssetColumn(
@@ -497,4 +515,6 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ? and n.type != ? order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
         return nextNodeId;
     }
+
+
 }

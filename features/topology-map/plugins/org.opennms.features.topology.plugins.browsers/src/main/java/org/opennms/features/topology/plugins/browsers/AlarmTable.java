@@ -176,7 +176,7 @@ public class AlarmTable extends SelectionAwareTable implements HasExtraComponent
 	private final SelectAllButton m_selectAllButton = new SelectAllButton("Select All");
 	private final ResetSelectionButton m_resetButton = new ResetSelectionButton("Deselect All");
 	private final AlarmRepository m_alarmRepo;
-	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<ItemSetChangeListener>();
+	private Set<ItemSetChangeListener> m_itemSetChangeListeners = new HashSet<>();
 
 	/**
 	 *  Leave OnmsVaadinContainer without generics; the Aries blueprint code cannot match up

@@ -297,7 +297,7 @@ public class TimelineRestService extends OnmsRestService {
     /**
      * The static list of timescales
      */
-    public static final ArrayList<TimescaleDescriptor> TIMESCALE_DESCRIPTORS = new ArrayList<TimescaleDescriptor>();
+    public static final ArrayList<TimescaleDescriptor> TIMESCALE_DESCRIPTORS = new ArrayList<>();
 
     /**
      * Initialization of the timescale list

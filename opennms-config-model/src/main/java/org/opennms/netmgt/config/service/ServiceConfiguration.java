@@ -53,7 +53,7 @@ public class ServiceConfiguration implements Serializable {
      * Service to be launched by the manager.
      */
     @XmlElement(name = "service")
-    private List<Service> m_services = new ArrayList<Service>();
+    private List<Service> m_services = new ArrayList<>();
 
     public ServiceConfiguration() {
     }

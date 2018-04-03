@@ -107,7 +107,7 @@ public class RrdPersistOperationBuilderTest {
 
     private SnmpCollectionAgent getCollectionAgent() {
 
-        return DefaultCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
+        return DefaultSnmpCollectionAgent.create(m_intf.getId(), m_ifDao, m_transMgr);
     }
 
     @Test

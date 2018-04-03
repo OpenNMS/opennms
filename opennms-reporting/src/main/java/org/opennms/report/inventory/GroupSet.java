@@ -64,7 +64,7 @@ public class GroupSet implements java.io.Serializable {
     private java.util.List<Nbisinglenode> nbisinglenodeList;
 
     public GroupSet() {
-        this.nbisinglenodeList = new java.util.ArrayList<Nbisinglenode>();
+        this.nbisinglenodeList = new java.util.ArrayList<>();
     }
 
     /**

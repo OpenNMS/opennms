@@ -63,7 +63,7 @@ public class XMeta {
     private Long columns;
 
     /** The legend entries. */
-    private List<String> legends = new ArrayList<String>();
+    private List<String> legends = new ArrayList<>();
 
     /**
      * Gets the start.

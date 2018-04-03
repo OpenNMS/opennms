@@ -45,6 +45,6 @@ public class RemotingPageIT extends OpenNMSSeleniumTestCase {
     public void testJnlpAndInstallerLinks() throws Exception {
         findElementByXpath("//a[@href='webstart/app.jnlp']");
         findElementByXpath("//a[@href='webstart/headless.jnlp']");
-        findElementByXpath("//a[text()='OpenNMS Remote Poller Installer']");
+        findElementByXpath("//p[text()='OpenNMS Remote Poller Installer']");
     }
 }

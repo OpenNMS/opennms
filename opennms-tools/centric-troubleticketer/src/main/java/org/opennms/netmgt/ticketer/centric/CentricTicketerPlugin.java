@@ -118,7 +118,7 @@ public class CentricTicketerPlugin implements Plugin {
     public Ticket get(String ticketId) {
         CentricConnection crm = createConnection();
         
-        ArrayList<String> returnFields = new ArrayList<String>();
+        ArrayList<String> returnFields = new ArrayList<>();
         returnFields.add("id");
         returnFields.add("modified");
         returnFields.add("problem");
@@ -257,7 +257,7 @@ public class CentricTicketerPlugin implements Plugin {
     public void saveOrUpdate(Ticket ticket) {
         CentricConnection crm = createConnection();
         
-        ArrayList<String> returnFields = new ArrayList<String>();
+        ArrayList<String> returnFields = new ArrayList<>();
         returnFields.add("id");
         crm.setTransactionMeta(returnFields);
         
@@ -351,7 +351,7 @@ public class CentricTicketerPlugin implements Plugin {
     private String getModifiedTimestamp(String id) {
         CentricConnection crm = createConnection();
         
-        ArrayList<String> returnFields = new ArrayList<String>();
+        ArrayList<String> returnFields = new ArrayList<>();
         returnFields.add("id");
         returnFields.add("modified");
         crm.setTransactionMeta(returnFields);

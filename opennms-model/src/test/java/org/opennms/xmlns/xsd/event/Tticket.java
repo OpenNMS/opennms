@@ -36,6 +36,8 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -75,8 +77,10 @@ import javax.xml.bind.annotation.XmlValue;
 public class Tticket {
 
     @XmlValue
+    @NotNull
     protected String value;
     @XmlAttribute(name = "state")
+    @Pattern(regexp="(on|off)")
     protected String state;
 
     /**

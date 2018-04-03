@@ -236,7 +236,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
     public static List<StatusWithIndex> weighEdges(Collection<GraphEdge> edges) {
         return weighStatuses(edges.stream()
-                .collect(Collectors.toMap(Function.identity(), e -> e.getStatus(),
+                .collect(Collectors.toMap(Function.identity(), GraphEdge::getStatus,
                         (u,v) -> { throw new IllegalStateException(String.format("Duplicate key %s", u)); },
                         LinkedHashMap::new)));
     }
@@ -252,7 +252,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
     public static List<StatusWithIndex> weighStatuses(Map<GraphEdge, Status> edgesWithStatus) {
         // Find the greatest common divisor of all the weights
         int gcd = edgesWithStatus.keySet().stream()
-                .map(e -> e.getWeight())
+                .map(GraphEdge::getWeight)
                 .reduce((a,b) -> BigInteger.valueOf(a).gcd(BigInteger.valueOf(b)).intValue())
                 .orElse(1);
 
@@ -453,8 +453,8 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
             // Rebuild the graph using the business services from the existing state machine
             final BusinessServiceGraph graph = getGraph();
             sm.setBusinessServices(graph.getVertices().stream()
-                    .filter(v -> v.getBusinessService() != null)
-                    .map(v -> v.getBusinessService())
+                    .map(GraphVertex::getBusinessService)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList()));
 
             // Prime the state
@@ -531,7 +531,7 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
         // Calculate the weighed statuses from the child edges
         List<StatusWithIndex> statusesWithIndices = weighEdges(getGraph().getOutEdges(vertex));
         List<Status> statuses = statusesWithIndices.stream()
-            .map(si -> si.getStatus())
+            .map(StatusWithIndex::getStatus)
             .collect(Collectors.toList());
 
         // Reduce

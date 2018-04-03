@@ -37,7 +37,6 @@ import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
 import org.opennms.netmgt.poller.MonitoredService;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -80,7 +79,7 @@ final public class PrTableMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = svc.getAddress();
 
-        ArrayList<String> errorStringReturn = new ArrayList<String>();
+        ArrayList<String> errorStringReturn = new ArrayList<>();
 
         // Retrieve this interface's SNMP peer object
         final SnmpAgentConfig agentConfig = getAgentConfig(svc, parameters);

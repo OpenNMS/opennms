@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -55,6 +55,6 @@ public class Log4j2StringAppenderTest {
         }
 
         // Verify that the log message was successfully captured
-        assertEquals("w00t\n", appender.getOutput());
+        assertTrue("Output did not contain test log message", appender.getOutput().contains("o.o.n.p.r.s.Log4j2StringAppenderTest: w00t"));
     }
 }

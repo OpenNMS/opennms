@@ -104,7 +104,7 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         this.m_metricRegistry = metricRegistry;
         final Gauge<Long> factCount = () -> { return getKieSession().getFactCount(); };
         metricRegistry.register(MetricRegistry.name(name, "fact-count"), factCount);
-        final Gauge<Integer> pendingTasksCount = () -> { return getPendingTasksCount(); };
+        final Gauge<Integer> pendingTasksCount = this::getPendingTasksCount;
         metricRegistry.register(MetricRegistry.name(name, "pending-tasks-count"), pendingTasksCount);
         m_eventsMeter = metricRegistry.meter(MetricRegistry.name(name, "events"));
     }

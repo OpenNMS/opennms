@@ -50,7 +50,7 @@ public class SeleniumJUnitRunner extends Suite{
         int timeout();
     }
     
-    private final List<Runner> m_runners = new ArrayList<Runner>();
+    private final List<Runner> m_runners = new ArrayList<>();
     
     public SeleniumJUnitRunner(Class<?> testClass) throws InitializationError 
     {

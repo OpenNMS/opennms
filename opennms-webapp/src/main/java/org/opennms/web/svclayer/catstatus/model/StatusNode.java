@@ -51,7 +51,7 @@ public class StatusNode {
 	 */
 	public StatusNode(){
 		
-		m_ipinterfaces = new ArrayList<StatusInterface>();
+		m_ipinterfaces = new ArrayList<>();
 		
 	}
 	

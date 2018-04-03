@@ -40,7 +40,7 @@ import com.google.gwt.event.shared.GwtEvent;
 public class LocationsUpdatedEvent extends GwtEvent<LocationsUpdatedEventHandler> {
     
     /** Constant <code>TYPE</code> */
-    public static Type<LocationsUpdatedEventHandler> TYPE = new Type<LocationsUpdatedEventHandler>();
+    public static Type<LocationsUpdatedEventHandler> TYPE = new Type<>();
 
     private String m_eventString = "You have got the event String";
     

@@ -87,7 +87,7 @@ public enum CriteriaRestriction {
     },
     In(CriteriaEntry.Property, CriteriaEntry.Value) {
         public void addRestriction(String property, CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, Object[] values) {
-            Set<Object> set = new HashSet<Object>();
+            Set<Object> set = new HashSet<>();
 
             Class<?> clazz = criteriaBuilderHelper.getTypeOfProperty(property);
 
@@ -192,7 +192,7 @@ public enum CriteriaRestriction {
      * @param values                the values of this criteria
      */
     public void addRestrictionToCriteriaBuilder(CriteriaBuilderHelper criteriaBuilderHelper, CriteriaBuilder criteriaBuilder, String[] values) {
-        List<Object> listOfObjects = new ArrayList<Object>();
+        List<Object> listOfObjects = new ArrayList<>();
 
         int i = 0;
 

@@ -36,7 +36,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Map;
 import javax.servlet.ServletContext;
 
 import org.opennms.core.db.DataSourceFactory;
@@ -49,6 +49,8 @@ import org.opennms.web.event.filter.NodeFilter;
 import org.opennms.web.event.filter.ServiceFilter;
 import org.opennms.web.event.filter.SeverityFilter;
 import org.opennms.web.filter.Filter;
+
+import com.google.common.collect.Maps;
 
 /**
  * Encapsulates all querying functionality for events.
@@ -208,6 +210,31 @@ public class EventFactory {
         }
 
         return event;
+    }
+
+    public static Map<String, String> getParmsForEventId(int eventId) throws SQLException {
+        final Connection conn = DataSourceFactory.getInstance().getConnection();
+        final DBUtils d = new DBUtils(EventFactory.class, conn);
+
+        final Map<String, String> result = Maps.newHashMap();
+
+        try {
+            PreparedStatement stmt = conn.prepareStatement("SELECT name, value FROM event_parameters WHERE eventid = ?");
+            d.watch(stmt);
+            stmt.setInt(1, eventId);
+
+            ResultSet rs = stmt.executeQuery();
+            d.watch(rs);
+
+            while (rs.next()) {
+                result.put(rs.getString("name"), rs.getString("value"));
+            }
+
+        } finally {
+            d.cleanUp();
+        }
+
+        return result;
     }
 
     /**
@@ -1232,7 +1259,7 @@ public class EventFactory {
             event.host = rs.getString("eventHost");
             event.snmphost = rs.getString("eventSnmpHost");
             event.dpName = rs.getString("systemLabel");
-            event.parms = rs.getString("eventParms");
+            event.parms = EventFactory.getParmsForEventId(event.id);
 
             // node id can be null
             Object element = rs.getObject("nodeID");
