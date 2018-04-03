@@ -36,7 +36,7 @@ import com.google.common.io.ByteStreams;
 public class DefaultTemplateLoader implements TemplateLoader {
 
     @Override
-    public String load(String resource) throws IOException {
+    public String load(Version serverVersion, String resource) throws IOException {
         try (InputStream inputStream = getResourceAsStream(resource)) {
             // Ensure resource actually exists
             if (inputStream == null) {

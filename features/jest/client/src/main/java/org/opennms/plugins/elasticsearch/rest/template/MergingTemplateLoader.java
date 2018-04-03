@@ -45,8 +45,8 @@ public class MergingTemplateLoader implements TemplateLoader {
     }
 
     @Override
-    public String load(String resource) throws IOException {
-        final String template = delegate.load(resource);
+    public String load(Version serverVersion, String resource) throws IOException {
+        final String template = delegate.load(serverVersion, resource);
         return merge(template);
     }
 

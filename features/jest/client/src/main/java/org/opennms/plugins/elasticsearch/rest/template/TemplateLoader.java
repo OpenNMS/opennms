@@ -31,5 +31,5 @@ package org.opennms.plugins.elasticsearch.rest.template;
 import java.io.IOException;
 
 public interface TemplateLoader {
-    String load(String resource) throws IOException;
+    String load(Version serverVersion, String resource) throws IOException;
 }
