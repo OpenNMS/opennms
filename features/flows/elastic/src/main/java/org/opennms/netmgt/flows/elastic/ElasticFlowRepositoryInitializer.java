@@ -38,7 +38,7 @@ import io.searchbox.client.JestClient;
 
 public class ElasticFlowRepositoryInitializer extends DefaultTemplateInitializer {
 
-    public static final String TEMPLATE_RESOURCE = "/netflow-template.json";
+    public static final String TEMPLATE_RESOURCE = "/netflow-template";
 
     private static final String FLOW_TEMPLATE_NAME = "netflow";
 

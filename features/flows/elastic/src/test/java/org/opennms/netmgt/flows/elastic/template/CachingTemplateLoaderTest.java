@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.elastic.template;
 
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,8 +41,11 @@ import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
 import org.opennms.plugins.elasticsearch.rest.template.CachingTemplateLoader;
 import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
 import org.opennms.plugins.elasticsearch.rest.template.TemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.Version;
 
 public class CachingTemplateLoaderTest {
+
+    private static final Version version = new Version(6,2,3);
 
     @Test
     public void verifyCaching() throws IOException {
@@ -53,12 +57,12 @@ public class CachingTemplateLoaderTest {
         final TemplateLoader cachingTemplateLoader = new CachingTemplateLoader(actualTemplateLoader);
 
         // Ask the caching loader
-        cachingTemplateLoader.load(ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
-        cachingTemplateLoader.load(ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
-        cachingTemplateLoader.load("/netflow-template-merged.json");
-        cachingTemplateLoader.load("/netflow-template-merged.json");
+        cachingTemplateLoader.load(version, ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
+        cachingTemplateLoader.load(version, ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
+        cachingTemplateLoader.load(version, "/netflow-template-merged");
+        cachingTemplateLoader.load(version, "/netflow-template-merged");
 
         // Verify that, actual loader was only be invoked twice
-        verify(actualTemplateLoader, times(2)).load(anyString());
+        verify(actualTemplateLoader, times(2)).load(any(), anyString());
     }
 }
