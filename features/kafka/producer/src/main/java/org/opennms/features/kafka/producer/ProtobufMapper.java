@@ -133,10 +133,15 @@ public class ProtobufMapper {
                 .setSource(event.getEventSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
                 .setLabel(eventConfDao.getEventLabel(event.getEventUei()))
-                .setDescription(event.getEventDescr())
-                .setLogMessage(event.getEventLogMsg())
                 .setLog("Y".equalsIgnoreCase(event.getEventLog()))
                 .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
+
+        if (event.getEventDescr() != null) {
+            builder.setDescription(event.getEventDescr());
+        }
+        if (event.getEventLogMsg() != null) {
+            builder.setLogMessage(event.getEventLogMsg());
+        }
         if (event.getNodeId() != null) {
             builder.setNodeCriteria(toNodeCriteria(event.getNode()));
         }
@@ -160,16 +165,21 @@ public class ProtobufMapper {
         final OpennmsModelProtos.Alarm.Builder builder = OpennmsModelProtos.Alarm.newBuilder()
                 .setId(alarm.getId())
                 .setUei(alarm.getUei())
-                .setReductionKey(alarm.getReductionKey())
                 .setCount(alarm.getCounter())
-                .setDescription(alarm.getDescription())
-                .setLogMessage(alarm.getLogMsg())
                 .setSeverity(toSeverity(alarm.getSeverity()));
 
+        if (alarm.getReductionKey() != null) {
+            builder.setReductionKey(alarm.getReductionKey());
+        }
         if (toEvent(alarm.getLastEvent()) != null) {
             builder.setLastEvent(toEvent(alarm.getLastEvent()));
         }
-
+        if (alarm.getLogMsg() != null) {
+            builder.setLogMessage(alarm.getLogMsg());
+        }
+        if (alarm.getDescription() != null) {
+            builder.setDescription(alarm.getDescription());
+        }
         if (alarm.getIpAddr() != null) {
             builder.setIpAddress(InetAddressUtils.toIpAddrString(alarm.getIpAddr()));
         }

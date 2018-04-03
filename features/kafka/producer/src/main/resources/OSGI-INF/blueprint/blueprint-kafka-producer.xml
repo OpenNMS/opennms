@@ -52,7 +52,9 @@
     <property name="eventFilter" value="${eventFilter}"/>
   </bean>
 
-  <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataView"
+  <service ref="alarmDataSync" interface="org.opennms.features.kafka.producer.datasync.AlarmDataStore" />
+
+  <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync"
 		init-method="init" destroy-method="destroy">
     <argument ref="configAdmin"/>
     <property name="alarmTopic" value="${alarmTopic}"/>

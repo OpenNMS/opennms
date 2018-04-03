@@ -31,7 +31,9 @@ package org.opennms.features.kafka.producer;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -54,6 +56,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -62,7 +65,6 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataView;
 
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
@@ -76,8 +78,6 @@ import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-
-import org.opennms.netmgt.model.OnmsNode;
 
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -94,6 +94,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
  *
  * @author cgorantla
  */
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -133,9 +134,6 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
 
     private OpennmsKafkaProducer kafkaProducer;
 
-    private KafkaAlarmDataView alarmDataView;
-
-
     private KafkaMessageConsumerRunner kafkaConsumerRunner;
 
     private MockDatabase m_database;
@@ -161,11 +159,6 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         kafkaConsumerRunner = new KafkaMessageConsumerRunner(kafkaServer.getKafkaConnectString());
         executor.execute(kafkaConsumerRunner);
 
-/*        alarmDataView = new KafkaAlarmDataView(configAdmin);
-        alarmDataView.setAlarmTopic("alarms");
-        alarmDataView.init();*/
-
-
         kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, m_eventdIpcMgr,
                 alarmLifecycleListenerManager);
 
@@ -188,7 +181,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         sendNodeUpEvent(NODE_ID_ONE);
 
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
-                .untilAtomic(kafkaConsumerRunner.getCount(), is(2));
+                .untilAtomic(kafkaConsumerRunner.getCount(), greaterThan(1));
 
         OpennmsModelProtos.Event newSuspectEvent = OpennmsModelProtos.Event
                 .parseFrom(kafkaConsumerRunner.getResult().get("events"));
@@ -209,7 +202,7 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         kafkaConsumerRunner.resetCount();
         sendAlarmDataToKafka();
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(15, SECONDS)
-                .untilAtomic(kafkaConsumerRunner.getCount(), is(2));
+                .until(() -> kafkaConsumerRunner.getResult().get("alarms") , notNullValue());
         OpennmsModelProtos.Alarm alarmData = OpennmsModelProtos.Alarm
                 .parseFrom(kafkaConsumerRunner.getResult().get("alarms"));
         assertEquals(alarmData.getUei(), EventConstants.NODE_UP_EVENT_UEI);
@@ -254,6 +247,8 @@ public class KafkaEventForwarderIT implements TemporaryDatabaseAware<MockDatabas
         props.put("group.id", "OpenNMS");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+        props.put("enable.auto.commit", "true");
+        props.put("auto.commit.interval.ms", "1000");
         KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(props);
         await().atMost(1, MINUTES).pollDelay(0, SECONDS).pollInterval(5, SECONDS)
                 .until(() -> kafkaConsumer.listTopics().keySet().contains("events"));
