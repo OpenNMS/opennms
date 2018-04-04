@@ -159,13 +159,19 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
         streamsProperties.put(StreamsConfig.DEFAULT_DESERIALIZATION_EXCEPTION_HANDLER_CLASS_CONFIG,
                 LogAndFailExceptionHandler.class);
         streamsProperties.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, FailOnInvalidTimestamp.class);
-        Path kafkaDir = Paths.get(System.getProperty("karaf.data"), "kafka");
-        streamsProperties.put(StreamsConfig.STATE_DIR_CONFIG, kafkaDir.toString());
+        if (streamsProperties.get(StreamsConfig.STATE_DIR_CONFIG) == null) {
+            Path kafkaDir = Paths.get(System.getProperty("karaf.data"), "kafka");
+            streamsProperties.put(StreamsConfig.STATE_DIR_CONFIG, kafkaDir.toString());
+        }
         return streamsProperties;
     }
 
     public void setAlarmTopic(String alarmTopic) {
         this.alarmTopic = alarmTopic;
+    }
+
+    public void setAlarmStoreQueryTimeout(long alarmStoreQueryTimeout) {
+        this.alarmStoreQueryTimeout = alarmStoreQueryTimeout;
     }
 
 }
