@@ -136,6 +136,14 @@ public class SyslogKafkaElasticsearch6IT extends AbstractSyslogTestCase {
         }
 
         // 100 warm-up messages plus ${numMessages} messages
-        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages);
+        pollForElasticsearchEventsUsingJest(esRestAddr, 100 + numMessages, () -> "{\n" +
+                "    \"query\": {\n" +
+                "        \"bool\" : {\n" +
+                "            \"filter\" : {\n" +
+                "                \"term\" : { \"eventuei\" : \"" + AbstractSyslogTestCase.SYSLOG_MESSAGE_UEI + "\" }\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
     }
 }
