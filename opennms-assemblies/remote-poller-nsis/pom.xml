@@ -55,8 +55,8 @@
             <artifactId>nsis-maven-plugin</artifactId>
             <version>1.0-alpha-1</version>
             <configuration>
-              <!-- You may have to change this path if you install NSIS in a different directory -->
-              <makensisBin>C:\Progra~1\NSIS\makensis.exe</makensisBin>
+              <!-- Use makensis.exe available in the %PATH% -->
+              <makensisBin>makensis.exe</makensisBin>
               <scriptFile>remote-poller.nsi</scriptFile>
             </configuration>
             <executions>
