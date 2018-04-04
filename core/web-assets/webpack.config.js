@@ -38,9 +38,11 @@ if (isProduction) {
 
 console.log('=== running ' + (isProduction? 'production':'development') + ' build of OpenNMS ' + opennmsVersion + ' assets ===');
 
-var styleroot = path.join(__dirname, 'src/main/assets/style');
-var jsroot = path.join(__dirname, 'src/main/assets/js');
-var moduleroot = path.join(__dirname, 'src/main/assets/modules');
+var assetsroot = path.join(__dirname, 'src', 'main', 'assets');
+var styleroot = path.join(assetsroot, 'style');
+var jsroot = path.join(assetsroot, 'js');
+var moduleroot = path.join(assetsroot, 'modules');
+var staticroot = path.join(assetsroot, 'static');
 
 var styleEntries = {};
 var appEntries = {};
@@ -65,14 +67,14 @@ const scanUtils = (start, dirs, names) => {
         continue;
       }
       const entryPath = path.join(start,file);
-      if (entryPath.indexOf('/vendor/') >= 0) {
+      if (entryPath.indexOf(path.sep + 'vendor' + path.sep) >= 0) {
         checkEntry('vendor', entry);
         vendorEntries[entry] = entryPath;
       } else {
         checkEntry('lib', entry);
         appEntries[entry] = entryPath;
       }
-      if (entryPath.indexOf('/vaadin/') >= 0) {
+      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
         vaadinEntries[entry] = entryPath;
       }
       allEntries[entry] = entryPath;
@@ -89,7 +91,7 @@ const scanApps = (start, dirs, names) => {
       const entry = path.basename(path.dirname(relative));
       const entryPath = path.join(start,file);
       checkEntry('app', entry);
-      if (entryPath.indexOf('/vaadin/') >= 0) {
+      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
         vaadinEntries[entry] = entryPath;
       }
       allEntries[entry] = entryPath;
@@ -157,10 +159,7 @@ var config = {
   entry: allEntries,
   output: {
     path: distdir,
-    libraryTarget: 'umd'/*,
-    umdNamedDefine: true,
-    publicPath: 'assets/'
-    */
+    libraryTarget: 'umd'
   },
   target: 'web',
   module: {
@@ -282,7 +281,7 @@ var config = {
             {
               loader: 'cache-loader',
               options: {
-                cacheDirectory: path.resolve('target/cache-loader')
+                cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
               }
             },
             {
@@ -334,7 +333,7 @@ var config = {
           {
             loader: 'cache-loader',
             options: {
-              cacheDirectory: path.resolve('target/cache-loader')
+              cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
             }
           },
           {
@@ -353,7 +352,7 @@ var config = {
           {
             loader: 'cache-loader',
             options: {
-              cacheDirectory: path.resolve('target/cache-loader')
+              cacheDirectory: path.resolve(path.join('target', 'cache-loader'))
             }
           },
           {
@@ -373,17 +372,11 @@ var config = {
     ]
   },
   resolve: {
-    /*
-    alias: {
-      // fix a weird issue in angular-ui-bootstrap not finding its modules
-      uib: path.join(__dirname, 'node_modules', 'angular-ui-bootstrap')
-    },
-    */
     modules: [
-      path.resolve('./src/main/assets/modules'),
-      path.resolve('./src/main/assets/js'),
-      path.resolve('./src/main/assets/style'),
-      path.resolve('./node_modules')
+      moduleroot,
+      jsroot,
+      styleroot,
+      path.resolve(path.join(__dirname, 'node_modules'))
     ],
     descriptionFiles: ['package.json', 'bower.json'],
     extensions: ['.tsx', '.ts', '.jsx', '.js']
@@ -537,7 +530,7 @@ function createConfig(options) {
 
   myconf.plugins.push(new CopyWebpackPlugin([
     {
-      from: 'src/main/assets/static'
+      from: staticroot
     }
   ]));
 
