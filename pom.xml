@@ -1370,7 +1370,8 @@
     <jungVersion>2.0.1</jungVersion>
     <vaadinVersion>7.2.7</vaadinVersion>
     <vaadinSharedEpsVersion>1.0.2</vaadinSharedEpsVersion>
-    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
+    <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
+    <vaadin.plugin.version>8.1.0</vaadin.plugin.version>
     <vaadinAddonContextMenuVersion>4.2.1</vaadinAddonContextMenuVersion>
     <vaadinAddonRefresherVersion>1.2.3.7</vaadinAddonRefresherVersion>
     <vaadinAddonConfirmDialogVersion>2.0.4</vaadinAddonConfirmDialogVersion>
