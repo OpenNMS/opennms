@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -49,6 +49,7 @@ import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.core.utils.WebSecurityUtils;
@@ -562,23 +563,22 @@ public abstract class EventUtils {
      * @return a boolean.
      */
     public static boolean eventsMatch(final Event e1, final Event e2) {
-    	if (e1 == e2) {
+        if (e1 == e2) {
             return true;
         }
         if (e1 == null || e2 == null) {
             return false;
         }
-        if (e1.getUei() != e2.getUei() && (e1.getUei() == null || e2.getUei() == null || !e1.getUei().equals(e2.getUei()))) {
-        		return false;
-        }
-    
-        if (e1.getNodeid() != e2.getNodeid()) {
+        if (!Objects.equals(e1.getUei(), e2.getUei())) {
             return false;
         }
-        if (e1.getInterface() != e2.getInterface() && (e1.getInterface() == null || e2.getInterface() == null || !e1.getInterface().equals(e2.getInterface()))) {
+        if (!Objects.equals(e1.getNodeid(), e2.getNodeid())) {
             return false;
         }
-        if (e1.getService() != e2.getService() && (e1.getService() == null || e2.getService() == null || !e1.getService().equals(e2.getService()))) {
+        if (!Objects.equals(e1.getInterface(), e2.getInterface())) {
+            return false;
+        }
+        if (!Objects.equals(e1.getService(), e2.getService())) {
             return false;
         }
     
@@ -595,7 +595,7 @@ public abstract class EventUtils {
      */
     static public void checkInterface(Event e) throws InsufficientInformationException {
         if (e == null) {
-            throw new NullPointerException("e is null");
+            throw new NullPointerException("Event is null");
         } else if (e.getInterface() == null) {
             throw new InsufficientInformationException("ipaddr for event is unavailable");
         }
