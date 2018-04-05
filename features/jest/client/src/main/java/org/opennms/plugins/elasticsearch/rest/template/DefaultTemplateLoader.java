@@ -42,9 +42,9 @@ public class DefaultTemplateLoader implements TemplateLoader {
 
     @Override
     public String load(Version serverVersion, String resource) throws IOException {
-        // Attempt to find a template that is prefixed using the ES# where # is the major version
-        // of the ES server. If no template is found for the current major version, try the previous.
-        // If no template is found then attempt to look it up without the version suffix.
+        // Attempt to find a template that ends in .es#.json where # is the major version
+        // of the ES server. If no template is found for the current major version, try the previous,
+	// and so on. If no template is found then attempt to look it up without the version in the suffix.
         for (int i = serverVersion.getMajor(); i >= 0; i--) {
             final String versionSuffix = i == 0 ? "" : String.format(".es%d", i);
             final String resourceWithSuffix = String.format("%s%s.json", resource, versionSuffix);
