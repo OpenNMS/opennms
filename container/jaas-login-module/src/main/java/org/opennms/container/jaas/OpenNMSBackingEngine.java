@@ -67,6 +67,11 @@ public class OpenNMSBackingEngine implements BackingEngine {
 	}
 
 	@Override
+	public UserPrincipal lookupUser(String s) {
+		throw new UnsupportedOperationException("Cannot lookup users in this JAAS module");
+	}
+
+	@Override
 	public List<GroupPrincipal> listGroups(UserPrincipal user) {
 		return Collections.emptyList();
 	}
