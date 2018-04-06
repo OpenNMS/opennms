@@ -85,7 +85,8 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
-        "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml",
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-server.xml",
+        "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })

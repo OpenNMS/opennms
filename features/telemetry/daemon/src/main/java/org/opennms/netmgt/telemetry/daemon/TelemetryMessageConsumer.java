@@ -111,7 +111,7 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 adapterInstance = ctor.newInstance();
             } catch (Exception e) {
                 throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
-                        adapterDef.getClassName(), e));
+                        adapterDef.getClassName()), e);
             }
 
             // Cast

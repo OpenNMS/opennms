@@ -610,7 +610,8 @@
       <feature>minion-core-api</feature>
       <feature>camel-blueprint</feature>
       <feature>camel-jms</feature>
-      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.camel-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.camel/org.opennms.core.ipc.sink.camel.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.camel/org.opennms.core.ipc.sink.camel.client/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-kafka" description="OpenNMS :: Core :: IPC :: Sink :: Kafka Impl." version="${project.version}">
