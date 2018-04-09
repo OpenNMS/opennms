@@ -27,6 +27,7 @@
   <reference id="alarmLifecycleSubscriptionService" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
+  <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
 
   <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
     <argument ref="eventConfDao"/>
@@ -57,6 +58,9 @@
   <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync"
 		init-method="init" destroy-method="destroy">
     <argument ref="configAdmin"/>
+    <argument ref="kafkaProducer"/>
+    <argument ref="alarmDao" />
+    <argument ref="protobufMapper" />
     <property name="alarmTopic" value="${alarmTopic}"/>
   </bean>
 

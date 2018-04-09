@@ -33,9 +33,16 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Dictionary;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.Consumed;
@@ -50,9 +57,17 @@ import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.processor.FailOnInvalidTimestamp;
 import org.apache.kafka.streams.state.QueryableStoreTypes;
 import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
+import org.opennms.features.kafka.producer.ProtobufMapper;
+import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Sets;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaAlarmDataSync implements AlarmDataStore {
 
@@ -63,12 +78,20 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
     private static final String KAFKA_STREAMS_PID = "org.opennms.features.kafka.producer.streams";
 
     private final ConfigurationAdmin configAdmin;
+    private final OpennmsKafkaProducer kafkaProducer;
+    private final AlarmDao alarmDao;
+    private final ProtobufMapper protobufMapper;
     private String alarmTopic;
     private KafkaStreams streams;
     private long alarmStoreQueryTimeout = TimeUnit.MINUTES.toMillis(1);
+    private final AtomicBoolean closed = new AtomicBoolean(false);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin) {
+    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, AlarmDao alarmDao, ProtobufMapper protobufMapper) {
         this.configAdmin = configAdmin;
+        this.kafkaProducer = kafkaProducer;
+        this.alarmDao = alarmDao;
+        this.protobufMapper = protobufMapper;
     }
 
     public void init() throws IOException {
@@ -97,18 +120,63 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
         } catch (StreamsException | IllegalStateException e) {
             LOG.error(" Alarm datasync stream is not started, {}", e);
         }
+        //Schedule sync every 5 minutes after initial delay of 1 minute
+        scheduler.scheduleAtFixedRate(() -> synchronizeAlarmsWithDB(), 1, 5, TimeUnit.MINUTES);
 
     }
 
     public void destroy() {
+        closed.set(true);
+        scheduler.shutdown();
         if (streams != null) {
             streams.close();
         }
     }
 
+    private void synchronizeAlarmsWithDB() {
+
+        ReadOnlyKeyValueStore<String, byte[]> alarmDataStore;
+        setAlarmStoreQueryTimeout(Long.MAX_VALUE);
+        try {
+            alarmDataStore = waitUntilStoreIsQueryable();
+        } catch (InterruptedException e) {
+            return;
+        }
+        if (Objects.isNull(alarmDataStore)) {
+            return;
+        }
+        Set<String> keysFromStore = new HashSet<>();
+        alarmDataStore.all().forEachRemaining(alarmData -> keysFromStore.add(alarmData.key));
+        Set<String> keysFromDB = alarmDao.findAll().stream().map(OnmsAlarm::getReductionKey)
+                .collect(Collectors.toSet());
+        // Handle deletes first
+        Set<String> keysNotInDB = Sets.difference(keysFromStore, keysFromDB);
+        keysNotInDB.stream().forEach(key -> kafkaProducer.handleDeletedAlarm(0, key));
+        // Handle new alarms
+        Set<String> keysNotInStore = Sets.difference(keysFromDB, keysFromStore);
+        keysNotInStore.stream().forEach(key -> {
+            kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
+        });
+        // Handle Updates
+        Set<String> commonKeys = Sets.intersection(keysFromDB, keysFromStore);
+        commonKeys.stream().forEach(key -> {
+            try {
+                OpennmsModelProtos.Alarm alarm = OpennmsModelProtos.Alarm.parseFrom(alarmDataStore.get(key));
+                OnmsAlarm alarmFromDB = alarmDao.findByReductionKey(key);
+                if (!alarm.equals(protobufMapper.toAlarm(alarmFromDB).build())) {
+                    kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
+                }
+            } catch (InvalidProtocolBufferException e) {
+                LOG.error(" Error while parsing alarm for key = {}, {}", key, e);
+            }
+        });
+
+    }
+
+
     private ReadOnlyKeyValueStore<String, byte[]> waitUntilStoreIsQueryable() throws InterruptedException {
         final long timeBeforeQuery = System.currentTimeMillis();
-        while (true) {
+        while (!closed.get()) {
             try {
                 return streams.store(ALARM_STORE_NAME, QueryableStoreTypes.keyValueStore());
             } catch (InvalidStateStoreException ignored) {
@@ -120,6 +188,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
                 Thread.sleep(100);
             }
         }
+        return null;
     }
 
     @Override
