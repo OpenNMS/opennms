@@ -92,11 +92,6 @@
             <version>${springVersion}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
-            <version>${springVersion}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.xml</artifactId>
             <version>${project.version}</version>
