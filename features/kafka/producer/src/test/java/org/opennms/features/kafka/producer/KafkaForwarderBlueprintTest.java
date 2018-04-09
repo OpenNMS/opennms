@@ -30,7 +30,6 @@ package org.opennms.features.kafka.producer;
 
 import java.util.Properties;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -38,7 +37,6 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
-@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
                                     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",

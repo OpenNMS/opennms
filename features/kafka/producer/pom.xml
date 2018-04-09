@@ -65,24 +65,6 @@
       <artifactId>opennms-dao-api</artifactId>
     </dependency>
 
-    <!-- For Integration Test -->
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.kafka_2.10</artifactId>
-      <version>0.10.1.1_1</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions>
-      <scope>test</scope>
-    </dependency>
-
     <!-- Kafka -->
     <dependency>
       <groupId>org.apache.kafka</groupId>

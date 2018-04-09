@@ -76,6 +76,7 @@ import com.google.common.util.concurrent.RateLimiter;
  * 
  * @author ranger
  */
+
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
         "classpath:/META-INF/opennms/applicationContext-soa.xml",

@@ -101,6 +101,7 @@ public class JUnitKafkaServer extends ExternalResource {
         properties.put("log.dir", "target/kafka-log");
         properties.put("port", String.valueOf(kafkaPort.get()));
         properties.put("zookeeper.connect", zkServer.getConnectString());
+        properties.put("offsets.topic.replication.factor", (short)1);
 
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
@@ -134,7 +135,7 @@ public class JUnitKafkaServer extends ExternalResource {
     private List<BrokerMetadata> getBrokerMetadatas() {
         ZkClient zkClient = new ZkClient(getZookeeperConnectString(), 1000, 1000, ZKStringSerializer$.MODULE$);
         ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(getZookeeperConnectString()), false);
-        return JavaConversions.asJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
+        return JavaConversions.seqAsJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
     }
 
     private static int getAvailablePort(final AtomicInteger current, final int max) {
