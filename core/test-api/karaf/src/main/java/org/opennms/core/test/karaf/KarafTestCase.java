@@ -260,8 +260,8 @@ public abstract class KarafTestCase {
             editConfigurationFilePut("etc/org.apache.karaf.shell.cfg", "sshPort", sshPort),
 
             // Work around bug KARAF-5251
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna/4.4.0", "5"),
-            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna-platform/4.4.0", "5"),
+            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna/4.5.0", "5"),
+            editConfigurationFilePut("etc/startup.properties", "mvn:net.java.dev.jna/jna-platform/4.5.0", "5"),
 
             // This port is already being allocated according to an org.ops4j.net.FreePort call
             //editConfigurationFilePut("etc/system.properties", "org.ops4j.pax.exam.rbc.rmi.port", paxExamRmiRegistryPort),
