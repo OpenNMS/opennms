@@ -3,29 +3,18 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:tx="http://www.springframework.org/schema/tx"
   xmlns:context="http://www.springframework.org/schema/context"
-  xmlns:util="http://www.springframework.org/schema/util"
-  xmlns:aop="http://www.springframework.org/schema/aop"
-  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
   xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
   xsi:schemaLocation="
   http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
-  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
 ">
 
     <context:annotation-config />
     <tx:annotation-driven/>
 
-    <bean id="daemon" class="org.opennms.netmgt.collectd.Collectd">
-      <property name="eventIpcManager" ref="eventIpcManager"/>
-    </bean>
-
     <bean id="collectionAgentFactory" class="org.opennms.netmgt.collectd.DefaultSnmpCollectionAgentFactory" />
     <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" ref="collectionAgentFactory" />
-
-    <bean id="defaultResourceTypeMapper" class="org.opennms.netmgt.collectd.DefaultResourceTypeMapper" />
 
 </beans>

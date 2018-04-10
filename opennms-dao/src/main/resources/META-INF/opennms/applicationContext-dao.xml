@@ -493,10 +493,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
-  <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory" />
-
-  <onmsgi:service interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" ref="collectionAgentFactory" />
-
   <!-- The time-series strategy specific context should provide beans that implement:
             org.opennms.netmgt.collection.api.PersisterFactory
             org.opennms.netmgt.dao.api.ResourceStorageDao
