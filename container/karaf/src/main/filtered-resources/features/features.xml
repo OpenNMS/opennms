@@ -165,11 +165,6 @@
             sshRealm = karaf
 
             #
-            # Defines if the SFTP system is enabled or not in the SSH server
-            #
-            sftpEnabled=true
-
-            #
             # The location of the hostKey file defines where the private/public key of the server
             # is located. If no file is at the defined location it will be ignored.
             #
@@ -184,7 +179,7 @@
             #
             # shRole defines the role required to access the console through ssh
             #
-            sshRole = ssh
+            sshRole = admin
 
             #
             # Self defined key size in 1024, 2048, 3072, or 4096
