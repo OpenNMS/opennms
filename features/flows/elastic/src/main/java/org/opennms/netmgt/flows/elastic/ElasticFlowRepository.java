@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -122,11 +123,14 @@ public class ElasticFlowRepository implements FlowRepository {
      */
     private final Histogram flowsPerLog;
 
+    private final IndexSelector indexSelector;
+
     public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher, int bulkRetryCount) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
         this.bulkRetryCount = bulkRetryCount;
+        this.indexSelector = new IndexSelector(TYPE, indexStrategy);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");
@@ -169,7 +173,7 @@ public class ElasticFlowRepository implements FlowRepository {
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, flowDocuments, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
-                   final String index = indexStrategy.getIndex("netflow", new Date(flowDocument.getTimestamp()));
+                   final String index = indexStrategy.getIndex(TYPE, new Date(flowDocument.getTimestamp()));
                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
                         .index(index)
                         .type(TYPE);
@@ -193,13 +197,14 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
-        return searchAsync(query).thenApply(SearchResult::getTotal);
+        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null)).thenApply(SearchResult::getTotal);
     }
 
     @Override
     public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
         final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters);
-        return searchAsync(query).thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
+        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+                .thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
                 .getBuckets()
                 .stream()
                 .map(e -> Integer.parseInt(e.getKey()))
@@ -209,7 +214,8 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Set<Integer>> getSnmpInterfaceIdsWithFlows(int limit, List<Filter> filters) {
         final String query = searchQueryProvider.getUniqueSnmpInterfaces(limit, filters);
-        return searchAsync(query).thenApply(res -> {
+        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+                .thenApply(res -> {
             final Set<Integer> interfaces = Sets.newHashSet();
             res.getAggregations().getTermsAggregation("input_snmp").getBuckets()
                     .stream()
@@ -263,7 +269,8 @@ public class ElasticFlowRepository implements FlowRepository {
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
-        return searchAsync(query).thenApply(res -> res.getAggregations().getTermsAggregation("grouped_by").getBuckets().stream()
+        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+                .thenApply(res -> res.getAggregations().getTermsAggregation("grouped_by").getBuckets().stream()
                 .map(TermsAggregation.Entry::getKey)
                 .limit(N)
                 .collect(Collectors.toList()));
@@ -281,7 +288,7 @@ public class ElasticFlowRepository implements FlowRepository {
         } else {
             final String seriesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, timeRangeFilter.getStart(),
                     timeRangeFilter.getEnd(), groupByTerm, filters);
-            seriesFuture = searchAsync(seriesFromTopNQuery)
+            seriesFuture = searchAsync(seriesFromTopNQuery, timeRangeFilter)
                     .thenApply(res -> {
                         toTable(builder, res);
                         return null;
@@ -293,7 +300,8 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also need to query for items with a missing term, this will require a separate query
             final String seriesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, keyForMissingTerm, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromMissingQuery), (ignored,res) -> {
+            seriesFuture = seriesFuture
+                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters).orElse(null)), (ignored,res) -> {
                 toTable(builder, res);
                 return null;
             });
@@ -303,7 +311,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also want to gather series for terms not part of the Top N
             final String seriesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, missingTermIncludedInTopN, filters);
-            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery), (ignored,res) -> {
+            seriesFuture = seriesFuture.thenCombine(searchAsync(seriesFromOthersQuery, timeRangeFilter), (ignored,res) -> {
                 final MetricAggregation aggs = res.getAggregations();
                 final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
                 for (TermsAggregation.Entry directionBucket : directionAgg.getBuckets()) {
@@ -359,7 +367,7 @@ public class ElasticFlowRepository implements FlowRepository {
             summariesFuture = CompletableFuture.completedFuture(new LinkedHashMap<>());
         } else {
             final String bytesFromTopNQuery = searchQueryProvider.getSeriesFromTopNQuery(topN, step, start, end, groupByTerm, filters);
-            summariesFuture = searchAsync(bytesFromTopNQuery).thenApply(ElasticFlowRepository::toTrafficSummaries);
+            summariesFuture = searchAsync(bytesFromTopNQuery, timeRangeFilter).thenApply(ElasticFlowRepository::toTrafficSummaries);
         }
 
         final boolean missingTermIncludedInTopN = keyForMissingTerm != null && topN.contains(keyForMissingTerm);
@@ -367,7 +375,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also need to query for items with a missing term, this will require a separate query
             final String bytesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step, start, end,
                     groupByTerm, keyForMissingTerm, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery), (summaries,results) -> {
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromMissingQuery, timeRangeFilter), (summaries,results) -> {
                 summaries.putAll(toTrafficSummaries(results));
                 return summaries;
             });
@@ -377,7 +385,7 @@ public class ElasticFlowRepository implements FlowRepository {
             // We also want to tally up traffic from other elements not part of the Top N
             final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(topN, step, start, end,
                     groupByTerm, missingTermIncludedInTopN, filters);
-            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery), (summaries,results) -> {
+            summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries,results) -> {
                 final MetricAggregation aggs = results.getAggregations();
                 final TrafficSummary<String> trafficSummary = new TrafficSummary<>(OTHER_APPLICATION_NAME);
                 final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
@@ -449,11 +457,14 @@ public class ElasticFlowRepository implements FlowRepository {
                 .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private CompletableFuture<SearchResult> searchAsync(String query) {
+    private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
         LOG.debug("Executing asynchronous query: {}", query);
-        return executeAsync(new Search.Builder(query)
-                .addType(TYPE)
-                .build());
+        Search.Builder builder = new Search.Builder(query)
+                .addType(TYPE);
+        if(timeRangeFilter != null) {
+            builder.addIndices(indexSelector.getIndexNames(timeRangeFilter));
+        }
+        return executeAsync(builder.build());
     }
 
     private <T extends JestResult> CompletableFuture<T> executeAsync(Action<T> action) {
@@ -496,14 +507,18 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
-        final Optional<TimeRangeFilter> filter = filters.stream()
-                .filter(f -> f instanceof TimeRangeFilter)
-                .map(f -> (TimeRangeFilter)f)
-                .findFirst();
+        final Optional<TimeRangeFilter> filter = extractTimeRangeFilter(filters);
         if (!filter.isPresent()) {
             throw new IllegalArgumentException("Time range is required.");
         }
         return filter.get();
+    }
+
+    private static Optional<TimeRangeFilter> extractTimeRangeFilter(Collection<Filter> filters){
+        return filters.stream()
+                .filter(f -> f instanceof  TimeRangeFilter)
+                .map(f -> (TimeRangeFilter)f)
+                .findFirst();
     }
 
     private static boolean isIngress(TermsAggregation.Entry entry) {
