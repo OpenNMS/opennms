@@ -61,6 +61,7 @@
     <argument ref="kafkaProducer"/>
     <argument ref="alarmDao" />
     <argument ref="protobufMapper" />
+    <argument ref="transactionOperations"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
   </bean>
 

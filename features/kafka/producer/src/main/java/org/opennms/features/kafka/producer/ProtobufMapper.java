@@ -50,6 +50,7 @@ public class ProtobufMapper {
 
     private final EventConfDao eventConfDao;
 
+
     public ProtobufMapper(EventConfDao eventConfDao) {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
     }

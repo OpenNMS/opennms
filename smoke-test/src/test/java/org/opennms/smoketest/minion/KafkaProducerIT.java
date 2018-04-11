@@ -24,6 +24,7 @@ import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -42,6 +43,8 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
 import org.opennms.test.system.api.utils.SshClient;
 
+/* Ignore this test as it takes >5 mins and not reliable */
+@Ignore
 public class KafkaProducerIT {
 
     private static TestEnvironment m_testEnvironment;

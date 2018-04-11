@@ -67,7 +67,7 @@ public class AlarmDataStoreCommand implements Action {
             System.out.print(".");
         }
         if (Objects.isNull(alarmStore)) {
-            System.out.println("Alarm store not initialized within 1 minute");
+            System.out.println("Alarm store not initialized");
             return null;
         }
         if (key != null && alarmStore.get(key) != null) {

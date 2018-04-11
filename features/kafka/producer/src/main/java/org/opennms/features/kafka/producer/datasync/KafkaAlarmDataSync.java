@@ -65,9 +65,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.collect.Sets;
-import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaAlarmDataSync implements AlarmDataStore {
 
@@ -79,6 +80,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
 
     private final ConfigurationAdmin configAdmin;
     private final OpennmsKafkaProducer kafkaProducer;
+    private final TransactionOperations transactionOperations;
     private final AlarmDao alarmDao;
     private final ProtobufMapper protobufMapper;
     private String alarmTopic;
@@ -87,11 +89,13 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
     private final AtomicBoolean closed = new AtomicBoolean(false);
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
-    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, AlarmDao alarmDao, ProtobufMapper protobufMapper) {
+    public KafkaAlarmDataSync(ConfigurationAdmin configAdmin, OpennmsKafkaProducer kafkaProducer, AlarmDao alarmDao,
+            ProtobufMapper protobufMapper, TransactionOperations transactionOperations) {
         this.configAdmin = configAdmin;
         this.kafkaProducer = kafkaProducer;
         this.alarmDao = alarmDao;
         this.protobufMapper = protobufMapper;
+        this.transactionOperations = transactionOperations;
     }
 
     public void init() throws IOException {
@@ -105,8 +109,10 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
 
         final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            // Use the class-loader for the current class, since the kafka-client bundle
-            // does not import the required classes from the kafka-streams bundle
+            // Use the class-loader for the current class, since the
+            // kafka-client bundle
+            // does not import the required classes from the kafka-streams
+            // bundle
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             streams = new KafkaStreams(topology, streamProperties);
         } finally {
@@ -120,7 +126,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
         } catch (StreamsException | IllegalStateException e) {
             LOG.error(" Alarm datasync stream is not started, {}", e);
         }
-        //Schedule sync every 5 minutes after initial delay of 1 minute
+        // Schedule sync every 5 minutes after initial delay of 1 minute
         scheduler.scheduleAtFixedRate(() -> synchronizeAlarmsWithDB(), 1, 5, TimeUnit.MINUTES);
 
     }
@@ -155,24 +161,29 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
         // Handle new alarms
         Set<String> keysNotInStore = Sets.difference(keysFromDB, keysFromStore);
         keysNotInStore.stream().forEach(key -> {
-            kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
+            transactionOperations.execute((TransactionCallback<Void>) status -> {
+                kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
+                return null;
+            });
         });
         // Handle Updates
         Set<String> commonKeys = Sets.intersection(keysFromDB, keysFromStore);
         commonKeys.stream().forEach(key -> {
             try {
                 OpennmsModelProtos.Alarm alarm = OpennmsModelProtos.Alarm.parseFrom(alarmDataStore.get(key));
-                OnmsAlarm alarmFromDB = alarmDao.findByReductionKey(key);
-                if (!alarm.equals(protobufMapper.toAlarm(alarmFromDB).build())) {
-                    kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
-                }
-            } catch (InvalidProtocolBufferException e) {
+                transactionOperations.execute((TransactionCallback<Void>) status -> {
+                    OnmsAlarm alarmFromDB = alarmDao.findByReductionKey(key);
+                    if (!alarm.equals(protobufMapper.toAlarm(alarmFromDB).build())) {
+                        kafkaProducer.handleNewOrUpdatedAlarm(alarmDao.findByReductionKey(key));
+                    }
+                    return null;
+                });
+            } catch (Exception e) {
                 LOG.error(" Error while parsing alarm for key = {}, {}", key, e);
             }
         });
 
     }
-
 
     private ReadOnlyKeyValueStore<String, byte[]> waitUntilStoreIsQueryable() throws InterruptedException {
         final long timeBeforeQuery = System.currentTimeMillis();
@@ -211,7 +222,8 @@ public class KafkaAlarmDataSync implements AlarmDataStore {
         final Dictionary<String, Object> clientProperties = configAdmin.getConfiguration(KAFKA_CLIENT_PID)
                 .getProperties();
         if (clientProperties != null) {
-            streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, clientProperties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
+            streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG,
+                    clientProperties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
 
         final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_STREAMS_PID).getProperties();

@@ -30,6 +30,7 @@ package org.opennms.features.kafka.producer;
 
 import java.util.Properties;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -37,6 +38,11 @@ import org.opennms.core.test.camel.CamelBlueprintTest;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.test.context.ContextConfiguration;
 
+/**
+ * Test to load blueprint. This fails if kafka instance is not running. So the test is ignored
+ */
+
+@Ignore
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
                                     "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
