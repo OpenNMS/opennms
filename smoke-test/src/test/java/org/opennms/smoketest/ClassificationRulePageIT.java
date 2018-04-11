@@ -60,6 +60,8 @@ import com.google.common.collect.Lists;
 
 public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
+    private static int DEFAULT_WAIT_TIME = 2000;
+
     private interface Tabs {
         String SETTINGS = "settings";
         String USER_DEFINED = "user-defined";
@@ -79,6 +81,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                 new Tab(uiPage, Tabs.PRE_DEFINED, "Pre-defined Rules", 6248, false)
         );
         uiPage.open();
+        uiPage.groupTab(Tabs.USER_DEFINED).deleteAll();
     }
 
     @Test
@@ -266,7 +269,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         assertThat(groupTab.isEditable(), is(false));
         assertThat(groupTab.isEmpty(), is(false));
 
-        // iterate over existing rules, but not more than one and verify it is actually not editable
+        // iterate over existing rules, but not more than 5 and verify it is actually not editable
         int ruleCount = groupTab.getRules().size();
         for (int i=0; i < Math.min(5, ruleCount); i++) {
             final int index = i;
@@ -362,6 +365,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             // Submit form
             execute(() -> findElementById("classification-submit")).click();
 
+            // The "classification-response" may already be visible (e.g. due to an earlier verification)
+            // therefore it may contain a value if it is fetched directly after clicking the button.
+            // In some scenarios the response from the opennms endpoint is not yet received, thus the old value is returned
+            // resulting in test failures. To avoid this, a bunch of seconds is waited before reading the value.
+            // See HZN-1289.
+            sleep(DEFAULT_WAIT_TIME);
+
             // Fiddle result out of UI
             return execute(() -> findElementById("classification-response")).getText();
         }
@@ -377,6 +387,10 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         private void setInput(String id, String text) {
             setInput(id, text, false);
+        }
+
+        public GroupTab groupTab(final String tabName) {
+            return new GroupTab(uiPage, tabName).click();
         }
     }
 
@@ -398,7 +412,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public void click() {
             getElement().click();
-            new WebDriverWait(m_driver, 10).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
+            new WebDriverWait(m_driver, 5).until((ExpectedCondition<Boolean>) input -> page.getTab(name).isActive());
         }
 
         public WebElement getElement() {
@@ -454,7 +468,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         public void refresh() {
             m_driver.findElement(By.id("action.refresh")).click();
-            sleep(2000);
+            sleep(DEFAULT_WAIT_TIME);
         }
     }
 
@@ -482,12 +496,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         public void setEnabled(boolean enabled) {
             if (isEnabled() != enabled) {
                 execute(() -> {
+                    // Toggle
                     final WebElement toggleElement = m_driver.findElement(By.id(String.format("action.%s.toggle", name)));
                     Actions actions = new Actions(m_driver);
                     actions.moveToElement(toggleElement);
                     actions.click();
                     actions.perform();
-                    new WebDriverWait(m_driver, 10)
+
+                    // We wait to process the request, otherwise the ui elements may be disposed and selenium throws
+                    // a stale exception. See HZN-1289
+                    sleep(DEFAULT_WAIT_TIME);
+
+                    // Verify the tab was actually enabled/disabled
+                    new WebDriverWait(m_driver, 5)
                             .until((Predicate<WebDriver>) input -> {
                                 final Group group = tab.getGroup(name);
                                 return enabled == group.isEnabled();
@@ -594,13 +615,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
 
         // Save or update
         public void save() {
-            execute(() -> {findElementById("save-rule").click(); return null; });
+            execute(() -> {
+                findElementById("save-rule").click();
+                return null;
+            });
             ensureClosed();
         }
 
         // Close dialog
         public void cancel() {
-            execute(() -> { findElementById("cancel-rule").click(); return null; });
+            execute(() -> {
+                findElementById("cancel-rule").click();
+                return null;
+            });
             ensureClosed();
         }
 
@@ -706,23 +733,40 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         }
 
         public void navigateToPage(int page) {
+            // Navigate to next page
             execute(() -> findElementByXpath("//li[contains(@class, 'pagination-page')]/a[contains(text(), '" + page + "')]")).click();
+
+            // The next page is active even if the data is not yet loaded, waiting reduced the likelihood of returning before
+            // the page was refreshed. See HZN-1289.
+            sleep(DEFAULT_WAIT_TIME);
+
+            // Verify the page is actually active
             execute(() -> new WebDriverWait(m_driver, 5).until(
                             ExpectedConditions.visibilityOf(
                                     findElementByXpath("//li[contains(@class, 'active')]/a[contains(text(), '" + page + "')]"))));
         }
 
         public void deleteAll() {
-            execute(() -> findElementById("action.deleteAll")).click();
-            execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
-            sleep(5000);
+            final WebElement deleteAllButton = execute(() -> findElementById("action.deleteAll"));
+            if (deleteAllButton.isDisplayed() && deleteAllButton.isEnabled()) {
+                deleteAllButton.click();
+                execute(() -> findElementByXpath("//div[contains(@class,'popover')]//button[contains(text(), 'Yes')]")).click();
+                sleep(DEFAULT_WAIT_TIME);
+            }
         }
 
         public void search(String search) {
             final WebElement searchElement = execute(() -> findElementById("action.search"));
             searchElement.clear();
-            searchElement.sendKeys(search);
-            sleep(5000);
+
+            // When sending the input at once, the search input gets stuck, so we send the chars
+            // and wait before the next char, kinda simulating a manual input.
+            // See HZN-1289.
+            for (int i=0; i<search.length(); i++) {
+                searchElement.sendKeys("" + search.charAt(i));
+                sleep(150);
+            }
+            sleep(DEFAULT_WAIT_TIME);
         }
     }
 
