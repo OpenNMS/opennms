@@ -44,8 +44,8 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
-import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Directional;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
@@ -136,17 +136,14 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public <P> void persist(final Collection<? extends P> packets, final FlowSource source, final Converter<P> converter) throws FlowException {
-        LOG.debug("Converting {} flow packets from {} to flow documents.", packets.size(), source);
+    public void persist(final Collection<Flow> flows, final FlowSource source) throws FlowException {
+        LOG.debug("Converting {} flows from {} to flow documents.", flows.size(), source);
         final List<FlowDocument> documents;
         try (final Timer.Context ctx = logConversionTimer.time()) {
-            documents = packets.stream()
-                    .map(converter::convert)
-                    .flatMap(Collection::stream)
+            documents = flows.stream()
                     .map(FlowDocument::from)
                     .collect(Collectors.toList());
         }
-
         enrichAndPersistFlows(documents, source);
     }
 

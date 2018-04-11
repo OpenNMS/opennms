@@ -35,14 +35,14 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.ConversationKey;
-import org.opennms.netmgt.flows.api.Converter;
 import org.opennms.netmgt.flows.api.Directional;
+import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.osgi.framework.BundleContext;
 
 import com.google.common.collect.Table;
@@ -72,9 +72,9 @@ public class InitializingFlowRepository implements FlowRepository {
     }
 
     @Override
-    public <P> void persist(Collection<? extends P> packets, FlowSource source, Converter<P> converter) throws FlowException {
+    public void persist(Collection<Flow> flows, FlowSource source) throws FlowException {
         ensureInitialized();
-        delegate.persist(packets, source, converter);
+        delegate.persist(flows, source);
     }
 
     @Override

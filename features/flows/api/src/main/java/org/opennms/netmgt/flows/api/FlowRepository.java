@@ -34,13 +34,12 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.filter.api.Filter;
-import org.opennms.netmgt.flows.filter.api.NodeCriteria;
 
 import com.google.common.collect.Table;
 
 public interface FlowRepository {
 
-    <P> void persist(Collection<? extends P> packets, FlowSource source, Converter<P> converter) throws FlowException;
+    void persist(Collection<Flow> packets, FlowSource source) throws FlowException;
 
     CompletableFuture<Long> getFlowCount(List<Filter> filters);
 
