@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
@@ -80,6 +81,8 @@ import io.searchbox.core.SearchResult;
 public abstract class AbstractSyslogTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSyslogTestCase.class);
+
+    protected static final String SYSLOG_MESSAGE_UEI = "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic";
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
@@ -227,11 +230,25 @@ public abstract class AbstractSyslogTestCase {
         }
     }
 
+    protected static String doQuery() {
+        return new SearchSourceBuilder()
+                .query(QueryBuilders.matchQuery("eventuei", SYSLOG_MESSAGE_UEI))
+                .toString();
+    }
+
     protected static void pollForElasticsearchEventsUsingJest(InetSocketAddress esTransportAddr, int numMessages) {
-        pollForElasticsearchEventsUsingJest(() -> esTransportAddr, numMessages);
+        pollForElasticsearchEventsUsingJest(() -> esTransportAddr, numMessages, AbstractSyslogTestCase::doQuery);
+    }
+
+    protected static void pollForElasticsearchEventsUsingJest(InetSocketAddress esTransportAddr, int numMessages, Supplier<String> query) {
+        pollForElasticsearchEventsUsingJest(() -> esTransportAddr, numMessages, query);
     }
 
     protected static void pollForElasticsearchEventsUsingJest(Supplier<InetSocketAddress> esTransportAddr, int numMessages) {
+        pollForElasticsearchEventsUsingJest(esTransportAddr, numMessages, AbstractSyslogTestCase::doQuery);
+    }
+
+    protected static void pollForElasticsearchEventsUsingJest(Supplier<InetSocketAddress> esTransportAddr, int numMessages, Supplier<String> query) {
         with().pollInterval(15, SECONDS).await().atMost(5, MINUTES).until(() -> {
             JestClient client = null;
             try {
@@ -241,15 +258,13 @@ public abstract class AbstractSyslogTestCase {
                     .build());
                 client = factory.getObject();
 
+                final String queryString = query.get();
+                LOG.debug("SEARCH QUERY: {}", queryString);
                 SearchResult response = client.execute(
-                    new Search.Builder(new SearchSourceBuilder()
-                        .query(QueryBuilders.matchQuery("eventuei", "uei.opennms.org/vendor/cisco/syslog/SEC-6-IPACCESSLOGP/aclDeniedIPTraffic"))
-                        .toString()
-                    )
+                    new Search.Builder(queryString)
                         .addIndex("opennms*")
                         .build()
                 );
-
                 LOG.debug("SEARCH RESPONSE: {}", response.toString());
 
                 // Sometimes, the first warm-up message is successful so treat both message counts as valid

@@ -41,26 +41,56 @@ import com.google.common.cache.LoadingCache;
  */
 public class CachingTemplateLoader implements TemplateLoader {
 
-    private final LoadingCache<String, String> cache;
+    private final LoadingCache<TemplateKey, String> cache;
 
     public CachingTemplateLoader(final TemplateLoader delegate) {
         Objects.requireNonNull(delegate);
-
-        this.cache = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<String, String>() {
+        this.cache = CacheBuilder.newBuilder().maximumSize(100).build(new CacheLoader<TemplateKey, String>() {
             @Override
-            public String load(String resource) throws Exception {
-                return delegate.load(resource);
+            public String load(TemplateKey key) throws Exception {
+                return delegate.load(key.getServerVersion(), key.getResource());
             }
         });
     }
 
     @Override
-    public String load(String resource) throws IOException {
+    public String load(Version serverVersion, String resource) throws IOException {
         try {
-            return cache.get(resource);
+            return cache.get(new TemplateKey(serverVersion, resource));
         } catch (ExecutionException e) {
             throw new IOException("Could not read data from cache", e);
         }
     }
 
+    private static final class TemplateKey {
+        private final Version serverVersion;
+        private final String resource;
+
+        private TemplateKey(Version serverVersion, String resource) {
+            this.serverVersion = serverVersion;
+            this.resource = resource;
+        }
+
+        private Version getServerVersion() {
+            return serverVersion;
+        }
+
+        private String getResource() {
+            return resource;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            TemplateKey that = (TemplateKey) o;
+            return Objects.equals(serverVersion, that.serverVersion) &&
+                    Objects.equals(resource, that.resource);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(serverVersion, resource);
+        }
+    }
 }

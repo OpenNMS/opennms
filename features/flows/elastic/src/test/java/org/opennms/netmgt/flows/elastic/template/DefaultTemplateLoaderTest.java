@@ -37,12 +37,13 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.opennms.netmgt.flows.elastic.ElasticFlowRepositoryInitializer;
 import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.Version;
 
 public class DefaultTemplateLoaderTest {
 
     @Test
     public void verifyTemplateLoading() throws IOException {
-        final String template = new DefaultTemplateLoader().load(ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
+        final String template = new DefaultTemplateLoader().load(new Version(6,2,3), ElasticFlowRepositoryInitializer.TEMPLATE_RESOURCE);
         assertNotNull(template);
         assertThat(template.length(), Matchers.greaterThan(0));
     }

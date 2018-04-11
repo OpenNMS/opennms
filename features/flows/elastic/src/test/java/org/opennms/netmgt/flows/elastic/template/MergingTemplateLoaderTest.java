@@ -37,13 +37,16 @@ import org.opennms.core.test.xml.JsonTest;
 import org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateLoader;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 import org.opennms.plugins.elasticsearch.rest.template.MergingTemplateLoader;
+import org.opennms.plugins.elasticsearch.rest.template.Version;
 
 public class MergingTemplateLoaderTest {
 
+    private static final Version version = new Version(6,2,3);
+
     @Test
     public void verifyMergingEmpty() throws IOException {
-        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), new IndexSettings()).load(TEMPLATE_RESOURCE);
-        final String expected = new DefaultTemplateLoader().load(TEMPLATE_RESOURCE);
+        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), new IndexSettings()).load(version, TEMPLATE_RESOURCE);
+        final String expected = new DefaultTemplateLoader().load(version, TEMPLATE_RESOURCE);
         JsonTest.assertJsonEquals(expected, merged);
     }
 
@@ -55,8 +58,8 @@ public class MergingTemplateLoaderTest {
         IndexSettings.setRefreshInterval("60s");
         IndexSettings.setRoutingPartitionSize(100);
 
-        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), IndexSettings).load(TEMPLATE_RESOURCE);
-        final String expected = new DefaultTemplateLoader().load("/netflow-template-merged.json");
+        final String merged = new MergingTemplateLoader(new DefaultTemplateLoader(), IndexSettings).load(version, TEMPLATE_RESOURCE);
+        final String expected = new DefaultTemplateLoader().load(version,"/netflow-template-merged");
         JsonTest.assertJsonEquals(expected, merged);
     }
 
