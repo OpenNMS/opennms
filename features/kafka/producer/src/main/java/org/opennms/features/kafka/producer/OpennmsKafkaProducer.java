@@ -153,7 +153,6 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
         if (shouldForwardEvent) {
             sendRecord(() -> {
-
                 final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
                 LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
                 return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());

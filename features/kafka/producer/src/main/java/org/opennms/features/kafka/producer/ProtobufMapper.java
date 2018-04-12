@@ -113,10 +113,11 @@ public class ProtobufMapper {
         if (event.getLogmsg() != null) {
             builder.setLogMessage(event.getLogmsg().getContent());
         }
-
         if (event.getNodeid() != null) {
+            // We only include the node id in the node criteria in when forwarding events
+            // since the event does not currently contain the fs:fid or a reference to the node object.
             builder.setNodeCriteria(OpennmsModelProtos.NodeCriteria.newBuilder()
-                    .setId(event.getNodeid())); // TODO: Lookup FS:FID
+                    .setId(event.getNodeid()));
         }
 
         setTimeIfNotNull(event.getTime(), builder::setTime);
