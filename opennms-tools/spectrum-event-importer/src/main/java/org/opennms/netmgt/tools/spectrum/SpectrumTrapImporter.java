@@ -54,6 +54,7 @@ import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.opennms.netmgt.xml.eventconf.Logmsg;
 import org.opennms.netmgt.xml.eventconf.Mask;
 import org.opennms.netmgt.xml.eventconf.Maskelement;
+import org.opennms.netmgt.xml.eventconf.Parameter;
 import org.opennms.netmgt.xml.eventconf.Varbindsdecode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -258,12 +259,16 @@ public class SpectrumTrapImporter {
 
 	public Event makeEventConf(AlertMapping mapping, EventDisposition dispo) throws IOException {
 		Event evt = new Event();
+		Parameter eventCodeParm = new Parameter();
+		eventCodeParm.setName("spectrumEventCode");
+		eventCodeParm.setValue(mapping.getEventCode());
 		evt.setMask(makeEventMask(mapping));
 		evt.setUei(makeUei(mapping.getEventCode()));
 		evt.setEventLabel(makeEventLabel(mapping));
 		evt.setDescr(makeDescr(mapping));
 		evt.setLogmsg(makeLogMsg(mapping, dispo));
 		evt.setSeverity(makeSeverity(mapping, dispo));
+		evt.addParameter(eventCodeParm);
 		if (makeAlarmData(mapping, dispo) != null) {
 			evt.setAlarmData(makeAlarmData(mapping, dispo));
 		}
