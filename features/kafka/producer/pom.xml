@@ -29,10 +29,6 @@
         <configuration>
           <instructions>
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-            <Import-Package>
-              org.apache.kafka.streams.processor.internals,
-              *
-            </Import-Package>
             <Karaf-Commands>*</Karaf-Commands>
           </instructions>
         </configuration>
@@ -123,11 +119,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-alarmd</artifactId>
       <scope>test</scope>
     </dependency>
@@ -139,11 +130,6 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.daemon</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

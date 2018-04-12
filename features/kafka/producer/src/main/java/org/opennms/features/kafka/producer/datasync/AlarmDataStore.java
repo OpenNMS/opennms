@@ -28,12 +28,16 @@
 
 package org.opennms.features.kafka.producer.datasync;
 
-import java.util.concurrent.CompletableFuture;
+import java.util.Map;
 
-import org.apache.kafka.streams.state.ReadOnlyKeyValueStore;
+import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
 public interface AlarmDataStore {
-    
-    CompletableFuture<ReadOnlyKeyValueStore<String, byte[]>> getAlarmDataStore();
+
+    boolean isReady();
+
+    Map<String, OpennmsModelProtos.Alarm> getAlarms();
+
+    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
 
 }
