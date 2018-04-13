@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.kafka;
+package org.opennms.features.kafka.producer.datasync;
 
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
 
-import org.apache.kafka.common.utils.Time;
+import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
+public interface AlarmDataStore {
 
-public class SystemTime implements Time {
-    @Override
-    public long milliseconds() {
-        return System.currentTimeMillis();
-    }
+    boolean isEnabled();
 
-    @Override
-    public long nanoseconds() {
-        return System.nanoTime();
-    }
+    boolean isReady();
 
-    @Override
-    public void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
+    Map<String, OpennmsModelProtos.Alarm> getAlarms();
 
-    @Override
-    public long hiResClockMs() {
-        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
-    }
+    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
+
 }
