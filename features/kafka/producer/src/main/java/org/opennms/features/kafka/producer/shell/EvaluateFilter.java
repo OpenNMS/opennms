@@ -36,6 +36,8 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.xml.event.Event;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -56,6 +58,9 @@ public class EvaluateFilter implements Action {
     @Option(name = "-a", aliases = "--alarm-id", description = "Lookup an alarm by id and apply the given expression against it.")
     private Integer alarmId;
 
+    @Option(name = "-e", aliases = "--event-uei", description = "Create a new event with the given UEI and apply the given expression against it.")
+    private String eventUei;
+
     @Argument(description = "An SPEL expression.")
     private String spelExpression;
 
@@ -68,7 +73,7 @@ public class EvaluateFilter implements Action {
                 if (alarmId != null) {
                     final OnmsAlarm alarm = alarmDao.get(alarmId);
                     if (alarm == null) {
-                        System.out.printf("No alarm found with ID: %d)\n", alarmId);
+                        System.out.printf("No alarm found with ID: %d\n", alarmId);
                     } else {
                         System.out.printf("Alarm with ID %d has reduction key: %s\n", alarmId, alarm.getReductionKey());
                     }
@@ -76,6 +81,12 @@ public class EvaluateFilter implements Action {
                 }
                 return null;
             });
+        }
+        if (eventUei != null) {
+            final Event event = new EventBuilder(eventUei, "kafka-producer:evaluate-filter")
+                    .getEvent();
+            System.out.printf("Event has UEI: %s\n", event.getUei());
+            System.out.printf("Result: %s\n", expression.getValue(event, Boolean.class));
         }
         return null;
     }

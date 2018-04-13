@@ -5,7 +5,7 @@
 
 The Kafka Producer feature allows events, alarms and nodes from _{opennms-product-name}_ to be forwarded to Kafka.
 
-These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers], making it easy to consume from a variety of languages.
+These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers].
 See `opennms-kafka-producer.proto` in the corresponding source distribution for the model definitions.
 
 ==== Events
@@ -23,6 +23,7 @@ The Kafka Producer listens for changes made to the current set of alarms and for
 The records are keyed by alarm reduction key and contain a GPB encoded model of the alarm.
 When an alarm is deleted, a `null` value is sent with the corresponding reduction key.
 Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+The Kafka Producer will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the _{opennms-product-name}_ database.
 
 By default, all alarms (and subsequent updates) are forwarded to a topic named `alarms`.
 
@@ -86,14 +87,17 @@ The Kafka Producer exposes the following options to help fine tune its behavior.
 | `alarmFilter`           | (none)               | A Spring SpEL expression (see bellow) used to filter alarms.
                                                    Set this to an empty string to disable filtering, and forward all alarms.
 | `nodeRefreshTimeoutMs`  | `300000` (5 minutes) | Number of milliseconds to wait before looking up a node in the database again.
-                                                   Increase this to improve accuracy at the cost of additional database look ups.
+                                                   Decrease this value to improve accuracy at the cost of additional database look ups.
+| `alarmSyncIntervalMs`   | `300000` (5 minutes) | Number of milliseconds at which the contents of the alarm topic will be synchronized with the local database.
+                                                   Decrease this to improve accuracy at the cost of additional database look ups.
+                                                   Set this value to 0 to disable alarm synchronization.
 |===
 
-==== Filtering
+==== Configuring Filtering
 
 Filtering can be used to selectively forward events and/or alarms to the Kafka topics.
 
-Filtering is performed using a Spring SpEL expression link:https://docs.spring.io/spring/docs/4.2.9.RELEASE/spring-framework-reference/html/expressions.html[SpEL] which is evaluated against each object to determine if it should be forwarded.
+Filtering is performed using a link:https://docs.spring.io/spring/docs/4.2.9.RELEASE/spring-framework-reference/html/expressions.html[Spring SpEL expression] which is evaluated against each object to determine if it should be forwarded.
 The expression must return a boolean value i.e. `true` or `false`.
 
 ===== Enabling Event Filtering
@@ -128,7 +132,7 @@ admin@opennms()> config:update
 In the example above, the filter is configured such that only alarms that are associated with a ticket id are forwarded.
 Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in your distribution for a complete list of available properties.
 
-===== Configuring Topic Names
+==== Configuring Topic Names
 
 By default three topics are created i.e. `events`, `alarms`, `nodes`.
 To change these, you can use:
@@ -144,3 +148,52 @@ admin@opennms()> config:update
 ----
 
 In the example above, we disable event forwarding by setting an empty topic name and change the node topic name to `opennms-nodes`.
+
+=== Shell Commands
+
+The Kafka Producer also provides a series of shell commands to help administering and debugging the service.
+
+==== kafka-producer:list-alarms
+
+The `list-alarms` command can be used to enumerate the reduction keys and show the associated event labels for the alarms that are present in the topic.
+This command leverages functionality used by the alarm synchronization process, and as a result this must be enabled in for this command to function.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> kafka-producer:list-alarms
+uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
+        Alarm: Generic Trigger
+----
+
+==== kafka-producer:evaluate-filter
+
+The `evaluate-filter` command can be used to test arbitrary SpEL filtering expressions against alarms or events.
+
+===== Evaluating filters against alarms
+
+To test a filter against an alarm, specify the database id of the alarm and the expression to test:
+
+[source]
+----
+admin@opennms> kafka-producer:evaluate-filter --alarm-id 57 "getReductionKey().contains('n33')"
+SPEL Expression: getReductionKey().contains('n33')
+Alarm with ID 57 has reduction key: uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
+Result: true
+----
+
+===== Evaluating filters against events
+
+To test a filter against an event, specify the UEI of the event and the expression to test:
+
+[source]
+----
+admin@opennms> kafka-producer:evaluate-filter --event-uei uei.opennms.org/alarms/trigger "getUei().contains('alarm')"
+SPEL Expression: getUei().contains('alarm')
+Event has UEI: uei.opennms.org/alarms/trigger
+Result: true
+----
+
+In this case, a new event will be created with the given UEI, and the filter will be evaluated against this new event object.
+At this time, existing events cannot be referenced by this tool, so this functionality only serves to help make sure the expressions are syntactically valid.

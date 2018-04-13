@@ -34,6 +34,8 @@ import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
 public interface AlarmDataStore {
 
+    boolean isEnabled();
+
     boolean isReady();
 
     Map<String, OpennmsModelProtos.Alarm> getAlarms();

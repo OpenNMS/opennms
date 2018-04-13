@@ -52,15 +52,19 @@ public class ListAlarms implements Action {
 
     @Override
     public Object execute() {
+        if (alarmDataStore.isEnabled()) {
+            System.out.println("The alarm data store is currently disabled and must be enabled for this shell command to function.");
+        }
+
         // Wait for the alarm data store to be ready
-        if (!alarmDataStore.isReady()) {
+        if (!isAlarmDataStoreReady()) {
             final long startTime = System.currentTimeMillis();
             System.out.println("Waiting for alarm data store to be ready..");
             while (true) {
                 try {
                     System.out.print(".");
                     Thread.sleep(TimeUnit.SECONDS.toMillis(1));
-                    if (alarmDataStore.isReady()) {
+                    if (isAlarmDataStoreReady()) {
                         System.out.printf("\nReady in %d ms.\n\n", System.currentTimeMillis() - startTime);
                         break;
                     }
@@ -83,6 +87,14 @@ public class ListAlarms implements Action {
         alarmsByReductionKey.forEach(this::printAlarm);
 
         return null;
+    }
+
+    private boolean isAlarmDataStoreReady() {
+        try {
+            return alarmDataStore.isReady();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void printAlarm(String reductionKey, OpennmsModelProtos.Alarm alarm) {

@@ -35,9 +35,11 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.function.Consumer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
@@ -59,7 +61,7 @@ import com.google.common.base.Strings;
 public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(OpennmsKafkaProducer.class);
 
-    private static final String KAFKA_PRODUCER_CLIENT_PID = "org.opennms.features.kafka.producer.client";
+    public static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
     private static final ExpressionParser SPEL_PARSER = new SpelExpressionParser();
 
     private final ProtobufMapper protobufMapper;
@@ -78,7 +80,9 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     private Expression eventFilterExpression;
     private Expression alarmFilterExpression;
 
+    private final CountDownLatch forwardedEvent = new CountDownLatch(1);
     private final CountDownLatch forwardedAlarm = new CountDownLatch(1);
+    private final CountDownLatch forwardedNode = new CountDownLatch(1);
 
     private KafkaProducer<String, byte[]> producer;
 
@@ -95,7 +99,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
     public void init() throws IOException {
         // Create the Kafka producer
         final Properties producerConfig = new Properties();
-        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_PRODUCER_CLIENT_PID).getProperties();
+        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
         if (properties != null) {
             final Enumeration<String> keys = properties.keys();
             while (keys.hasMoreElements()) {
@@ -167,16 +171,24 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             final OpennmsModelProtos.Event mappedEvent = protobufMapper.toEvent(event).build();
             LOG.debug("Sending event with UEI: {}", mappedEvent.getUei());
             return new ProducerRecord<>(eventTopic, mappedEvent.getUei(), mappedEvent.toByteArray());
+        }, recordMetadata -> {
+            // We've got an ACK from the server that the event was forwarded
+            // Let other threads know when we've successfully forwarded an event
+            forwardedEvent.countDown();
         });
     }
 
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
-        // Always push null records, no good way to perfom filtering on these
+        // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
             // The alarm was deleted, push a null record to the reduction key
             sendRecord(() -> {
                 LOG.debug("Deleting alarm with reduction key: {}", reductionKey);
                 return new ProducerRecord<>(alarmTopic, reductionKey, null);
+            }, recordMetadata -> {
+                // We've got an ACK from the server that the alarm was forwarded
+                // Let other threads know when we've successfully forwarded an alarm
+                forwardedAlarm.countDown();
             });
             return;
         }
@@ -209,10 +221,11 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
             final OpennmsModelProtos.Alarm mappedAlarm = protobufMapper.toAlarm(alarm).build();
             LOG.debug("Sending alarm with reduction key: {}", reductionKey);
             return new ProducerRecord<>(alarmTopic, reductionKey, mappedAlarm.toByteArray());
+        }, recordMetadata -> {
+            // We've got an ACK from the server that the alarm was forwarded
+            // Let other threads know when we've successfully forwarded an alarm
+            forwardedAlarm.countDown();
         });
-
-        // Let other threads know that we forwarded an alarm
-        forwardedAlarm.countDown();
     }
 
     private void maybeUpdateNode(long nodeId) {
@@ -237,11 +250,19 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
                 final OpennmsModelProtos.Node mappedNode = protobufMapper.toNode(node).build();
                 LOG.debug("Sending node with criteria: {}", nodeCriteria);
                 return new ProducerRecord<>(nodeTopic, nodeCriteria, mappedNode.toByteArray());
+            }, recordMetadata -> {
+                // We've got an ACK from the server that the node was forwarded
+                // Let other threads know when we've successfully forwarded a node
+                forwardedNode.countDown();
             });
         });
     }
 
     private void sendRecord(Callable<ProducerRecord<String,byte[]>> callable) {
+        sendRecord(callable, null);
+    }
+
+    private void sendRecord(Callable<ProducerRecord<String,byte[]>> callable, Consumer<RecordMetadata> callback) {
         if (producer == null) {
             return;
         }
@@ -257,6 +278,10 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         producer.send(record, (recordMetadata, e) -> {
             if (e != null) {
                 LOG.warn("Failed to send record to producer: {}.", record, e);
+                return;
+            }
+            if (callback != null) {
+                callback.accept(recordMetadata);
             }
         });
     }
@@ -320,7 +345,15 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         return forwardAlarms;
     }
 
+    public CountDownLatch getEventForwardedLatch() {
+        return forwardedEvent;
+    }
+
     public CountDownLatch getAlarmForwardedLatch() {
         return forwardedAlarm;
+    }
+
+    public CountDownLatch getNodeForwardedLatch() {
+        return forwardedNode;
     }
 }

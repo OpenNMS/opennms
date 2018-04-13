@@ -77,8 +77,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaAlarmDataSync.class);
 
     private static final String ALARM_STORE_NAME = "alarm_store";
-    private static final String KAFKA_CLIENT_PID = "org.opennms.features.kafka.producer.client";
-    private static final String KAFKA_STREAMS_PID = "org.opennms.features.kafka.producer.streams";
+    public static final String KAFKA_STREAMS_PID = "org.opennms.features.kafka.producer.streams";
 
     private final ConfigurationAdmin configAdmin;
     private final OpennmsKafkaProducer kafkaProducer;
@@ -160,7 +159,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
     @Override
     public void run() {
         try {
-            kafkaProducer.getAlarmForwardedLatch().await();
+            if (kafkaProducer.getAlarmForwardedLatch().await(2, TimeUnit.MINUTES)) {
+                LOG.debug("Triggered: An alarm was successfully forwarded to the topic.");
+            } else {
+                LOG.debug("Triggered: Timeout reached before an alarm was successfully forwarded to the topic.");
+            }
         } catch (InterruptedException e) {
             LOG.info("Interrupted while waiting for alarm to be forwarded. Synchronization will not be performed.");
             return;
@@ -189,9 +192,9 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         }
         LOG.info("Alarm data store is ready!");
 
-        LOG.info("Scheduling periodic alarm synchronization every {} ms", alarmSyncIntervalMs);
-        // Schedule sync after initial delay of 1 minute
-        scheduler.scheduleWithFixedDelay(this::synchronizeAlarmsWithDB, TimeUnit.MINUTES.toMillis(1),
+        LOG.info("Scheduling periodic alarm synchronization every {}ms", alarmSyncIntervalMs);
+        // Schedule sync after initial delay of 1 minute or the sync interval, whichever is shorter
+        scheduler.scheduleWithFixedDelay(this::synchronizeAlarmsWithDB, Math.min(TimeUnit.MINUTES.toMillis(1), alarmSyncIntervalMs),
                 alarmSyncIntervalMs, TimeUnit.MILLISECONDS);
     }
 
@@ -255,7 +258,7 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         Path kafkaDir = Paths.get(System.getProperty("karaf.data"), "kafka");
         streamsProperties.put(StreamsConfig.STATE_DIR_CONFIG, kafkaDir.toString());
         // Copy kafka server info from client properties
-        final Dictionary<String, Object> clientProperties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
+        final Dictionary<String, Object> clientProperties = configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
         if (clientProperties != null) {
             streamsProperties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, clientProperties.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG));
         }
@@ -284,6 +287,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
 
     private ReadOnlyKeyValueStore<String, byte[]> getAlarmTableNow() throws InvalidStateStoreException {
         return streams.store(ALARM_STORE_NAME, QueryableStoreTypes.keyValueStore());
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return !kafkaProducer.isForwardingAlarms() || alarmSyncIntervalMs <= 0;
     }
 
     @Override
