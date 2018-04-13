@@ -65,13 +65,13 @@
     <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-streams</artifactId>
-      <version>1.0.0</version>
+      <version>${kafkaStreamsVersion}</version>
     </dependency>
-	<dependency>
-	  <groupId>org.apache.servicemix.bundles</groupId>
-	  <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-	  <version>1.0.0_2</version>
-	  <exclusions>
+    <dependency>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
+      <version>${kafkaStreamsBundleVersion}</version>
+      <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
           <groupId>log4j</groupId>
@@ -81,11 +81,11 @@
           <groupId>org.slf4j</groupId>
         </exclusion>
       </exclusions>
-	</dependency>
+    </dependency>
     <dependency>
       <groupId> com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
-      <version>3.5.1</version>
+      <version>${protobuf3Version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
@@ -96,6 +96,7 @@
       <groupId>org.apache.karaf.shell</groupId>
       <artifactId>org.apache.karaf.shell.core</artifactId>
     </dependency>
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>
@@ -137,12 +138,12 @@
       <artifactId>opennms-services</artifactId>
       <scope>test</scope>
     </dependency>
-	<dependency>
-	  <groupId>com.jayway.awaitility</groupId>
-	  <artifactId>awaitility</artifactId>
-	  <scope>test</scope>
-	</dependency>
-	<dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.kafka</artifactId>
       <version>${project.version}</version>
