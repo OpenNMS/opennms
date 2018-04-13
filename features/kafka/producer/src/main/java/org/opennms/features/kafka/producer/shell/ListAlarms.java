@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.features.kafka.producer.shell;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,6 +37,7 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.features.kafka.producer.datasync.AlarmDataStore;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 
 @Command(scope = "kafka-producer", name = "list-alarms", description = "Enumerates the alarms that are currently in the Kafka data store.")
