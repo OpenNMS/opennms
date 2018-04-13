@@ -81,7 +81,7 @@ $MVN = $ENV{'MVN'};
 if (not defined $MVN or not -x $MVN) {
 	$MVN = File::Spec->catfile($PREFIX, 'maven', 'bin', 'mvn');
 	if ($^O =~ /(mswin|msys)/i) {
-		$MVN .= '.bat';
+		$MVN .= '.cmd';
 	}
 }
 
@@ -348,8 +348,24 @@ sub get_minimum_java {
 sub get_version_from_java {
 	my $javacmd = shift;
 
-	if (not defined $javacmd or not -x $javacmd) {
+	if (not defined $javacmd) {
+		warning("\$javacmd is not defined.\n");
 		return ();
+	}
+
+	# Check Windows and Windows GitBash (mingW64)
+	if ($^O =~ /(mswin|msys)/i) {
+		$javacmd .= '.exe';
+		if (not -e $javacmd) {
+			warning("$javacmd does not exist.\n");
+			return ();
+		}
+	} else {
+		# Check Linux
+		if (not -x $javacmd) {
+			warning("$javacmd is not Executable.\n");
+			return ();
+		}
 	}
 
 	my ($output, $bindir, $shortversion, $version, $build, $java_home);
@@ -371,10 +387,6 @@ sub find_java_home {
 
 	my $versions = {};
 	my $javacmd = 'java';
-
-	if ($^O =~ /(mswin|msys)/i) {
-		$javacmd .= '.exe';
-	}
 
 	for my $searchdir (@JAVA_SEARCH_DIRS) {
 		my @javas = (

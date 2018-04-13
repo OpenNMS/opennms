@@ -1308,7 +1308,7 @@
     <jodaTimeVersion>2.1</jodaTimeVersion>
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
-    <karafVersion>4.1.2</karafVersion>
+    <karafVersion>4.1.5</karafVersion>
     <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
     <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
     <felixVersion>3.0.0</felixVersion>
