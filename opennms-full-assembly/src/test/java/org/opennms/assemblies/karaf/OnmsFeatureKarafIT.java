@@ -259,6 +259,12 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	public void testInstallFeatureJolokia() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
+		installFeature("jolokia");
+		System.out.println(executeCommand("feature:list -i"));
+	}
+	@Test
 	public void testInstallFeatureJrobin() {
 		installFeature("jrobin");
 		System.out.println(executeCommand("feature:list -i"));
@@ -513,6 +519,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsProvisioningDetectors() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-config"); // System classpath
 		installFeature("opennms-provisioning-detectors", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
@@ -662,6 +669,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureTsrmTroubleticketer() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-core"); // System classpath
 		installFeature("tsrm-troubleticketer");
 		System.out.println(executeCommand("feature:list -i"));
@@ -728,7 +736,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureInternalPluginsDescriptor() {
-		installFeature("pax-http", "4.3.0");
+		installFeature("pax-http", "4.3.0"); // Provides javax.servlet version 2.6
 		installFeature("opennms-http-whiteboard");
 		installFeature("internal-plugins-descriptor");
 		System.out.println(executeCommand("feature:list -i"));

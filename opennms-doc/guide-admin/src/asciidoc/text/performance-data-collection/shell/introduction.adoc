@@ -13,3 +13,5 @@ ssh -p 8101 admin@localhost
 
 NOTE: The Karaf shell uses the same credential as the web interface.
       Users must be associated with the `ADMIN` role to access the shell.
+
+IMPORTANT: In order to keep the session open while executing long-running tasks without any user input add `-o ServerAliveInterval=10` to your ssh command.

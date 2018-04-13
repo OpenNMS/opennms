@@ -40,10 +40,14 @@
                         <feature>wrapper</feature>
 
                         <!-- OPENNMS: Add Spring features that we need in the base container -->
-                        <!-- These versions match the versions shipped with Apache Karaf 4.1.2 -->
+                        <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
+                        <feature>spring/3.1.4.RELEASE</feature>
                         <feature>spring/3.2.18.RELEASE_1</feature>
-                        <feature>spring/4.0.7.RELEASE_3</feature>
+                        <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
+                        <feature>spring/4.2.9.RELEASE_1</feature>
+                        <feature>spring/4.3.14.RELEASE_1</feature>
+
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
                         <feature>spring/${springVersion}</feature>
                         <feature>spring-jms/${springVersion}</feature>
