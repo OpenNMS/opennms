@@ -67,6 +67,15 @@ public class OpenNMSBackingEngine implements BackingEngine {
 	}
 
 	@Override
+	public UserPrincipal lookupUser(String s) {
+		if ("admin".equals(s)) {
+			return new UserPrincipal("admin");
+		} else {
+			return null;
+		}
+	}
+
+	@Override
 	public List<GroupPrincipal> listGroups(UserPrincipal user) {
 		return Collections.emptyList();
 	}

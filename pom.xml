@@ -1319,7 +1319,7 @@
     <jrubyVersion>9.0.4.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
-    <karafVersion>4.1.2</karafVersion>
+    <karafVersion>4.1.5</karafVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
