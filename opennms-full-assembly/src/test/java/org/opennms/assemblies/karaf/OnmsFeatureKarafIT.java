@@ -259,12 +259,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureJolokia() {
-		installFeature("pax-http"); // Provides javax.servlet version 2.6
-		installFeature("jolokia");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureJrobin() {
 		installFeature("jrobin");
 		System.out.println(executeCommand("feature:list -i"));
@@ -736,7 +730,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureInternalPluginsDescriptor() {
-		installFeature("pax-http", "4.3.0"); // Provides javax.servlet version 2.6
+		installFeature("pax-http", "4.3.0");
 		installFeature("opennms-http-whiteboard");
 		installFeature("internal-plugins-descriptor");
 		System.out.println(executeCommand("feature:list -i"));
