@@ -103,7 +103,7 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.2").type("xml").classifier("features").getURL());
+        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.5").type("xml").classifier("features").getURL());
 
         installFeature("spring", "4.2.9.RELEASE_1");
         installFeature("spring-aspects", "4.2.9.RELEASE_1");

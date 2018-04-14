@@ -513,6 +513,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureOpennmsProvisioningDetectors() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-config"); // System classpath
 		installFeature("opennms-provisioning-detectors", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		System.out.println(executeCommand("feature:list -i"));
@@ -663,6 +664,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	}
 	@Test
 	public void testInstallFeatureTsrmTroubleticketer() {
+		installFeature("pax-http"); // Provides javax.servlet version 2.6
 		installFeature("opennms-core"); // System classpath
 		installFeature("tsrm-troubleticketer");
 		System.out.println(executeCommand("feature:list -i"));
