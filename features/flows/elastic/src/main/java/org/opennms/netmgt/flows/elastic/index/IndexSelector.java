@@ -48,6 +48,7 @@ import java.util.TimeZone;
 
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.osgi.util.measurement.Unit;
 
 public class IndexSelector {
 
@@ -66,10 +67,16 @@ public class IndexSelector {
 
     private String prefix;
     private IndexStrategy strategy;
+    private TemporalUnit unit;
 
     public IndexSelector(String prefix, IndexStrategy strategy) {
         this.prefix = prefix;
         this.strategy = strategy;
+        this.unit = UNIT_MAP.get(strategy);
+        if (unit == null) {
+            // should never happen
+            throw new UnsupportedOperationException("This is a programming mistake, please check your code!");
+        }
     }
 
     /**
@@ -83,27 +90,34 @@ public class IndexSelector {
      */
     public List<String> getIndexNames(TimeRangeFilter timeRange) {
         List<String> all = new ArrayList<>();
-        Date endDate = adjustEndTime(new Date(timeRange.getEnd()));
-        Date currentDate = new Date(timeRange.getStart());
-        TemporalUnit unit = getUnit(strategy);
+        // we start one before and end one after the time range, see HZN-1281
+        Date endDate = plusOne(adjustEndTime(new Date(timeRange.getEnd())));
+        Date startDate = minusOne(new Date(timeRange.getStart()));
+        Date currentDate = startDate;
 
         while (currentDate.before(endDate)) {
             String index = strategy.getIndex(prefix, currentDate);
             all.add(index);
-            LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(currentDate.getTime()),
-                    UTC)
-                    .plus(1L, unit).withMinute(0).withSecond(0);
-            currentDate = new Date(current.atZone(UTC).toInstant().toEpochMilli());
+            currentDate = plusOne(currentDate);
         }
 
         // collapse the indexes in order to reduce the length of the URL:
         String elementAfterSequence = strategy.getIndex(prefix, currentDate);
-        LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(new Date(timeRange.getStart()).getTime()), UTC)
-                .minus(1L, unit);
-        currentDate = new Date(current.atZone(UTC).toInstant().toEpochMilli());
-        String elementBeforeSequence = strategy.getIndex(prefix, currentDate);
+        String elementBeforeSequence = strategy.getIndex(prefix, minusOne(startDate));
 
         return collapseList(all, elementBeforeSequence, elementAfterSequence, 0);
+    }
+
+    private Date minusOne(Date date){
+        LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), UTC)
+                .minus(1L, unit).withMinute(0).withSecond(0);
+        return new Date(current.atZone(UTC).toInstant().toEpochMilli());
+    }
+
+    private Date plusOne(Date date){
+        LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), UTC)
+                .plus(1L, unit).withMinute(0).withSecond(0);
+        return new Date(current.atZone(UTC).toInstant().toEpochMilli());
     }
 
     private List<String> collapseList(final List<String> orgList,
@@ -116,8 +130,11 @@ public class IndexSelector {
         }
 
         int collapseAfter = prefix.length() + strategy.getPattern().length() - 1 + offset;
+        boolean beginningIsSameAsEnd = orgList.get(0).substring(0, collapseAfter)
+                .equals(orgList.get(orgList.size() - 1).substring(0, collapseAfter));
         boolean doCollapsingAtBeginning = !elementBeforeSequence.startsWith(orgList.get(0).substring(0, collapseAfter));
         boolean doCollapsingAtEnd = !elementAfterSequence.startsWith(orgList.get(orgList.size() - 1).substring(0, collapseAfter));
+        doCollapsingAtBeginning = (doCollapsingAtBeginning && doCollapsingAtEnd) || (doCollapsingAtBeginning && !beginningIsSameAsEnd);
 
         return collapseList(orgList,
                 doCollapsingAtBeginning,
@@ -169,14 +186,5 @@ public class IndexSelector {
             current = current.withHour(23);
         }
         return new Date(current.atZone(UTC).toInstant().toEpochMilli());
-    }
-
-    private TemporalUnit getUnit(IndexStrategy strategy) {
-        TemporalUnit unit = UNIT_MAP.get(strategy);
-        if (unit == null) {
-            // should never happen
-            throw new UnsupportedOperationException("This is a programming mistake, please check your code!");
-        }
-        return unit;
     }
 }
