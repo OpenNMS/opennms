@@ -38,14 +38,17 @@ import java.util.TimeZone;
  * Defines a strategy on how to define the index when persisting.
  */
 public enum IndexStrategy {
-    YEARLY(new SimpleDateFormat("yyyy")),
-    MONTHLY(new SimpleDateFormat("yyyy-MM")),
-    DAILY(new SimpleDateFormat("yyyy-MM-dd")),
-    HOURLY(new SimpleDateFormat("yyyy-MM-dd-HH"));
+    YEARLY("yyyy"),
+    MONTHLY("yyyy-MM"),
+    DAILY("yyyy-MM-dd"),
+    HOURLY("yyyy-MM-dd-HH");
 
     private final DateFormat dateFormat;
+    private final String pattern; // remember pattern since DateFormat doesn't provide access to it
 
-    IndexStrategy(DateFormat dateFormat) {
+    IndexStrategy(String pattern) {
+        this.pattern = pattern;
+        DateFormat dateFormat = new SimpleDateFormat(pattern);
         this.dateFormat = Objects.requireNonNull(dateFormat);
         // Ensure all dates are formatted in UTC. See HZN-1278.
         this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -53,5 +56,9 @@ public enum IndexStrategy {
 
     public String getIndex(String indexPrefix, Date date) {
         return String.format("%s-%s", indexPrefix, dateFormat.format(date));
+    }
+
+    public String getPattern(){
+        return pattern;
     }
 }

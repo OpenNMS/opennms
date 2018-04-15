@@ -30,7 +30,6 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -51,6 +50,7 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.elastic.index.IndexSelector;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.bulk.BulkException;
@@ -463,6 +463,7 @@ public class ElasticFlowRepository implements FlowRepository {
                 .addType(TYPE);
         if(timeRangeFilter != null) {
             builder.addIndices(indexSelector.getIndexNames(timeRangeFilter));
+            builder.setParameter("ignore_unavailable", "true"); // ignore unknown index
         }
         return executeAsync(builder.build());
     }
