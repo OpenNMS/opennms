@@ -63,12 +63,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.minion.container</groupId>
+            <groupId>org.opennms.container</groupId>
             <artifactId>extender</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion.container</groupId>
+            <groupId>org.opennms.container</groupId>
             <artifactId>scv</artifactId>
             <version>${project.version}</version>
             <type>pom</type>

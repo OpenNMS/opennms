@@ -13,8 +13,6 @@
 
     <modules>
         <module>karaf</module>
-        <module>extender</module>
-        <module>scv</module>
         <module>features</module>
     </modules>
 </project>
