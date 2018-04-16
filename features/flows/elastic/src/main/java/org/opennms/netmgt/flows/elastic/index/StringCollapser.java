@@ -67,7 +67,7 @@ public class StringCollapser {
         return this;
     }
 
-    public List<String> doIt() {
+    public List<String> collapse() {
 
         if(this.list == null || this.list.size() == 0){
             // shortcut

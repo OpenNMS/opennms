@@ -43,7 +43,7 @@ public class StringCollapserTest {
                 .forList(Arrays.asList("aa1", "aa2","aa3","aa4","xx1"))
                 .collapseAfterChars(2)
                 .doCollapsingAtBeginning(true)
-                .doIt();
+                .collapse();
         assertEquals("aa*", result.get(0));
         assertEquals("xx*", result.get(1));
     }
@@ -54,7 +54,7 @@ public class StringCollapserTest {
                 .forList(Arrays.asList("aa1", "aa2","aa3","aa4","xx1"))
                 .collapseAfterChars(2)
                 .doCollapsingAtBeginning(false)
-                .doIt();
+                .collapse();
         assertEquals(5, result.size());
         assertEquals("aa1", result.get(0));
         assertEquals("xx*", result.get(4));
@@ -68,7 +68,7 @@ public class StringCollapserTest {
                 .collapseAfterChars(2)
                 .doCollapsingAtBeginning(true)
                 .doCollapsingAtEnd(false)
-                .doIt();
+                .collapse();
         assertEquals("aa*", result.get(0));
         assertEquals("xx1", result.get(1));
         assertEquals("xx2", result.get(2));
@@ -81,7 +81,7 @@ public class StringCollapserTest {
                 .collapseAfterChars(2)
                 .doCollapsingAtBeginning(false)
                 .doCollapsingAtEnd(false)
-                .doIt();
+                .collapse();
 
         assertEquals("aa1", result.get(0));
         assertEquals("aa2", result.get(1));

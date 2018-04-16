@@ -48,7 +48,6 @@ import java.util.TimeZone;
 
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.osgi.util.measurement.Unit;
 
 public class IndexSelector {
 
@@ -75,7 +74,8 @@ public class IndexSelector {
         this.unit = UNIT_MAP.get(strategy);
         if (unit == null) {
             // should never happen
-            throw new UnsupportedOperationException("This is a programming mistake, please check your code!");
+            throw new UnsupportedOperationException("This is a programming mistake, please check the mapping for strategy="
+                    + strategy.name());
         }
     }
 
@@ -90,9 +90,10 @@ public class IndexSelector {
      */
     public List<String> getIndexNames(TimeRangeFilter timeRange) {
         List<String> all = new ArrayList<>();
-        // we start one before and end one after the time range, see HZN-1281
-        Date endDate = plusOne(adjustEndTime(new Date(timeRange.getEnd())));
-        Date startDate = minusOne(new Date(timeRange.getStart()));
+        // we expand the time range by a bit in order to be sure to find all relevant events:
+        long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
+        Date endDate = adjustEndTime(new Date(timeRange.getEnd()+expandTimeRangeInMs));
+        Date startDate = new Date(timeRange.getStart()-expandTimeRangeInMs);
         Date currentDate = startDate;
 
         while (currentDate.before(endDate)) {
@@ -158,7 +159,7 @@ public class IndexSelector {
                 .replaceCollapsedCharsWith("*")
                 .doCollapsingAtBeginning(doCollapsingAtBeginning)
                 .doCollapsingAtEnd(doCollapsingAtEnd)
-                .doIt();
+                .collapse();
 
         if (collapseAfter > prefix.length() + IndexStrategy.YEARLY.getPattern().length()) {
             collapsedList = collapseList(collapsedList,

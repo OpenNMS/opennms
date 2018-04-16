@@ -51,23 +51,29 @@ public class IndexSelectorTest {
     public void indexesForSingleTimeRange() throws ParseException {
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-02-03 12:03").to("2018-02-03 12:04")
-                .expected("prefix-2018-02-03-11", "prefix-2018-02-03-12", "prefix-2018-02-03-13")
+                .from("2018-02-03 11:03").to("2018-02-03 13:04")
+                .expected("prefix-2018-02-03-11"
+                        , "prefix-2018-02-03-12"
+                        , "prefix-2018-02-03-13")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
-                .from("2018-02-03 12:00").to("2018-02-03 15:00")
-                .expected("prefix-2018-02-02", "prefix-2018-02-03", "prefix-2018-02-04")
+                .from("2018-02-02 12:00").to("2018-02-04 15:00")
+                .expected("prefix-2018-02-02"
+                        , "prefix-2018-02-03"
+                        , "prefix-2018-02-04")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
                 .from("2018-02-03 12:00").to("2018-02-28 15:00")
-                .expected("prefix-2018-01", "prefix-2018-02", "prefix-2018-03")
+                .expected("prefix-2018-02")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
-                .from("2018-02-03 12:00").to("2018-02-28 15:00")
-                .expected("prefix-2017", "prefix-2018", "prefix-2019")
+                .from("2017-02-03 12:00").to("2019-02-28 15:00")
+                .expected("prefix-2017"
+                        , "prefix-2018"
+                        , "prefix-2019")
                 .check();
     }
 
@@ -75,24 +81,38 @@ public class IndexSelectorTest {
     public void indexesForMultipleTimeRange() throws ParseException {
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-02-03 12:00").to("2018-02-03 15:01")
-                .expected("prefix-2018-02-03-11", "prefix-2018-02-03-12", "prefix-2018-02-03-13"
-                        , "prefix-2018-02-03-14", "prefix-2018-02-03-15", "prefix-2018-02-03-16")
+                .from("2018-02-03 11:03").to("2018-02-03 16:01")
+                .expected("prefix-2018-02-03-11"
+                        , "prefix-2018-02-03-12"
+                        , "prefix-2018-02-03-13"
+                        , "prefix-2018-02-03-14"
+                        , "prefix-2018-02-03-15"
+                        , "prefix-2018-02-03-16")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
-                .from("2018-02-03 12:00").to("2018-02-04 15:00")
-                .expected("prefix-2018-02-02", "prefix-2018-02-03", "prefix-2018-02-04", "prefix-2018-02-05")
+                .from("2018-02-02 12:00").to("2018-02-05 15:00")
+                .expected("prefix-2018-02-02"
+                        , "prefix-2018-02-03"
+                        , "prefix-2018-02-04"
+                        , "prefix-2018-02-05")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
-                .from("2018-02-03 12:00").to("2018-03-04 15:00")
-                .expected("prefix-2018-01", "prefix-2018-02", "prefix-2018-03", "prefix-2018-04")
+                .from("2018-01-03 12:00").to("2018-04-04 15:00")
+                .expected("prefix-2018-01"
+                        , "prefix-2018-02"
+                        , "prefix-2018-03"
+                        , "prefix-2018-04")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
-                .from("2016-02-03 12:00").to("2018-02-04 15:00")
-                .expected("prefix-2015", "prefix-2016", "prefix-2017", "prefix-2018", "prefix-2019")
+                .from("2015-02-03 12:00").to("2019-02-04 15:00")
+                .expected("prefix-2015"
+                        , "prefix-2016"
+                        , "prefix-2017"
+                        , "prefix-2018"
+                        , "prefix-2019")
                 .check();
     }
 
@@ -100,26 +120,36 @@ public class IndexSelectorTest {
     public void shouldGiveMultipleIndexesForTimeRangeWithCollapseInMiddle() throws ParseException {
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-02-02 22:00").to("2018-02-04 02:03")
-                .expected("prefix-2018-02-02-21", "prefix-2018-02-02-22", "prefix-2018-02-02-23", "prefix-2018-02-03-*"
-                        , "prefix-2018-02-04-00", "prefix-2018-02-04-01", "prefix-2018-02-04-02", "prefix-2018-02-04-03")
+                .from("2018-02-02 22:03").to("2018-02-04 02:03")
+                .expected("prefix-2018-02-02-22"
+                        , "prefix-2018-02-02-23"
+                        , "prefix-2018-02-03-*"
+                        , "prefix-2018-02-04-00"
+                        , "prefix-2018-02-04-01"
+                        , "prefix-2018-02-04-02")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
                 .from("2018-01-31 12:00").to("2018-03-02 15:00")
-                .expected("prefix-2018-01-30", "prefix-2018-01-31", "prefix-2018-02-*", "prefix-2018-03-01"
-                        , "prefix-2018-03-02", "prefix-2018-03-03")
+                .expected("prefix-2018-01-31"
+                        , "prefix-2018-02-*"
+                        , "prefix-2018-03-01"
+                        , "prefix-2018-03-02")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
-                .from("2016-12-03 12:00").to("2018-02-04 15:00")
-                .expected("prefix-2016-11", "prefix-2016-12", "prefix-2017-*", "prefix-2018-01", "prefix-2018-02"
-                        , "prefix-2018-03")
+                .from("2016-12-03 12:00").to("2018-02-03 15:00")
+                .expected("prefix-2016-12"
+                        , "prefix-2017-*"
+                        , "prefix-2018-01"
+                        , "prefix-2018-02")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
                 .from("2016-02-03 12:00").to("2018-02-04 15:00")
-                .expected("prefix-2015", "prefix-2016", "prefix-2017", "prefix-2018", "prefix-2019")
+                .expected("prefix-2016"
+                        , "prefix-2017"
+                        , "prefix-2018")
                 .check();
     }
 
@@ -127,38 +157,51 @@ public class IndexSelectorTest {
     public void indexesForTimeRangeThatBordersYears() throws ParseException {
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-01-01 01:00").to("2018-01-01 02:03")
-                .expected("prefix-2018-01-01-00", "prefix-2018-01-01-01", "prefix-2018-01-01-02", "prefix-2018-01-01-03")
+                .from("2018-01-01 00:03").to("2018-01-01 02:03")
+                .expected("prefix-2018-01-01-00"
+                        , "prefix-2018-01-01-01"
+                        , "prefix-2018-01-01-02")
                 .check();
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-12-31 21:00").to("2018-12-31 22:03")
-                .expected("prefix-2018-12-31-20", "prefix-2018-12-31-21", "prefix-2018-12-31-22", "prefix-2018-12-31-23")
+                .from("2018-12-31 20:03").to("2018-12-31 23:03")
+                .expected("prefix-2018-12-31-20"
+                        , "prefix-2018-12-31-21"
+                        , "prefix-2018-12-31-22"
+                        , "prefix-2018-12-31-23")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
-                .from("2018-01-02 01:00").to("2018-01-03 02:03")
-                .expected("prefix-2018-01-01", "prefix-2018-01-02", "prefix-2018-01-03", "prefix-2018-01-04")
+                .from("2018-01-01 01:00").to("2018-01-03 02:03")
+                .expected("prefix-2018-01-01"
+                        , "prefix-2018-01-02"
+                        , "prefix-2018-01-03")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
-                .from("2018-12-30 21:00").to("2018-12-30 22:03")
-                .expected("prefix-2018-12-29", "prefix-2018-12-30", "prefix-2018-12-31")
+                .from("2018-12-30 21:00").to("2018-12-31 22:03")
+                .expected("prefix-2018-12-30"
+                        , "prefix-2018-12-31")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
-                .from("2018-02-02 01:00").to("2018-03-03 02:03")
-                .expected("prefix-2018-01", "prefix-2018-02", "prefix-2018-03", "prefix-2018-04")
+                .from("2018-01-01 01:00").to("2018-03-03 02:03")
+                .expected("prefix-2018-01"
+                        , "prefix-2018-02"
+                        , "prefix-2018-03")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
-                .from("2018-11-29 21:00").to("2018-11-30 22:03")
-                .expected("prefix-2018-10", "prefix-2018-11", "prefix-2018-12")
+                .from("2018-11-29 21:00").to("2018-12-30 22:03")
+                .expected("prefix-2018-11"
+                        , "prefix-2018-12")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
                 .from("2016-02-03 12:00").to("2018-02-04 15:00")
-                .expected("prefix-2015", "prefix-2016", "prefix-2017", "prefix-2018", "prefix-2019")
+                .expected("prefix-2016"
+                        , "prefix-2017"
+                        , "prefix-2018")
                 .check();
     }
 
@@ -166,23 +209,33 @@ public class IndexSelectorTest {
     public void shouldGiveCollapsedIndexesForFullTimeRange() throws ParseException {
 
         Check.strategy(IndexStrategy.HOURLY)
-                .from("2018-02-02 01:00").to("2018-02-04 22:03")
-                .expected("prefix-2018-02-02-*", "prefix-2018-02-03-*", "prefix-2018-02-04-*")
+                .from("2018-02-02 01:00").to("2018-02-04 23:03")
+                .expected("prefix-2018-02-02-*"
+                        , "prefix-2018-02-03-*"
+                        , "prefix-2018-02-04-*")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
-                .from("2018-01-02 12:00").to("2018-03-30 12:01")
-                .expected("prefix-2018-01-*", "prefix-2018-02-*", "prefix-2018-03-*")
+                .from("2018-01-01 12:00").to("2018-03-31 12:01")
+                .expected("prefix-2018-01-*"
+                        , "prefix-2018-02-*"
+                        , "prefix-2018-03-*")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
-                .from("2016-02-01 12:00").to("2018-11-04 15:00")
-                .expected("prefix-2016-*", "prefix-2017-*", "prefix-2018-*")
+                .from("2016-01-01 12:00").to("2018-12-04 15:00")
+                .expected("prefix-2016-*"
+                        , "prefix-2017-*"
+                        , "prefix-2018-*")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
-                .from("2015-02-03 12:00").to("2017-02-04 15:00")
-                .expected("prefix-2014", "prefix-2015", "prefix-2016", "prefix-2017", "prefix-2018")
+                .from("2014-02-03 12:00").to("2018-02-04 15:00")
+                .expected("prefix-2014"
+                        , "prefix-2015"
+                        , "prefix-2016"
+                        , "prefix-2017"
+                        , "prefix-2018")
                 .check();
     }
 
@@ -191,8 +244,7 @@ public class IndexSelectorTest {
 
         Check.strategy(IndexStrategy.HOURLY)
                 .from("2015-11-29 23:05").to("2018-02-02 02:10")
-                .expected("prefix-2015-11-29-22"
-                        , "prefix-2015-11-29-23"
+                .expected("prefix-2015-11-29-23"
                         , "prefix-2015-11-30-*"
                         , "prefix-2015-12-*"
                         , "prefix-2016-*"
@@ -201,38 +253,32 @@ public class IndexSelectorTest {
                         , "prefix-2018-02-01-*"
                         , "prefix-2018-02-02-00"
                         , "prefix-2018-02-02-01"
-                        , "prefix-2018-02-02-02"
-                        , "prefix-2018-02-02-03")
+                        , "prefix-2018-02-02-02")
                 .check();
 
         Check.strategy(IndexStrategy.DAILY)
                 .from("2015-11-28 23:05").to("2018-02-01 22:59")
-                .expected("prefix-2015-11-27"
-                        , "prefix-2015-11-28"
+                .expected("prefix-2015-11-28"
                         , "prefix-2015-11-29"
                         , "prefix-2015-11-30"
                         , "prefix-2015-12-*"
                         , "prefix-2016-*"
                         , "prefix-2017-*"
                         , "prefix-2018-01-*"
-                        , "prefix-2018-02-01"
-                        , "prefix-2018-02-02")
+                        , "prefix-2018-02-01")
                 .check();
 
         Check.strategy(IndexStrategy.MONTHLY)
                 .from("2015-12-29 22:05").to("2018-01-02 03:10")
-                .expected("prefix-2015-11"
-                        , "prefix-2015-12"
+                .expected("prefix-2015-12"
                         , "prefix-2016-*"
                         , "prefix-2017-*"
-                        , "prefix-2018-01"
-                        , "prefix-2018-02")
+                        , "prefix-2018-01")
                 .check();
 
         Check.strategy(IndexStrategy.YEARLY)
-                .from("2016-11-29 22:05").to("2017-02-02 03:10")
-                .expected("prefix-2015"
-                        , "prefix-2016"
+                .from("2016-11-29 22:05").to("2018-02-02 03:10")
+                .expected("prefix-2016"
                         , "prefix-2017"
                         , "prefix-2018")
                 .check();

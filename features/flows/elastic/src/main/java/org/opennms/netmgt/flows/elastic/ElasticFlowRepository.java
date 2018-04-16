@@ -197,13 +197,13 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
-        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null)).thenApply(SearchResult::getTotal);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResult::getTotal);
     }
 
     @Override
     public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
         final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters);
-        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+        return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
                 .getBuckets()
                 .stream()
@@ -214,7 +214,7 @@ public class ElasticFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Set<Integer>> getSnmpInterfaceIdsWithFlows(int limit, List<Filter> filters) {
         final String query = searchQueryProvider.getUniqueSnmpInterfaces(limit, filters);
-        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+        return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> {
             final Set<Integer> interfaces = Sets.newHashSet();
             res.getAggregations().getTermsAggregation("input_snmp").getBuckets()
@@ -269,7 +269,7 @@ public class ElasticFlowRepository implements FlowRepository {
         // See https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations-bucket-terms-aggregation.html#_size
         final int multiplier = 2;
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
-        return searchAsync(query, extractTimeRangeFilter(filters).orElse(null))
+        return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> res.getAggregations().getTermsAggregation("grouped_by").getBuckets().stream()
                 .map(TermsAggregation.Entry::getKey)
                 .limit(N)
@@ -301,7 +301,7 @@ public class ElasticFlowRepository implements FlowRepository {
             final String seriesFromMissingQuery = searchQueryProvider.getSeriesFromMissingQuery(step,
                     timeRangeFilter.getStart(), timeRangeFilter.getEnd(), groupByTerm, keyForMissingTerm, filters);
             seriesFuture = seriesFuture
-                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters).orElse(null)), (ignored,res) -> {
+                    .thenCombine(searchAsync(seriesFromMissingQuery, extractTimeRangeFilter(filters)), (ignored,res) -> {
                 toTable(builder, res);
                 return null;
             });
@@ -508,18 +508,18 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     private static TimeRangeFilter getRequiredTimeRangeFilter(Collection<Filter> filters) {
-        final Optional<TimeRangeFilter> filter = extractTimeRangeFilter(filters);
-        if (!filter.isPresent()) {
+        final TimeRangeFilter filter = extractTimeRangeFilter(filters);
+        if (filter == null) {
             throw new IllegalArgumentException("Time range is required.");
         }
-        return filter.get();
+        return filter;
     }
 
-    private static Optional<TimeRangeFilter> extractTimeRangeFilter(Collection<Filter> filters){
+    private static TimeRangeFilter extractTimeRangeFilter(Collection<Filter> filters){
         return filters.stream()
                 .filter(f -> f instanceof  TimeRangeFilter)
                 .map(f -> (TimeRangeFilter)f)
-                .findFirst();
+                .findFirst().orElse(null);
     }
 
     private static boolean isIngress(TermsAggregation.Entry entry) {
