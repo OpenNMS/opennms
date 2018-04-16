@@ -167,6 +167,26 @@ uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
         Alarm: Generic Trigger
 ----
 
+==== kafka-producer:sync-alarms
+
+The `sync-alarms` command can be used to manually trigger the alarm synchronization process.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> kafka-producer:sync-alarms
+Performing synchronization of alarms from the database with those in the ktable.
+Executed 1 updates in 47ms.
+
+Number of reduction keys in ktable: 4
+Number of reduction keys in the db: 4 (4 alarms total)
+Reduction keys added to the ktable: (None)
+Reduction keys deleted from the ktable: (None)
+Reduction keys updated in the ktable:
+        uei.opennms.org/nodes/nodeLostService::1:127.0.0.1:Minion-RPC
+----
+
 ==== kafka-producer:evaluate-filter
 
 The `evaluate-filter` command can be used to test arbitrary SpEL filtering expressions against alarms or events.

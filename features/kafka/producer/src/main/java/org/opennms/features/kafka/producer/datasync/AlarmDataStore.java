@@ -42,4 +42,6 @@ public interface AlarmDataStore {
 
     OpennmsModelProtos.Alarm getAlarm(String reductionKey);
 
+    AlarmSyncResults synchronizeAlarmsWithDb();
+
 }
