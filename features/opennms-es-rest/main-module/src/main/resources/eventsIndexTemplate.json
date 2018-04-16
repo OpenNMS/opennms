@@ -58,6 +58,9 @@
                "hour":{
                   "type":"long"
                },
+               "p_oids": {
+                  "type": "nested"
+               },
                "p_alarmseverity":{
                   "type":"long"
                },
