@@ -70,7 +70,7 @@ public class Value implements Serializable {
      * Field _type.
      */
 	@XmlAttribute(name="type")
-	@Pattern(regexp="(int|string|Int32|OctetString|Null|ObjectIdentifier|Sequence|IpAddress|Counter32|Gauge32|TimeTicks|Opaque|Counter64)")
+	@Pattern(regexp="(int|string|Int32|OctetString|Null|ObjectIdentifier|Sequence|IpAddress|Counter32|Gauge32|TimeTicks|Opaque|Counter64|json)")
     private java.lang.String _type = "string";
 
     /**
