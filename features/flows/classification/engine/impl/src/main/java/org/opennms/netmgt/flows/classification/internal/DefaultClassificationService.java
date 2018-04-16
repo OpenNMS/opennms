@@ -121,7 +121,7 @@ public class DefaultClassificationService implements ClassificationService {
     }
 
     @Override
-    public void importRules(InputStream inputStream, boolean hasHeader) throws CSVImportException {
+    public void importRules(InputStream inputStream, boolean hasHeader, boolean deleteExistingRules) throws CSVImportException {
         runInTransaction(status -> {
             // Parse and validate the rules
             final CsvImportResult result = csvService.parseCSV(inputStream, hasHeader);
@@ -129,12 +129,16 @@ public class DefaultClassificationService implements ClassificationService {
                 throw new CSVImportException(result);
             }
 
-            // Remove existing rules and afterwards add new rules
+
             final Group group = classificationGroupDao.findByName(Groups.USER_DEFINED); // Automatically add all rules to the USER_DEFINED space
-            for (Rule eachRule : group.getRules()) {
-                eachRule.setGroup(null);
+
+            // Remove existing rules and afterwards add new rules
+            if (deleteExistingRules) {
+                for (Rule eachRule : group.getRules()) {
+                    eachRule.setGroup(null);
+                }
+                group.getRules().clear();
             }
-            group.getRules().clear();
             final List<Rule> rules = result.getRules();
             for (int i=0; i<rules.size(); i++) {
                 final Rule rule = rules.get(i);
