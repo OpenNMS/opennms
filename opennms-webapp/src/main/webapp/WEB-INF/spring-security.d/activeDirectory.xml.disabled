@@ -67,6 +67,15 @@
     <!-- <beans:property name="groupSearchFilter" value="member:1.2.840.113556.1.4.1941:={0}" /> -->
     <beans:property name="groupToRoleMap">
       <beans:map>
+        <!-- If the is an empty string, the roles are applied to all users -->
+        <!--
+        <beans:entry>
+          <beans:key><beans:value></beans:value></beans:key>
+          <beans:list>
+            <beans:value>ROLE_USER</beans:value>
+          </beans:list>
+        </beans:entry>
+        -->
         <beans:entry>
           <!-- Name of the AD group for normal (non-admin) OpenNMS users -->
           <beans:key><beans:value>OpenNMS-Users</beans:value></beans:key>
