@@ -80,12 +80,12 @@
                     <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
-                <th class="col-md-1 text-nowrap">
+                <th ng-class="{'col-md-2': group.readOnly === false, 'col-md-3': group.readOnly === true}" class="text-nowrap">
                     <a ng-click="changeOrderBy('exporterFilter')">Exporter Filter</a>
                     <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
-                <th class="col-md-1">
+                <th class="col-md-1" ng-if="group.readOnly === false">
                     Actions
                 </th>
             </tr>
@@ -103,8 +103,8 @@
                 <td class="text-nowrap">{{rule['dstAddress']}}</td>
                 <td class="text-nowrap">{{rule['dstPort']}}</td>
                 <td class="text-nowrap">{{rule['exporterFilter']}}</td>
-                <td>
-                    <div ng-show="rule.group.readOnly === false" class="pull-right">
+                <td ng-if="group.readOnly === false">
+                    <div class="pull-right">
                         <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-default" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>
                         <button id="action.{{rule.position}}.delete" class="btn btn-sm btn-default" ng-click="deleteRule(rule)" title="delete rule"><i class="fa fa-trash-o"></i></button>
                     </div>
