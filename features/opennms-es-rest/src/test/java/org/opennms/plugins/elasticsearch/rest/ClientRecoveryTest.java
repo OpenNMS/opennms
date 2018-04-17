@@ -28,7 +28,7 @@
 
 package org.opennms.plugins.elasticsearch.rest;
 
-import java.util.Date;
+import java.time.Instant;
 
 import org.junit.Test;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -51,7 +51,7 @@ public class ClientRecoveryTest {
 		try {
 
 			String rootIndexName = EventToIndex.Indices.ALARMS.getIndexPrefix();
-			String indexName = IndexStrategy.MONTHLY.getIndex(rootIndexName , new Date());
+			String indexName = IndexStrategy.MONTHLY.getIndex(rootIndexName , Instant.now());
 			
 			// Get Jest client
 			HttpClientConfig clientConfig = new HttpClientConfig.Builder(

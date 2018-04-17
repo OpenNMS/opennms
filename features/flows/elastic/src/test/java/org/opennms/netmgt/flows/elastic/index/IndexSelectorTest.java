@@ -38,9 +38,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.hibernate.annotations.Check;
 import org.junit.Test;
-import org.opennms.netmgt.flows.elastic.index.IndexSelector;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 

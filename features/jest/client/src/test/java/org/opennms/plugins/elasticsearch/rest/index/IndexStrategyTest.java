@@ -30,8 +30,8 @@ package org.opennms.plugins.elasticsearch.rest.index;
 
 import static org.junit.Assert.assertEquals;
 
+import java.time.Instant;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.TimeZone;
 
 import org.junit.Test;
@@ -59,7 +59,7 @@ public class IndexStrategyTest {
         // Verify each strategy
         final IndexStrategy[] strategies = IndexStrategy.values();
         for (int i=0; i<expectedValues.length; i++) {
-            final String actualValue = strategies[i].getIndex("opennms", cal.getTime());
+            final String actualValue = strategies[i].getIndex("opennms", cal.toInstant());
             final String expectedValue = "opennms-" + expectedValues[i];
             assertEquals(expectedValue, actualValue);
         }
@@ -73,8 +73,8 @@ public class IndexStrategyTest {
 
         // Set date to "Wednesday, March 28, 2018 2:55:05 AM UTC"
         // This is "Tuesday March 27, 2018 21:55:05 EST"
-        final Date date = new Date(1522205705000L);
-        assertEquals("opennms-2018-03-28", IndexStrategy.DAILY.getIndex("opennms", date));
-        assertEquals("opennms-2018-03-28-02", IndexStrategy.HOURLY.getIndex("opennms", date));
+        final Instant instant = Instant.ofEpochMilli(1522205705000L);
+        assertEquals("opennms-2018-03-28", IndexStrategy.DAILY.getIndex("opennms", instant));
+        assertEquals("opennms-2018-03-28-02", IndexStrategy.HOURLY.getIndex("opennms", instant));
     }
 }

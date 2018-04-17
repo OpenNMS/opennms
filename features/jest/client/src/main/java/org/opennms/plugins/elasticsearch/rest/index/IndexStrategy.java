@@ -28,14 +28,15 @@
 
 package org.opennms.plugins.elasticsearch.rest.index;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.TimeZone;
 
 /**
  * Defines a strategy on how to define the index when persisting.
+ *
+ * This implementation is thread safe.
  */
 public enum IndexStrategy {
     YEARLY("yyyy"),
@@ -43,19 +44,22 @@ public enum IndexStrategy {
     DAILY("yyyy-MM-dd"),
     HOURLY("yyyy-MM-dd-HH");
 
-    private final DateFormat dateFormat;
+    /**
+     * Use the {@link DateTimeFormatter} since its thread-safe.
+     */
+    private final DateTimeFormatter dateFormat;
+
     private final String pattern; // remember pattern since DateFormat doesn't provide access to it
 
     IndexStrategy(String pattern) {
         this.pattern = pattern;
-        DateFormat dateFormat = new SimpleDateFormat(pattern);
-        this.dateFormat = Objects.requireNonNull(dateFormat);
-        // Ensure all dates are formatted in UTC. See HZN-1278.
-        this.dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        final ZoneId UTC = TimeZone.getTimeZone("UTC").toZoneId();
+        dateFormat = DateTimeFormatter.ofPattern(pattern)
+                .withZone(UTC);
     }
 
-    public String getIndex(String indexPrefix, Date date) {
-        return String.format("%s-%s", indexPrefix, dateFormat.format(date));
+    public String getIndex(String indexPrefix, TemporalAccessor temporal) {
+        return String.format("%s-%s", indexPrefix, dateFormat.format(temporal));
     }
 
     public String getPattern(){

@@ -92,11 +92,11 @@ public class IndexSelector {
         List<String> all = new ArrayList<>();
         // we expand the time range by a bit in order to be sure to find all relevant events:
         long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
-        Date endDate = adjustEndTime(new Date(timeRange.getEnd()+expandTimeRangeInMs));
-        Date startDate = new Date(timeRange.getStart()-expandTimeRangeInMs);
-        Date currentDate = startDate;
+        Instant endDate = adjustEndTime(new Date(timeRange.getEnd()+expandTimeRangeInMs));
+        Instant startDate = Instant.ofEpochMilli(timeRange.getStart()-expandTimeRangeInMs);
+        Instant currentDate = startDate;
 
-        while (currentDate.before(endDate)) {
+        while (currentDate.isBefore(endDate)) {
             String index = strategy.getIndex(prefix, currentDate);
             all.add(index);
             currentDate = plusOne(currentDate);
@@ -109,16 +109,16 @@ public class IndexSelector {
         return collapseList(all, elementBeforeSequence, elementAfterSequence, 0);
     }
 
-    private Date minusOne(Date date){
-        LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), UTC)
+    private Instant minusOne(Instant date){
+        LocalDateTime current = LocalDateTime.ofInstant(date, UTC)
                 .minus(1L, unit).withMinute(0).withSecond(0);
-        return new Date(current.atZone(UTC).toInstant().toEpochMilli());
+        return current.atZone(UTC).toInstant();
     }
 
-    private Date plusOne(Date date){
-        LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), UTC)
+    private Instant plusOne(Instant date){
+        LocalDateTime current = LocalDateTime.ofInstant(date, UTC)
                 .plus(1L, unit).withMinute(0).withSecond(0);
-        return new Date(current.atZone(UTC).toInstant().toEpochMilli());
+        return current.atZone(UTC).toInstant();
     }
 
     private List<String> collapseList(final List<String> orgList,
@@ -171,7 +171,7 @@ public class IndexSelector {
         return collapsedList;
     }
 
-    private Date adjustEndTime(Date date){
+    private Instant adjustEndTime(Date date){
         LocalDateTime current = LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()),
                 UTC).withMinute(59).withSecond(59).withNano(999999999);
         if(this.strategy == IndexStrategy.YEARLY){
@@ -186,6 +186,6 @@ public class IndexSelector {
                 || this.strategy == IndexStrategy.YEARLY){
             current = current.withHour(23);
         }
-        return new Date(current.atZone(UTC).toInstant().toEpochMilli());
+        return current.atZone(UTC).toInstant();
     }
 }
