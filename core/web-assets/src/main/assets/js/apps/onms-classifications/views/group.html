@@ -1,4 +1,7 @@
 <div class="panel-body">
+    <div class="navbar-form navbar-left">
+        <h5 style="margin-left: -10px">{{group.description}} <span class="label label-default" ng-if="group.readOnly">read-only</span></h5>
+    </div>
     <div class="navbar-form navbar-right">
         <div class="input-group" role="group" style="padding-right: 50px" ng-show="group.ruleCount > 0">
             <span class="input-group-addon"><i class="fa fa-search"/></span>
