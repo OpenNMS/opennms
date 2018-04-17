@@ -39,8 +39,13 @@ import com.google.common.collect.Lists;
 public class RuleDTO {
     private Integer id;
     private String name;
-    private String ipAddress;
-    private String port;
+    private String dstAddress;
+    private String dstPort;
+    private String srcAddress;
+    private String srcPort;
+
+    // TODO MVR optional filter capability
+    private List<String> filter = new ArrayList<>();
     private GroupDTO group;
     private Integer position;
     private List<String> protocols = new ArrayList<>();
@@ -61,20 +66,36 @@ public class RuleDTO {
         this.name = name;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public String getDstAddress() {
+        return dstAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setDstAddress(String dstAddress) {
+        this.dstAddress = dstAddress;
     }
 
-    public String getPort() {
-        return port;
+    public String getDstPort() {
+        return dstPort;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setDstPort(String dstPort) {
+        this.dstPort = dstPort;
+    }
+
+    public String getSrcAddress() {
+        return srcAddress;
+    }
+
+    public void setSrcAddress(String srcAddress) {
+        this.srcAddress = srcAddress;
+    }
+
+    public String getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(String srcPort) {
+        this.srcPort = srcPort;
     }
 
     public void setProtocol(String protocol) {
@@ -120,8 +141,10 @@ public class RuleDTO {
         final RuleDTO that = (RuleDTO) o;
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
-                && Objects.equals(ipAddress, that.ipAddress)
-                && Objects.equals(port, that.port)
+                && Objects.equals(dstAddress, that.dstAddress)
+                && Objects.equals(dstPort, that.dstPort)
+                && Objects.equals(srcAddress, that.srcAddress)
+                && Objects.equals(srcPort, that.srcPort)
                 && Objects.equals(protocols, that.protocols)
                 && Objects.equals(group, that.group)
                 && Objects.equals(position, that.position);
@@ -129,6 +152,6 @@ public class RuleDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, ipAddress, port, protocols, group, position);
+        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, group, position);
     }
 }

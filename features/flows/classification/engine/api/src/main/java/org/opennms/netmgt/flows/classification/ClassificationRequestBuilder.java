@@ -26,51 +26,45 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.error;
+package org.opennms.netmgt.flows.classification;
 
-import java.util.Objects;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 
-import com.google.common.base.MoreObjects;
+public class ClassificationRequestBuilder {
 
-public class ErrorTemplate {
+    private final ClassificationRequest request = new ClassificationRequest();
 
-    // A unique error key
-    private final String key;
-
-    // The error message. May use Message Format syntax.
-    private final String message;
-
-    public ErrorTemplate(String errorKey, String errorMessage) {
-        this.key = errorKey;
-        this.message = Objects.requireNonNull(errorMessage);
-    }
-    public String getKey() {
-        return key;
+    public ClassificationRequestBuilder withSrcAddress(String srcAddress) {
+        request.setSrcAddress(srcAddress);
+        return this;
     }
 
-    public String getMessage() {
-        return message;
+    public ClassificationRequestBuilder withSrcPort(int srcPort) {
+        request.setSrcPort(srcPort);
+        return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final ErrorTemplate that = (ErrorTemplate) o;
-        return Objects.equals(key, that.key)
-                && Objects.equals(message, that.message);
+    public ClassificationRequestBuilder withDstPort(int srcPort) {
+        request.setDstPort(srcPort);
+        return this;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, message);
+    public ClassificationRequestBuilder withDstAddress(String dstAddress) {
+        request.setDstAddress(dstAddress);
+        return this;
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("key", key)
-                .add("message", message)
-                .toString();
+    public ClassificationRequestBuilder withProtocol(Protocol protocol) {
+        request.setProtocol(protocol);
+        return this;
+    }
+
+    public ClassificationRequestBuilder withLocation(String location) {
+        request.setLocation(location);
+        return this;
+    }
+
+    public ClassificationRequest build() {
+        return request;
     }
 }

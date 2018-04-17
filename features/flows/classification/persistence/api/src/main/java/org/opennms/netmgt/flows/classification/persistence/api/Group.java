@@ -144,8 +144,8 @@ public class Group {
 
         // Update values
         existingRule.setProtocol(newRule.getProtocol());
-        existingRule.setIpAddress(newRule.getIpAddress());
+        existingRule.setDstAddress(newRule.getDstAddress());
         existingRule.setName(newRule.getName());
-        existingRule.setPort(newRule.getPort());
+        existingRule.setDstPort(newRule.getDstPort());
     }
 }

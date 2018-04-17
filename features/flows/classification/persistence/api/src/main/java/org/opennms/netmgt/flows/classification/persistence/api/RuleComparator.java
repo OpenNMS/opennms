@@ -31,6 +31,8 @@ package org.opennms.netmgt.flows.classification.persistence.api;
 import java.util.Comparator;
 import java.util.Objects;
 
+// The more concrete a rule is, the higher the priority should be.
+// However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
 public class RuleComparator implements Comparator<Rule> {
     @Override
     public int compare(Rule r1, Rule r2) {
@@ -44,9 +46,6 @@ public class RuleComparator implements Comparator<Rule> {
 
         // If group priority is identical, sort by rule priority (highest priority first)
         if (result == 0) {
-            if (r1.calculatePriority() == r2.calculatePriority()) {
-                return -1 * Boolean.compare(r1.hasIpAddressDefinition(), r2.hasIpAddressDefinition());
-            }
             return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
         }
         return result;

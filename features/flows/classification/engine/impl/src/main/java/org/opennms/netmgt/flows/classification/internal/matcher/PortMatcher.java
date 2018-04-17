@@ -28,19 +28,26 @@
 
 package org.opennms.netmgt.flows.classification.internal.matcher;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 
-public class PortMatcher implements Matcher {
+import com.google.common.base.Function;
 
+class PortMatcher implements Matcher {
+
+    // Extracts the value from the ClassificationRequest. Allows to easily distinguish between srcPort and dstPort
+    private final Function<ClassificationRequest, Integer> valueExtractor;
     private final PortValue value;
 
-    public PortMatcher(String ports) {
+    protected PortMatcher(String ports, Function<ClassificationRequest, Integer> valueExtractor) {
         this.value = new PortValue(ports);
+        this.valueExtractor = Objects.requireNonNull(valueExtractor);
     }
 
     @Override
     public boolean matches(ClassificationRequest request) {
-        return this.value.getPorts().contains(request.getPort());
+        return this.value.getPorts().contains(valueExtractor.apply(request));
     }
 }

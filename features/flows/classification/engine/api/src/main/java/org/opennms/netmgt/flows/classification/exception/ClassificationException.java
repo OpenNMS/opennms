@@ -39,9 +39,10 @@ public class ClassificationException extends RuntimeException {
     // The user-friendly error message
     private final Error error;
 
-    public ClassificationException(ErrorTemplate errorTemplate, Object... arguments) {
-        Objects.requireNonNull(errorTemplate);
-        this.error = new Error(errorTemplate, arguments);
+    public ClassificationException(String context, ErrorTemplate template, Object... arguments) {
+        Objects.requireNonNull(context);
+        Objects.requireNonNull(template);
+        this.error = new Error(context, template, arguments);
     }
 
     public Error getError() {

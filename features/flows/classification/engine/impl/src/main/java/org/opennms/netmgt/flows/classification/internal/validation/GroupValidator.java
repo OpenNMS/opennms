@@ -30,6 +30,7 @@ package org.opennms.netmgt.flows.classification.internal.validation;
 
 import java.util.Objects;
 
+import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
@@ -50,7 +51,7 @@ public class GroupValidator {
             Objects.requireNonNull(group);
             final Rule existingRule = ruleDao.findByDefinition(potentialNewRule, group);
             if (existingRule != null) {
-                throw new ClassificationException(Errors.GROUP_DUPLICATE_RULE);
+                throw new ClassificationException(ErrorContext.Name, Errors.GROUP_DUPLICATE_RULE);
             }
         }
     }

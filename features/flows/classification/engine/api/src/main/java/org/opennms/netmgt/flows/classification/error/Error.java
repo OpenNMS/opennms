@@ -35,12 +35,16 @@ import java.util.Objects;
 // Generic error object to handle user friendly error messages
 public class Error {
 
+    // Additional (optional) context of the error (e.g. an attribute name)
+    private final String context;
+
     private final ErrorTemplate template;
 
     // Arguments to be used in the message format.
     private final Object[] arguments;
 
-    public Error(ErrorTemplate errorTemplate, Object... arguments) {
+    public Error(String context, ErrorTemplate errorTemplate, Object... arguments) {
+        this.context = context;
         this.template = Objects.requireNonNull(errorTemplate);
         this.arguments = arguments;
     }
@@ -55,6 +59,10 @@ public class Error {
 
     public ErrorTemplate getTemplate() {
         return template;
+    }
+
+    public String getContext() {
+        return context;
     }
 
     @Override

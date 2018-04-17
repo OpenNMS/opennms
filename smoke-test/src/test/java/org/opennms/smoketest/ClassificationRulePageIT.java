@@ -148,7 +148,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         // Create dummy group
         groupTab.addNewRule(new RuleDTOBuilder()
                 .withName("http")
-                .withPort("80,8080")
+                .withDstPort("80,8080")
                 .withProtocol("udp,tcp").build());
         assertThat(groupTab.isEmpty(), is(false));
 
@@ -164,9 +164,9 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         // Edit rule
         groupTab.editRule(rule.getPosition(),
                 createFrom(rule)
-                        .withIpAddress("127.0.0.1")
+                        .withDstAddress("127.0.0.1")
                         .withName("OpenNMS")
-                        .withPort("8980")
+                        .withDstPort("8980")
                         .withProtocol("tcp").build());
 
         // Edit, but cancel
@@ -196,7 +196,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         for (int i=0; i<NUMBER_OF_RULES; i++) {
             final RuleDTO rule = new RuleDTOBuilder()
                     .withName("http" + i)
-                    .withPort(Integer.toString(i))
+                    .withDstPort(Integer.toString(i))
                     .withProtocol("tcp,udp").build();
             groupTab.addNewRule(rule);
         }
@@ -244,19 +244,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyClassification() {
         final ClassificationRequestDTO classificationRequestDTO = new ClassificationRequestDTO();
-        classificationRequestDTO.setIpAddress("127.0.0.1");
-        classificationRequestDTO.setPort("80");
+        classificationRequestDTO.setDstAddress("127.0.0.1");
+        classificationRequestDTO.setDstPort("80");
         classificationRequestDTO.setProtocol("tcp");
 
         // try http
         assertThat("http", is(uiPage.classify(classificationRequestDTO)));
 
         // try http-alt
-        classificationRequestDTO.setPort("8080");
+        classificationRequestDTO.setDstPort("8080");
         assertThat("http-alt", is(uiPage.classify(classificationRequestDTO)));
 
         // try no mapping found
-        classificationRequestDTO.setPort("12");
+        classificationRequestDTO.setDstPort("12");
         assertThat("No mapping found", is(uiPage.classify(classificationRequestDTO)));
     }
 
@@ -282,8 +282,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyErrorMessageReset() {
         final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
-        classificationRequest.setIpAddress("127.0.0.1");
-        classificationRequest.setPort("x"); // invalid
+        classificationRequest.setDstAddress("127.0.0.1");
+        classificationRequest.setDstPort("x"); // invalid
         classificationRequest.setProtocol("tcp");
 
         // try classification, should fail
@@ -294,7 +294,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // fix classification request and retry
-        classificationRequest.setPort("80");
+        classificationRequest.setDstPort("80");
         uiPage.classify(classificationRequest);
 
         // Verify visibility is inverted
@@ -302,7 +302,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         assertThat(true, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // make an invalid request and try again
-        classificationRequest.setPort("x");
+        classificationRequest.setDstPort("x");
         uiPage.classify(classificationRequest);
 
         // Error should be displayed, but response should not
@@ -358,9 +358,10 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             }
 
             // Input fields
-            setInput("classify-ipAddress", classificationRequestDTO.getIpAddress());
-            setInput("classify-port", classificationRequestDTO.getPort());
-            setInput("classify-protocol", classificationRequestDTO.getProtocol(), true);
+            // TODO MVR verify simple vs complex mode
+            setInput("classify-dstIpAddress", classificationRequestDTO.getDstAddress());
+            setInput("classify-dstPort", classificationRequestDTO.getDstPort());
+            setInput("classify-dstProtocol", classificationRequestDTO.getProtocol(), true);
 
             // Submit form
             execute(() -> findElementById("classification-submit")).click();
@@ -589,8 +590,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         public RuleModal setInput(RuleDTO rule) {
             // Input form
             setInput("rule.name", rule.getName());
-            setInput("rule.ipAddress", rule.getIpAddress());
-            setInput("rule.port", rule.getPort());
+            setInput("rule.ipAddress", rule.getDstAddress());
+            setInput("rule.port", rule.getDstPort());
 
             // remove all protocols
             execute(() -> {
@@ -822,8 +823,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     private static RuleDTOBuilder createFrom(RuleData rule) {
         return new RuleDTOBuilder()
                 .withName(rule.getName())
-                .withPort(rule.getPort())
+                .withDstPort(rule.getPort())
                 .withProtocol(rule.getProtocol())
-                .withIpAddress(rule.getIpAddress());
+                .withDstAddress(rule.getIpAddress());
     }
 }

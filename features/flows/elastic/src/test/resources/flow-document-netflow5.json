@@ -17,7 +17,6 @@
   "netflow.flow_locality": "private",
   "netflow.flow_records": 0,
   "netflow.flow_seq_num": 0,
-  "netflow.initiator": false,
   "netflow.input_snmp": 0,
   "netflow.ip_protocol_version": 4,
   "netflow.last_switched": 0,

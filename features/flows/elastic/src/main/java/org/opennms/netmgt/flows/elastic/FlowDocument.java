@@ -157,13 +157,6 @@ public class FlowDocument {
     private long flowSeqNum;
 
     /**
-     * True of the flow belongs to the initiator
-     * of the conversation.
-     */
-    @SerializedName("netflow.initiator")
-    private Boolean initiator;
-
-    /**
      * SNMP ifIndex
      */
     @SerializedName("netflow.input_snmp")
@@ -440,14 +433,6 @@ public class FlowDocument {
 
     public void setFlowSeqNum(long flowSeqNum) {
         this.flowSeqNum = flowSeqNum;
-    }
-
-    public Boolean isInitiator() {
-        return initiator;
-    }
-
-    public void setInitiator(Boolean initiator) {
-        this.initiator = initiator;
     }
 
     public Integer getInputSnmp() {

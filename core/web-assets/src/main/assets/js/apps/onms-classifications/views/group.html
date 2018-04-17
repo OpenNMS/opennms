@@ -11,7 +11,6 @@
             <div class="input-group-btn">
                 <button class="btn btn-default" title="Clear search" ng-click="clearSearch()" ng-show="query.search"><i class="fa fa-close"/></button>
             </div>
-
         </div>
 
         <div class="btn-group" role="group">
@@ -48,25 +47,40 @@
                     <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'position' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
-                <th class="col-md-3 text-nowrap">
+                <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('name')">Application</a>
                     <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
-                <th class="col-md-3 text-nowrap">
-                    <a ng-click="changeOrderBy('ipAddress')">IP Address</a>
-                    <i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                    <i ng-show="query.orderBy === 'ipAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                </th>
-                <th class="col-md-2 text-nowrap">
-                    <a ng-click="changeOrderBy('port')">Port</a>
-                    <i ng-show="query.orderBy === 'port' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
-                    <i ng-show="query.orderBy === 'port' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
-                </th>
-                <th class="col-md-2 text-nowrap">
+                <th class="col-md-1 text-nowrap">
                     <a ng-click="changeOrderBy('protocol')">Protocol</a>
                     <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
                     <i ng-show="query.orderBy === 'protocol' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-2 text-nowrap">
+                    <a ng-click="changeOrderBy('srcAddress')">Src. Address</a>
+                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'srcAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-1 text-nowrap">
+                    <a ng-click="changeOrderBy('srcPort')">Src. Port</a>
+                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'srcPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-2 text-nowrap">
+                    <a ng-click="changeOrderBy('dstAddress')">Dst. Address</a>
+                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'dstAddress' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-1 text-nowrap">
+                    <a ng-click="changeOrderBy('dstPort')">Dst. Port</a>
+                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'dstPort' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                </th>
+                <th class="col-md-1 text-nowrap">
+                    <a ng-click="changeOrderBy('exporterFilter')">Exporter Filter</a>
+                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                    <i ng-show="query.orderBy === 'exporterFilter' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
                 </th>
                 <th class="col-md-1">
                     Actions
@@ -78,11 +92,14 @@
             <tr ng-repeat="rule in rules">
                 <td class="text-nowwrap">{{rule['position']}}</td>
                 <td class="text-nowrap">{{rule['name']}}</td>
-                <td class="text-nowrap">{{rule['ipAddress']}}</td>
-                <td class="text-nowrap">{{rule['port']}}</td>
                 <td class="text-nowrap">
                     <span ng-repeat="protocol in rule.protocols" class="label label-default" style="margin-right: 5px;">{{protocol}}</span>
                 </td>
+                <td class="text-nowrap">{{rule['srcAddress']}}</td>
+                <td class="text-nowrap">{{rule['srcPort']}}</td>
+                <td class="text-nowrap">{{rule['dstAddress']}}</td>
+                <td class="text-nowrap">{{rule['dstPort']}}</td>
+                <td class="text-nowrap">{{rule['exporterFilter']}}</td>
                 <td>
                     <div ng-show="rule.group.readOnly === false" class="pull-right">
                         <button id="action.{{rule.position}}.edit" class="btn btn-sm btn-default" ng-click="editRule(rule)" title="edit rule"><i class="fa fa-edit"></i></button>

@@ -47,13 +47,24 @@
                                    uib-typeahead="protocol.keyword for protocol in protocols | filter:$viewValue"
                                    typeahead-editable="false"/>
                         </div>
-                        <div class="form-group">
-                            <label class="control-label" for="classify-ipAddress">IP Address</label>
-                            <input class="form-control" type="text" id="classify-ipAddress" name="classify-ipAddress" placeholder="An IP address, e.g. 127.0.0.1" ng-model="classificationRequest.ipAddress"></input>
+                        <div class="form-group col-md-8 col-sm-8" style="padding-left: 0">
+                            <label class="control-label" for="classify-srcAddress" >Source Address</label>
+                            <input class="form-control" type="text" id="classify-srcAddress" name="classify-srcAddress" placeholder="e.g. 127.0.0.1" ng-model="classificationRequest.srcAddress"></input>
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4" style="padding-right: 0" >
+                            <label class="control-label" for="classify-srcPort" >Port</label>
+                            <input class="form-control" type="text" id="classify-srcPort" name="classify-srcPort" placeholder="e.g. 55252" ng-model="classificationRequest.srcPort"></input>
+                        </div>
+                        <div class="form-group col-md-8 col-sm-8" style="padding-left: 0">
+                            <label class="control-label" for="classify-dstAddress">Destination Address</label>
+                            <input class="form-control" type="text" id="classify-dstAddress" name="classify-dstAddress" placeholder="e.g. 127.0.0.1" ng-model="classificationRequest.dstAddress"></input>
+                        </div>
+                        <div class="form-group col-md-4 col-sm-4" style="padding-right: 0" >
+                            <label class="control-label" for="classify-dstPort">Port</label>
+                            <input class="form-control" type="text" id="classify-dstPort" name="classify-dstPort" placeholder="e.g. 80" ng-model="classificationRequest.dstPort"></input>
                         </div>
                         <div class="form-group">
-                            <label class="control-label" for="classify-port">Port</label>
-                            <input class="form-control" type="text" id="classify-port" name="classify-port" placeholder="An IP port between 0 and 65535" ng-model="classificationRequest.port"></input>
+                            TODO additional filter
                         </div>
                         <div class="badge" ng-show="classificationResponse">
                             <span id="classification-response" title="Based on the current set of rules, the given flow would be mapped to">{{classificationResponse}}</span>

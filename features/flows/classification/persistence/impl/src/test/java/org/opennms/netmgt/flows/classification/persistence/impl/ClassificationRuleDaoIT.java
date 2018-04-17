@@ -94,8 +94,8 @@ public class ClassificationRuleDaoIT {
         // Create dummy
         final Rule rule = new RuleBuilder()
                 .withName("HTTP")
-                .withIpAddress("127.0.0.1")
-                .withPort("80,8080")
+                .withDstAddress("127.0.0.1")
+                .withDstPort("80,8080")
                 .withProtocol("tcp")
                 .withGroup(customGroup)
                 .build();
@@ -120,8 +120,8 @@ public class ClassificationRuleDaoIT {
     @Test
     public void verifyFetchingOnlyEnabledRules() {
         // Create a bunch of rules
-        ruleDao.save(new RuleBuilder().withName("Rule 1").withPort(1000).withGroup(staticGroup).build());
-        ruleDao.save(new RuleBuilder().withName("Rule 2").withPort(1000).withGroup(customGroup).build());
+        ruleDao.save(new RuleBuilder().withName("Rule 1").withDstPort(1000).withGroup(staticGroup).build());
+        ruleDao.save(new RuleBuilder().withName("Rule 2").withDstPort(1000).withGroup(customGroup).build());
 
         // Verify creation
         assertThat(ruleDao.findAllEnabledRules(), hasSize(2));

@@ -20,7 +20,6 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
     var MODULE_NAME = 'onms.classifications';
 
-
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
             'ngResource',
@@ -143,7 +142,13 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             };
 
             $scope.fullyDefined = function() {
-                return $scope.classificationRequest && $scope.classificationRequest.protocol && $scope.classificationRequest.port && $scope.classificationRequest.ipAddress;
+                // TODO MVR distinguish between simple and complex mode
+                var fullyDefined = $scope.classificationRequest && $scope.classificationRequest.protocol && $scope.classificationRequest.dstPort && $scope.classificationRequest.dstAddress;
+                return fullyDefined;
+            };
+
+            $scope.toggleClassificationMode = function() {
+                $scope.classificationMode = ($scope.classificationMode === 'simple' ? 'complex' : 'simple');
             };
 
             $scope.loadProtocols();

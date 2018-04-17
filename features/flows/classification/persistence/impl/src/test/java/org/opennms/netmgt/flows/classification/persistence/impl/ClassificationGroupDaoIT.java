@@ -106,8 +106,8 @@ public class ClassificationGroupDaoIT {
 
         // INSERT
         final Group group = new GroupBuilder().withName("custom")
-                .withRule(new RuleBuilder().withName("http").withPort(80).build())
-                .withRule(new RuleBuilder().withName("http").withPort(8080).build())
+                .withRule(new RuleBuilder().withName("http").withDstPort(80).build())
+                .withRule(new RuleBuilder().withName("http").withDstPort(8080).build())
                 .build();
         groupDao.save(group);
         assertThat(groupDao.countAll(), is(1));

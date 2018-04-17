@@ -71,8 +71,8 @@ public class Rule {
      * May contain wildcards, e.g. 192.168.1.*. 192.168.*.*.
      * May be null.
      */
-    @Column(name="ipaddress")
-    private String ipAddress;
+    @Column(name="dst_address")
+    private String dstAddress;
 
     /**
      * The port to map.
@@ -80,8 +80,16 @@ public class Rule {
      * 80,8980,8000-9000
      * Must always be provided.
      */
-    @Column(name="port")
-    private String port;
+    @Column(name="dst_port")
+    private String dstPort;
+
+    // see dstPort
+    @Column(name="src_port")
+    private String srcPort;
+
+    // see dstAddress
+    @Column(name="src_address")
+    private String srcAddress;
 
     /**
      * The protocol to map.
@@ -106,10 +114,10 @@ public class Rule {
         
     }
 
-    public Rule(String name, String ipAddress, String port) {
+    public Rule(String name, String dstAddress, String dstPort) {
         this.name = name;
-        this.port = port;
-        this.ipAddress = ipAddress;
+        this.dstPort = dstPort;
+        this.dstAddress = dstAddress;
     }
 
     public Rule(String name, String port) {
@@ -132,20 +140,36 @@ public class Rule {
         this.name = name;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public String getDstAddress() {
+        return dstAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setDstAddress(String dstAddress) {
+        this.dstAddress = dstAddress;
     }
 
-    public String getPort() {
-        return port;
+    public String getDstPort() {
+        return dstPort;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setDstPort(String dstPort) {
+        this.dstPort = dstPort;
+    }
+
+    public String getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(String srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    public String getSrcAddress() {
+        return srcAddress;
+    }
+
+    public void setSrcAddress(String srcAddress) {
+        this.srcAddress = srcAddress;
     }
 
     public String getProtocol() {
@@ -176,34 +200,51 @@ public class Rule {
     public String toString() {
         return MoreObjects.toStringHelper(getClass())
             .add("name", name)
-            .add("ipAddress", ipAddress)
-            .add("port", port)
+            .add("dstAddress", dstAddress)
+            .add("dstPort", dstPort)
+            .add("srcAddress", srcAddress)
+            .add("srcPort", srcPort)
             .add("protocol", protocol)
             .add("group", group)
             .toString();
     }
 
     public boolean hasProtocolDefinition() {
-        return !Strings.isNullOrEmpty(getProtocol());
+        return isDefined(getProtocol());
     }
 
-    public boolean hasIpAddressDefinition() {
-        return !Strings.isNullOrEmpty(getIpAddress());
+    public boolean hasDstAddressDefinition() {
+        return isDefined(getDstAddress());
     }
 
-    public boolean hasPortDefinition() {
-        return !Strings.isNullOrEmpty(getPort());
+    public boolean hasDstPortDefinition() {
+        return isDefined(getDstPort());
+    }
+
+    public boolean hasSrcAddressDefinition() {
+        return isDefined(getSrcAddress());
+    }
+
+    public boolean hasSrcPortDefinition() {
+        return isDefined(getSrcPort());
     }
 
     public boolean hasDefinition() {
-        return hasProtocolDefinition() || hasIpAddressDefinition() || hasPortDefinition();
+        return hasProtocolDefinition() || hasDstAddressDefinition() || hasDstPortDefinition() || hasSrcAddressDefinition() || hasSrcPortDefinition();
     }
 
+    // a protocol definition has a lesser priority (+1) than port (+2) or address definition (+3)
     public int calculatePriority() {
         int priority = 0;
-        if (hasPortDefinition()) priority++;
-        if (hasIpAddressDefinition()) priority++;
-        if (hasProtocolDefinition()) priority++;
+        if (hasSrcAddressDefinition()) priority += 3;
+        if (hasSrcPortDefinition()) priority += 2;
+        if (hasDstAddressDefinition()) priority += 3;
+        if (hasDstPortDefinition()) priority += 2;
+        if (hasProtocolDefinition()) priority += 1;
         return priority;
+    }
+
+    private static boolean isDefined(String value) {
+        return !Strings.isNullOrEmpty(value);
     }
 }

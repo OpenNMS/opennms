@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.classification.internal.validation;
 import static org.opennms.netmgt.flows.classification.internal.validation.ValidatorTestUtils.verify;
 
 import org.junit.Test;
+import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
@@ -57,9 +58,9 @@ public class RuleValidatorTest {
     public void verifySuccess() {
         final Rule rule = new RuleBuilder()
                 .withName("dummy")
-                .withIpAddress("8.8.8.8")
                 .withProtocol("tcp")
-                .withPort("80").build();
+                .withDstAddress("8.8.8.8")
+                .withDstPort("80").build();
         verify(rule);
     }
 
@@ -86,34 +87,38 @@ public class RuleValidatorTest {
 
     @Test
     public void verifyIpAddress() {
+        // Note: The errorContext can either be srcAddress or dstAddress.
+
         // Fail
-        verify(() -> RuleValidator.validateIpAddress(""), Errors.RULE_IP_ADDRESS_INVALID);
-        verify(() -> RuleValidator.validateIpAddress(null), Errors.RULE_IP_ADDRESS_INVALID);
-        verify(() -> RuleValidator.validateIpAddress("8.8"), Errors.RULE_IP_ADDRESS_INVALID);
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, ""), Errors.RULE_IP_ADDRESS_INVALID);
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, null), Errors.RULE_IP_ADDRESS_INVALID);
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "8.8"), Errors.RULE_IP_ADDRESS_INVALID);
 
         // Succeed
-        verify(() -> RuleValidator.validateIpAddress("*"));
-        verify(() -> RuleValidator.validateIpAddress("ff01::1"));
-        verify(() -> RuleValidator.validateIpAddress("127.0.0.1"));
-        verify(() -> RuleValidator.validateIpAddress("8.8.8.*"));
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "*"));
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "ff01::1"));
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "127.0.0.1"));
+        verify(() -> RuleValidator.validateIpAddress(ErrorContext.SrcAddress, "8.8.8.*"));
     }
 
     @Test
     public void verifyPort() {
+        // Note: The errorContext can either be srcPort or dstPort.
+
         // Fail
-        verify(() -> RuleValidator.validatePort("*"), Errors.RULE_PORT_NO_WILDCARD);
-        verify (() -> RuleValidator.validatePort(""), Errors.RULE_PORT_IS_REQUIRED);
-        verify (() -> RuleValidator.validatePort(null), Errors.RULE_PORT_IS_REQUIRED);
-        verify(() -> RuleValidator.validatePort("80-a"), Errors.RULE_PORT_DEFINITION_NOT_VALID);
-        verify(() -> RuleValidator.validatePort("80,a"), Errors.RULE_PORT_DEFINITION_NOT_VALID);
-        verify(() -> RuleValidator.validatePort("100-80"), Errors.RULE_PORT_RANGE_BOUNDS_NOT_VALID);
-        verify(() -> RuleValidator.validatePort("0-70000"), Errors.RULE_PORT_VALUE_NOT_IN_RANGE);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "*"), Errors.RULE_PORT_NO_WILDCARD);
+        verify (() -> RuleValidator.validatePort(ErrorContext.SrcPort, ""), Errors.RULE_PORT_IS_REQUIRED);
+        verify (() -> RuleValidator.validatePort(ErrorContext.SrcPort, null), Errors.RULE_PORT_IS_REQUIRED);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80-a"), Errors.RULE_PORT_DEFINITION_NOT_VALID);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80,a"), Errors.RULE_PORT_DEFINITION_NOT_VALID);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "100-80"), Errors.RULE_PORT_RANGE_BOUNDS_NOT_VALID);
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "0-70000"), Errors.RULE_PORT_VALUE_NOT_IN_RANGE);
 
         // Succeed
-        verify(() -> RuleValidator.validatePort("80"));
-        verify(() -> RuleValidator.validatePort("80,8080"));
-        verify(() -> RuleValidator.validatePort("80-8080"));
-        verify(() -> RuleValidator.validatePort(String.format("%d-%d", Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE)));
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80"));
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80,8080"));
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, "80-8080"));
+        verify(() -> RuleValidator.validatePort(ErrorContext.SrcPort, String.format("%d-%d", Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE)));
     }
 
     @Test

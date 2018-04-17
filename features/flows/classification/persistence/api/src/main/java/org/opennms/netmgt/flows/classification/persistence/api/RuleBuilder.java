@@ -28,8 +28,11 @@
 
 package org.opennms.netmgt.flows.classification.persistence.api;
 
+import java.util.Objects;
+
 import com.google.common.base.Strings;
 
+// TODO MVR add tests for srcAddress and srcPort as well
 public class RuleBuilder {
 
     private Rule rule = new Rule();
@@ -39,18 +42,34 @@ public class RuleBuilder {
         return this;
     }
 
-    public RuleBuilder withIpAddress(String ipAddress) {
-        rule.setIpAddress(ipAddress);
+    public RuleBuilder withDstAddress(String dstAddress) {
+        rule.setDstAddress(dstAddress);
         return this;
     }
 
-    public RuleBuilder withPort(String port) {
-        rule.setPort(port);
+    public RuleBuilder withDstPort(String dstPort) {
+        rule.setDstPort(dstPort);
         return this;
     }
 
-    public RuleBuilder withPort(int port) {
-        rule.setPort("" + port);
+    public RuleBuilder withDstPort(int dstPort) {
+        rule.setDstPort("" + dstPort);
+        return this;
+    }
+
+
+    public RuleBuilder withSrcAddress(String srcAddress) {
+        rule.setSrcAddress(srcAddress);
+        return this;
+    }
+
+    public RuleBuilder withSrcPort(String srcPort) {
+        rule.setSrcPort(srcPort);
+        return this;
+    }
+
+    public RuleBuilder withSrcPort(int srcPort) {
+        rule.setSrcPort("" + srcPort);
         return this;
     }
 
@@ -60,7 +79,7 @@ public class RuleBuilder {
     }
 
     public RuleBuilder withProtocol(Protocol protocol) {
-        rule.setProtocol(protocol.getKeyword().toLowerCase());
+        rule.setProtocol(protocol.getKeyword());
         return this;
     }
 
@@ -69,9 +88,23 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder fromRule(Rule rule) {
+        Objects.requireNonNull(rule);
+        withName(rule.getName());
+        withSrcAddress(rule.getSrcAddress());
+        withSrcPort(rule.getSrcPort());
+        withDstAddress(rule.getDstAddress());
+        withDstPort(rule.getDstPort());
+        withProtocol(rule.getProtocol());
+        if (rule.getGroup() != null) {
+            withGroup(rule.getGroup());
+        }
+        return this;
+    }
+
     public Rule build() {
         if (Strings.isNullOrEmpty(rule.getName())) {
-            throw new IllegalStateException("Cannot build rule, because required field 'name' is null or empty");
+            throw new IllegalStateException("Cannot build rule. Field 'name' must not be null or empty.");
         }
         return rule;
     }

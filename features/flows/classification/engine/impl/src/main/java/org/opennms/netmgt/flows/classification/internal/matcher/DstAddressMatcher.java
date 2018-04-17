@@ -26,51 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.error;
+package org.opennms.netmgt.flows.classification.internal.matcher;
 
-import java.util.Objects;
-
-import com.google.common.base.MoreObjects;
-
-public class ErrorTemplate {
-
-    // A unique error key
-    private final String key;
-
-    // The error message. May use Message Format syntax.
-    private final String message;
-
-    public ErrorTemplate(String errorKey, String errorMessage) {
-        this.key = errorKey;
-        this.message = Objects.requireNonNull(errorMessage);
-    }
-    public String getKey() {
-        return key;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final ErrorTemplate that = (ErrorTemplate) o;
-        return Objects.equals(key, that.key)
-                && Objects.equals(message, that.message);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key, message);
-    }
-
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("key", key)
-                .add("message", message)
-                .toString();
+public class DstAddressMatcher extends IpMatcher {
+    public DstAddressMatcher(String input) {
+        super(input, (request) -> request.getDstAddress());
     }
 }
