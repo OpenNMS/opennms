@@ -46,7 +46,7 @@ public abstract class DBTools {
      * 
      * @see #constructUrl
      */
-    private static final String JDBC_HOST = "localhost:5432";
+    private static final String OPENNMS_JDBC_HOSTNAME = "OPENNMS_JDBC_HOSTNAME";
 
     /**
      * Minimal port range
@@ -82,12 +82,12 @@ public abstract class DBTools {
     public static final String DEFAULT_DATABASE_PASSWORD = "";
 
     /**
-     * Default vendor protocol, like jdbc:sybase:Tds:
+     * Default vendor protocol, like jdbc:postgresql
      */
-    public static final String DEFAULT_URL = "jdbc:postgresql://" + JDBC_HOST + "/opennms";
+    public static final String DEFAULT_URL = "jdbc:postgresql://" + OPENNMS_JDBC_HOSTNAME + "/opennms";
 
     // Pattern for the JDBC_HOST
-    private static final Pattern _pattern = Pattern.compile(JDBC_HOST);
+    private static final Pattern _pattern = Pattern.compile(OPENNMS_JDBC_HOSTNAME);
 
     /**
      * Constructs a JDBC url given a set of fragments. The resulting Url will
@@ -97,13 +97,13 @@ public abstract class DBTools {
      * @param hostname_
      *            The hostname where the database server is
      * @param url_
-     *            (for example jdbc:sybase:Tds:@{link #JDBC_HOST
-     *            JDBC_HOST}:4100/tempdb). The JDBC_HOST is replaced by the real
+     *            (for example jdbc:sybase:Tds:@{link #OPENNMS_JDBC_HOSTNAME
+     *            OPENNMS_JDBC_HOSTNAME}:4100/tempdb). The OPENNMS_JDBC_HOSTNAME is replaced by the real
      *            hostname
      * @throws java.lang.NullPointerException
      *             If one of the arguments is null
      * @throws java.lang.IllegalArgumentException
-     *             If the JDBC_HOST is not part of the JDBC url
+     *             If the OPENNMS_JDBC_HOSTNAME is not part of the JDBC url
      * @return a {@link java.lang.String} object.
      */
     public static String constructUrl(String url_, String hostname_) throws IllegalArgumentException, NullPointerException {
