@@ -85,6 +85,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     /** Constant <code>RESOLUTION_TYPE=2</code> */
     public static final int RESOLUTION_TYPE = 2;
 
+    /** Constant <code>PROBLEM_WITHOUT_RESOLUTION_TYPE=3</code> */
+    public static final int PROBLEM_WITHOUT_RESOLUTION_TYPE = 3;
+
     /** identifier field */
     private Integer m_id;
 

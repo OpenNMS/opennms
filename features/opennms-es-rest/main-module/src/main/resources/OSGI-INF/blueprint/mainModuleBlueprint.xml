@@ -30,6 +30,7 @@
       <cm:property name="archiveOldAlarmValues" value="true" />
       <cm:property name="archiveNewAlarmValues" value="true" />
       <cm:property name="archiveAssetData" value="true" />
+      <cm:property name="groupOidParameters" value="false" />
       <cm:property name="timeout" value="3000" /> <!-- 3 second timeout for Elasticsearch operations -->
       <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
       <cm:property name="socketTimeout" value="3000" /> <!-- 3 second timeout for Elasticsearch socket reads -->
@@ -93,6 +94,7 @@
     <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
     <property name="archiveOldAlarmValues" value="${archiveOldAlarmValues}" />
     <property name="archiveNewAlarmValues" value="${archiveNewAlarmValues}" />
+    <property name="groupOidParameters" value="${groupOidParameters}" />
   </bean>
 
   <bean id="indexNameFunction" class="org.opennms.plugins.elasticsearch.rest.IndexNameFunction">

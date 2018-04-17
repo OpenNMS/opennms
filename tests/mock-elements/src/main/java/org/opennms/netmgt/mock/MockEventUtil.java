@@ -357,7 +357,20 @@ public abstract class MockEventUtil {
         event.setAlarmData(alarmData);
         return event;
     }
-    
+
+    public static EventBuilder createNodeUpEventBuilder(String source, OnmsNode node) {
+        EventBuilder event = createNodeEventBuilder(source, EventConstants.NODE_UP_EVENT_UEI, node);
+        event.setSeverity(OnmsSeverity.NORMAL.getLabel());
+        // <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false" />
+        AlarmData alarmData = new AlarmData();
+        alarmData.setReductionKey("%uei%:%dpname%:%nodeid%");
+        alarmData.setAlarmType(2);
+        alarmData.setClearKey("uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%");
+        alarmData.setAutoClean(false);
+        event.setAlarmData(alarmData);
+        return event;
+    }
+
     /**
      * <p>createNodeUpEvent</p>
      *
@@ -679,4 +692,5 @@ public abstract class MockEventUtil {
             printEvent(prefix, event);
         }
     }
+
 }

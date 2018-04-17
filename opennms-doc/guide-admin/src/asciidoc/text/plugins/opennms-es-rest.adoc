@@ -38,6 +38,7 @@ With the following properties (defaults shown will be used if file is not presen
 |`archiveAssetData`         | true                  | optional | If true The following attributes representing useful node asset fields from the node asset table are included in archived events and alarms. These are included only where the values are not null or empty strings in the table. 
 
 (asset-latitude,asset-longitude,asset-region,asset-building,asset-floor,asset-room,asset-rack,asset-slot,asset-port,asset-category,asset-displaycategory,asset-notifycategory,asset-pollercategory,asset-thresholdcategory,asset-managedobjecttype,asset-managedobjectinstance,asset-manufacturer,asset-vendor,asset-modelnumber,parent-nodelabel,parent-nodeid,parent-foreignsource,parent-foreignid)
+|`groupOidParameters`       | false                 | optional | If `true` all oid from the event parameters are stored in a single array `p_oids` instead of a flattened structue.
 |`logAllEvents`             | false                 | optional | If changed to true, then archive all events even if they have not been persisted in the _{opennms-product-name}_ database.
 |`retries`                  | 0                     | optional | The number of times to retry an _Elasticsearch_ operation that fails completely. You can increase `retries` to avoid losing forwarded events and alarms when _Elasticsearch_ is down or unreachable.
 |`timeout`                  | 5000                  | optional | The interval between subsequent retries when a `retries` value greater than 1 is being used.

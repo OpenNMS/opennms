@@ -61,6 +61,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 
 	public static final String EVENT_SOURCE_NAME = "AlarmChangeNotifier";
 
+	protected static final String TYPE_JSON = "json";
+	protected static final String ENCODING_TEXT = "text";
 
 	EventProxy eventProxy = null;
 
@@ -105,8 +107,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							new EventBuilder( AlarmChangeEventConstants.ALARM_DELETED_EVENT, EVENT_SOURCE_NAME));
 
 					//copy in all values as json in params
-					eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-					eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+					eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 					sendEvent(eb.getEvent());
 				}
@@ -121,8 +123,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							new EventBuilder( AlarmChangeEventConstants.ALARM_CREATED_EVENT, EVENT_SOURCE_NAME));
 
 					//copy in all values as json in params
-					eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-					eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+					eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+					eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 					// set initial severity to new alarm severity
 					if (newJsonObject.get("severity")!=null) {
@@ -185,8 +187,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							eb.addParam(AlarmChangeEventConstants.OLDSEVERITY_PARAM,oldseverity);
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 						}
@@ -202,8 +204,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 									new EventBuilder(AlarmChangeEventConstants.ALARM_ACKNOWLEDGED_EVENT, EVENT_SOURCE_NAME));
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 
@@ -217,8 +219,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 										new EventBuilder(AlarmChangeEventConstants.ALARM_UNACKNOWLEDGED_EVENT, EVENT_SOURCE_NAME));
 
 								//copy in all values as json in params
-								eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-								eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+								eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+								eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 								sendEvent(eb.getEvent());
 							}
@@ -236,8 +238,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 									new EventBuilder(AlarmChangeEventConstants.ALARM_SUPPRESSED_EVENT, EVENT_SOURCE_NAME));
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 
@@ -253,8 +255,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 												EVENT_SOURCE_NAME));
 
 								//copy in all values as json in params
-								eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-								eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+								eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+								eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 								sendEvent(eb.getEvent());
 							}
@@ -284,8 +286,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							eb.addParam(AlarmChangeEventConstants.TTICKETSTATE_PARAM,newtticketstate);
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 						}
@@ -302,8 +304,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 							eb.addParam(AlarmChangeEventConstants.STICKYMEMO_PARAM,newstickymemo);
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 						}
@@ -332,8 +334,8 @@ public class AlarmChangeNotificationClient implements NotificationClient {
 									new EventBuilder(AlarmChangeEventConstants.ALARM_CHANGED_EVENT, EVENT_SOURCE_NAME));
 
 							//copy in all values as json in params
-							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString());
-							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString());
+							eb.addParam(AlarmChangeEventConstants.OLD_ALARM_VALUES_PARAM,oldJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
+							eb.addParam(AlarmChangeEventConstants.NEW_ALARM_VALUES_PARAM,newJsonObject.toString(), TYPE_JSON, ENCODING_TEXT);
 
 							sendEvent(eb.getEvent());
 						}

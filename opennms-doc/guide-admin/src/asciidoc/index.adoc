@@ -327,3 +327,7 @@ include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
 [[ga-telemetryd-listener]]
 === Listener Reference
 include::text/telemetryd/listener/udp-listener.adoc[]
+
+[[ga-kafka-producer]]
+== Kafka Producer
+include::text/kafka-producer/kafka-producer.adoc[]

@@ -258,6 +258,7 @@
             <feature>opennms-icmp-best</feature>
             <feature>opennms-icmp-commands</feature>
             <feature>opennms-javamail</feature>
+            <feature>opennms-kafka-producer</feature>
             <feature>opennms-model</feature>
             <feature>opennms-poller-api</feature>
             <feature>opennms-poller-shell</feature>
@@ -790,6 +791,12 @@
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>bundle-refresher</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.kafka</groupId>
+      <artifactId>org.opennms.features.kafka.producer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

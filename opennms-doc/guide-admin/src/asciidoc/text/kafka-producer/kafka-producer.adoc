@@ -1,0 +1,220 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+=== Overview
+
+The _Kafka Producer feature_ allows events, alarms and nodes from _{opennms-product-name}_ to be forwarded to _Kafka_.
+
+These objects are stored in different topics and the payloads are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+See `opennms-kafka-producer.proto` in the corresponding source distribution for the model definitions.
+
+==== Events
+
+The _Kafka Producer_ listens for all events on the event bus and forwards these to a _Kafka_ topic.
+The records are keyed by event _UEI_ and contain a _GPB_ encoded model of the event.
+
+By default, all events are forwarded to a topic named `events`.
+
+The name of the topic used can be configured, and an optional filtering expression can be set to help control which events are sent to the topic.
+
+==== Alarms
+
+The _Kafka Producer_ listens for changes made to the current set of alarms and forwards the resulting alarms to a _Kafka_ topic.
+The records are keyed by alarm reduction key and contain a _GPB_ encoded model of the alarm.
+When an alarm is deleted, a _null_ value is sent with the corresponding reduction key.
+Publishing records in this fashion allows the topic to be used as a link:https://docs.confluent.io/current/streams/concepts.html#ktable[KTable].
+The _Kafka Producer_ will also perform periodic synchronization tasks to ensure that the contents of the Kafka topic reflect the current state of alarms in the _{opennms-product-name}_ database.
+
+By default, all alarms (and subsequent updates) are forwarded to a topic named `alarms`.
+
+The name of the topic used can be configured, and an optional filtering expression can be set to help control which alarms are sent to the topic.
+
+==== Nodes
+
+If an event or alarm being forwarded reference a node, then the corresponding node is also forwarded.
+The records are keyed by "node criteria" (see bellow) and contain a _GPB_ encoded model of the alarm.
+A caching mechanism is in place to help avoid forwarding nodes that have been successfully forwarded, and have not changed since.
+
+The name of the topic used can be configured.
+
+IMPORTANT: The node topic is not intended to include all of the nodes in the system, it only includes records for nodes that relate to events or alarms that have been forwarded.
+
+===== Node Criteria
+
+The _node criteria_ is a string representation of the unique identifier for a given node.
+If the node is associated with a _foreign source (fs)_  and _foreign id (fid)_, the node criteria resulting node criteria will be the name of the _foreign source_, followed by a colon (:) and then the foreign id i.e. (fs:fid).
+If the node is not associated with both a _foreign source_ and _foreign id_, then the node id (database id) will be used.
+
+=== Enabling the Kafka Producer
+
+The _Kafka Producer_ is disabled by default and can be enabled as follows.
+
+First, login to the _Karaf_ shell of your _{opennms-product-name}_ instance and configure the _Kafka_ client settings to point to your _Kafka_ broker.
+See link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs] for a complete list of available options.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer.client
+admin@opennms()> config:property-set bootstrap.servers 127.0.0.1:9092
+admin@opennms()> config:update
+----
+
+Next, install the `opennms-kafka-producer` feature from that same shell using:
+
+[source]
+----
+admin@opennms()> feature:install opennms-kafka-producer
+----
+
+In order to ensure that the feature continues to be installed as subsequent restarts, add `opennms-kafka-producer` to the `featuresBoot` property in the `${OPENNMS_HOME}/etc/org.apache.karaf.features.cfg`.
+
+=== Configuring the Kafka Producer
+
+The _Kafka Producer_ exposes the following options to help fine tune its behavior.
+
+[options="header, autowidth"]
+|===
+| Name                    | Default Value        | Description
+| `eventTopic`            | `events`             | Name of the topic used for events.
+                                                   Set this to an empty string to disable forwarding events.
+| `alarmTopic`            | `alarms`             | Name of the topic used for alarms.
+                                                   Set this to an empty string to disable forwarding alarms.
+| `nodeTopic`             | `nodes`              | Name of the topic used for nodes.
+                                                   Set this to an empty string to disable forwarding nodes.
+| `eventFilter`           | `-`                  | A _Spring SpEL expression_ (see bellow) used to filter events.
+                                                   Set this to an empty string to disable filtering, and forward all events.
+| `alarmFilter`           | `-`                  | A _Spring SpEL expression_ (see bellow) used to filter alarms.
+                                                   Set this to an empty string to disable filtering, and forward all alarms.
+| `nodeRefreshTimeoutMs`  | `300000` (5 minutes) | Number of milliseconds to wait before looking up a node in the database again.
+                                                   Decrease this value to improve accuracy at the cost of additional database look ups.
+| `alarmSyncIntervalMs`   | `300000` (5 minutes) | Number of milliseconds at which the contents of the alarm topic will be synchronized with the local database.
+                                                   Decrease this to improve accuracy at the cost of additional database look ups.
+                                                   Set this value to 0 to disable alarm synchronization.
+|===
+
+==== Configuring Filtering
+
+Filtering can be used to selectively forward events and/or alarms to the _Kafka_ topics.
+
+Filtering is performed using a link:https://docs.spring.io/spring/docs/4.2.9.RELEASE/spring-framework-reference/html/expressions.html[Spring SpEL expression] which is evaluated against each object to determine if it should be forwarded.
+The expression must return a boolean value i.e. `true` or `false`.
+
+===== Enabling Event Filtering
+
+To enable event filtering, set the value of the `eventFilter` property to a valid _SpEL expression_.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set eventFilter 'getUei().equals("uei.opennms.org/internal/discovery/newSuspect")'
+admin@opennms()> config:update
+----
+
+In the example above, the filter is configured such that only events with the given _UEI_ are forwarded.
+Consult the source code of the `org.opennms.netmgt.xml.event.OnmsEvent` class in your distribution for a complete list of available properties.
+
+===== Enabling Alarm Filtering
+
+To enable alarm filtering, set the value of the `alarmFilter` property to a valid _SpEL expression_.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set alarmFilter 'getTTicketId() != null'
+admin@opennms()> config:update
+----
+
+In the example above, the filter is configured such that only alarms that are associated with a _ticket id_ are forwarded.
+Consult the source code of the `org.opennms.netmgt.model.OnmsAlarm` class in your distribution for a complete list of available properties.
+
+==== Configuring Topic Names
+
+By default three topics are created i.e. `events`, `alarms`, `nodes`.
+To change these, you can use:
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.kafka.producer
+admin@opennms()> config:property-set eventTopic ""
+admin@opennms()> config:property-set nodeTopic "opennms-nodes"
+admin@opennms()> config:update
+----
+
+In the example above, we disable event forwarding by setting an empty topic name and change the node topic name to `opennms-nodes`.
+
+=== Shell Commands
+
+The _Kafka Producer_ also provides a series of shell commands to help administering and debugging the service.
+
+==== kafka-producer:list-alarms
+
+The `list-alarms` command can be used to enumerate the reduction keys and show the associated event labels for the alarms that are present in the topic.
+This command leverages functionality used by the alarm synchronization process, and as a result this must be enabled in for this command to function.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> kafka-producer:list-alarms
+uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
+        Alarm: Generic Trigger
+----
+
+==== kafka-producer:sync-alarms
+
+The `sync-alarms` command can be used to manually trigger the alarm synchronization process.
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms> kafka-producer:sync-alarms
+Performing synchronization of alarms from the database with those in the ktable.
+Executed 1 updates in 47ms.
+
+Number of reduction keys in ktable: 4
+Number of reduction keys in the db: 4 (4 alarms total)
+Reduction keys added to the ktable: (None)
+Reduction keys deleted from the ktable: (None)
+Reduction keys updated in the ktable:
+        uei.opennms.org/nodes/nodeLostService::1:127.0.0.1:Minion-RPC
+----
+
+==== kafka-producer:evaluate-filter
+
+The `evaluate-filter` command can be used to test arbitrary _SpEL_ filtering expressions against alarms or events.
+
+===== Evaluating filters against alarms
+
+To test a filter against an alarm, specify the database id of the alarm and the expression to test:
+
+[source]
+----
+admin@opennms> kafka-producer:evaluate-filter --alarm-id 57 "getReductionKey().contains('n33')"
+SPEL Expression: getReductionKey().contains('n33')
+Alarm with ID 57 has reduction key: uei.opennms.org/alarms/trigger:n33:0.0.0.0:HTTPS_POOLs
+Result: true
+----
+
+===== Evaluating filters against events
+
+To test a filter against an event, specify the _UEI_ of the event and the expression to test:
+
+[source]
+----
+admin@opennms> kafka-producer:evaluate-filter --event-uei uei.opennms.org/alarms/trigger "getUei().contains('alarm')"
+SPEL Expression: getUei().contains('alarm')
+Event has UEI: uei.opennms.org/alarms/trigger
+Result: true
+----
+
+In this case, a new event will be created with the given _UEI_, and the filter will be evaluated against this new event object.
+At this time, existing events cannot be referenced by this tool, so this functionality only serves to help make sure the expressions are syntactically valid.

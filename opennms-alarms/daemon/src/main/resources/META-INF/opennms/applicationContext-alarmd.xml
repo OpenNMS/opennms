@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
+  <context:annotation-config />
   <tx:annotation-driven />
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" >
@@ -28,5 +31,14 @@
   <onmsgi:list id="northbounderList" interface="org.opennms.netmgt.alarmd.api.Northbounder">
     <onmsgi:listener ref="daemon" bind-method="onNorthbounderRegistered" unbind-method="onNorthbounderUnregistered" />
   </onmsgi:list>
+
+  <bean id="alarmLifecycleListenerManager" class="org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager" />
+
+  <bean id="alarmLifecycleListenerManagerListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
+    <property name="annotatedListener" ref="alarmLifecycleListenerManager" />
+    <property name="eventSubscriptionService" ref="eventSubscriptionService" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService" ref="alarmLifecycleListenerManager"/>
 
 </beans>
