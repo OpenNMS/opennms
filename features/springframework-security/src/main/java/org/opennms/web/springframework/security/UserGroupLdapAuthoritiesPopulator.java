@@ -104,6 +104,9 @@ public class UserGroupLdapAuthoritiesPopulator extends DefaultLdapAuthoritiesPop
 				this.groupRoleAttribute
 		);
 
+		// A Role mapping with an empty name is always applied to all users
+		userRoles.add("");
+
 		for(String group : userRoles) {
 			final List<String> rolesForGroup = this.groupToRoleMap.get(group);
 			LOG.debug("Checking {} for an associated role", group);

@@ -66,11 +66,11 @@
             <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
             <version>${springVersion}</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.apache.servicemix.bundles</groupId>-->
-            <!--<artifactId>org.apache.servicemix.bundles.spring-asm</artifactId>-->
-            <!--<version>${springVersion}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-tx</artifactId>
+            <version>${springVersion}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
@@ -89,11 +89,6 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
-            <version>${springVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
             <version>${springVersion}</version>
         </dependency>
         <dependency>
