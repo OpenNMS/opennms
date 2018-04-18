@@ -63,11 +63,16 @@
     String grafanaProtocol = System.getProperty("org.opennms.grafanaBox.protocol", "http");
     String grafanaHostname = System.getProperty("org.opennms.grafanaBox.hostname", "localhost");
     String grafanaTag = System.getProperty("org.opennms.grafanaBox.tag", "");
+    String grafanaBasePath = System.getProperty("org.opennms.grafanaBox.basePath", "");
     int grafanaPort = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.port", "3000"));
     int grafanaConnectionTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.connectionTimeout", "500"));
     int grafanaSoTimeout = Integer.parseInt(System.getProperty("org.opennms.grafanaBox.soTimeout", "500"));
     String errorMessage = null;
     String responseString = null;
+
+    if (!grafanaBasePath.startsWith("/")) {
+        grafanaBasePath = "/" + grafanaBasePath;
+    }
 
     if (!"".equals(grafanaApiKey)
             && !"".equals(grafanaHostname)
@@ -77,13 +82,12 @@
             RequestConfig requestConfig = RequestConfig.custom()
                     .setConnectTimeout(grafanaConnectionTimeout)
                     .setSocketTimeout(grafanaSoTimeout)
-                    .build()
-                    ;
+                    .build();
             URI uri = new URIBuilder()
                     .setScheme(grafanaProtocol)
                     .setHost(grafanaHostname)
                     .setPort(grafanaPort)
-                    .setPath("/api/search/")
+                    .setPath(grafanaBasePath + "/api/search/")
                     .build();
 
             /**
@@ -137,7 +141,7 @@
                 }
                 if (showDashboard) {
                     if (limit < 1 || count++ < limit) {
-                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
+                        $('#dashboardlist').append('<a href="<%=grafanaProtocol%>://<%=grafanaHostname%>:<%=grafanaPort%><%=grafanaBasePath%>/dashboard/' + val['uri'] + '"><span class="glyphicon glyphicon-signal" aria-hidden="true"></span>&nbsp;' + val['title'] + "</a><br/>");
                     }
                 }
             };
