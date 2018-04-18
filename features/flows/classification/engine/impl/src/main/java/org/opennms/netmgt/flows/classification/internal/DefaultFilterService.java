@@ -26,28 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-// The more concrete a rule is, the higher the priority should be.
-// However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
-public class RuleComparator implements Comparator<RuleDefinition> {
+import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.filter.api.FilterParseException;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.exception.InvalidFilterException;
+
+public class DefaultFilterService implements FilterService {
+
+    private final FilterDao filterDao;
+
+    public DefaultFilterService(FilterDao filterDao) {
+        this.filterDao = Objects.requireNonNull(filterDao);
+    }
+
     @Override
-    public int compare(RuleDefinition r1, RuleDefinition r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
-
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroupPriority();
-        int groupPriority2 = r2.getGroupPriority();
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
-
-        // If group priority is identical, sort by rule priority (highest priority first)
-        if (result == 0) {
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
+    public void validate(final String filterExpression) throws InvalidFilterException {
+        try {
+            this.filterDao.validateRule(filterExpression);
+        } catch (FilterParseException ex) {
+            throw new InvalidFilterException(filterExpression, ex);
         }
-        return result;
+    }
+
+    @Override
+    public boolean matches(final String address, final String filterExpression) {
+        return filterDao.isValid(address, filterExpression);
     }
 }

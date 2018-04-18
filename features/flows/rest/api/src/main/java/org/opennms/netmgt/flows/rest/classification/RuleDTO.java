@@ -43,9 +43,8 @@ public class RuleDTO {
     private String dstPort;
     private String srcAddress;
     private String srcPort;
+    private String exporterFilter;
 
-    // TODO MVR optional filter capability
-    private List<String> filter = new ArrayList<>();
     private GroupDTO group;
     private Integer position;
     private List<String> protocols = new ArrayList<>();
@@ -126,6 +125,14 @@ public class RuleDTO {
         return position;
     }
 
+    public String getExporterFilter() {
+        return exporterFilter;
+    }
+
+    public void setExporterFilter(String exporterFilter) {
+        this.exporterFilter = exporterFilter;
+    }
+
     public void setGroup(GroupDTO group) {
         this.group = group;
     }
@@ -146,12 +153,13 @@ public class RuleDTO {
                 && Objects.equals(srcAddress, that.srcAddress)
                 && Objects.equals(srcPort, that.srcPort)
                 && Objects.equals(protocols, that.protocols)
+                && Objects.equals(exporterFilter, that.exporterFilter)
                 && Objects.equals(group, that.group)
                 && Objects.equals(position, that.position);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, group, position);
+        return Objects.hash(id, name, dstAddress, dstPort, srcAddress, srcPort, protocols, exporterFilter, group, position);
     }
 }

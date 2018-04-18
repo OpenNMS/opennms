@@ -40,6 +40,7 @@ public class ClassificationRequest {
     private String dstAddress;
     private int srcPort;
     private String srcAddress;
+    private String exporterAddress;
 
     public ClassificationRequest(String location, int dstPort, String dstAddress, Protocol protocol) {
         this.location = location;
@@ -100,6 +101,14 @@ public class ClassificationRequest {
         this.srcAddress = srcAddress;
     }
 
+    public String getExporterAddress() {
+        return exporterAddress;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.exporterAddress = exporterAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -110,12 +119,13 @@ public class ClassificationRequest {
                 && Objects.equals(dstPort, that.dstPort)
                 && Objects.equals(dstAddress, that.dstAddress)
                 && Objects.equals(srcPort, that.srcPort)
-                && Objects.equals(srcAddress, that.srcAddress);
+                && Objects.equals(srcAddress, that.srcAddress)
+                && Objects.equals(exporterAddress, that.exporterAddress);
         return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, protocol, dstPort, dstAddress, srcPort, srcAddress);
+        return Objects.hash(location, protocol, dstPort, dstAddress, srcPort, srcAddress, exporterAddress);
     }
 }

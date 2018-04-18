@@ -33,42 +33,45 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.DstPortMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.FilterMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
 public class CombinedClassifier implements Classifier {
 
     private final List<Matcher> matchers;
-    private final String application;
-    private final Rule rule;
+    private final RuleDefinition ruleDefinition;
     private final RuleComparator ruleComparator = new RuleComparator();
 
-    public CombinedClassifier(Rule rule) {
-        Objects.requireNonNull(rule);
+    public CombinedClassifier(RuleDefinition ruleDefinition, FilterService filterService) {
+        Objects.requireNonNull(ruleDefinition);
         final List<Matcher> matchers = new ArrayList<>();
-        if (rule.hasProtocolDefinition()) {
-            matchers.add(new ProtocolMatcher(rule.getProtocol()));
+        if (ruleDefinition.hasProtocolDefinition()) {
+            matchers.add(new ProtocolMatcher(ruleDefinition.getProtocol()));
         }
-        if (rule.hasSrcPortDefinition()) {
-            matchers.add(new SrcPortMatcher(rule.getSrcPort()));
+        if (ruleDefinition.hasSrcPortDefinition()) {
+            matchers.add(new SrcPortMatcher(ruleDefinition.getSrcPort()));
         }
-        if (rule.hasSrcAddressDefinition()) {
-            matchers.add(new SrcAddressMatcher(rule.getSrcAddress()));
+        if (ruleDefinition.hasSrcAddressDefinition()) {
+            matchers.add(new SrcAddressMatcher(ruleDefinition.getSrcAddress()));
         }
-        if (rule.hasDstAddressDefinition()) {
-            matchers.add(new DstAddressMatcher(rule.getDstAddress()));
+        if (ruleDefinition.hasDstAddressDefinition()) {
+            matchers.add(new DstAddressMatcher(ruleDefinition.getDstAddress()));
         }
-        if (rule.hasDstPortDefinition()) {
-            matchers.add(new DstPortMatcher(rule.getDstPort()));
+        if (ruleDefinition.hasDstPortDefinition()) {
+            matchers.add(new DstPortMatcher(ruleDefinition.getDstPort()));
         }
-        this.rule = rule;
-        this.application = rule.getName();
+        if (ruleDefinition.hasExportFilterDefinition()) {
+            matchers.add(new FilterMatcher(ruleDefinition.getExporterFilter(), filterService));
+        }
+        this.ruleDefinition = ruleDefinition;
         this.matchers = matchers;
     }
 
@@ -81,12 +84,12 @@ public class CombinedClassifier implements Classifier {
                 return null;
             }
         }
-        return application;
+        return ruleDefinition.getName();
     }
 
     @Override
     public int compareTo(Classifier o) {
-        return ruleComparator.compare(this.rule, ((CombinedClassifier) o).rule);
+        return ruleComparator.compare(this.ruleDefinition, ((CombinedClassifier) o).ruleDefinition);
     }
 
     @Override
@@ -94,21 +97,11 @@ public class CombinedClassifier implements Classifier {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final CombinedClassifier that = (CombinedClassifier) o;
-        return Objects.equals(rule.getName(), that.rule.getName())
-                && Objects.equals(rule.getDstAddress(), that.rule.getDstAddress())
-                && Objects.equals(rule.getDstPort(), that.rule.getDstPort())
-                && Objects.equals(rule.getSrcAddress(), that.rule.getSrcAddress())
-                && Objects.equals(rule.getSrcPort(), that.rule.getSrcPort())
-                && Objects.equals(rule.getProtocol(), that.rule.getProtocol())
-                && Objects.equals(rule.getGroup(), that.rule.getGroup())
-                && Objects.equals(rule.getPosition(), that.rule.getPosition());
+        return Objects.equals(ruleDefinition, that.ruleDefinition);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                rule.getName(), rule.getDstAddress(), rule.getDstPort(), rule.getSrcAddress(),
-                rule.getSrcPort(), rule.getProtocol(), rule.getGroup(), rule.getPosition()
-        );
+        return Objects.hash(ruleDefinition);
     }
 }

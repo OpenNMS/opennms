@@ -39,7 +39,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
 
 /**
  * A rule defines how a flow should be mapped.
@@ -49,7 +48,7 @@ import com.google.common.base.Strings;
  */
 @Table(name="classification_rules")
 @Entity
-public class Rule {
+public class Rule implements RuleDefinition {
 
     public static final int MIN_PORT_VALUE = 0;
     public static final int MAX_PORT_VALUE = 65536;
@@ -90,6 +89,9 @@ public class Rule {
     // see dstAddress
     @Column(name="src_address")
     private String srcAddress;
+
+    @Column(name="exporter_filter")
+    private String exporterFilter;
 
     /**
      * The protocol to map.
@@ -132,6 +134,7 @@ public class Rule {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -140,6 +143,7 @@ public class Rule {
         this.name = name;
     }
 
+    @Override
     public String getDstAddress() {
         return dstAddress;
     }
@@ -148,6 +152,7 @@ public class Rule {
         this.dstAddress = dstAddress;
     }
 
+    @Override
     public String getDstPort() {
         return dstPort;
     }
@@ -156,6 +161,7 @@ public class Rule {
         this.dstPort = dstPort;
     }
 
+    @Override
     public String getSrcPort() {
         return srcPort;
     }
@@ -164,6 +170,7 @@ public class Rule {
         this.srcPort = srcPort;
     }
 
+    @Override
     public String getSrcAddress() {
         return srcAddress;
     }
@@ -172,6 +179,7 @@ public class Rule {
         this.srcAddress = srcAddress;
     }
 
+    @Override
     public String getProtocol() {
         return protocol;
     }
@@ -188,8 +196,22 @@ public class Rule {
         return position;
     }
 
+    @Override
+    public String getExporterFilter() {
+        return exporterFilter;
+    }
+
+    public void setExporterFilter(String exporterFilter) {
+        this.exporterFilter = exporterFilter;
+    }
+
     public Group getGroup() {
         return group;
+    }
+
+    @Override
+    public int getGroupPriority() {
+        return group == null ? 0 : group.getPriority();
     }
 
     public void setGroup(Group group) {
@@ -204,47 +226,9 @@ public class Rule {
             .add("dstPort", dstPort)
             .add("srcAddress", srcAddress)
             .add("srcPort", srcPort)
+            .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
             .add("group", group)
             .toString();
-    }
-
-    public boolean hasProtocolDefinition() {
-        return isDefined(getProtocol());
-    }
-
-    public boolean hasDstAddressDefinition() {
-        return isDefined(getDstAddress());
-    }
-
-    public boolean hasDstPortDefinition() {
-        return isDefined(getDstPort());
-    }
-
-    public boolean hasSrcAddressDefinition() {
-        return isDefined(getSrcAddress());
-    }
-
-    public boolean hasSrcPortDefinition() {
-        return isDefined(getSrcPort());
-    }
-
-    public boolean hasDefinition() {
-        return hasProtocolDefinition() || hasDstAddressDefinition() || hasDstPortDefinition() || hasSrcAddressDefinition() || hasSrcPortDefinition();
-    }
-
-    // a protocol definition has a lesser priority (+1) than port (+2) or address definition (+3)
-    public int calculatePriority() {
-        int priority = 0;
-        if (hasSrcAddressDefinition()) priority += 3;
-        if (hasSrcPortDefinition()) priority += 2;
-        if (hasDstAddressDefinition()) priority += 3;
-        if (hasDstPortDefinition()) priority += 2;
-        if (hasProtocolDefinition()) priority += 1;
-        return priority;
-    }
-
-    private static boolean isDefined(String value) {
-        return !Strings.isNullOrEmpty(value);
     }
 }

@@ -26,28 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.exception;
 
-import java.util.Comparator;
-import java.util.Objects;
+import org.opennms.netmgt.filter.api.FilterParseException;
+import org.opennms.netmgt.flows.classification.error.ErrorContext;
+import org.opennms.netmgt.flows.classification.error.Errors;
 
-// The more concrete a rule is, the higher the priority should be.
-// However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
-public class RuleComparator implements Comparator<RuleDefinition> {
-    @Override
-    public int compare(RuleDefinition r1, RuleDefinition r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
+public class InvalidFilterException extends InvalidRuleException {
 
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroupPriority();
-        int groupPriority2 = r2.getGroupPriority();
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
+    public InvalidFilterException(final String filterExpression, final FilterParseException ex) {
+        this(filterExpression, ex.getMessage());
+    }
 
-        // If group priority is identical, sort by rule priority (highest priority first)
-        if (result == 0) {
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
-        }
-        return result;
+    public InvalidFilterException(final String filterExpression, final String errorMessage) {
+        super(ErrorContext.ExportFilter, Errors.RULE_EXPORTER_FILTER_INVALID, filterExpression, errorMessage);
     }
 }

@@ -49,7 +49,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class CsvServiceImpl implements CsvService {
 
-    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort"};
+    public static final String[] HEADERS = {"name","protocol","srcAddress","srcPort", "dstAddress", "dstPort", "exporterFilter"};
 
     public static final String HEADERS_STRING = String.join(";", HEADERS) + "\n";
 
@@ -81,8 +81,7 @@ public class CsvServiceImpl implements CsvService {
                 final String srcPort = record.get(3);
                 final String dstAddress = record.get(4);
                 final String dstPort = record.get(5);
-
-                // TODO MVR add filtering
+                final String exportFilter = record.get(6);
 
                 // Set values
                 final Rule rule = new Rule();
@@ -92,6 +91,7 @@ public class CsvServiceImpl implements CsvService {
                 rule.setSrcPort("".equals(srcPort) ? null : srcPort);
                 rule.setSrcAddress("".equals(srcAddress) ? null : srcAddress);
                 rule.setProtocol("".equals(protocol) ? null : protocol);
+                rule.setExporterFilter("".equals(exportFilter) ? null : exportFilter);
 
                 // Ensure it is a valid rule
                 try {
@@ -112,7 +112,6 @@ public class CsvServiceImpl implements CsvService {
 
     @Override
     public String createCSV(List<Rule> rules) {
-        // TODO MVR add filtering
         final String csv = new CsvBuilder().withHeader(true).withRules(rules).build();
         return csv;
     }

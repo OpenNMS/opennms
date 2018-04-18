@@ -26,28 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal;
 
-import java.util.Comparator;
-import java.util.Objects;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.springframework.transaction.support.TransactionOperations;
 
-// The more concrete a rule is, the higher the priority should be.
-// However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
-public class RuleComparator implements Comparator<RuleDefinition> {
-    @Override
-    public int compare(RuleDefinition r1, RuleDefinition r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
+// Is required to initialize the classification engine properly, as it requires a transaction to load correctly.
+// While starting the bundle, the initialization occurs from within the blueprint container, thus no transaction is available
+// This bean wraps the loading in a transaction, ensuring loading can occurr correctly
+public class ClassificationEngineInitializer {
 
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroupPriority();
-        int groupPriority2 = r2.getGroupPriority();
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
-
-        // If group priority is identical, sort by rule priority (highest priority first)
-        if (result == 0) {
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
-        }
-        return result;
+    public ClassificationEngineInitializer(ClassificationEngine engine, TransactionOperations transactionOperations) {
+        transactionOperations.execute(callback -> {
+            engine.reload();
+            return null;
+        });
     }
 }

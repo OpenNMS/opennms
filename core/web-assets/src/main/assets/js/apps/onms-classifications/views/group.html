@@ -3,7 +3,7 @@
         <h5 style="margin-left: -10px">{{group.description}} <span class="label label-default" ng-if="group.readOnly">read-only</span></h5>
     </div>
     <div class="navbar-form navbar-right">
-        <div class="input-group" role="group" style="padding-right: 50px" ng-show="group.ruleCount > 0">
+        <div class="input-group" role="group" ng-show="group.ruleCount > 0">
             <span class="input-group-addon"><i class="fa fa-search"/></span>
             <input type="text"
                    id="action.search"
@@ -17,7 +17,7 @@
         </div>
 
         <div class="btn-group" role="group">
-            <button id="action.refresh" class="btn btn-default" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+            <button id="action.refresh" class="btn btn-default" ng-click="refreshAll()" title="Refresh list"><i class="fa fa-refresh"></i></button>
         </div>
         <div class="btn-group" role="group" ng-show="!group.readOnly">
             <button id="action.addRule" class="btn btn-default" ng-click="addRule()" title="Add new classification rule"><i class="fa fa-plus"></i></button>

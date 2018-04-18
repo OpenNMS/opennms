@@ -4,7 +4,6 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
-  <!-- TODO MVr add filter -->
   <changeSet author="mvrueden" id="22.0.0-classification-tables">
     <createTable tableName="classification_rules">
       <column name="id" type="integer">

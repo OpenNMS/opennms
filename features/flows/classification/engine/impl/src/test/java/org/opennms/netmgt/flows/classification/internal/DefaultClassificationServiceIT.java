@@ -41,7 +41,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.ClassificationService;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.csv.CsvBuilder;
 import org.opennms.netmgt.flows.classification.internal.provider.DaoClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
@@ -77,13 +79,23 @@ public class DefaultClassificationServiceIT {
     private ClassificationGroupDao groupDao;
 
     @Autowired
+    private FilterDao filterDao;
+
+    @Autowired
     private TransactionOperations transactionOperations;
 
     private ClassificationService classificationService;
 
     @Before
     public void setUp() {
-        classificationService = new DefaultClassificationService(ruleDao, groupDao, new DefaultClassificationEngine(new DaoClassificationRuleProvider(ruleDao)), transactionOperations);
+        FilterService filterService = new DefaultFilterService(filterDao);
+        classificationService = new DefaultClassificationService(
+                ruleDao,
+                groupDao,
+                new DefaultClassificationEngine(
+                        new DaoClassificationRuleProvider(ruleDao), filterService),
+                filterService,
+                transactionOperations);
         groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
         assertThat(ruleDao.countAll(), is(0));
     }

@@ -38,6 +38,7 @@ import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
@@ -54,7 +55,7 @@ public class CachingClassificationEngineTest {
     @Test
     public void verifyCaching() {
         // Create caching engine and spy o original engine
-        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("TEST", "0-10000")));
+        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("TEST", "0-10000")), FilterService.NOOP);
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
         final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine, CACHE_CONFIG);
 
@@ -76,7 +77,7 @@ public class CachingClassificationEngineTest {
         final List<Rule> rules = new ArrayList<>();
 
         // Create caching engine and spy o original engine
-        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> rules);
+        final DefaultClassificationEngine originalEngine = new DefaultClassificationEngine(() -> rules, FilterService.NOOP);
         final ClassificationEngine classificationEngine = Mockito.spy(originalEngine);
         final ClassificationEngine cachingEngine = new CachingClassificationEngine(classificationEngine, CACHE_CONFIG);
 

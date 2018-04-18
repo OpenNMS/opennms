@@ -26,28 +26,25 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification.internal.matcher;
 
-import java.util.Comparator;
 import java.util.Objects;
 
-// The more concrete a rule is, the higher the priority should be.
-// However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
-public class RuleComparator implements Comparator<RuleDefinition> {
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.FilterService;
+
+public class FilterMatcher implements Matcher {
+
+    private final FilterService filterService;
+    private final String filterExpression;
+
+    public FilterMatcher(String filterExpression, FilterService filterService) {
+        this.filterExpression = Objects.requireNonNull(filterExpression);
+        this.filterService = Objects.requireNonNull(filterService);
+    }
+
     @Override
-    public int compare(RuleDefinition r1, RuleDefinition r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
-
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroupPriority();
-        int groupPriority2 = r2.getGroupPriority();
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
-
-        // If group priority is identical, sort by rule priority (highest priority first)
-        if (result == 0) {
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
-        }
-        return result;
+    public boolean matches(ClassificationRequest request) {
+        return this.filterService.matches(request.getExporterAddress(), filterExpression);
     }
 }

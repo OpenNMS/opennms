@@ -42,22 +42,32 @@ import java.util.stream.Collectors;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.classifier.Classifier;
 import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClassifier;
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
+import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final List<List<Classifier>> classifierPortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
-    private final Comparator<Rule> ruleComparator = new RuleComparator();
+    private final Comparator<RuleDefinition> ruleComparator = new RuleComparator();
     private final ClassificationRuleProvider ruleProvider;
+    private final FilterService filterService;
 
-    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider) {
+    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, FilterService filterService) {
+        this(ruleProvider, filterService, true);
+    }
+
+    public DefaultClassificationEngine(ClassificationRuleProvider ruleProvider, FilterService filterService, boolean initialize) {
         this.ruleProvider = Objects.requireNonNull(ruleProvider);
-        this.reload();
+        this.filterService = Objects.requireNonNull(filterService);
+        if (initialize) {
+            this.reload();
+        }
     }
 
     @Override
@@ -80,7 +90,11 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             classifierPortList.add(new ArrayList<>());
         }
 
-        // Bind each rule to a port
+        // Technically there are 2^16 * 2^16 combinations, but it is possible to correctly pre-sort the rules
+        // by sorting them to all possible ports (2^16 possibilities).
+        // In case only src OR dst port is defined, the rule is sorted in the according port.
+        // In case src AND dst port are defined, the rule is only sorted by dst port.
+        // In case neither src NOR dst port are defined, the rule is applied to ALL ports.
         for (Rule eachRule : rules) {
             // src AND dst port are defined, only map rule to dst port
             if (eachRule.hasSrcPortDefinition() && eachRule.hasDstPortDefinition()) {
@@ -103,7 +117,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
             }
         }
 
-        // Add rules with a missing port mapping (Src or dst) to ALL ports, if not already added
+        // Add rules with no port mapping to ALL ports, if not already added
         for (final List<Rule> theRules : rulePortList) {
             theRules.addAll(anyPortRules);
         }
@@ -121,12 +135,14 @@ public class DefaultClassificationEngine implements ClassificationEngine {
 
             // Convert rule to classifier
             final List<Classifier> classifiers = portRules.stream().map(rule -> {
-                final Rule portRule = new RuleBuilder()
-                        .withName(rule.getName())
-                        .withProtocol(rule.getProtocol())
-                        .withSrcAddress(rule.getSrcAddress())
-                        .withDstAddress(rule.getDstAddress())
-                        .build();
+                final DefaultRuleDefinition portRule = new DefaultRuleDefinition();
+                portRule.setName(rule.getName());
+                portRule.setProtocol(rule.getProtocol());
+                portRule.setSrcAddress(rule.getSrcAddress());
+                portRule.setDstAddress(rule.getDstAddress());
+                portRule.setExporterFilter(rule.getExporterFilter());
+                portRule.setGroupPriority(rule.getGroupPriority());
+
                 // Check weather to apply rule for src or dst port (both may be very unlikely, but possible)
                 if (rule.hasDstPortDefinition() && rule.hasSrcPortDefinition()) {
                     portRule.setSrcPort(rule.getSrcPort()); // keep src port as is, to apply filter
@@ -141,7 +157,7 @@ public class DefaultClassificationEngine implements ClassificationEngine {
                         portRule.setSrcPort(Integer.toString(port));
                     }
                 }
-                return new CombinedClassifier(portRule);
+                return new CombinedClassifier(portRule, filterService);
             })
             .collect(Collectors.toList());
             classifierPortList.set(port, classifiers);

@@ -42,22 +42,31 @@ public class RuleTest {
     @Test
     public void verifyCalculatePriority() {
         final Rule leastConcreteRule = new RuleBuilder().withName("dummy").build();
-        final Rule mostConcreteRule = new RuleBuilder().withName("opennms-monitor").withProtocol("tcp").withDstAddress("10.0.0.1").withDstPort("8980").withSrcAddress("10.0.0.2").withSrcPort(5231).build();
+        final Rule mostConcreteRule = new RuleBuilder()
+                .withName("opennms-monitor")
+                .withProtocol("tcp")
+                .withDstAddress("10.0.0.1").withDstPort("8980")
+                .withSrcAddress("10.0.0.2").withSrcPort(5231)
+                .withExporterFilter("categoryName='Test'").build();
         final Rule tcpRule = new RuleBuilder().withName("tcpTraffic").withProtocol("tcp").build();
         final Rule httpRule = new RuleBuilder().withName("http").withProtocol("tcp,udp").withDstPort("80,8980,8080").build();
         final Rule portRule = new RuleBuilder().withName("443-traffic").withDstPort("443").build();
 
         assertEquals(0, leastConcreteRule.calculatePriority());
         assertEquals(1, tcpRule.calculatePriority());
-        assertEquals(2, portRule.calculatePriority());
-        assertEquals(3, httpRule.calculatePriority());
-        assertEquals(11, mostConcreteRule.calculatePriority());
+        assertEquals(3, portRule.calculatePriority());
+        assertEquals(4, httpRule.calculatePriority());
+        assertEquals(26, mostConcreteRule.calculatePriority());
     }
 
     @Test
     public void verifyRuleComparator() {
         final Rule leastConcreteRule = new RuleBuilder().withName("dummy").build();
-        final Rule mostConcreteRule = new RuleBuilder().withName("opennms-monitor").withProtocol("tcp").withDstAddress("10.0.0.1").withDstPort("8980").withSrcAddress("10.0.0.2").withSrcPort(5231).build();
+        final Rule mostConcreteRule = new RuleBuilder().withName("opennms-monitor")
+                .withProtocol("tcp")
+                .withDstAddress("10.0.0.1").withDstPort("8980")
+                .withSrcAddress("10.0.0.2").withSrcPort(5231)
+                .withExporterFilter("categoryName='Test'").build();
         final Rule tcpRule = new RuleBuilder().withName("tcpTraffic").withProtocol("tcp").build();
         final Rule httpRule = new RuleBuilder().withName("http").withProtocol("tcp,udp").withDstPort("80,8980,8080").build();
         final Rule portRule = new RuleBuilder().withName("443-traffic").withDstPort("443").build();

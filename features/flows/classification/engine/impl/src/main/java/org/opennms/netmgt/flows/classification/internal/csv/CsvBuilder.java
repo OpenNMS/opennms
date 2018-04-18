@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
@@ -68,16 +69,20 @@ public class CsvBuilder {
         if (includeHeader) {
             csv.append(CsvServiceImpl.HEADERS_STRING);
         }
+        final String rowFormat = IntStream.range(0, CsvServiceImpl.HEADERS.length)
+                .mapToObj(i -> "%s")
+                .collect(Collectors.joining(";"));
         csv.append(
                 rules.stream()
                         .map(rule ->
-                                String.format("%s;%s;%s;%s;%s;%s",
+                                String.format(rowFormat,
                                         rule.getName() == null ? "" : rule.getName(),
                                         rule.getProtocol() == null ? "" : rule.getProtocol(),
                                         rule.getSrcAddress() == null ? "" : rule.getSrcAddress(),
                                         rule.getSrcPort() == null ? "" : rule.getSrcPort(),
                                         rule.getDstAddress() == null ? "" : rule.getDstAddress(),
-                                        rule.getDstPort() == null ? "" : rule.getDstPort()
+                                        rule.getDstPort() == null ? "" : rule.getDstPort(),
+                                        rule.getExporterFilter() == null ? "" : rule.getExporterFilter()
                                 )
                         )
                         .collect(Collectors.joining("\n")));

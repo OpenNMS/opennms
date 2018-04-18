@@ -22,6 +22,7 @@
 
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <!-- CacheConfig -->
@@ -39,9 +40,16 @@
         <argument ref="classificationRuleDao"/>
     </bean>
 
+    <!-- Filter Service -->
+    <bean id="filterService" class="org.opennms.netmgt.flows.classification.internal.DefaultFilterService">
+        <argument ref="filterDao" />
+    </bean>
+
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine">
         <argument ref="classificationRuleProvider" />
+        <argument ref="filterService" />
+        <argument value="false" />
     </bean>
     <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TimingClassificationEngine">
         <argument ref="classificationMetricRegistry"/>
@@ -53,6 +61,10 @@
     </bean>
     <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.ThreadSafeClassificationEngine">
         <argument ref="cachingClassificationEngine" />
+    </bean>
+    <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
+        <argument ref="threadSafeClassificationEngine"/>
+        <argument ref="transactionOperations" />
     </bean>
 
     <!-- Metrics -->
@@ -76,6 +88,7 @@
             <argument ref="classificationRuleDao"/>
             <argument ref="classificationGroupDao"/>
             <argument ref="threadSafeClassificationEngine"/>
+            <argument ref="filterService" />
             <argument ref="transactionOperations"/>
         </bean>
     </service>

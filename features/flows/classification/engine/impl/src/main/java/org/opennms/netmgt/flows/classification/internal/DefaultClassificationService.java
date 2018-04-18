@@ -39,6 +39,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationService;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.csv.CsvImportResult;
 import org.opennms.netmgt.flows.classification.csv.CsvService;
 import org.opennms.netmgt.flows.classification.exception.CSVImportException;
@@ -75,12 +76,13 @@ public class DefaultClassificationService implements ClassificationService {
     public DefaultClassificationService(ClassificationRuleDao classificationRuleDao,
                                         ClassificationGroupDao classificationGroupDao,
                                         ClassificationEngine classificationEngine,
+                                        FilterService filterService,
                                         TransactionOperations transactionOperations) {
         this.classificationRuleDao = Objects.requireNonNull(classificationRuleDao);
         this.classificationGroupDao = Objects.requireNonNull(classificationGroupDao);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
         this.transactionTemplate = Objects.requireNonNull(transactionOperations);
-        this.ruleValidator = new RuleValidator();
+        this.ruleValidator = new RuleValidator(filterService);
         this.groupValidator = new GroupValidator(classificationRuleDao);
         this.csvService = new CsvServiceImpl(ruleValidator);
     }

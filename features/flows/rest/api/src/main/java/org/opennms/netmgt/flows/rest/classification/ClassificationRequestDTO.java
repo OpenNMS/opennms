@@ -38,6 +38,8 @@ public class ClassificationRequestDTO {
 
     private String srcPort;
 
+    private String exporterAddress;
+
     private String protocol;
 
     public String getDstAddress() {
@@ -70,6 +72,14 @@ public class ClassificationRequestDTO {
 
     public void setSrcPort(String srcPort) {
         this.srcPort = srcPort;
+    }
+
+    public String getExporterAddress() {
+        return exporterAddress;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.exporterAddress = exporterAddress;
     }
 
     public String getProtocol() {

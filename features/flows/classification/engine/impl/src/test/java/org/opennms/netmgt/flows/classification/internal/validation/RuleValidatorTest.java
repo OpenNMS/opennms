@@ -31,6 +31,7 @@ package org.opennms.netmgt.flows.classification.internal.validation;
 import static org.opennms.netmgt.flows.classification.internal.validation.ValidatorTestUtils.verify;
 
 import org.junit.Test;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
@@ -44,14 +45,14 @@ public class RuleValidatorTest {
     @Test
     public void verifyNameIsRequired() {
         final Rule rule = new Rule();
-        verify(rule, Errors.RULE_NAME_IS_REQUIRED);
+        verify(() -> new RuleValidator(FilterService.NOOP).validate(rule), Errors.RULE_NAME_IS_REQUIRED);
     }
 
     @Test
     public void verifyDefinitionIsRequired() {
         final Rule rule = new Rule();
         rule.setName("test");
-        verify(rule, Errors.RULE_NO_DEFINITIONS);
+        verify(() -> new RuleValidator(FilterService.NOOP).validate(rule), Errors.RULE_NO_DEFINITIONS);
     }
 
     @Test
@@ -61,7 +62,7 @@ public class RuleValidatorTest {
                 .withProtocol("tcp")
                 .withDstAddress("8.8.8.8")
                 .withDstPort("80").build();
-        verify(rule);
+        verify(() -> new RuleValidator(FilterService.NOOP).validate(rule));
     }
 
     @Test

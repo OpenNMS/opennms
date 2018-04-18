@@ -206,6 +206,7 @@ public class DocumentEnricher {
         final ClassificationRequest request = new ClassificationRequest();
         request.setProtocol(Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());
+        request.setExporterAddress(document.getHost());
         if (document.getDirection() == Direction.INGRESS) {
             request.setDstAddress(document.getDstAddr());
             request.setDstPort(document.getDstPort());

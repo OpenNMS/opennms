@@ -32,7 +32,6 @@ import java.util.Objects;
 
 import com.google.common.base.Strings;
 
-// TODO MVR add tests for srcAddress and srcPort as well
 public class RuleBuilder {
 
     private Rule rule = new Rule();
@@ -83,6 +82,11 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder withExporterFilter(String exporterFilter) {
+        rule.setExporterFilter(exporterFilter);
+        return this;
+    }
+
     public RuleBuilder withGroup(Group group) {
         group.addRule(rule);
         return this;
@@ -96,6 +100,7 @@ public class RuleBuilder {
         withDstAddress(rule.getDstAddress());
         withDstPort(rule.getDstPort());
         withProtocol(rule.getProtocol());
+        withExporterFilter(rule.getExporterFilter());
         if (rule.getGroup() != null) {
             withGroup(rule.getGroup());
         }

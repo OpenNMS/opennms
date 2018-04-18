@@ -75,9 +75,9 @@ public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Intege
         return matchingRules;
     }
 
-    // TODO MVR wirte test for this (atm only dst is verified)
     private static CriteriaBuilder createCriteriaBuilderDefinition(Rule rule) {
         final CriteriaBuilder builder = new CriteriaBuilder(Rule.class);
+
         // DST
         if (rule.hasDstAddressDefinition()) {
             builder.ilike("dstAddress", rule.getDstAddress());
@@ -107,6 +107,11 @@ public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Intege
             builder.ilike("protocol", rule.getProtocol());
         } else {
             builder.isNull("protocol");
+        }
+        if (rule.hasExportFilterDefinition()) {
+            builder.ilike("exporterFilter", rule.getExporterFilter());
+        } else {
+            builder.isNull("exporterFilter");
         }
         return builder;
     }

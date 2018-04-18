@@ -46,7 +46,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
 import com.google.common.collect.Lists;
 
-// TODO MVR add tests for filtering
 public class CsvServiceTest {
 
     @Test
@@ -59,28 +58,36 @@ public class CsvServiceTest {
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;;;;;"));
+        assertThat(rows[1], is("dummy;;;;;;"));
     }
 
-    // TODO MVR this is not defined fully, srcAddress and srcPort is missing
     @Test
     public void verifyExportForFullyDefinedRule() {
         // create a csv for a completely empty rule
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
-        final Rule rule = new RuleBuilder().withName("dummy").withProtocol("tcp,udp,icmp").withDstPort("80,1234").withDstAddress("8.8.8.8").build();
+        final Rule rule = new RuleBuilder()
+                .withName("dummy")
+                .withProtocol("tcp,udp,icmp")
+                .withDstPort("80,1234").withDstAddress("8.8.8.8")
+                .withSrcPort("55555").withSrcAddress("10.0.0.1")
+                .withExporterFilter("categoryName = 'Databases'")
+                .build();
         final String response = csvService.createCSV(Lists.newArrayList(rule));
         final String[] rows = response.split("\n");
 
         // Verify output
         assertThat(rows.length, is(2));
-        assertThat(rows[1], is("dummy;tcp,udp,icmp;;;8.8.8.8;80,1234"));
+        assertThat(rows[1], is("dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'"));
     }
 
-    // TODO MVR this is not defined fully, srcAddress and srcPort is missing
     @Test
     public void verifyParsingFullyDefined() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
-        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream("dummy;tcp,udp,icmp;;;8.8.8.8;80,1234".getBytes()), false).getRules();
+        final List<Rule> rules = csvService.parseCSV(
+                new ByteArrayInputStream(
+                        "dummy;tcp,udp,icmp;10.0.0.1;55555;8.8.8.8;80,1234;categoryName = 'Databases'".getBytes()),
+                false
+                ).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
         assertThat(rule.getId(), is(nullValue()));
@@ -88,15 +95,16 @@ public class CsvServiceTest {
         assertThat(rule.getProtocol(), is("tcp,udp,icmp"));
         assertThat(rule.getDstPort(), is("80,1234"));
         assertThat(rule.getDstAddress(), is("8.8.8.8"));
+        assertThat(rule.getSrcPort(), is("55555"));
+        assertThat(rule.getSrcAddress(), is("10.0.0.1"));
+        assertThat(rule.getExporterFilter(), is("categoryName = 'Databases'"));
     }
-
-    // TODO MVR add test for partially defined
 
     @Test
     public void verifyParsingEmpty() {
         final CsvService csvService = new CsvServiceImpl(createNiceMock(RuleValidator.class));
 
-        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;".getBytes()), false).getRules();
+        final List<Rule> rules = csvService.parseCSV(new ByteArrayInputStream(";;;;;;".getBytes()), false).getRules();
         assertThat(rules, hasSize(1));
         final Rule rule = rules.get(0);
         assertThat(rule.getId(), is(nullValue()));

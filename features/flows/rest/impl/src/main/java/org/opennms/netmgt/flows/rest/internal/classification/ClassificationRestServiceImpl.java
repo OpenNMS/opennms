@@ -46,8 +46,9 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
@@ -105,6 +106,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
                     Restrictions.like("dstAddress", query),
                     Restrictions.ilike("dstPort", query),
                     Restrictions.ilike("name", query),
+                    Restrictions.ilike("exporterFilter", query),
                     Restrictions.ilike("protocol", query)).toCriteria();
         }
 
@@ -176,6 +178,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         rule.setSrcPort(newRule.getSrcPort());
         rule.setSrcAddress(newRule.getSrcAddress());
         rule.setName(newRule.getName());
+        rule.setExporterFilter(newValue.getExporterFilter());
 
         // Persist
         classificationService.updateRule(rule);
@@ -185,16 +188,16 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
     @Override
     public Response classify(ClassificationRequestDTO classificationRequestDTO) {
         validate(classificationRequestDTO);
-        final ClassificationRequest classificationRequest = new ClassificationRequest(null,
-                Integer.parseInt(classificationRequestDTO.getDstPort()),
-                classificationRequestDTO.getDstAddress(),
-                Protocols.getProtocol(classificationRequestDTO.getProtocol()));
-        if (classificationRequestDTO.getSrcAddress() != null) {
-            classificationRequest.setSrcAddress(classificationRequestDTO.getSrcAddress());
-        }
-        if (classificationRequestDTO.getSrcPort() != null) {
-            classificationRequest.setSrcPort(Integer.parseInt(classificationRequestDTO.getSrcPort()));
-        }
+
+        final ClassificationRequest classificationRequest = new ClassificationRequestBuilder()
+                .withLocation(null)
+                .withSrcAddress(classificationRequestDTO.getSrcAddress())
+                .withSrcPort(Integer.parseInt(classificationRequestDTO.getSrcPort()))
+                .withDstAddress(classificationRequestDTO.getDstAddress())
+                .withDstPort(Integer.parseInt(classificationRequestDTO.getDstPort()))
+                .withProtocol(Protocols.getProtocol(classificationRequestDTO.getProtocol()))
+                .withExporterAddress(classificationRequestDTO.getExporterAddress())
+                .build();
         final String classification = classificationService.classify(classificationRequest);
         if (Strings.isNullOrEmpty(classification)) return Response.noContent().build();
         return Response.ok(new ClassificationResponseDTO(classification)).build();
@@ -286,25 +289,27 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         if (!Strings.isNullOrEmpty(ruleDTO.getSrcPort())) {
             rule.setSrcPort(ruleDTO.getSrcPort());
         }
-        // TODO MVR add filter
+        if (!Strings.isNullOrEmpty(ruleDTO.getExporterFilter())) {
+            rule.setExporterFilter(ruleDTO.getExporterFilter());
+        }
         rule.setProtocol(ruleDTO.getProtocols().stream().collect(Collectors.joining(",")));
         return rule;
     }
 
     private static RuleDTO convert(Rule rule) {
         if (rule == null) return null;
-        final RuleDTO classification = new RuleDTO();
-        classification.setId(rule.getId());
-        classification.setName(rule.getName());
-        classification.setDstAddress(rule.getDstAddress());
-        classification.setProtocol(rule.getProtocol());
-        classification.setDstPort(rule.getDstPort());
-        classification.setSrcAddress(rule.getSrcAddress());
-        classification.setSrcPort(rule.getSrcPort());
-        classification.setGroup(convert(rule.getGroup()));
-        classification.setPosition(rule.getPosition());
-        // TODO MVR add filter
-        return classification;
+        final RuleDTO ruleDTO = new RuleDTO();
+        ruleDTO.setId(rule.getId());
+        ruleDTO.setName(rule.getName());
+        ruleDTO.setDstAddress(rule.getDstAddress());
+        ruleDTO.setProtocol(rule.getProtocol());
+        ruleDTO.setDstPort(rule.getDstPort());
+        ruleDTO.setSrcAddress(rule.getSrcAddress());
+        ruleDTO.setSrcPort(rule.getSrcPort());
+        ruleDTO.setGroup(convert(rule.getGroup()));
+        ruleDTO.setPosition(rule.getPosition());
+        ruleDTO.setExporterFilter(rule.getExporterFilter());
+        return ruleDTO;
     }
 
     private static GroupDTO convert(Group group) {
@@ -346,6 +351,7 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         return ResponseUtils.createResponse(responseBody, offset, totalCount);
     }
 
+    // TODO MVR move to its own implementation
     private static void validate(ClassificationRequestDTO requestDTO) {
         // Verify Protocol
         if (Strings.isNullOrEmpty(requestDTO.getProtocol())) {
@@ -360,14 +366,14 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         validateAddress(ErrorContext.DstAddress, requestDTO.getDstAddress());
 
         // Verify Src
-        if (requestDTO.getSrcPort() != null) {
-            validatePort(ErrorContext.SrcPort, requestDTO.getSrcPort());
-        }
-        if (requestDTO.getSrcAddress() != null) {
-            validateAddress(ErrorContext.SrcAddress, requestDTO.getSrcAddress());
-        }
+        validatePort(ErrorContext.SrcPort, requestDTO.getSrcPort());
+        validateAddress(ErrorContext.SrcAddress, requestDTO.getSrcAddress());
+
+        // Verify Exporter Address
+        validateAddress(ErrorContext.ExporterAddress, requestDTO.getExporterAddress());
     }
 
+    // TODO MVR move to its own implementation
     private static void validatePort(String errorContext, String portValue) {
         Objects.requireNonNull(errorContext);
 
@@ -384,11 +390,14 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         }
     }
 
+    // TODO MVR move to its own implementation
     private static void validateAddress(String errorContext, String address) {
         Objects.requireNonNull(errorContext);
 
         try {
-            InetAddressUtils.getInetAddress(address);
+            // Matches actually verifies the "pattern" before a match against a concrete ip address is performed
+            // As we are only interesting in the validation, we just use "8.8.8.8".
+            IPLike.matches("8.8.8.8", address);
         } catch (Exception ex) {
             throw new  ClassificationException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, address);
         }

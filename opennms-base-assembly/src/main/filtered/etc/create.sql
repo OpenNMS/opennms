@@ -2547,13 +2547,14 @@ CREATE TABLE classification_rules (
   dst_port TEXT,
   src_address TEXT,
   src_port TEXT,
+  exporter_filter TEXT,
   protocol TEXT,
   position integer not null,
   groupid integer NOT NULL,
   CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
   CONSTRAINT fk_classification_rules_groupid FOREIGN KEY (groupId) REFERENCES classification_groups (id) ON DELETE CASCADE
 );
-ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (dst_address,dst_port,src_address,src_port,protocol,groupid);
+ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (dst_address,dst_port,src_address,src_port,protocol,exporter_filter,groupid);
 
 --# Sequence for the id column in classification_rules table
 --#          sequence, column, table

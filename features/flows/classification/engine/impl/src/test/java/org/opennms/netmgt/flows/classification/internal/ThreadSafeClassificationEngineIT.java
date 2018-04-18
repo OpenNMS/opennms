@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;
+import org.opennms.netmgt.flows.classification.FilterService;
 
 public class ThreadSafeClassificationEngineIT {
 
@@ -72,7 +73,7 @@ public class ThreadSafeClassificationEngineIT {
         };
 
         // Create a thread safe classification engine
-        final ClassificationEngine original = new DefaultClassificationEngine(classificationRuleProvider);
+        final ClassificationEngine original = new DefaultClassificationEngine(classificationRuleProvider, FilterService.NOOP);
         final ClassificationEngine classificationEngine = new ThreadSafeClassificationEngine(original);
 
         // Kick off the threads

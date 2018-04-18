@@ -39,6 +39,7 @@ import org.opennms.core.network.IPAddressRange;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.persistence.api.ProtocolType;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
@@ -56,7 +57,7 @@ public class DefaultClassificationEngineTest {
                     new RuleBuilder().withName("rule3").withSrcPort(8888).withDstPort(9999).build(),
                     new RuleBuilder().withName("rule4").withSrcPort(8888).withDstPort(80).build(),
                     new RuleBuilder().withName("rule5").build()
-            ));
+            ), FilterService.NOOP);
 
         assertEquals("rule2", engine.classify(new ClassificationRequestBuilder().withSrcPort(9999).withDstPort(443).build()));
         assertEquals("rule3", engine.classify(new ClassificationRequestBuilder().withSrcPort(8888).withDstPort(9999).build()));
@@ -74,7 +75,7 @@ public class DefaultClassificationEngineTest {
                 new Rule("RANGE-TEST", "7000-8000"),
                 new Rule("OpenNMS", "8980"),
                 new RuleBuilder().withName("OpenNMS Monitor").withDstPort("1077").withSrcPort("5347").withSrcAddress("10.0.0.5").build()
-            )
+            ), FilterService.NOOP
         );
       
         // Verify concrete mappings
@@ -142,7 +143,7 @@ public class DefaultClassificationEngineTest {
             new RuleBuilder().withName("HTTP").withDstPort(80).build(),
             new RuleBuilder().withName("XXX2").withSrcAddress("192.168.2.1").withSrcPort(4789).build(),
             new RuleBuilder().withName("XXX").withDstAddress("192.168.2.1").build()
-        ));
+        ), FilterService.NOOP);
 
         final ClassificationRequest classificationRequest = new ClassificationRequest("Default", 80, "192.168.2.1", ProtocolType.TCP);
         assertEquals("XXX", engine.classify(classificationRequest));
@@ -156,7 +157,7 @@ public class DefaultClassificationEngineTest {
 
     @Test
     public void verifyAllPortsToEnsureEngineIsProperlyInitialized() {
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>());
+        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> new ArrayList<>(), FilterService.NOOP);
         for (int i=Rule.MIN_PORT_VALUE; i<Rule.MAX_PORT_VALUE; i++) {
             classificationEngine.classify(new ClassificationRequest("Default", i, "127.0.0.1", ProtocolType.TCP));
         }
@@ -164,6 +165,6 @@ public class DefaultClassificationEngineTest {
 
     @Test(timeout=5000)
     public void verifyInitializesQuickly() {
-        new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("Test", "0-10000")));
+        new DefaultClassificationEngine(() -> Lists.newArrayList(new Rule("Test", "0-10000")), FilterService.NOOP);
     }
 }

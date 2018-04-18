@@ -35,7 +35,7 @@ public interface Errors {
 
     ErrorTemplate RULE_NAME_IS_REQUIRED = new ErrorTemplate("rule.name.required", "No name provided. Please provide a name.");
     ErrorTemplate GROUP_DUPLICATE_RULE = new ErrorTemplate("rule.duplicate", "A rule with the same definition already exists");
-    ErrorTemplate RULE_NO_DEFINITIONS = new ErrorTemplate("rule.nodefinitions", "You must provide at least one definition for port, ip address or protocol");
+    ErrorTemplate RULE_NO_DEFINITIONS = new ErrorTemplate("rule.nodefinitions", "You must provide at least one definition for src/dst port, src/dst address, protocol or exporter filter");
 
     ErrorTemplate RULE_PROTOCOL_DOES_NOT_EXIST = new ErrorTemplate("rule.protocol.doesnotexist", "The defined protocol ''{0}'' does not exist");
     ErrorTemplate RULE_PROTOCOL_IS_REQUIRED = new ErrorTemplate("rule.protocol.required", "Protocol is required");
@@ -45,6 +45,8 @@ public interface Errors {
     ErrorTemplate RULE_PORT_IS_REQUIRED = new ErrorTemplate("rule.port.required", "Please provide a value.");
     ErrorTemplate RULE_PORT_RANGE_BOUNDS_NOT_VALID = new ErrorTemplate("rule.port.range.bounds.invalid", "The first value of the range must be lower than the second value.");
     ErrorTemplate RULE_PORT_VALUE_NOT_IN_RANGE = new ErrorTemplate("rule.port.value.notinrange", "Range must be between {0} and {1}.");
+
+    ErrorTemplate RULE_EXPORTER_FILTER_INVALID = new ErrorTemplate("rule.filter.invalid", "The provided filter ''{0}'' is invalid: {1}");
 
     ErrorTemplate RULE_IP_ADDRESS_INVALID = new ErrorTemplate("rule.ipaddress.invalid", "The provided IP Address ''{0}'' is not valid.");
 

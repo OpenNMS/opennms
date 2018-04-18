@@ -36,4 +36,6 @@ public interface ErrorContext {
     String DstAddress = "dstAddress";
     String SrcPort = "srcPort";
     String SrcAddress = "srcAddress";
+    String ExportFilter = "exporterFilter";
+    String ExporterAddress = "exporterAddress";
 }

@@ -29,11 +29,13 @@
 package org.opennms.netmgt.flows.classification.internal.validation;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.opennms.core.utils.IPLike;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.error.ErrorContext;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.exception.InvalidRuleException;
@@ -47,6 +49,12 @@ import com.google.common.base.Strings;
 public class RuleValidator {
 
     private static final Pattern PORT_PATTERN = Pattern.compile("^\\d+((-|,)\\d+)*$");
+
+    private final FilterService filterService;
+
+    public RuleValidator(FilterService filterService) {
+        this.filterService = Objects.requireNonNull(filterService);
+    }
 
     public void validate(Rule rule) throws InvalidRuleException {
         // Name is required
@@ -75,6 +83,10 @@ public class RuleValidator {
         // Ensure src ip address is defined correctly
         if (rule.hasSrcAddressDefinition()) {
             validateIpAddress(ErrorContext.SrcAddress, rule.getSrcAddress());
+        }
+        // Ensure filter is defined correctly
+        if (rule.hasExportFilterDefinition()) {
+            filterService.validate(rule.getExporterFilter());
         }
     }
 
@@ -146,7 +158,10 @@ public class RuleValidator {
         try {
             StringValue value = new StringValue(ipAddressValue);
             if (!value.isWildcard()) {
-                IPLike.matches("8.8.8.8", ipAddressValue); // TODO MVR verify what this is actually doing. This looks weird
+                // The matches method parses the pattern (in this case the ipAddressValue) and validates
+                // the address, as we don't care if it actually matches. We only want to know, if it considers the
+                // "pattern" (in this case a concrete address) correct.
+                IPLike.matches("8.8.8.8", ipAddressValue);
             }
         } catch (Exception ex) {
             throw new InvalidRuleException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, ipAddressValue);

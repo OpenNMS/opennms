@@ -59,6 +59,11 @@ public class ClassificationRequestBuilder {
         return this;
     }
 
+    public ClassificationRequestBuilder withExporterAddress(String exporterAddress) {
+        request.setExporterAddress(exporterAddress);
+        return this;
+    }
+
     public ClassificationRequestBuilder withLocation(String location) {
         request.setLocation(location);
         return this;

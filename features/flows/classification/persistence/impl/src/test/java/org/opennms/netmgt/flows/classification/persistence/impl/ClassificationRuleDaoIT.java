@@ -29,6 +29,7 @@
 package org.opennms.netmgt.flows.classification.persistence.impl;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -135,5 +136,63 @@ public class ClassificationRuleDaoIT {
         customGroup.setEnabled(false);
         groupDao.saveOrUpdate(customGroup);
         assertThat(ruleDao.findAllEnabledRules(), hasSize(0));
+    }
+
+    // Does not test ALL combinations, but some
+    @Test
+    public void verifyFindByDefinition() {
+        final Rule fullyDefinedRule = new RuleBuilder()
+                .withName("HTTP")
+                .withSrcAddress("10.0.0.1")
+                .withSrcPort("55555")
+                .withDstAddress("127.0.0.1")
+                .withDstPort("80,8080")
+                .withProtocol("tcp")
+                .withExporterFilter("some-filter-value")
+                .withGroup(customGroup)
+                .build();
+        ruleDao.save(fullyDefinedRule);
+
+        // Create dummy rule
+        final Rule tmpRule = new Rule();
+        tmpRule.setName("dummy"); // name does not matter
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // define src address
+        tmpRule.setSrcAddress(fullyDefinedRule.getSrcAddress());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // define src port
+        tmpRule.setSrcPort(fullyDefinedRule.getSrcPort());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // Define dst address
+        tmpRule.setDstAddress(fullyDefinedRule.getDstAddress());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // Define dst port
+        tmpRule.setDstPort(fullyDefinedRule.getDstPort());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // Define protocol
+        tmpRule.setProtocol(fullyDefinedRule.getProtocol());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(0));
+
+        // Define exporter filter
+        tmpRule.setExporterFilter(fullyDefinedRule.getExporterFilter());
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(1));
+
+        // Now add another rule to another group
+        final Rule anotherRule = new RuleBuilder().fromRule(fullyDefinedRule).build();
+        anotherRule.getGroup().removeRule(anotherRule);
+        anotherRule.setGroup(staticGroup);
+        ruleDao.save(anotherRule);
+
+        // should exist twice
+        assertThat(ruleDao.findByDefinition(tmpRule), hasSize(2));
+
+        // Should exist only once
+        assertThat(ruleDao.findByDefinition(tmpRule, customGroup), is(fullyDefinedRule));
+        assertThat(ruleDao.findByDefinition(tmpRule, staticGroup), is(anotherRule));
     }
 }
