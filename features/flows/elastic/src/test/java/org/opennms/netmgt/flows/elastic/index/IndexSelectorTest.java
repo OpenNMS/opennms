@@ -319,8 +319,9 @@ public class IndexSelectorTest {
             TimeRangeFilter filter = new TimeRangeFilter(start.getTime(), end.getTime());
 
             List<String> expectedList = Arrays.asList(expected);
+            long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
             assertEquals(String.format("Test failed for strategy %s from %s to %s", this.strategy.name(), this.from, this.to)
-                    , expectedList, new IndexSelector("prefix", strategy).getIndexNames(filter));
+                    , expectedList, new IndexSelector("prefix", strategy, expandTimeRangeInMs).getIndexNames(filter));
         }
     }
 }
