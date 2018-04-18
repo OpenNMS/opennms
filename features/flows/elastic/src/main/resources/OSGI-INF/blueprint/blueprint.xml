@@ -19,6 +19,7 @@
             <cm:property name="globalElasticUser" value="" />
             <cm:property name="globalElasticPassword" value="" />
             <cm:property name="elasticIndexStrategy" value="monthly" />
+            <cm:property name="maxFlowDurationMs" value="120000" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
             <cm:property name="nodeDiscovery" value="false" />
@@ -129,6 +130,7 @@
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
         <argument value="${bulkRetryCount}" />
+        <argument value="${maxFlowDurationMs}" />
     </bean>
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">

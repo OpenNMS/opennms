@@ -124,12 +124,13 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSelector indexSelector;
 
-    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy, DocumentEnricher documentEnricher, int bulkRetryCount) {
+    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy
+            , DocumentEnricher documentEnricher, int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
         this.bulkRetryCount = bulkRetryCount;
-        this.indexSelector = new IndexSelector(TYPE, indexStrategy);
+        this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
 
         flowsPersistedMeter = metricRegistry.meter("flowsPersisted");
         logConversionTimer = metricRegistry.timer("logConversion");

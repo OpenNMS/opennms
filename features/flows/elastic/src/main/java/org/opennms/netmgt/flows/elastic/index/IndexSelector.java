@@ -67,8 +67,9 @@ public class IndexSelector {
     private String prefix;
     private IndexStrategy strategy;
     private TemporalUnit unit;
+    private long expandTimeRangeInMs;
 
-    public IndexSelector(String prefix, IndexStrategy strategy) {
+    public IndexSelector(String prefix, IndexStrategy strategy, long expandTimeRangeInMs) {
         this.prefix = prefix;
         this.strategy = strategy;
         this.unit = UNIT_MAP.get(strategy);
@@ -77,6 +78,7 @@ public class IndexSelector {
             throw new UnsupportedOperationException("This is a programming mistake, please check the mapping for strategy="
                     + strategy.name());
         }
+        this.expandTimeRangeInMs = expandTimeRangeInMs;
     }
 
     /**
@@ -91,7 +93,6 @@ public class IndexSelector {
     public List<String> getIndexNames(TimeRangeFilter timeRange) {
         List<String> all = new ArrayList<>();
         // we expand the time range by a bit in order to be sure to find all relevant events:
-        long expandTimeRangeInMs = 2 * 60 * 1000; // 2 min
         Instant endDate = adjustEndTime(new Date(timeRange.getEnd()+expandTimeRangeInMs));
         Instant startDate = Instant.ofEpochMilli(timeRange.getStart()-expandTimeRangeInMs);
         Instant currentDate = startDate;

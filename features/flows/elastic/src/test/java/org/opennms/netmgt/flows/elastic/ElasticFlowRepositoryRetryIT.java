@@ -99,7 +99,8 @@ public class ElasticFlowRepositoryRetryIT {
 
             final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher, 3), client);
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher
+                            , 3, 12000), client);
 
             consumer.accept(elasticFlowRepository);
 
