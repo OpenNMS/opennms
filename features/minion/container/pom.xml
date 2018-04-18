@@ -13,6 +13,5 @@
 
     <modules>
         <module>karaf</module>
-        <module>features</module>
     </modules>
 </project>
