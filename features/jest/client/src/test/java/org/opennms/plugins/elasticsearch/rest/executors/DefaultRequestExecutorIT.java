@@ -28,7 +28,7 @@
 
 package org.opennms.plugins.elasticsearch.rest.executors;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -80,7 +80,7 @@ public class DefaultRequestExecutorIT {
                     final Map<String, String> object = new HashMap<>();
                     object.put("name", "Ulf");
                     object.put("location", "Pittsboro");
-                    final Index action = new Index.Builder(object).index(IndexStrategy.MONTHLY.getIndex("dummy", new Date())).type("persons").build();
+                    final Index action = new Index.Builder(object).index(IndexStrategy.MONTHLY.getIndex("dummy", Instant.now())).type("persons").build();
                     client.execute(action);
                     Assert.fail("The execution of persistNetFlow5Packets() should not have finished. Failing.");
                 } finally {
