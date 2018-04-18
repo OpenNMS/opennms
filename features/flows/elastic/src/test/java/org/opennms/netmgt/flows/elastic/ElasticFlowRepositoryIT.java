@@ -72,7 +72,7 @@ public class ElasticFlowRepositoryIT {
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, 3);
+                    client, IndexStrategy.MONTHLY, documentEnricher, 3, 12000);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
