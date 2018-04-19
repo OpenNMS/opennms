@@ -71,12 +71,12 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 
 	@Override
 	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
-		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePort = ?", id,port);
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedPort = ?", id,port);
 	}
 
 	@Override
 	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
-		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePortIfIndex = ?", id,ifindex);
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedPortIfIndex = ?", id,ifindex);
 	}
 
 	@Override

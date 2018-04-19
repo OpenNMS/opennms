@@ -370,7 +370,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         delink.setDesignatedNode(nodeE);
         delink.setDesignatedPort(54);
         delink.setBridgeBridgeLinkLastPollTime(delink.getBridgeBridgeLinkCreateTime());
-        m_bridgeBridgeLinkDao.save(delink);
 
         BridgeBridgeLink ablink = new BridgeBridgeLink();
         ablink.setNode(nodeA);
@@ -378,7 +377,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         ablink.setDesignatedNode(nodeB);
         ablink.setDesignatedPort(topology.portBA);
         ablink.setBridgeBridgeLinkLastPollTime(ablink.getBridgeBridgeLinkCreateTime());
-        m_bridgeBridgeLinkDao.save(ablink);
 
         BridgeBridgeLink bclink = new BridgeBridgeLink();
         bclink.setNode(nodeC);
@@ -386,7 +384,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         bclink.setDesignatedNode(nodeB);
         bclink.setDesignatedPort(topology.portBC);
         bclink.setBridgeBridgeLinkLastPollTime(ablink.getBridgeBridgeLinkCreateTime());
-        m_bridgeBridgeLinkDao.save(bclink);
         
         BridgeMacLink forward = new BridgeMacLink();
         forward.setNode(nodeB);
@@ -394,7 +391,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         forward.setMacAddress(topology.macA);
         forward.setLinkType(BridgeMacLinkType.BRIDGE_FORWARDER);
         forward.setBridgeMacLinkLastPollTime(forward.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(forward);
 
         BridgeMacLink sharedB = new BridgeMacLink();
         sharedB.setNode(nodeB);
@@ -402,7 +398,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedB.setMacAddress(topology.shar);
         sharedB.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedB.setBridgeMacLinkLastPollTime(sharedB.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(sharedB);
         
         BridgeMacLink mac1 = new BridgeMacLink();
         mac1.setNode(nodeA);
@@ -410,7 +405,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac1.setMacAddress(topology.mac1);
         mac1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac1.setBridgeMacLinkLastPollTime(mac1.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(mac1);
 
         BridgeMacLink mac2 = new BridgeMacLink();
         mac2.setNode(nodeB);
@@ -418,7 +412,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac2.setMacAddress(topology.mac2);
         mac2.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac2.setBridgeMacLinkLastPollTime(mac2.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(mac2);
 
         BridgeMacLink mac3 = new BridgeMacLink();
         mac3.setNode(nodeC);
@@ -426,23 +419,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         mac3.setMacAddress(topology.mac3);
         mac3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         mac3.setBridgeMacLinkLastPollTime(mac3.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(mac3);
         
-        BridgeMacLink sharedD = new BridgeMacLink();
-        sharedD.setNode(nodeD);
-        sharedD.setBridgePort(45);
-        sharedD.setMacAddress(topology.shar);
-        sharedD.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
-        sharedD.setBridgeMacLinkLastPollTime(sharedD.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(sharedD);
-
         BridgeMacLink sharedE = new BridgeMacLink();
         sharedE.setNode(nodeE);
         sharedE.setBridgePort(54);
         sharedE.setMacAddress(topology.shar);
         sharedE.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedE.setBridgeMacLinkLastPollTime(sharedE.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(sharedE);
 
         BridgeMacLink sharedK = new BridgeMacLink();
         sharedK.setNode(nodeK);
@@ -450,7 +433,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         sharedK.setMacAddress(topology.shar);
         sharedK.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         sharedK.setBridgeMacLinkLastPollTime(sharedK.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(sharedK);
 
         BridgeMacLink macK = new BridgeMacLink();
         macK.setNode(nodeK);
@@ -458,17 +440,45 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         macK.setMacAddress("1234567800aa");
         macK.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         macK.setBridgeMacLinkLastPollTime(macK.getBridgeMacLinkCreateTime());
-        m_bridgeMacLinkDao.save(macK);
 
-        m_bridgeMacLinkDao.flush();
+        m_bridgeBridgeLinkDao.save(delink);
+        m_bridgeBridgeLinkDao.save(ablink);
+        m_bridgeBridgeLinkDao.save(bclink);
         m_bridgeBridgeLinkDao.flush();
-        assertEquals(10, m_bridgeMacLinkDao.countAll());
         assertEquals(3, m_bridgeBridgeLinkDao.countAll());
+
         
+        m_bridgeMacLinkDao.save(forward);
+        m_bridgeMacLinkDao.save(sharedB);
+        m_bridgeMacLinkDao.save(mac1);
+        m_bridgeMacLinkDao.save(mac2);
+        m_bridgeMacLinkDao.save(mac3);
+
+        m_bridgeMacLinkDao.save(sharedE);
+        
+        m_bridgeMacLinkDao.save(sharedK);
+        m_bridgeMacLinkDao.save(macK);
+        
+        m_bridgeMacLinkDao.flush();
+        
+        assertEquals(8, m_bridgeMacLinkDao.countAll());
+        
+        for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
+            System.err.println(maclink.printTopology());
+        }
+
+        for (BridgeBridgeLink bblink: m_bridgeBridgeLinkDao.findAll()) {
+            System.err.println(bblink.printTopology());
+        }
+
         assertNotNull(m_bridgeTopologyDao);
         m_linkd.getQueryManager().loadBridgeTopology();
 
+        for (BroadcastDomain bd:m_bridgeTopologyDao.getAll()) {
+            System.err.println(bd.printTopology());
+        }
         assertEquals(3, m_bridgeTopologyDao.getAll().size());
+        
         BroadcastDomain nodeAbd = m_linkd.getQueryManager().getBroadcastDomain(nodeA.getId().intValue());
         assertNotNull(nodeAbd);
         BroadcastDomain nodeBbd = m_linkd.getQueryManager().getBroadcastDomain(nodeB.getId().intValue());
@@ -484,9 +494,13 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         
         List<SharedSegment> nodeASegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeA.getId());
         assertEquals(2, nodeASegments.size());
-        
-        System.err.println(nodeAbd.printTopology());
-        
+
+        List<SharedSegment> nodeCSegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeC.getId());
+        assertEquals(2, nodeCSegments.size());
+
+        List<SharedSegment> nodeBSegments = m_bridgeTopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeB.getId());
+        assertEquals(3, nodeBSegments.size());
+
         BroadcastDomain nodeDbd = m_linkd.getQueryManager().getBroadcastDomain(nodeD.getId().intValue());
         assertNotNull(nodeDbd);
         BroadcastDomain nodeEbd = m_linkd.getQueryManager().getBroadcastDomain(nodeE.getId().intValue());
@@ -502,8 +516,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(45,deSegment.getBridgePort(nodeD.getId()).getBridgePort().intValue());
         assertEquals(54,deSegment.getBridgePort(nodeE.getId()).getBridgePort().intValue());
         assertTrue(deSegment.containsMac(topology.shar));
-
-        System.err.println(nodeDbd.printTopology());
 
         BroadcastDomain nodeKbd = m_linkd.getQueryManager().getBroadcastDomain(nodeK.getId().intValue());
         assertNotNull(nodeKbd);

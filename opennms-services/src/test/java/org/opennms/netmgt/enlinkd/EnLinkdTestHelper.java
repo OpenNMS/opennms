@@ -1433,9 +1433,9 @@ public abstract class EnLinkdTestHelper {
         }
         
         public void checkwithshared(BroadcastDomain domain) throws BridgeTopologyException {
-            assertEquals(0, domain.getForwarders(nodeAId));
-            assertEquals(0, domain.getForwarders(nodeCId));
-            assertEquals(1, domain.getForwarders(nodeBId));
+            assertEquals(0, domain.getForwarders(nodeAId).size());
+            assertEquals(0, domain.getForwarders(nodeCId).size());
+            assertEquals(1, domain.getForwarders(nodeBId).size());
             BridgeForwardingTableEntry forwentry = domain.getForwarders(nodeBId).iterator().next();
             assertEquals(nodeBId.intValue(), forwentry.getNodeId().intValue());
             assertEquals(portBA.intValue(), forwentry.getBridgePort().intValue());
@@ -1471,7 +1471,7 @@ public abstract class EnLinkdTestHelper {
                    
                    BridgeMacLink link = links.iterator().next();
                    assertEquals(nodeBId, link.getNode().getId());
-                   assertEquals(portB,link.getBridgePort());
+                   assertEquals(portBC,link.getBridgePort());
                    assertEquals(shar, link.getMacAddress());
                    assertEquals(BridgeMacLinkType.BRIDGE_LINK, link.getLinkType());
                    
