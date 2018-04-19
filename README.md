@@ -26,11 +26,12 @@ Installing OpenNMS
 
 For details on installing OpenNMS, please see the install guide: [Installing OpenNMS][].
 
-Building OpenNMS
-================
+Before making a pull request, please submit an [OCA][] for copyright assignment.  Note that this does **not** mean that you are giving up your copyright of your changes to OpenNMS, it instead allows for _dual_ copyright over contributed code.
 
-For details on building OpenNMS, please see the wiki page: [Building OpenNMS][].
+If you are using Eclipse, please read the [Eclipse][] page for details on setting up your workspace for code conventions and the plugins we use.
 
 [OpenNMS]:           http://www.opennms.org/
-[Building OpenNMS]:  https://www.opennms.org/wiki/Installation:Source
-[Installing OpenNMS]:  http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html
+[OCA]:               http://www.opennms.org/wiki/OCA
+[Eclipse]:           http://www.opennms.org/wiki/Eclipse
+[Building_OpenNMS]:  http://www.opennms.org/wiki/Building_OpenNMS
+[Installing OpenNMS]: http://docs.opennms.org/opennms/branches/develop/guide-install/guide-install.html

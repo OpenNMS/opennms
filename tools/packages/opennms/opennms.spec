@@ -23,8 +23,8 @@
 %{!?bindir:%define bindir %instprefix/bin}
 
 # Description
-%{!?_name:%define _name "opennms"}
-%{!?_descr:%define _descr "OpenNMS"}
+%{!?_name:%define _name "meridian"}
+%{!?_descr:%define _descr "OpenNMS Meridian"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
 %{!?jdk:%define jdk java-1.8.0}
@@ -92,6 +92,8 @@ Requires(pre):	jicmp >= 2.0.0
 Requires:	jicmp >= 2.0.0
 Requires(pre):	jicmp6 >= 2.0.0
 Requires:	jicmp6 >= 2.0.0
+Requires(pre):	jrrd2 >= 2.0.0
+Requires:	jrrd2 >= 2.0.0
 Requires(pre):	%{jdk}
 Requires:	%{jdk}
 Obsoletes:	opennms < 1.3.11

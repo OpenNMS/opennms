@@ -165,19 +165,19 @@ a:focus {
   background-color: $color_opennms_darker;
 }
 .btn-info {
-  background-color: $color_opennms_light;
-  border-color: $color_opennms;
+  border-color: #35BBA6;
+  background-color: #5BDBC7;
 }
 .btn-info[disabled] {
-  background-color: lighten($color_opennms_light, 10%);
-  border-color: lighten($color_opennms, 10%);
+  background-color: lighten(#35BBA6, 10%);
+  border-color: lighten(#5BDBC7, 10%);
 }
 .btn-info:hover,
 .btn-info:focus,
 .btn-info:active,
 .btn-info.active,
 .open .dropdown-toggle.btn-info {
-  background-color: $color_opennms;
+  background-color: #35BBA6;
 }
 .btn-warning {
   background-color: #FFBF00;
@@ -221,7 +221,7 @@ a:focus {
   color:$color_opennms;
 }
 .text-info {
-  color:$color_opennms;
+  color:#5BDBC7;
 }
 .text-warning {
   color:#FFBF00;
@@ -249,7 +249,7 @@ a:focus {
   background: $color_opennms_dark;
 }
 .alert-info {
-  background: $color_opennms;
+  background: #5BDBC7;
 }
 .alert-warning {
   background: #FFBF00;
@@ -349,7 +349,7 @@ a:focus {
   background-color: $color_success;
 }
 .progress-bar-info {
-  background-color: $color_opennms;
+  background-color: #5BDBC7;
 }
 .progress-bar-warning {
   background-color: #FFBF00;
@@ -374,14 +374,14 @@ a.list-group-item.active:focus {
 /* =10.0 Dropdowns
 ----------------------------------------------- */
 .dropdown-menu > li > a {
-  color: black;
+  color: white;
 }
 
 .dropdown-menu,
 .dropdown-menu>.active>a,
 .dropdown-menu>.active>a:hover,
 .dropdown-menu>.active>a:focus {
-  color: black;
+  color: white;
   background-color: $color_alto_approx;
   padding: 5px;
   min-width: 50px;
@@ -456,11 +456,11 @@ a.list-group-item.active:focus {
   }
 
   a:focus {
-    color: $color_opennms;
+    color: $color_meridian_blue;
   }
 
   a:hover {
-    color: $color_opennms;
+    color: $color_meridian_blue;
   }
 
   &.dropdown.open {
@@ -476,9 +476,9 @@ a.list-group-item.active:focus {
   margin-right: 0;
   padding-right: 5px;
   padding-top: 2px;
-  @include navbar-inverse-color(black);
+  @include navbar-inverse-color(white);
   a {
-    @include navbar-inverse-color(black);
+    @include navbar-inverse-color(white);
   }
   h3 {
     margin: 0;
@@ -497,7 +497,7 @@ a.list-group-item.active:focus {
   > li {
     > a,
     > span {
-      color: $color_opennms;
+      color: $color_meridian_blue;
       /* background-color: $pagination-bg; */
       border: 1px solid $table-border-color;
     }
@@ -506,7 +506,7 @@ a.list-group-item.active:focus {
   > li > span {
     &:hover,
     &:focus {
-      color: $color_opennms;
+      color: $color_meridian_blue;
       /* background-color: $pagination-hover-bg; */
       border-color: $table-border-color;
     }
@@ -517,7 +517,7 @@ a.list-group-item.active:focus {
     &:hover,
     &:focus {
       /* color: $pagination-active-color; */
-      background-color: $color_opennms;
+      background-color: $color_meridian_blue;
       border-color: $color_green_leaf_approx;
     }
   }
@@ -552,8 +552,8 @@ a.list-group-item.active:focus {
 .panel-heading {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
-  background-color: $color_opennms !important;
-  border-color: $color_opennms !important;
+  background-color: $color_meridian_blue !important;
+  border-color: $color_meridian_blue !important;
   background-position: center center;
   padding: $panel-heading-padding;
 }
@@ -564,8 +564,10 @@ a.list-group-item.active:focus {
   font-weight: bold;
 }
 
-.panel-title > a:hover {
-  color: $color_alto_approx;
+.panel-title > a:hover,
+.panel-title > a:link,
+.panel-title > a:visited,
+.panel-title > a:active {
   text-decoration: none;
 }
 
@@ -861,10 +863,10 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 .resource-graphs-sidebar .nav>.active>a,
 .resource-graphs-sidebar .nav>li>a:hover,
 .resource-graphs-sidebar .nav>li>a:focus {
-  color: $color_opennms;
+  color: #563d7c;
   text-decoration: none;
   background-color: transparent;
-  border-left-color: $color_opennms;
+  border-left-color: #563d7c;
 }
 /* all active links */
 .resource-graphs-sidebar .nav>.active>a,

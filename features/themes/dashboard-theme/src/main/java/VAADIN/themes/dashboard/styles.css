@@ -44,17 +44,17 @@
 }
 
 .dashboard .header {
-    background-color: #dddddd;
-    border-color: #dddddd;
+    background-color: #ddd;
+    border-color: #ccc;
     border-width: 0 0 1px;
 }
 
 #onmslogo {
-    background:url(/opennms/images/horizon_logo.svg) no-repeat;
+    background:url(/opennms/images/meridian_logo.svg) no-repeat;
     display:block;
     height:44px;
-    width:130px;
-    background-size: 130px 44px;
+    width:170px;
+    background-size: 170px 44px;
     overflow:hidden;
     text-indent:100%;
     white-space:nowrap;

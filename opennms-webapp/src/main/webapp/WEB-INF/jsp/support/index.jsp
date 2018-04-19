@@ -173,7 +173,7 @@ session="true"
         </p>
         <p>
           If you do not have a commercial support agreement, see
-          <a href="http://www.opennms.com/support/">the OpenNMS.com support page</a> for more details.
+          <a href="https://www.opennms.com/support/">the OpenNMS.com support page</a> for more details.
         </p>
         <form role="form" method="post" action="support/index.htm">
 			<div class="form-group">
@@ -205,7 +205,7 @@ session="true"
   <div class="panel-body">
     <ul class="list-unstyled">
       <li><a href="support/about.jsp">About the OpenNMS Web Console</a></li>
-      <li><a href="http://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html">Release Notes</a></li>
+      <li><a href="https://meridian.opennms.com/releasenotes/2017/latest/index.html">Release Notes</a></li>
     </ul>
   </div>
   </div>
@@ -217,10 +217,10 @@ session="true"
   <div class="panel-body">
     <span id="online-documentation" style="display:none;">
     <ul class="list-unstyled">
-      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-install/guide-install.html">Installation Guide</a></li>
-      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-user/guide-user.html">Users Guide</a></li>
-      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
-      <li><a href="https://docs.opennms.org/opennms/releases/latest/guide-development/guide-development.html">Developers Guide</a></li>
+      <li><a href="https://meridian.opennms.com/docs/2017/latest/guide-install/index.html">Installation Guide</a></li>
+      <li><a href="https://meridian.opennms.com/docs/2017/latest/guide-user/index.html">Users Guide</a></li>
+      <li><a href="https://meridian.opennms.com/docs/2017/latest/guide-admin/guide-admin.html">Administrators Guide</a></li>
+      <li><a href="https://meridian.opennms.com/docs/2017/latest/guide-development/guide-development.html">Developers Guide</a></li>
       <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>

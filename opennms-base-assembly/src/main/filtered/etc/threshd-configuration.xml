@@ -1,4 +1,44 @@
 <threshd-configuration xmlns="http://xmlns.opennms.org/xsd/config/thresholding" threads="5">
+   <package name="TH-Storage-High-95">
+      <filter>categoryname == 'TH-Storage-High-95'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="TH-Storage-High-95"/>
+      </service>
+   </package>
+   <package name="TH-Storage-Relative-33">
+      <filter>categoryname == 'TH-Storage-Relative-33'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="TH-Storage-Relative-33"/>
+      </service>
+   </package>
+   <package name="TH-Network-Discards-High-5">
+      <filter>categoryname == 'TH-Network-Discards-High-5'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="TH-Network-Discards-High-5"/>
+      </service>
+   </package>
+   <package name="TH-System-Temp-High-55">
+      <filter>categoryname == 'TH-System-Temp-High-55'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="TH-System-Temp-High-55"/>
+      </service>
+   </package>
+   <package name="TH-Network-Bandwidth-High-90">
+      <filter>categoryname == 'TH-Network-Bandwidth-High-90'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="SNMP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="TH-Network-Bandwidth-High-90"/>
+      </service>
+   </package>
    <package name="mib2">
       <filter>IPADDR != '0.0.0.0'</filter>
       <include-range begin="1.1.1.1" end="254.254.254.254"/>

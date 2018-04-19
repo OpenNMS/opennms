@@ -41,7 +41,7 @@ casper.test.begin('Support Page', {
 			casper.clickLabel('Release Notes');
 		});
 		casper.then(function() {
-			test.assertUrlMatch(/docs\.opennms\.org/, 'Release Notes on docs.opennms.org');
+			test.assertUrlMatch(/meridian\.opennms\.com/, 'Release Notes on meridian.opennms.com');
 			casper.back();
 		});
 
@@ -49,7 +49,7 @@ casper.test.begin('Support Page', {
 			casper.clickLabel('Online Documentation');
 		});
 		casper.then(function() {
-			test.assertUrlMatch(/www\.opennms\.org/, 'OpenNMS Wiki');
+			test.assertUrlMatch(/meridian\.opennms\.com/, 'Meridian Docs');
 			casper.back();
 		});
 

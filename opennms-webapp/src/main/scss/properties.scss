@@ -26,11 +26,16 @@ $color_bright_red_approx: #a20200;
 $color_alizarin_crimson_approx: #a40000;
 $color_lima_approx: #4c9d29;
 
-$color_opennms: #4c9d29;
-$color_opennms_light: #5acc29;
-$color_opennms_lighter: lighten($color_opennms_light,10%);
-$color_opennms_dark: $color_green_leaf_approx;
-$color_opennms_darker: darken($color_opennms_dark,10%);
+$color_horizon_green: #4c9d29;
+$color_horizon_green_light: #5acc29;
+$color_meridian_blue: #267db6;
+$color_meridian_blue_light: #32a2e0;
+
+$color_opennms: $color_meridian_blue;
+$color_opennms_light: $color_meridian_blue_light;
+$color_opennms_lighter: lighten($color_meridian_blue_light,10%);
+$color_opennms_dark: darken($color_meridian_blue,10%);
+$color_opennms_darker: darken($color_meridian_blue,20%);
 
 $color_success: #94bf7c;
 $color_success_lighter: lighten($color_success,20%);

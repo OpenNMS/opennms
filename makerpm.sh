@@ -149,8 +149,8 @@ function main()
     SIGN_PASSWORD=
     SIGN_ID="opennms@opennms.org"
     BUILD_RPM=true
-    PACKAGE_NAME="opennms"
-    PACKAGE_DESCRIPTION="OpenNMS"
+    PACKAGE_NAME="meridian"
+    PACKAGE_DESCRIPTION="OpenNMS Meridian"
 
     RELEASE_MAJOR=0
     local RELEASE_MINOR="$(calcMinor)"
