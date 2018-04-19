@@ -2,6 +2,42 @@
 
 === Changelog
 
+[[releasenotes-changelog-21.1.0]]
+
+==== Release 21.1.0
+
+Release 21.1.0 is the latest stable release of OpenNMS.
+It contains bug fixes and a few enhancements, including support for forwarding events, alarms, and nodes to Kafka.
+For a high-level overview of what's changed in OpenNMS 21, see link:https://docs.opennms.org/opennms/releases/latest/releasenotes/releasenotes.html#releasenotes-21[What's New in OpenNMS 21].
+
+The codename for 21.1.0 is _link:https://bladerunner.wikia.com/wiki/Replicant[Replicant]_.
+
+===== Bug
+
+* NettyServerTCPWorker warnings in eventd.log (Issue http://issues.opennms.org/browse/NMS-9667[NMS-9667])
+* RADIUS Poller: MD4 MessageDigest not available (Issue http://issues.opennms.org/browse/NMS-9763[NMS-9763])
+* Karaf opennms-es-rest Plugin - Creating OID mappings causing ES index mappings to exceed 1000 (Issue http://issues.opennms.org/browse/NMS-9831[NMS-9831])
+* Node ReST service not handling assets and deleting properly (Issue http://issues.opennms.org/browse/NMS-9855[NMS-9855])
+* JasperStudio extension dependency error (Issue http://issues.opennms.org/browse/NMS-9915[NMS-9915])
+* Can't install OpenNMS on Ubuntu 18.04 (Issue http://issues.opennms.org/browse/NMS-9925[NMS-9925])
+* A Karaf issue with SSH sessions makes unusable the metrics:stress command (Issue http://issues.opennms.org/browse/NMS-9929[NMS-9929])
+* EventUtils.eventsMatch() fails if nodeId is greater than 127 (Issue http://issues.opennms.org/browse/NMS-9941[NMS-9941])
+* compilation fails on windows due to checkstyle exceptions (Issue http://issues.opennms.org/browse/NMS-9943[NMS-9943])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+* Possible StackOverflow in DefaultRequestExecutor (Issue http://issues.opennms.org/browse/NMS-9920[NMS-9920])
+* EventToIndex - Alarm Change Old/New parameters submitted to ES as single string and not JSON objects (Issue http://issues.opennms.org/browse/HZN-1272[HZN-1272])
+
+===== Enhancement
+
+* Kafka Entity Streams (Issue http://issues.opennms.org/browse/HZN-1256[HZN-1256])
+* Add filtering support to events forwarded to kafka (Issue http://issues.opennms.org/browse/NMS-9898[NMS-9898])
+* The Grafana Box on the front page doesn't work when Grafana is behind a Web Proxy (Issue http://issues.opennms.org/browse/NMS-9916[NMS-9916])
+* Subsume "Event Configuration How-To" from wiki into admin guide (Issue http://issues.opennms.org/browse/NMS-9926[NMS-9926])
+* Update docs section of devel guide with section on migrating info from wiki (Issue http://issues.opennms.org/browse/NMS-9934[NMS-9934])
+* Refactor UserGroupLdapAuthoritiesPopulator to provide a default role. (Issue http://issues.opennms.org/browse/NMS-9937[NMS-9937])
+* Kafka Event Stream - Add support for filtering (Issue http://issues.opennms.org/browse/HZN-1257[HZN-1257])
+* Kafka Alarm Stream -  Perform periodic synchronization (Issue http://issues.opennms.org/browse/HZN-1258[HZN-1258])
+
 [[releasenotes-changelog-21.0.5]]
 
 ==== Release 21.0.5
