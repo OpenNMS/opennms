@@ -175,22 +175,38 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
 [releasenotes-changelog-Meridian-2017.1.7]
+
 ==== Release Meridian-2017.1.7
 
 Release 2017.1.7 is a small update to OpenNMS Meridian 2017.1.6.
 It contains a few bug fixes and minor enhancements.
 
-The codename for 2017.1.7 is _Undefined_.
+The codename for 2017.1.7 is _United Kingdom Ordnance Survey Zero Meridian_.
 
 .Configuration Update
 [NOTE]
-Some updates to Cisco data collection and graph configuration has been made since 2017.1.6.
+Some updates to Cisco data collection and graph configuration have been made since 2017.1.6.
 They add collection from `CISCO-REMOTE-ACCESS-MONITOR-MIB` on a number of ASAxxxx devices, as well as alarm reduction keys for FRU insertion and removal.
 Additionally, graphs for tunnel sessions have been added.
 To avoid configuration conflicts, however, the updated files have been written with the extension `.xml-2017.1.7`.
 If you wish to use these new configurations, rename the `.xml-2017.1.7` files to `.xml`, overwriting the existing files.
 
+===== Bug
+
+* Node ReST service not handling assets and deleting properly (Issue http://issues.opennms.org/browse/NMS-9855[NMS-9855])
+* JasperStudio extension dependency error (Issue http://issues.opennms.org/browse/NMS-9915[NMS-9915])
+* EventUtils.eventsMatch() fails if nodeId is greater than 127 (Issue http://issues.opennms.org/browse/NMS-9941[NMS-9941])
+* compilation fails on windows due to checkstyle exceptions (Issue http://issues.opennms.org/browse/NMS-9943[NMS-9943])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+
+===== Enhancement
+
+* Subsume "Event Configuration How-To" from wiki into admin guide (Issue http://issues.opennms.org/browse/NMS-9926[NMS-9926])
+* Update docs section of devel guide with section on migrating info from wiki (Issue http://issues.opennms.org/browse/NMS-9934[NMS-9934])
+* Refactor UserGroupLdapAuthoritiesPopulator to provide a default role. (Issue http://issues.opennms.org/browse/NMS-9937[NMS-9937])
+
 [releasenotes-changelog-Meridian-2017.1.6]
+
 ==== Release Meridian-2017.1.6
 
 Release 2017.1.6 is a small update to OpenNMS Meridian 2017.1.5.
