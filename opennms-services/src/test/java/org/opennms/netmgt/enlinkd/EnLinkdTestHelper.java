@@ -623,6 +623,7 @@ public abstract class EnLinkdTestHelper {
             //BFT E port 23 wireless 
             bftE.add(addBridgeForwardingTableEntry(nodeE, 23, 23, macsonEport23[0]));
         }
+        
         public void checkBC(BroadcastDomain domain) throws BridgeTopologyException {
             assertEquals(5, domain.getBridgeNodesOnDomain().size());
             assertEquals(nodeBId, domain.getRootBridge().getNodeId().intValue());

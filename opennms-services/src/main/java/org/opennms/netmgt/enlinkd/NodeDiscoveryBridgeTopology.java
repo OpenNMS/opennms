@@ -455,7 +455,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             if (goDown(rootft, bridgeft)) {
                 parsed.add(xBridgeId);
             }
-        }        
+        }  
+        
+        m_domain.cleanForwarders();
         if (LOG.isInfoEnabled()) {
             LOG.info("calculate: topology calculation end: ->\n{}.", 
                  m_domain.printTopology());
@@ -546,7 +548,14 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             BridgeSimpleConnection bridgesimpleconn = 
                     new BridgeSimpleConnection(curBridgeFT,
                                        upsimpleconn.getSecond());
-            if (!bridgesimpleconn.findSimpleConnection()) {
+            if (bridgesimpleconn.findSimpleConnection()) {
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("goDown: level: {}, bridge:[{}]. simple connection found: ->\n{}", 
+                             level,
+                             bridgesimpleconn.getSecond().getNodeId(),
+                             bridgesimpleconn.printTopology());
+                }
+            } else {
                 LOG.warn("goDown: level: {}, no simple connection:[{}<-->{}]",
                          level, upsimpleconn.getSecond().getNodeId(),
                          curbridge.getNodeId());

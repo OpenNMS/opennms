@@ -42,6 +42,7 @@ import org.opennms.netmgt.config.EnhancedLinkdConfigManager;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -353,6 +354,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         topology.check2nodeTopology(ndbt.getDomain(),true);
         assertEquals(topology.nodeBId, domain.getRootBridge().getNodeId());
+
+        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateRootBFT(domain)));
+        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeAId))));
     }
 
     @Test 
@@ -380,6 +384,10 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         topology.check2nodeTopology(ndbt.getDomain(),false);
         assertEquals(topology.nodeAId, domain.getRootBridge().getNodeId());
+        
+        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateRootBFT(domain)));
+        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeBId))));
+
     }
 
     @Test
@@ -888,6 +896,80 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test 
+    public void testDEFGThenI() throws BridgeTopologyException {
+        DEFGHILTopology topology = new DEFGHILTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.nodeDId);
+        Bridge.create(domain,topology.nodeEId);
+        Bridge.create(domain,topology.nodeFId);
+        Bridge.create(domain,topology.nodeGId);
+        Bridge.create(domain,topology.nodeIId);
+        setBridgeElements(domain,topology.elemlist);
+
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeDId, null, null, null,location));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT((topology.nodeDId),topology.bftD);
+        ndbt.addUpdatedBFT((topology.nodeEId),topology.bftE);
+        ndbt.addUpdatedBFT((topology.nodeFId),topology.bftF);
+        ndbt.addUpdatedBFT((topology.nodeGId),topology.bftG);
+        ndbt.calculate();
+        
+        topology.checkDEFG(ndbt.getDomain());
+        
+        ndbt.addUpdatedBFT((topology.nodeIId),topology.bftI);
+        ndbt.calculate();
+        
+        for (BridgeForwardingTableEntry bftentry: BroadcastDomain.calculateBFT(domain, domain.getBridge(topology.nodeIId))) {
+            assertEquals(topology.nodeIId.intValue(), bftentry.getNodeId().intValue());
+            if (bftentry.getMacAddress().equals(topology.mac1)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac2)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac3)) {
+                assertEquals(topology.portI3.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac4)) {
+                assertEquals(topology.portI4.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac5)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac6)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac7)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac8)) {
+                assertEquals(topology.portII.intValue(), bftentry.getBridgePort().intValue());
+            } else {
+                assertEquals(0, 1);
+            }
+        }
+
+        for (BridgeForwardingTableEntry bftentry: BroadcastDomain.calculateBFT(domain, domain.getBridge(topology.nodeGId))) {
+            assertEquals(topology.nodeGId.intValue(), bftentry.getNodeId().intValue());
+            if (bftentry.getMacAddress().equals(topology.mac1)) {
+                assertEquals(topology.portGD.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac2)) {
+                assertEquals(topology.portGD.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac3)) {
+                assertEquals(topology.portGF.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac4)) {
+                assertEquals(topology.portGF.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac5)) {
+                assertEquals(topology.portGE.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac6)) {
+                assertEquals(topology.portGE.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac7)) {
+                assertEquals(topology.portG7.intValue(), bftentry.getBridgePort().intValue());
+            } else if (bftentry.getMacAddress().equals(topology.mac8)) {
+                assertEquals(topology.portG8.intValue(), bftentry.getBridgePort().intValue());
+            } else {
+                assertEquals(0, 1);
+            }
+        }
+
+
+    }
+
+    @Test 
     public void testDEFGHIL() throws BridgeTopologyException {
         DEFGHILTopology topology = new DEFGHILTopology();
 
@@ -913,7 +995,6 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbt.calculate();
         
         topology.check(ndbt.getDomain());
-
     }
 
 
@@ -1000,7 +1081,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtD.setDomain(domain);
         ndbtD.addUpdatedBFT((topology.nodeDId),topology.bftD);
         ndbtD.calculate();
-
+        
         NodeDiscoveryBridgeTopology ndbtE= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeEId, null, null, null,location));
         ndbtE.setDomain(domain);
         ndbtE.addUpdatedBFT((topology.nodeEId),topology.bftE);
