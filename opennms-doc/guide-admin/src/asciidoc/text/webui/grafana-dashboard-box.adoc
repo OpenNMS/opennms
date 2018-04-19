@@ -25,6 +25,7 @@ image:webui/startpage/01_grafana-box.png[]
 | `org.opennms.grafanaBox.hostname`          | _String_  | If the box is enabled you also need to specify hostname of
                                                            the _Grafana_ server                                         | `localhost`
 | `org.opennms.grafanaBox.port`              | _Integer_ | The port of the _Grafana_ server ReST API                    | `3000`
+| `org.opennms.grafanaBox.basePath`          | _String_  | The _Grafana_ base path to be used                           |
 | `org.opennms.grafanaBox.apiKey`            | _String_  | The API key is needed for the ReST calls to work             |
 | `org.opennms.grafanaBox.tag`               | _String_  | When a _tag_ is specified only dashboards with this given _tag_
                                                            will be displayed. When no _tag_ is given all dashboards will
