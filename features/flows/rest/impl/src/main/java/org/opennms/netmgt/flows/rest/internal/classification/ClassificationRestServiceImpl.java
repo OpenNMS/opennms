@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.flows.rest.internal.classification;
 
+import static org.opennms.netmgt.flows.rest.internal.classification.ClassificationRequestDTOValidator.validate;
+
 import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
@@ -46,14 +48,9 @@ import javax.ws.rs.core.UriInfo;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
-import org.opennms.core.utils.IPLike;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.ClassificationRequestBuilder;
 import org.opennms.netmgt.flows.classification.ClassificationService;
-import org.opennms.netmgt.flows.classification.error.ErrorContext;
-import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
-import org.opennms.netmgt.flows.classification.error.Errors;
-import org.opennms.netmgt.flows.classification.exception.ClassificationException;
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
@@ -349,58 +346,6 @@ public class ClassificationRestServiceImpl implements ClassificationRestService 
         final int offset = (criteria.getOffset() == null ? 0 : criteria.getOffset());
         final long totalCount = countDelegate.countMatching(criteria);
         return ResponseUtils.createResponse(responseBody, offset, totalCount);
-    }
-
-    // TODO MVR move to its own implementation
-    private static void validate(ClassificationRequestDTO requestDTO) {
-        // Verify Protocol
-        if (Strings.isNullOrEmpty(requestDTO.getProtocol())) {
-            throw new ClassificationException(ErrorContext.Protocol, Errors.RULE_PROTOCOL_IS_REQUIRED);
-        }
-        if (Protocols.getProtocol(requestDTO.getProtocol()) == null) {
-            throw new ClassificationException(ErrorContext.Protocol, Errors.RULE_PROTOCOL_DOES_NOT_EXIST, requestDTO.getProtocol());
-        }
-
-        // Verify Dst
-        validatePort(ErrorContext.DstPort, requestDTO.getDstPort());
-        validateAddress(ErrorContext.DstAddress, requestDTO.getDstAddress());
-
-        // Verify Src
-        validatePort(ErrorContext.SrcPort, requestDTO.getSrcPort());
-        validateAddress(ErrorContext.SrcAddress, requestDTO.getSrcAddress());
-
-        // Verify Exporter Address
-        validateAddress(ErrorContext.ExporterAddress, requestDTO.getExporterAddress());
-    }
-
-    // TODO MVR move to its own implementation
-    private static void validatePort(String errorContext, String portValue) {
-        Objects.requireNonNull(errorContext);
-
-        try {
-            int port = Integer.parseInt(portValue);
-            if (port < Rule.MIN_PORT_VALUE || port > Rule.MAX_PORT_VALUE) {
-                throw new ClassificationException(errorContext, Errors.RULE_PORT_VALUE_NOT_IN_RANGE, Rule.MIN_PORT_VALUE, Rule.MAX_PORT_VALUE);
-            }
-        } catch (NumberFormatException ex) {
-            throw new ClassificationException(
-                    errorContext,
-                    new ErrorTemplate(null, "The provided port {0} is not a valid number."),
-                    portValue);
-        }
-    }
-
-    // TODO MVR move to its own implementation
-    private static void validateAddress(String errorContext, String address) {
-        Objects.requireNonNull(errorContext);
-
-        try {
-            // Matches actually verifies the "pattern" before a match against a concrete ip address is performed
-            // As we are only interesting in the validation, we just use "8.8.8.8".
-            IPLike.matches("8.8.8.8", address);
-        } catch (Exception ex) {
-            throw new  ClassificationException(errorContext, Errors.RULE_IP_ADDRESS_INVALID, address);
-        }
     }
 
     @FunctionalInterface

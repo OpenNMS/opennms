@@ -358,7 +358,6 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             }
 
             // Input fields
-            // TODO MVR verify simple vs complex mode
             setInput("classify-dstIpAddress", classificationRequestDTO.getDstAddress());
             setInput("classify-dstPort", classificationRequestDTO.getDstPort());
             setInput("classify-dstProtocol", classificationRequestDTO.getProtocol(), true);

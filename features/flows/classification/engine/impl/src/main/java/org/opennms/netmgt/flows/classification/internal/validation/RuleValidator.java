@@ -45,7 +45,6 @@ import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 import com.google.common.base.Strings;
 
-// TODO MVR move to api and re-use in rest endpoint
 public class RuleValidator {
 
     private static final Pattern PORT_PATTERN = Pattern.compile("^\\d+((-|,)\\d+)*$");
