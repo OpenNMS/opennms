@@ -141,6 +141,19 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.12]
+
+==== Release Meridian-2016.1.12
+
+Release 2016.1.12 is an update to 2016.1.11 that provides one small bug fix and a Windows build fix.
+
+The codename for 2016.1.12 is _Lambert cylindrical equal-area_.
+
+===== Bug
+
+* EventUtils.eventsMatch() fails if nodeId is greater than 127 (Issue http://issues.opennms.org/browse/NMS-9941[NMS-9941])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+
 [releasenotes-changelog-Meridian-2016.1.11]
 ==== Release Meridian-2016.1.11
 
