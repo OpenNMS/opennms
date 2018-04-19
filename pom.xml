@@ -1324,6 +1324,8 @@
     <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>4.1.5</karafVersion>
+    <kafkaStreamsVersion>1.0.1</kafkaStreamsVersion>
+    <kafkaStreamsBundleVersion>1.0.1_1</kafkaStreamsBundleVersion>
     <felixVersion>3.0.0</felixVersion>
     <liquibaseVersion>2.0.5-ONMS20160524b</liquibaseVersion>
     <lmaxDisruptorVersion>3.3.2</lmaxDisruptorVersion>
@@ -1339,6 +1341,7 @@
     <paxSwissboxVersion>1.8.2</paxSwissboxVersion>
     <paxWebVersion>4.3.0</paxWebVersion>
     <protobufVersion>2.6.1</protobufVersion>
+    <protobuf3Version>3.5.1</protobuf3Version>
     <postgresqlVersion>9.4.1211</postgresqlVersion>
     <powermockVersion>1.6.4</powermockVersion>
     <osgiVersion>6.0.0</osgiVersion>

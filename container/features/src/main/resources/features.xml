@@ -1098,6 +1098,27 @@
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="kafka-streams" description="Kafka Streams" version="${kafkaStreamsVersion}">
+      <!-- Wrap the kafka-streams bundle instead of using the servicemix implementation since the later doesn't include the required imports for rocksdb -->
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/kafka-streams/${kafkaStreamsVersion}$Bundle-Version=${kafkaStreamsVersion}&amp;Export-Package=*;-noimport:=true:version="${kafkaStreamsVersion}"</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaStreamsBundleVersion}</bundle>
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-json/${kafkaStreamsVersion}</bundle>
+      <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaStreamsVersion}</bundle>
+      <bundle dependency="true">mvn:org.lz4/lz4-java/1.4</bundle>
+      <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.4</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.6.6</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.6.6</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+      <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/5.7.3</bundle>
+    </feature>
+
+    <feature name="opennms-kafka-producer" description="OpenNMS :: Kafka :: Producer" version="${project.version}">
+      <feature version="${guavaVersion}">guava</feature>
+      <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
+      <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-telemetry-collection" description="OpenNMS :: Telemetry :: Collection" version="${project.version}">
       <feature>guava</feature>
 

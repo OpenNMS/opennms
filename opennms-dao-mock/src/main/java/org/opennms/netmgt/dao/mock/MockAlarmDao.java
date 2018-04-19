@@ -78,7 +78,12 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
 
     @Override
     public OnmsAlarm findByReductionKey(final String reductionKey) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        for (OnmsAlarm alarm : findAll()) {
+            if (alarm.getReductionKey().equals(reductionKey)) {
+                return alarm;
+            }
+        }
+        return null;
     }
 
     @Override

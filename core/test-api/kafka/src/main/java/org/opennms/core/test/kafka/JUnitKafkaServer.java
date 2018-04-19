@@ -40,6 +40,7 @@ import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.I0Itec.zkclient.ZkClient;
@@ -48,6 +49,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
+import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,33 +76,52 @@ public class JUnitKafkaServer extends ExternalResource {
 
     private String localhost = "localhost";
     private AtomicInteger kafkaPort = new AtomicInteger(9092);
+    private String kafkaLogDir;
+    private TemporaryFolder temporaryFolder;
 
     private KafkaConfig kafkaConfig;
     private KafkaServer kafkaServer;
     private TestingServer zkServer;
 
+    public JUnitKafkaServer() {
+        this("target/kafka-log");
+    }
+
+    public JUnitKafkaServer(String kafkaLogDir) {
+        this.kafkaLogDir = Objects.requireNonNull(kafkaLogDir);
+    }
+
+    public JUnitKafkaServer(TemporaryFolder temporaryFolder) {
+        this.temporaryFolder = temporaryFolder;
+    }
+
     @Override
     public void before() throws Exception {
-        zkServer = new TestingServer();
+        File zkTempDirectory = null;
+        if (temporaryFolder != null) {
+            kafkaLogDir = temporaryFolder.newFolder("kafka-log").getAbsolutePath();
+            zkTempDirectory = temporaryFolder.newFolder("zookeeper");
+        } else {
+            FileUtils.deleteDirectory(new File(kafkaLogDir));
+        }
+
+        zkServer = new TestingServer(-1, zkTempDirectory, true);
         // Start ZooKeeper, this method will block until the service has started
         zkServer.start();
 
         getAvailablePort(kafkaPort, 9192);
-
-        // Delete any existing Kafka log directory
-        FileUtils.deleteDirectory(new File("target/kafka-log"));
-
         localhost = getLocalhost();
 
         final Properties properties = new Properties();
         properties.put("broker.id", "1");
         properties.put("auto.create.topics.enable", "true");
-        properties.put("num.partitions", "100");
+        properties.put("num.partitions", "10");
         properties.put("enable.zookeeper", "true");
         properties.put("host.name", localhost);
-        properties.put("log.dir", "target/kafka-log");
+        properties.put("log.dir", kafkaLogDir);
         properties.put("port", String.valueOf(kafkaPort.get()));
         properties.put("zookeeper.connect", zkServer.getConnectString());
+        properties.put("offsets.topic.replication.factor", (short)1);
         properties.put("listeners", "PLAINTEXT://" + "localhost:" + String.valueOf(kafkaPort.get()));
 
         System.err.println("Kafka server properties: " + properties);

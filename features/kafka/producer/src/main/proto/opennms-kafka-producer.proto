@@ -1,0 +1,111 @@
+syntax = "proto3";
+option java_package = "org.opennms.features.kafka.producer.model";
+option java_outer_classname = "OpennmsModelProtos";
+
+// The values differ from the standard codes in OpenNMS
+// since proto3 enforces us to start at 0
+enum Severity {
+  INDETERMINATE = 0;
+  CLEARED = 1;
+  NORMAL = 2;
+  WARNING = 3;
+  MINOR = 4;
+  MAJOR = 5;
+  CRITICAL = 6;
+}
+
+message NodeCriteria {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+}
+
+message EventParameter {
+  string name = 1;
+  string value = 2;
+  string type = 3;
+}
+
+message Event {
+  uint64 id = 1;
+  string uei = 2;
+  string label = 3;
+  uint64 time = 4;
+  string source = 5;
+  repeated EventParameter parameter = 6;
+  uint64 create_time = 7;
+  string description = 8;
+  string log_message = 9;
+  Severity severity = 10;
+  bool log = 11;
+  bool display = 12;
+  NodeCriteria node_criteria = 13;
+}
+
+message Alarm {
+  uint64 id = 1;
+  string uei = 2;
+  NodeCriteria node_criteria = 3;
+  string ip_address = 4;
+  string service_name = 5;
+  string reduction_key = 6;
+  enum Type {
+    PROBLEM_WITH_CLEAR = 0;
+    CLEAR = 1;
+    PROBLEM_WITHOUT_CLEAR = 2;
+  }
+  Type type = 7;
+  uint64 count = 8;
+  Severity severity = 9;
+  uint64 first_event_time = 10;
+  string description = 11;
+  string log_message = 12;
+  string ack_user = 13;
+  uint64 ack_time = 14;
+  Event last_event = 15;
+  uint64 last_event_time = 16;
+  uint32 if_index = 17;
+  string operator_instructions = 18;
+  string clear_key = 19;
+}
+
+message IpInterface {
+  uint64 id = 1;
+  string ip_address = 2;
+  uint32 if_index = 3;
+  enum PrimaryType {
+    PRIMARY = 0;
+    SECONDARY = 1;
+    NOT_ELIGIBLE = 2;
+  }
+  PrimaryType primary_type = 4;
+  repeated string service = 5;
+}
+
+message SnmpInterface {
+  uint64 id = 1;
+  uint32 if_index = 2;
+  string if_descr = 3;
+  uint32 if_type = 4;
+  string if_name = 5;
+  uint64 if_speed = 6;
+  string if_phys_address = 7;
+  uint32 if_admin_status = 8;
+  uint32 if_oper_status = 9;
+  string if_alias = 10;
+}
+
+message Node {
+  uint64 id = 1;
+  string foreign_source = 2;
+  string foreign_id = 3;
+  string location = 4;
+  repeated string category = 5;
+  string label = 6;
+  uint64 create_time = 7;
+  string sys_contact = 8;
+  string sys_description = 9;
+  string sys_object_id = 10;
+  repeated IpInterface ip_interface = 11;
+  repeated SnmpInterface snmp_interface = 12;
+}

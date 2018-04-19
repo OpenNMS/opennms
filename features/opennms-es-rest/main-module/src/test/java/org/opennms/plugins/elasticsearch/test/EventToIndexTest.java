@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.kafka;
+package org.opennms.plugins.elasticsearch.test;
 
-import java.util.concurrent.TimeUnit;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.opennms.plugins.elasticsearch.rest.EventToIndex.isOID;
 
-import kafka.utils.Time;
+import org.junit.Test;
 
-
-public class SystemTime implements Time {
-    @Override
-    public long milliseconds() {
-        return System.currentTimeMillis();
-    }
-
-    @Override
-    public long nanoseconds() {
-        return System.nanoTime();
-    }
-
-    @Override
-    public void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public long hiResClockMs() {
-        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
+public class EventToIndexTest {
+    @Test
+    public void verifyIsOID() {
+        assertThat(isOID(".3"), is(true));
+        assertThat(isOID(".3.1.2"), is(true));
+        assertThat(isOID("..3.."), is(false));
+        assertThat(isOID("192.168.0.1"), is(false));
+        assertThat(isOID("nodeLabel"), is(false));
     }
 }
