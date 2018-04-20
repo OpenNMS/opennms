@@ -30,14 +30,17 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jna</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-icmp-jni6</artifactId>
+      <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
