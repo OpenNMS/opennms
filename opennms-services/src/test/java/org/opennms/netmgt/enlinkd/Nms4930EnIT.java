@@ -57,7 +57,8 @@ import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 /*
  * port 24 of A is connected on port 10 of B 
 dlink_DES-3026.properties
-A)  00 1E 58 A3 2F CD —> 0.30.88.163.47.205 
+A)  00 1E 58 A3 2F CD —> 0.30.88.163.47.205 (001e58a32fcd)
+
 self entry with bridgeport 0 and status SELF(4)
 dlink_DES-3026.properties:.1.3.6.1.2.1.17.7.1.2.2.1.2.400.0.30.88.163.47.205 = INTEGER: 0
 dlink_DES-3026.properties:.1.3.6.1.2.1.17.7.1.2.2.1.3.400.0.30.88.163.47.205 = INTEGER: 4
@@ -70,9 +71,8 @@ BFT
    61 rows .1.3.6.1.2.1.17.7.1.2.2.1.2 {port}    —> 57 + 1 self + 2 duplicated + 1 without a valid status 
    60 rows .1.3.6.1.2.1.17.7.1.2.2.1.3 {learned} -> 57 + 1 self + 2 duplicated
 
-   Port    ->BFT
+   Port    ->BFT entries
  INTEGER: 0—>1
-
  INTEGER: 1—>1
  INTEGER: 2—>2
  INTEGER: 3—>1
@@ -153,9 +153,9 @@ ubftA=          30={mac: on A:24 && not on B}         +
 21  ={mac: on B:10 && not on A:24 && not on A0}
 1   ={mac: on B:10 && on A:0}
 18  ={mac: on A:24 && not on B:10}
-8   ={mac learned on B&A on A:24}={mac learned on A&B on B:10}
+8   ={mac learned on B&A on A:24}={mac learned on A&B on B:10} forwarders
 
-332 ={mac: on B:10 && not on A}
+333 ={mac: on B:10 && not on A} U  {mac: on B:10 && on A:0} forwarders
 
   4 ={mac: on A:24 && not on B}
     
@@ -424,7 +424,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
         assertTrue(m_linkd.runTopologyDiscovery(dlink2.getId()));
-        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2);
+        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,false);
     }
     
     private void checkTopologyDlink1(OnmsNode dlink1) {
@@ -459,7 +459,17 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
     }
     
     private void checkTopology(OnmsNode dlink1, OnmsNode dlink2, OnmsNode nodeonlink1dport6,
-    		OnmsNode nodebetweendlink1dlink2) {
+    		OnmsNode nodebetweendlink1dlink2, boolean reverse) {
+        /*
+         *  
+         * INTEGER: 1—>1
+         * INTEGER: 2—>2
+         * INTEGER: 3—>1
+         * INTEGER: 4—>8
+         * INTEGER: 5—>2
+         * INTEGER: 6—>14
+         * INTEGER: 24—>30 Backbone port
+         */
         assertEquals(1, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 1).size());
         assertEquals(2, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 2).size());
         assertEquals(1, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 3).size());
@@ -467,6 +477,19 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(2, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 5).size());
         assertEquals(14, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 6).size());
 
+        /*
+         *  
+         *         INTEGER: 1     35
+         *         INTEGER: 2     71
+         *         INTEGER: 3     29
+         *         INTEGER: 5    142
+         *         INTEGER: 6     47
+         *         INTEGER: 7      5
+         *         INTEGER: 8    123
+         *         INTEGER: 10   362 Backbone port
+         *         INTEGER: 12   163
+         *         */
+        
         assertEquals(35, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 1).size());
         assertEquals(71, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 2).size());
         assertEquals(29, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 3).size());
@@ -476,14 +499,20 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(123, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 8).size());
         assertEquals(163, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 12).size());
 
-        assertEquals(8, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
-        assertEquals(8, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 10).size());
+        if (reverse) {
+            assertEquals(4, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
+            assertEquals(341, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 10).size());
+        } else {
+            assertEquals(12, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
+            assertEquals(333, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 10).size());            
+        }
+        assertEquals(988,m_bridgeMacLinkDao.countAll());
 
         assertEquals(1,m_bridgeBridgeLinkDao.countAll());        
-        assertEquals(659,m_bridgeMacLinkDao.countAll());
-        // we have 3 that links "real mac nodes" to bridge.
+        // we have 2 that links "real mac nodes" to bridge.
         // we have 8 macs on bridge cloud between dlink1 and dlink2
-        assertEquals(3,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        assertEquals(2,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
+        
         assertEquals(8,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
@@ -494,6 +523,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         }
 
         for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
+            System.err.println(link.printTopology());
             assertNotNull(link.getSrcNodeId());
             assertNotNull(link.getBridgePort());
             assertNotNull(link.getBridgePortIfIndex());
@@ -528,6 +558,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         }
         
         for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
+            System.err.println(link.printTopology());
             assertNotNull(link.getSrcNodeId());
             assertNotNull(link.getBridgePort());
             assertNotNull(link.getBridgePortIfIndex());
@@ -536,10 +567,17 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
             assertNotNull(link.getTargetBridgePort());
             assertNotNull(link.getTargetIfIndex());
             assertNotNull(link.getTargetId());
-            assertEquals(dlink1.getId().intValue(), link.getSrcNodeId().intValue());
-            assertEquals(dlink2.getId().intValue(), link.getTargetNodeId().intValue());
-//            assertEquals(24, link.getBridgePort().intValue());
-//            assertEquals(10, link.getTargetBridgePort().intValue());
+            if (reverse) {
+                assertEquals(dlink2.getId().intValue(), link.getSrcNodeId().intValue());
+                assertEquals(dlink1.getId().intValue(), link.getTargetNodeId().intValue());
+                assertEquals(10, link.getBridgePort().intValue());
+                assertEquals(24, link.getTargetBridgePort().intValue());
+            } else {
+                assertEquals(dlink1.getId().intValue(), link.getSrcNodeId().intValue());
+                assertEquals(dlink2.getId().intValue(), link.getTargetNodeId().intValue());
+                assertEquals(24, link.getBridgePort().intValue());
+                assertEquals(10, link.getTargetBridgePort().intValue());
+            }
         }
         
 
@@ -555,7 +593,6 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         	for (BridgeMacLink link: maclinks) {
         	    assertEquals(BridgeMacLinkType.BRIDGE_LINK, link.getLinkType());
         	    assertEquals(mac, link.getMacAddress());
-        	    System.err.println(link.printTopology());
         	}
         	
 
@@ -634,7 +671,7 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
         assertTrue(m_linkd.runTopologyDiscovery(dlink1.getId()));
-        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2);
+        checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,true);
     }
 
 }

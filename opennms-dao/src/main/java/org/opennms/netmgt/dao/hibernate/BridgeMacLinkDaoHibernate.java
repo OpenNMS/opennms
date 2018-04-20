@@ -136,17 +136,18 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
 	        + "np.nodesysoid as targetnodesysoid, "
 	        + "np.nodesyslocation as targetnodelocation, "
 	        + "np.nodetype as targetnodetype, "
-	        + "plink.macaddress as target_mac, "
+                + "mlink.macaddress as target_macaddress, "
                 + "plink.bridgeportifindex as target_ifindex, "
                 + "plink.bridgeportifname as target_ifname, "
                 + "plink.bridgeport as target_bridgeport, "
                 + "plink.id as target_id, "
                 + "mlink.bridgemaclinklastpolltime as lastPollTime "
 	        + "from bridgemaclink as mlink "
-	        + "left join bridgemaclink as plink on mlink.macaddress = plink.macaddress "
+	        + "left join bridgebridgelink as plink on mlink.bridgeport = plink.designatedbridgeport "
 	        + "left join node n on mlink.nodeid = n.nodeid "
 	        + "left join node np on plink.nodeid = np.nodeid "
-	        + "where mlink.nodeid < plink.nodeid "
+	        + "where mlink.nodeid = plink.designatednodeid "
+                + "and mlink.linktype = 1 "
 	        + "order by source_nodeid, bridgeport;";
         
 	private List<BridgeMacTopologyLink> convertObjectToTopologyLink(List<Object[]> list) {

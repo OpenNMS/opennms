@@ -33,7 +33,7 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
-public class BridgeMacTopologyLink extends TopologyLink {
+public class BridgeMacTopologyLink extends TopologyLink implements BridgeTopology {
 
     private final int m_id;
     private final Integer m_bridgePort;
@@ -112,5 +112,28 @@ public class BridgeMacTopologyLink extends TopologyLink {
     public Integer getTargetBridgePort() {
         return m_targetBridgePort;
     }
+    
+    public String printTopology() {
+
+        StringBuffer strbfr = new StringBuffer();
+        strbfr.append("sourcenode:["); 
+        strbfr.append(getSrcLabel());
+        strbfr.append("], bridgeport:[");
+        strbfr.append(getBridgePort());
+        strbfr.append("], ifindex:[");
+        strbfr.append(getBridgePortIfIndex());
+        strbfr.append("], targetnode:["); 
+        strbfr.append(getTargetLabel());
+        strbfr.append("], mac:["); 
+        strbfr.append(getMacAddr());
+        strbfr.append("], targetbridgeport:[");
+        strbfr.append(getTargetBridgePort());
+        strbfr.append("], targetifindex:[");
+        strbfr.append(getTargetIfIndex());
+        strbfr.append("]");
+
+        return strbfr.toString();
+    }
+
 
 }

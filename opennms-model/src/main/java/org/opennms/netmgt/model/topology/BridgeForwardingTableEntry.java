@@ -186,10 +186,13 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
     public static Map<BridgePort,Set<String>> getThroughSet(Set<BridgeForwardingTableEntry> bft, Set<BridgePort> excluded) {
         Map<BridgePort, Set<String>> throughSet= new HashMap<BridgePort, Set<String>>();
         BFT: for (BridgeForwardingTableEntry link: bft) {
+            if (link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                continue;
+            }
             for (BridgePort exclude: excluded) {
-                if ((link.getNodeId() == exclude.getNodeId() 
-                    && link.getBridgePort() == exclude.getBridgePort()) 
-                    || link.getBridgeDot1qTpFdbStatus() != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
+                if (link.getNodeId() == exclude.getNodeId() 
+                    && link.getBridgePort() == exclude.getBridgePort()
+                    ) {
                     continue BFT;
                 }
             }

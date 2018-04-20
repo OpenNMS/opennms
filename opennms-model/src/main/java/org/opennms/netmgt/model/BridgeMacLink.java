@@ -264,6 +264,7 @@ public class BridgeMacLink implements BridgeTopology {
 		setBridgePortIfIndex(element.getBridgePortIfIndex());
 		setBridgePortIfName(element.getBridgePortIfName());
 		setVlan(element.getVlan());
+		setLinkType(element.getLinkType());
 		if (element.getBridgeMacLinkLastPollTime() == null)
 		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
 		else 
