@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Objects;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -46,6 +47,7 @@ import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
@@ -95,6 +97,11 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 }
             }
         }
+    }
+
+    @PreDestroy
+    public void destroy() {
+        adapters.forEach((adapter) -> adapter.destroy());
     }
 
     @Override
