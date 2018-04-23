@@ -132,7 +132,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         EventBuilder builder = new EventBuilder(
                                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
                                    "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
+                           builder.setNodeid(nodeid);
                            builder.setInterface(getPrimaryIpAddress());
                            builder.addParam("runnable", getName());
                            m_linkd.getEventForwarder().sendNow(builder.getEvent());
@@ -143,7 +143,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         EventBuilder builder = new EventBuilder(
                                    "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
                                    "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
+                           builder.setNodeid(nodeid);
                            builder.setInterface(getPrimaryIpAddress());
                            builder.addParam("runnable", getName());
                            m_linkd.getEventForwarder().sendNow(builder.getEvent());
