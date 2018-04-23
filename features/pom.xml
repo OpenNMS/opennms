@@ -133,6 +133,9 @@
     <!-- Business Service Monitor -->
     <module>bsm</module>
 
+    <!-- Sentinel -->
+    <module>sentinel</module>
+
     <!-- Minion -->
     <module>minion</module>
     <module>scv</module>
