@@ -33,7 +33,7 @@ import java.util.Objects;
 
 // The more concrete a rule is, the higher the priority should be.
 // However, if a name and protocol is defined, but a rule with a concrete port/address (src or dst) this rule wins.
-public class RuleComparator implements Comparator<RuleDefinition> {
+public class RulePriorityComparator implements Comparator<RuleDefinition> {
     @Override
     public int compare(RuleDefinition r1, RuleDefinition r2) {
         Objects.requireNonNull(r1);
@@ -46,7 +46,7 @@ public class RuleComparator implements Comparator<RuleDefinition> {
 
         // If group priority is identical, sort by rule priority (highest priority first)
         if (result == 0) {
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
+            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority());
         }
         return result;
     }

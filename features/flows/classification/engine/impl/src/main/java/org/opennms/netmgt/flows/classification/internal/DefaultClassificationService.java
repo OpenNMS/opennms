@@ -53,7 +53,7 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRul
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
@@ -266,7 +266,7 @@ public class DefaultClassificationService implements ClassificationService {
     private void updateRulePositionsAndReloadEngine(Group group) {
         // Load all rules of group and sort by priority (highest first) in that group
         final List<Rule> rules = group.getRules();
-        Collections.sort(rules, new RuleComparator());
+        Collections.sort(rules, new RulePriorityComparator());
 
         // Update priority field
         for (int i=0; i<rules.size(); i++) {

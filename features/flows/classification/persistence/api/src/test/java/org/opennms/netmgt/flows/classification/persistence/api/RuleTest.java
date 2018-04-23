@@ -74,7 +74,7 @@ public class RuleTest {
 
         final List<Rule> expectedList = Lists.newArrayList(mostConcreteRule, srcRule /* src address and src port is > only ony dst port */, httpRule, portRule, tcpRule, leastConcreteRule);
         final List<Rule> actualRules = Lists.newArrayList(leastConcreteRule, mostConcreteRule, tcpRule, httpRule, portRule, srcRule);
-        Collections.sort(actualRules, new RuleComparator());
+        Collections.sort(actualRules, new RulePriorityComparator());
 
         assertEquals(actualRules, expectedList);
     }

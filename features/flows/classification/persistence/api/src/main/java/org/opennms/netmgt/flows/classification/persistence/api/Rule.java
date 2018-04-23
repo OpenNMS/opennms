@@ -107,7 +107,7 @@ public class Rule implements RuleDefinition {
     /**
      * The position of the rule within it's group.
      * Global order must consider group.priority as well.
-     * See {@link RuleComparator}.
+     * See {@link RulePriorityComparator}.
      */
     @Column(name="position", nullable = false)
     private int position;
@@ -228,6 +228,7 @@ public class Rule implements RuleDefinition {
             .add("srcPort", srcPort)
             .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
+            .add("position", position)
             .add("group", group)
             .toString();
     }

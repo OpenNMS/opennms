@@ -107,6 +107,11 @@ public class RuleBuilder {
         return this;
     }
 
+    public RuleBuilder withPosition(int position) {
+        rule.setPosition(position);
+        return this;
+    }
+
     public Rule build() {
         if (Strings.isNullOrEmpty(rule.getName())) {
             throw new IllegalStateException("Cannot build rule. Field 'name' must not be null or empty.");

@@ -48,13 +48,13 @@ import org.opennms.netmgt.flows.classification.internal.classifier.CombinedClass
 import org.opennms.netmgt.flows.classification.internal.value.PortValue;
 import org.opennms.netmgt.flows.classification.persistence.api.DefaultRuleDefinition;
 import org.opennms.netmgt.flows.classification.persistence.api.Rule;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
 public class DefaultClassificationEngine implements ClassificationEngine {
 
     private final List<List<Classifier>> classifierPortList = new ArrayList<>(Rule.MAX_PORT_VALUE);
-    private final Comparator<RuleDefinition> ruleComparator = new RuleComparator();
+    private final Comparator<RuleDefinition> ruleComparator = new RulePriorityComparator();
     private final ClassificationRuleProvider ruleProvider;
     private final FilterService filterService;
 

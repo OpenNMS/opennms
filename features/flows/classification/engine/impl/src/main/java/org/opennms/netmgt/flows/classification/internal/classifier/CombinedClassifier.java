@@ -41,14 +41,14 @@ import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.RuleComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
 public class CombinedClassifier implements Classifier {
 
     private final List<Matcher> matchers;
     private final RuleDefinition ruleDefinition;
-    private final RuleComparator ruleComparator = new RuleComparator();
+    private final RulePriorityComparator rulePriorityComparator = new RulePriorityComparator();
 
     public CombinedClassifier(RuleDefinition ruleDefinition, FilterService filterService) {
         Objects.requireNonNull(ruleDefinition);
@@ -89,7 +89,7 @@ public class CombinedClassifier implements Classifier {
 
     @Override
     public int compareTo(Classifier o) {
-        return ruleComparator.compare(this.ruleDefinition, ((CombinedClassifier) o).ruleDefinition);
+        return rulePriorityComparator.compare(this.ruleDefinition, ((CombinedClassifier) o).ruleDefinition);
     }
 
     @Override
