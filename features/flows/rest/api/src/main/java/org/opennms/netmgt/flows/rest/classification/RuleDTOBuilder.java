@@ -61,6 +61,11 @@ public class RuleDTOBuilder {
         return this;
     }
 
+    public RuleDTOBuilder withExporterFilter(String exporterFilter) {
+        this.ruleDTO.setExporterFilter(exporterFilter);
+        return this;
+    }
+
     public RuleDTO build() {
         return ruleDTO;
     }

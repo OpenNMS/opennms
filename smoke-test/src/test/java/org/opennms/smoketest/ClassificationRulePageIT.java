@@ -157,17 +157,25 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         assertThat(rules, hasSize(1));
         final RuleData rule = rules.get(0);
         assertThat(rule.getName(), is("http"));
-        assertThat(rule.getPort(), is("80,8080"));
         assertThat(rule.getProtocol(), is("TCP,UDP"));
-        assertThat(rule.getIpAddress(), is(""));
+        assertThat(rule.getDstAddress(), is(""));
+        assertThat(rule.getDstPort(), is("80,8080"));
+        assertThat(rule.getSrcAddress(), is(""));
+        assertThat(rule.getSrcPort(), is(""));
+        assertThat(rule.getExporterFilter(), is(""));
 
         // Edit rule
         groupTab.editRule(rule.getPosition(),
                 createFrom(rule)
-                        .withDstAddress("127.0.0.1")
                         .withName("OpenNMS")
+                        .withProtocol("tcp")
+                        .withDstAddress("5.5.5.5")
                         .withDstPort("8980")
-                        .withProtocol("tcp").build());
+                        .withSrcAddress("127.0.0.1")
+                        .withSrcPort("55557")
+                        .withExporterFilter("categoryName == 'Routers'")
+                .build()
+        );
 
         // Edit, but cancel
         groupTab.editModal(0).setInput(createFrom(rule).build()).cancel();
@@ -175,9 +183,12 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         // Verify edit made it through, but cancel did not
         final RuleData modifiedRule = groupTab.getRuleData(0);
         assertThat(modifiedRule.getName(), is("OpenNMS"));
-        assertThat(modifiedRule.getPort(), is("8980"));
-        assertThat(modifiedRule.getIpAddress(), is("127.0.0.1"));
         assertThat(modifiedRule.getProtocol(), is("TCP"));
+        assertThat(modifiedRule.getDstAddress(), is("5.5.5.5"));
+        assertThat(modifiedRule.getDstPort(), is("8980"));
+        assertThat(modifiedRule.getSrcAddress(), is("127.0.0.1"));
+        assertThat(modifiedRule.getSrcPort(), is("55557"));
+        assertThat(modifiedRule.getExporterFilter(), is("categoryName == 'Routers'"));
 
         // Delete rule
         groupTab.deleteGroup(rule.getPosition());
@@ -234,9 +245,12 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         final RuleData rule = rules.get(0);
         assertThat(6170, is(rule.getPosition()));
         assertThat("icmpd", is(rule.getName()));
-        assertThat("5813", is(rule.getPort()));
+        assertThat("5813", is(rule.getDstPort()));
         assertThat("tcp,udp", is(rule.getProtocol()));
-        assertThat("", is(rule.getIpAddress()));
+        assertThat("", is(rule.getDstAddress()));
+        assertThat("", is(rule.getSrcAddress()));
+        assertThat("", is(rule.getSrcPort()));
+        assertThat("", is(rule.getExporterFilter()));
 
         tab.search(""); // clear Search afterwards
     }
@@ -244,9 +258,12 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyClassification() {
         final ClassificationRequestDTO classificationRequestDTO = new ClassificationRequestDTO();
-        classificationRequestDTO.setDstAddress("127.0.0.1");
+        classificationRequestDTO.setSrcAddress("127.0.0.1");
+        classificationRequestDTO.setSrcPort("55556");
+        classificationRequestDTO.setDstAddress("8.8.8.8");
         classificationRequestDTO.setDstPort("80");
         classificationRequestDTO.setProtocol("tcp");
+        classificationRequestDTO.setExporterAddress("10.0.0.5");
 
         // try http
         assertThat("http", is(uiPage.classify(classificationRequestDTO)));
@@ -273,8 +290,8 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         int ruleCount = groupTab.getRules().size();
         for (int i=0; i < Math.min(5, ruleCount); i++) {
             final int index = i;
-            assertThat(execute(() -> m_driver.findElement(By.id("action." + Integer.toString(index) + ".delete"))).isDisplayed(), is(false));
-            assertThat(execute(() -> m_driver.findElement(By.id("action." + Integer.toString(index) + ".edit"))).isDisplayed(), is(false));
+            assertElementDoesNotExist(By.id("action." + Integer.toString(index) + ".delete"));
+            assertElementDoesNotExist(By.id("action." + Integer.toString(index) + ".edit"));
         }
     }
 
@@ -282,15 +299,18 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyErrorMessageReset() {
         final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
-        classificationRequest.setDstAddress("127.0.0.1");
-        classificationRequest.setDstPort("x"); // invalid
+        classificationRequest.setSrcAddress("127.0.0.1");
+        classificationRequest.setSrcPort("55557");
+        classificationRequest.setExporterAddress("10.0.0.1");
+        classificationRequest.setDstAddress("8.8.8.8");
+        classificationRequest.setDstPort("X"); // invalid
         classificationRequest.setProtocol("tcp");
 
         // try classification, should fail
         uiPage.classify(classificationRequest);
 
         // Error should be displayed, but response should not
-        assertThat(true, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(true, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
         assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // fix classification request and retry
@@ -298,7 +318,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         uiPage.classify(classificationRequest);
 
         // Verify visibility is inverted
-        assertThat(false, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(false, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
         assertThat(true, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
 
         // make an invalid request and try again
@@ -306,7 +326,7 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         uiPage.classify(classificationRequest);
 
         // Error should be displayed, but response should not
-        assertThat(true, is(m_driver.findElement(By.id("classification-error")).isDisplayed()));
+        assertThat(true, is(m_driver.findElement(By.id("classifyError.dstPort")).isDisplayed()));
         assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
     }
 
@@ -351,16 +371,19 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             });
         }
 
-        public String classify(ClassificationRequestDTO classificationRequestDTO) {
+        public String classify(ClassificationRequestDTO classificationRequest) {
             // get the classification input
             if (!execute(() -> findElementById("classification-tab")).isDisplayed()) {
                 execute(() -> findElementById("action.classification.toggle")).click();
             }
 
             // Input fields
-            setInput("classify-dstIpAddress", classificationRequestDTO.getDstAddress());
-            setInput("classify-dstPort", classificationRequestDTO.getDstPort());
-            setInput("classify-dstProtocol", classificationRequestDTO.getProtocol(), true);
+            setInput("classify-srcAddress", classificationRequest.getSrcAddress());
+            setInput("classify-srcPort", classificationRequest.getSrcPort());
+            setInput("classify-exporterAddress", classificationRequest.getExporterAddress());
+            setInput("classify-dstAddress", classificationRequest.getDstAddress());
+            setInput("classify-dstPort", classificationRequest.getDstPort());
+            setInput("classify-protocol", classificationRequest.getProtocol(), true);
 
             // Submit form
             execute(() -> findElementById("classification-submit")).click();
@@ -589,8 +612,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         public RuleModal setInput(RuleDTO rule) {
             // Input form
             setInput("rule.name", rule.getName());
-            setInput("rule.ipAddress", rule.getDstAddress());
-            setInput("rule.port", rule.getDstPort());
+            setInput("rule.dstAddress", rule.getDstAddress());
+            setInput("rule.dstPort", rule.getDstPort());
+            setInput("rule.srcAddress", rule.getSrcAddress());
+            setInput("rule.srcPort", rule.getSrcPort());
+            setInput("rule.exporterFilter", rule.getExporterFilter());
 
             // remove all protocols
             execute(() -> {
@@ -716,10 +742,13 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
                 final List<WebElement> columns = ruleElement.findElements(By.xpath("./td"));
                 final int position = Integer.parseInt(columns.get(0).getText());
                 final String name = columns.get(1).getText();
-                final String ipAddress = columns.get(2).getText();
-                final String port = columns.get(3).getText();
-                final String protocol = columns.get(4).findElements(By.xpath("./span")).stream().map(webElement -> webElement.getText()).collect(Collectors.joining(","));
-                return new RuleData(position, name, ipAddress, port, protocol);
+                final String protocol = columns.get(2).findElements(By.xpath("./span")).stream().map(webElement -> webElement.getText()).collect(Collectors.joining(","));
+                final String srcAddress = columns.get(3).getText();
+                final String srcPort = columns.get(4).getText();
+                final String dstAddress = columns.get(5).getText();
+                final String dstPort = columns.get(6).getText();
+                final String exporterFilter = columns.get(7).getText();
+                return new RuleData(position, name, protocol, srcAddress, srcPort, dstAddress, dstPort, exporterFilter);
             });
         }
 
@@ -773,16 +802,25 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     private class RuleData {
         private final int position;
         private final String name;
-        private final String ipAddress;
-        private final String port;
         private final String protocol;
+        private final String srcAddress;
+        private final String srcPort;
+        private final String dstAddress;
+        private final String dstPort;
+        private final String exporterFilter;
 
-        public RuleData(int position, String name, String ipAddress, String port, String protocol) {
+        public RuleData(int position, String name, String protocol,
+                        String srcAddress, String srcPort,
+                        String dstAddress, String dstPort,
+                        String exporterFilter) {
             this.position = position;
             this.name = Objects.requireNonNull(name);
-            this.ipAddress = Objects.requireNonNull(ipAddress);
-            this.port = Objects.requireNonNull(port);
             this.protocol = Objects.requireNonNull(protocol);
+            this.srcAddress = Objects.requireNonNull(srcAddress);
+            this.srcPort = Objects.requireNonNull(srcPort);
+            this.dstAddress = Objects.requireNonNull(dstAddress);
+            this.dstPort = Objects.requireNonNull(dstPort);
+            this.exporterFilter = Objects.requireNonNull(exporterFilter);
         }
 
         public int getPosition() {
@@ -793,16 +831,28 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
             return name;
         }
 
-        public String getIpAddress() {
-            return ipAddress;
-        }
-
-        public String getPort() {
-            return port;
-        }
-
         public String getProtocol() {
             return protocol;
+        }
+
+        public String getSrcAddress() {
+            return srcAddress;
+        }
+
+        public String getSrcPort() {
+            return srcPort;
+        }
+
+        public String getDstAddress() {
+            return dstAddress;
+        }
+
+        public String getDstPort() {
+            return dstPort;
+        }
+
+        public String getExporterFilter() {
+            return exporterFilter;
         }
     }
 
@@ -822,8 +872,11 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
     private static RuleDTOBuilder createFrom(RuleData rule) {
         return new RuleDTOBuilder()
                 .withName(rule.getName())
-                .withDstPort(rule.getPort())
                 .withProtocol(rule.getProtocol())
-                .withDstAddress(rule.getIpAddress());
+                .withSrcAddress(rule.getSrcAddress())
+                .withSrcPort(rule.getSrcPort())
+                .withDstAddress(rule.getDstAddress())
+                .withDstPort(rule.getDstPort())
+                .withExporterFilter(rule.getExporterFilter());
     }
 }

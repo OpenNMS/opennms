@@ -104,15 +104,15 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.classify = function (classificationRequest) {
                 ClassificationService.classify(classificationRequest, function (result) {
-                    $scope.error = undefined;
+                    $scope.classifyError = undefined;
                     $scope.classificationResponse = result.classification === undefined ? 'No mapping found' : result.classification;
                 }, function (response) {
                     $scope.classificationResponse = undefined;
                     if (response.status === 400 && response.data && response.data.context && response.data.message) {
-                        $scope.error = {};
-                        $scope.error[response.data.context] = response.data.message;
+                        $scope.classifyError = {};
+                        $scope.classifyError[response.data.context] = response.data.message;
                     } else {
-                        $scope.error['entity'] = 'Cannot perform the request.';
+                        $scope.classifyError['entity'] = 'Cannot perform the request.';
                     }
                 });
             };
