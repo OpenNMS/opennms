@@ -1,6 +1,11 @@
 <uib-tabset justified="true">
   <uib-tab heading="IP Interfaces" id="tab-ip-interfaces">
-    <div class="jumbotron" ng-show="ipInterfaces.length == 0">
+    <div class="jumbotron" ng-show="!ipIfLoaded">
+      <div class="container">
+        <p>IP Interfaces are loading</p>
+      </div>
+    </div>
+    <div class="jumbotron" ng-show="ipIfLoaded && ipInterfaces.length == 0">
       <div class="container">
         <p>There are no IP interfaces for this node</p>
       </div>
@@ -40,7 +45,12 @@
       ng-show="filteredIpInterfaces.length > ipInterfacesPageSize"></ul>
   </uib-tab>
   <uib-tab heading="SNMP Interfaces" id="tab-ip-interfaces">
-    <div class="jumbotron" ng-show="snmpInterfaces.length == 0">
+    <div class="jumbotron" ng-show="!snmpIfLoaded">
+      <div class="container">
+        <p>SNMP Interfaces are loading</p>
+      </div>
+    </div>
+    <div class="jumbotron" ng-show="snmpIfLoaded && snmpInterfaces.length == 0">
       <div class="container">
         <p>There are no SNMP interfaces for this node</p>
       </div>
