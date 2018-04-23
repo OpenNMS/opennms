@@ -40,7 +40,20 @@ import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qT
 public class BroadcastDomain implements BridgeTopology {
     
     public static int maxlevel = 30;
+    public static final int DOMAIN_MATCH_MIN_SIZE = 5;
+    public static final float DOMAIN_MATCH_MIN_RATIO = 0.1f;
     
+    public static boolean checkMacSets(Set<String> setA, Set<String> setB) {
+        Set<String>retainedSet = new HashSet<String>(setB);
+        retainedSet.retainAll(setA);
+        // should contain at list 5 or 10% of the all size
+        if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
+                || retainedSet.size() >= setA.size() * DOMAIN_MATCH_MIN_RATIO) {
+            return true;
+        }
+        return false;
+    }
+
     public static Bridge electRootBridge(BroadcastDomain domain) throws BridgeTopologyException {
         if (domain.getBridges().size() == 1) {
             return domain.getBridges().iterator().next();
@@ -358,6 +371,26 @@ public class BroadcastDomain implements BridgeTopology {
         domain.m_topology = topology;
         domain.getForwarding().remove(bridge.getNodeId());
         bridge.setRootPort(null);
+        //assigning again the forwarders to segment if is the case 
+        Map<String, Set<BridgePort>> forwardermap =  new HashMap<String, Set<BridgePort>>();
+        for (Integer forwarderNode: domain.getForwarding().keySet()) {
+            for (BridgeForwardingTableEntry forwarder: domain.getForwarders(forwarderNode)) {
+                if (!forwardermap.containsKey(forwarder.getMacAddress())) {
+                    forwardermap.put(forwarder.getMacAddress(), new HashSet<BridgePort>());                    
+                }
+                forwardermap.get(forwarder.getMacAddress()).add(BridgePort.getFromBridgeForwardingTableEntry(forwarder));
+            }
+        }
+        for (String mac: forwardermap.keySet()) {
+            SharedSegment first = domain.getSharedSegment(forwardermap.get(mac).iterator().next());
+            if (first == null) {
+                continue;
+            }
+            if (forwardermap.get(mac).containsAll(first.getBridgePortsOnSegment())) {
+                first.getMacsOnSegment().add(mac);
+            }
+        }
+        domain.cleanForwarders();
     }
 
     public static void removeBridge(BroadcastDomain domain,int bridgeId) throws BridgeTopologyException {
