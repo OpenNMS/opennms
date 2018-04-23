@@ -330,6 +330,87 @@ public class ClassificationRulePageIT extends OpenNMSSeleniumTestCase {
         assertThat(false, is(m_driver.findElement(By.id("classification-response")).isDisplayed()));
     }
 
+    @Test
+    public void verifySrcValues() {
+        // Add custom rules
+        final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
+        groupTab.addNewRule(new RuleDTOBuilder()
+                .withName("OpenNMS Monitoring")
+                .withSrcAddress("10.0.0.5")
+                .withDstPort("8980")
+                .withProtocol("udp,tcp")
+                .build());
+        groupTab.addNewRule(new RuleDTOBuilder()
+                .withName("OpenNMS")
+                .withDstPort("8980")
+                .withProtocol("udp,tcp")
+                .build());
+
+        final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
+        classificationRequest.setSrcAddress("10.0.0.1");
+        classificationRequest.setSrcPort("55557");
+        classificationRequest.setExporterAddress("10.0.0.1");
+        classificationRequest.setDstAddress("8.8.8.8");
+        classificationRequest.setDstPort("8980");
+        classificationRequest.setProtocol("tcp");
+
+        // Src Address does not match, so OpenNMS should be the result
+        assertThat("OpenNMS", is(uiPage.classify(classificationRequest)));
+
+        // Update srcAddress
+        classificationRequest.setSrcAddress("10.0.0.5");
+        assertThat("OpenNMS Monitoring", is(uiPage.classify(classificationRequest)));
+    }
+
+    @Test
+    public void verifyExporterFilter() {
+        try {
+            // Add requisition to use exporter filter (otherwise no exporter nodes exist)
+            final String requisitionXML = "<model-import foreign-source=\"" + REQUISITION_NAME + "\">" +
+                    "   <node foreign-id=\"NodeA\" node-label=\"NodeA\">" +
+                    "       <interface ip-addr=\"10.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
+                    "           <monitored-service service-name=\"ICMP\"/>" +
+                    "           <monitored-service service-name=\"SNMP\"/>" +
+                    "       </interface>" +
+                    "       <category name=\"Routers\"/>" +
+                    "       <category name=\"Servers\"/>" +
+                    "   </node>" +
+                    "</model-import>";
+            createRequisition(REQUISITION_NAME , requisitionXML, 1);
+
+            // Add custom rules
+            final GroupTab groupTab = new GroupTab(this.uiPage, Tabs.USER_DEFINED).click();
+            groupTab.addNewRule(new RuleDTOBuilder()
+                    .withName("test")
+                    .withDstPort("8980")
+                    .withProtocol("udp,tcp")
+                    .withExporterFilter("categoryName == 'Routers'")
+                    .build());
+            groupTab.addNewRule(new RuleDTOBuilder()
+                    .withName("OpenNMS")
+                    .withDstPort("8980")
+                    .withProtocol("udp,tcp")
+                    .build());
+
+            final ClassificationRequestDTO classificationRequest = new ClassificationRequestDTO();
+            classificationRequest.setSrcAddress("127.0.0.1");
+            classificationRequest.setSrcPort("55557");
+            classificationRequest.setExporterAddress("10.0.0.1");
+            classificationRequest.setDstAddress("8.8.8.8");
+            classificationRequest.setDstPort("8980");
+            classificationRequest.setProtocol("tcp");
+
+            // exporter filter should apply
+            assertThat("test", is(uiPage.classify(classificationRequest)));
+
+            // update exporter address and have exporterFilter not apply
+            classificationRequest.setExporterAddress("10.0.0.5");
+            assertThat("OpenNMS", is(uiPage.classify(classificationRequest)));
+        } finally {
+            deleteExistingRequisition(REQUISITION_NAME);
+        }
+    }
+
     private class Page {
         private final String url;
 
