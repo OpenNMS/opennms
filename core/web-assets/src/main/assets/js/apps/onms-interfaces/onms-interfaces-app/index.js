@@ -52,10 +52,10 @@ angular.module('onms-interfaces', [
     link: function(scope, element, attrs) {
       scope.onClick = function () {
         if( scope.order === scope.by ) {
-           scope.reverse = !scope.reverse 
+           scope.reverse = !scope.reverse
         } else {
           scope.by = scope.order;
-          scope.reverse = false; 
+          scope.reverse = false;
         }
       }
     }
@@ -87,6 +87,8 @@ angular.module('onms-interfaces', [
   $scope.snmpInterfacesTotalItems = 0;
   $scope.snmpOrder = 'ifIndex';
   $scope.snmpReverse = false;
+  $scope.ipIfLoaded = false;
+  $scope.snmpIfLoaded = false;
 
   // IP Interfaces
 
@@ -96,6 +98,7 @@ angular.module('onms-interfaces', [
       method: 'GET',
       params: { limit: 0 }
     }).success(function(data) {
+      $scope.ipIfLoaded = true;
       $scope.ipInterfaces = data.ipInterface;
       $scope.setStylesForIpInterfaces();
       $scope.filteredIpInterfaces = $scope.ipInterfaces;
@@ -138,6 +141,7 @@ angular.module('onms-interfaces', [
       method: 'GET',
       params: { limit: 0 }
     }).success(function(data) {
+      $scope.snmpIfLoaded = true;
       $scope.snmpInterfaces = data.snmpInterface;
       $scope.setStylesForSnmpInterfaces();
       $scope.filteredSnmpInterfaces = $scope.snmpInterfaces;

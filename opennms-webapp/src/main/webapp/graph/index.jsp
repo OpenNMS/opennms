@@ -43,7 +43,15 @@
 
   <div growl></div>
 
-  <div class="jumbotron" ng-show="!hasResources">
+  <div class="jumbotron" ng-show="!loaded">
+    <div class="container">
+      <h1>Loading Resources</h1>
+      <p>Please wait while all the resources are loaded into your browser.</p>
+      <p>This could take time, depending on the number of resources for this node.</p>
+    </div>
+  </div>
+
+  <div class="jumbotron" ng-show="loaded && !hasResources">
     <div class="container">
       <h1>There is no collected data</h1>
     </div>
