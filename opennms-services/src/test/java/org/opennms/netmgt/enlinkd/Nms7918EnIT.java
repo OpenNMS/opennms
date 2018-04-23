@@ -1044,7 +1044,6 @@ public class Nms7918EnIT extends EnLinkdBuilderITCase {
         for (String mac: samasw01shared) {
             List<BridgeMacLink>links = m_bridgeMacLinkDao.findByMacAddress(mac);
             for (BridgeMacLink link: links) {
-                System.err.println(link.printTopology());
                 assertEquals(mac, link.getMacAddress());
                 assertEquals(BridgeMacLinkType.BRIDGE_FORWARDER, link.getLinkType());
                 if (link.getNode().getId() == samasw01.getId()) {
