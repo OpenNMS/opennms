@@ -196,7 +196,12 @@ public class BridgeSimpleConnection implements BridgeTopology {
                 }
             }
         }    
-        if (m_xyPort == null || m_xyPort == null) {
+        if (
+            m_xyPort == null || 
+            m_yxPort == null || 
+            m_xyPort.getBridgePort() == null ||
+            m_yxPort.getBridgePort() == null
+            ) {
             return false;
         }
         return true;
