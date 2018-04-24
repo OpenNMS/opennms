@@ -229,7 +229,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                              
         LOG.info("run: node: [{}], getting nodes with updated bft on broadcast domain. Start", getNodeId());
         try {
-            m_notYetParsedBFTMap = getUpdated(nodemacset);
+            synchronized (m_domain) {
+                m_notYetParsedBFTMap = getUpdated(nodemacset);
+            }
         } catch (BridgeTopologyException e) {
             LOG.error("run: node: [{}], error on getting bft upadates. {}", 
                       getNodeId(), 
@@ -262,7 +264,9 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
         LOG.info("run: node: [{}], saving Topology.", getNodeId());
         try {
-            m_linkd.getQueryManager().store(m_domain, now);
+            synchronized(m_domain) {
+                m_linkd.getQueryManager().store(m_domain, now);
+            }
         } catch (BridgeTopologyException e) {
             LOG.error("run: node: [{}], saving topology failed: {}. {}", 
                       getNodeId(), 
