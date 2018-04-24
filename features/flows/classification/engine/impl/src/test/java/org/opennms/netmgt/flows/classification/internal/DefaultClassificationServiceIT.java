@@ -204,7 +204,6 @@ public class DefaultClassificationServiceIT {
 
         // Define another rule, to import
         Rule rule2 = new RuleBuilder()
-                .withGroup(userGroup)
                 .withName("rule2")
                 .withDstAddress("127.0.0.1")
                 .withDstPort(222)
