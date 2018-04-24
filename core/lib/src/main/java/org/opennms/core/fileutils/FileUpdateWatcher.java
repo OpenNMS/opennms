@@ -41,9 +41,6 @@ import java.nio.file.StandardWatchEventKinds;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
@@ -64,23 +61,24 @@ public class FileUpdateWatcher {
     public FileUpdateWatcher(String fileName, FileUpdateCallback fileUpdateCb) throws IOException {
         File file = new File(fileName);
         if (!file.exists() || file.isDirectory()) {
-            throw new IllegalArgumentException("script file doesn't exist");
+            throw new IllegalArgumentException(String.format("file %s doesn't exist", fileName));
         }
         this.fileName = fileName;
         Path path = Paths.get(file.getParent());
         this.callback = fileUpdateCb;
         watcher = path.getFileSystem().newWatchService();
         path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
-        final Executor executor = Executors.newSingleThreadExecutor();
-        executor.execute(new FileWatcherThread());
-        LOG.info(" started watcher thread");
+        Thread thread = new Thread(new FileWatcherThread());
+        thread.setName(String.format("fileUpdateWatcher-%s", file.getName()));
+        thread.start();
+        LOG.info("started watcher thread for file : {}", file.getName());
+
     }
 
     private class FileWatcherThread implements Runnable {
 
         @Override
         public void run() {
-            long lastTimeStamp = 0;
             while (!closed.get()) {
                 WatchKey key = null;
                 try {
@@ -98,15 +96,8 @@ public class FileUpdateWatcher {
                     // Some editors create temporary buffers, watch for both create/modify
                     if (kind == StandardWatchEventKinds.ENTRY_MODIFY || kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         if (updatedFile.toString().equals(fileName)) {
-                            final long now = System.currentTimeMillis();
-                            final long interval = Long.getLong("org.opennms.core.fileutils.watcher.interval.seconds", 1);
-                            if (now - lastTimeStamp > TimeUnit.SECONDS.toMillis(interval)) {
-                                LOG.info(" file got updated, send callback");
-                                callback.reload();
-                            } else {
-                                LOG.debug(" callback was not sent as the changes are in within {} secs interval ", interval);
-                            }
-                            lastTimeStamp = now;
+                            LOG.info(" file {} got updated, send callback", updatedFile.getFileName());
+                            callback.reload();
                         }
                     }
                     if (!key.reset()) {

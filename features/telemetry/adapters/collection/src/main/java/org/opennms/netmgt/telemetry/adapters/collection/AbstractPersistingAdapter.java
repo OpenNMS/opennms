@@ -77,23 +77,17 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     private Protocol protocol;
 
-    private FileUpdateWatcher reloadUtils;
+    private FileUpdateWatcher scriptUpdateWatcher;
 
     private BundleContext bundleContext;
 
-    protected Map<ScriptedCollectionSetBuilder, Boolean> scriptMap = new ConcurrentHashMap<>();
+    private String script;
 
-    protected String script;
-
-    protected ThreadLocal<Boolean> scriptCompiled = new ThreadLocal<Boolean>() {
-        @Override
-        protected Boolean initialValue() {
-            return true;
-        }
-
-    };
-
-    protected final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
+    /*
+     * Since ScriptCollectionSetBuilder is not thread safe , loading of script
+     * is handled in ThreadLocal.
+     */
+    private final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
         @Override
         protected ScriptedCollectionSetBuilder initialValue() {
             try {
@@ -104,6 +98,28 @@ public abstract class AbstractPersistingAdapter implements Adapter {
             }
         }
     };
+
+    /*
+     * Flag to reload script if script didn't compile in earlier invocation,
+     * need to be ThreadLocal as script itself loads in ThreadLocal.
+     */
+    private ThreadLocal<Boolean> scriptCompiled = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return true;
+        }
+
+    };
+
+    /*
+     * This map is needed since loading of script happens in a ThreadLocal and
+     * status of script update needs to be propagated to each thread. This map
+     * collects ScriptedCollectionSetBuilder and set it's value as false
+     * initially. Whenever script updates and callback reload() gets called, all
+     * values will be set to true to trigger reload of script in corresponding
+     * thread, see getCollectionBuilder().
+     */
+    private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
 
     private final LoadingCache<CacheKey, Optional<Package>> cache = CacheBuilder.newBuilder()
             .maximumSize(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
@@ -119,8 +135,7 @@ public abstract class AbstractPersistingAdapter implements Adapter {
                             // No filter specified, always match
                             return Optional.of(pkg);
                         }
-                        // NOTE: The location of the host address is not taken
-                        // into account.
+                        // NOTE: The location of the host address is not taken into account.
                         if (filterDao.isValid(key.getHostAddress(), pkg.getFilterRule())) {
                             return Optional.of(pkg);
                         }
@@ -245,47 +260,20 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         }
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    private void setFileUpdateCallback(String script) {
-
-        if (!Strings.isNullOrEmpty(script)) {
-            try {
-                reloadUtils = new FileUpdateWatcher(script, reloadScript());
-            } catch (Exception e) {
-                LOG.info("Script reload Utils is not registered", e);
-            }
-        }
-
-    }
-
-    private FileUpdateCallback reloadScript() {
-
-        return new FileUpdateCallback() {
-            @Override
-            public void reload() {
-                try {
-                    checkScript(bundleContext, script);
-                    LOG.debug(" Updated script compiled");
-                    scriptMap.replaceAll((builder, Boolean) -> true);
-                } catch (Exception e) {
-                    LOG.error("Updated script failed to build , using existing script'{}'.", script, e);
-                }
-            }
-
-        };
-    }
-
+    /*
+     * This method checks and reloads script if there is an update else returns
+     * existing builder
+     */
     protected ScriptedCollectionSetBuilder getCollectionBuilder() throws Exception {
 
         ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
-        if ((builder != null && scriptMap.get(builder)) || !scriptCompiled.get()) {
+        // Reload script if reload() happened or earlier invocation of script didn't compile
+        if ((builder != null && scriptUpdateMap.get(builder)) || !scriptCompiled.get()) {
             scriptedCollectionSetBuilders.remove();
             builder = scriptedCollectionSetBuilders.get();
         }
         if (builder == null) {
+            // script didn't compile, set flag to false
             scriptCompiled.set(false);
             throw new Exception(String.format("Error compiling script '%s'. See logs for details.", script));
         } else if (!scriptCompiled.get()) {
@@ -299,11 +287,11 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         ScriptedCollectionSetBuilder builder;
         if (bundleContext != null) {
             builder = new ScriptedCollectionSetBuilder(new File(script), bundleContext);
-            scriptMap.put(builder, Boolean.FALSE);
+            scriptUpdateMap.put(builder, false);
             return builder;
         } else {
             builder = new ScriptedCollectionSetBuilder(new File(script));
-            scriptMap.put(builder, Boolean.FALSE);
+            scriptUpdateMap.put(builder, false);
             return builder;
         }
     }
@@ -317,6 +305,39 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         }
     }
 
+    private void setFileUpdateCallback(String script) {
+        if (!Strings.isNullOrEmpty(script)) {
+            try {
+                scriptUpdateWatcher = new FileUpdateWatcher(script, reloadScript());
+            } catch (Exception e) {
+                LOG.info("Script reload Utils is not registered", e);
+            }
+        }
+    }
+
+    private FileUpdateCallback reloadScript() {
+
+        return new FileUpdateCallback() {
+            /* Callback method for script update */
+            @Override
+            public void reload() {
+                try {
+                    checkScript(bundleContext, script);
+                    LOG.debug(" Updated script compiled");
+                    // Set all the values in Map to true to trigger reload of script in all threads
+                    scriptUpdateMap.replaceAll((builder, Boolean) -> true);
+                } catch (Exception e) {
+                    LOG.error("Updated script failed to build , using existing script'{}'.", script, e);
+                }
+            }
+
+        };
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
     public String getScript() {
         return script;
     }
@@ -327,8 +348,8 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     }
 
     public void destroy() {
-        if (reloadUtils != null) {
-            reloadUtils.destroy();
+        if (scriptUpdateWatcher != null) {
+            scriptUpdateWatcher.destroy();
         }
     }
 }

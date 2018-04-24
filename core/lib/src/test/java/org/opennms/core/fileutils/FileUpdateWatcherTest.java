@@ -74,9 +74,9 @@ public class FileUpdateWatcherTest {
     @Test
     public void testFileUpdateWatcher() throws IOException {
         
-        String str = "Hello";
+        String hello = "Hello";
         BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
-        writer.write(str);
+        writer.write(hello);
         writer.close();
         await().atMost(5, SECONDS).pollDelay(0, SECONDS).pollInterval(2, SECONDS)
         .untilTrue(reloadCalled);

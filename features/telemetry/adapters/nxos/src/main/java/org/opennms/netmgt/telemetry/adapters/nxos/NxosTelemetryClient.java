@@ -39,7 +39,9 @@ import java.util.List;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 
-
+/**
+ * Utility to send Nxos messages to Telemetry stack
+ **/
 public class NxosTelemetryClient {
 
     private static TelemetryBis.Telemetry buildMessage(String ipAddress , int i) throws IOException {
@@ -74,7 +76,6 @@ public class NxosTelemetryClient {
             try {
                 sendNxosPacket(i);
             } catch (IOException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         });
