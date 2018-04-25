@@ -13,7 +13,7 @@
 
     <cm:property-placeholder id="ClassificationEngineProperties" persistent-id="org.opennms.features.flows.classification" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="cache.classification.enabled" value="true" />
+            <cm:property name="cache.classification.enabled" value="false" />
             <cm:property name="cache.classification.maxSize" value="5000" />
             <cm:property name="cache.classification.expireAfterRead" value="60" /> <!-- Seconds -->
             <cm:property name="cache.classification.recordStats" value="true" />
