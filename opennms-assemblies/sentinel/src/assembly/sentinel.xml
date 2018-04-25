@@ -26,7 +26,7 @@
       </excludes>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/unpacked/karaf-${project.version}</directory>
+      <directory>${project.build.directory}/unpacked/sentinel-${project.version}</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
     </fileSet>
     <fileSet>

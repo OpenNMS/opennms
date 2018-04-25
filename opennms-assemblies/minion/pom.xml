@@ -77,8 +77,8 @@
               <outputDirectory>${project.build.directory}/unpacked</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features.minion.container</groupId>
-                  <artifactId>karaf</artifactId>
+                  <groupId>org.opennms.features.container</groupId>
+                  <artifactId>minion</artifactId>
                   <version>${project.version}</version>
                   <type>tar.gz</type>
                 </artifactItem>
@@ -134,7 +134,7 @@
               </includes>
             </fileSet>
             <fileSet>
-              <directory>${project.build.directory}/unpacked/karaf-${project.version}</directory>
+              <directory>${project.build.directory}/unpacked/minion-${project.version}</directory>
               <includes>
                 <include>**/*.jar</include>
                 <include>**/*.pom</include>
@@ -166,8 +166,8 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>org.opennms.features.minion.container</groupId>
-      <artifactId>karaf</artifactId>
+      <groupId>org.opennms.features.container</groupId>
+      <artifactId>minion</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
     </dependency>

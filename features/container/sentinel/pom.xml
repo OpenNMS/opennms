@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms.features.minion</groupId>
+        <groupId>org.opennms.features</groupId>
         <artifactId>container-parent</artifactId>
         <version>22.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.minion.container</groupId>
-    <artifactId>karaf</artifactId>
+    <groupId>org.opennms.features.container</groupId>
+    <artifactId>sentinel</artifactId>
     <packaging>pom</packaging>
-    <name>OpenNMS :: Features :: Minion :: Container :: Karaf</name>
+    <name>OpenNMS :: Features :: Container :: Sentinel</name>
 
     <build>
         <plugins>
@@ -64,7 +64,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <configuration>
                     <descriptors>
-                        <descriptor>src/assembly/minion.xml</descriptor>
+                        <descriptor>src/assembly/sentinel.xml</descriptor>
                     </descriptors>
                     <tarLongFileMode>posix</tarLongFileMode>
                     <appendAssemblyId>false</appendAssemblyId>

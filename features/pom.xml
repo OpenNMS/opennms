@@ -133,6 +133,9 @@
     <!-- Business Service Monitor -->
     <module>bsm</module>
 
+    <!-- Standalone Karaf Containers -->
+    <module>container</module>
+
     <!-- Sentinel -->
     <module>sentinel</module>
 
