@@ -13,6 +13,8 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
       <includes>
+        <include>debian/opennms-sentinel.sentinel.init</include>
+        <include>debian/rules</include>
         <include>etc/sentinel.init</include>
         <include>bin/scvcli</include>
       </includes>
@@ -22,6 +24,8 @@
       <directory>${project.build.directory}/classes</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
       <excludes>
+        <exclude>debian/opennms-sentinel.sentinel.init</exclude>
+        <exclude>debian/rules</exclude>
         <exclude>etc/sentinel.init</exclude>
       </excludes>
     </fileSet>
@@ -38,6 +42,11 @@
     <file>
       <source>../../COPYING</source>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
+    </file>
+    <file>
+      <source>../../COPYING</source>
+      <outputDirectory>sentinel-${project.version}/debian</outputDirectory>
+      <destName>copyright</destName>
     </file>
   </files>
 </assembly>
