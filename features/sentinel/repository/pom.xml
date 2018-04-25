@@ -237,6 +237,21 @@
             <artifactId>org.opennms.protocols.xml</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.persistence</groupId>
+            <artifactId>org.opennms.features.persistence.dao-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.persistence</groupId>
+            <artifactId>org.opennms.features.persistence.dao-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.persistence</groupId>
+            <artifactId>org.opennms.features.persistence.datasource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <repositories>

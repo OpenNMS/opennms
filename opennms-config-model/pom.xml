@@ -99,6 +99,8 @@
             <Import-Package>
               org.eclipse.persistence.internal.jaxb;resolution:=optional,
               org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
+              javassist.util.proxy,
+              org.hibernate.proxy,
               org.opennms.core.network,
               org.opennms.netmgt.collection.adapters,
               *
