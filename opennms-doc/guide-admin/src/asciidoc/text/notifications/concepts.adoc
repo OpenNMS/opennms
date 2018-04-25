@@ -149,4 +149,4 @@ NOTE: Use external binary notification commands sparingly to avoid fork-bombing 
 Originally, all notification commands were external.
 Today only the `numericPage` and `textPage` commands use external programs to do their work.
 
-NOTE: A video walkthrough is available as part of the _OpenNMS 101_ videos on YouTube.  https://www.youtube.com/watch?v=h4xML_m0r8s[Module 4-2] features custom notification commands.
+TIP: A video walkthrough is available as part of the _OpenNMS 101_ videos on YouTube.  https://www.youtube.com/watch?v=h4xML_m0r8s[Module 4-2] features custom notification commands.
