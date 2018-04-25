@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.FlowSelectorAlgorithm;
 
 class Netflow9Flow implements Flow {
     private final BsonDocument document;
@@ -178,10 +179,20 @@ class Netflow9Flow implements Flow {
     }
 
     @Override
-    public Integer getSamplingAlgorithm() {
-        return getInt64(this.document,  "SAMPLING_ALGORITHM")
+    public FlowSelectorAlgorithm getSamplingAlgorithm() {
+        final Integer samplingAlgorithm = getInt64(this.document,  "SAMPLING_ALGORITHM")
                 .map(Long::intValue)
                 .orElse(null);
+
+            if (samplingAlgorithm == 1) {
+                return FlowSelectorAlgorithm.SystematicCountBasedSampling;
+            }
+            if (samplingAlgorithm == 2) {
+                return FlowSelectorAlgorithm.RandomNoutOfNSampling;
+            }
+
+            return FlowSelectorAlgorithm.Unassigned;
+        }
     }
 
     @Override

@@ -28,16 +28,14 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getTime;
-
 import java.time.Instant;
 import java.util.Objects;
 
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.FlowSelectorAlgorithm;
+
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.*;
 
 class IpfixFlow implements Flow {
     private final BsonDocument document;
@@ -206,19 +204,165 @@ class IpfixFlow implements Flow {
     }
 
     @Override
-    public Integer getSamplingAlgorithm() {
-        return first(getInt64(this.document,  "selectorAlgorithm"),
-                     getInt64(this.document,  "samplingAlgorithm"))
-                .map(Long::intValue)
-                .orElse(null);
+    public FlowSelectorAlgorithm getSamplingAlgorithm() {
+        final Integer deprecatedSamplingAlgorithm = first(
+                getInt64(this.document,  "samplingAlgorithm"),
+                getInt64(this.document,  "samplerMode"))
+                .map(Long::intValue).orElse(null);
+
+        if (deprecatedSamplingAlgorithm == 1) {
+            return FlowSelectorAlgorithm.SystematicCountBasedSampling;
+        }
+
+        if (deprecatedSamplingAlgorithm == 2) {
+            return FlowSelectorAlgorithm.RandomNoutOfNSampling;
+        }
+
+        final Integer selectorAlgorithm = getInt64(this.document,  "selectorAlgorithm").map(Long::intValue).orElse(null);
+
+        if (selectorAlgorithm != null) {
+            return FlowSelectorAlgorithm.fromId(selectorAlgorithm);
+        }
+
+        return FlowSelectorAlgorithm.Unassigned;
     }
 
     @Override
     public Integer getSamplingInterval() {
-        return first(getInt64(this.document,  "samplingPacketInterval"),
-                     getInt64(this.document,  "samplingInterval"))
-                .map(Long::intValue)
-                .orElse(null);
+        final Integer deprecatedSamplingInterval = first(
+                getInt64(this.document, "samplingInterval"),
+                getInt64(this.document, "samplerRandomInterval"))
+                .map(Long::intValue).orElse(null);
+
+        if (deprecatedSamplingInterval != null) {
+            return deprecatedSamplingInterval;
+        }
+
+        final Integer selectorAlgorithm = getInt64(this.document, "selectorAlgorithm").map(Long::intValue).orElse(null);
+
+        if (selectorAlgorithm != null) {
+            switch (FlowSelectorAlgorithm.fromId(selectorAlgorithm)) {
+                case Unassigned: {
+                    return null;
+                }
+                case SystematicCountBasedSampling: {
+                    final Integer samplingInterval =
+                            getInt64(this.document, "samplingFlowInterval")
+                            .map(Long::intValue).orElse(null);
+                    final Integer samplingSpacing =
+                            getInt64(this.document, "samplingFlowSpacing")
+                            .map(Long::intValue).orElse(null);
+
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case SystematicTimeBasedSampling: {
+                    final Integer flowSamplingTimeInterval =
+                            getInt64(this.document, "flowSamplingTimeInterval")
+                            .map(Long::intValue).orElse(null);
+                    final Integer flowSamplingTimeSpacing =
+                            getInt64(this.document, "flowSamplingTimeSpacing")
+                            .map(Long::intValue).orElse(null);
+
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case RandomNoutOfNSampling: {
+                    final Integer samplingSize =
+                            getInt64(this.document, "samplingSize")
+                            .map(Long::intValue).orElse(null);
+                    final Integer samplingPopulation =
+                            getInt64(this.document, "samplingPopulation")
+                            .map(Long::intValue).orElse(null);
+
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case UniformProbabilisticSampling: {
+                    final Double samplingProbability =
+                            getDouble(this.document, "samplingProbability")
+                            .orElse(null);
+
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case PropertyMatchFiltering: {
+                    // Information Element Value Range?
+                    return null;
+                }
+                case HashBasedFilteringUsingBOB: {
+                    final Integer hashInitialiserValue =
+                            getInt64(this.document, "hashInitialiserValue")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashFlowDomain =
+                            getInt64(this.document, "hashFlowDomain")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMin =
+                            getInt64(this.document, "hashSelectedRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMax =
+                            getInt64(this.document, "hashSelectedRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMin =
+                            getInt64(this.document, "hashOutputRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMax =
+                            getInt64(this.document, "hashOutputRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case HashBasedFilteringUsingIPSX: {
+                    final Integer hashInitialiserValue =
+                            getInt64(this.document, "hashInitialiserValue")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashFlowDomain =
+                            getInt64(this.document, "hashFlowDomain")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMin =
+                            getInt64(this.document, "hashSelectedRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMax =
+                            getInt64(this.document, "hashSelectedRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMin =
+                            getInt64(this.document, "hashOutputRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMax =
+                            getInt64(this.document, "hashOutputRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case HashBasedFilteringUsingCRC: {
+                    final Integer hashInitialiserValue =
+                            getInt64(this.document, "hashInitialiserValue")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashFlowDomain =
+                            getInt64(this.document, "hashFlowDomain")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMin =
+                            getInt64(this.document, "hashSelectedRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashSelectedRangeMax =
+                            getInt64(this.document, "hashSelectedRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMin =
+                            getInt64(this.document, "hashOutputRangeMin")
+                                    .map(Long::intValue).orElse(null);
+                    final Integer hashOutputRangeMax =
+                            getInt64(this.document, "hashOutputRangeMax")
+                                    .map(Long::intValue).orElse(null);
+                    // TODO: Compute something funny...
+                    return null;
+                }
+                case FlowStateDependentIntermediateFlowSelectionProcess: {
+                    // No agreed parameters?
+                    return null;
+                }
+            }
+        }
+        return null;
     }
 
     @Override

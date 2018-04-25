@@ -144,7 +144,7 @@ public interface Flow {
     /**
      * Sampling algorithm ID
      */
-    Integer getSamplingAlgorithm();
+    FlowSelectorAlgorithm getSamplingAlgorithm();
 
     /**
      * Sampling interval

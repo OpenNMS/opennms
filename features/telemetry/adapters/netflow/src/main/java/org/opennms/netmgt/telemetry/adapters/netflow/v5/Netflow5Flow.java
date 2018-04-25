@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.adapters.netflow.v5;
 import java.util.Objects;
 
 import org.opennms.netmgt.flows.api.Flow;
+import org.opennms.netmgt.flows.api.FlowSelectorAlgorithm;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowPacket;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowRecord;
 
@@ -139,8 +140,15 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public Integer getSamplingAlgorithm() {
-        return null;
+    public FlowSelectorAlgorithm getSamplingAlgorithm() {
+        if (this.packet.getSamplingAlgorithm() == 1) {
+            return FlowSelectorAlgorithm.SystematicCountBasedSampling;
+        }
+        if (this.packet.getSamplingAlgorithm() == 2) {
+            return FlowSelectorAlgorithm.RandomNoutOfNSampling;
+        }
+
+        return FlowSelectorAlgorithm.Unassigned;
     }
 
     @Override

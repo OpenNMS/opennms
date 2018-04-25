@@ -32,11 +32,7 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.bson.BsonDocument;
-import org.bson.BsonInt32;
-import org.bson.BsonInt64;
-import org.bson.BsonString;
-import org.bson.BsonValue;
+import org.bson.*;
 
 public class BsonUtils {
 
@@ -56,6 +52,10 @@ public class BsonUtils {
 
     public static Optional<Long> getInt64(final BsonDocument doc, final String... path) {
         return get(doc, path).map(BsonValue::asInt64).map(BsonInt64::getValue);
+    }
+
+    public static Optional<Double> getDouble(final BsonDocument doc, final String... path) {
+        return get(doc, path).map(BsonValue::asDouble).map(BsonDouble::getValue);
     }
 
     public static Optional<Integer> getInt32(final BsonDocument doc, final String... path) {
