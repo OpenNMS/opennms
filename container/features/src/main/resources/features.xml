@@ -218,7 +218,7 @@
 
     <!-- Use name hibernate36 so that we don't collide with Karaf 2.3.5+'s hibernate feature -->
     <feature name="hibernate36" description="Hibernate :: Hibernate ORM" version="3.6.10.Final">
-      <bundle dependency="true">wrap:mvn:antlr/antlr/2.7.7</bundle>
+      <bundle dependency="true">wrap:mvn:antlr/antlr/2.7.7$Import-Package=org.hibernate.hql.ast</bundle>
       <bundle dependency="true">wrap:mvn:dom4j/dom4j/1.6.1</bundle>
       <!-- Use geronimo-jta_1.1_spec instead of javax.transaction because the Apache projects use it -->
       <!-- <bundle dependency="true">wrap:mvn:javax.transaction/jta/1.1</bundle> -->
@@ -670,7 +670,13 @@
       <feature>opennms-config-api</feature>
 
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
-      <bundle>mvn:org.opennms/opennms-dao-api/${project.version}</bundle>
+
+      <!--
+        We use this instead of org.opennms/opennms-dao-api as there are other bundles providing DAOs (e.g. bsm)
+        and those are all merged together in the following bundle. Technically starting all API bundles would be
+        sufficient, but this is consistent with dao-impl.
+      -->
+      <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.dao-api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
@@ -690,7 +696,11 @@
       <!-- We really just need org.apache.httpcomponents out of here for opennms-xml-collector -->
       <feature>opennms-core-web</feature>
 
-      <bundle>mvn:org.opennms/opennms-dao/${project.version}</bundle>
+      <!--
+        We this instead of org.opennms/opennms-dao as there are other bundles providing DAO implementations (e.g. bsm)
+        and those are all merged together as one big classpath is required in order to use spring's datasource factory.
+       -->
+      <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.dao-impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
@@ -1174,6 +1184,30 @@
 
     <feature name="opennms-bundle-refresher" description="OpenNMS :: Vaadin-Theme Bundle Refresher">
         <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-persistence" description="OpenNMS :: Persistence" version="${project.version}">
+        <feature>opennms-model</feature>
+        <feature>opennms-dao</feature>
+
+        <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.datasource/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-spring-extender" description="OpenNMS :: Spring Extender" version="${project.version}">
+        <!--
+          Technically only feature "spring" is required but to prevent other features installing different versions of spring,
+          e.g. when "spring-jdbc" is installed in a different version, at this point all spring features are installed
+          to avoid spring version mix ups.
+        -->
+        <feature version="[4.2,4.3)">spring</feature>
+        <feature version="[4.2,4.3)">spring-jdbc</feature>
+        <feature version="[4.2,4.3)">spring-orm</feature>
+        <feature version="[4.2,4.3)">spring-jms</feature>
+        <feature version="[4.2,4.3)">spring-tx</feature>
+
+        <bundle dependency="true">mvn:com.google.guava/guava/18.0</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
+        <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
 </features>
