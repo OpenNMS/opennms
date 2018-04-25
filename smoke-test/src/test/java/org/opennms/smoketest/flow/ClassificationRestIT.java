@@ -279,7 +279,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "name;ipAddress;port;protocol\nmagic-ulf;;1337;tcp";
+        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter\nmagic-ulf;tcp;;;;1337;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
                 .post()
@@ -297,8 +297,10 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                     .contentType(ContentType.JSON)
                     .body("", hasSize(1))
                     .body("[0].name", equalTo("magic-ulf"))
-                    .body("[0].ipAddress", nullValue())
-                    .body("[0].port", equalTo("1337"))
+                    .body("[0].srcAddress", nullValue())
+                    .body("[0].srcPort", nullValue())
+                    .body("[0].dstAddress", nullValue())
+                    .body("[0].dstPort", equalTo("1337"))
                     .body("[0].protocols[0]", equalTo("tcp"));
     }
 
