@@ -73,8 +73,8 @@ public class NetflowPacket {
         this.flowSequence = Utils.getLong(16, 19, data, 0);
         this.engineType =  Utils.getShort(20, 20, data, 0); 
         this.engineId =  Utils.getShort(21, 21, data, 0);
-        this.samplingAlgorithm = Utils.getInt(22, 23, data, 0) & 0b11000000;
-        this.samplingInterval = Utils.getInt(22, 23, data, 0) & 0b00111111;
+        this.samplingAlgorithm = (Utils.getInt(22, 23, data, 0) & 0b11000000_00000000) >> 14;
+        this.samplingInterval = Utils.getInt(22, 23, data, 0) & 0b00111111_11111111;
 
         // Parse body
         // determine how many records are there, as this.count could be wrong
