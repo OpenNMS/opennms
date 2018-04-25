@@ -32,11 +32,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
@@ -198,13 +196,18 @@ public class DefaultClassificationEngine implements ClassificationEngine {
         // If rules for src and dst port exist and they are not identical,
         // they must be deduped (merging and sorting the classifiers)
         // 1. Merge
-        final Set<Classifier> classifiers = new HashSet<>();
+        final List<Classifier> classifiers = new ArrayList<>();
         classifiers.addAll(srcPortClassifiers);
-        classifiers.addAll(dstPortClassifiers);
+
+        // Only add not already added classifiers
+        for (Classifier c : dstPortClassifiers) {
+            if (!classifiers.contains(c)) {
+                classifiers.add(c);
+            }
+        }
 
         // 2. Sort
-        final List<Classifier> sortedClassifiers = new ArrayList<>(classifiers);
-        Collections.sort(sortedClassifiers);
-        return sortedClassifiers;
+        Collections.sort(classifiers);
+        return classifiers;
     }
 }
