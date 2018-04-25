@@ -28,12 +28,11 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.v5;
 
-import java.util.Objects;
-
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowSelectorAlgorithm;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowPacket;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowRecord;
+
+import java.util.Objects;
 
 class Netflow5Flow implements Flow {
     private final NetflowPacket packet;
@@ -140,20 +139,20 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public FlowSelectorAlgorithm getSamplingAlgorithm() {
+    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
         if (this.packet.getSamplingAlgorithm() == 1) {
-            return FlowSelectorAlgorithm.SystematicCountBasedSampling;
+            return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
         }
         if (this.packet.getSamplingAlgorithm() == 2) {
-            return FlowSelectorAlgorithm.RandomNoutOfNSampling;
+            return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
         }
 
-        return FlowSelectorAlgorithm.Unassigned;
+        return Flow.SamplingAlgorithm.Unassigned;
     }
 
     @Override
-    public Integer getSamplingInterval() {
-        return this.packet.getSamplingInterval();
+    public Double getSamplingInterval() {
+        return (double) this.packet.getSamplingInterval();
     }
 
     @Override
@@ -197,8 +196,8 @@ class Netflow5Flow implements Flow {
     }
 
     /**
-     * @param timestampMs Current unix timestamp in milliseconds.
-     * @param sysUptimeMs Current time in milliseconds since the export device booted.
+     * @param timestampMs      Current unix timestamp in milliseconds.
+     * @param sysUptimeMs      Current time in milliseconds since the export device booted.
      * @param switchedUptimeMs System uptime at which the this.packet was switched.
      * @return Unix timestamp in milliseconds at which the this.packet was switched.
      */

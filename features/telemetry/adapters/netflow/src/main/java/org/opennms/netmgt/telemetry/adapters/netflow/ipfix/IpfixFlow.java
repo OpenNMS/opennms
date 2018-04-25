@@ -28,16 +28,20 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.ipfix;
 
-import java.time.Instant;
-import java.util.Objects;
-
+import com.google.common.primitives.UnsignedLong;
 import org.bson.BsonDocument;
 import org.opennms.netmgt.flows.api.Flow;
-import org.opennms.netmgt.flows.api.FlowSelectorAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.Objects;
 
 import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.*;
 
 class IpfixFlow implements Flow {
+    private static final Logger LOG = LoggerFactory.getLogger(IpfixFlow.class);
+
     private final BsonDocument document;
 
     public IpfixFlow(final BsonDocument document) {
@@ -52,17 +56,17 @@ class IpfixFlow implements Flow {
     @Override
     public Long getBytes() {
         // TODO: What about the totals?
-        return first(getInt64(this.document,  "octetDeltaCount"),
-                     getInt64(this.document,  "postOctetDeltaCount"),
-                     getInt64(this.document,  "layer2OctetDeltaCount"),
-                     getInt64(this.document,  "postLayer2OctetDeltaCount"),
-                     getInt64(this.document,  "transportOctetDeltaCount"))
+        return first(getInt64(this.document, "octetDeltaCount"),
+                getInt64(this.document, "postOctetDeltaCount"),
+                getInt64(this.document, "layer2OctetDeltaCount"),
+                getInt64(this.document, "postLayer2OctetDeltaCount"),
+                getInt64(this.document, "transportOctetDeltaCount"))
                 .orElse(null);
     }
 
     @Override
     public Direction getDirection() {
-        return getInt64(this.document,  "flowDirection")
+        return getInt64(this.document, "flowDirection")
                 .map(v -> v == 0x00 ? Direction.INGRESS
                         : v == 0x01 ? Direction.EGRESS
                         : null)
@@ -71,43 +75,43 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getDstAddr() {
-        return first(getString(this.document,  "destinationIPv6Address"),
-                     getString(this.document,  "destinationIPv4Address"))
+        return first(getString(this.document, "destinationIPv6Address"),
+                getString(this.document, "destinationIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getDstAs() {
-        return getInt64(this.document,  "bgpDestinationAsNumber")
+        return getInt64(this.document, "bgpDestinationAsNumber")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstMaskLen() {
-        return first(getInt64(this.document,  "destinationIPv6PrefixLength"),
-                     getInt64(this.document,  "destinationIPv4PrefixLength"))
+        return first(getInt64(this.document, "destinationIPv6PrefixLength"),
+                getInt64(this.document, "destinationIPv4PrefixLength"))
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getDstPort() {
-        return getInt64(this.document,  "destinationTransportPort")
+        return getInt64(this.document, "destinationTransportPort")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineId() {
-        return getInt64(this.document,  "engineId")
+        return getInt64(this.document, "engineId")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getEngineType() {
-        return getInt64(this.document,  "engineType")
+        return getInt64(this.document, "engineType")
                 .map(Long::intValue)
                 .orElse(null);
     }
@@ -117,13 +121,13 @@ class IpfixFlow implements Flow {
         // TODO: What about flowDuration* ?
         return first(
                 first(getTime(this.document, "flowStartSeconds"),
-                      getTime(this.document, "flowStartMilliseconds"),
-                      getTime(this.document, "flowStartMicroseconds"),
-                      getTime(this.document, "flowStartNanoseconds")
+                        getTime(this.document, "flowStartMilliseconds"),
+                        getTime(this.document, "flowStartMicroseconds"),
+                        getTime(this.document, "flowStartNanoseconds")
                 ).map(Instant::toEpochMilli),
                 getInt64(this.document, "flowStartDeltaMicroseconds").map(t -> this.getTimestamp() + t),
                 getInt64(this.document, "flowStartSysUpTime").flatMap(t ->
-                    getTime(this.document, "systemInitTimeMilliseconds").map(ts -> ts.toEpochMilli() + t)
+                        getTime(this.document, "systemInitTimeMilliseconds").map(ts -> ts.toEpochMilli() + t)
                 )
         ).orElse(null);
     }
@@ -143,14 +147,14 @@ class IpfixFlow implements Flow {
 
     @Override
     public Integer getInputSnmp() {
-        return getInt64(this.document,  "ingressInterface")
+        return getInt64(this.document, "ingressInterface")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getIpProtocolVersion() {
-        return getInt64(this.document,  "ipVersion")
+        return getInt64(this.document, "ipVersion")
                 .map(Long::intValue)
                 .orElse(null);
     }
@@ -160,9 +164,9 @@ class IpfixFlow implements Flow {
         // TODO: What about flowDuration* ?
         return first(
                 first(getTime(this.document, "flowEndSeconds"),
-                      getTime(this.document, "flowEndMilliseconds"),
-                      getTime(this.document, "flowEndMicroseconds"),
-                      getTime(this.document, "flowEndNanoseconds")
+                        getTime(this.document, "flowEndMilliseconds"),
+                        getTime(this.document, "flowEndMicroseconds"),
+                        getTime(this.document, "flowEndNanoseconds")
                 ).map(Instant::toEpochMilli),
                 getInt64(this.document, "flowEndDeltaMicroseconds").map(t -> this.getTimestamp() + t),
                 getInt64(this.document, "flowEndSysUpTime").flatMap(t ->
@@ -173,16 +177,16 @@ class IpfixFlow implements Flow {
 
     @Override
     public String getNextHop() {
-        return first(getString(this.document,  "ipNextHopIPv6Address"),
-                     getString(this.document,  "ipNextHopIPv4Address"),
-                     getString(this.document,  "bgpNextHopIPv6Address"),
-                     getString(this.document,  "bgpNextHopIPv4Address"))
+        return first(getString(this.document, "ipNextHopIPv6Address"),
+                getString(this.document, "ipNextHopIPv4Address"),
+                getString(this.document, "bgpNextHopIPv6Address"),
+                getString(this.document, "bgpNextHopIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
-        return getInt64(this.document,  "egressInterface")
+        return getInt64(this.document, "egressInterface")
                 .map(Long::intValue)
                 .orElse(null);
     }
@@ -190,49 +194,71 @@ class IpfixFlow implements Flow {
     @Override
     public Long getPackets() {
         // TODO: What about the totals?
-        return first(getInt64(this.document,  "packetDeltaCount"),
-                     getInt64(this.document,  "postPacketDeltaCount"),
-                     getInt64(this.document,  "transportPacketDeltaCount"))
+        return first(getInt64(this.document, "packetDeltaCount"),
+                getInt64(this.document, "postPacketDeltaCount"),
+                getInt64(this.document, "transportPacketDeltaCount"))
                 .orElse(null);
     }
 
     @Override
     public Integer getProtocol() {
-        return getInt64(this.document,  "protocolIdentifier")
+        return getInt64(this.document, "protocolIdentifier")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
-    public FlowSelectorAlgorithm getSamplingAlgorithm() {
+    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
         final Integer deprecatedSamplingAlgorithm = first(
-                getInt64(this.document,  "samplingAlgorithm"),
-                getInt64(this.document,  "samplerMode"))
+                getInt64(this.document, "samplingAlgorithm"),
+                getInt64(this.document, "samplerMode"))
                 .map(Long::intValue).orElse(null);
 
-        if (deprecatedSamplingAlgorithm == 1) {
-            return FlowSelectorAlgorithm.SystematicCountBasedSampling;
+        if (deprecatedSamplingAlgorithm != null) {
+            if (deprecatedSamplingAlgorithm == 1) {
+                return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
+            }
+            if (deprecatedSamplingAlgorithm == 2) {
+                return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
+            }
         }
 
-        if (deprecatedSamplingAlgorithm == 2) {
-            return FlowSelectorAlgorithm.RandomNoutOfNSampling;
-        }
-
-        final Integer selectorAlgorithm = getInt64(this.document,  "selectorAlgorithm").map(Long::intValue).orElse(null);
+        final Integer selectorAlgorithm = getInt64(this.document, "selectorAlgorithm").map(Long::intValue).orElse(null);
 
         if (selectorAlgorithm != null) {
-            return FlowSelectorAlgorithm.fromId(selectorAlgorithm);
+            switch (selectorAlgorithm) {
+                case 0:
+                    return SamplingAlgorithm.Unassigned;
+                case 1:
+                    return SamplingAlgorithm.SystematicCountBasedSampling;
+                case 2:
+                    return SamplingAlgorithm.SystematicTimeBasedSampling;
+                case 3:
+                    return SamplingAlgorithm.RandomNoutOfNSampling;
+                case 4:
+                    return SamplingAlgorithm.UniformProbabilisticSampling;
+                case 5:
+                    return SamplingAlgorithm.PropertyMatchFiltering;
+                case 6:
+                case 7:
+                case 8:
+                    return SamplingAlgorithm.HashBasedFiltering;
+                case 9:
+                    return SamplingAlgorithm.FlowStateDependentIntermediateFlowSelectionProcess;
+                default:
+                    LOG.warn("Unknown selector algorithm: {}", selectorAlgorithm);
+            }
         }
 
-        return FlowSelectorAlgorithm.Unassigned;
+        return Flow.SamplingAlgorithm.Unassigned;
     }
 
     @Override
-    public Integer getSamplingInterval() {
-        final Integer deprecatedSamplingInterval = first(
+    public Double getSamplingInterval() {
+        final Double deprecatedSamplingInterval = first(
                 getInt64(this.document, "samplingInterval"),
                 getInt64(this.document, "samplerRandomInterval"))
-                .map(Long::intValue).orElse(null);
+                .map(Long::doubleValue).orElse(null);
 
         if (deprecatedSamplingInterval != null) {
             return deprecatedSamplingInterval;
@@ -241,169 +267,115 @@ class IpfixFlow implements Flow {
         final Integer selectorAlgorithm = getInt64(this.document, "selectorAlgorithm").map(Long::intValue).orElse(null);
 
         if (selectorAlgorithm != null) {
-            switch (FlowSelectorAlgorithm.fromId(selectorAlgorithm)) {
-                case Unassigned: {
+            switch (selectorAlgorithm) {
+                case 0: {
                     return null;
                 }
-                case SystematicCountBasedSampling: {
-                    final Integer samplingInterval =
+                case 1: {
+                    final Double samplingInterval =
                             getInt64(this.document, "samplingFlowInterval")
-                            .map(Long::intValue).orElse(null);
-                    final Integer samplingSpacing =
+                                    .map(Long::doubleValue).orElse(1.0);
+                    final Double samplingSpacing =
                             getInt64(this.document, "samplingFlowSpacing")
-                            .map(Long::intValue).orElse(null);
+                                    .map(Long::doubleValue).orElse(0.0);
 
-                    // TODO: Compute something funny...
-                    return null;
+                    return (samplingInterval + samplingSpacing) / samplingInterval;
                 }
-                case SystematicTimeBasedSampling: {
-                    final Integer flowSamplingTimeInterval =
+                case 2: {
+                    final Double flowSamplingTimeInterval =
                             getInt64(this.document, "flowSamplingTimeInterval")
-                            .map(Long::intValue).orElse(null);
-                    final Integer flowSamplingTimeSpacing =
+                                    .map(Long::doubleValue).orElse(1.0);
+                    final Double flowSamplingTimeSpacing =
                             getInt64(this.document, "flowSamplingTimeSpacing")
-                            .map(Long::intValue).orElse(null);
+                                    .map(Long::doubleValue).orElse(0.0);
 
-                    // TODO: Compute something funny...
-                    return null;
+                    return (flowSamplingTimeInterval + flowSamplingTimeSpacing) / flowSamplingTimeInterval;
                 }
-                case RandomNoutOfNSampling: {
-                    final Integer samplingSize =
+                case 3: {
+                    final Double samplingSize =
                             getInt64(this.document, "samplingSize")
-                            .map(Long::intValue).orElse(null);
-                    final Integer samplingPopulation =
+                                    .map(Long::doubleValue).orElse(1.0); // n
+                    final Double samplingPopulation =
                             getInt64(this.document, "samplingPopulation")
-                            .map(Long::intValue).orElse(null);
+                                    .map(Long::doubleValue).orElse(1.0); // N
 
-                    // TODO: Compute something funny...
-                    return null;
+                    return samplingPopulation / samplingSize;
                 }
-                case UniformProbabilisticSampling: {
+                case 4: {
                     final Double samplingProbability =
                             getDouble(this.document, "samplingProbability")
-                            .orElse(null);
+                                    .orElse(1.0);
 
-                    // TODO: Compute something funny...
-                    return null;
+                    return 1.0 / samplingProbability;
                 }
-                case PropertyMatchFiltering: {
-                    // Information Element Value Range?
-                    return null;
-                }
-                case HashBasedFilteringUsingBOB: {
-                    final Integer hashInitialiserValue =
-                            getInt64(this.document, "hashInitialiserValue")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashFlowDomain =
-                            getInt64(this.document, "hashFlowDomain")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMin =
+                case 5:
+                case 6:
+                case 7: {
+                    final UnsignedLong hashSelectedRangeMin =
                             getInt64(this.document, "hashSelectedRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMax =
+                                    .map(UnsignedLong::fromLongBits).orElse(UnsignedLong.ZERO);
+                    final UnsignedLong hashSelectedRangeMax =
                             getInt64(this.document, "hashSelectedRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMin =
+                                    .map(UnsignedLong::fromLongBits).orElse(UnsignedLong.MAX_VALUE);
+                    final UnsignedLong hashOutputRangeMin =
                             getInt64(this.document, "hashOutputRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMax =
+                                    .map(UnsignedLong::fromLongBits).orElse(UnsignedLong.ZERO);
+                    final UnsignedLong hashOutputRangeMax =
                             getInt64(this.document, "hashOutputRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    // TODO: Compute something funny...
-                    return null;
+                                    .map(UnsignedLong::fromLongBits).orElse(UnsignedLong.MAX_VALUE);
+
+                    return (hashOutputRangeMax.minus(hashOutputRangeMin)).dividedBy(hashSelectedRangeMax.minus(hashSelectedRangeMin)).doubleValue();
                 }
-                case HashBasedFilteringUsingIPSX: {
-                    final Integer hashInitialiserValue =
-                            getInt64(this.document, "hashInitialiserValue")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashFlowDomain =
-                            getInt64(this.document, "hashFlowDomain")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMin =
-                            getInt64(this.document, "hashSelectedRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMax =
-                            getInt64(this.document, "hashSelectedRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMin =
-                            getInt64(this.document, "hashOutputRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMax =
-                            getInt64(this.document, "hashOutputRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    // TODO: Compute something funny...
-                    return null;
-                }
-                case HashBasedFilteringUsingCRC: {
-                    final Integer hashInitialiserValue =
-                            getInt64(this.document, "hashInitialiserValue")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashFlowDomain =
-                            getInt64(this.document, "hashFlowDomain")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMin =
-                            getInt64(this.document, "hashSelectedRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashSelectedRangeMax =
-                            getInt64(this.document, "hashSelectedRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMin =
-                            getInt64(this.document, "hashOutputRangeMin")
-                                    .map(Long::intValue).orElse(null);
-                    final Integer hashOutputRangeMax =
-                            getInt64(this.document, "hashOutputRangeMax")
-                                    .map(Long::intValue).orElse(null);
-                    // TODO: Compute something funny...
-                    return null;
-                }
-                case FlowStateDependentIntermediateFlowSelectionProcess: {
-                    // No agreed parameters?
-                    return null;
+                case 8:
+                case 9:
+                default: {
+                    LOG.warn("Unsupported sampling algorithm: {}", selectorAlgorithm);
+                    return Double.NaN;
                 }
             }
         }
-        return null;
+        return 1.0;
     }
 
     @Override
     public String getSrcAddr() {
-        return first(getString(this.document,  "sourceIPv6Address"),
-                     getString(this.document,  "sourceIPv4Address"))
+        return first(getString(this.document, "sourceIPv6Address"),
+                getString(this.document, "sourceIPv4Address"))
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcAs() {
-        return getInt64(this.document,  "bgpSourceAsNumber")
+        return getInt64(this.document, "bgpSourceAsNumber")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcMaskLen() {
-        return first(getInt64(this.document,  "sourceIPv6PrefixLength"),
-                     getInt64(this.document,  "sourceIPv4PrefixLength"))
+        return first(getInt64(this.document, "sourceIPv6PrefixLength"),
+                getInt64(this.document, "sourceIPv4PrefixLength"))
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getSrcPort() {
-        return getInt64(this.document,  "sourceTransportPort")
+        return getInt64(this.document, "sourceTransportPort")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTcpFlags() {
-        return getInt64(this.document,  "tcpControlBits")
+        return getInt64(this.document, "tcpControlBits")
                 .map(Long::intValue)
                 .orElse(null);
     }
 
     @Override
     public Integer getTos() {
-        return getInt64(this.document,  "ipClassOfService")
+        return getInt64(this.document, "ipClassOfService")
                 .map(Long::intValue)
                 .orElse(null);
     }
@@ -415,12 +387,12 @@ class IpfixFlow implements Flow {
 
     @Override
     public Integer getVlan() {
-        return first(getInt64(this.document,  "vlanId"),
-                     getInt64(this.document,  "postVlanId"),
-                     getInt64(this.document,  "dot1qVlanId"),
-                     getInt64(this.document,  "dot1qCustomerVlanId"),
-                     getInt64(this.document,  "postDot1qVlanId"),
-                     getInt64(this.document,  "postDot1qCustomerVlanId"))
+        return first(getInt64(this.document, "vlanId"),
+                getInt64(this.document, "postVlanId"),
+                getInt64(this.document, "dot1qVlanId"),
+                getInt64(this.document, "dot1qCustomerVlanId"),
+                getInt64(this.document, "postDot1qVlanId"),
+                getInt64(this.document, "postDot1qCustomerVlanId"))
                 .map(Long::intValue)
                 .orElse(null);
     }
