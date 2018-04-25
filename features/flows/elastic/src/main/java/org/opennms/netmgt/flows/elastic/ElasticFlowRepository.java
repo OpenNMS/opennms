@@ -199,8 +199,24 @@ public class ElasticFlowRepository implements FlowRepository {
 
     @Override
     public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
-        final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters);
-        return searchAsync(query, extractTimeRangeFilter(filters))
+        // This is not an exact query as it replaces the time range filter by pure index roting. The resulting set of
+        // exporters my contain some false positives but therefore this allows to use caching of the results which
+        // improves query speed a lot.
+
+        final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters.stream()
+                                                                                      .filter(f -> !(f instanceof TimeRangeFilter))
+                                                                                      .collect(Collectors.toList()));
+
+        final Search.Builder builder = new Search.Builder(query).addType(TYPE)
+                .setParameter("request_cache", true);
+
+        final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
+        if(timeRangeFilter != null) {
+            builder.addIndices(indexSelector.getIndexNames(timeRangeFilter));
+            builder.setParameter("ignore_unavailable", "true"); // ignore unknown index
+        }
+
+        return executeAsync(builder.build())
                 .thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
                 .getBuckets()
                 .stream()
