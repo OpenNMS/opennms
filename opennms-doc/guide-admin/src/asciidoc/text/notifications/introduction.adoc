@@ -20,4 +20,4 @@ Common notification methods are email and paging, but notification mechanisms al
 
 The notification daemon _Notifd_ creates and sends notifications according to configured rules when selected events occur in _{opennms-product-name}_.
 
-NOTE: A video walkthrough is available as part of the _OpenNMS 101_ videos on YouTube.  https://www.youtube.com/watch?v=atK-zYYEzd0[Module 4-1] features an introduction to notifications.
+TIP: A video walkthrough is available as part of the _OpenNMS 101_ videos on YouTube.  https://www.youtube.com/watch?v=atK-zYYEzd0[Module 4-1] features an introduction to notifications.
