@@ -833,7 +833,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         topology.check(nodeAbd);
 
         assertTrue(m_linkd.scheduleNodeCollection(nodeA.getId()));
-        m_linkd.scheduleBridgeTopologyDiscovery(nodeA.getId());
         
         m_linkd.deleteNode(nodeA.getId());
         assertEquals(1, m_bridgeTopologyDao.getAll().size());

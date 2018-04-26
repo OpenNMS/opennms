@@ -144,25 +144,21 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
                     stplink.setVlan(entry.getKey());
                     stplink.setStpPortIfIndex(bridgeifindex.get(stplink.getStpPort()));
                     m_linkd.getQueryManager().store(getNodeId(), stplink);
-
                 }
             }
             bft = walkDot1dTpFdp(entry.getValue(),entry.getKey(), bridgeifindex, bft, vlanSnmpAgentConfigMap.get(entry.getKey()));
         }
+        LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
+        m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
 		
-        LOG.debug("run: node [{}]: bridge ifindex map {}",
-                  getNodeId(), bridgeifindex);
         bft = walkDot1qTpFdb(peer,bridgeifindex, bft);
         LOG.debug("run: node [{}]: bft size:{}", getNodeId(), bft.size());
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
         	m_linkd.getQueryManager().store(getNodeId(), bft);
-        	m_linkd.scheduleBridgeTopologyDiscovery(getNodeId());
         }
-        LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
         m_linkd.collectedBft(getNodeId());
-        m_linkd.getQueryManager().reconcileBridge(getNodeId(), now);
     }
 
     private BridgeElement getDot1dBridgeBase(SnmpAgentConfig peer) {
@@ -407,7 +403,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
             }
             if (diffafter == diffbefore) {
                 bridgeifindex.put(bridgeport, bridgeport+diffafter);
-            } else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) { //FIXME NPE
+            } else if ((bridgeport-beforePort) > (afterPort-bridgeport) ) {
                 bridgeifindex.put(bridgeport, diffafter+bridgeport);
             } else {
                 bridgeifindex.put(bridgeport, diffbefore+bridgeport);
@@ -422,6 +418,10 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     private List<BridgeForwardingTableEntry> walkDot1qTpFdb(SnmpAgentConfig peer,
             final Map<Integer, Integer> bridgeifindex,
             final List<BridgeForwardingTableEntry> bft) {
+
+        LOG.debug("walkDot1qTpFdb: node [{}]: bridge ifindex map {}",
+                  getNodeId(), bridgeifindex);
+        
 
         Dot1qTpFdbTableTracker dot1qTpFdbTableTracker = new Dot1qTpFdbTableTracker() {
 

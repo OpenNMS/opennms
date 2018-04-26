@@ -32,8 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
-import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,35 +43,16 @@ import org.slf4j.LoggerFactory;
  * creating and collection occurs in the main run method of the instance. This
  * allows the collection to occur in a thread if necessary.
  */
-public abstract class NodeDiscovery implements ReadyRunnable {
+public abstract class NodeDiscovery extends Discovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscovery.class);
     /**
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
+    protected long m_initial_sleep_time = 600000;
+    protected boolean m_runned = false;
 
-    /**
-     * The scheduler object
-     */
-    private Scheduler m_scheduler;
-
-    /**
-     * The interval, default value 30 minutes
-     */
-    private long m_poll_interval = 1800000;
-
-    /**
-     * The initial sleep time, default value 5 minutes
-     */
-    private long m_initial_sleep_time = 600000;
-
-    private boolean m_suspendCollection = false;
-
-    private boolean m_runned = false;
-
-
-    protected final EnhancedLinkd m_linkd;
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -85,11 +64,39 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      *            The SnmpPeer object to collect from.
      */
     public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
-        m_linkd = linkd;
+        super(linkd,linkd.getRescanInterval());
         m_node = node;
         m_initial_sleep_time = m_linkd.getInitialSleepTime();
-        m_poll_interval = m_linkd.getRescanInterval();
     }
+
+    /**
+     * <p>
+     * schedule
+     * </p>
+     */
+    public void schedule() {
+        if (m_scheduler == null)
+            throw new IllegalStateException(
+                                            "Cannot schedule a service whose scheduler is set to null");
+        m_scheduler.schedule(m_initial_sleep_time, this);
+    }
+
+    /**
+     * <p>
+     * unschedule
+     * </p>
+     */
+    public void unschedule() {
+        if (m_scheduler == null)
+            throw new IllegalStateException(
+                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
+        if (m_runned) {
+            m_scheduler.unschedule(this, m_poll_interval);
+        } else {
+            m_scheduler.unschedule(this, m_initial_sleep_time);
+        }
+    }
+
 
     /**
      * <p>
@@ -150,108 +157,6 @@ public abstract class NodeDiscovery implements ReadyRunnable {
     }
 
     protected abstract void runCollection(); 
-    /**
-     * <p>
-     * getScheduler
-     * </p>
-     * 
-     * @return a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler} object.
-     */
-    public Scheduler getScheduler() {
-        return m_scheduler;
-    }
-
-    /**
-     * <p>
-     * setScheduler
-     * </p>
-     * 
-     * @param scheduler
-     *            a {@link org.opennms.netmgt.enlinkd.scheduler.Scheduler}
-     *            object.
-     */
-    public void setScheduler(Scheduler scheduler) {
-        m_scheduler = scheduler;
-    }
-
-    /**
-     * <p>
-     * schedule
-     * </p>
-     */
-    public void schedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_initial_sleep_time, this);
-    }
-
-    /**
-	 * 
-	 */
-    public void reschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_poll_interval, this);
-    }
-
-    /**
-     * <p>
-     * isReady
-     * </p>
-     * 
-     * @return a boolean.
-     */
-    public boolean isReady() {
-        return true;
-    }
-
-    /**
-     * <p>
-     * isSuspended
-     * </p>
-     * 
-     * @return Returns the suspendCollection.
-     */
-    public boolean isSuspended() {
-        return m_suspendCollection;
-    }
-
-    /**
-     * <p>
-     * suspend
-     * </p>
-     */
-    public void suspend() {
-        m_suspendCollection = true;
-    }
-
-    /**
-     * <p>
-     * wakeUp
-     * </p>
-     */
-    public void wakeUp() {
-        m_suspendCollection = false;
-    }
-
-    /**
-     * <p>
-     * unschedule
-     * </p>
-     */
-    public void unschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
-        if (m_runned) {
-            m_scheduler.unschedule(this, m_poll_interval);
-        } else {
-            m_scheduler.unschedule(this, m_initial_sleep_time);
-        }
-    }
-
 
     /**
      * Returns the target address that the collection occurred for.
@@ -273,12 +178,28 @@ public abstract class NodeDiscovery implements ReadyRunnable {
      * 
      * @return a {@link java.lang.String} object.
      */
-	public String getInfo() {
+    public String getInfo() {
         return  getName()  
         		+ " node=" + getNodeId()
         		+ " ip=" + str(getPrimaryIpAddress());
-	}
+    }
 
+    public int getNodeId() {
+    	return m_node.getNodeId();
+    }
+    
+    public String getSysoid() {
+        return m_node.getSysoid();
+    }
+
+    public String getSysname() {
+        return m_node.getSysname();
+    }
+
+    public String getLocation() {
+        return m_node.getLocation();
+    }
+    
     /**
      * <p>
      * getInitialSleepTime
@@ -302,45 +223,7 @@ public abstract class NodeDiscovery implements ReadyRunnable {
         m_initial_sleep_time = initial_sleep_time;
     }
 
-    /**
-     * <p>
-     * getPollInterval
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getPollInterval() {
-        return m_poll_interval;
-    }
 
-    /**
-     * <p>
-     * setPollInterval
-     * </p>
-     * 
-     * @param interval
-     *            a long.
-     */
-    public void setPollInterval(long interval) {
-        m_poll_interval = interval;
-    }
-
-
-    public int getNodeId() {
-    	return m_node.getNodeId();
-    }
-    
-    public String getSysoid() {
-        return m_node.getSysoid();
-    }
-
-    public String getSysname() {
-        return m_node.getSysname();
-    }
-
-    public String getLocation() {
-        return m_node.getLocation();
-    }
 
     public abstract String getName();
 
