@@ -32,11 +32,17 @@ import java.time.Instant;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.bson.*;
+import org.bson.BsonDocument;
+import org.bson.BsonDouble;
+import org.bson.BsonInt32;
+import org.bson.BsonInt64;
+import org.bson.BsonString;
+import org.bson.BsonValue;
 
 public class BsonUtils {
 
-    private BsonUtils() {}
+    private BsonUtils() {
+    }
 
     public static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
         BsonValue value = doc;

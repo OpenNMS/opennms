@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.sflow;
 
-import org.bson.BsonDocument;
-import org.bson.BsonValue;
-import org.opennms.netmgt.flows.api.Flow;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.bson.BsonDocument;
+import org.bson.BsonValue;
+import org.opennms.netmgt.flows.api.Flow;
 
 class SFlow implements Flow {
 

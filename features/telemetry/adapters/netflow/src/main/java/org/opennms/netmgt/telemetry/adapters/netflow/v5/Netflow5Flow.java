@@ -28,11 +28,11 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.v5;
 
+import java.util.Objects;
+
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowPacket;
 import org.opennms.netmgt.telemetry.adapters.netflow.v5.proto.NetflowRecord;
-
-import java.util.Objects;
 
 class Netflow5Flow implements Flow {
     private final NetflowPacket packet;

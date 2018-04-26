@@ -28,12 +28,14 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.v9;
 
-import org.bson.BsonDocument;
-import org.opennms.netmgt.flows.api.Flow;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getInt64;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.getString;
 
 import java.util.Objects;
 
-import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.*;
+import org.bson.BsonDocument;
+import org.opennms.netmgt.flows.api.Flow;
 
 class Netflow9Flow implements Flow {
     private final BsonDocument document;
