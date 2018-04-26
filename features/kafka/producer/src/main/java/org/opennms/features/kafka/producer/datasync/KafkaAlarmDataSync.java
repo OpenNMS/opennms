@@ -224,7 +224,11 @@ public class KafkaAlarmDataSync implements AlarmDataStore, Runnable {
         return transactionOperations.execute(status -> {
             final Set<String> reductionKeysInKtable = alarmsInKtableByReductionKey.keySet();
 
-            final List<OnmsAlarm> alarmsInDb = alarmDao.findAll();
+            // Retrieve all of the alarms from the database and apply the filter (if any) to these
+            final List<OnmsAlarm> alarmsInDb = alarmDao.findAll().stream()
+                    .filter(kafkaProducer::shouldForwardAlarm)
+                    .collect(Collectors.toList());
+
             final Map<String, OnmsAlarm> alarmsInDbByReductionKey = alarmsInDb.stream()
                     .collect(Collectors.toMap(OnmsAlarm::getReductionKey, a -> a));
             final Set<String> reductionKeysInDb = alarmsInDbByReductionKey.keySet();
