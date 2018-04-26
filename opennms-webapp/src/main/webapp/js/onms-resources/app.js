@@ -46,12 +46,16 @@ angular.module('onms-resources', [
     $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
   };
 
-  $http.get('rest/resources?depth=0').success(function(data) {
+  $http.get('rest/resources?depth=0').then(function succeeded(response) {
+    var data = response.data;
     $scope.loaded = true;
     $scope.hasResources = data.resource.length > 0;
     $scope.resources = data.resource;
     $scope.filteredResources = $scope.resources;
     $scope.update();
+  }, function errorCallback(response) {
+     $scope.loaded = true;
+     growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
   });
 
   $scope.$watch('resourceFilter', function() {
@@ -85,7 +89,8 @@ angular.module('onms-resources', [
       $scope.url = endUrl;
     }
 
-    $http.get('rest/resources/fornode/'+nodeCriteria).success(function(data) {
+    $http.get('rest/resources/fornode/'+nodeCriteria).then(function succeeded(response) {
+      var data = response.data;
       $scope.nodeLink = data.link;
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
@@ -98,6 +103,9 @@ angular.module('onms-resources', [
         return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type;
       }), 'typeLabel');
       angular.copy($scope.resources, $scope.filteredResources);
+    }, function errorCallback(response) {
+       $scope.loaded = true;
+       growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
     });
   };
 

@@ -88,12 +88,14 @@ angular.module('onms-interfaces', [
       url: 'rest/nodes/' + $scope.nodeId + '/ipinterfaces',
       method: 'GET',
       params: { limit: 0 }
-    }).success(function(data) {
+    }).then(function succeeded(response) {
       $scope.ipIfLoaded = true;
-      $scope.ipInterfaces = data.ipInterface;
+      $scope.ipInterfaces = response.data.ipInterface;
       $scope.setStylesForIpInterfaces();
       $scope.filteredIpInterfaces = $scope.ipInterfaces;
       $scope.updateFilteredIpInterfaces();
+    }, function errorCallback(response) {
+      $scope.ipIfLoaded = true;
     });
   };
 
@@ -131,12 +133,14 @@ angular.module('onms-interfaces', [
       url: 'rest/nodes/' + $scope.nodeId + '/snmpinterfaces',
       method: 'GET',
       params: { limit: 0 }
-    }).success(function(data) {
+    }).then(function succeeded(response) {
       $scope.snmpIfLoaded = true;
-      $scope.snmpInterfaces = data.snmpInterface;
+      $scope.snmpInterfaces = response.data.snmpInterface;
       $scope.setStylesForSnmpInterfaces();
       $scope.filteredSnmpInterfaces = $scope.snmpInterfaces;
       $scope.updateFilteredSnmpInterfaces();
+    }, function errorCallback(response) {
+      $scope.snmpIfLoaded = true;
     });
   };
 
