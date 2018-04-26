@@ -85,7 +85,12 @@ public interface RuleDefinition {
     }
 
     default boolean hasDefinition() {
-        return hasProtocolDefinition() || hasDstAddressDefinition() || hasDstPortDefinition() || hasSrcAddressDefinition() || hasSrcPortDefinition();
+        return hasProtocolDefinition()
+                || hasDstAddressDefinition()
+                || hasDstPortDefinition()
+                || hasSrcAddressDefinition()
+                || hasSrcPortDefinition()
+                || hasExportFilterDefinition();
     }
 
     static boolean isDefined(String value) {
