@@ -276,23 +276,9 @@ public abstract class NodeDiscovery implements ReadyRunnable {
 	public String getInfo() {
         return  getName()  
         		+ " node=" + getNodeId()
-        		+ " ip=" + str(getPrimaryIpAddress())
-        		+ " package=" + getPackageName();
+        		+ " ip=" + str(getPrimaryIpAddress());
 	}
 
-    /**
-     * <p>
-     * Getter for the field <code>packageName</code>.
-     * </p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPackageName() {
-        return "default";
-    }
-
-    public void setPackageName(String pkgName) {
-    }
     /**
      * <p>
      * getInitialSleepTime

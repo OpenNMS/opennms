@@ -75,19 +75,5 @@ public interface ReadyRunnable extends Runnable {
      * @return a {@link java.lang.String} object.
      */
     public String getInfo();
-    
-    /**
-     * <p>getPackageName</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getPackageName();
-    
-    /**
-     * <p>setPackageName</p>
-     *
-     * @param pkg a {@link java.lang.String} object.
-     */
-    public void setPackageName(String pkg);
 
 }
