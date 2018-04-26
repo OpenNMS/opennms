@@ -50,6 +50,10 @@ public enum SamplingAlgorithm {
     FlowStateDependentIntermediateFlowSelectionProcess;
 
     public static SamplingAlgorithm from(final Flow.SamplingAlgorithm samplingAlgorithm) {
+        if (samplingAlgorithm == null) {
+            return Unassigned;
+        }
+
         switch (samplingAlgorithm) {
             case Unassigned:
                 return Unassigned;
