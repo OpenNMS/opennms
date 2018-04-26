@@ -178,6 +178,26 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         });
     }
 
+    public boolean shouldForwardAlarm(OnmsAlarm alarm) {
+        if (alarmFilterExpression != null) {
+            // The expression is not necessarily thread safe
+            synchronized(this) {
+                try {
+                    final boolean shouldForwardAlarm = alarmFilterExpression.getValue(alarm, Boolean.class);
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("Alarm {} not forwarded due to event filter: {}",
+                                alarm, alarmFilterExpression.getExpressionString());
+                    }
+                    return shouldForwardAlarm;
+                } catch (Exception e) {
+                    LOG.error("Alarm filter '{}' failed to return a result for event: {}. The alarm will be forwarded anyways.",
+                            alarmFilterExpression.getExpressionString(), alarm, e);
+                }
+            }
+        }
+        return true;
+    }
+
     private void updateAlarm(String reductionKey, OnmsAlarm alarm) {
         // Always push null records, no good way to perform filtering on these
         if (alarm == null) {
@@ -194,20 +214,7 @@ public class OpennmsKafkaProducer implements AlarmLifecycleListener, EventListen
         }
 
         // Filtering
-        boolean shouldForwardAlarm = true;
-        if (alarmFilterExpression != null) {
-            try {
-                shouldForwardAlarm = alarmFilterExpression.getValue(alarm, Boolean.class);
-            } catch (Exception e) {
-                LOG.error("Alarm filter '{}' failed to return a result for event: {}. The alarm will be forwarded anyways.",
-                        alarmFilterExpression.getExpressionString(), alarm, e);
-            }
-        }
-        if (!shouldForwardAlarm) {
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Alarm {} not forwarded due to event filter: {}",
-                        alarm, alarmFilterExpression.getExpressionString());
-            }
+        if (!shouldForwardAlarm(alarm)) {
             return;
         }
 
