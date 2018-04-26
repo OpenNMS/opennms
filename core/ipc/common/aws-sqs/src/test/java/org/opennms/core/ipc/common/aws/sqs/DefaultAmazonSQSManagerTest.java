@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,6 +37,8 @@ import static org.junit.Assert.assertEquals;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opennms.core.utils.SystemInfoUtils;
+
 import org.junit.Test;
 
 /**
@@ -54,15 +56,15 @@ public class DefaultAmazonSQSManagerTest {
         String moduleId = "Heartbeat";
         Map<String, String> sqsConfig = new HashMap<>();
         DefaultAmazonSQSManager mgr = getManagerWith(sqsConfig);
-        assertEquals("OpenNMS-Sink-Heartbeat", mgr.getSinkQueueName(moduleId));
+        assertEquals(SystemInfoUtils.DEFAULT_INSTANCE_ID + "-Sink-Heartbeat", mgr.getSinkQueueName(moduleId));
 
         sqsConfig.put(AmazonSQSConstants.AWS_QUEUE_NAME_PREFIX, "PROD");
         mgr = getManagerWith(sqsConfig);
-        assertEquals("PROD-OpenNMS-Sink-Heartbeat", mgr.getSinkQueueName(moduleId));
+        assertEquals("PROD-" + SystemInfoUtils.DEFAULT_INSTANCE_ID + "-Sink-Heartbeat", mgr.getSinkQueueName(moduleId));
 
         sqsConfig.put(AmazonSQSConstants.SINK_QUEUE_PROP_PREFIX + AmazonSQSQueueAttributes.FifoQueue.toString(), "true");
         mgr = getManagerWith(sqsConfig);
-        assertEquals("PROD-OpenNMS-Sink-Heartbeat.fifo", mgr.getSinkQueueName(moduleId));
+        assertEquals("PROD-" + SystemInfoUtils.DEFAULT_INSTANCE_ID + "-Sink-Heartbeat.fifo", mgr.getSinkQueueName(moduleId));
     }
 
     /**
