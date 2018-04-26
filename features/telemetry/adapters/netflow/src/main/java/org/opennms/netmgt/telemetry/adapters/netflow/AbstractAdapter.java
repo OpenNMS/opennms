@@ -111,4 +111,8 @@ public abstract class AbstractAdapter<P> implements Adapter {
     }
 
     protected abstract P parse(TelemetryMessage message);
+
+    public void destroy() {
+        // not needed
+    }
 }
