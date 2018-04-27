@@ -110,7 +110,7 @@ public class DiscoveryBridgeDomains extends Discovery {
     }
         
     @Override
-    public void run() {
+    public void doit() {
         Map<Integer, Map<Integer,Set<BridgeForwardingTableEntry>>> nodeondomainbft = 
                 new HashMap<Integer, Map<Integer,Set<BridgeForwardingTableEntry>>>();
 
@@ -189,8 +189,15 @@ public class DiscoveryBridgeDomains extends Discovery {
     	if (nodedomainMap.size() < 5) {
     	    n=nodedomainMap.size();
     	}
+    	
+    	if (n == 0 ) {
+            LOG.info("run: no Domain to process", n);
+    	    return;
+    	}
 
+        LOG.info("run: creating executorService with {} Threads", n);
     	ExecutorService executorService = Executors.newFixedThreadPool(n);
+        LOG.info("run: created executorService with {} Threads", n);
     	
     	List<Callable<String>> taskList = new ArrayList<Callable<String>>();
     	for (Integer nodeid: nodedomainMap.keySet()) {
@@ -202,10 +209,11 @@ public class DiscoveryBridgeDomains extends Discovery {
     	        nodebridgetopology.addUpdatedBFT(bridgeId, notYetParsedBFT.get(bridgeId));
     	    }
     	    Callable<String> task = () -> {
-    	        nodebridgetopology.run();
+    	        nodebridgetopology.doit();
     	        return "Topology calculated: " + nodebridgetopology.getInfo();
     	    };
     	    taskList.add(task);
+            LOG.info("run: adding bridge topology discovery Task {}", nodebridgetopology.getInfo());
     	}
     	
         try {
@@ -217,7 +225,6 @@ public class DiscoveryBridgeDomains extends Discovery {
         }
 
         executorService.shutdown(); 
-        schedule();
         LOG.info("run: getting nodes with updated bft on broadcast domains. End");
         
 

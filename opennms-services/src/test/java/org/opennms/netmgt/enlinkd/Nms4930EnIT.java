@@ -419,11 +419,11 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
         
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
-        assertTrue(m_linkd.runTopologyDiscovery(dlink1.getId()));
+        m_linkd.runTopologyDiscovery();
         checkTopologyDlink1(dlink1);
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
-        assertTrue(m_linkd.runTopologyDiscovery(dlink2.getId()));
+        m_linkd.runTopologyDiscovery();
         checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,false);
     }
     
@@ -666,11 +666,11 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_bridgeMacLinkDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink2.getId()));
-        assertTrue(m_linkd.runTopologyDiscovery(dlink2.getId()));
+        m_linkd.runTopologyDiscovery();
         checkTopologyDlink2(dlink2);
 
         assertTrue(m_linkd.runSingleSnmpCollection(dlink1.getId()));
-        assertTrue(m_linkd.runTopologyDiscovery(dlink1.getId()));
+        m_linkd.runTopologyDiscovery();
         checkTopology(dlink1, dlink2, nodeonlink1dport6, nodebetweendlink1dlink2,true);
     }
 

@@ -130,8 +130,19 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         scheduleCollection();
-        m_scheduler.schedule(getInitialSleepTime(), new DiscoveryBridgeDomains(this));
+        if (m_nodes.size() > 0 && m_linkdConfig.useBridgeDiscovery()) {
+            scheduleDiscoveryBridgeDomain();
+        }
         LOG.info("init: ENHANCED LINKD INITIALIZED");
+    }
+    
+    public void scheduleDiscoveryBridgeDomain() {
+            DiscoveryBridgeDomains discoverbridge=
+                    new DiscoveryBridgeDomains(this);
+            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
+                     discoverbridge.getInfo());
+            discoverbridge.setScheduler(m_scheduler);
+            discoverbridge.schedule();
     }
 
     private void scheduleCollection() {
@@ -139,14 +150,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             for (final Node node : m_nodes) {
                 scheduleCollectionForNode(node);
             }
-        }
-        if (m_linkdConfig.useBridgeDiscovery()) {
-            DiscoveryBridgeDomains discoverbridge=
-                    new DiscoveryBridgeDomains(this);
-            LOG.info("ScheduleCollection: Scheduling {}",
-                     discoverbridge.getInfo());
-            discoverbridge.setScheduler(m_scheduler);
-            discoverbridge.schedule();
         }
     }
 
@@ -313,35 +316,38 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         }
 
         scheduleCollectionForNode(node);
+        if (m_nodes.size() == 1 && m_linkdConfig.useBridgeDiscovery()) {
+            scheduleDiscoveryBridgeDomain();
+        }
         return true;
     }
 
     public boolean runSingleSnmpCollection(final int nodeId) {
         boolean allready = true;
-            final Node node = m_queryMgr.getSnmpNode(nodeId);
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
 
-            for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
-                if (snmpColl instanceof NodeDiscoveryBridgeTopology)
-                    continue;
-                if (!snmpColl.isReady()) {
-                    allready = false;
-                    continue;
-                }
-                snmpColl.run();
+        for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
+            if (snmpColl instanceof NodeDiscoveryBridgeTopology)
+                continue;
+            if (!snmpColl.isReady()) {
+                allready = false;
+                continue;
             }
-            return allready;
+            snmpColl.doit();
+        }
+        return allready;
     }
 
-    public boolean runTopologyDiscovery(final int nodeId) {
+    public void runTopologyDiscovery() {
         final DiscoveryBridgeDomains snmpColl = new DiscoveryBridgeDomains(this);
-        snmpColl.run();
-        return true;
+        snmpColl.doit();
     }
     
-    public synchronized void scheduleBridgeTopologyDiscovery(final int nodeId) {
+    public void scheduleNodeBridgeTopologyDiscovery(final int nodeId) {
         final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(nodeId);
-        if (snmpColl == null)
+        if (snmpColl == null) {
             return;
+        }
         LOG.info("scheduleBridgeTopologyDiscovery: Scheduling {}",
                     snmpColl.getInfo());
         snmpColl.setScheduler(m_scheduler);
@@ -392,7 +398,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 ReadyRunnable rr = getReadyRunnable(collection);
 
                 if (rr == null) {
-                    LOG.warn("deleteNode: found null ReadyRunnable");
+                    LOG.warn("deleteNode: found null ReadyRunnable for {}", collection.getInfo());
                     continue;
                 } else {
                     rr.unschedule();
@@ -403,7 +409,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
             ReadyRunnable rr = getReadyRunnable(topology);
 
             if (rr == null) {
-                LOG.warn("deleteNode: found null ReadyRunnable");
+                LOG.warn("deleteNode: found null ReadyRunnable for {}", topology.getInfo());
             } else {
                 rr.unschedule();
             }

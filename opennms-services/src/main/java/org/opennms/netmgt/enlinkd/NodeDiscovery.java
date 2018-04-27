@@ -109,7 +109,7 @@ public abstract class NodeDiscovery extends Discovery {
      * thread context synchronization must be added.
      * </p>
      */
-    public void run() {
+    public void doit() {
         if (m_suspendCollection) {
             sendSuspendedEvent(getNodeId());
         } else {
@@ -122,7 +122,6 @@ public abstract class NodeDiscovery extends Discovery {
             sendCompletedEvent(getNodeId());
         }
         m_runned = true;
-        reschedule();
     }
 
     protected void sendSuspendedEvent(int nodeid) {

@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTable;
@@ -46,6 +45,7 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 import static org.opennms.netmgt.model.topology.BroadcastDomain.calculateBFT;
 import static org.opennms.netmgt.model.topology.BroadcastDomain.calculateRootBFT;
@@ -53,7 +53,7 @@ import static org.opennms.netmgt.model.topology.BroadcastDomain.hierarchySetUp;
 import static org.opennms.netmgt.model.topology.BroadcastDomain.clearTopologyForBridge;
 import static org.opennms.netmgt.model.topology.BroadcastDomain.electRootBridge;
 
-public class NodeDiscoveryBridgeTopology extends NodeDiscovery implements Callable<String> {
+public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridgeTopology.class);
 
@@ -81,16 +81,12 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery implements Callab
     public NodeDiscoveryBridgeTopology(EnhancedLinkd linkd, Node node) {
         super(linkd, node);
     }
-
-    @Override
-    public String call() throws Exception {
-            Thread.sleep(1000);
-            return Thread.currentThread().getName();
-    }
         
     @Override
-    public void run() {
+    public void doit() {
 
+        Assert.notNull(m_domain);
+        Assert.notNull(m_notYetParsedBFTMap);
     	Date now = new Date();
                              
         for (Integer nodeid : m_notYetParsedBFTMap.keySet()) {

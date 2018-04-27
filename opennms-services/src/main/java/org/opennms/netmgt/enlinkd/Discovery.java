@@ -69,9 +69,17 @@ public abstract class Discovery implements ReadyRunnable {
      */
     public Discovery(final EnhancedLinkd linkd, long interval) {
         m_linkd = linkd;
-        m_poll_interval = m_linkd.getRescanInterval();
+        m_poll_interval = interval;
     }
 
+    public abstract void doit();
+    
+    // run is called by a Thread for the runnable
+    // execute is where you got the stuff made
+    public void run() {
+        doit();
+        reschedule();
+    }
     /**
      * <p>
      * getScheduler
