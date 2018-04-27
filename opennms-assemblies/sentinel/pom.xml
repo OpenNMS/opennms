@@ -88,18 +88,8 @@
                   <version>${project.version}</version>
                   <classifier>repo</classifier>
                   <type>tar.gz</type>
-                  <outputDirectory>${project.build.directory}/unpacked/repositories/default</outputDirectory>
+                  <outputDirectory>${project.build.directory}/unpacked/sentinel-${project.version}/system</outputDirectory>
                 </artifactItem>
-                <!--
-                <artifactItem>
-                  <groupId>org.opennms.features.sentinel</groupId>
-                  <artifactId>core-repository</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>repo</classifier>
-                  <type>tar.gz</type>
-                  <outputDirectory>${project.build.directory}/unpacked/repositories/core</outputDirectory>
-                </artifactItem>
-                -->
                 <artifactItem>
                   <groupId>org.opennms</groupId>
                   <artifactId>opennms-base-assembly</artifactId>
@@ -126,15 +116,6 @@
         <configuration>
           <algorithms><algorithm>SHA-1</algorithm></algorithms>
           <fileSets>
-            <fileSet>
-              <directory>${project.build.directory}/unpacked/repositories</directory>
-              <includes>
-                <include>**/*.jar</include>
-                <include>**/*.pom</include>
-                <include>**/*.war</include>
-                <include>**/*.xml</include>
-              </includes>
-            </fileSet>
             <fileSet>
               <directory>${project.build.directory}/unpacked/sentinel-${project.version}</directory>
               <includes>
@@ -173,15 +154,6 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>org.opennms.features.sentinel</groupId>
-      <artifactId>core-repository</artifactId>
-      <version>${project.version}</version>
-      <classifier>repo</classifier>
-      <type>tar.gz</type>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.opennms.features.sentinel</groupId>
       <artifactId>repository</artifactId>
