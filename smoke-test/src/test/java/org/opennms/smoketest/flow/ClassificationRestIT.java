@@ -248,6 +248,9 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyClassify() {
         final ClassificationRequestDTO request = new ClassificationRequestDTO();
+        request.setSrcAddress("127.0.0.1");
+        request.setSrcPort("55557");
+        request.setExporterAddress("10.0.0.5");
         request.setDstAddress("10.0.0.1");
         request.setDstPort("24005");
         request.setProtocol("tcp");
