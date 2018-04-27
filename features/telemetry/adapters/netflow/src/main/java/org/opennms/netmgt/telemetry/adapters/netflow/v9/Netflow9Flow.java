@@ -248,7 +248,7 @@ class Netflow9Flow implements Flow {
     }
 
     private long getSysUpTime() {
-        return getInt64(this.document, "@sysUpTime").get() * 1000;
+        return getInt64(this.document, "@sysUpTime").get();
     }
 
     private long getBootTime() {
