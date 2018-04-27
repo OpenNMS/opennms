@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.support;
 
 import static org.opennms.netmgt.newts.support.NewtsUtils.findResourcesWithMetricsAtDepth;
+import static org.opennms.netmgt.newts.support.NewtsUtils.toMetricName;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
@@ -44,6 +45,7 @@ import java.util.stream.IntStream;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.model.StringPropertyAttribute;
 import org.opennms.netmgt.newts.NewtsWriter;
@@ -186,10 +188,16 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
                 continue;
             }
 
-            for (String metric : result.getMetrics()) {
-                // Use the metric name as the dsName
+            if (ResourceTypeUtils.isResponseTime(resourceId)) {
+                // Use the last part of the resource id as the dsName
                 // Store the resource id in the rrdFile field
-                attributes.add(new RrdGraphAttribute(metric, "", resourceId));
+                attributes.add(new RrdGraphAttribute(toMetricName(resourceId), "", resourceId));
+            } else {
+                for (String metric : result.getMetrics()) {
+                    // Use the metric name as the dsName
+                    // Store the resource id in the rrdFile field
+                    attributes.add(new RrdGraphAttribute(metric, "", resourceId));
+                }
             }
         }
 
