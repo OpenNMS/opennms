@@ -33,6 +33,7 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.toMetricName;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -40,6 +41,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
@@ -182,10 +184,17 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
             final String resourceId = result.getResource().getId();
             final ResourcePath resultPath = toResourcePath(resourceId);
             if (!path.equals(resultPath)) {
-                // This shouldn't happen
-                LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. Ignoring resource.",
-                        result.getResource(), path, 0);
-                continue;
+                // The paths don't match exactly, but it is possible that they differ only by leading/trailing whitespace
+                // so we perform a closer inspection
+                if (!Arrays.stream(path.elements())
+                        .map(String::trim)
+                        .collect(Collectors.toList())
+                        .equals(Arrays.asList(resultPath.elements()))) {
+                    // This shouldn't happen
+                    LOG.warn("Encountered non-child resource {} when searching for {} with depth {}. " +
+                                    "Ignoring resource.", result.getResource(), path, 0);
+                    continue;
+                }
             }
 
             if (ResourceTypeUtils.isResponseTime(resourceId)) {
