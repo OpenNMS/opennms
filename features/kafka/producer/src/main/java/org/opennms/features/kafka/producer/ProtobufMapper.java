@@ -134,10 +134,13 @@ public class ProtobufMapper {
                 .setUei(event.getEventUei())
                 .setSource(event.getEventSource())
                 .setSeverity(toSeverity(OnmsSeverity.get(event.getEventSeverity())))
-                .setLabel(eventConfDao.getEventLabel(event.getEventUei()))
                 .setLog("Y".equalsIgnoreCase(event.getEventLog()))
                 .setDisplay("Y".equalsIgnoreCase(event.getEventDisplay()));
 
+        final String eventLabel = eventConfDao.getEventLabel(event.getEventUei());
+        if (eventLabel != null) {
+            builder.setLabel(eventLabel);
+        }
         if (event.getEventDescr() != null) {
             builder.setDescription(event.getEventDescr());
         }
