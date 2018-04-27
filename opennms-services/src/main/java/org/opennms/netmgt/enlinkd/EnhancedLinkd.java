@@ -604,6 +604,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public long getRescanInterval() {
             return m_linkdConfig.getRescanInterval(); 
     }
+    public long getBridgeTopologyInterval() {
+        return m_linkdConfig.getBridgeTopologyInterval();
+    }
+    
+    public int getDiscoveryBridgeThreads() {
+        return m_linkdConfig.getDiscoveryBridgeThreads();
+    }
 
     public LocationAwareSnmpClient getLocationAwareSnmpClient() {
         return m_locationAwareSnmpClient;

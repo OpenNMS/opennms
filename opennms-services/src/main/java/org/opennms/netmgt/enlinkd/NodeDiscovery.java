@@ -50,9 +50,6 @@ public abstract class NodeDiscovery extends Discovery {
      * The node ID of the system used to collect the SNMP information
      */
     protected final Node m_node;
-    protected long m_initial_sleep_time = 600000;
-    protected boolean m_runned = false;
-
     
     /**
      * Constructs a new SNMP collector for a node using the passed interface
@@ -64,40 +61,12 @@ public abstract class NodeDiscovery extends Discovery {
      *            The SnmpPeer object to collect from.
      */
     public NodeDiscovery(final EnhancedLinkd linkd, final Node node) {
-        super(linkd,linkd.getRescanInterval());
+        super(linkd,linkd.getRescanInterval(), linkd.getInitialSleepTime());
         m_node = node;
-        m_initial_sleep_time = m_linkd.getInitialSleepTime();
-    }
-
-    /**
-     * <p>
-     * schedule
-     * </p>
-     */
-    public void schedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_initial_sleep_time, this);
-    }
-
-    /**
-     * <p>
-     * unschedule
-     * </p>
-     */
-    public void unschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
-        if (m_runned) {
-            m_scheduler.unschedule(this, m_poll_interval);
-        } else {
-            m_scheduler.unschedule(this, m_initial_sleep_time);
-        }
     }
 
 
+    protected abstract void runCollection(); 
     /**
      * <p>
      * Performs the collection for the targeted IP address. The success or
@@ -121,7 +90,6 @@ public abstract class NodeDiscovery extends Discovery {
                       getNodeId(),getName());
             sendCompletedEvent(getNodeId());
         }
-        m_runned = true;
     }
 
     protected void sendSuspendedEvent(int nodeid) {
@@ -154,8 +122,6 @@ public abstract class NodeDiscovery extends Discovery {
                            builder.addParam("runnable", getName());
                            m_linkd.getEventForwarder().sendNow(builder.getEvent());
     }
-
-    protected abstract void runCollection(); 
 
     /**
      * Returns the target address that the collection occurred for.
@@ -199,64 +165,38 @@ public abstract class NodeDiscovery extends Discovery {
         return m_node.getLocation();
     }
     
-    /**
-     * <p>
-     * getInitialSleepTime
-     * </p>
-     * 
-     * @return Returns the initial_sleep_time.
-     */
-    public long getInitialSleepTime() {
-        return m_initial_sleep_time;
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime
+                * result
+                + (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
+        result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
+        result = prime * result
+                + (int) (m_poll_interval ^ (m_poll_interval >>> 32));
+        return result;
     }
 
-    /**
-     * <p>
-     * setInitialSleepTime
-     * </p>
-     * 
-     * @param initial_sleep_time
-     *            The initial_sleep_timeto set.
-     */
-    public void setInitialSleepTime(long initial_sleep_time) {
-        m_initial_sleep_time = initial_sleep_time;
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        NodeDiscovery other = (NodeDiscovery) obj;
+        if (m_initial_sleep_time != other.m_initial_sleep_time)
+            return false;
+        if (m_node == null) {
+            if (other.m_node != null)
+                return false;
+        } else if (!m_node.equals(other.m_node))
+            return false;
+        if (m_poll_interval != other.m_poll_interval)
+            return false;
+        return true;
     }
-
-
-
-    public abstract String getName();
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
-		result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
-		result = prime * result
-				+ (int) (m_poll_interval ^ (m_poll_interval >>> 32));
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		NodeDiscovery other = (NodeDiscovery) obj;
-		if (m_initial_sleep_time != other.m_initial_sleep_time)
-			return false;
-		if (m_node == null) {
-			if (other.m_node != null)
-				return false;
-		} else if (!m_node.equals(other.m_node))
-			return false;
-		if (m_poll_interval != other.m_poll_interval)
-			return false;
-		return true;
-	}
 	
 }

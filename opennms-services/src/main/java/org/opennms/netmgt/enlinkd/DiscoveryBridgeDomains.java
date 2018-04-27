@@ -49,10 +49,11 @@ import org.slf4j.LoggerFactory;
 public class DiscoveryBridgeDomains extends Discovery {
 
     private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeDomains.class);
-
+    final int m_maxthreads;
     
     public DiscoveryBridgeDomains(EnhancedLinkd linkd) {
-        super(linkd, linkd.getInitialSleepTime());
+        super(linkd, linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
+        m_maxthreads=linkd.getDiscoveryBridgeThreads();
     }
         
     private void clean(BroadcastDomain domain, Set<Integer> nodes) throws BridgeTopologyException {
@@ -184,17 +185,16 @@ public class DiscoveryBridgeDomains extends Discovery {
             }
             LOG.info("run: node: [{}], getting broadcast domain. End", nodeid);
     	}
-    	
-    	int n = 5;
-    	if (nodedomainMap.size() < 5) {
-    	    n=nodedomainMap.size();
-    	}
-    	
-    	if (n == 0 ) {
-            LOG.info("run: no Domain to process", n);
-    	    return;
-    	}
 
+    	int n = nodedomainMap.size();
+    	if (n == 0) {
+            LOG.info("run: no Domain to process");
+            return;    	    
+    	}
+    	if (n > m_maxthreads) {
+    	    n=m_maxthreads;
+    	}
+    	
         LOG.info("run: creating executorService with {} Threads", n);
     	ExecutorService executorService = Executors.newFixedThreadPool(n);
         LOG.info("run: created executorService with {} Threads", n);

@@ -43,12 +43,14 @@ public abstract class Discovery implements ReadyRunnable {
     /**
      * The scheduler object
      */
-    protected Scheduler m_scheduler;
+    private Scheduler m_scheduler;
 
     /**
      * The interval, default value 30 minutes
      */
     protected long m_poll_interval = 1800000;
+    protected long m_initial_sleep_time = 600000;
+    private boolean m_runned = false;
 
     /**
      * The initial sleep time, default value 5 minutes
@@ -67,17 +69,20 @@ public abstract class Discovery implements ReadyRunnable {
      * @param config
      *            The SnmpPeer object to collect from.
      */
-    public Discovery(final EnhancedLinkd linkd, long interval) {
+    public Discovery(final EnhancedLinkd linkd, long interval, long initial) {
         m_linkd = linkd;
         m_poll_interval = interval;
-    }
+        m_initial_sleep_time = initial;
+   }
 
+    public abstract String getName();
     public abstract void doit();
     
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
     public void run() {
         doit();
+        m_runned = true;
         reschedule();
     }
     /**
@@ -113,7 +118,23 @@ public abstract class Discovery implements ReadyRunnable {
         if (m_scheduler == null)
             throw new IllegalStateException(
                                             "Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.schedule(m_poll_interval, this);
+        m_scheduler.schedule(m_initial_sleep_time, this);
+    }
+
+    /**
+     * <p>
+     * unschedule
+     * </p>
+     */
+    public void unschedule() {
+        if (m_scheduler == null)
+            throw new IllegalStateException(
+                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
+        if (m_runned) {
+            m_scheduler.unschedule(this, m_poll_interval);
+        } else {
+            m_scheduler.unschedule(this, m_initial_sleep_time);
+        }
     }
 
     /**
@@ -168,28 +189,14 @@ public abstract class Discovery implements ReadyRunnable {
 
     /**
      * <p>
-     * unschedule
-     * </p>
-     */
-    public void unschedule() {
-        if (m_scheduler == null)
-            throw new IllegalStateException(
-                                            "rescedule: Cannot schedule a service whose scheduler is set to null");
-        m_scheduler.unschedule(this, m_poll_interval);
-    }
-
-
-
-    /**
-     * <p>
      * getInfo
      * </p>
      * 
      * @return a {@link java.lang.String} object.
      */
-	public String getInfo() {
-	    return  getName();  
-	}
+    public String getInfo() {
+        return  getName();  
+    }
 
     /**
      * <p>
@@ -214,6 +221,54 @@ public abstract class Discovery implements ReadyRunnable {
         m_poll_interval = interval;
     }
 
-    public abstract String getName();
+    /**
+     * <p>
+     * getInitialSleepTime
+     * </p>
+     * 
+     * @return Returns the initial_sleep_time.
+     */
+    public long getInitialSleepTime() {
+        return m_initial_sleep_time;
+    }
+
+    /**
+     * <p>
+     * setInitialSleepTime
+     * </p>
+     * 
+     * @param initial_sleep_time
+     *            The initial_sleep_timeto set.
+     */
+    public void setInitialSleepTime(long initial_sleep_time) {
+        m_initial_sleep_time = initial_sleep_time;
+    }
+
+    @Override
+    public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result
+                            + (int) (m_initial_sleep_time ^ (m_initial_sleep_time >>> 32));
+            result = prime * result
+                            + (int) (m_poll_interval ^ (m_poll_interval >>> 32));
+            return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+            if (this == obj)
+                    return true;
+            if (obj == null)
+                    return false;
+            if (getClass() != obj.getClass())
+                    return false;
+            Discovery other = (Discovery) obj;
+            if (m_initial_sleep_time != other.m_initial_sleep_time)
+                    return false;
+            if (m_poll_interval != other.m_poll_interval)
+                    return false;
+            return true;
+    }
 	
 }
