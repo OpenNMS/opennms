@@ -32,7 +32,7 @@
 			</attribute>
 
 			<attribute name="initial_sleep_time" type="long"
-				use="optional" default="1800000">
+				use="optional" default="60000">
 				<annotation>
 					<documentation>
 						The initial sleep time in mill seconds before starting
@@ -60,7 +60,7 @@
 			</attribute>
 
 			<attribute name="max_bft" type="int"
-				use="optional" default="1">
+				use="optional" default="10">
 				<annotation>
 					<documentation>
 						Max bridge forwarding table to hold in memory.

@@ -60,19 +60,19 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * The initial sleep time in mill seconds before starting
      *  node Link Discovery.
      */
-    @XmlAttribute(name = "initial_sleep_time", required = true)
+    @XmlAttribute(name = "initial_sleep_time")
     private Long m_initialSleepTime;
 
     /**
      * Node Link Discovery Rescan Time interval in millseconds.
      */
-    @XmlAttribute(name = "rescan_interval", required = true)
+    @XmlAttribute(name = "rescan_interval")
     private Long m_rescanInterval;
 
     /**
      * Bridge Topology Discovery Time interval in mill seconds.
      */
-    @XmlAttribute(name = "bridge_topology_interval", required = true)
+    @XmlAttribute(name = "bridge_topology_interval")
     private Long m_bridgeTopologyInterval;
 
     /**
@@ -134,7 +134,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getInitialSleepTime() {
-        return m_initialSleepTime == null? 1800000l : m_initialSleepTime;
+        return m_initialSleepTime == null? 60000l : m_initialSleepTime;
     }
 
     public void setInitialSleepTime(final Long initialSleepTime) {
@@ -158,7 +158,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Integer getMaxBft() {
-        return m_maxBft != null ? m_maxBft : 1;
+        return m_maxBft != null ? m_maxBft : 10;
     }
 
     public void setMaxBft(final Integer maxBft) {
