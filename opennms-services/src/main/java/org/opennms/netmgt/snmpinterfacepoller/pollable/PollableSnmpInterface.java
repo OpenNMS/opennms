@@ -283,12 +283,16 @@ public class PollableSnmpInterface implements ReadyRunnable {
     @Override
     public void run() {
             if (getParent().polling()) {
-                LOG.info("run: polling SNMP interfaces on package/interface {}/{} on primary address: {}", getParent().getPackageName(), getName(), getParent().getIpaddress());
+                String location = getContext().getLocation(getParent().getNodeid());
+                LOG.info("run: polling SNMP interfaces on package/interface {}/{} on primary address: {} at location {}",
+                        getParent().getPackageName(), getName(), getParent().getIpaddress(), location);
                 if (m_snmpinterfaces == null || m_snmpinterfaces.isEmpty()) {
                     LOG.debug("No Interface found. Doing nothing");
                 } else {
                     LOG.debug("{} Interfaces found. Getting Statutes....", m_snmpinterfaces.size());
-                    SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor();
+                    SnmpPollInterfaceMonitor pollMonitor = new SnmpPollInterfaceMonitor(getContext().getLocationAwareSnmpClient());
+                    pollMonitor.setLocation(location);
+                    pollMonitor.setInterval(getSnmppollableconfig().getInterval());
                     int maxiface = getMaxInterfacePerPdu();
                     if (maxiface == 0) maxiface=m_snmpinterfaces.size();
                     LOG.debug("Max Interface Per Pdu is: {}", maxiface);
@@ -324,7 +328,7 @@ public class PollableSnmpInterface implements ReadyRunnable {
                 if (miface.getStatus().isUp()) {
                     OnmsSnmpInterface iface = m_snmpinterfaces.get(Integer.valueOf(miface.getIfindex()));
 
-                    LOG.debug("Previuos status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
+                    LOG.debug("Previous status Admin/Oper: {}/{}", iface.getIfAdminStatus(), iface.getIfOperStatus());
                     LOG.debug("Current status Admin/Oper: {}/{}", miface.getAdminstatus(), miface.getOperstatus());
                     
                     // If the interface is Admin Up, and the interface is Operational Down, we generate an alarm.
