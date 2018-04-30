@@ -150,11 +150,10 @@ public class PollableSnmpInterface implements ReadyRunnable {
      * @param snmpinterfaces a {@link java.util.List} object.
      */
     public void setSnmpinterfaces(List<OnmsSnmpInterface> snmpinterfaces) {
-    	if (snmpinterfaces == null) {
-    		LOG.debug("setting snmpinterfaces: got null, thread instantiated but at moment no interface found");
-    		return;
-    	}
-
+        if (snmpinterfaces == null || snmpinterfaces.isEmpty()) {
+            LOG.debug("setting snmpinterfaces: got null, thread instantiated but at moment no interface found");
+            return;
+        }
     	// ifIndex -> operstatus
     	final Map<Integer, Integer> oldStatuses = new HashMap<Integer, Integer>();
     	for (final Integer ifIndex : m_snmpinterfaces.keySet()) {
