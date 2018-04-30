@@ -104,7 +104,14 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
     @Override
     public Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties) {
         AdapterFactoryRegistration registration = m_adapterFactoryByClassName.get(className);
-        while ((registration == null) && ManagementFactory.getRuntimeMXBean().getUptime() < ServiceLookupBuilder.GRACE_PERIOD_MS) {
+
+        final long waitUntil = System.currentTimeMillis() + ServiceLookupBuilder.WAIT_PERIOD_MS;
+        // If the adapter is not currently available, wait until the JVM has been up for at least GRACE_PERIOD_MS
+        // (absolute) and ensure we've waited for at least WAIT_PERIOD_MS (relative) before aborting
+        // the lookup
+        while ((registration == null)
+                && ManagementFactory.getRuntimeMXBean().getUptime() < ServiceLookupBuilder.GRACE_PERIOD_MS
+                && System.currentTimeMillis() < waitUntil) {
             try {
                 Thread.sleep(ServiceLookupBuilder.LOOKUP_DELAY_MS);
             } catch (InterruptedException e) {
