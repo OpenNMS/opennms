@@ -48,8 +48,8 @@ public class BroadcastDomain implements BridgeTopology {
         retainedSet.retainAll(setA);
         // should contain at list 20 or 50% of the all size
         if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
-            || retainedSet.size() >= setA.size() * DOMAIN_MATCH_MIN_RATIO
-            || retainedSet.size() >= setB.size() * DOMAIN_MATCH_MIN_RATIO
+            || retainedSet.size() > setA.size() * DOMAIN_MATCH_MIN_RATIO
+            || retainedSet.size() > setB.size() * DOMAIN_MATCH_MIN_RATIO
                 ) {
             return true;
         }
