@@ -251,7 +251,11 @@ public class SnmpPoller extends AbstractServiceDaemon {
      */
     protected void schedulePollableInterface(OnmsIpInterface iface) {
         String ipaddress = iface.getIpAddress().getHostAddress();
-        String netmask = iface.getNetMask().getHostAddress();
+        String netmask = null;
+        // netmask is nullable
+        if (iface.getNetMask() != null) {
+            netmask = iface.getNetMask().getHostAddress();
+        }
         Integer nodeid = iface.getNode().getId();
         if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
             String pkgName = getPollerConfig().getPackageName(ipaddress);
