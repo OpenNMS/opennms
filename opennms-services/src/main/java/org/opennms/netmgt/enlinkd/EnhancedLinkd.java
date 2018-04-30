@@ -35,6 +35,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.opennms.core.spring.BeanUtils;
@@ -44,6 +45,7 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
@@ -335,15 +337,16 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         snmpColl.doit();
     }
     
-    public void scheduleNodeBridgeTopologyDiscovery() {
-        final Discovery snmpColl = getNodeBridgeDiscoveryTopology();
-        if (snmpColl == null) {
-            return;
+    public void scheduleNodeBridgeTopologyDiscovery(BroadcastDomain domain, Map<Integer,Set<BridgeForwardingTableEntry>> updateBfpMap) {
+        final DiscoveryBridgeTopology bridgediscovery = getNodeBridgeDiscoveryTopology();
+        bridgediscovery.setDomain(domain);
+        for (Integer bridgeid: updateBfpMap.keySet()) {
+            bridgediscovery.addUpdatedBFT(bridgeid, updateBfpMap.get(bridgeid));
         }
         LOG.info("scheduleBridgeTopologyDiscovery: Scheduling {}",
-                    snmpColl.getInfo());
-        snmpColl.setScheduler(m_scheduler);
-        snmpColl.schedule();
+                    bridgediscovery.getInfo());
+        bridgediscovery.setScheduler(m_scheduler);
+        bridgediscovery.schedule();
     }
 
     void wakeUpNodeCollection(int nodeid) {

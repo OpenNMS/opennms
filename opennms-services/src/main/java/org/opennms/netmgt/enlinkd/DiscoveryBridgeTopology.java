@@ -92,7 +92,7 @@ public class DiscoveryBridgeTopology extends Discovery {
                     info.append(m_domain.getBridgeNodesOnDomain());  
                 }
                 if (m_notYetParsedBFTMap != null) {
-                    info.append("updated bft nodes: ");
+                    info.append(" ,updated bft nodes: ");
                     info.append(m_notYetParsedBFTMap.keySet());  
                 }
                 return  info.toString();

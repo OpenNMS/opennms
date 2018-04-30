@@ -55,61 +55,55 @@ public class DiscoveryBridgeDomains extends Discovery {
         super(linkd, linkd.getBridgeTopologyInterval(), linkd.getInitialSleepTime()+linkd.getBridgeTopologyInterval());
         m_maxthreads=linkd.getDiscoveryBridgeThreads();
     }
+            
+    private BroadcastDomain find(Set<Integer> nodes, Set<String> setA) throws BridgeTopologyException {
         
-    private void clean(BroadcastDomain domain, Set<Integer> nodes) throws BridgeTopologyException {
-        for (Integer nodeid:nodes) {
-            if (domain.getBridgeNodesOnDomain().contains(nodeid)) {
-                continue;
-            }
-            BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(nodeid);
-            if (olddomain != null) {
-                m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("clean: node: [{}]. Removed from Old Domain {} ", 
-                             nodeid,
-                             olddomain.printTopology());
-                }
-            }
-        }
-    }
-    
-    private BroadcastDomain find(Integer nodeid, Set<String> setA) throws BridgeTopologyException {
-        BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(nodeid);
-        if (olddomain != null &&
-                BroadcastDomain.checkMacSets(setA, olddomain.getMacsOnDomain())) {
-            LOG.info("find: node: [{}]. node found on previuos Domain", 
-                     nodeid);
-            return olddomain;
-        } 
-        if (olddomain != null) {
-            m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
-            if (LOG.isInfoEnabled()) {
-                LOG.info("find: node: [{}]. Removed from Old Domain {} \n", 
-                     nodeid, olddomain.printTopology());
-            }
-        }
         BroadcastDomain domain = null;
         
         for (BroadcastDomain curBDomain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
-            if (curBDomain.getBridgeNodesOnDomain().contains(nodeid)) {
-                continue;
-            }
             if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnDomain())) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("find: node: [{}], found:\n{}",
-                             nodeid, 
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("find: node:{}, found:\n{}",
+                             nodes, 
                           curBDomain.printTopology());
                 }
-                return curBDomain;
+                if (domain != null) {
+                    throw new BridgeTopologyException("at least two domains found", domain);
+                }
+                domain = curBDomain;                
             }
         }
 
-        LOG.info("find: node: [{}]. No domain found, creating new Domain", nodeid);
-        domain = new BroadcastDomain();
-        m_linkd.getQueryManager().save(domain);
+        for (Integer nodeid: nodes) {
+            BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(nodeid);
+            if (olddomain == null) {
+                continue;
+            }
+            if (domain == null || domain != olddomain ) {
+                m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
+                if (LOG.isInfoEnabled()) {
+                    LOG.info("find: node:[{}]. Removed from Old Domain \n{}", 
+                         nodeid, olddomain.printTopology());
+                }
+                continue;
+            }            
+            if (domain == olddomain) {
+                if (LOG.isInfoEnabled()) {
+                               LOG.info("find: node:[{}]. node found on previuos Domain\n{}", 
+                         nodeid,domain.printTopology());
+                }
+                continue;
+            } 
+        }
+        if (domain == null) {
+            LOG.info("find: nodes: [{}]. No domain found, creating new Domain", nodes);
+            domain = new BroadcastDomain();
+            m_linkd.getQueryManager().save(domain);
+        }
+
         return domain;        
     }
-        
+    
     @Override
     public void doit() {
         LOG.info("run: calculate topology on broadcast domains. Start");
@@ -126,13 +120,13 @@ public class DiscoveryBridgeDomains extends Discovery {
         = new HashSet<Integer>(
                 m_linkd.getQueryManager().getUpdateBftMap().keySet());
         
-        LOG.debug("run: nodes {} have updated bft", nodeids);
+        LOG.info("run: nodes with updated bft\n{}", nodeids);
 
         for (Integer nodeid : nodeids) {
             Set<BridgeForwardingTableEntry> links = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
 
             if (links == null || links.size() == 0) {
-                LOG.warn("run: node: [{}]. no updated bft. Return", nodeid);
+                LOG.warn("run: node:[{}]. no updated bft. Return", nodeid);
                 continue;
             }
             nodeBft.put(nodeid, links);
@@ -140,7 +134,7 @@ public class DiscoveryBridgeDomains extends Discovery {
             for (BridgeForwardingTableEntry link : links) {
                 macs.add(link.getMacAddress());
             }
-            LOG.debug("run: node: [{}]. macs:{}", nodeid, macs);
+            LOG.info("run: node:[{}]. macs:{}", nodeid, macs);
             nodeMacs.put(nodeid, macs);
         }
 
@@ -163,24 +157,28 @@ public class DiscoveryBridgeDomains extends Discovery {
                     nodeondomainbft.get(nodeidA).put(nodeidB,
                                                      nodeBft.get(nodeidB));
                     parsed.add(nodeidB);
-                    LOG.debug("run: nodes {} are on same domain",
-                              nodeondomainbft.get(nodeidA).keySet());
                 }
             }
         }
 
-        Map<Integer, BroadcastDomain> nodedomainMap = 
-                new HashMap<Integer, BroadcastDomain>();
+        List<Callable<String>> taskList = new ArrayList<Callable<String>>();
         for (Integer nodeid : nodeondomainbft.keySet()) {
+            LOG.info("run: nodes are on same domain {}",nodeondomainbft.get(nodeid).keySet());
             try {
-                BroadcastDomain domain = find(nodeid, nodeMacs.get(nodeid));
-                if (domain == null) {
-                    LOG.error("run: node: [{}], null broadcast domain.",
-                              nodeid);
-                    continue;
+                BroadcastDomain domain = find(nodeondomainbft.get(nodeid).keySet(),
+                                              nodeMacs.get(nodeid));
+                DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology();
+                nodebridgetopology.setDomain(domain);
+                for (Integer bridgeId : nodeondomainbft.get(nodeid).keySet()) {
+                    nodebridgetopology.addUpdatedBFT(bridgeId,
+                                                     nodeondomainbft.get(nodeid).get(bridgeId));
                 }
-                clean(domain, nodeondomainbft.get(nodeid).keySet());
-                nodedomainMap.put(nodeid, domain);
+                Callable<String> task = () -> {
+                    nodebridgetopology.doit();
+                    return "executed Task: " + nodebridgetopology.getInfo();
+                };
+                taskList.add(task);
+                LOG.info("run: added Task {}", nodebridgetopology.getInfo());
             } catch (BridgeTopologyException e) {
                 LOG.error("run: node: [{}], getting broadcast domain. Failed {}",
                           nodeid, e.getMessage());
@@ -188,25 +186,7 @@ public class DiscoveryBridgeDomains extends Discovery {
             }
         }
 
-        List<Callable<String>> taskList = new ArrayList<Callable<String>>();
-        for (Integer nodeid : nodedomainMap.keySet()) {
-
-            DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology();
-            nodebridgetopology.setDomain(nodedomainMap.get(nodeid));
-            Map<Integer, Set<BridgeForwardingTableEntry>> notYetParsedBFT = nodeondomainbft.get(nodeid);
-            for (Integer bridgeId : notYetParsedBFT.keySet()) {
-                nodebridgetopology.addUpdatedBFT(bridgeId,
-                                                 notYetParsedBFT.get(bridgeId));
-            }
-            Callable<String> task = () -> {
-                nodebridgetopology.doit();
-                return "executed Task: " + nodebridgetopology.getInfo();
-            };
-            taskList.add(task);
-            LOG.info("run: added Task {}", nodebridgetopology.getInfo());
-        }
-
-        int n = nodedomainMap.size();
+        int n = taskList.size();
         if (n > m_maxthreads) {
             n = m_maxthreads;
         }
