@@ -34,23 +34,14 @@ import static org.junit.Assert.fail;
 
 import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
 import org.opennms.netmgt.flows.classification.exception.ClassificationException;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 
 public class ValidatorTestUtils {
     protected interface Block {
         void execute();
     }
 
-    protected static void verify(final Rule rule) {
-        verify(rule, null);
-    }
-
     protected static void verify(final Block block) {
         verify(block, null);
-    }
-
-    protected static void verify(final Rule rule, final ErrorTemplate expectedErrorTemplate) {
-        verify(() -> new RuleValidator().validate(rule), expectedErrorTemplate);
     }
 
     protected static void verify(final Block block, final ErrorTemplate expectedErrorTemplate) {

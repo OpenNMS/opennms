@@ -39,7 +39,6 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Strings;
 
 /**
  * A rule defines how a flow should be mapped.
@@ -49,7 +48,7 @@ import com.google.common.base.Strings;
  */
 @Table(name="classification_rules")
 @Entity
-public class Rule {
+public class Rule implements RuleDefinition {
 
     public static final int MIN_PORT_VALUE = 0;
     public static final int MAX_PORT_VALUE = 65536;
@@ -71,8 +70,8 @@ public class Rule {
      * May contain wildcards, e.g. 192.168.1.*. 192.168.*.*.
      * May be null.
      */
-    @Column(name="ipaddress")
-    private String ipAddress;
+    @Column(name="dst_address")
+    private String dstAddress;
 
     /**
      * The port to map.
@@ -80,8 +79,19 @@ public class Rule {
      * 80,8980,8000-9000
      * Must always be provided.
      */
-    @Column(name="port")
-    private String port;
+    @Column(name="dst_port")
+    private String dstPort;
+
+    // see dstPort
+    @Column(name="src_port")
+    private String srcPort;
+
+    // see dstAddress
+    @Column(name="src_address")
+    private String srcAddress;
+
+    @Column(name="exporter_filter")
+    private String exporterFilter;
 
     /**
      * The protocol to map.
@@ -97,7 +107,7 @@ public class Rule {
     /**
      * The position of the rule within it's group.
      * Global order must consider group.priority as well.
-     * See {@link RuleComparator}.
+     * See {@link RulePriorityComparator}.
      */
     @Column(name="position", nullable = false)
     private int position;
@@ -106,10 +116,10 @@ public class Rule {
         
     }
 
-    public Rule(String name, String ipAddress, String port) {
+    public Rule(String name, String dstAddress, String dstPort) {
         this.name = name;
-        this.port = port;
-        this.ipAddress = ipAddress;
+        this.dstPort = dstPort;
+        this.dstAddress = dstAddress;
     }
 
     public Rule(String name, String port) {
@@ -124,6 +134,7 @@ public class Rule {
         this.id = id;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -132,22 +143,43 @@ public class Rule {
         this.name = name;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    @Override
+    public String getDstAddress() {
+        return dstAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setDstAddress(String dstAddress) {
+        this.dstAddress = dstAddress;
     }
 
-    public String getPort() {
-        return port;
+    @Override
+    public String getDstPort() {
+        return dstPort;
     }
 
-    public void setPort(String port) {
-        this.port = port;
+    public void setDstPort(String dstPort) {
+        this.dstPort = dstPort;
     }
 
+    @Override
+    public String getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(String srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    @Override
+    public String getSrcAddress() {
+        return srcAddress;
+    }
+
+    public void setSrcAddress(String srcAddress) {
+        this.srcAddress = srcAddress;
+    }
+
+    @Override
     public String getProtocol() {
         return protocol;
     }
@@ -164,8 +196,22 @@ public class Rule {
         return position;
     }
 
+    @Override
+    public String getExporterFilter() {
+        return exporterFilter;
+    }
+
+    public void setExporterFilter(String exporterFilter) {
+        this.exporterFilter = exporterFilter;
+    }
+
     public Group getGroup() {
         return group;
+    }
+
+    @Override
+    public int getGroupPriority() {
+        return group == null ? 0 : group.getPriority();
     }
 
     public void setGroup(Group group) {
@@ -176,34 +222,14 @@ public class Rule {
     public String toString() {
         return MoreObjects.toStringHelper(getClass())
             .add("name", name)
-            .add("ipAddress", ipAddress)
-            .add("port", port)
+            .add("dstAddress", dstAddress)
+            .add("dstPort", dstPort)
+            .add("srcAddress", srcAddress)
+            .add("srcPort", srcPort)
+            .add("exporterFilter", exporterFilter)
             .add("protocol", protocol)
+            .add("position", position)
             .add("group", group)
             .toString();
-    }
-
-    public boolean hasProtocolDefinition() {
-        return !Strings.isNullOrEmpty(getProtocol());
-    }
-
-    public boolean hasIpAddressDefinition() {
-        return !Strings.isNullOrEmpty(getIpAddress());
-    }
-
-    public boolean hasPortDefinition() {
-        return !Strings.isNullOrEmpty(getPort());
-    }
-
-    public boolean hasDefinition() {
-        return hasProtocolDefinition() || hasIpAddressDefinition() || hasPortDefinition();
-    }
-
-    public int calculatePriority() {
-        int priority = 0;
-        if (hasPortDefinition()) priority++;
-        if (hasIpAddressDefinition()) priority++;
-        if (hasProtocolDefinition()) priority++;
-        return priority;
     }
 }

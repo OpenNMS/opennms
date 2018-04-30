@@ -30,8 +30,12 @@ package org.opennms.netmgt.flows.classification.error;
 
 public interface ErrorContext {
     String Entity = "entity";
-    String Port = "port";
-    String Protocol = "protocol";
     String Name = "name";
-    String IpAddress = "ipaddress";
+    String Protocol = "protocol";
+    String DstPort = "dstPort";
+    String DstAddress = "dstAddress";
+    String SrcPort = "srcPort";
+    String SrcAddress = "srcAddress";
+    String ExportFilter = "exporterFilter";
+    String ExporterAddress = "exporterAddress";
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.flows.elastic;
 
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
@@ -102,7 +101,6 @@ public class DocumentEnricher {
                 // Metadata from message
                 document.setHost(source.getSourceAddress());
                 document.setLocation(source.getLocation());
-                document.setInitiator(isInitiator(document));
 
                 // Node data
                 getNodeInfoFromCache(source.getLocation(), source.getSourceAddress()).ifPresent(document::setNodeExporter);
@@ -131,9 +129,7 @@ public class DocumentEnricher {
                 document.setConvoKey(ConversationKeyUtils.getConvoKeyAsJsonString(document));
 
                 // Apply Application mapping
-                if (document.isInitiator() != null) {
-                    document.setApplication(classificationEngine.classify(createClassificationRequest(document)));
-                }
+                document.setApplication(classificationEngine.classify(createClassificationRequest(document)));
             });
             return null;
         });
@@ -206,43 +202,21 @@ public class DocumentEnricher {
         }
     }
 
-    // Determine if the provided flow is the initiator.
-    // Yes, this may not be 100% accurate, but is a very easy way of defining the direction of the flow in most cases.
-    protected static Boolean isInitiator(FlowDocument document) {
-        if (document.getSrcPort() != null && document.getDstPort() != null) {
-            if (document.getSrcPort() > document.getDstPort()) {
-                return true;
-            } else if (document.getSrcPort() < document.getDstPort()) {
-                return false;
-            }
-        }
-
-        // Tie breaker
-        if (document.getSrcAddr() != null && document.getDstAddr() != null) {
-            final BigInteger srcAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getSrcAddr()));
-            final BigInteger dstAddressAsInt = InetAddressUtils.toInteger(InetAddressUtils.addr(document.getDstAddr()));
-            if (srcAddressAsInt.compareTo(dstAddressAsInt) > 0) {
-                return true;
-            } else if (srcAddressAsInt.compareTo(dstAddressAsInt) < 0) {
-                return false;
-            }
-        }
-
-        return null;
-    }
-
     protected static ClassificationRequest createClassificationRequest(FlowDocument document) {
         final ClassificationRequest request = new ClassificationRequest();
         request.setProtocol(Protocols.getProtocol(document.getProtocol()));
         request.setLocation(document.getLocation());
-
-        // Decide whether to use source or dest address/port to determine application mapping
-        if (document.isInitiator()) {
-            request.setIpAddress(document.getDstAddr());
-            request.setPort(document.getDstPort());
+        request.setExporterAddress(document.getHost());
+        if (document.getDirection() == Direction.INGRESS) {
+            request.setDstAddress(document.getDstAddr());
+            request.setDstPort(document.getDstPort());
+            request.setSrcAddress(document.getSrcAddr());
+            request.setSrcPort(document.getSrcPort());
         } else {
-            request.setIpAddress(document.getSrcAddr());
-            request.setPort(document.getSrcPort());
+            request.setSrcAddress(document.getDstAddr());
+            request.setSrcPort(document.getDstPort());
+            request.setDstAddress(document.getSrcAddr());
+            request.setDstPort(document.getSrcPort());
         }
         return request;
     }

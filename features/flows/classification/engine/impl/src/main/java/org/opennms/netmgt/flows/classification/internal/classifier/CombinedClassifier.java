@@ -30,31 +30,48 @@ package org.opennms.netmgt.flows.classification.internal.classifier;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
-import org.opennms.netmgt.flows.classification.internal.matcher.IpMatcher;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.internal.matcher.DstAddressMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.DstPortMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.FilterMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.Matcher;
-import org.opennms.netmgt.flows.classification.internal.matcher.PortMatcher;
 import org.opennms.netmgt.flows.classification.internal.matcher.ProtocolMatcher;
-import org.opennms.netmgt.flows.classification.persistence.api.Rule;
+import org.opennms.netmgt.flows.classification.internal.matcher.SrcAddressMatcher;
+import org.opennms.netmgt.flows.classification.internal.matcher.SrcPortMatcher;
+import org.opennms.netmgt.flows.classification.persistence.api.RulePriorityComparator;
+import org.opennms.netmgt.flows.classification.persistence.api.RuleDefinition;
 
 public class CombinedClassifier implements Classifier {
 
     private final List<Matcher> matchers;
-    private final String application;
+    private final RuleDefinition ruleDefinition;
+    private final RulePriorityComparator rulePriorityComparator = new RulePriorityComparator();
 
-    public CombinedClassifier(Rule rule) {
+    public CombinedClassifier(RuleDefinition ruleDefinition, FilterService filterService) {
+        Objects.requireNonNull(ruleDefinition);
         final List<Matcher> matchers = new ArrayList<>();
-        if (rule.hasProtocolDefinition()) {
-            matchers.add(new ProtocolMatcher(rule.getProtocol()));
+        if (ruleDefinition.hasProtocolDefinition()) {
+            matchers.add(new ProtocolMatcher(ruleDefinition.getProtocol()));
         }
-        if (rule.hasIpAddressDefinition()) {
-            matchers.add(new IpMatcher(rule.getIpAddress()));
+        if (ruleDefinition.hasSrcPortDefinition()) {
+            matchers.add(new SrcPortMatcher(ruleDefinition.getSrcPort()));
         }
-        if (rule.hasPortDefinition()) {
-            matchers.add(new PortMatcher(rule.getPort()));
+        if (ruleDefinition.hasSrcAddressDefinition()) {
+            matchers.add(new SrcAddressMatcher(ruleDefinition.getSrcAddress()));
         }
-        this.application = rule.getName();
+        if (ruleDefinition.hasDstAddressDefinition()) {
+            matchers.add(new DstAddressMatcher(ruleDefinition.getDstAddress()));
+        }
+        if (ruleDefinition.hasDstPortDefinition()) {
+            matchers.add(new DstPortMatcher(ruleDefinition.getDstPort()));
+        }
+        if (ruleDefinition.hasExportFilterDefinition()) {
+            matchers.add(new FilterMatcher(ruleDefinition.getExporterFilter(), filterService));
+        }
+        this.ruleDefinition = ruleDefinition;
         this.matchers = matchers;
     }
 
@@ -67,6 +84,24 @@ public class CombinedClassifier implements Classifier {
                 return null;
             }
         }
-        return application;
+        return ruleDefinition.getName();
+    }
+
+    @Override
+    public int compareTo(Classifier o) {
+        return rulePriorityComparator.compare(this.ruleDefinition, ((CombinedClassifier) o).ruleDefinition);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final CombinedClassifier that = (CombinedClassifier) o;
+        return Objects.equals(ruleDefinition, that.ruleDefinition);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ruleDefinition);
     }
 }

@@ -13,25 +13,26 @@
 
     <cm:property-placeholder id="ClassificationEngineProperties" persistent-id="org.opennms.features.flows.classification" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="cache.classification.enabled" value="true" />
-            <cm:property name="cache.classification.maxSize" value="5000" />
-            <cm:property name="cache.classification.expireAfterRead" value="60" /> <!-- Seconds -->
-            <cm:property name="cache.classification.recordStats" value="true" />
+            <cm:property name="cache.classificationFilter.enabled" value="false" />
+            <cm:property name="cache.classificationFilter.maxSize" value="5000" />
+            <cm:property name="cache.classificationFilter.expireAfterRead" value="300" /> <!-- Seconds -->
+            <cm:property name="cache.classificationFilter.recordStats" value="true" />
         </cm:default-properties>
     </cm:property-placeholder>
 
     <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
     <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <!-- CacheConfig -->
-    <bean id="classificationCacheConfig" class="org.opennms.core.cache.CacheConfig">
-        <argument value="classification" />
-        <property name="recordStats" value="${cache.classification.recordStats}" />
+    <bean id="classificationFilterCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="classificationFilter" />
+        <property name="recordStats" value="${cache.classificationFilter.recordStats}" />
         <property name="metricRegistry" ref="classificationMetricRegistry" />
-        <property name="maximumSize" value="${cache.classification.maxSize}" />
-        <property name="expireAfterRead" value="${cache.classification.expireAfterRead}" />
-        <property name="enabled" value="${cache.classification.enabled}" />
+        <property name="maximumSize" value="${cache.classificationFilter.maxSize}" />
+        <property name="expireAfterRead" value="${cache.classificationFilter.expireAfterRead}" />
+        <property name="enabled" value="${cache.classificationFilter.enabled}" />
     </bean>
 
     <!-- Rule Provider -->
@@ -39,20 +40,31 @@
         <argument ref="classificationRuleDao"/>
     </bean>
 
+    <!-- Filter Service -->
+    <bean id="filterService" class="org.opennms.netmgt.flows.classification.internal.DefaultFilterService">
+        <argument ref="filterDao" />
+    </bean>
+    <bean id="cachingFilterService" class="org.opennms.netmgt.flows.classification.internal.CachingFilterService">
+        <argument ref="filterService" />
+        <argument ref="classificationFilterCacheConfig" />
+    </bean>
+
     <!-- Classification Engine -->
     <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine">
         <argument ref="classificationRuleProvider" />
+        <argument ref="cachingFilterService" />
+        <argument value="false" />
     </bean>
     <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TimingClassificationEngine">
         <argument ref="classificationMetricRegistry"/>
         <argument ref="defaultClassificationEngine" />
     </bean>
-    <bean id="cachingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.CachingClassificationEngine">
-        <argument ref="timingClassificationEngine" />
-        <argument ref="classificationCacheConfig" />
-    </bean>
     <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.ThreadSafeClassificationEngine">
-        <argument ref="cachingClassificationEngine" />
+        <argument ref="timingClassificationEngine" />
+    </bean>
+    <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
+        <argument ref="threadSafeClassificationEngine"/>
+        <argument ref="transactionOperations" />
     </bean>
 
     <!-- Metrics -->
@@ -76,6 +88,7 @@
             <argument ref="classificationRuleDao"/>
             <argument ref="classificationGroupDao"/>
             <argument ref="threadSafeClassificationEngine"/>
+            <argument ref="cachingFilterService" />
             <argument ref="transactionOperations"/>
         </bean>
     </service>

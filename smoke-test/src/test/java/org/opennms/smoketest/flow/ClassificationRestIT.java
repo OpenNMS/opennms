@@ -79,7 +79,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
         given().get().then().assertThat().statusCode(204); // 204 because "system-defined" rules are disabled
 
         // POST (create) a rule
-        final RuleDTO httpRule = builder().withName("http").withPort("80,8080").withProtocol("tcp,udp").build();
+        final RuleDTO httpRule = builder().withName("http").withDstPort("80,8080").withProtocol("tcp,udp").build();
         String header = given().contentType(ContentType.JSON)
                 .accept(ContentType.JSON)
                 .body(httpRule)
@@ -97,14 +97,14 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .extract().response().as(RuleDTO.class);
         assertThat(receivedHttpRule.getId(), is(classificationId));
         assertThat(receivedHttpRule.getName(), is(httpRule.getName()));
-        assertThat(receivedHttpRule.getIpAddress(), is(httpRule.getIpAddress()));
+        assertThat(receivedHttpRule.getDstAddress(), is(httpRule.getDstAddress()));
         assertThat(receivedHttpRule.getProtocols(), is(httpRule.getProtocols()));
         assertThat(receivedHttpRule.getGroup().getName(), is(Groups.USER_DEFINED));
 
         // Post another rule
         given().contentType(ContentType.JSON)
             .accept(ContentType.JSON)
-            .body(builder().withName("https").withPort("443").withProtocol("tcp").build())
+            .body(builder().withName("https").withDstPort("443").withProtocol("tcp").build())
             .post().then().assertThat().statusCode(201); // created
 
         // Verify creation worked
@@ -119,9 +119,9 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
 
         // UPDATE 1st rule
         receivedHttpRule.setName("http-opennms");
-        receivedHttpRule.setPort("8980");
+        receivedHttpRule.setDstPort("8980");
         receivedHttpRule.setProtocol("tcp");
-        receivedHttpRule.setIpAddress("127.0.0.1");
+        receivedHttpRule.setDstAddress("127.0.0.1");
         given().contentType(ContentType.JSON)
                 .body(receivedHttpRule)
                 .log().all()
@@ -140,7 +140,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                 .extract().response().as(RuleDTO.class);
         assertThat(updatedRule.getId(), is(classificationId));
         assertThat(updatedRule.getName(), is(receivedHttpRule.getName()));
-        assertThat(updatedRule.getIpAddress(), is(receivedHttpRule.getIpAddress()));
+        assertThat(updatedRule.getDstAddress(), is(receivedHttpRule.getDstAddress()));
         assertThat(updatedRule.getProtocols(), is(receivedHttpRule.getProtocols()));
         assertThat(updatedRule.getGroup().getName(), is(Groups.USER_DEFINED));
 
@@ -248,8 +248,11 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyClassify() {
         final ClassificationRequestDTO request = new ClassificationRequestDTO();
-        request.setIpAddress("10.0.0.1");
-        request.setPort("24005");
+        request.setSrcAddress("127.0.0.1");
+        request.setSrcPort("55557");
+        request.setExporterAddress("10.0.0.5");
+        request.setDstAddress("10.0.0.1");
+        request.setDstPort("24005");
         request.setProtocol("tcp");
         final String application = given()
                 .contentType(ContentType.JSON)
@@ -261,7 +264,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                     .extract().body().asString();
         assertThat(application, equalTo("{\"classification\":\"med-ci\"}"));
 
-        request.setPort("50000");
+        request.setDstPort("50000");
         given().contentType(ContentType.JSON)
                 .body(request).post("classify")
                 .then().assertThat().statusCode(204);
@@ -279,7 +282,7 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
     @Test
     public void verifyImport() {
         // IMPORT
-        final String importCsv = "name;ipAddress;port;protocol\nmagic-ulf;;1337;tcp";
+        final String importCsv = "name;protocol;srcAddress;srcPort;dstAddress;dstPort;exporterFilter\nmagic-ulf;tcp;;;;1337;";
         given().contentType("text/comma-separated-values")
                 .body(importCsv)
                 .post()
@@ -297,8 +300,10 @@ public class ClassificationRestIT extends OpenNMSSeleniumTestCase {
                     .contentType(ContentType.JSON)
                     .body("", hasSize(1))
                     .body("[0].name", equalTo("magic-ulf"))
-                    .body("[0].ipAddress", nullValue())
-                    .body("[0].port", equalTo("1337"))
+                    .body("[0].srcAddress", nullValue())
+                    .body("[0].srcPort", nullValue())
+                    .body("[0].dstAddress", nullValue())
+                    .body("[0].dstPort", equalTo("1337"))
                     .body("[0].protocols[0]", equalTo("tcp"));
     }
 

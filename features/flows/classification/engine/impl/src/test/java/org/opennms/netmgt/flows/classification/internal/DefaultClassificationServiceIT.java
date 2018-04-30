@@ -41,7 +41,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.flows.classification.ClassificationService;
+import org.opennms.netmgt.flows.classification.FilterService;
+import org.opennms.netmgt.flows.classification.internal.csv.CsvBuilder;
 import org.opennms.netmgt.flows.classification.internal.provider.DaoClassificationRuleProvider;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao;
@@ -76,13 +79,23 @@ public class DefaultClassificationServiceIT {
     private ClassificationGroupDao groupDao;
 
     @Autowired
+    private FilterDao filterDao;
+
+    @Autowired
     private TransactionOperations transactionOperations;
 
     private ClassificationService classificationService;
 
     @Before
     public void setUp() {
-        classificationService = new DefaultClassificationService(ruleDao, groupDao, new DefaultClassificationEngine(new DaoClassificationRuleProvider(ruleDao)), transactionOperations);
+        FilterService filterService = new DefaultFilterService(filterDao);
+        classificationService = new DefaultClassificationService(
+                ruleDao,
+                groupDao,
+                new DefaultClassificationEngine(
+                        new DaoClassificationRuleProvider(ruleDao), filterService),
+                filterService,
+                transactionOperations);
         groupDao.save(new GroupBuilder().withName(Groups.USER_DEFINED).build());
         assertThat(ruleDao.countAll(), is(0));
     }
@@ -94,36 +107,48 @@ public class DefaultClassificationServiceIT {
 
     @Test
     public void verifyCsvImport() {
+        // Rules
+        final Rule http2Rule = new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1").build();
+        final Rule googleRule = new RuleBuilder().withName("google").withDstAddress("8.8.8.8").build();
+        final Rule opennmsMonitorRule = new RuleBuilder()
+                .withName("opennms-monitor")
+                .withProtocol("TCP")
+                .withSrcAddress("10.0.0.1").withSrcPort(1000)
+                .withDstAddress("10.0.0.2").withDstPort(8980)
+                .build();
+
         // Dummy input
-        final StringBuilder builder = new StringBuilder();
-        builder.append("name;ipAddress;port;protocol\n");
-        builder.append("http2;127.0.0.1;;TCP,UDP\n");
-        builder.append("google;8.8.8.8;;\n");
+        final String csv = new CsvBuilder()
+                .withRule(http2Rule)
+                .withRule(googleRule)
+                .withRule(opennmsMonitorRule)
+                .build();
 
         // Import
-        final InputStream inputStream = new ByteArrayInputStream(builder.toString().getBytes());
+        final InputStream inputStream = new ByteArrayInputStream(csv.getBytes());
         classificationService.importRules(inputStream, true, true);
 
         // Verify
-        assertThat(ruleDao.countAll(), is(2));
+        assertThat(ruleDao.countAll(), is(3));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
-                .withName("http")
+                .withName("http") // name differs
                 .withProtocol("tcp,udp")
-                .withIpAddress("127.0.0.1").build()), hasSize(1));
-        assertThat(ruleDao.findByDefinition(new RuleBuilder()
-                .withName("google")
-                .withIpAddress("8.8.8.8").build()), hasSize(1));
+                .withDstAddress("127.0.0.1").build()), hasSize(1));
+        assertThat(ruleDao.findByDefinition(googleRule), hasSize(1));
+        assertThat(ruleDao.findByDefinition(opennmsMonitorRule), hasSize(1));
     }
 
     @Test
     public void verifyCsvImportWithoutHeader() {
         // Dummy input
-        final StringBuilder builder = new StringBuilder();
-        builder.append("http2;127.0.0.1;;TCP,UDP\n");
-        builder.append("google;8.8.8.8;;");
+        final String csv = new CsvBuilder()
+                .withHeader(false)
+                .withRule(new RuleBuilder().withName("http2").withProtocol("TCP,UDP").withDstAddress("127.0.0.1"))
+                .withRule(new RuleBuilder().withName("google").withDstAddress("8.8.8.8"))
+                .build();
 
         // Import
-        final InputStream inputStream = new ByteArrayInputStream(builder.toString().getBytes());
+        final InputStream inputStream = new ByteArrayInputStream(csv.getBytes());
         classificationService.importRules(inputStream, false, true);
 
         // Verify
@@ -131,10 +156,10 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("http")
                 .withProtocol("tcp,udp")
-                .withIpAddress("127.0.0.1").build()), hasSize(1));
+                .withDstAddress("127.0.0.1").build()), hasSize(1));
         assertThat(ruleDao.findByDefinition(new RuleBuilder()
                 .withName("google")
-                .withIpAddress("8.8.8.8").build()), hasSize(1));
+                .withDstAddress("8.8.8.8").build()), hasSize(1));
     }
 
     @Test
@@ -152,9 +177,10 @@ public class DefaultClassificationServiceIT {
         assertThat(ruleDao.countAll(), is(1));
 
         // define csv and import
-        final StringBuilder builder = new StringBuilder();
-        builder.append("http2;127.0.0.1;;TCP,UDP");
-        classificationService.importRules(new ByteArrayInputStream(builder.toString().getBytes()), false, true);
+        final String csv = new CsvBuilder()
+                .withRule(new RuleBuilder().withName("http2").withDstAddress("127.0.0.1").withProtocol("TCP,UDP"))
+                .build();
+        classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), true, true);
 
         // Verify original one is deleted, but count is still 1
         assertThat(ruleDao.findByDefinition(rule), hasSize(0));
@@ -165,32 +191,34 @@ public class DefaultClassificationServiceIT {
     public void verifyCsvImportWithoutDeletingExistingRules() {
         // Save a rule
         final Group userGroup = groupDao.findByName(Groups.USER_DEFINED);
-        Rule rule = new RuleBuilder()
+        Rule rule1 = new RuleBuilder()
                 .withGroup(userGroup)
                 .withName("rule1")
                 .withProtocol("tcp,udp")
-                .withPort(111)
+                .withDstPort(111)
                 .build();
-        ruleDao.save(rule);
+        ruleDao.save(rule1);
 
         // verify it is created
         assertThat(ruleDao.countAll(), is(1));
 
+        // Define another rule, to import
+        Rule rule2 = new RuleBuilder()
+                .withName("rule2")
+                .withDstAddress("127.0.0.1")
+                .withDstPort(222)
+                .withProtocol("tcp,udp")
+                .build();
+
         // define csv and import
-        final String csv = "rule2;127.0.0.1;222;TCP,UDP";
         boolean hasHeader = false;
         boolean deleteExistingRules = false;
+        final String csv = new CsvBuilder().withRule(rule2).withHeader(hasHeader).build();
         classificationService.importRules(new ByteArrayInputStream(csv.getBytes()), hasHeader, deleteExistingRules);
         assertThat(ruleDao.countAll(), is(2));
 
         // Verify original one is retained, and new one was added
-        assertThat(ruleDao.findByDefinition(rule), hasSize(1));
-        Rule rule2 = new RuleBuilder()
-                .withGroup(userGroup)
-                .withName("rule2")
-                .withProtocol("tcp,udp")
-                .withPort(222)
-                .build();
+        assertThat(ruleDao.findByDefinition(rule1), hasSize(1));
         assertThat(ruleDao.findByDefinition(rule2), hasSize(1));
 
     }

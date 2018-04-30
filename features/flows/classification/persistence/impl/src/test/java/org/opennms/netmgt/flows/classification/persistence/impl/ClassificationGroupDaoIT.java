@@ -43,10 +43,12 @@ import org.opennms.netmgt.flows.classification.persistence.api.ClassificationRul
 import org.opennms.netmgt.flows.classification.persistence.api.Group;
 import org.opennms.netmgt.flows.classification.persistence.api.GroupBuilder;
 import org.opennms.netmgt.flows.classification.persistence.api.Groups;
+import org.opennms.netmgt.flows.classification.persistence.api.Rule;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -106,8 +108,8 @@ public class ClassificationGroupDaoIT {
 
         // INSERT
         final Group group = new GroupBuilder().withName("custom")
-                .withRule(new RuleBuilder().withName("http").withPort(80).build())
-                .withRule(new RuleBuilder().withName("http").withPort(8080).build())
+                .withRule(new RuleBuilder().withName("http").withDstPort(80).build())
+                .withRule(new RuleBuilder().withName("http").withDstPort(8080).build())
                 .build();
         groupDao.save(group);
         assertThat(groupDao.countAll(), is(1));
@@ -125,5 +127,27 @@ public class ClassificationGroupDaoIT {
         groupDao.delete(group.getId());
         assertThat(groupDao.countAll(), is(0));
         assertThat(ruleDao.countAll(), is(0));
+    }
+
+    @Test
+    @Transactional
+    public void verifyKeepsOrder() {
+        // INSERT
+        Group group = new GroupBuilder().withName(Groups.SYSTEM_DEFINED)
+                .withRule(new RuleBuilder().withName("http").withDstPort(80).withPosition(2).build())
+                .withRule(new RuleBuilder().withName("http").withDstPort(8080).withPosition(1).build())
+                .build();
+        groupDao.save(group);
+        group = groupDao.findByName(Groups.SYSTEM_DEFINED);
+
+        final Rule rule1 = group.getRules().get(0);
+        assertThat(rule1.getPosition(), is(1));
+        assertThat(rule1.getName(), is("http"));
+        assertThat(rule1.getDstPort(), is("8080"));
+
+        final Rule rule2 = group.getRules().get(1);
+        assertThat(rule2.getPosition(), is(2));
+        assertThat(rule2.getName(), is("http"));
+        assertThat(rule2.getDstPort(), is("80"));
     }
 }

@@ -37,7 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
-import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.flows.classification.error.Errors;
 import org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao;
@@ -118,6 +117,6 @@ public class GroupValidatorIT {
     }
 
     private static Rule createDummyRule() {
-        return new RuleBuilder().withIpAddress("127.0.0.1").withName("dummy").build();
+        return new RuleBuilder().withDstAddress("127.0.0.1").withName("dummy").build();
     }
 }

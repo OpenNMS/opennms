@@ -46,6 +46,7 @@ import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 
@@ -72,9 +73,9 @@ public class MockDocumentEnricherFactory {
         categoryDao = new MockCategoryDao();
 
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
-                new RuleBuilder().withName("http").withPort("80").withProtocol("tcp,udp").build(),
-                new RuleBuilder().withName("https").withPort("443").withProtocol("tcp,udp").build()
-        ));
+                new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
+                new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
+        ), FilterService.NOOP);
         enricher = new DocumentEnricher(
                 new MetricRegistry(), nodeDao, interfaceToNodeCache, transactionTemplate, classificationEngine,
                 new CacheConfigBuilder()

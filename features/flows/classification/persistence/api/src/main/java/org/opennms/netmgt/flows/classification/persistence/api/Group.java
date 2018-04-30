@@ -29,8 +29,8 @@
 package org.opennms.netmgt.flows.classification.persistence.api;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
@@ -85,6 +85,7 @@ public class Group {
     }
 
     public List<Rule> getRules() {
+        Collections.sort(rules, new RulePositionComparator());
         return rules;
     }
 
@@ -135,17 +136,5 @@ public class Group {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public void replaceRuleById(Rule newRule) {
-        // Find in group
-        int ruleId = newRule.getId();
-        final Rule existingRule = getRules().stream().filter(r -> r.getId() == ruleId).findFirst().orElseThrow(() -> new NoSuchElementException("Rule with id " + ruleId + " does not exist."));
-
-        // Update values
-        existingRule.setProtocol(newRule.getProtocol());
-        existingRule.setIpAddress(newRule.getIpAddress());
-        existingRule.setName(newRule.getName());
-        existingRule.setPort(newRule.getPort());
     }
 }

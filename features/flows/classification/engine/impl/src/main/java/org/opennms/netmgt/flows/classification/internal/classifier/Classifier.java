@@ -30,6 +30,6 @@ package org.opennms.netmgt.flows.classification.internal.classifier;
 
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 
-public interface Classifier {
+public interface Classifier extends Comparable<Classifier> {
     String classify(ClassificationRequest classificationRequest);
 }

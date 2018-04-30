@@ -20,7 +20,6 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
     var MODULE_NAME = 'onms.classifications';
 
-
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
             'ngResource',
@@ -105,14 +104,15 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.classify = function (classificationRequest) {
                 ClassificationService.classify(classificationRequest, function (result) {
-                    $scope.error = undefined;
+                    $scope.classifyError = undefined;
                     $scope.classificationResponse = result.classification === undefined ? 'No mapping found' : result.classification;
                 }, function (response) {
                     $scope.classificationResponse = undefined;
-                    if (response.status === 400 && response.data && response.data.message) {
-                        $scope.error = response.data.message;
+                    if (response.status === 400 && response.data && response.data.context && response.data.message) {
+                        $scope.classifyError = {};
+                        $scope.classifyError[response.data.context] = response.data.message;
                     } else {
-                        $scope.error = 'Cannot perform the request.';
+                        $scope.classifyError['entity'] = 'Cannot perform the request.';
                     }
                 });
             };
@@ -143,7 +143,16 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             };
 
             $scope.fullyDefined = function() {
-                return $scope.classificationRequest && $scope.classificationRequest.protocol && $scope.classificationRequest.port && $scope.classificationRequest.ipAddress;
+                var fullyDefined = $scope.classificationRequest
+                    && $scope.classificationRequest.protocol
+                    && $scope.classificationRequest.dstPort && $scope.classificationRequest.dstAddress
+                    && $scope.classificationRequest.srcPort && $scope.classificationRequest.srcAddress
+                    && $scope.classificationRequest.exporterAddress;
+                return fullyDefined;
+            };
+
+            $scope.toggleClassificationMode = function() {
+                $scope.classificationMode = ($scope.classificationMode === 'simple' ? 'complex' : 'simple');
             };
 
             $scope.loadProtocols();
@@ -225,6 +234,26 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 });
             };
 
+            // In some cases the currently selected group needs to be refreshed, this method finds the group from
+            // $scope.groups and updates $scope.group accordingly, in order to reflect updates in $scope.groups
+            $scope.refreshGroup = function() {
+                for (var i = 0; i<$scope.groups.length; i++) {
+                    var group = $scope.groups[i];
+                    if (group.id === $scope.group.id) {
+                        $scope.group = group;
+                        return;
+                    }
+                }
+            };
+
+            $scope.refreshAll = function() {
+                var result = $scope.refreshTabs();
+                result.$promise.then(function() {
+                    $scope.refreshGroup()
+                    $scope.refresh();
+                });
+            };
+
             $scope.changeOrderBy = function(column) {
                 if ($scope.query.orderBy === column) {
                     $scope.query.order = $scope.query.order === 'asc' ? 'desc' : 'asc';
@@ -237,15 +266,13 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.deleteRule = function(rule) {
                 rule.$delete().then(function() {
-                    $scope.refreshTabs();
-                    $scope.refresh();
+                    $scope.refreshAll();
                 });
             };
 
             $scope.deleteAllRules = function() {
                 ClassificationRuleService.delete({groupId: $scope.group.id}, function() {
-                    $scope.refreshTabs();
-                    $scope.refresh();
+                    $scope.refreshAll();
                 });
             };
 
@@ -265,9 +292,8 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.editRule = function(rule) {
                 var modalInstance = openModal(rule);
-                modalInstance.result.then(function () {
-                    $scope.refreshTabs();
-                    $scope.refresh();
+                modalInstance.closed.then(function () {
+                    $scope.refreshAll();
                 }, function() {
                     // modal was dismissed
                     $scope.refresh();
@@ -276,9 +302,8 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
 
             $scope.addRule = function() {
                 var modalInstance = openModal();
-                modalInstance.result.then(function () {
-                    $scope.refreshTabs();
-                    $scope.refresh();
+                modalInstance.closed.then(function () {
+                    $scope.refreshAll();
                 });
             };
 
@@ -293,9 +318,8 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                         }
                     }
                 });
-                modalInstance.result.then(function () {
-                    $scope.refreshTabs();
-                    $scope.refresh();
+                modalInstance.closed.then(function () {
+                    $scope.refreshAll();
                 });
             };
 
@@ -419,7 +443,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
                 if (response && response.data) {
                     var error = response.data;
                     $scope.error = {};
-                    $scope.error[error.context.toLowerCase()] = error.message;
+                    $scope.error[error.context] = error.message;
                 }
             };
 

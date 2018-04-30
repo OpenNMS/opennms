@@ -26,29 +26,24 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.classification.persistence.api;
+package org.opennms.netmgt.flows.classification;
 
-import java.util.Comparator;
-import java.util.Objects;
+import org.opennms.netmgt.flows.classification.exception.InvalidFilterException;
 
-public class RuleComparator implements Comparator<Rule> {
-    @Override
-    public int compare(Rule r1, Rule r2) {
-        Objects.requireNonNull(r1);
-        Objects.requireNonNull(r2);
+public interface FilterService {
+    void validate(String filterExpression) throws InvalidFilterException;
 
-        // Sort by group priority (highest priority first)
-        int groupPriority1 = r1.getGroup() != null ? r1.getGroup().getPriority() : 0;
-        int groupPriority2 = r2.getGroup() != null ? r2.getGroup().getPriority() : 0;
-        int result = -1 * Integer.compare(groupPriority1, groupPriority2);
+    boolean matches(String address, String filterExpression);
 
-        // If group priority is identical, sort by rule priority (highest priority first)
-        if (result == 0) {
-            if (r1.calculatePriority() == r2.calculatePriority()) {
-                return -1 * Boolean.compare(r1.hasIpAddressDefinition(), r2.hasIpAddressDefinition());
-            }
-            return -1 * Integer.compare(r1.calculatePriority(), r2.calculatePriority() );
+    FilterService NOOP = new FilterService() {
+        @Override
+        public void validate(String filterExpression) throws InvalidFilterException {
+
         }
-        return result;
-    }
+
+        @Override
+        public boolean matches(String address, String filterExpression) {
+            return false;
+        }
+    };
 }

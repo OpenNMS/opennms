@@ -31,10 +31,8 @@ package org.opennms.netmgt.flows.elastic;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.filter.api.ExporterNodeFilter;

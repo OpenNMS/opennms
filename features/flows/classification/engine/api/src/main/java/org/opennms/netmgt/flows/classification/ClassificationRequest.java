@@ -34,44 +34,23 @@ import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
 
 public class ClassificationRequest {
 
-    private int port;
-    private Protocol protocol;
-    private String ipAddress;
     private String location;
+    private Protocol protocol;
+    private int dstPort;
+    private String dstAddress;
+    private int srcPort;
+    private String srcAddress;
+    private String exporterAddress;
 
-    public ClassificationRequest(String location, int port, String ipAddress, Protocol protocol) {
+    public ClassificationRequest(String location, int dstPort, String dstAddress, Protocol protocol) {
         this.location = location;
-        this.port = port;
-        this.ipAddress = ipAddress;
+        this.dstPort = dstPort;
+        this.dstAddress = dstAddress;
         this.protocol = protocol;
     }
 
     public ClassificationRequest() {
 
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
-
-    public String getIpAddress() {
-        return ipAddress;
     }
 
     public String getLocation() {
@@ -82,20 +61,71 @@ public class ClassificationRequest {
         this.location = location;
     }
 
+    public void setProtocol(Protocol protocol) {
+        this.protocol = protocol;
+    }
+
+    public Protocol getProtocol() {
+        return protocol;
+    }
+
+    public void setDstPort(int dstPort) {
+        this.dstPort = dstPort;
+    }
+
+    public int getDstPort() {
+        return dstPort;
+    }
+
+    public void setDstAddress(String dstAddress) {
+        this.dstAddress = dstAddress;
+    }
+
+    public String getDstAddress() {
+        return dstAddress;
+    }
+
+    public int getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(int srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    public String getSrcAddress() {
+        return srcAddress;
+    }
+
+    public void setSrcAddress(String srcAddress) {
+        this.srcAddress = srcAddress;
+    }
+
+    public String getExporterAddress() {
+        return exporterAddress;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.exporterAddress = exporterAddress;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ClassificationRequest that = (ClassificationRequest) o;
         boolean equals = Objects.equals(location, that.location)
-                && Objects.equals(port, that.port)
                 && Objects.equals(protocol, that.protocol)
-                && Objects.equals(ipAddress, that.ipAddress);
+                && Objects.equals(dstPort, that.dstPort)
+                && Objects.equals(dstAddress, that.dstAddress)
+                && Objects.equals(srcPort, that.srcPort)
+                && Objects.equals(srcAddress, that.srcAddress)
+                && Objects.equals(exporterAddress, that.exporterAddress);
         return equals;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, port, protocol, ipAddress);
+        return Objects.hash(location, protocol, dstPort, dstAddress, srcPort, srcAddress, exporterAddress);
     }
 }

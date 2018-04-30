@@ -32,8 +32,8 @@ import org.opennms.netmgt.flows.classification.error.ErrorTemplate;
 
 public class InvalidRuleException extends ClassificationException {
 
-    public InvalidRuleException(ErrorTemplate errorTemplate, Object... arguments) {
-        super(errorTemplate, arguments);
+    public InvalidRuleException(String errorContext, ErrorTemplate errorTemplate, Object... arguments) {
+        super(errorContext, errorTemplate, arguments);
     }
 
 }

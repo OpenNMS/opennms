@@ -30,30 +30,60 @@ package org.opennms.netmgt.flows.rest.classification;
 
 public class ClassificationRequestDTO {
 
-    private String ipAddress;
+    private String dstAddress;
 
-    private String port;
+    private String dstPort;
+
+    private String srcAddress;
+
+    private String srcPort;
+
+    private String exporterAddress;
 
     private String protocol;
 
-    public String getIpAddress() {
-        return ipAddress;
+    public String getDstAddress() {
+        return dstAddress;
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public void setDstAddress(String dstAddress) {
+        this.dstAddress = dstAddress;
     }
 
-    public String getPort() {
-        return port;
+    public String getDstPort() {
+        return dstPort;
+    }
+
+    public void setDstPort(String dstPort) {
+        this.dstPort = dstPort;
+    }
+
+    public String getSrcAddress() {
+        return srcAddress;
+    }
+
+    public void setSrcAddress(String srcIpAddress) {
+        this.srcAddress = srcIpAddress;
+    }
+
+    public String getSrcPort() {
+        return srcPort;
+    }
+
+    public void setSrcPort(String srcPort) {
+        this.srcPort = srcPort;
+    }
+
+    public String getExporterAddress() {
+        return exporterAddress;
+    }
+
+    public void setExporterAddress(String exporterAddress) {
+        this.exporterAddress = exporterAddress;
     }
 
     public String getProtocol() {
         return protocol;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
     }
 
     public void setProtocol(String protocol) {

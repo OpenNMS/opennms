@@ -12,8 +12,11 @@
       <column name="name" type="text">
         <constraints nullable="false"/>
       </column>
-      <column name="ipaddress" type="text"/>
-      <column name="port" type="text"/>
+      <column name="src_address" type="text"/>
+      <column name="src_port" type="text"/>
+      <column name="exporter_filter" type="text" />
+      <column name="dst_address" type="text"/>
+      <column name="dst_port" type="text"/>
       <column name="protocol" type="text"/>
       <column name="position" type="integer">
         <constraints nullable="false"/>
@@ -22,7 +25,7 @@
         <constraints nullable="false" />
       </column>
     </createTable>
-    <addUniqueConstraint tableName="classification_rules" columnNames="ipaddress,port,protocol,groupid" />
+    <addUniqueConstraint tableName="classification_rules" columnNames="src_address,src_port,exporter_filter,dst_address,dst_port,protocol,groupid" />
     <addPrimaryKey tableName="classification_rules" columnNames="id" constraintName="classification_rules_pkey" />
 
     <createTable tableName="classification_groups">

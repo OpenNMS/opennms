@@ -77,22 +77,41 @@ public class ClassificationRuleDaoImpl extends AbstractDaoHibernate<Rule, Intege
 
     private static CriteriaBuilder createCriteriaBuilderDefinition(Rule rule) {
         final CriteriaBuilder builder = new CriteriaBuilder(Rule.class);
-        if (rule.hasIpAddressDefinition()) {
-            builder.ilike("ipAddress", rule.getIpAddress());
+
+        // DST
+        if (rule.hasDstAddressDefinition()) {
+            builder.ilike("dstAddress", rule.getDstAddress());
         } else {
-            builder.isNull("ipAddress");
+            builder.isNull("dstAddress");
+        }
+        if (rule.hasDstPortDefinition()) {
+            builder.ilike("dstPort", rule.getDstPort());
+        } else {
+            builder.isNull("dstPort");
         }
 
+        // SOURCE
+        if (rule.hasSrcAddressDefinition()) {
+            builder.ilike("srcAddress", rule.getSrcAddress());
+        } else {
+            builder.isNull("srcAddress");
+        }
+        if (rule.hasSrcPortDefinition()) {
+            builder.ilike("srcPort", rule.getSrcPort());
+        } else {
+            builder.isNull("srcPort");
+        }
+
+        // COMMON
         if (rule.hasProtocolDefinition()) {
             builder.ilike("protocol", rule.getProtocol());
         } else {
             builder.isNull("protocol");
         }
-
-        if (rule.hasPortDefinition()) {
-            builder.ilike("port", rule.getPort());
+        if (rule.hasExportFilterDefinition()) {
+            builder.ilike("exporterFilter", rule.getExporterFilter());
         } else {
-            builder.isNull("port");
+            builder.isNull("exporterFilter");
         }
         return builder;
     }

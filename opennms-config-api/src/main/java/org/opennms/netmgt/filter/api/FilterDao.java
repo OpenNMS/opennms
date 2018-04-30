@@ -50,18 +50,18 @@ public interface FilterDao {
      * @return SortedMap containing all node IDs and node labels selected by the rule.
      * @exception FilterParseException if a rule is syntactically incorrect or failed in
      *                executing the SQL statement
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws FilterParseException if any.
      */
-    public SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException;
+    SortedMap<Integer, String> getNodeMap(String rule) throws FilterParseException;
 
     /**
      * <p>getIPServiceMap</p>
      *
      * @param rule a {@link java.lang.String} object.
      * @return a {@link java.util.Map} object.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws FilterParseException if any.
      */
-    public Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
+    Map<InetAddress, Set<String>> getIPAddressServiceMap(String rule) throws FilterParseException;
 
     void flushActiveIpAddressListCache();
 
@@ -70,18 +70,18 @@ public interface FilterDao {
      *
      * @param rule the filter rule
      * @return a {@link java.util.List} of IP addresses.
-     * @throws org.opennms.netmgt.filter.FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
+     * @throws FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
      */
-    public List<InetAddress> getActiveIPAddressList(String rule) throws FilterParseException;
+    List<InetAddress> getActiveIPAddressList(String rule) throws FilterParseException;
 
     /**
      * Get the IP addresses (including deleted) that match the specified rule.
      *
      * @param rule the filter rule
      * @return a {@link java.util.List} of IP addresses.
-     * @throws org.opennms.netmgt.filter.FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
+     * @throws FilterParseException if a rule is syntactically incorrect or failed in executing the SQL statement.
      */
-    public List<InetAddress> getIPAddressList(String rule) throws FilterParseException;
+    List<InetAddress> getIPAddressList(String rule) throws FilterParseException;
 
     /**
      * <p>isValid</p>
@@ -89,9 +89,9 @@ public interface FilterDao {
      * @param addr a {@link java.lang.String} object.
      * @param rule a {@link java.lang.String} object.
      * @return a boolean.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws FilterParseException if any.
      */
-    public boolean isValid(String addr, String rule) throws FilterParseException;
+    boolean isValid(String addr, String rule) throws FilterParseException;
 
     /**
      * Does this rule match anything in the database?  In particular, does it
@@ -99,16 +99,16 @@ public interface FilterDao {
      *
      * @param rule rule to match on
      * @return true if there is at least one match, false otherwise
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws FilterParseException if any.
      */
-    public boolean isRuleMatching(String rule) throws FilterParseException;
+    boolean isRuleMatching(String rule) throws FilterParseException;
 
     /**
      * <p>validateRule</p>
      *
      * @param rule a {@link java.lang.String} object.
-     * @throws org.opennms.netmgt.filter.FilterParseException if any.
+     * @throws FilterParseException if any.
      */
-    public void validateRule(String rule) throws FilterParseException;
+    void validateRule(String rule) throws FilterParseException;
 
 }
