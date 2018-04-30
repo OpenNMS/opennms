@@ -32,7 +32,6 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,37 +89,6 @@ public abstract class NodeDiscovery extends Discovery {
                       getNodeId(),getName());
             sendCompletedEvent(getNodeId());
         }
-    }
-
-    protected void sendSuspendedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(getNodeId());
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-       m_linkd.getEventForwarder().sendNow(builder.getEvent());
-    }
-    
-    protected void sendStartEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
-        
-    }
-    
-    protected void sendCompletedEvent(int nodeid) {
-        EventBuilder builder = new EventBuilder(
-                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
-                                   "EnhancedLinkd");
-                           builder.setNodeid(nodeid);
-                           builder.setInterface(getPrimaryIpAddress());
-                           builder.addParam("runnable", getName());
-                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
     }
 
     /**

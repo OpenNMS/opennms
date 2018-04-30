@@ -84,7 +84,7 @@ public class DiscoveryBridgeDomains extends Discovery {
         if (olddomain != null) {
             m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
             if (LOG.isInfoEnabled()) {
-                LOG.info("find: node: [{}]. Removed from Old Domain {} ", 
+                LOG.info("find: node: [{}]. Removed from Old Domain {} \n", 
                      nodeid, olddomain.printTopology());
             }
         }
@@ -112,24 +112,27 @@ public class DiscoveryBridgeDomains extends Discovery {
         
     @Override
     public void doit() {
-        Map<Integer, Map<Integer,Set<BridgeForwardingTableEntry>>> nodeondomainbft = 
-                new HashMap<Integer, Map<Integer,Set<BridgeForwardingTableEntry>>>();
-
-        Map<Integer, Set<BridgeForwardingTableEntry>> nodeBft= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
-        Map<Integer, Set<String>> nodeMacs = new HashMap<Integer, Set<String>>();
+        LOG.info("run: calculate topology on broadcast domains. Start");
         
-        Set<Integer> nodeids = new HashSet<Integer>(m_linkd.getQueryManager().getUpdateBftMap().keySet());
+        Map<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>> nodeondomainbft 
+            = new HashMap<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>>();
 
-        LOG.info("run: getting nodes with updated bft on broadcast domains. Start");
-        for (Integer nodeid: nodeids) {
-            Set<BridgeForwardingTableEntry> links =  m_linkd.
-                    getQueryManager().
-                    useBridgeTopologyUpdateBFT(
-                                    nodeid);
-    
+        Map<Integer, Set<BridgeForwardingTableEntry>> nodeBft 
+            = new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
+        Map<Integer, Set<String>> nodeMacs 
+        = new HashMap<Integer, Set<String>>();
+
+        Set<Integer> nodeids 
+        = new HashSet<Integer>(
+                m_linkd.getQueryManager().getUpdateBftMap().keySet());
+        
+        LOG.debug("run: nodes {} have updated bft", nodeids);
+
+        for (Integer nodeid : nodeids) {
+            Set<BridgeForwardingTableEntry> links = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
+
             if (links == null || links.size() == 0) {
-                LOG.warn("run: node: [{}]. no updated bft. Return", 
-                         nodeid);
+                LOG.warn("run: node: [{}]. no updated bft. Return", nodeid);
                 continue;
             }
             nodeBft.put(nodeid, links);
@@ -137,96 +140,94 @@ public class DiscoveryBridgeDomains extends Discovery {
             for (BridgeForwardingTableEntry link : links) {
                 macs.add(link.getMacAddress());
             }
-            LOG.debug("run: node: [{}]. macs:{}", 
-                      nodeid, 
-                      macs);
+            LOG.debug("run: node: [{}]. macs:{}", nodeid, macs);
             nodeMacs.put(nodeid, macs);
         }
-            
+
         Set<Integer> parsed = new HashSet<Integer>();
 
-        for (Integer nodeidA: nodeBft.keySet()) {
+        for (Integer nodeidA : nodeBft.keySet()) {
             if (parsed.contains(nodeidA)) {
                 continue;
             }
-            nodeondomainbft.put(nodeidA, new HashMap<Integer, Set<BridgeForwardingTableEntry>>());
+            nodeondomainbft.put(nodeidA,
+                                new HashMap<Integer, Set<BridgeForwardingTableEntry>>());
             nodeondomainbft.get(nodeidA).put(nodeidA, nodeBft.get(nodeidA));
             parsed.add(nodeidA);
-            for (Integer nodeidB: nodeBft.keySet()) {
+            for (Integer nodeidB : nodeBft.keySet()) {
                 if (parsed.contains(nodeidB)) {
                     continue;
                 }
-                if (BroadcastDomain.checkMacSets(nodeMacs.get(nodeidA), 
+                if (BroadcastDomain.checkMacSets(nodeMacs.get(nodeidA),
                                                  nodeMacs.get(nodeidB))) {
-                    nodeondomainbft.get(nodeidA).put(nodeidB, nodeBft.get(nodeidB));
+                    nodeondomainbft.get(nodeidA).put(nodeidB,
+                                                     nodeBft.get(nodeidB));
                     parsed.add(nodeidB);
-                    LOG.info("run: node: [{}], node [{}] are on same domain", 
-                         nodeidA, 
-                         nodeidB);
+                    LOG.debug("run: nodes {} are on same domain",
+                              nodeondomainbft.get(nodeidA).keySet());
                 }
             }
         }
 
-    	Map<Integer, BroadcastDomain> nodedomainMap = new HashMap<Integer, BroadcastDomain>();
-    	for (Integer nodeid: nodeondomainbft.keySet()) {
-            LOG.info("run: node: [{}], getting broadcast domain. Start", nodeid);
+        Map<Integer, BroadcastDomain> nodedomainMap = 
+                new HashMap<Integer, BroadcastDomain>();
+        for (Integer nodeid : nodeondomainbft.keySet()) {
             try {
-                BroadcastDomain domain = find(nodeid,nodeMacs.get(nodeid));
+                BroadcastDomain domain = find(nodeid, nodeMacs.get(nodeid));
                 if (domain == null) {
-                    LOG.error("run: node: [{}], null broadcast domain.", nodeid);
+                    LOG.error("run: node: [{}], null broadcast domain.",
+                              nodeid);
                     continue;
-                }                    
+                }
                 clean(domain, nodeondomainbft.get(nodeid).keySet());
                 nodedomainMap.put(nodeid, domain);
             } catch (BridgeTopologyException e) {
-                LOG.error("run: node: [{}], getting broadcast domain. Failed {}", nodeid,
-                          e.getMessage());
+                LOG.error("run: node: [{}], getting broadcast domain. Failed {}",
+                          nodeid, e.getMessage());
                 continue;
             }
-            LOG.info("run: node: [{}], getting broadcast domain. End", nodeid);
-    	}
-
-    	int n = nodedomainMap.size();
-    	if (n == 0) {
-            LOG.info("run: no Domain to process");
-            return;    	    
-    	}
-    	if (n > m_maxthreads) {
-    	    n=m_maxthreads;
-    	}
-    	
-        LOG.info("run: creating executorService with {} Threads", n);
-    	ExecutorService executorService = Executors.newFixedThreadPool(n);
-        LOG.info("run: created executorService with {} Threads", n);
-    	
-    	List<Callable<String>> taskList = new ArrayList<Callable<String>>();
-    	for (Integer nodeid: nodedomainMap.keySet()) {
-    	    
-    	    NodeDiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology(nodeid);
-    	    nodebridgetopology.setDomain(nodedomainMap.get(nodeid));
-    	    Map<Integer,Set<BridgeForwardingTableEntry>> notYetParsedBFT = nodeondomainbft.get(nodeid);
-    	    for (Integer bridgeId: notYetParsedBFT.keySet()) {
-    	        nodebridgetopology.addUpdatedBFT(bridgeId, notYetParsedBFT.get(bridgeId));
-    	    }
-    	    Callable<String> task = () -> {
-    	        nodebridgetopology.doit();
-    	        return "Topology calculated: " + nodebridgetopology.getInfo();
-    	    };
-    	    taskList.add(task);
-            LOG.info("run: adding bridge topology discovery Task {}", nodebridgetopology.getInfo());
-    	}
-    	
-        try {
-            for(Future<String> future: executorService.invokeAll(taskList)) {
-                LOG.info("run: {}" ,future.get());
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.error("run: executing tasks {}", e.getMessage(),e);
         }
 
-        executorService.shutdown(); 
-        LOG.info("run: getting nodes with updated bft on broadcast domains. End");
-        
+        List<Callable<String>> taskList = new ArrayList<Callable<String>>();
+        for (Integer nodeid : nodedomainMap.keySet()) {
+
+            DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology();
+            nodebridgetopology.setDomain(nodedomainMap.get(nodeid));
+            Map<Integer, Set<BridgeForwardingTableEntry>> notYetParsedBFT = nodeondomainbft.get(nodeid);
+            for (Integer bridgeId : notYetParsedBFT.keySet()) {
+                nodebridgetopology.addUpdatedBFT(bridgeId,
+                                                 notYetParsedBFT.get(bridgeId));
+            }
+            Callable<String> task = () -> {
+                nodebridgetopology.doit();
+                return "executed Task: " + nodebridgetopology.getInfo();
+            };
+            taskList.add(task);
+            LOG.info("run: added Task {}", nodebridgetopology.getInfo());
+        }
+
+        int n = nodedomainMap.size();
+        if (n > m_maxthreads) {
+            n = m_maxthreads;
+        }
+
+        if (n > 0) {
+            LOG.info("run: creating executorService with {} Threads", n);
+            ExecutorService executorService = Executors.newFixedThreadPool(n);
+            LOG.info("run: created executorService with {} Threads", n);
+
+            try {
+                for (Future<String> future : executorService.invokeAll(taskList)) {
+                    LOG.info("run: {}", future.get());
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.error("run: executing tasks {}", e.getMessage(), e);
+            }
+            executorService.shutdown();
+        } else {
+            LOG.info("run: no updates on broadcast domains");
+        }
+        LOG.info("run: calculate topology on broadcast domains. End");
 
     }
 

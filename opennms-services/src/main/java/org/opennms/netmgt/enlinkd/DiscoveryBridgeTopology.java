@@ -29,6 +29,7 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -53,9 +54,9 @@ import static org.opennms.netmgt.model.topology.BroadcastDomain.hierarchySetUp;
 import static org.opennms.netmgt.model.topology.BroadcastDomain.clearTopologyForBridge;
 import static org.opennms.netmgt.model.topology.BroadcastDomain.electRootBridge;
 
-public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
+public class DiscoveryBridgeTopology extends Discovery {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeDiscoveryBridgeTopology.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DiscoveryBridgeTopology.class);
 
     Map<Integer,Set<BridgeForwardingTableEntry>> m_notYetParsedBFTMap;
     BroadcastDomain m_domain;
@@ -78,10 +79,25 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
         m_notYetParsedBFTMap.put(bridge, notYetParsedBFT);
     }
 
-    public NodeDiscoveryBridgeTopology(EnhancedLinkd linkd, Node node) {
-        super(linkd, node);
+    public DiscoveryBridgeTopology(EnhancedLinkd linkd) {
+        super(linkd,linkd.getBridgeTopologyInterval(),0);
     }
         
+    @Override
+    public String getInfo() {
+                StringBuffer info = new StringBuffer();
+                info.append(getName());
+                if (m_domain != null) {
+                    info.append(" domain nodes: ");
+                    info.append(m_domain.getBridgeNodesOnDomain());  
+                }
+                if (m_notYetParsedBFTMap != null) {
+                    info.append("updated bft nodes: ");
+                    info.append(m_notYetParsedBFTMap.keySet());  
+                }
+                return  info.toString();
+    }
+
     @Override
     public void doit() {
 
@@ -101,32 +117,31 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
             sendCompletedEvent(bridgeid);
         }
         for (Integer bridgeid : m_notYetParsedBFTMap.keySet()) {
-            LOG.error("run: node: [{}], bridge [{}], topology calcutation failed.", 
-                      getNodeId(), 
+            LOG.error("run: node: [{}], topology calcutation failed.", 
                       bridgeid);
         }
 
-        LOG.info("run: node: [{}], saving Topology.", getNodeId());
+        LOG.info("run: saving Topology.");
         try {
             m_linkd.getQueryManager().store(m_domain, now);
         } catch (BridgeTopologyException e) {
-            LOG.error("run: node: [{}], saving topology failed: {}. {}", 
-                      getNodeId(), 
+            LOG.error("run: saving topology failed: {}. {}", 
                       e.getMessage(),
                       e.printTopology());
             return;
+        } catch (ConcurrentModificationException e) {
+            LOG.error("run: node: [{}], saving topology failed: {}. {}", 
+                      e.getMessage(),
+                      m_domain.printTopology());
+            
         }
-        LOG.info("run: node: [{}], saved Topology.", getNodeId());
+        LOG.info("run: saved Topology.");
 
     }
             
     @Override
-    protected void runCollection() {
-    }
-
-    @Override
     public String getName() {
-        return "NodeDiscoveryBridgeTopology";
+        return "DiscoveryBridgeTopology";
     }
 
     private Bridge getRootBridge() {

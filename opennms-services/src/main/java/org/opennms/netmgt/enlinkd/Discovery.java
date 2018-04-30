@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd;
 
 import org.opennms.netmgt.enlinkd.scheduler.ReadyRunnable;
 import org.opennms.netmgt.enlinkd.scheduler.Scheduler;
+import org.opennms.netmgt.model.events.EventBuilder;
 
 /**
  * This class is designed to collect the necessary SNMP information from the
@@ -270,5 +271,34 @@ public abstract class Discovery implements ReadyRunnable {
                     return false;
             return true;
     }
-	
+
+    protected void sendSuspendedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoverySuspended",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(nodeid);
+                           builder.addParam("runnable", getName());
+       m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+    
+    protected void sendStartEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryStarted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(nodeid);
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+        
+    }
+    
+    protected void sendCompletedEvent(int nodeid) {
+        EventBuilder builder = new EventBuilder(
+                                   "uei.opennms.org/internal/linkd/nodeLinkDiscoveryCompleted",
+                                   "EnhancedLinkd");
+                           builder.setNodeid(nodeid);
+                           builder.addParam("runnable", getName());
+                           m_linkd.getEventForwarder().sendNow(builder.getEvent());
+    }
+
+
 }

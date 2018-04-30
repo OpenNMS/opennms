@@ -215,14 +215,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return snmpcolls;
     }
 
-    public NodeDiscoveryBridgeTopology getNodeBridgeDiscoveryTopology(Integer nodeId) {
-        final Node node = m_queryMgr.getSnmpNode(nodeId);
-        if (node == null) {
-            return null;
-        }
-        LOG.info("getBridgeDiscoveryTopology: get Bridge Topology Discovery: {}",
-                node);
-        return new NodeDiscoveryBridgeTopology(this, node);
+    public DiscoveryBridgeTopology getNodeBridgeDiscoveryTopology() {
+        return new DiscoveryBridgeTopology(this);
     }
     /**
      * <p>
@@ -327,8 +321,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
 
         for (final NodeDiscovery snmpColl : getSnmpCollections(node)) {
-            if (snmpColl instanceof NodeDiscoveryBridgeTopology)
-                continue;
             if (!snmpColl.isReady()) {
                 allready = false;
                 continue;
@@ -343,8 +335,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         snmpColl.doit();
     }
     
-    public void scheduleNodeBridgeTopologyDiscovery(final int nodeId) {
-        final NodeDiscovery snmpColl = getNodeBridgeDiscoveryTopology(nodeId);
+    public void scheduleNodeBridgeTopologyDiscovery() {
+        final Discovery snmpColl = getNodeBridgeDiscoveryTopology();
         if (snmpColl == null) {
             return;
         }
@@ -404,14 +396,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                     rr.unschedule();
                 }
 
-            }
-            NodeDiscovery topology = getNodeBridgeDiscoveryTopology(node.getNodeId());
-            ReadyRunnable rr = getReadyRunnable(topology);
-
-            if (rr == null) {
-                LOG.warn("deleteNode: found null ReadyRunnable for {}", topology.getInfo());
-            } else {
-                rr.unschedule();
             }
         }
         try {

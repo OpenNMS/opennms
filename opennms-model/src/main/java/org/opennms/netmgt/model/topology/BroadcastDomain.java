@@ -40,15 +40,17 @@ import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qT
 public class BroadcastDomain implements BridgeTopology {
     
     public static int maxlevel = 30;
-    public static final int DOMAIN_MATCH_MIN_SIZE = 5;
-    public static final float DOMAIN_MATCH_MIN_RATIO = 0.1f;
+    public static final int DOMAIN_MATCH_MIN_SIZE = 20;
+    public static final float DOMAIN_MATCH_MIN_RATIO = 0.5f;
     
     public static boolean checkMacSets(Set<String> setA, Set<String> setB) {
         Set<String>retainedSet = new HashSet<String>(setB);
         retainedSet.retainAll(setA);
-        // should contain at list 5 or 10% of the all size
+        // should contain at list 20 or 50% of the all size
         if (retainedSet.size() > DOMAIN_MATCH_MIN_SIZE
-                || retainedSet.size() >= setA.size() * DOMAIN_MATCH_MIN_RATIO) {
+            || retainedSet.size() >= setA.size() * DOMAIN_MATCH_MIN_RATIO
+            || retainedSet.size() >= setB.size() * DOMAIN_MATCH_MIN_RATIO
+                ) {
             return true;
         }
         return false;
