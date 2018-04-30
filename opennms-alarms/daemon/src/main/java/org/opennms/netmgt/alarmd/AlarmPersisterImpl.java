@@ -63,6 +63,7 @@ import com.google.common.util.concurrent.Striped;
  */
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
+    public static final String EVENT_SOURCE_NAME = "Alarmd";
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
@@ -146,7 +147,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             }
-            reduceEvent(e, alarm, event);
+            reduceEvent(e, alarm, event, getEventForwarder());
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
 
@@ -174,7 +175,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
-    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event, EventForwarder f) {
         
         //Always set these
         alarm.setLastEvent(e);
@@ -211,7 +212,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
                     } else if (fieldName.toLowerCase().contains("descr")) {
                         alarm.setDescription(e.getEventDescr());
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                    } else if (fieldName.toLowerCase().startsWith("ack")) {
+                        alarm.unacknowledge("admin");
                     } else {
                         LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                     }
