@@ -7,13 +7,13 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
-  <artifactId>org.opennms.assemblies.minion</artifactId>
+  <artifactId>org.opennms.assemblies.sentinel</artifactId>
   <packaging>jar</packaging>
-  <name>OpenNMS Minion</name>
+  <name>OpenNMS Sentinel</name>
   <url>http://maven.apache.org</url>
   <properties>
-    <INSTPREFIX>/opt/minion</INSTPREFIX>
-    <SYSCONFDIR>/opt/minion/etc</SYSCONFDIR>
+    <INSTPREFIX>/opt/sentinel</INSTPREFIX>
+    <SYSCONFDIR>/opt/sentinel/etc</SYSCONFDIR>
   </properties>
   <build>
     <resources>
@@ -78,25 +78,17 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.opennms.features.container</groupId>
-                  <artifactId>minion</artifactId>
+                  <artifactId>sentinel</artifactId>
                   <version>${project.version}</version>
                   <type>tar.gz</type>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.opennms.features.minion</groupId>
+                  <groupId>org.opennms.features.sentinel</groupId>
                   <artifactId>repository</artifactId>
                   <version>${project.version}</version>
                   <classifier>repo</classifier>
                   <type>tar.gz</type>
-                  <outputDirectory>${project.build.directory}/unpacked/repositories/default</outputDirectory>
-                </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms.features.minion</groupId>
-                  <artifactId>core-repository</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>repo</classifier>
-                  <type>tar.gz</type>
-                  <outputDirectory>${project.build.directory}/unpacked/repositories/core</outputDirectory>
+                  <outputDirectory>${project.build.directory}/unpacked/sentinel-${project.version}/system</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.opennms</groupId>
@@ -125,16 +117,7 @@
           <algorithms><algorithm>SHA-1</algorithm></algorithms>
           <fileSets>
             <fileSet>
-              <directory>${project.build.directory}/unpacked/repositories</directory>
-              <includes>
-                <include>**/*.jar</include>
-                <include>**/*.pom</include>
-                <include>**/*.war</include>
-                <include>**/*.xml</include>
-              </includes>
-            </fileSet>
-            <fileSet>
-              <directory>${project.build.directory}/unpacked/minion-${project.version}</directory>
+              <directory>${project.build.directory}/unpacked/sentinel-${project.version}</directory>
               <includes>
                 <include>**/*.jar</include>
                 <include>**/*.pom</include>
@@ -149,7 +132,7 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>src/assembly/minion.xml</descriptor>
+            <descriptor>src/assembly/sentinel.xml</descriptor>
           </descriptors>
           <tarLongFileMode>posix</tarLongFileMode>
         </configuration>
@@ -167,19 +150,12 @@
   <dependencies>
     <dependency>
       <groupId>org.opennms.features.container</groupId>
-      <artifactId>minion</artifactId>
+      <artifactId>sentinel</artifactId>
       <version>${project.version}</version>
       <type>tar.gz</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.minion</groupId>
-      <artifactId>core-repository</artifactId>
-      <version>${project.version}</version>
-      <classifier>repo</classifier>
-      <type>tar.gz</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.minion</groupId>
+      <groupId>org.opennms.features.sentinel</groupId>
       <artifactId>repository</artifactId>
       <version>${project.version}</version>
       <classifier>repo</classifier>

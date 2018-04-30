@@ -1253,6 +1253,9 @@
    <updatePolicy>interval:60</updatePolicy> <!-- 60 minutes -->
    <maven.clover.licenseLocation>${user.home}/.m2/clover.license</maven.clover.licenseLocation>
 
+   <karaf.servicemix.specs.version>2.9.0</karaf.servicemix.specs.version>
+   <hawtio.version>2.0.0</hawtio.version>
+
     <!-- dependency versions -->
     <oldAsmVersion>99.99.99-exclude-and-use-org.ow2.asm.asm-all-instead</oldAsmVersion>
     <args4jVersion>2.32</args4jVersion>
