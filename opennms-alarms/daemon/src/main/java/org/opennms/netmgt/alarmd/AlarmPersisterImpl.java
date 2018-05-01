@@ -147,7 +147,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             }
-            reduceEvent(e, alarm, event, getEventForwarder());
+            reduceEvent(e, alarm, event);
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
 
@@ -175,7 +175,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
-    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event, EventForwarder f) {
+    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
         
         //Always set these
         alarm.setLastEvent(e);
