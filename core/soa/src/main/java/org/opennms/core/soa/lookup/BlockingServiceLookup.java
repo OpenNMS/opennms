@@ -70,8 +70,10 @@ public class BlockingServiceLookup implements ServiceLookup {
 
         // A service matching the filter is not currently available.
         // Wait until the system has finished starting up (uptime >= grace period)
-        // before aborting the search.
-        while (uptimeSupplier.get() < this.gracePeriodInMs) {
+        // while ensuring we've waited for at least WAIT_PERIOD_MS before aborting the search.
+        final long waitUntil = System.currentTimeMillis() + ServiceLookupBuilder.WAIT_PERIOD_MS;
+        while (uptimeSupplier.get() < this.gracePeriodInMs
+                && System.currentTimeMillis() < waitUntil) {
             try {
                 Thread.sleep(this.lookupDelayMs);
             } catch (InterruptedException e) {

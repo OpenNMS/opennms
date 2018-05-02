@@ -30,15 +30,18 @@ package org.opennms.core.soa.lookup;
 
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import org.opennms.core.soa.ServiceRegistry;
 
 public class ServiceLookupBuilder {
 
-    public static final long GRACE_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", 3 * 60 * 1000);
+    public static final long GRACE_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
 
-    public static final long LOOKUP_DELAY_MS = Long.getLong("org.opennms.core.soa.lookup.lookupDelayMs", 5 * 1000);
+    public static final long WAIT_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(1));
+
+    public static final long LOOKUP_DELAY_MS = Long.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
 
     private final ServiceRegistry registry;
     private long gracePeriodInMs;
