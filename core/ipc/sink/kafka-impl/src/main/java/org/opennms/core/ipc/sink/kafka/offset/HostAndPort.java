@@ -32,20 +32,50 @@ public class HostAndPort {
 
     private String host;
     private int port;
+    private static String[] hostAndPortArray;
 
-    public final static HostAndPort fromString(final String hostWithPort) {
+    public final static HostAndPort fromString(String hostWithPort) {
+        hostWithPort = hostWithPort.replaceAll("\\s+", "");
+        hostAndPortArray = hostWithPort.split(",");
+        return getHostAndPort(hostAndPortArray[0]);
+    }
 
+    public static HostAndPort getNextHostAndPort(HostAndPort hostAndPort) {
+        String hostWithPort = hostAndPort.getHost() + ":" + hostAndPort.getPort();
+        if (hostAndPortArray.length == 0) {
+            return null;
+        } else {
+            hostWithPort = getNextHost(hostWithPort);
+        }
+        if (hostWithPort == null) {
+            return null;
+        }
+        return getHostAndPort(hostWithPort);
+    }
+
+    private static HostAndPort getHostAndPort(String hostWithPort) {
         int i = hostWithPort.lastIndexOf(":");
         if (i < 0 || (hostWithPort.length() == i)) {
             return null;
         }
         String[] hostWithPortArray = { hostWithPort.substring(0, i), hostWithPort.substring(i + 1) };
-
         HostAndPort hostAndPort = new HostAndPort();
         hostAndPort.setHost(hostWithPortArray[0]);
         hostAndPort.setPort(Integer.parseInt(hostWithPortArray[1]));
         return hostAndPort;
+    }
 
+    private static String getNextHost(String hostWithPort) {
+        int len = hostAndPortArray.length;
+        for (int i = 0; i < len; i++) {
+            if (hostWithPort.equals(hostAndPortArray[i]) && i != (len - 1)) {
+                return hostAndPortArray[i + 1];
+            }
+        }
+        if (hostWithPort.equals(hostAndPortArray[len - 1])) {
+            return hostAndPortArray[0];
+        }
+        return null;
     }
 
     public String getHost() {

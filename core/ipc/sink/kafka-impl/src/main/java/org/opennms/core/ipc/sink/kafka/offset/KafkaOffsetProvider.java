@@ -63,6 +63,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -95,6 +96,11 @@ public class KafkaOffsetProvider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KafkaOffsetProvider.class);
 
+    // 120 retries is equivalent to 1 minute
+    private static final int NUM_RETRIES = 120;
+
+    private static final int INVALID = -1;
+
     private KafkaOffsetConsumerRunner consumerRunner;
 
     private final Properties kafkaConfig = new Properties();
@@ -113,6 +119,12 @@ public class KafkaOffsetProvider {
     private MetricRegistry  kafkaOffsetMetrics = new MetricRegistry();
 
     private JmxReporter reporter = null;
+
+    private final AtomicInteger resetBroker = new AtomicInteger(0);
+
+    private int partitionNumber = INVALID;
+
+    private HostAndPort kafkaHost;
 
     private class KafkaOffsetConsumerRunner implements Runnable {
 
@@ -151,7 +163,10 @@ public class KafkaOffsetProvider {
                                             partition, -1);
                                     long consumerOffset = readOffsetMessageValue(
                                             ByteBuffer.wrap(consumerRecord.value()));
-                                    long lag = realOffset - consumerOffset;
+                                    long lag = 0;
+                                    if (realOffset > 0) {
+                                        lag = realOffset - consumerOffset;
+                                    }
                                     KafkaOffset mon = new KafkaOffset(group, topic, partition, realOffset,
                                             consumerOffset, lag);
                                     LOGGER.debug("group : {} , topic: {}:{} , offsets : {}-{}-{}", group, topic,
@@ -180,14 +195,14 @@ public class KafkaOffsetProvider {
                                     consumerLagMap.put(topic, totalLag);
 
                                 } catch (Exception e) {
-                                    LOGGER.error("Exception while getting offset", e);
+                                    LOGGER.debug("Exception while getting offset", e);
                                 }
                             }
                         }
                     }
                 }
             } catch (Exception e) {
-                LOGGER.error("Exception while getting offset", e);
+                LOGGER.debug("Exception while getting offset", e);
             } finally {
                 consumer.close();
             }
@@ -197,6 +212,7 @@ public class KafkaOffsetProvider {
         // Shutdown hook which can be called from a separate thread
         public void shutdown() {
             closed.set(true);
+            LOGGER.info("Closing offset consumer");
             consumer.wakeup();
         }
 
@@ -209,26 +225,40 @@ public class KafkaOffsetProvider {
     }
 
     public SimpleConsumer getConsumer() {
-        Object kafkaServer = kafkaConfig.get("bootstrap.servers");
-        if (kafkaServer == null || !(kafkaServer instanceof String)) {
-            throw new IllegalArgumentException("Kafka server is invalid");
-        }
-        final String kafkaString = (String) kafkaServer;
-        HostAndPort kafkaHost = HostAndPort.fromString(kafkaString);
+        Object kafkaServer = null;
         if (kafkaHost == null) {
-            throw new IllegalArgumentException("Kafka server is invalid");
+            kafkaServer = kafkaConfig.get("bootstrap.servers");
+            if (kafkaServer == null || !(kafkaServer instanceof String)) {
+                throw new IllegalArgumentException("Kafka server is invalid");
+            }
+            final String kafkaString = (String) kafkaServer;
+            kafkaHost = HostAndPort.fromString(kafkaString);
+            if (kafkaHost == null) {
+                throw new IllegalArgumentException("Kafka server is invalid");
+            }
+        }
+        if (resetBroker.get() == NUM_RETRIES) {
+            LOGGER.debug(" Max num of retries reached, try if there is another broker");
+            kafkaHost = HostAndPort.getNextHostAndPort(kafkaHost);
+            if (kafkaHost == null) {
+                // No valid kafkaHost, shutdown offset consumer.
+                consumerRunner.shutdown();
+                throw new IllegalArgumentException("Kafka server is invalid");
+            }
+            partitionNumber = INVALID;
+            resetBroker.set(0);
         }
         return getConsumer(kafkaHost.getHost(), kafkaHost.getPort());
     }
 
     public SimpleConsumer getConsumer(String host, int port) {
 
-        SimpleConsumer consumer = consumerMap.get(host);
+        SimpleConsumer consumer = consumerMap.get(host + ":" + port);
         if (consumer == null) {
             consumer = new SimpleConsumer(host, port, KafkaOffsetConstants.TIMEOUT, KafkaOffsetConstants.BUFFERSIZE,
                     KafkaOffsetConstants.CLIENT_NAME);
-            LOGGER.info("Created a new Kafka Consumer for host: " + host);
-            consumerMap.put(host, consumer);
+            LOGGER.info("Created a new Kafka Consumer with host  {}:{} ", host, port);
+            consumerMap.put(host + ":" + port, consumer);
         }
         return consumer;
     }
@@ -259,14 +289,21 @@ public class KafkaOffsetProvider {
                     kafka.api.OffsetRequest.CurrentVersion(), KafkaOffsetConstants.CLIENT_NAME);
             OffsetResponse response = consumer.getOffsetsBefore(request);
             if (response.hasError()) {
-                LOGGER.error("Error fetching Offset Data from the Broker. Reason: {}",
+                LOGGER.debug("Error fetching Offset Data from the Broker. Reason: {}",
                         response.errorCode(topic, partition));
                 lastOffset = 0;
             }
             long[] offsets = response.offsets(topic, partition);
             lastOffset = offsets[0];
         } catch (Exception e) {
-            LOGGER.error("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
+            LOGGER.debug("Error while collecting the log Size for topic: {}:{} ", topic, partition, e);
+            // Store first partitionNumber and track errors with that partition
+            if (partitionNumber == INVALID) {
+                partitionNumber = partition;
+            }
+            if (partitionNumber == partition) {
+                resetBroker.getAndIncrement();
+            }
         }
         return lastOffset;
     }
