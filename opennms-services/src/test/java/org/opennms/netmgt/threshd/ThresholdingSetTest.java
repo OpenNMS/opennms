@@ -28,35 +28,81 @@
 
 package org.opennms.netmgt.threshd;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.core.db.DataSourceFactory;
+import org.opennms.core.test.Level;
+import org.opennms.core.test.LoggingEvent;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.db.MockDatabase;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
+import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.rrd.RrdRepository;
 
 public class ThresholdingSetTest {
+    @Before
+    public void setUp() throws Exception {
+        MockLogAppender.setupLogging();
+        MockDatabase m_db = new MockDatabase();
+        final MockNetwork network = new MockNetwork();
+        network.addNode(1, "localhost").addInterface("127.0.0.1").addService("SNMP", 1);
+        m_db.populate(network);
+        DataSourceFactory.setInstance(m_db);
+    }
 
-    @Test
-    public void testBadThresholdingConfigInitialize() throws IOException {
+    @Test(expected=ThresholdInitializationException.class)
+    public void testBadThresholdingConfigInitialize() throws Exception {
         System.setProperty("opennms.home", getClass().getResource("testBadThresholdingConfig").getFile());
         PollOutagesConfigFactory.init();
-        final ThresholdingSet set = new ThresholdingSet(1, "127.0.0.1", "ICMP", new RrdRepository());
-
-        // there is no information about the node, so it should say it does not have an outage
-        assertFalse(set.isNodeInOutage());
-
-        // the config is empty
-        assertFalse(set.hasThresholds());
+        new ThresholdingSet(1, "127.0.0.1", "SNMP", new RrdRepository());
     }
 
     @Test
-    public void testBadThresholdingConfigReinitialize() throws IOException {
-        System.setProperty("opennms.home", getClass().getResource("testBadThresholdingConfig").getFile());
+    public void testBadThresholdingConfigReinitialize() throws Exception {
+        final String opennmsHome = getClass().getResource("testBadThresholdingConfigReinitialize").getFile();
+        final Path goodXml = Paths.get(opennmsHome, "etc", "good-thresholds.xml");
+        final Path badXml = Paths.get(opennmsHome, "etc", "bad-thresholds.xml");
+        final Path targetXml = Paths.get(opennmsHome,  "etc", "thresholds.xml");
+
+        if (targetXml.toFile().exists()) {
+            Files.delete(targetXml);
+        }
+        Files.copy(goodXml, targetXml);
+
+        System.setProperty("opennms.home", opennmsHome);
         PollOutagesConfigFactory.init();
-        final ThresholdingSet set = new ThresholdingSet(1, "127.0.0.1", "ICMP", new RrdRepository());
-        set.reinitialize();
+        final ThresholdingSet set = new ThresholdingSet(1, "127.0.0.1", "SNMP", new RrdRepository());
+
+        LoggingEvent[] events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        assertEquals("There should be no warnings or higher after initializing with a good config.", 0, events.length);
+
+        // there are no outages configured for the node
+        assertFalse(set.isNodeInOutage());
+        // the config is not empty
+        assertTrue(set.hasThresholds());
+
+        /* thresholding config has changed, reinitialize */
+        Files.delete(targetXml);
+        Files.copy(badXml, targetXml);
+        set.reinitialize(true);
+
+        // there is no information about the node, so it should say it does not have an outage
+        assertFalse(set.isNodeInOutage());
+        // the config is not empty
+        assertTrue(set.hasThresholds());
+
+        events = MockLogAppender.getEventsGreaterOrEqual(Level.WARN);
+        assertEquals("There should be one error after reinitializing with a bad config.", 1, events.length);
+        assertEquals("It should have an error-level log message.", Level.ERROR, events[0].getLevel());
+        assertTrue("It should say it is reverting to previous configuration.", events[0].getMessage().contains("Reverting to previous"));
     }
 
 }

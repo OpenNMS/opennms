@@ -25,5 +25,5 @@
             trigger="3" ds-label="ifName" filterOperator="or" expression="ifOutOctets * 8 / 1000000 / ifHighSpeed * 100">
             <resource-filter field="ifHighSpeed">^[1-9]+[0-9]*$</resource-filter>
         </expression>
-    <group> <!-- this should be </group> -->
+    </group>
 </thresholding-config>
