@@ -48,10 +48,10 @@ Source:        %{_name}-source-%{version}-%{releasenumber}.tar.gz
 URL:           http://www.opennms.org/wiki/Sentinel
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
-Requires:       jicmp >= 2.0.0
-Requires(pre):  jicmp >= 2.0.0
-Requires:       jicmp6 >= 2.0.0
-Requires(pre):  jicmp6 >= 2.0.0
+#Requires:       jicmp >= 2.0.0
+#Requires(pre):  jicmp >= 2.0.0
+#Requires:       jicmp6 >= 2.0.0
+#Requires(pre):  jicmp6 >= 2.0.0
 Requires:       openssh
 Requires(post): util-linux
 Requires:       util-linux
