@@ -39,6 +39,7 @@ angular.module('onms-resources', [
   $scope.maxSize = 5;
   $scope.totalItems = 0;
   $scope.hasResources = false;
+  $scope.loaded = false;
 
   $scope.goTo = function(id) {
     $window.location.href = getBaseHref() + 'graph/chooseresource.jsp?reports=all&parentResourceId=' + id + '&endUrl=' + $scope.endUrl;
@@ -50,11 +51,16 @@ angular.module('onms-resources', [
     $scope.numPages = Math.ceil($scope.totalItems / $scope.pageSize);
   };
 
-  $http.get('rest/resources?depth=0').success(function(data) {
+  $http.get('rest/resources?depth=0').then(function succeeded(response) {
+    var data = response.data;
+    $scope.loaded = true;
     $scope.hasResources = data.resource.length > 0;
     $scope.resources = data.resource;
     $scope.filteredResources = $scope.resources;
     $scope.update();
+  }, function errorCallback(response) {
+     $scope.loaded = true;
+     growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
   });
 
   $scope.$watch('resourceFilter', function() {
@@ -75,6 +81,7 @@ angular.module('onms-resources', [
   $scope.nodeLabel = undefined;
   $scope.url = 'graph/results.htm';
   $scope.reports = 'all';
+  $scope.loaded = false;
 
   $scope.init = function(nodeCriteria, reports, endUrl) {
     if (nodeCriteria === null || nodeCriteria === '') {
@@ -86,18 +93,24 @@ angular.module('onms-resources', [
     if (endUrl !== null && endUrl !== '') {
       $scope.url = endUrl;
     }
-    $http.get('rest/resources/fornode/'+nodeCriteria).success(function(data) {
+
+    $http.get('rest/resources/fornode/'+nodeCriteria).then(function succeeded(response) {
+      var data = response.data;
       $scope.nodeLink = data.link;
       $scope.nodeLabel = data.label;
+      $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
       var reduced = _.map(data.children.resource, function(obj) {
         return { id: obj.id, label: obj.label, typeLabel: obj.typeLabel, checked: false };
       });
       $scope.resources = _.groupBy(_.sortBy(reduced, function(r) {
         var type = r['typeLabel'];
-        return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type; 
+        return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type;
       }), 'typeLabel');
       angular.copy($scope.resources, $scope.filteredResources);
+    }, function errorCallback(response) {
+       $scope.loaded = true;
+       growl.error("There was a problem in retrieving resources through ReST", {ttl: 10000});
     });
   };
 
