@@ -53,19 +53,9 @@ public class DefaultAckdConfigurationDao extends AbstractJaxbConfigDao<AckdConfi
      * <p>Constructor for DefaultAckdConfigurationDao.</p>
      */
     public DefaultAckdConfigurationDao() {
-        super(AckdConfiguration.class, "Ackd Configuration");
+        super(AckdConfiguration.class, AckdConfiguration.class, "Ackd Configuration");
     }
     
-    /**
-     * <p>getConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.ackd.AckdConfiguration} object.
-     */
-    @Override
-    public AckdConfiguration getConfig() {
-        return getContainer().getObject();
-    }
-
     /** {@inheritDoc} */
     @Override
     public AckdConfiguration translateConfig(AckdConfiguration config) {

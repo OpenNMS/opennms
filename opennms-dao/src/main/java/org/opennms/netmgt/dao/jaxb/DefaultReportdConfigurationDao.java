@@ -48,17 +48,7 @@ public class DefaultReportdConfigurationDao extends AbstractJaxbConfigDao<Report
      * <p>Constructor for DefaultReportdConfigurationDao.</p>
      */
     public DefaultReportdConfigurationDao() {
-        super(ReportdConfiguration.class, "Reportd Configuration");
-    }
-    
-    /**
-     * <p>getConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.reportd.ReportdConfiguration} object.
-     */
-    @Override
-    public ReportdConfiguration getConfig() {
-        return getContainer().getObject();
+        super(ReportdConfiguration.class, ReportdConfiguration.class, "Reportd Configuration");
     }
     
     //@Override

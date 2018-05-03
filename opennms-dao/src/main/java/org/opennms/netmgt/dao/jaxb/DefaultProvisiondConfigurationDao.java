@@ -49,19 +49,9 @@ public class DefaultProvisiondConfigurationDao extends AbstractJaxbConfigDao<Pro
      * <p>Constructor for DefaultProvisiondConfigurationDao.</p>
      */
     public DefaultProvisiondConfigurationDao() {
-        super(ProvisiondConfiguration.class, "Provisiond Configuration");
+        super(ProvisiondConfiguration.class, ProvisiondConfiguration.class,"Provisiond Configuration");
     }
     
-    /**
-     * <p>getConfig</p>
-     *
-     * @return a {@link org.opennms.netmgt.config.provisiond.ProvisiondConfiguration} object.
-     */
-    @Override
-    public ProvisiondConfiguration getConfig() {
-        return getContainer().getObject();
-    }
-
     /** {@inheritDoc} */
     @Override
     public ProvisiondConfiguration translateConfig(ProvisiondConfiguration config) {

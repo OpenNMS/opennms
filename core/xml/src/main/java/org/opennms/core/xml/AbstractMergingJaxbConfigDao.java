@@ -57,13 +57,14 @@ import org.springframework.core.io.FileSystemResource;
  * @param <V> Configuration object that is stored in memory (might be the same
  *            as the JAXB class or could be a different class)
  */
-public abstract class AbstractMergingJaxbConfigDao<K, V> {
+public abstract class AbstractMergingJaxbConfigDao<K, V> implements org.opennms.core.xml.JaxbConfigDao<V> {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractMergingJaxbConfigDao.class);
 
     private static final long DEFAULT_RELOAD_CHECK_INTERVAL = 5000;
 
     // Configuration
     private final Class<K> m_entityClass;
+    private final Class<V> m_configClass;
     private final String m_description;
     private Path m_opennmsHome;
     private Path m_rootFile;
@@ -77,14 +78,15 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
     private final Map<File, JaxbConfigDao> m_configDaosByPath = new HashMap<>();
     private V m_object = null;
 
-    public AbstractMergingJaxbConfigDao(final Class<K> entityClass, final String description,
+    public AbstractMergingJaxbConfigDao(final Class<K> entityClass, final Class<V> configClass, final String description,
             final Path includeFolder) {
-        this(entityClass, description, null, includeFolder);
+        this(entityClass, configClass, description, null, includeFolder);
     }
 
-    public AbstractMergingJaxbConfigDao(final Class<K> entityClass, final String description,
+    public AbstractMergingJaxbConfigDao(final Class<K> entityClass, final Class<V> configClass, final String description,
             final Path rootFile, final Path includeFolder) {
         m_entityClass = Objects.requireNonNull(entityClass, "entityClass argument");
+        m_configClass = Objects.requireNonNull(configClass, "configClass argument");
         m_description = Objects.requireNonNull(description, "description argument");
         m_rootFile = rootFile;
         m_includeFolder = Objects.requireNonNull(includeFolder, "includeFolder argument");
@@ -175,6 +177,15 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
         return m_object;
     }
 
+    public V getConfig() {
+        return getObject();
+    }
+
+    @Override
+    public Class<V> getConfigType() {
+        return m_configClass;
+    }
+
     private List<File> getXmlFiles() {
         final List<File> xmlFiles = new LinkedList<>();
         try (Stream<Path> stream = Files.walk(m_opennmsHome.resolve(m_includeFolder), 1)) {
@@ -215,7 +226,7 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> {
 
     private class JaxbConfigDao extends AbstractJaxbConfigDao<K, V> {
         public JaxbConfigDao() {
-            super(m_entityClass, m_description);
+            super(m_entityClass, m_configClass, m_description);
         }
 
         @Override

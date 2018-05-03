@@ -39,20 +39,30 @@ public interface RestClient {
      *
      * @throws Exception on failure
      */
-    public String getVersion() throws Exception;
+    String getVersion() throws Exception;
 
     /**
      * Used to verify connectivity with the REST endpoint.
      *
      * @throws Exception on failure
      */
-    public void ping() throws Exception;
+    void ping() throws Exception;
     
     /**
      * Used to fetch snmpV3users from REST endpoint.
      * 
      *  @throws Exception on failure
      */
-    public String getSnmpV3Users() throws Exception;
+    String getSnmpV3Users() throws Exception;
 
+    /**
+     * Returns the string representation of the configuration provided by the type simpleConfigClassName.
+     *
+     * E.g. a call with "TelemetrydConfiguration" would return the content of the "telemetryd-configuration.xml" file.
+     *
+     * @param simpleConfigClassName The simple name of the dao class
+     * @return the content of the according configuration file or null.
+     * @throws Exception on failure
+     */
+    String getConfiguration(String simpleConfigClassName) throws Exception;
 }

@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Persistence (Parent)</name>
     <modules>
+        <module>config</module>
         <module>dao-api</module>
         <module>dao-impl</module>
         <module>datasource</module>

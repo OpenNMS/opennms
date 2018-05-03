@@ -54,17 +54,7 @@ public class DefaultJavamailConfigurationDao extends AbstractJaxbConfigDao<Javam
      * Instantiates a new default javamail configuration DAO.
      */
     public DefaultJavamailConfigurationDao() {
-        super(JavamailConfiguration.class, "Javamail configuration");
-    }
-
-    /**
-     * Instantiates a new default javamail configuration DAO.
-     *
-     * @param entityClass the entity class
-     * @param description the description
-     */
-    public DefaultJavamailConfigurationDao(Class<JavamailConfiguration> entityClass, String description) {
-        super(entityClass, description);
+        super(JavamailConfiguration.class, JavamailConfiguration.class,"Javamail configuration");
     }
 
     /* (non-Javadoc)

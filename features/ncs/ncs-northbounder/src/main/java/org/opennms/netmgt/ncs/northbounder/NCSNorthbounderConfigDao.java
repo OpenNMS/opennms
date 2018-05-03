@@ -33,7 +33,7 @@ import org.opennms.core.xml.AbstractJaxbConfigDao;
 public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthbounderConfig, NCSNorthbounderConfig> {
 
 	public NCSNorthbounderConfigDao() {
-		super(NCSNorthbounderConfig.class,"Config for NCS Northbounder");
+		super(NCSNorthbounderConfig.class, NCSNorthbounderConfig.class,"Config for NCS Northbounder");
 	}
 
 	@Override
@@ -41,8 +41,4 @@ public class NCSNorthbounderConfigDao extends AbstractJaxbConfigDao<NCSNorthboun
 		return config;
 	}
 	
-	public NCSNorthbounderConfig getConfig() {
-		return getContainer().getObject();
-	}
-
 }
