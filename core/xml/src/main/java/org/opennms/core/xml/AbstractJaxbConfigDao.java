@@ -46,27 +46,22 @@ import org.springframework.util.Assert;
  *            as the JAXB class or could be a different class)
  * @version $Id: $
  */
-public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
+public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean, JaxbConfigDao<V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AbstractJaxbConfigDao.class);
 
     private Class<K> m_jaxbClass;
+    private Class<V> m_configClass;
     private String m_description;
     private Resource m_configResource;
     private FileReloadContainer<V> m_container;
     private JaxbReloadCallback m_callback = new JaxbReloadCallback();
     private Long m_reloadCheckInterval = null;
 
-    /**
-     * <p>Constructor for AbstractJaxbConfigDao.</p>
-     *
-     * @param entityClass a {@link java.lang.Class} object.
-     * @param description a {@link java.lang.String} object.
-     */
-    public AbstractJaxbConfigDao(final Class<K> entityClass, final String description) {
-        super();
 
+    public AbstractJaxbConfigDao(final Class<K> entityClass, final Class<V> configClass, final String description) {
         m_jaxbClass = entityClass;
+        m_configClass = configClass;
         m_description = description;
     }
 
@@ -104,13 +99,6 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
-
-        final V config = loadConfig(m_configResource);
-        m_container = new FileReloadContainer<V>(config, m_configResource, m_callback);
-
-        if (m_reloadCheckInterval != null) {
-            m_container.setReloadCheckInterval(m_reloadCheckInterval);
-        }
     }
 
     /**
@@ -137,6 +125,13 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      * @return a {@link org.opennms.core.spring.FileReloadContainer} object.
      */
     public FileReloadContainer<V> getContainer() {
+        if (m_container == null) {
+            final V config = loadConfig(m_configResource);
+            m_container = new FileReloadContainer<>(config, m_configResource, m_callback);
+            if (m_reloadCheckInterval != null) {
+                m_container.setReloadCheckInterval(m_reloadCheckInterval);
+            }
+        }
         return m_container;
     }
 
@@ -175,5 +170,15 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean {
      */
     public String getDescription() {
         return m_description;
+    }
+
+    @Override
+    public Class<V> getConfigType() {
+        return m_configClass;
+    }
+
+    @Override
+    public V getConfig() {
+        return getContainer().getObject();
     }
 }

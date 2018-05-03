@@ -43,15 +43,7 @@ public class TcaDataCollectionConfigDaoJaxb  extends AbstractJaxbConfigDao<TcaDa
 	 * Instantiates a new tca data collection config dao jaxb.
 	 */
 	public TcaDataCollectionConfigDaoJaxb() {
-		super(TcaDataCollectionConfig.class, "TCA Data Collection Configuration");
-	}
-
-	/* (non-Javadoc)
-	 * @see org.opennms.netmgt.collectd.tca.dao.TcaDataCollectionConfigDao#getConfig()
-	 */
-	@Override
-	public TcaDataCollectionConfig getConfig() {
-		return getContainer().getObject();
+		super(TcaDataCollectionConfig.class, TcaDataCollectionConfig.class, "TCA Data Collection Configuration");
 	}
 
 	/* (non-Javadoc)

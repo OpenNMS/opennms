@@ -26,11 +26,19 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.config.dao;
+package org.opennms.core.xml;
 
-import org.opennms.core.xml.JaxbConfigDao;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
-public interface TelemetrydConfigDao extends JaxbConfigDao<TelemetrydConfiguration> {
-
+/**
+ * A class extending class {@link AbstractJaxbConfigDao} may add this annotation to indicate,
+ * that it supports distributed (proxied) fetching of the configuration object.
+ *
+ * This means, that the annotated class may be on the class path, but fetching the configuration is proxied to the
+ * OpenNMS ReST API.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+public @interface ConfigProxy {
+    String proxyMethod() default "getConfig";
 }

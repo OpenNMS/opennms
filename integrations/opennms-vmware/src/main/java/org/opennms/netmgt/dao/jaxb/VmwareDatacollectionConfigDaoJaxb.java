@@ -50,17 +50,7 @@ public class VmwareDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<Vmw
      * Default constructor
      */
     public VmwareDatacollectionConfigDaoJaxb() {
-        super(VmwareDatacollectionConfig.class, "Vmware Data Collection Configuration");
-    }
-
-    /**
-     * Returns the loaded config object.
-     *
-     * @return the current config object
-     */
-    @Override
-    public VmwareDatacollectionConfig getConfig() {
-        return getContainer().getObject();
+        super(VmwareDatacollectionConfig.class, VmwareDatacollectionConfig.class,"Vmware Data Collection Configuration");
     }
 
     /**

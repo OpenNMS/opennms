@@ -26,11 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.config.dao;
+package org.opennms.core.xml;
 
-import org.opennms.core.xml.JaxbConfigDao;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
-
-public interface TelemetrydConfigDao extends JaxbConfigDao<TelemetrydConfiguration> {
-
+public interface JaxbConfigDao<T> {
+    T getConfig();
+    Class<T> getConfigType();
 }

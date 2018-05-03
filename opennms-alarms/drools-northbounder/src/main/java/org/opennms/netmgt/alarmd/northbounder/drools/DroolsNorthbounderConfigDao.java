@@ -51,7 +51,7 @@ public class DroolsNorthbounderConfigDao extends AbstractJaxbConfigDao<DroolsNor
      * Instantiates a new Drools northbounder configuration DAO.
      */
     public DroolsNorthbounderConfigDao() {
-        super(DroolsNorthbounderConfig.class, "Config for Drools Northbounder");
+        super(DroolsNorthbounderConfig.class, DroolsNorthbounderConfig.class,"Config for Drools Northbounder");
     }
 
     /* (non-Javadoc)
@@ -60,15 +60,6 @@ public class DroolsNorthbounderConfigDao extends AbstractJaxbConfigDao<DroolsNor
     @Override
     protected DroolsNorthbounderConfig translateConfig(DroolsNorthbounderConfig config) {
         return config;
-    }
-
-    /**
-     * Gets the Drools northbounder configuration.
-     *
-     * @return the configuration object
-     */
-    public DroolsNorthbounderConfig getConfig() {
-        return getContainer().getObject();
     }
 
     /**

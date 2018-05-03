@@ -40,14 +40,14 @@ import org.opennms.netmgt.config.reporting.Report;
 import org.opennms.netmgt.config.reporting.StringParm;
 import org.opennms.netmgt.dao.api.OnmsReportConfigDao;
 
-public class DefaultOnmsReportConfigDao extends AbstractJaxbConfigDao<OpennmsReports, List<Report>>
+public class DefaultOnmsReportConfigDao extends AbstractJaxbConfigDao<OpennmsReports, OpennmsReports>
 implements OnmsReportConfigDao {
     
     /**
      * <p>Constructor for DefaultOnmsReportConfigDao.</p>
      */
     public DefaultOnmsReportConfigDao() {
-        super(OpennmsReports.class, "OpenNMS Report Configuration");
+        super(OpennmsReports.class, OpennmsReports.class,"OpenNMS Report Configuration");
     }
 
     /** {@inheritDoc} */
@@ -101,7 +101,7 @@ implements OnmsReportConfigDao {
     }
     
     private Report getReport(String id) {
-        for (Report report : getContainer().getObject()) {
+        for (Report report : getConfig().getReports()) {
             if (id.equals(report.getId())) {
                 return report;
             }
@@ -161,8 +161,10 @@ implements OnmsReportConfigDao {
 
     /** {@inheritDoc} */
     @Override
-    public List<Report> translateConfig(OpennmsReports config) {
-        return Collections.unmodifiableList(config.getReports());
+    public OpennmsReports translateConfig(OpennmsReports config) {
+        final OpennmsReports reports = new OpennmsReports();
+        reports.setReports(Collections.unmodifiableList(config.getReports()));
+        return reports;
     }
     
 }
