@@ -181,7 +181,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setNodeid(1)
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -293,7 +293,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setNodeid(1)
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -382,7 +382,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setInterface(InetAddressUtils.addr("10.10.10.10"))
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -427,7 +427,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setInterface(InetAddressUtils.addr("10.10.10.10"))
                                                                             .getEvent());
 
-        sendRequest(DELETE, url + "/10.10.10.10", 204);
+        sendRequest(DELETE, url + "/10.10.10.10", 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -509,7 +509,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setService("ICMP")
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();

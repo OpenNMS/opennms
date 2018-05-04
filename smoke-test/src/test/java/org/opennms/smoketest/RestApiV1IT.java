@@ -29,8 +29,11 @@
 
 package org.opennms.smoketest;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.core.Response;
 
@@ -52,7 +55,7 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
  * This test verifies creation/deletion of Nodes/Interfaces/Services through
  * Rest API
  */
-public class NodesInterfacesAndServicesRestIT {
+public class RestApiV1IT {
 
     private static TestEnvironment m_testEnvironment;
     private static RestClient restClient;
@@ -122,12 +125,13 @@ public class NodesInterfacesAndServicesRestIT {
         ipInterface2 = restClient.getInterface("test:node1", "192.168.1.2");
         assertEquals(node.getId(), ipInterface2.getNode().getId());
         assertEquals("192.168.1.2", ipInterface2.getIpHostName());
-        // Delete interface (192.168.1.2)
+        // Delete interface (192.168.1.2), (asynchronous call, response will be 202)
         response = restClient.deleteInterface("test:node1", "192.168.1.2");
-        assertEquals(204, response.getStatus());
+        assertEquals(202, response.getStatus());
         // Verify that interface2 (192.168.1.2) was deleted
-        response = restClient.getResponseForInterface("test:node1", "192.168.1.2");
-        assertEquals(404, response.getStatus());
+        // Since delete is asynchronous call, wait till Interface is deleted
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> restClient.getResponseForInterface("test:node1", "192.168.1.2").getStatus(), is(404));
         // Add services on interface (192.168.1.1)
         OnmsMonitoredService service = new OnmsMonitoredService();
         OnmsServiceType serviceType = new OnmsServiceType();
@@ -144,19 +148,17 @@ public class NodesInterfacesAndServicesRestIT {
         // Verify that service https was added 
         response = restClient.addService("test:node1", "192.168.1.1", service2);
         assertEquals(201, response.getStatus());
-        // Delete http service 
+        // Delete http service (asynchronous call, response will be 202)
         response = restClient.deleteService("test:node1", "192.168.1.1", "HTTP");
-        assertEquals(204, response.getStatus());
-        // Delete https service 
+        assertEquals(202, response.getStatus());
+        // Delete https service (asynchronous call, response will be 202)
         response = restClient.deleteService("test:node1", "192.168.1.1", "SSH");
-        assertEquals(204, response.getStatus());
-/*        // Delete interface (192.168.1.1)
-        response = restClient.deleteInterface("test:node1", "192.168.1.1");
-        assertEquals(204, response.getStatus());*/
-        // Verify that interface (192.168.1.1) was deleted
-        response = restClient.getResponseForInterface("test:node1", "192.168.1.1");
-        assertEquals(400, response.getStatus()); // Since node doesn't exist, responde code is 400
-        // Verify that node also gets deleted
+        assertEquals(202, response.getStatus());
+        // Verify that interface (192.168.1.1) was deleted since all services are deleted
+        // Since node also doesn't exist, responde code will be 400
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS)
+                .until(() -> restClient.getResponseForInterface("test:node1", "192.168.1.1").getStatus(), is(400));
+        // Verify that node is also deleted
         response = restClient.getResponseForNode("test:node1");
         assertEquals(404, response.getStatus());
     }
