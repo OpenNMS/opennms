@@ -142,7 +142,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     public void scheduleDiscoveryBridgeDomain() {
             DiscoveryBridgeDomains discoverbridge=
                     new DiscoveryBridgeDomains(this);
-            LOG.info("scheduleDiscoveryBridgeDomain: Scheduling {}",
+            LOG.debug("scheduleDiscoveryBridgeDomain: Scheduling {}",
                      discoverbridge.getInfo());
             discoverbridge.setScheduler(m_scheduler);
             discoverbridge.schedule();
