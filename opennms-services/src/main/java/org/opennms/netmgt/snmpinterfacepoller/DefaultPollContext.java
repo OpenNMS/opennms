@@ -35,6 +35,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -42,6 +43,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -69,7 +71,13 @@ public class DefaultPollContext implements PollContext {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-    private String m_serviceName="SNMP";
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    private String m_serviceName = "SNMP";
 
     /**
      * <p>getIpInterfaceDao</p>
@@ -244,5 +252,18 @@ public class DefaultPollContext implements PollContext {
                 builder.eq("isSnmpPrimary", PrimaryType.PRIMARY).eq("isManaged", "M");
 		return getIpInterfaceDao().findMatching(builder.toCriteria());
 	}
+
+    @Override
+    public String getLocation(Integer nodeId) {
+        return m_nodeDao.getLocationForId(nodeId);
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return locationAwareSnmpClient;
+    }
+
+    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.locationAwareSnmpClient = locationAwareSnmpClient;
+    }
 
 }

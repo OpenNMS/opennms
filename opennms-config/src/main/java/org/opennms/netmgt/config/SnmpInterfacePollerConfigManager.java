@@ -291,10 +291,10 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             //
             try {
                 List<InetAddress> ipList = getIpList(pkg);
-                LOG.debug("createPackageIpMap: package {}: ipList size = {}", ipList.size(), pkg.getName());
+                LOG.debug("createPackageIpMap: package {}: ipList size = {}", pkg.getName(), ipList.size());
     
                 if (ipList.size() > 0) {
-                    LOG.debug("createPackageIpMap: package {}. IpList size is {}", ipList.size(), pkg.getName());
+                    LOG.debug("createPackageIpMap: package {}. IpList size is {}", pkg.getName(), ipList.size());
                     m_pkgIpMap.put(pkg, ipList);
                 }
             } catch (Throwable t) {
@@ -325,7 +325,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
             filterRules.append('\"');
             filterRules.append(")");
         }
-        LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
+        LOG.debug("createPackageIpMap: package is {}. filer rules are {}", pkg.getName(), filterRules);
         FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
         return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
     }
@@ -370,7 +370,7 @@ abstract public class SnmpInterfacePollerConfigManager implements SnmpInterfaceP
         }
     
 
-        LOG.debug("interfaceInPackage: Interface {} passed filter for package {}?: {}", filterPassed, iface, pkg.getName());
+        LOG.debug("interfaceInPackage: Interface {} passed filter for package {} ?: {}",  iface, pkg.getName() , filterPassed);
     
         if (!filterPassed)
             return false;
