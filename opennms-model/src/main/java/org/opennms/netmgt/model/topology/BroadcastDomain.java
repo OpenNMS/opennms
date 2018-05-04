@@ -96,7 +96,7 @@ public class BroadcastDomain implements BridgeTopology {
 
     public static Map<Integer,Integer> getUpperForwardingBridgePorts(BroadcastDomain domain, Bridge bridge, Map<Integer,Integer> downports, int level) throws BridgeTopologyException {
         if (level == maxlevel) {
-            throw new BridgeTopologyException("getUpperForwardingBridgePorts: to many iteration", bridge);
+            throw new BridgeTopologyException("getUpperForwardingBridgePorts: too many iteration", bridge);
         }
         
         if (bridge.isRootBridge()) {
@@ -144,7 +144,7 @@ public class BroadcastDomain implements BridgeTopology {
                 portifindexmap.put(bport.getBridgePort(), bport);
                 bridgeport = bport.getBridgePort();
             } else {
-                bridgeport = getBftBridgePort(domain, segment, bridge, bridgeIdtobridgePortOnBridge,new HashSet<Integer>(),0);
+                bridgeport = getCalculateBFT(domain, segment, bridge, bridgeIdtobridgePortOnBridge,new HashSet<Integer>(),0);
             }
 
             if (!bft.containsKey(bridgeport)) {
@@ -191,9 +191,9 @@ public class BroadcastDomain implements BridgeTopology {
         return links;
     }
     
-    public static Integer getBftBridgePort(BroadcastDomain domain, SharedSegment segment,Bridge bridge, Map<Integer,Integer> bridgetobridgeport, Set<Integer> downBridgeIds,int level) throws BridgeTopologyException {
+    public static Integer getCalculateBFT(BroadcastDomain domain, SharedSegment segment,Bridge bridge, Map<Integer,Integer> bridgetobridgeport, Set<Integer> downBridgeIds,int level) throws BridgeTopologyException {
         if (level == maxlevel) {
-            throw new BridgeTopologyException("getBftBridgePort: to many iteration", segment);
+            throw new BridgeTopologyException("getCalculateBFT: too many iteration", domain);
         }
         
         for (Integer bridgeIdOnsegment: segment.getBridgeIdsOnSegment()) {
@@ -235,14 +235,14 @@ public class BroadcastDomain implements BridgeTopology {
             }
         }
         if (upBridge == null) {
-            throw new BridgeTopologyException("getBftBridgePort: cannot find up bridge on domain", domain);
+            throw new BridgeTopologyException("getCalculateBFT: cannot find up bridge on domain", domain);
         }
         SharedSegment up = domain.getSharedSegment(upBridge.getNodeId(),upBridge.getRootPort());
         if (up == null) {
-            throw new BridgeTopologyException("getBftBridgePort: cannot find up segment on domain", domain);
+            throw new BridgeTopologyException("getCalculateBFT: cannot find up segment on domain", domain);
         }
 
-        return getBftBridgePort(domain,up, bridge,bridgetobridgeport,downBridgeIds, ++level);
+        return getCalculateBFT(domain,up, bridge,bridgetobridgeport,downBridgeIds, ++level);
     }    
 
     

@@ -60,6 +60,7 @@ public class DiscoveryBridgeTopology extends Discovery {
 
     Map<Integer,Set<BridgeForwardingTableEntry>> m_notYetParsedBFTMap;
     BroadcastDomain m_domain;
+    Set<Integer> m_failed;
     
     public void setDomain(BroadcastDomain domain) {
         m_domain =domain;
@@ -68,6 +69,7 @@ public class DiscoveryBridgeTopology extends Discovery {
     public BroadcastDomain getDomain() {
         return m_domain;
     }
+    
     
     public Map<Integer, Set<BridgeForwardingTableEntry>> getNotYetParsedBFTMap() {
         return m_notYetParsedBFTMap;
@@ -95,11 +97,17 @@ public class DiscoveryBridgeTopology extends Discovery {
                     info.append(" ,updated bft nodes: ");
                     info.append(m_notYetParsedBFTMap.keySet());  
                 }
+                if (m_failed != null) {
+                    info.append(" ,failed bft nodes: ");
+                    info.append(m_failed);  
+                }
                 return  info.toString();
     }
 
     @Override
     public void doit() {
+        LOG.info("run: topology calculation start: -> {}.", 
+                 getInfo());
 
         Assert.notNull(m_domain);
         Assert.notNull(m_notYetParsedBFTMap);
@@ -114,14 +122,17 @@ public class DiscoveryBridgeTopology extends Discovery {
         }
         
         for (Integer bridgeid : calculate()) {
+            LOG.info("run: node: [{}], topology calcutation success.", 
+                      bridgeid);
             sendCompletedEvent(bridgeid);
         }
-        for (Integer bridgeid : m_notYetParsedBFTMap.keySet()) {
+        
+        for (Integer bridgeid : m_failed) {
             LOG.error("run: node: [{}], topology calcutation failed.", 
                       bridgeid);
         }
 
-        LOG.info("run: saving Topology.");
+        LOG.debug("run: saving Topology.");
         try {
             m_linkd.getQueryManager().store(m_domain, now);
         } catch (BridgeTopologyException e) {
@@ -135,8 +146,9 @@ public class DiscoveryBridgeTopology extends Discovery {
                       m_domain.printTopology());
             
         }
-        LOG.info("run: saved Topology.");
-
+        LOG.debug("run: saved Topology.");
+        LOG.info("run: topology calculation end: -> {}.", 
+                 getInfo());
     }
             
     @Override
@@ -265,6 +277,8 @@ public class DiscoveryBridgeTopology extends Discovery {
         }
 
         Set<Integer> parsed=new HashSet<Integer>();
+        m_failed = new HashSet<Integer>();
+        
         BridgeForwardingTable rootft;
         try {
             rootft = calculateRootBridge();
@@ -273,13 +287,14 @@ public class DiscoveryBridgeTopology extends Discovery {
                       e.getMessage(),
                       e.printTopology(),
                       e);
+            m_failed.addAll(m_notYetParsedBFTMap.keySet());
             return parsed;
         }
         
         Set<Integer> nodetobeparsed = new HashSet<Integer>(m_notYetParsedBFTMap.keySet());
         for (Integer xBridgeId: nodetobeparsed) {
-            if (LOG.isInfoEnabled()) {
-                LOG.info("calculate: bridge[{}] find topology", 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("calculate: bridge[{}] find topology", 
                      xBridgeId);
             }
             BridgeForwardingTable bridgeft = null;
@@ -287,20 +302,24 @@ public class DiscoveryBridgeTopology extends Discovery {
                 bridgeft = BridgeForwardingTable.create(m_domain.getBridge(xBridgeId), 
                     new HashSet<BridgeForwardingTableEntry>(m_notYetParsedBFTMap.remove(xBridgeId)));
             } catch (BridgeTopologyException e) {
-                LOG.warn("calculate: {}, topology:\n{}", 
+                LOG.error("calculate:  node[{}], {}, topology:\n{}", 
+                          xBridgeId,
                           e.getMessage(),
                           e.printTopology(),
                           e);
+                m_failed.add(xBridgeId);
                 continue;
             }
             if (goDown(rootft, bridgeft)) {
                 parsed.add(xBridgeId);
+            } else {
+                m_failed.add(xBridgeId);
             }
         }  
         
         m_domain.cleanForwarders();
-        if (LOG.isInfoEnabled()) {
-            LOG.info("calculate: topology calculation end: ->\n{}.", 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculate: topology calculation end: ->\n{}.", 
                  m_domain.printTopology());
         }
         return parsed;
@@ -313,8 +332,8 @@ public class DiscoveryBridgeTopology extends Discovery {
                 new BridgeSimpleConnection(bridgeUpFT, 
                                              bridgeFT);
         if (upsimpleconn.findSimpleConnection()) {
-            if (LOG.isInfoEnabled()) {
-                LOG.info("goDown: level: 1, bridge:[{}]. simple connection found: ->\n{}", 
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("goDown: level: 1, bridge:[{}]. simple connection found: ->\n{}", 
                          bridgeFT.getNodeId(),
                          upsimpleconn.printTopology());
             }
@@ -390,8 +409,8 @@ public class DiscoveryBridgeTopology extends Discovery {
                     new BridgeSimpleConnection(curBridgeFT,
                                        upsimpleconn.getSecond());
             if (bridgesimpleconn.findSimpleConnection()) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("goDown: level: {}, bridge:[{}]. simple connection found: ->\n{}", 
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("goDown: level: {}, bridge:[{}]. simple connection found: ->\n{}", 
                              level,
                              bridgesimpleconn.getSecond().getNodeId(),
                              bridgesimpleconn.printTopology());

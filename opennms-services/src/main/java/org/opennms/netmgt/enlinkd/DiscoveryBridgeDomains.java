@@ -62,8 +62,8 @@ public class DiscoveryBridgeDomains extends Discovery {
         
         for (BroadcastDomain curBDomain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
             if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnDomain())) {
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("find: node:{}, found:\n{}",
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("find: node:{}, found:\n{}",
                              nodes, 
                           curBDomain.printTopology());
                 }
@@ -81,22 +81,22 @@ public class DiscoveryBridgeDomains extends Discovery {
             }
             if (domain == null || domain != olddomain ) {
                 m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
-                if (LOG.isInfoEnabled()) {
-                    LOG.info("find: node:[{}]. Removed from Old Domain \n{}", 
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("find: node:[{}]. Removed from Old Domain \n{}", 
                          nodeid, olddomain.printTopology());
                 }
                 continue;
             }            
             if (domain == olddomain) {
-                if (LOG.isInfoEnabled()) {
-                               LOG.info("find: node:[{}]. node found on previuos Domain\n{}", 
+                if (LOG.isDebugEnabled()) {
+                               LOG.debug("find: node:[{}]. node found on previuos Domain\n{}", 
                          nodeid,domain.printTopology());
                 }
                 continue;
             } 
         }
         if (domain == null) {
-            LOG.info("find: nodes: [{}]. No domain found, creating new Domain", nodes);
+            LOG.debug("find: nodes: [{}]. No domain found, creating new Domain", nodes);
             domain = new BroadcastDomain();
             m_linkd.getQueryManager().save(domain);
         }
@@ -120,7 +120,7 @@ public class DiscoveryBridgeDomains extends Discovery {
         = new HashSet<Integer>(
                 m_linkd.getQueryManager().getUpdateBftMap().keySet());
         
-        LOG.info("run: nodes with updated bft\n{}", nodeids);
+        LOG.debug("run: nodes with updated bft {}", nodeids);
 
         for (Integer nodeid : nodeids) {
             Set<BridgeForwardingTableEntry> links = m_linkd.getQueryManager().useBridgeTopologyUpdateBFT(nodeid);
@@ -134,7 +134,7 @@ public class DiscoveryBridgeDomains extends Discovery {
             for (BridgeForwardingTableEntry link : links) {
                 macs.add(link.getMacAddress());
             }
-            LOG.info("run: node:[{}]. macs:{}", nodeid, macs);
+            LOG.debug("run: node:[{}]. macs:{}", nodeid, macs);
             nodeMacs.put(nodeid, macs);
         }
 
@@ -163,7 +163,7 @@ public class DiscoveryBridgeDomains extends Discovery {
 
         List<Callable<String>> taskList = new ArrayList<Callable<String>>();
         for (Integer nodeid : nodeondomainbft.keySet()) {
-            LOG.info("run: nodes are on same domain {}",nodeondomainbft.get(nodeid).keySet());
+            LOG.debug("run: nodes are on same domain {}",nodeondomainbft.get(nodeid).keySet());
             try {
                 BroadcastDomain domain = find(nodeondomainbft.get(nodeid).keySet(),
                                               nodeMacs.get(nodeid));
@@ -192,9 +192,9 @@ public class DiscoveryBridgeDomains extends Discovery {
         }
 
         if (n > 0) {
-            LOG.info("run: creating executorService with {} Threads", n);
+            LOG.debug("run: creating executorService with {} Threads", n);
             ExecutorService executorService = Executors.newFixedThreadPool(n);
-            LOG.info("run: created executorService with {} Threads", n);
+            LOG.debug("run: created executorService with {} Threads", n);
 
             try {
                 for (Future<String> future : executorService.invokeAll(taskList)) {
