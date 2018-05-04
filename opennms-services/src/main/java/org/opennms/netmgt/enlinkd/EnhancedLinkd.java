@@ -335,7 +335,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         for (Integer bridgeid: updateBfpMap.keySet()) {
             bridgediscovery.addUpdatedBFT(bridgeid, updateBfpMap.get(bridgeid));
         }
-        LOG.info("scheduleBridgeTopologyDiscovery: Scheduling {}",
+        LOG.debug("scheduleBridgeTopologyDiscovery: Scheduling {}",
                     bridgediscovery.getInfo());
         bridgediscovery.setScheduler(m_scheduler);
         bridgediscovery.schedule();
