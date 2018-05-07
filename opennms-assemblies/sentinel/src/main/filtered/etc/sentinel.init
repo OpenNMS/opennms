@@ -23,7 +23,7 @@ DESC="Sentinel"
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 SENTINEL_HOME="@INSTPREFIX@"
 SYSCONFDIR="@SYSCONFDIR@"
-RUNAS=root
+RUNAS=sentinel
 STOP_RETRIES=10
 STOP_WAIT=5
 
