@@ -115,29 +115,27 @@ rm -f '%{buildroot}%{sentinelinstprefix}/etc/sentinel.init'
 install -d -m 755 %{buildroot}%{_sysconfdir}/sysconfig
 mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconfdir}/sysconfig/sentinel"
 
-# container package files
+# sentinel package files
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
     grep -v %{sentinelrepoprefix} | \
     grep -v %{sentinelinstprefix}/etc/featuresBoot.d | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
-    sort > %{_tmppath}/files.container
+    sort > %{_tmppath}/files.sentinel
 find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,sentinel,sentinel) |" | \
-    sort >> %{_tmppath}/files.container
+    sort >> %{_tmppath}/files.sentinel
 # Exclude subdirs of the repository directory
 find %{buildroot}%{sentinelinstprefix} -type d | \
     grep -v %{sentinelrepoprefix}/ | \
     sed -e "s,^%{buildroot},%dir ," | \
-    sort >> %{_tmppath}/files.container
+    sort >> %{_tmppath}/files.sentinel
 
 %clean
 rm -rf %{buildroot}
 
-%files
+%files -f %{_tmppath}/files.sentinel
 %defattr(664 root root 775)
-%dir %{sentinelinstprefix}
-%{sentinelinstprefix}
 %attr(755,sentinel,sentinel) %{_initrddir}/sentinel
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
