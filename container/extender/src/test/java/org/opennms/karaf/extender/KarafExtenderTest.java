@@ -145,4 +145,10 @@ public class KarafExtenderTest {
                         Lists.newArrayList(new Feature("snapshot-feature")))),
                 karafExtender.getRepositories());
     }
+
+    @Test
+    public void handlesMissingRepositoryDirectory() throws Exception {
+        tempFolder.getRoot().mkdirs();
+        assertEquals(Collections.emptyList(), karafExtender.getRepositories());
+    }
 }

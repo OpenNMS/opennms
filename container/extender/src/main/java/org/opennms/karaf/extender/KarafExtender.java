@@ -201,7 +201,7 @@ public class KarafExtender {
     }
 
     public List<Repository> getRepositories() throws IOException {
-        final List<Path> repositoryPaths = getFoldersIn(m_repositories);
+        final List<Path> repositoryPaths = getRepositoryFolders(m_repositories);
 
         final List<Repository> repositories = Lists.newLinkedList();
         for (Path repositoryPath : repositoryPaths) {
@@ -310,8 +310,13 @@ public class KarafExtender {
         return files;
     }
 
-    private static List<Path> getFoldersIn(Path folder) throws IOException {
+    private static List<Path> getRepositoryFolders(Path folder) throws IOException {
         final List<Path> paths = Lists.newLinkedList();
+        if (!folder.toFile().exists()) {
+            LOG.warn("Repository folder {} does not exist!", folder);
+            return paths;
+        }
+
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(folder)) {
             for (Path path : directoryStream) {
                 if (!path.toFile().isDirectory()) {
