@@ -49,7 +49,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.HttpResponseRange;
+import org.opennms.core.utils.http.HttpResponseRange;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
