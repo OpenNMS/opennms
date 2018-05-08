@@ -157,4 +157,8 @@ public class GuavaSearchableResourceMetadataCache implements SearchableResourceM
     public void onRemoval(RemovalNotification<String, ResourceMetadata> notification) {
         m_radixTree.remove(notification.getKey());
     }
+
+    public long getSize() {
+        return m_cache.size();
+    }
 }

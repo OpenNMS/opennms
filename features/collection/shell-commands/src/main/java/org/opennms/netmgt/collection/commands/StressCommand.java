@@ -66,6 +66,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.codahale.metrics.Timer.Context;
 import com.google.common.collect.Lists;
+import com.google.common.util.concurrent.RateLimiter;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 /**
@@ -111,6 +112,13 @@ public class StressCommand extends OsgiCommandSupport {
     @Option(name="-x", aliases="--rra", description="Round Robin Archives, defaults to the pritine content on datacollection-config.xml", required=false, multiValued=true)
     List<String> rras = null;
 
+    private RateLimiter rateLimiter;
+
+    private int numNumericAttributesPerNodePerCycle;
+
+    private double numNumericAttributesPerSecond;
+
+    private double numStringAttributesPerSecond;
 
     private final AtomicBoolean abort = new AtomicBoolean(false);
 
@@ -146,8 +154,12 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         // Display the effective settings and rates
-        double attributesPerSecond = (1 / (double)intervalInSeconds) * numberOfGroupsPerInterface
+        final double groupsPerSecond = (1 / (double)intervalInSeconds) * numberOfGroupsPerInterface
                 * numberOfInterfacesPerNode * numberOfNodes;
+        numNumericAttributesPerNodePerCycle = numberOfInterfacesPerNode * numberOfGroupsPerInterface
+                * numberOfNumericAttributesPerGroup;
+        numNumericAttributesPerSecond = numberOfNumericAttributesPerGroup * groupsPerSecond;
+        numStringAttributesPerSecond = numberOfStringAttributesPerGroup * groupsPerSecond;
         System.out.printf("Generating collection sets every %d seconds\n", intervalInSeconds);
         System.out.printf("\t for %d nodes\n", numberOfNodes);
         System.out.printf("\t with %d interfaces\n", numberOfInterfacesPerNode);
@@ -159,8 +171,8 @@ public class StressCommand extends OsgiCommandSupport {
             System.out.printf("With string variation factor %d\n", stringVariationFactor);
         }
         System.out.printf("Which will yield an effective\n");
-        System.out.printf("\t %.2f numeric attributes per second\n", numberOfNumericAttributesPerGroup * attributesPerSecond);
-        System.out.printf("\t %.2f string attributes per second\n", numberOfStringAttributesPerGroup * attributesPerSecond);
+        System.out.printf("\t %.2f numeric attributes per second\n", numNumericAttributesPerSecond);
+        System.out.printf("\t %.2f string attributes per second\n", numStringAttributesPerSecond);
 
         ConsoleReporter reporter = ConsoleReporter.forRegistry(metrics)
                 .convertRatesTo(TimeUnit.SECONDS)
@@ -168,10 +180,10 @@ public class StressCommand extends OsgiCommandSupport {
                 .build();
 
         // Setup the executor
-        ThreadFactory threadFactoy = new ThreadFactoryBuilder()
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("Metrics Stress Tool Generator #%d")
             .build();
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfGeneratorThreads, threadFactoy);
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfGeneratorThreads, threadFactory);
 
         // Setup auxiliary objects needed by the persister
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
@@ -191,17 +203,14 @@ public class StressCommand extends OsgiCommandSupport {
         }
         repository.setRrdBaseDir(Paths.get(System.getProperty("opennms.home"),"share","rrd","snmp").toFile());
 
-        // Calculate how we fast we should insert the collection sets
-        int sleepTimeInMillisBetweenNodes = 0;
-        int sleepTimeInSecondsBetweenIterations = 0;
-        System.out.printf("Sleeping for\n");
+        // Display effective rate limiting strategy:
+        System.out.printf("Limiting rate by\n");
         if (burst) {
-            sleepTimeInSecondsBetweenIterations = intervalInSeconds;
-            System.out.printf("\t %d seconds between batches\n", sleepTimeInSecondsBetweenIterations);
+            System.out.printf("\t sleeping %d seconds between batches (batch mode)\n", intervalInSeconds);
+            rateLimiter = null;
         } else {
-            // We want to "stream" the collection sets
-            sleepTimeInMillisBetweenNodes = Math.round((((float)intervalInSeconds * 1000) / numberOfNodes) * numberOfGeneratorThreads);
-            System.out.printf("\t %d milliseconds between nodes\n", sleepTimeInMillisBetweenNodes);
+            rateLimiter = RateLimiter.create(numNumericAttributesPerSecond);
+            System.out.printf("\t smoothing persistence to %.2f attributes per second\n", numNumericAttributesPerSecond);
         }
 
         // Start generating, and keep generating until we're interrupted
@@ -214,7 +223,7 @@ public class StressCommand extends OsgiCommandSupport {
                     // Split the tasks up among the threads
                     List<Future<Void>> futures = new ArrayList<>();
                     for (int generatorThreadId = 0; generatorThreadId < numberOfGeneratorThreads; generatorThreadId++) {
-                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId, sleepTimeInMillisBetweenNodes)));
+                        futures.add(executor.submit(generateAndPersistCollectionSets(params, repository, generatorThreadId)));
                     }
                     // Wait for all the tasks to complete before starting others
                     for (Future<Void> future : futures) {
@@ -226,10 +235,12 @@ public class StressCommand extends OsgiCommandSupport {
                     context.stop();
                 }
 
-                try {
-                    Thread.sleep(sleepTimeInSecondsBetweenIterations * 1000);
-                } catch (InterruptedException e) {
-                    break;
+                if (burst) {
+                    try {
+                        Thread.sleep(intervalInSeconds);
+                    } catch (InterruptedException e) {
+                        break;
+                    }
                 }
             }
         } finally {
@@ -241,7 +252,7 @@ public class StressCommand extends OsgiCommandSupport {
         return null;
     }
 
-    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId, int sleepTimeInMillisBetweenNodes) {
+    private Callable<Void> generateAndPersistCollectionSets(ServiceParameters params, RrdRepository repository, int generatorThreadId) {
         return new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -250,12 +261,15 @@ public class StressCommand extends OsgiCommandSupport {
                         // A different generator will handle this node
                         continue;
                     }
+                    if (rateLimiter != null) {
+                        rateLimiter.acquire(numNumericAttributesPerNodePerCycle);
+                    }
 
                     // Build the node resource
                     CollectionAgent agent = new MockCollectionAgent(nodeId);
                     NodeLevelResource nodeResource = new NodeLevelResource(nodeId);
 
-                    // Don't reuse the persister instance across nodes to help simulate collectd's actual behavior
+                    // Don't reuse the persister instances across nodes to help simulate collectd's actual behavior
                     Persister persister = persisterFactory.createPersister(params, repository);
                     for (int interfaceId = 0; interfaceId < numberOfInterfacesPerNode; interfaceId++) {
                         // Return immediately if the abort flag is set
@@ -272,7 +286,6 @@ public class StressCommand extends OsgiCommandSupport {
                         // Persist
                         collectionSet.visit(persister);
                     }
-                    Thread.sleep(sleepTimeInMillisBetweenNodes);
                 }
                 return null;
             }
