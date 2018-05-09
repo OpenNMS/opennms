@@ -16,11 +16,11 @@
 	<reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
 
 	<!-- Create a DistPollerDao that can be used to access information about the Minion system -->
-	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.dao.DistPollerDaoMinion">
+	<bean id="distPollerDaoDistributed" class="org.opennms.netmgt.dao.DistPollerDaoDistributed">
 		<argument ref="identity"/>
 	</bean>
 
 	<!-- DistPollerDao -->
-	<service ref="distPollerDaoMinion" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+	<service ref="distPollerDaoDistributed" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
 
 </blueprint>

@@ -21,6 +21,7 @@
     <module>core</module>
     <module>dao-api</module>
     <module>dao-impl</module>
+    <module>dao-distributed</module>
     <module>datasource</module>
   </modules>
 </project>

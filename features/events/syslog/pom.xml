@@ -99,8 +99,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-minion</artifactId>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-distributed</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
