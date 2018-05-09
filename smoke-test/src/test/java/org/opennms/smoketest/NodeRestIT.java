@@ -55,7 +55,7 @@ import org.opennms.test.system.api.NewTestEnvironment.ContainerAlias;
  * This test verifies creation/deletion of Nodes/Interfaces/Services through
  * Rest API
  */
-public class RestApiV1IT {
+public class NodeRestIT {
 
     private static TestEnvironment m_testEnvironment;
     private static RestClient restClient;
