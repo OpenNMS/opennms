@@ -146,7 +146,6 @@
     <!-- Minion -->
     <module>minion</module>
     <module>scv</module>
-    <module>persistence</module>
 
     <!-- OpenNMS Plugin Manager -->
     <module>vaadin-opennms-pluginmanager</module>
