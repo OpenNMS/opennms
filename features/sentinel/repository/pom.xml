@@ -243,18 +243,18 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.persistence</groupId>
-            <artifactId>org.opennms.features.persistence.dao-api</artifactId>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.persistence</groupId>
-            <artifactId>org.opennms.features.persistence.dao-impl</artifactId>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.persistence</groupId>
-            <artifactId>org.opennms.features.persistence.datasource</artifactId>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.datasource</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

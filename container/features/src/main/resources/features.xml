@@ -687,7 +687,7 @@
         and those are all merged together in the following bundle. Technically starting all API bundles would be
         sufficient, but this is consistent with dao-impl.
       -->
-      <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.dao-api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dao" description="OpenNMS :: DAO" version="${project.version}">
@@ -711,7 +711,7 @@
         We this instead of org.opennms/opennms-dao as there are other bundles providing DAO implementations (e.g. bsm)
         and those are all merged together as one big classpath is required in order to use spring's datasource factory.
        -->
-      <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.dao-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-events-api" description="OpenNMS :: Events :: API" version="${project.version}">
@@ -1201,7 +1201,7 @@
         <feature>opennms-model</feature>
         <feature>opennms-dao</feature>
 
-        <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.datasource/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.datasource/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-spring-extender" description="OpenNMS :: Spring Extender" version="${project.version}">
@@ -1229,7 +1229,7 @@
         <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.config/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.config/${project.version}</bundle>
     </feature>
 
 </features>
