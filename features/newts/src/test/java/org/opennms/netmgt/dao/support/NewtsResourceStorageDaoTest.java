@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.netmgt.newts.support.NewtsUtils;
 import org.opennms.netmgt.newts.support.SearchableResourceMetadataCache;
@@ -192,6 +193,19 @@ public class NewtsResourceStorageDaoTest {
             }
         }
         assertNotNull(metric11);
+
+        verify();
+    }
+
+    @Test
+    public void getResponseTimeAttributes() {
+        index(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1", "strafeping"), Sets.newHashSet("ping1", "ping2"));
+        replay();
+        Set<OnmsAttribute> attributes = m_nrs.getAttributes(ResourcePath.get(ResourceTypeUtils.RESPONSE_DIRECTORY, "127.0.0.1"));
+
+        // Response time metrics should be treated as a single attribute
+        assertEquals(1, attributes.size());
+        assertEquals("strafeping", attributes.iterator().next().getName());
 
         verify();
     }
