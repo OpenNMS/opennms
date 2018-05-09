@@ -15,6 +15,13 @@
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
     </feature>
 
+    <!-- TODO MVR this is identical to opennms-dao-minion -->
+    <feature name="sentinel-distpoller-dao">
+        <feature>opennms-dao-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
+    </feature>
+
     <!-- TODO MVR this is very similar to minion-jms and may be better consolidated than just copy & pasting -->
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
         <feature>sentinel-core</feature>

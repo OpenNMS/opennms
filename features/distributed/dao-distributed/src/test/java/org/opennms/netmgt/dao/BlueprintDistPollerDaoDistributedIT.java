@@ -46,7 +46,7 @@ import org.springframework.test.context.ContextConfiguration;
 
 @RunWith( OpenNMSJUnit4ClassRunner.class )
 @ContextConfiguration( locations = { "classpath:/META-INF/opennms/emptyContext.xml" } )
-public class BlueprintDistPollerDaoMinionIT extends CamelBlueprintTest {
+public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
     private static final String LOCATION = "TEST_LOCATION";
 
     @SuppressWarnings("rawtypes")
@@ -72,7 +72,7 @@ public class BlueprintDistPollerDaoMinionIT extends CamelBlueprintTest {
     // The location of our Blueprint XML file to be used for testing
     @Override
     protected String getBlueprintDescriptor() {
-        return "file:src/main/resources/OSGI-INF/blueprint/blueprint-distPollerDaoMinion.xml,blueprint-empty-camel-context.xml";
+        return "file:src/main/resources/OSGI-INF/blueprint/blueprint-distPollerDao.xml,blueprint-empty-camel-context.xml";
     }
 
     @Test

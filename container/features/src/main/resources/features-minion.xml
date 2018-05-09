@@ -17,7 +17,7 @@
     <feature name="opennms-dao-minion" description="OpenNMS :: DAO :: Minion" version="${project.version}">
       <feature>minion-core-api</feature>
       <feature>opennms-dao-api</feature>
-      <bundle>mvn:org.opennms/opennms-dao-minion/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-trapd-listener" description="OpenNMS :: Trapd :: Listener" version="${project.version}">

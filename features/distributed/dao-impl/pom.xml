@@ -181,11 +181,11 @@
                         <configuration>
                             <artifactSet>
                                 <includes>
-                                    <include>org.opennms.features.persistence:org.opennms.features.persistence:dao-api</include>
+                                    <include>org.opennms.features.distributed:org.opennms.features.distributed.dao-api</include>
                                     <include>org.opennms:opennms-dao</include>
                                     <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.impl</include>
                                     <!-- TODO MVR comment in, when merging with features/drift -->
-                                    <!--<include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.impl</include>-->
+                                    <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.impl</include>
                                 </includes>
                             </artifactSet>
                             <transformers>

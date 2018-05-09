@@ -44,15 +44,15 @@ import org.opennms.netmgt.model.OnmsDistPoller;
  * 
  * @author Seth
  */
-public class DistPollerDaoMinion implements DistPollerDao {
+public class DistPollerDaoDistributed implements DistPollerDao {
 
 	private final OnmsDistPoller m_distPoller;
 
-	public DistPollerDaoMinion(OnmsDistPoller distPoller) {
+	public DistPollerDaoDistributed(OnmsDistPoller distPoller) {
 		m_distPoller = Objects.requireNonNull(distPoller);
 	}
 
-	public DistPollerDaoMinion(Identity identity) {
+	public DistPollerDaoDistributed(Identity identity) {
 		Objects.requireNonNull(identity);
 		m_distPoller = new OnmsDistPoller();
 		m_distPoller.setId(identity.getId());
