@@ -13,11 +13,11 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-	<reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity"/>
+	<reference id="identity" interface="org.opennms.distributed.core.api.Identity"/>
 
 	<!-- Create a DistPollerDao that can be used to access information about the Minion system -->
 	<bean id="distPollerDaoMinion" class="org.opennms.netmgt.dao.DistPollerDaoMinion">
-		<argument ref="minionIdentity"/>
+		<argument ref="identity"/>
 	</bean>
 
 	<!-- DistPollerDao -->

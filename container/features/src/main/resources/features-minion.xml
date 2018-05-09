@@ -8,9 +8,10 @@
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
-    <!-- TODO: Maybe this is already defined somewhere else -->
-    <feature name="minion-core-api" description="OpenNMS :: Minion :: Core :: API" version="${project.version}">
-      <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
+    <!-- TODO: This is already defined somewhere else -->
+    <!-- TODO MVR this is no longer features.minion/core-api but features.distributed/core-api and probbly should be defined somewhere else -->
+    <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
+      <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-dao-minion" description="OpenNMS :: DAO :: Minion" version="${project.version}">
@@ -130,7 +131,7 @@
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-telemetryd-listeners" description="OpenNMS :: Telemetryd :: Listeners" version="${project.version}">
+    <feature name="minion-telemetryd-listeners" description="Minion :: Telemetry :: Listeners" version="${project.version}">
       <!-- Not fully needed, but a convenient way to install netty4 -->
       <feature>camel-netty4</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
@@ -154,5 +155,9 @@
         <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.config/${project.version}</bundle>
+
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
+
     </feature>
 </features>

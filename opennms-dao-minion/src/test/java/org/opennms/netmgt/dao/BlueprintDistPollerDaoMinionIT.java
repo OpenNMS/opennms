@@ -37,7 +37,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -59,6 +60,11 @@ public class BlueprintDistPollerDaoMinionIT extends CamelBlueprintTest {
             @Override
             public String getLocation() {
                 return LOCATION;
+            }
+
+            @Override
+            public String getType() {
+                return SystemType.Minion.name();
             }
         }, new Properties()));
     }

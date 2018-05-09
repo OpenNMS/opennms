@@ -5,7 +5,7 @@
         http://www.osgi.org/xmlns/blueprint/v1.0.0
         https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 ">
-    <reference id="restClient" interface="org.opennms.minion.core.api.RestClient" availability="mandatory"/>
+    <reference id="restClient" interface="org.opennms.distributed.core.api.RestClient" availability="mandatory"/>
 
     <bean id="configProxyAnnotationBeanPostProcessor" class="org.opennms.features.persistence.config.ConfigProxyAnnotationBeanPostProcessor">
         <property name="restClient" ref="restClient" />

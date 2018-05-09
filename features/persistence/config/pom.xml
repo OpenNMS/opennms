@@ -38,7 +38,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>core-api</artifactId>
             <version>${project.version}</version>
         </dependency>

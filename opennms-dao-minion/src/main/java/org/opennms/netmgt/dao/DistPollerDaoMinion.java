@@ -34,10 +34,9 @@ import java.util.List;
 import java.util.Objects;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.netmgt.model.OnmsMonitoringSystem;
 
 /**
  * This {@link DistPollerDao} wraps the single instance that represents the
@@ -53,14 +52,14 @@ public class DistPollerDaoMinion implements DistPollerDao {
 		m_distPoller = Objects.requireNonNull(distPoller);
 	}
 
-	public DistPollerDaoMinion(MinionIdentity identity) {
+	public DistPollerDaoMinion(Identity identity) {
 		Objects.requireNonNull(identity);
 		m_distPoller = new OnmsDistPoller();
 		m_distPoller.setId(identity.getId());
 		m_distPoller.setLabel(identity.getId());
 		m_distPoller.setLastUpdated(new Date());
 		m_distPoller.setLocation(identity.getLocation());
-		m_distPoller.setType(OnmsMonitoringSystem.TYPE_MINION);
+		m_distPoller.setType(identity.getType());
 	}
 
 	@Override
