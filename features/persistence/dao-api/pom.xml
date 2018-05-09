@@ -20,7 +20,6 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Spring-Context>META-INF/opennms/applicationContext-osgi.xml,META-INF/opennms/component-dao.xml</Spring-Context>
                         <!-- TODO MVR when merging with features/drift add "org.opennms.netmgt.flows.classification.persistence.api" -->
                         <Export-Package>
                             org.opennms.netmgt.dao.util,

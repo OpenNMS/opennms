@@ -334,7 +334,6 @@
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
             <feature>opennms-telemetry-collection</feature>
-            <feature>opennms-telemetry-daemon</feature>
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 
@@ -404,6 +403,11 @@
                   <file>${project.build.outputDirectory}/features-minion.xml</file>
                   <type>xml</type>
                   <classifier>minion</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features-sentinel.xml</file>
+                  <type>xml</type>
+                  <classifier>sentinel</classifier>
                 </artifact>
                 <artifact>
                   <file>${project.build.outputDirectory}/karaf-extensions.xml</file>

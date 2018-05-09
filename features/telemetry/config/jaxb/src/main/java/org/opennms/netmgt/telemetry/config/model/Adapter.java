@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
 
 @XmlRootElement(name="adapter")
 @XmlAccessorType(XmlAccessType.NONE)
-public class Adapter {
+public class Adapter implements org.opennms.netmgt.telemetry.config.api.Adapter {
     @XmlAttribute(name="name")
     private String name;
     @XmlAttribute(name="class-name")
@@ -49,6 +49,7 @@ public class Adapter {
     @XmlElement(name="parameter")
     private List<Parameter> parameters = new ArrayList<>();
 
+    @Override
     public String getName() {
         return name;
     }
@@ -57,6 +58,7 @@ public class Adapter {
         this.name = name;
     }
 
+    @Override
     public String getClassName() {
         return className;
     }
@@ -73,6 +75,7 @@ public class Adapter {
         this.parameters = parameters;
     }
 
+    @Override
     public Map<String, String> getParameterMap() {
         return parameters.stream().collect(
                 Collectors.toMap(Parameter::getKey, Parameter::getValue));

@@ -35,7 +35,7 @@ import java.lang.reflect.Proxy;
 import org.opennms.core.xml.ConfigProxy;
 import org.opennms.core.xml.JaxbConfigDao;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.minion.core.api.RestClient;
+import org.opennms.distributed.core.api.RestClient;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
