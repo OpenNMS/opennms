@@ -121,6 +121,8 @@
 
   <bean id="resourceMetadataCache" class="${org.opennms.newts.config.cache.strategy:org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache}" />
 
+  <bean id="cachePrimer" class="org.opennms.netmgt.newts.support.CachePrimer"/>
+
   <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
 
   <bean id="cassandraIndexerSampleProcessor" class="org.opennms.newts.cassandra.search.CassandraIndexerSampleProcessor" />

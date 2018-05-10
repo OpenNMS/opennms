@@ -281,7 +281,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             public Collection<Row<Measurement>> call() throws Exception {
                 ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
                 for (Source source : listOfSources) {
-                    final String metricName = source.getAttribute();
+                    // Use the datasource as the metric name if set, otherwise use the name of the attribute
+                    final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
                     final String name = source.getLabel();
                     final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 

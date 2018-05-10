@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -63,8 +63,9 @@ public class LatencyThresholdingSet extends ThresholdingSet {
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
+     * @throws ThresholdInitializationException 
      */
-    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, String location, RrdRepository repository, ResourceStorageDao resourceStorageDao) {
+    public LatencyThresholdingSet(int nodeId, String hostAddress, String serviceName, String location, RrdRepository repository, ResourceStorageDao resourceStorageDao) throws ThresholdInitializationException {
         super(nodeId, hostAddress, serviceName, repository);
         m_resourceStorageDao = resourceStorageDao;
         m_location = location;
