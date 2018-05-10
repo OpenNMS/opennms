@@ -206,6 +206,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
                                 newName = "Untitled #" + i;
                             } while (WallboardProvider.getInstance().containsWallboard(newName));
                         }
+                        name.setId("newopsboard.name");
                         name.setValue(newName);
                         addComponent(name);
                         name.focus();
@@ -243,6 +244,7 @@ public class WallboardConfigView extends HorizontalLayout implements TabSheet.Cl
                         setComponentAlignment(cancel, Alignment.TOP_RIGHT);
 
                         Button ok = new Button("Save");
+                        ok.setId("newopsboard.save");
                         ok.setDescription("Save configuration");
                         ok.addClickListener(new Button.ClickListener() {
                             @Override

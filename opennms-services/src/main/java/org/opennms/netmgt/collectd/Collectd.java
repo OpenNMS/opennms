@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,8 +49,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
-import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.PersisterFactory;
+import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -214,6 +214,15 @@ public class Collectd extends AbstractServiceDaemon implements
         getScheduler().schedule(0, ifScheduler());
 
         installMessageSelectors();
+
+        // since thresholding is triggered from collectd now, make sure it is initialized properly now
+        // see: https://issues.opennms.org/browse/NMS-9064
+        try {
+            ThreshdConfigFactory.init();
+            ThresholdingConfigFactory.init();
+        } catch (final Exception e) {
+            throw new RuntimeException("Unable to initialize thresholding.", e);
+        }
     }
 
     private void installMessageSelectors() {
@@ -661,7 +670,7 @@ public class Collectd extends AbstractServiceDaemon implements
         m_schedulingCompletedFlag.setSchedulingCompleted(schedulingCompleted);
     }
 
-    private void refreshServicePackages() {
+    private void refreshServicePackages() throws CollectionInitializationException {
     	for (CollectableService thisService : m_collectableServices) {
             thisService.refreshPackage(m_collectdConfigFactory);
         }
