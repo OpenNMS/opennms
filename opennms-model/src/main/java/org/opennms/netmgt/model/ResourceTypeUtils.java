@@ -59,6 +59,8 @@ public abstract class ResourceTypeUtils {
      */
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
+    private static final Pattern s_responseDirectoryPattern =  Pattern.compile("^" + RESPONSE_DIRECTORY + ".+$");
+
     /**
      * <p>isStoreByGroup</p>
      *
@@ -84,7 +86,7 @@ public abstract class ResourceTypeUtils {
      * @return a boolean.
      */
     public static boolean isResponseTime(String relativePath) {
-        return Pattern.matches("^" + RESPONSE_DIRECTORY + ".+$", relativePath);
+        return s_responseDirectoryPattern.matcher(relativePath).matches();
     }
 
     /**

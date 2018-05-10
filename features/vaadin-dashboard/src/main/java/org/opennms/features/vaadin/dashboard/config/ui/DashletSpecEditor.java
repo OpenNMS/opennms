@@ -191,6 +191,7 @@ public class DashletSpecEditor extends Panel {
          * Duration field setup, layout and adding listener and validator
          */
         final TextField durationField = new TextField();
+        durationField.setId("opsboard.duration");
         durationField.setValue(String.valueOf(dashletSpec.getDuration()));
         durationField.setImmediate(true);
         durationField.setCaption("Duration");
@@ -259,7 +260,7 @@ public class DashletSpecEditor extends Panel {
          */
 
         m_dashletSelect = new NativeSelect();
-
+        m_dashletSelect.setId("opsboard.type");
         m_dashletSelect.setCaption("Dashlet");
 
         updateDashletSelection(dashletSelector.getDashletFactoryList());
@@ -305,6 +306,7 @@ public class DashletSpecEditor extends Panel {
         });
 
         m_titleField = new TextField();
+        m_titleField.setId("opsboard.title");
         m_titleField.setValue(dashletSpec.getTitle());
         m_titleField.setImmediate(true);
         m_titleField.setCaption("Title");
