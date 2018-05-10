@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.api;
+package org.opennms.netmgt.threshd;
 
-public class CollectionInitializationException extends Exception {
+public class ThresholdInitializationException extends Exception {
+    private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 2L;
+    public ThresholdInitializationException() {
+        super();
+    }
 
-    public CollectionInitializationException(final String message) {
+    public ThresholdInitializationException(final String message) {
         super(message);
     }
 
-    public CollectionInitializationException(final String message, final Throwable t) {
-        super(message, t);
+    public ThresholdInitializationException(final Throwable cause) {
+        super(cause);
+    }
+
+    public ThresholdInitializationException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
+    public ThresholdInitializationException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 
 }

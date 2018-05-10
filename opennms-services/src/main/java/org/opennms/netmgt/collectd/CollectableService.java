@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -68,6 +68,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.threshd.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -180,7 +181,11 @@ class CollectableService implements ReadyRunnable {
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
+        try {
+            m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
+        } catch (final ThresholdInitializationException e) {
+            throw new CollectionInitializationException("Failed to initialize thresholding visitor.", e);
+        }
     }
     
     /**
@@ -237,17 +242,23 @@ class CollectableService implements ReadyRunnable {
         return m_updates;
     }
 
-	/**
-	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
-	 * Should be called when the collect config has been reloaded.
-	 *
-	 * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
-	 */
-	public void refreshPackage(CollectdConfigFactory collectorConfigDao) {
-		m_spec.refresh(collectorConfigDao);
-		if (m_thresholdVisitor != null)
-		    m_thresholdVisitor.reloadScheduledOutages();
-	}
+    /**
+     * Uses the existing package name to try and re-obtain the package from the collectd config factory.
+     * Should be called when the collect config has been reloaded.
+     *
+     * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @throws CollectionInitializationException 
+     */
+    public void refreshPackage(CollectdConfigFactory collectorConfigDao) throws CollectionInitializationException {
+        m_spec.refresh(collectorConfigDao);
+        if (m_thresholdVisitor != null) {
+            try {
+                m_thresholdVisitor.reloadScheduledOutages();
+            } catch (final ThresholdInitializationException e) {
+                throw new CollectionInitializationException("Failed to reload scheduled outages after refreshing package.", e);
+            }
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
