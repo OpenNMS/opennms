@@ -32,11 +32,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.easymock.Capture;
 import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Before;
@@ -58,6 +60,7 @@ import org.opennms.newts.api.Results;
 import org.opennms.newts.api.Results.Row;
 import org.opennms.newts.api.SampleRepository;
 import org.opennms.newts.api.Timestamp;
+import org.opennms.newts.api.query.ResultDescriptor;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -71,6 +74,8 @@ public class NewtsFetchStrategyTest {
     private NewtsFetchStrategy m_newtsFetchStrategy;
 
     private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
+
+    private Capture<ResultDescriptor> lastCapturedResultDescriptor = new Capture<>();
 
     @Before
     public void setUp() throws Exception {
@@ -205,11 +210,30 @@ public class NewtsFetchStrategyTest {
         assertEquals(45000*1000L, lag.heartbeat);
     }
 
+    @Test
+    public void canRetrieveValuesByDatasource() {
+        List<Source> sources = Collections.singletonList(
+                createMockResource("ping1Micro", "strafeping",  "ping1", "127.0.0.1", true));
+        replay();
+
+        FetchResults fetchResults = m_newtsFetchStrategy.fetch(1431047069000L - (60 * 60 * 1000), 1431047069000L,
+                300 * 1000, 0, null, null, sources, false);
+        assertEquals(1, fetchResults.getColumns().keySet().size());
+        assertTrue(fetchResults.getColumns().containsKey("ping1Micro"));
+
+        // Verify that the name of the source matches the name of the DS provided in the source definition
+        assertEquals("ping1", lastCapturedResultDescriptor.getValue().getDatasources().get("ping1Micro").getSource());
+    }
+
     public Source createMockResource(final String label, final String attr, final String node) {
         return createMockResource(label, attr, node, true);
     }
 
     public Source createMockResource(final String label, final String attr, final String node, boolean expect) {
+        return createMockResource(label, attr, null, node, expect);
+    }
+
+    public Source createMockResource(final String label, final String attr, final String ds, final String node, boolean expect) {
         OnmsResourceType type = EasyMock.createNiceMock(OnmsResourceType.class);
 
         final int nodeId = node.hashCode();
@@ -232,13 +256,14 @@ public class NewtsFetchStrategyTest {
 
         if (expect) {
             EasyMock.expect(m_sampleRepository.select(
-                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.anyObject()
+                    EasyMock.eq(m_context), EasyMock.eq(res), EasyMock.anyObject(), EasyMock.anyObject(), EasyMock.capture(lastCapturedResultDescriptor), EasyMock.anyObject(), EasyMock.anyObject()
             )).andReturn(results);
         }
 
         final Source source = new Source();
         source.setAggregation("AVERAGE");
         source.setAttribute(attr);
+        source.setDataSource(ds);
         source.setLabel(label);
         source.setResourceId(resourceId.toString());
         source.setTransient(false);
