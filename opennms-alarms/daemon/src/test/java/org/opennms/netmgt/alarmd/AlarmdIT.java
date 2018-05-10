@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -468,6 +469,60 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertTrue("The logMsg should have changed.", !"new logMsg".equals(newLogMsg));
         assertEquals("The logMsg should new be the default logMsg.", newLogMsg, defaultLogMsg);
         
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "swivelchair", "");
+        String newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        String newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("swivelchair", newAckUser);
+        assertTrue(newAckTime != null);
+        
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "somebodyelse", "1000000");
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("somebodyelse", newAckUser);
+        assertEquals("1970-01-12 08:46:40-05", newAckTime);
+        
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "somebodyelse", "null");
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertNull(newAckUser);
+        assertNull(newAckTime);
+        
     }
 
     //Supporting method for test
@@ -587,5 +642,44 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             }
         });
         assertEquals("Found one or more alarms: " + alarmDescriptions, 0, alarmDescriptions.size());
+    }
+    
+    private void sendNodeDownEventWithUpdateFieldsAckUserAndTime(String reductionKey, MockNode node, String ackUserExpr, String ackTimeExpr) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            
+            List<UpdateField> fields = new ArrayList<>();
+            
+            UpdateField field = new UpdateField();
+            if (ackUserExpr != null) {
+                field.setFieldName("AckUser");
+                field.setUpdateOnReduction(Boolean.TRUE);
+                field.setValueExpression(ackUserExpr);
+                fields.add(field);
+            }
+            
+            field = new UpdateField();
+            if (ackTimeExpr != null) {
+                field.setFieldName("AckTime");
+                field.setUpdateOnReduction(Boolean.TRUE);
+                field.setValueExpression(ackTimeExpr);
+                fields.add(field);
+            }
+            
+            data.setUpdateField(fields);
+            
+            event.setAlarmData(data);
+        } else {
+            event.setAlarmData(null);
+        }
+
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+
+        m_eventdIpcMgr.sendNow(event.getEvent());
     }
 }
