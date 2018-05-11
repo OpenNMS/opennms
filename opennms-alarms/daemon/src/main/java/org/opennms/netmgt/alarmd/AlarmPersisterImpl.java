@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
@@ -220,14 +221,21 @@ public class AlarmPersisterImpl implements AlarmPersister {
                             final long ackTimeLong;
                             try {
                                 ackTimeLong = Long.valueOf(expandedAckTime);
+                                // Heuristic: values < 2**31 * 1000 (10 Jan 2004) are probably whole seconds, otherwise milliseconds
                                 if (ackTimeLong < 1073741824000L) {
                                     alarm.setAlarmAckTime(new java.util.Date(ackTimeLong * 1000));
                                 } else {
                                     alarm.setAlarmAckTime(new java.util.Date(ackTimeLong));
                                 }
                             } catch (NumberFormatException nfe) {
-                                LOG.warn("Could not parse update-field 'acktime' value '{}' as a Long. Using current time instead.");
+                                LOG.warn("Could not parse update-field 'acktime' value '{}' as a Long. Using current time instead.", expandedAckTime);
+                                alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                             }
+                        } else if (expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{22}$") || expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{16}$")) {
+                            alarm.setAlarmAckTime(s_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
+                        } else {
+                            LOG.warn("Not sure what to do with update-field 'acktime' value '{}'. Using current time instead.", expandedAckTime);
+                            alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                         }
                     } else if (fieldName.toLowerCase().startsWith("ackuser")) {
                         final String expandedAckUser = s_eventUtil.expandParms(field.getValueExpression(), event);

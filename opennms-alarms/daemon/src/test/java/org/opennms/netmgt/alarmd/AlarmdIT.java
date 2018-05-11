@@ -40,8 +40,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
@@ -469,7 +471,10 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertTrue("The logMsg should have changed.", !"new logMsg".equals(newLogMsg));
         assertEquals("The logMsg should new be the default logMsg.", newLogMsg, defaultLogMsg);
         
-        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "swivelchair", "");
+        // Acknowledge the alarm via update-field for "acktime" / "ackuser"
+        Map<String,String> eventParams = new LinkedHashMap<>();
+        long timeWhenSent = System.currentTimeMillis();
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "swivelchair", "", eventParams);
         String newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
@@ -477,17 +482,21 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
                 return results.getString(1);
             }
         });
-        String newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+        String newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
                 results.next();
                 return results.getString(1);
             }
         });
-        assertEquals("swivelchair", newAckUser);
-        assertTrue(newAckTime != null);
+        assertEquals("New alarmackuser must be as in event parameter", "swivelchair", newAckUser);
+        assertTrue("New alarmacktime must be non-null", newAckTime != null);
+        assertTrue("New alarmacktime must be within 5s of current system time", System.currentTimeMillis() - Long.valueOf(newAckTime) < 5000);
         
-        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "somebodyelse", "1000000");
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in whole seconds
+        eventParams.put("extSourcedAckUser", "somebodyelse");
+        eventParams.put("extSourcedAckTime", "1000000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
         newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
@@ -495,7 +504,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
                 return results.getString(1);
             }
         });
-        newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
                 results.next();
@@ -503,9 +512,12 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             }
         });
         assertEquals("somebodyelse", newAckUser);
-        assertEquals("1970-01-12 08:46:40-05", newAckTime);
+        assertEquals("1000000000", newAckTime);
         
-        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "somebodyelse", "null");
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in milliseconds
+        eventParams.put("extSourcedAckUser", "somethirdactor");
+        eventParams.put("extSourcedAckTime", "1526040190000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
         newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
@@ -513,7 +525,71 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
                 return results.getString(1);
             }
         });
-        newAckTime = m_jdbcTemplate.query("select alarmacktime from alarms", new ResultSetExtractor<String>() {
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("somethirdactor", newAckUser);
+        assertEquals("1526040190000", newAckTime);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime including time zone
+        eventParams.put("extSourcedAckUser", "someotheractortz");
+        eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a052d0000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("someotheractortz", newAckUser);
+        assertEquals("1526042578500", newAckTime);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime excluding time zone
+        eventParams.put("extSourcedAckUser", "someotheractornotz");
+        eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a09");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("someotheractornotz", newAckUser);
+        assertEquals("1526042578900", newAckTime);
+        
+        // De-acknowledge the alarm via update-field. Verify this nulls both acktime and ackuser.
+        eventParams.clear();
+        eventParams.put("extSourcedAckUser", "somethirdactor");
+        eventParams.put("extSourcedAckTime", "null");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[extSourcedAckUser]%", "%parm[#2]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
             @Override
             public String extractData(ResultSet results) throws SQLException, DataAccessException {
                 results.next();
@@ -644,7 +720,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertEquals("Found one or more alarms: " + alarmDescriptions, 0, alarmDescriptions.size());
     }
     
-    private void sendNodeDownEventWithUpdateFieldsAckUserAndTime(String reductionKey, MockNode node, String ackUserExpr, String ackTimeExpr) throws SQLException {
+    private void sendNodeDownEventWithUpdateFieldsAckUserAndTime(String reductionKey, MockNode node, String ackUserExpr, String ackTimeExpr, Map<String,String> params) throws SQLException {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -679,6 +755,10 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
         event.setLogDest("logndisplay");
         event.setLogMessage("testing");
+        
+        for (String paramName : params.keySet()) {
+            event.addParam(paramName, params.get(paramName), "OctetString", null);
+        }
 
         m_eventdIpcMgr.sendNow(event.getEvent());
     }
