@@ -61,7 +61,6 @@ import com.google.common.util.concurrent.Striped;
  */
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
-    public static final String EVENT_SOURCE_NAME = "Alarmd";
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
