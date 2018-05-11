@@ -69,7 +69,7 @@ endif::opennms-prime[]
 
 The following apply for OpenNMS Horizon 18 and newer.
 
-* All the DELETE requests are going to return a 204 (NO_CONTENT) on success.
+* DELETE requests are going to return a 202 (ACCEPTED) if they are performed asynchronously otherwise they return a 204 (NO_CONTENT) on success.
 * All the PUT requests are going to return a 204 (NO_CONTENT) on success.
 * All the POST requests that can either add or update an entity are going to return a 204 (NO_CONTENT) on success.
 * All the POST associated to resource addition are going to return a 201 (CREATED) on success.
