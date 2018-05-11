@@ -76,4 +76,10 @@ public class NodeLabelChangedEventBuilder extends EventBuilder {
         setParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, newNodeLabelSource);
         return this;
     }
+
+    @Override
+    protected void checkForIllegalUei(){
+        // do nothing since we can be sure that we set the right Event type. Once the generic EventBuilder is abstract we
+        // can remove this method from here and the super class
+    }
 }
