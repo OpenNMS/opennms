@@ -96,6 +96,38 @@ For more details please refer to link:../guide-admin/index.html#configure-elasti
 * The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
 * The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
+* [NMS-9737](https://issues.opennms.org/browse/NMS-9737): Cleaning up SNMP data collection
+
+==== NMS-9737 Cleaning up SNMP data collection
+
+We removed cross dependencies between data collection files which affect the following SNMP agent devices:
+
+* Microsoft SNMP Informant MIB into separate files to remove overhead in case several SNMP Informant extensions are not licensed
+* Cleaned up the Dell Open Manage device support which were added Net-SNMP and Microsoft Windows configurations
+* Standard MIB-II agents related to UPS, Host Resource and Interface data collections
+* Dell Open Manage data collections
+
+Cleaned up duplicated and overlapping data collections
+
+* Removed duplicated entries for Host Resources support and created a dedicated file
+* Removed duplicated entries for MIB2 UPS support
+* Separated the Coffee MIB support (nice we support it, but not necessary trying to collect it by default)
+* Standard MIB-II data collections are divided in separated files
+
+Introduced prefixed `REF_` data collection files which can't be assigned by default to devices.
+This is for example the case when a UPS has a manufacture specific _System Object Identifier_ and supports the Standard MIB-II UPS metrics.
+Affected are also devices which support RFC, IETF or generic Printer MIBs.
+
+Removed the `mib2-interface` data collection by default which causes duplicated data collection of a lot of metrics when agents provide 32bit and 64bit counters.
+For SNMP agents supporting Standard MIB-II the interface traffic is only collected by default for High-Speed counters 64bit (`mib2-X-interfaces`).
+
+IMPORTANT: Devices which support only support 32bit counters do not collect data after updating to this release.
+           Identify those devices and include the `mib2-interface` data collection group in the related systemDefinitions.
+
+IMPORTANT: We have removed the data collection from all Standard MIB-II compatible agents trying to collect the POWER-ETHERNET-MIB.
+           If you have devices which provide those metrics, include the `mib2-powerethernet` data collection group to your specific devices.
+
+Before you update check the attachments in NMS-9737 with hints what is changed and which configuration files are affected.
 
 === New Features
 

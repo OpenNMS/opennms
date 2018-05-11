@@ -970,8 +970,6 @@
          <includeGroup>cisco-rttmon-latest-rtp-stats</includeGroup>
          <includeGroup>rfc1315-frame-relay</includeGroup>
          <includeGroup>cisco-frame-relay</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
-         <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>ietf-bgp4-peer-stats</includeGroup>
          <includeGroup>cisco-bgp-peer-addr-family-prefix-stats</includeGroup>
          <includeGroup>cisco-docs-ext-ifupchannel</includeGroup>

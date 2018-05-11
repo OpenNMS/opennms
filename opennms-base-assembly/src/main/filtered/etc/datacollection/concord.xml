@@ -38,8 +38,6 @@
    <systemDef name="Concord Net Health">
       <sysoidMask>.1.3.6.1.4.1.546.</sysoidMask>
       <collect>
-         <includeGroup>mib2-host-resources-system</includeGroup>
-         <includeGroup>mib2-host-resources-memory</includeGroup>
          <includeGroup>netHealth-loadavg</includeGroup>
          <includeGroup>netHealth-memory</includeGroup>
          <includeGroup>netHealth-sysstat</includeGroup>
