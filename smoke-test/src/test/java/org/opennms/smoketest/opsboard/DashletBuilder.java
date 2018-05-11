@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -26,18 +26,28 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collection.api;
+package org.opennms.smoketest.opsboard;
 
-public class CollectionInitializationException extends Exception {
+public class DashletBuilder {
 
-    private static final long serialVersionUID = 2L;
+    private final DashletConfig dashletConfig = new DashletConfig();
 
-    public CollectionInitializationException(final String message) {
-        super(message);
+    public DashletBuilder withDashlet(String type) {
+        dashletConfig.setType(type);
+        return this;
     }
 
-    public CollectionInitializationException(final String message, final Throwable t) {
-        super(message, t);
+    public DashletBuilder withTitle(String title) {
+        dashletConfig.setTitle(title);
+        return this;
     }
 
+    public DashletBuilder withDuration(long duration) {
+        dashletConfig.setDuration(duration);
+        return this;
+    }
+
+    public DashletConfig build() {
+        return dashletConfig;
+    }
 }

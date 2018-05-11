@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,10 +38,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -87,27 +89,32 @@ public class ThresholdingSet {
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param interval a long.
+     * @throws ThresholdInitializationException 
      */
-    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) {
+    public ThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository) throws ThresholdInitializationException {
         m_nodeId = nodeId;
         m_hostAddress = (hostAddress == null ? null : hostAddress.intern());
         m_serviceName = (serviceName == null ? null : serviceName.intern());
         m_repository = repository;
         initThresholdsDao();
         initialize();
+        if (!m_initialized) {
+            throw new ThresholdInitializationException("Failed to initialize thresholding set.");
+        }
     }
 
     /**
      * <p>initialize</p>
+     * @throws ThresholdInitializationException 
      */
-    protected void initialize() {
+    protected void initialize() throws ThresholdInitializationException {
         final String logHeader = "initialize(nodeId=" + m_nodeId + ",ipAddr=" + m_hostAddress + ",svc=" + m_serviceName + ")";
-        List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
+        final List<String> groupNameList = getThresholdGroupNames(m_nodeId, m_hostAddress, m_serviceName);
         synchronized(m_thresholdGroups) {
             m_thresholdGroups.clear();
-            for (String groupName : groupNameList) {
+            for (final String groupName : groupNameList) {
                 try {
-                    ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                    final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
                     if (thresholdGroup == null) {
                         LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
                     } else {
@@ -116,6 +123,7 @@ public class ThresholdingSet {
                     }
                 } catch (Throwable e) {
                     LOG.error("{}: Can't process threshold group {}", logHeader, groupName, e);
+                    // It should not throw an exception when we are unable to find the group, see NMS-3532
                 }
             }
             m_hasThresholds = !m_thresholdGroups.isEmpty();
@@ -123,15 +131,42 @@ public class ThresholdingSet {
         updateScheduledOutages();
     }
 
+    public void reinitialize() {
+        reinitialize(false);
+    }
+
     /**
      * <p>reinitialize</p>
      */
-    public void reinitialize() {
+    public void reinitialize(final boolean reloadThresholdConfig) {
         m_initialized = false;
         ThresholdingEventProxyFactory.getFactory().getProxy().removeAllEvents();
-        initThresholdsDao();
-        mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
-        updateScheduledOutages();
+
+        final ThresholdingConfigFactory tcf = ThresholdingConfigFactory.getInstance();
+        final boolean hasThresholds = m_hasThresholds;
+        final List<ThresholdGroup> thresholdGroups = new ArrayList<>(m_thresholdGroups);
+        final List<String> scheduledOutages = new ArrayList<>(m_scheduledOutages);
+        try {
+            if (reloadThresholdConfig) {
+                ThresholdingConfigFactory.reload();
+            }
+            initThresholdsDao();
+            mergeThresholdGroups(m_nodeId, m_hostAddress, m_serviceName);
+            updateScheduledOutages();
+        } catch (final Exception e) {
+            LOG.error("Failed to reinitialize thresholding set.  Reverting to previous configuration.", e);
+            ThresholdingConfigFactory.setInstance(tcf);
+            m_hasThresholds = hasThresholds;
+            if (!thresholdGroups.equals(m_thresholdGroups)) {
+                m_thresholdGroups.clear();
+                m_thresholdGroups.addAll(thresholdGroups);
+            }
+            if (!scheduledOutages.equals(m_scheduledOutages)) {
+                m_scheduledOutages.clear();
+                m_scheduledOutages.addAll(scheduledOutages);
+            }
+            m_initialized = true;
+        }
         ThresholdingEventProxyFactory.getFactory().getProxy().sendAllEvents();
     }
 
@@ -142,47 +177,52 @@ public class ThresholdingSet {
      */
     /**
      * <p>mergeThresholdGroups</p>
+     * @throws ThresholdInitializationException 
      */
-    private void mergeThresholdGroups(final int nodeId, final String hostAddress, final String serviceName) {
+    private void mergeThresholdGroups(final int nodeId, final String hostAddress, final String serviceName) throws ThresholdInitializationException {
         final String logHeader = "mergeThresholdGroups(nodeId=" + nodeId + ",ipAddr=" + hostAddress + ",svc=" + serviceName + ")";
         LOG.debug("{}: Begin merging operation", logHeader);
-        List<String> groupNameList = getThresholdGroupNames(nodeId, hostAddress, serviceName);
+        final List<String> existingGroupNameList = m_thresholdGroups.stream().map(ThresholdGroup::getName).collect(Collectors.toList());
+        List<String> newGroupNameList = getThresholdGroupNames(nodeId, hostAddress, serviceName);
+
         synchronized(m_thresholdGroups) {
             // If size differs its because some groups where deleted.
-            if (groupNameList.size() != m_thresholdGroups.size()) {
+            if (newGroupNameList.size() != m_thresholdGroups.size() || !existingGroupNameList.equals(newGroupNameList)) {
                 // Deleting Groups
                 LOG.debug("{}: New group name list differs from current threshold group list", logHeader);
-                for (Iterator<ThresholdGroup> i = m_thresholdGroups.iterator(); i.hasNext();) {
-                    ThresholdGroup group = i.next();
-                    if (!groupNameList.contains(group.getName())) {
+                for (final Iterator<ThresholdGroup> i = m_thresholdGroups.iterator(); i.hasNext();) {
+                    final ThresholdGroup group = i.next();
+                    if (!newGroupNameList.contains(group.getName())) {
                         LOG.info("{}: deleting group {}", logHeader, group);
                         group.delete();
                         i.remove();
                     }
                 }
             }
-            List<ThresholdGroup> newThresholdGroupList = new LinkedList<>();
-            for (String groupName : groupNameList) {
+            final List<ThresholdGroup> newThresholdGroupList = new LinkedList<>();
+            for (final String groupName : newGroupNameList) {
                 // Check if group exist on current configured list
-                ThresholdGroup foundGroup = null;
-                for (ThresholdGroup group : m_thresholdGroups) {
-                    if (group.getName().equals(groupName))
-                        foundGroup = group;
-                }
-                if (foundGroup == null) {
-                    // Add new group
-                    ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
-                    if (thresholdGroup == null) {
-                        LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
+                final Optional<ThresholdGroup> foundGroup = m_thresholdGroups.stream().filter(tg -> groupName.equals(tg.getName())).findFirst();
+                try {
+                    if (!foundGroup.isPresent()) {
+                        // Add new group
+                        final ThresholdGroup thresholdGroup = m_thresholdsDao.get(groupName);
+                        if (thresholdGroup == null) {
+                            LOG.error("{}: Could not get threshold group with name {}", logHeader, groupName);
+                        } else {
+                            newThresholdGroupList.add(thresholdGroup);
+                            LOG.debug("{}: Adding threshold group: {}", logHeader, thresholdGroup);
+                        }
                     } else {
+                        // Merge existing data with current data
+                        final ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup.get());
                         newThresholdGroupList.add(thresholdGroup);
-                        LOG.debug("{}: Adding threshold group: {}", logHeader, thresholdGroup);
+                        LOG.debug("{}: Merging threshold group: {}", logHeader, thresholdGroup);
                     }
-                } else {
-                    // Merge existing data with current data
-                    ThresholdGroup thresholdGroup = m_thresholdsDao.merge(foundGroup);
-                    newThresholdGroupList.add(thresholdGroup);
-                    LOG.debug("{}: Merging threshold group: {}", logHeader, thresholdGroup);
+                } catch (final IllegalStateException e) {
+                    final ThresholdInitializationException tie = new ThresholdInitializationException("Unable to add or merge existing group " + foundGroup.orElse(null), e);
+                    LOG.error(tie.getLocalizedMessage(), e);
+                    throw tie;
                 }
             }
             m_thresholdGroups.clear();
@@ -365,27 +405,30 @@ public class ThresholdingSet {
 
     /**
      * <p>initThresholdsDao</p>
+     * @throws ThresholdInitializationException 
      */
-    protected final void initThresholdsDao() {
+    protected final void initThresholdsDao() throws ThresholdInitializationException {
         if (!m_initialized) {
             LOG.debug("initThresholdsDao: Initializing Factories and DAOs");
-            m_initialized = true;
-            DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
+            final DefaultThresholdsDao defaultThresholdsDao = new DefaultThresholdsDao();
             try {
                 ThresholdingConfigFactory.init();
                 defaultThresholdsDao.setThresholdingConfigFactory(ThresholdingConfigFactory.getInstance());
                 defaultThresholdsDao.afterPropertiesSet();
-            } catch (Throwable t) {
-                LOG.error("initThresholdsDao: Could not initialize DefaultThresholdsDao", t);
-                return;
+            } catch (final Throwable t) {
+                final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize DefaultThresholdsDao.", t);
+                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
+                throw tie;
             }
             try {
                 ThreshdConfigFactory.init();
-            } catch (Throwable t) {
-                LOG.error("initThresholdsDao: Could not initialize ThreshdConfigFactory", t);
-                return;
+            } catch (final Throwable t) {
+                final ThresholdInitializationException tie = new ThresholdInitializationException("Could not initialize ThreshdConfigFactory.", t);
+                LOG.error("initThresholdsDao: " + tie.getLocalizedMessage(), t);
+                throw tie;
             }
             m_thresholdsDao = defaultThresholdsDao;
+            m_initialized = true;
         }
     }
 
@@ -396,46 +439,61 @@ public class ThresholdingSet {
      * - Compare interface/service pair against each Threshd package.
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
-    private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) {
-        ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
-
+    private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) throws ThresholdInitializationException {
         List<String> groupNameList = new LinkedList<>();
-        for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
 
-            // Make certain the the current service is in the package and enabled!
-            if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
-                LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", hostAddress, serviceName, pkg.getName());
-                continue;
-            }
+        ThreshdConfigManager configManager = null;
 
-            // Is the interface in the package?
-            LOG.debug("getThresholdGroupNames: checking ipaddress {} for inclusion in pkg {}", hostAddress, pkg.getName());
-            if (!configManager.interfaceInPackage(hostAddress, pkg)) {
-                LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, interface does not belong to package: {}", hostAddress, serviceName, pkg.getName());
-                continue;
-            }
+        try { 
+            configManager = ThreshdConfigFactory.getInstance();
+        } catch (final IllegalStateException e) {
+            throw new ThresholdInitializationException(e);
+        }
 
-            // Getting thresholding-group for selected service and adding to groupNameList
-            for (org.opennms.netmgt.config.threshd.Service svc : pkg.getServices()) {
-                if (svc.getName().equals(serviceName)) {
-                    for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameters()) {
-                        if (parameter.getKey().equals("thresholding-group")) {
-                            String groupName = parameter.getValue();
-                            groupNameList.add(groupName);
-                            LOG.debug("getThresholdGroupNames:  address/service: {}/{}. Adding Group {}", hostAddress, serviceName, groupName);
+        if (configManager != null) {
+            for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
+
+                // Make certain the the current service is in the package and enabled!
+                if (!configManager.serviceInPackageAndEnabled(serviceName, pkg)) {
+                    LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, service is not enabled or does not exist in package: {}", hostAddress, serviceName, pkg.getName());
+                    continue;
+                }
+
+                // Is the interface in the package?
+                LOG.debug("getThresholdGroupNames: checking ipaddress {} for inclusion in pkg {}", hostAddress, pkg.getName());
+                if (!configManager.interfaceInPackage(hostAddress, pkg)) {
+                    LOG.debug("getThresholdGroupNames: address/service: {}/{} not scheduled, interface does not belong to package: {}", hostAddress, serviceName, pkg.getName());
+                    continue;
+                }
+
+                // Getting thresholding-group for selected service and adding to groupNameList
+                for (org.opennms.netmgt.config.threshd.Service svc : pkg.getServices()) {
+                    if (svc.getName().equals(serviceName)) {
+                        for (org.opennms.netmgt.config.threshd.Parameter parameter : svc.getParameters()) {
+                            if (parameter.getKey().equals("thresholding-group")) {
+                                String groupName = parameter.getValue();
+                                groupNameList.add(groupName);
+                                LOG.debug("getThresholdGroupNames:  address/service: {}/{}. Adding Group {}", hostAddress, serviceName, groupName);
+                            }
                         }
                     }
                 }
             }
         }
-
         return groupNameList;
     }
 
-    protected void updateScheduledOutages() {
+    protected void updateScheduledOutages() throws ThresholdInitializationException {
         synchronized (m_scheduledOutages) {
             m_scheduledOutages.clear();
-            ThreshdConfigManager configManager = ThreshdConfigFactory.getInstance();
+            ThreshdConfigManager configManager = null;
+            try {
+                configManager = ThreshdConfigFactory.getInstance();
+            } catch (final IllegalStateException e) {
+                final ThresholdInitializationException tie = new ThresholdInitializationException("Failed to get threshd configuration factory while attempting to update scheduled outages.", e);
+                LOG.error(tie.getLocalizedMessage(), e);
+                throw tie;
+            }
             for (org.opennms.netmgt.config.threshd.Package pkg : configManager.getConfiguration().getPackages()) {
                 for (String outageCal : pkg.getOutageCalendars()) {
                     LOG.info("updateScheduledOutages[node={}]: checking scheduled outage '{}'", m_nodeId, outageCal);
@@ -447,7 +505,7 @@ public class ThresholdingSet {
                             LOG.debug("updateScheduledOutages[node={}]: outage calendar '{}' found on package '{}'", m_nodeId, outage.getName(), pkg.getName());
                             m_scheduledOutages.add(outageCal);
                         }
-                    } catch (Exception e) {
+                    } catch (final Exception e) {
                         LOG.info("updateScheduledOutages[node={}]: scheduled outage '{}' does not exist.", m_nodeId, outageCal);
                     }
                 }

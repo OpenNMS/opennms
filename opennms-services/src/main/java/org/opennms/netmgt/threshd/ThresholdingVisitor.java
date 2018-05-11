@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -96,8 +96,9 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
      * @param repo a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
      * @return a {@link org.opennms.netmgt.threshd.ThresholdingVisitor} object.
+     * @throws ThresholdInitializationException 
      */
-    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) {
+    public static ThresholdingVisitor create(int nodeId, String hostAddress, String serviceName, RrdRepository repo, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) throws ThresholdInitializationException {
 
         String enabled = ParameterMap.getKeyedString(svcParams.getParameters(), "thresholding-enabled", null);
         if (enabled != null && !"true".equals(enabled)) {
@@ -159,7 +160,7 @@ public class ThresholdingVisitor extends AbstractCollectionSetVisitor {
         m_thresholdingSet.reinitialize();
     }
 
-    public void reloadScheduledOutages() {
+    public void reloadScheduledOutages() throws ThresholdInitializationException {
         m_thresholdingSet.updateScheduledOutages();
     }
 
