@@ -64,6 +64,7 @@
       <include-collection dataCollectionGroup="PostgreSQL-JDBC"/>
       <include-collection dataCollectionGroup="Powerware"/>
       <include-collection dataCollectionGroup="Printers"/>
+      <include-collection dataCollectionGroup="REF_MIB2-UPS"/>
       <include-collection dataCollectionGroup="Riverbed"/>
       <include-collection dataCollectionGroup="Routers"/>
       <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
