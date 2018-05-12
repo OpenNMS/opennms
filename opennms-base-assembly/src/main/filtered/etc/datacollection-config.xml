@@ -68,7 +68,11 @@
       <include-collection dataCollectionGroup="Routers"/>
       <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
       <include-collection dataCollectionGroup="ServerTech"/>
-      <include-collection dataCollectionGroup="SNMP-Informant"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Adv"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Exchange"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-MSSQL"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Std"/>
+      <include-collection dataCollectionGroup="SNMP-Informant-Termsvc"/>
       <include-collection dataCollectionGroup="SofaWare"/>
       <include-collection dataCollectionGroup="Sonicwall"/>
       <include-collection dataCollectionGroup="SUN Microsystems"/>
