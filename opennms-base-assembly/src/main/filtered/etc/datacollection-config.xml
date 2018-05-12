@@ -65,6 +65,7 @@
       <include-collection dataCollectionGroup="Powerware"/>
       <include-collection dataCollectionGroup="Printers"/>
       <include-collection dataCollectionGroup="Riverbed"/>
+      <include-collection dataCollectionGroup="REF_Printers"/>
       <include-collection dataCollectionGroup="Routers"/>
       <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
       <include-collection dataCollectionGroup="ServerTech"/>

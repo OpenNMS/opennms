@@ -1,4 +1,4 @@
-<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="Printers">
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="REF_Printers">
    <resourceType name="prtMarkerSuppliesIndex" label="Printer Marker Supply" resourceLabel="${prtMarkerSuppliesDescription}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
