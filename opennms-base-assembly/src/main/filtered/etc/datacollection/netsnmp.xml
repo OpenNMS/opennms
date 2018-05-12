@@ -175,7 +175,6 @@
       <collect>
          <includeGroup>mib2-interfaces</includeGroup>
          <includeGroup>mib2-tcp</includeGroup>
-         <includeGroup>mib2-powerethernet</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
          <includeGroup>mib2-host-resources-memory</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>

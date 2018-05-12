@@ -65,6 +65,7 @@
       <include-collection dataCollectionGroup="Powerware"/>
       <include-collection dataCollectionGroup="Printers"/>
       <include-collection dataCollectionGroup="REF_Compaq-Insight-Manager"/>
+      <include-collection dataCollectionGroup="REF_MIB2-Powerethernet"/>
       <include-collection dataCollectionGroup="Riverbed"/>
       <include-collection dataCollectionGroup="Routers"/>
       <include-collection dataCollectionGroup="Savin or Ricoh Printers"/>
