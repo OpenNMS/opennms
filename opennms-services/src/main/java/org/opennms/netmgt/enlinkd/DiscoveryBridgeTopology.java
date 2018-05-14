@@ -106,9 +106,6 @@ public class DiscoveryBridgeTopology extends Discovery {
 
     @Override
     public void doit() {
-        LOG.info("run: topology calculation start: -> {}.", 
-                 getInfo());
-
         Assert.notNull(m_domain);
         Assert.notNull(m_notYetParsedBFTMap);
     	Date now = new Date();
@@ -147,8 +144,6 @@ public class DiscoveryBridgeTopology extends Discovery {
             
         }
         LOG.debug("run: saved Topology.");
-        LOG.info("run: topology calculation end: -> {}.", 
-                 getInfo());
     }
             
     @Override
@@ -271,8 +266,8 @@ public class DiscoveryBridgeTopology extends Discovery {
     }
     
     protected  Set<Integer> calculate() {
-        if (LOG.isInfoEnabled()) {
-            LOG.info("calculate: topology calculation start: ->\n{}.", 
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculate: topology calculation start: ->\n{}.", 
                  m_domain.printTopology());
         }
 
