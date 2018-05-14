@@ -20,16 +20,15 @@
                     <instructions>
                         <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <!-- TODO MVR when merging with features/drift add "org.opennms.netmgt.flows.classification.persistence.api" -->
                         <Export-Package>
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.dao.api,
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map
+                            org.opennms.netmgt.bsm.persistence.api.functions.map,
+                            org.opennms.netmgt.flows.classification.persistence.api
                         </Export-Package>
-                        <!-- TODO MVR when merging with features/drift add "org.opennms.netmgt.flows.classification.persistence.api" -->
                         <Import-Package>
                             com.google.common.base,
                             com.google.common.collect,
@@ -70,6 +69,7 @@
                             org.opennms.netmgt.dao.api,
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.events.api,
+                            org.opennms.netmgt.flows.classification.persistence.api,
                             org.opennms.netmgt.model,
                             org.opennms.netmgt.model.alarm,
                             org.opennms.netmgt.model.minion,
@@ -78,13 +78,13 @@
                             org.opennms.netmgt.model.topology,
                             org.opennms.netmgt.xml.event
                         </Import-Package>
-                        <!-- TODO MVR when merging with features/drift add "org.opennms.netmgt.flows.classification.persistence.api" -->
                         <Private-Package>
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.dao.api,
                             org.opennms.netmgt.bsm.persistence.api,
                             org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map
+                            org.opennms.netmgt.bsm.persistence.api.functions.map,
+                            org.opennms.netmgt.flows.classification.persistence.api
                         </Private-Package>
                     </instructions>
                 </configuration>
@@ -104,17 +104,9 @@
                                 <includes>
                                     <include>org.opennms:opennms-dao-api</include>
                                     <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.api</include>
-                                    <!-- TODO MVR comment in, when merging with features/drift -->
-                                    <!--<include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.api</include>-->
+                                    <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.api</include>
                                 </includes>
                             </artifactSet>
-                            <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.XmlAppendingTransformer">
-                                    <resource>META-INF/opennms/applicationContext-dao.xml</resource>
-                                    <resource>META-INF/opennms/applicationContext-osgi.xml</resource>
-                                    <resource>META-INF/opennms/component-dao.xml</resource>
-                                </transformer>
-                            </transformers>
                             <createDependencyReducedPom>true</createDependencyReducedPom>
                         </configuration>
                     </execution>
@@ -132,11 +124,10 @@
             <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- TODO MVR when merging with features/drift, comment this in -->
-        <!--<dependency>-->
-            <!--<groupId>org.opennms.features.flows.classification.persistence</groupId>-->
-            <!--<artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>-->
-            <!--<version>${project.version}</version>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.opennms.features.flows.classification.persistence</groupId>
+            <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
