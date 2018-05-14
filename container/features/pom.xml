@@ -807,8 +807,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.minion</artifactId>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.common</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.minion</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.sentinel</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
