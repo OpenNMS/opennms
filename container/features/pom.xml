@@ -828,12 +828,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-flows</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>bundle-refresher</artifactId>
       <version>${project.version}</version>
