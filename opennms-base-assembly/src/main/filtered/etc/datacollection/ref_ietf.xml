@@ -1,4 +1,4 @@
-<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="IETF">
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="REF_IETF">
    <resourceType name="msdpPeerEntry" label="MSDP Peer" resourceLabel="Remote ${msdpPeerRemoteAddr}:${msdpPeerRemotePort} (Local ${msdpPeerLocalAddr}:${msdpPeerLocalPort})">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
