@@ -1232,4 +1232,24 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.config/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
+        <details>Feature definition to start all required bundles related to *flow-support.</details>
+        <feature>opennms-jest</feature>
+        <feature>quartz</feature>
+        <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+
+        <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.impl/${project.version}</bundle>
+
+        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+
+        <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle>mvn:com.google.guava/guava/${guavaVersion}</bundle>
+        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.netflow/${project.version}</bundle>
+    </feature>
+
 </features>
