@@ -51,14 +51,14 @@ public class CachePrimer implements InitializingBean, Runnable {
     @Autowired
     private Context context;
 
-    private static final boolean primingEnabled = Boolean.getBoolean("org.opennms.newts.config.cache.priming.enable");
+    private static final boolean primingDisabled = Boolean.getBoolean("org.opennms.newts.config.cache.priming.disable");
     private static final long blockWhilePrimingMs = Long.getLong("org.opennms.newts.config.cache.priming.block_ms", TimeUnit.MINUTES.toMillis(2));
     private static final int fetchSize = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_size", CassandraCachePrimer.DEFAULT_FETCH_SIZE);
     private static final int fetchMoreThreshold = Integer.getInteger("org.opennms.newts.config.cache.priming.fetch_more_threshold", CassandraCachePrimer.DEFAULT_FETCH_MORE_THRESHOLD);
 
     @Override
     public void afterPropertiesSet() {
-        if (!primingEnabled) {
+        if (!primingDisabled) {
             LOG.debug("Cache priming disabled. Skipping cache priming.");
             return;
         }
