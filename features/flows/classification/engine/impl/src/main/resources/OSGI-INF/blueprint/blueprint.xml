@@ -1,0 +1,96 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+
+    <cm:property-placeholder id="ClassificationEngineProperties" persistent-id="org.opennms.features.flows.classification" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="cache.classificationFilter.enabled" value="false" />
+            <cm:property name="cache.classificationFilter.maxSize" value="5000" />
+            <cm:property name="cache.classificationFilter.expireAfterRead" value="300" /> <!-- Seconds -->
+            <cm:property name="cache.classificationFilter.recordStats" value="true" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="classificationRuleDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationRuleDao" availability="mandatory"/>
+    <reference id="classificationGroupDao" interface="org.opennms.netmgt.flows.classification.persistence.api.ClassificationGroupDao" availability="mandatory"/>
+    <reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" availability="mandatory"/>
+    <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+
+    <!-- CacheConfig -->
+    <bean id="classificationFilterCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="classificationFilter" />
+        <property name="recordStats" value="${cache.classificationFilter.recordStats}" />
+        <property name="metricRegistry" ref="classificationMetricRegistry" />
+        <property name="maximumSize" value="${cache.classificationFilter.maxSize}" />
+        <property name="expireAfterRead" value="${cache.classificationFilter.expireAfterRead}" />
+        <property name="enabled" value="${cache.classificationFilter.enabled}" />
+    </bean>
+
+    <!-- Rule Provider -->
+    <bean id="classificationRuleProvider" class="org.opennms.netmgt.flows.classification.internal.provider.DaoClassificationRuleProvider">
+        <argument ref="classificationRuleDao"/>
+    </bean>
+
+    <!-- Filter Service -->
+    <bean id="filterService" class="org.opennms.netmgt.flows.classification.internal.DefaultFilterService">
+        <argument ref="filterDao" />
+    </bean>
+    <bean id="cachingFilterService" class="org.opennms.netmgt.flows.classification.internal.CachingFilterService">
+        <argument ref="filterService" />
+        <argument ref="classificationFilterCacheConfig" />
+    </bean>
+
+    <!-- Classification Engine -->
+    <bean id="defaultClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine">
+        <argument ref="classificationRuleProvider" />
+        <argument ref="cachingFilterService" />
+        <argument value="false" />
+    </bean>
+    <bean id="timingClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.TimingClassificationEngine">
+        <argument ref="classificationMetricRegistry"/>
+        <argument ref="defaultClassificationEngine" />
+    </bean>
+    <bean id="threadSafeClassificationEngine" class="org.opennms.netmgt.flows.classification.internal.ThreadSafeClassificationEngine">
+        <argument ref="timingClassificationEngine" />
+    </bean>
+    <bean id="classificationEngineInitializer" class="org.opennms.netmgt.flows.classification.internal.ClassificationEngineInitializer">
+        <argument ref="threadSafeClassificationEngine"/>
+        <argument ref="transactionOperations" />
+    </bean>
+
+    <!-- Metrics -->
+    <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <bean id="classificationMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+        <argument ref="classificationMetricRegistry"/>
+    </bean>
+    <bean id="classificationMetricRegistryDomainedJmxReporterBuilder" factory-ref="classificationMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows.classifications"/>
+    </bean>
+    <bean id="classificationMetricRegistryJmxReporter"
+          factory-ref="classificationMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+    <!-- Expose Services -->
+    <service interface="org.opennms.netmgt.flows.classification.ClassificationEngine" ref="threadSafeClassificationEngine"/>
+    <service interface="org.opennms.netmgt.flows.classification.ClassificationService">
+        <bean class="org.opennms.netmgt.flows.classification.internal.DefaultClassificationService">
+            <argument ref="classificationRuleDao"/>
+            <argument ref="classificationGroupDao"/>
+            <argument ref="threadSafeClassificationEngine"/>
+            <argument ref="cachingFilterService" />
+            <argument ref="transactionOperations"/>
+        </bean>
+    </service>
+
+</blueprint>

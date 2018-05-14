@@ -28,23 +28,22 @@
 
 package org.opennms.netmgt.notifd;
 
+import java.util.List;
+
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.model.notifd.Argument;
 import org.opennms.netmgt.model.notifd.NotificationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.management.ManagementFactory;
-import java.util.List;
-
 public class ServiceRegistryExecutor implements ExecutorStrategy {
     private static final Logger LOG = LoggerFactory.getLogger(ServiceRegistryExecutor.class);
 
-    private static final DefaultServiceRegistry s_registry = DefaultServiceRegistry.INSTANCE;
-
-    private static final String GRACE_PERIOD_MS_SYS_PROP = "org.opennms.netmgt.notifd.notificationStrategyGracePeriodMs";
-    private static final int GRACE_PERIOD_MS = Integer.getInteger(GRACE_PERIOD_MS_SYS_PROP, 3*60*1000);
-    private static final int LOOKUP_DELAY_MS = 5*1000;
+    private static final ServiceLookup SERVICE_LOOKUP = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            .blocking()
+            .build();
 
     @Override
     public int execute(String filter, List<Argument> arguments) {
@@ -59,28 +58,6 @@ public class ServiceRegistryExecutor implements ExecutorStrategy {
     }
 
     private NotificationStrategy getNotificationStrategy(String filter) {
-        // Lookup
-        NotificationStrategy ns = s_registry.findProvider(NotificationStrategy.class, filter);
-        if (ns != null) {
-            return ns;
-        }
-
-        // A strategy matching the filter is not currently available.
-        // Wait until the system has finished starting up (uptime >= grace period)
-        // before aborting the search.
-        while (ManagementFactory.getRuntimeMXBean().getUptime() < GRACE_PERIOD_MS) {
-            try {
-                Thread.sleep(LOOKUP_DELAY_MS);
-            } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting for notification strategy to become available in the service registry. Aborting.");
-                return null;
-            }
-            ns = s_registry.findProvider(NotificationStrategy.class, filter);
-            if (ns != null) {
-                return ns;
-            }
-        }
-
-        return null;
+        return SERVICE_LOOKUP.lookup(NotificationStrategy.class, filter);
     }
 }

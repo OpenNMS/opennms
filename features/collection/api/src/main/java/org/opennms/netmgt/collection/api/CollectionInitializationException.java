@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,10 +30,14 @@ package org.opennms.netmgt.collection.api;
 
 public class CollectionInitializationException extends Exception {
 
-    private static final long serialVersionUID = -8181677826055143390L;
+    private static final long serialVersionUID = 2L;
 
-    public CollectionInitializationException(String string) {
-        super(string);
+    public CollectionInitializationException(final String message) {
+        super(message);
+    }
+
+    public CollectionInitializationException(final String message, final Throwable t) {
+        super(message, t);
     }
 
 }

@@ -33,32 +33,39 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.filter.api.FilterDao;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
-public abstract class AbstractCollectionAdapterFactory {
-    
+public abstract class AbstractCollectionAdapterFactory implements AdapterFactory {
 
+    @Autowired
     private CollectionAgentFactory collectionAgentFactory;
 
+    @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
+    @Autowired
     private NodeDao nodeDao;
 
+    @Autowired
     private TransactionOperations transactionTemplate;
 
+    @Autowired
     private FilterDao filterDao;
 
+    @Autowired
     private PersisterFactory persisterFactory;
 
     private final BundleContext bundleContext;
 
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    public AbstractCollectionAdapterFactory(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
-    public AbstractCollectionAdapterFactory(BundleContext m_bundleContext) {
-        this.bundleContext = m_bundleContext;
+    public BundleContext getBundleContext() {
+        return bundleContext;
     }
 
     public CollectionAgentFactory getCollectionAgentFactory() {

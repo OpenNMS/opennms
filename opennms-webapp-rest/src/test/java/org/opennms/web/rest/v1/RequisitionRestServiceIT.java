@@ -28,6 +28,7 @@
 
 package org.opennms.web.rest.v1;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
@@ -35,7 +36,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -335,7 +335,7 @@ public class RequisitionRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         final MockHttpServletResponse response = sendPost("/requisitions", req, 500, null);
         final String responseText = response.getContentAsString();
-        assertThat(responseText, CoreMatchers.containsString("Failed to marshal/unmarshal XML file while unmarshalling an object (Requisition)"));
+        assertThat(responseText, containsString("Failed to marshal/unmarshal XML file while unmarshalling an object (Requisition)"));
     }
 
     @Test

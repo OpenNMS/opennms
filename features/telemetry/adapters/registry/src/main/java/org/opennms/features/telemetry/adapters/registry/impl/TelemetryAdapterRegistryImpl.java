@@ -31,37 +31,59 @@ package org.opennms.features.telemetry.adapters.registry.impl;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.ServiceLoader;
 
-import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.context.ApplicationContext;
 
+/**
+ * Maintains the list of available telemtryd adapters, aggregating
+ * those expose the the service loader and via the OSGi registry.
+ *
+ * @author chandrag
+ * @author jwhite
+ */
 public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryAdapterRegistry.class);
 
-    private static final int LOOKUP_DELAY_MS = 5 * 1000;
-    private static final int GRACE_PERIOD_MS = 3 * 60 * 1000;
-
-    private final Map<String, AdapterFactory> m_adapterFactoryByClassName = new HashMap<>();
+    private static final ServiceLoader<AdapterFactory> s_adapterFactoryLoader = ServiceLoader.load(AdapterFactory.class);
 
     private static final String TYPE = "type";
 
+    private final Map<String, AdapterFactoryRegistration> m_adapterFactoryByClassName = new HashMap<>();
+
+    @Autowired
+    private ApplicationContext applicationContext;
+
+    public TelemetryAdapterRegistryImpl() {
+        // Register all of the factories exposed via the service loader
+        for (AdapterFactory adapterFactory : s_adapterFactoryLoader) {
+            final String className = adapterFactory.getAdapterClass().getCanonicalName();
+            m_adapterFactoryByClassName.put(className, new AdapterFactoryRegistration(className, adapterFactory, true));
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     public synchronized void onBind(AdapterFactory adapterFactory, Map properties) {
-        LOG.debug("bind called with {}: {}", adapterFactory, properties);
+        LOG.debug("Bind called with {}: {}", adapterFactory, properties);
         if (adapterFactory != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn(
-                        "Unable to determine the class name for AdapterFactory: {}, with properties: {}. The adapter will not be registered.",
+                LOG.warn("Unable to determine the class name for AdapterFactory: {}, with properties: {}. The adapter will not be registered.",
                         adapterFactory, properties);
                 return;
             }
-            m_adapterFactoryByClassName.put(className, adapterFactory);
+            m_adapterFactoryByClassName.put(className, new AdapterFactoryRegistration(className, adapterFactory, false));
         }
     }
 
@@ -71,13 +93,46 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
         if (adapterFactory != null) {
             final String className = getClassName(properties);
             if (className == null) {
-                LOG.warn(
-                        "Unable to determine the class name for AdapterFactory: {}, with properties: {}. The adapter will not be unregistered.",
+                LOG.warn("Unable to determine the class name for AdapterFactory: {}, with properties: {}. The adapter will not be unregistered.",
                         adapterFactory, properties);
                 return;
             }
-            m_adapterFactoryByClassName.remove(className, adapterFactory);
+            m_adapterFactoryByClassName.remove(className);
         }
+    }
+
+    @Override
+    public Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties) {
+        AdapterFactoryRegistration registration = m_adapterFactoryByClassName.get(className);
+
+        final long waitUntil = System.currentTimeMillis() + ServiceLookupBuilder.WAIT_PERIOD_MS;
+        // If the adapter is not currently available, wait until the JVM has been up for at least GRACE_PERIOD_MS
+        // (absolute) and ensure we've waited for at least WAIT_PERIOD_MS (relative) before aborting
+        // the lookup
+        while ((registration == null)
+                && ManagementFactory.getRuntimeMXBean().getUptime() < ServiceLookupBuilder.GRACE_PERIOD_MS
+                && System.currentTimeMillis() < waitUntil) {
+            try {
+                Thread.sleep(ServiceLookupBuilder.LOOKUP_DELAY_MS);
+            } catch (InterruptedException e) {
+                LOG.error("Interrupted while waiting for adapter factory to become available in the service registry. Aborting.");
+                return null;
+            }
+            registration = m_adapterFactoryByClassName.get(className);
+        }
+
+        Adapter adapter = null;
+        if (registration != null) {
+            adapter = registration.getAdapterFactory().createAdapter(protocol, properties);
+            if (registration.shouldAutowire()) {
+                // Autowire!
+                final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
+                beanFactory.autowireBean(adapter);
+                beanFactory.initializeBean(adapter, "adapter");
+            }
+        }
+
+        return adapter;
     }
 
     private static String getClassName(Map<?, ?> properties) {
@@ -88,25 +143,27 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
         return null;
     }
 
-    @Override
-    public Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties) {
-        AdapterFactory adapterFactory = m_adapterFactoryByClassName.get(className);
-        while ((adapterFactory == null) && ManagementFactory.getRuntimeMXBean().getUptime() < GRACE_PERIOD_MS) {
-            try {
-                Thread.sleep(LOOKUP_DELAY_MS);
-            } catch (InterruptedException e) {
-                LOG.error(
-                        "Interrupted while waiting for adapter factory to become available in the service registry. Aborting.");
-                return null;
-            }
-            adapterFactory = m_adapterFactoryByClassName.get(className);
-        }
-        Adapter adapter = null;
-        if (adapterFactory != null) {
-            adapter = adapterFactory.createAdapter(protocol, properties);
+    private static class AdapterFactoryRegistration {
+        private final String clazz;
+        private final AdapterFactory factory;
+        private final boolean autowire;
+
+        public AdapterFactoryRegistration(String clazz, AdapterFactory factory, boolean autowire) {
+            this.clazz = Objects.requireNonNull(clazz);
+            this.factory = Objects.requireNonNull(factory);
+            this.autowire = autowire;
         }
 
-        return adapter;
+        public String getAdapterClass() {
+            return clazz;
+        }
+
+        public AdapterFactory getAdapterFactory() {
+            return factory;
+        }
+
+        public boolean shouldAutowire() {
+            return autowire;
+        }
     }
-
 }

@@ -87,6 +87,7 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-queuingservice-mq-vm.xml",
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-server-camel.xml",
         "classpath:/META-INF/opennms/applicationContext-collectionAgentFactory.xml",
+        "classpath:/META-INF/opennms/applicationContext-jtiAdapterFactory.xml",
         "classpath:/META-INF/opennms/applicationContext-telemetryDaemon.xml"
 })
 @JUnitConfigurationEnvironment

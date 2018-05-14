@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="mvrueden" id="22.0.0-classification-tables">
+    <createTable tableName="classification_rules">
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="src_address" type="text"/>
+      <column name="src_port" type="text"/>
+      <column name="exporter_filter" type="text" />
+      <column name="dst_address" type="text"/>
+      <column name="dst_port" type="text"/>
+      <column name="protocol" type="text"/>
+      <column name="position" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="groupid" type="integer">
+        <constraints nullable="false" />
+      </column>
+    </createTable>
+    <addUniqueConstraint tableName="classification_rules" columnNames="src_address,src_port,exporter_filter,dst_address,dst_port,protocol,groupid" />
+    <addPrimaryKey tableName="classification_rules" columnNames="id" constraintName="classification_rules_pkey" />
+
+    <createTable tableName="classification_groups">
+      <column name="id" type="integer">
+        <constraints nullable="false"/>
+      </column>
+      <column name="name" type="text">
+        <constraints nullable="false"/>
+      </column>
+      <column name="description" type="text"/>
+      <column name="readonly" type="boolean"/>
+      <column name="enabled" type="boolean"/>
+      <column name="priority" type="integer">
+        <constraints nullable="false"/>
+      </column>
+    </createTable>
+    <addPrimaryKey tableName="classification_groups" columnNames="id" constraintName="classification_groups_pkey" />
+    <addUniqueConstraint tableName="classification_groups" columnNames="name" />
+    <addForeignKeyConstraint constraintName="fk_classification_rules_groupid"
+                             baseTableName="classification_rules" baseColumnNames="groupid"
+                             referencedTableName="classification_groups" referencedColumnNames="id"
+                             deleteCascade="true"/>
+  </changeSet>
+
+  <changeSet runOnChange="false" author="mvrueden" id="22.0.0-ruleNxtId">
+    <preConditions onFail="MARK_RAN">
+      <sqlCheck expectedResult="0">
+        SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+        WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'rulenxtid'
+      </sqlCheck>
+    </preConditions>
+    <createSequence sequenceName="rulenxtid" />
+    <rollback>
+      <dropSequence sequenceName="rulenxtid" />
+    </rollback>
+  </changeSet>
+</databaseChangeLog>

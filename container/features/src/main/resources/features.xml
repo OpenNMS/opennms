@@ -1124,11 +1124,18 @@
 
       <feature>opennms-collection-api</feature>
       <feature>opennms-osgi-jsr223</feature>
-
+      <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.factory/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-telemetry-flow" description="OpenNMS :: Telemetry :: Flow" version="${project.version}">
+      <feature>opennms-telemetry-collection</feature>
+      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.flow/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-telemetry-daemon" description="OpenNMS :: Telemetry :: Daemon" version="${project.version}">

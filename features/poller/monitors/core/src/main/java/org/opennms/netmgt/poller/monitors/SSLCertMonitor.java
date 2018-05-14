@@ -193,7 +193,7 @@ public class SSLCertMonitor extends AbstractServiceMonitor {
                                 serviceStatus = PollStatus.available(tracker.elapsedTimeInMillis());
                                 break;
                             } else {
-                                String reason = "Certificate is valid, but will expire in " + validityDays + " days.";
+                                String reason = "Certificate is valid, but will expire within " + validityDays + " days (" + certx.getNotAfter() + ").";
                                 LOG.debug(reason);
                                 serviceStatus = PollStatus.unavailable(reason);
                                 break;

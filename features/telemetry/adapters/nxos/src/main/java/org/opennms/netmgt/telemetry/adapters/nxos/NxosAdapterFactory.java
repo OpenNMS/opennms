@@ -30,7 +30,6 @@ package org.opennms.netmgt.telemetry.adapters.nxos;
 
 import java.util.Map;
 
-import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractCollectionAdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -38,10 +37,15 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class NxosAdapterFactory extends AbstractCollectionAdapterFactory implements AdapterFactory {
+public class NxosAdapterFactory extends AbstractCollectionAdapterFactory {
 
     public NxosAdapterFactory(BundleContext bundleContext) {
         super(bundleContext);
+    }
+
+    @Override
+    public Class<? extends Adapter> getAdapterClass() {
+        return NxosGpbAdapter.class;
     }
 
     @Override

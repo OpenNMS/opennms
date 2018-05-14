@@ -52,7 +52,6 @@ import org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop;
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -84,37 +83,14 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
         TelemetryTop.registerAllExtensions(s_registry);
     }
 
-    @Autowired
     private CollectionAgentFactory collectionAgentFactory;
 
-    @Autowired
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    @Autowired
     private NodeDao nodeDao;
 
-    @Autowired
     private TransactionOperations transactionTemplate;
 
-    private String script;
-
-    private BundleContext bundleContext;
-
-    private final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
-        @Override
-        protected ScriptedCollectionSetBuilder initialValue() {
-            try {
-                if (bundleContext != null) {
-                    return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
-                } else {
-                    return new ScriptedCollectionSetBuilder(new File(script));
-                }
-            } catch (Exception e) {
-                LOG.error("Failed to create builder for script '{}'.", script, e);
-                return null;
-            }
-        }
-    };
 
     @Override
     public Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog)
@@ -158,21 +134,10 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
             return Optional.empty();
         }
 
-        final ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
-        if (builder == null) {
-            throw new Exception(String.format("Error compiling script '%s'. See logs for details.", script));
-        }
+        ScriptedCollectionSetBuilder builder = getCollectionBuilder();
 
         final CollectionSet collectionSet = builder.build(agent, jtiMsg);
         return Optional.of(new CollectionSetWithAgent(agent, collectionSet));
-    }
-
-    public String getScript() {
-        return script;
-    }
-
-    public void setScript(String script) {
-        this.script = script;
     }
 
     public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
@@ -189,10 +154,6 @@ public class JtiGpbAdapter extends AbstractPersistingAdapter {
 
     public void setTransactionTemplate(TransactionOperations transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
-    }
-
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
     }
 
 }

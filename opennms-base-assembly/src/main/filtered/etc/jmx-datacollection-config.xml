@@ -318,6 +318,69 @@
             <attrib name="TempLimit" alias="TempLimit" type="gauge"/>
             <attrib name="TempPercentUsage" alias="TempPctUsage" type="gauge"/>
          </mbean>
+         <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted">
+            <attrib name="Count" alias="FlowPerst" type="counter"/>
+            <attrib name="OneMinuteRate" alias="FlowPerst1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowPerst5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.flows.flowsPerLog" objectname="org.opennms.netmgt.flows:name=flowsPerLog">
+            <attrib name="50thPercentile" alias="FlowFlwsPerLog50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowFlwsPerLog75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowFlwsPerLog95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowFlwsPerLog98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowFlwsPerLog99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowFlwsPerLog999" type="gauge"/>
+            <attrib name="Count" alias="FlowFlwsPerLogCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.flows.logConversion" objectname="org.opennms.netmgt.flows:name=logConversion">
+            <attrib name="50thPercentile" alias="FlowLogConv50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowLogConv75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowLogConv95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowLogConv98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowLogConv99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowLogConv999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="FlowLogConv1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowLogConv5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.flows.logEnrichment" objectname="org.opennms.netmgt.flows:name=logEnrichment">
+            <attrib name="50thPercentile" alias="FlowLogEnrich50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowLogEnrich75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowLogEnrich95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowLogEnrich98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowLogEnrich99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowLogEnrich999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="FlowLogEnrich1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowLogEnrich5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.flows.logPersisting" objectname="org.opennms.netmgt.flows:name=logPersisting">
+            <attrib name="50thPercentile" alias="FlowLogPerst50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowLogPerst75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowLogPerst95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowLogPerst98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowLogPerst99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowLogPerst999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="FlowLogPerst1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowLogPerst5m" type="gauge"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.netflow.packetsPerLog" objectname="org.opennms.netmgt.telemetry.adapters.netflow:name=packetsPerLog">
+            <attrib name="50thPercentile" alias="FlowPktsPerLog50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowPktsPerLog75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowPktsPerLog95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowPktsPerLog98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowPktsPerLog99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowPktsPerLog999" type="gauge"/>
+            <attrib name="Count" alias="FlowPktsPerLogCnt" type="counter"/>
+         </mbean>
+         <mbean name="org.opennms.netmgt.telemetry.adapters.netflow.logParsing" objectname="org.opennms.netmgt.telemetry.adapters.netflow:name=logParsing">
+            <attrib name="50thPercentile" alias="FlowLogParse50" type="gauge"/>
+            <attrib name="75thPercentile" alias="FlowLogParse75" type="gauge"/>
+            <attrib name="95thPercentile" alias="FlowLogParse95" type="gauge"/>
+            <attrib name="98thPercentile" alias="FlowLogParse98" type="gauge"/>
+            <attrib name="99thPercentile" alias="FlowLogParse99" type="gauge"/>
+            <attrib name="999thPercentile" alias="FlowLogParse999" type="gauge"/>
+            <attrib name="OneMinuteRate" alias="FlowLogParse1m" type="gauge"/>
+            <attrib name="FiveMinuteRate" alias="FlowLogParse5m" type="gauge"/>
+         </mbean>
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

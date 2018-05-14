@@ -73,6 +73,7 @@
         <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
         <value>org.opennms.netmgt.topology</value>
+        <value>org.opennms.netmgt.flows</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">

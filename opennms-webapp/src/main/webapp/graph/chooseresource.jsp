@@ -39,7 +39,7 @@
       if (m.find()) {
         node = m.group(1);
       }
-    } 
+    }
   }
   String reports = request.getParameter("reports");
   String endUrl = request.getParameter("endUrl");
@@ -66,7 +66,16 @@
     Node: <strong><a href="{{ nodeLink }}">{{ nodeLabel }}</a></strong>
   </h4>
 
-  <div class="jumbotron" ng-show="!hasResources">
+  <!-- Loading Message -->
+  <div class="jumbotron" ng-show="!loaded">
+    <div class="container">
+      <h1>Loading Resources</h1>
+      <p>Please wait while all the resources are loaded into your browser.</p>
+      <p>This could take time, depending on the number of resources for this node.</p>
+    </div>
+  </div>
+
+  <div class="jumbotron" ng-show="loaded && !hasResources">
     <div class="container">
       <h1>There are no resources for this node</h1>
       <p>Please check the data collection configuration for this node.</p>

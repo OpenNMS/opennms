@@ -32,20 +32,24 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.adapters.nxos.proto.TelemetryBis;
 
-
+/**
+ * Utility to send Nxos messages to Telemetry stack
+ **/
 public class NxosTelemetryClient {
 
-    private static TelemetryBis.Telemetry buildMessage(String ipAddress) throws IOException {
+    private static TelemetryBis.Telemetry buildMessage(String ipAddress , int i) throws IOException {
 
         // Set Telemetry fields
         TelemetryBis.TelemetryField field1 = TelemetryBis.TelemetryField.newBuilder()
                                                 .setName("loadavg")
-                                                .setUint32Value(23)
+                                                .setUint32Value(i+32)
                                                 .setTimestamp(1510584351).build();
         
 
@@ -53,7 +57,7 @@ public class NxosTelemetryClient {
                                                         .setNodeIdStr(ipAddress)
                                                         .addDataGpbkv(field1)
                                                         .setSubscriptionIdStr("18374686715878047745")
-                                                        .setCollectionId(4)
+                                                        .setCollectionId(10456)
                                                         .setCollectionStartTime(1510584351)
                                                         .setCollectionEndTime(1510584402)
                                                         .setMsgTimestamp(new Date().getTime())
@@ -63,8 +67,23 @@ public class NxosTelemetryClient {
     }
     
     public static void main(String... args) throws IOException {
-        // Making assumption that NodeId is IpAddress
-        TelemetryBis.Telemetry nxosMsg = buildMessage("192.168.2.1");
+        
+        List<Integer> numbers = new ArrayList<>();
+        for ( int i=0; i < 1000; i++) {
+            numbers.add(i);
+        }
+        numbers.parallelStream().forEach( i -> {
+            try {
+                sendNxosPacket(i);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+    
+    public static void sendNxosPacket(int i) throws IOException {
+        
+        TelemetryBis.Telemetry nxosMsg = buildMessage("192.168.0.106", i);
         byte[] nxosMsgBytes = nxosMsg.toByteArray();
 
         InetAddress address = InetAddressUtils.getLocalHostAddress();

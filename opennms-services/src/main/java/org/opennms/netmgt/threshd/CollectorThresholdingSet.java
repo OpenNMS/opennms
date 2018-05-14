@@ -67,8 +67,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
+     * @throws ThresholdInitializationException 
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) throws ThresholdInitializationException {
         super(nodeId, hostAddress, serviceName, repository);
         m_resourceStorageDao = resourceStorageDao;
         String storeByIfAliasString = svcParams.getStoreByIfAlias();

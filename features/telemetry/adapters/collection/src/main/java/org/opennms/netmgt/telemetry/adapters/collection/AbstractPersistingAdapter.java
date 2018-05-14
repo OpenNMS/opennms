@@ -29,12 +29,19 @@
 package org.opennms.netmgt.telemetry.adapters.collection;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.script.ScriptException;
+
+import org.opennms.core.fileutils.FileUpdateCallback;
+import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
@@ -47,10 +54,12 @@ import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.config.api.Package;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
+import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.base.Strings;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -68,9 +77,55 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
     private Protocol protocol;
 
+    private FileUpdateWatcher scriptUpdateWatcher;
+
+    private BundleContext bundleContext;
+
+    private String script;
+
+    /*
+     * Since ScriptCollectionSetBuilder is not thread safe , loading of script
+     * is handled in ThreadLocal.
+     */
+    private final ThreadLocal<ScriptedCollectionSetBuilder> scriptedCollectionSetBuilders = new ThreadLocal<ScriptedCollectionSetBuilder>() {
+        @Override
+        protected ScriptedCollectionSetBuilder initialValue() {
+            try {
+                return loadCollectionBuilder(bundleContext, script);
+            } catch (Exception e) {
+                LOG.error("Failed to create builder for script '{}'.", script, e);
+                return null;
+            }
+        }
+    };
+
+    /*
+     * Flag to reload script if script didn't compile in earlier invocation,
+     * need to be ThreadLocal as script itself loads in ThreadLocal.
+     */
+    private ThreadLocal<Boolean> scriptCompiled = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return true;
+        }
+
+    };
+
+    /*
+     * This map is needed since loading of script happens in a ThreadLocal and
+     * status of script update needs to be propagated to each thread. This map
+     * collects ScriptedCollectionSetBuilder and set it's value as false
+     * initially. Whenever script updates and callback reload() gets called, all
+     * values will be set to true to trigger reload of script in corresponding
+     * thread, see getCollectionBuilder().
+     */
+    private Map<ScriptedCollectionSetBuilder, Boolean> scriptUpdateMap = new ConcurrentHashMap<>();
+
     private final LoadingCache<CacheKey, Optional<Package>> cache = CacheBuilder.newBuilder()
             .maximumSize(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.maximumSize", 1000))
-            .expireAfterWrite(Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120), TimeUnit.SECONDS)
+            .expireAfterWrite(
+                    Long.getLong("org.opennms.features.telemetry.cache.ipAddressFilter.expireAfterWrite", 120),
+                    TimeUnit.SECONDS)
             .build(new CacheLoader<CacheKey, Optional<Package>>() {
                 @Override
                 public Optional<Package> load(CacheKey key) {
@@ -92,17 +147,22 @@ public abstract class AbstractPersistingAdapter implements Adapter {
     /**
      * Build a collection set from the given message.
      *
-     * The message log is also provided in case the log contains additional meta-data
-     * required.
+     * The message log is also provided in case the log contains additional
+     * meta-data required.
      *
      * IMPORTANT: Implementations of this method must be thread-safe.
      *
-     * @param message message to be converted into a collection set
-     * @param messageLog message log to which the message belongs
-     * @return a {@link CollectionSetWithAgent} or an empty value if nothing should be persisted
-     * @throws Exception if an error occured while generating the collection set
+     * @param message
+     *            message to be converted into a collection set
+     * @param messageLog
+     *            message log to which the message belongs
+     * @return a {@link CollectionSetWithAgent} or an empty value if nothing
+     *         should be persisted
+     * @throws Exception
+     *             if an error occured while generating the collection set
      */
-    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog) throws Exception;
+    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message,
+            TelemetryMessageLog messageLog) throws Exception;
 
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
@@ -157,13 +217,13 @@ public abstract class AbstractPersistingAdapter implements Adapter {
         }
     }
 
-	public void setFilterDao(FilterDao filterDao) {
-		this.filterDao = filterDao;
-	}
+    public void setFilterDao(FilterDao filterDao) {
+        this.filterDao = filterDao;
+    }
 
-	public void setPersisterFactory(PersisterFactory persisterFactory) {
-		this.persisterFactory = persisterFactory;
-	}
+    public void setPersisterFactory(PersisterFactory persisterFactory) {
+        this.persisterFactory = persisterFactory;
+    }
 
     private static class CacheKey {
         private String protocol;
@@ -189,12 +249,107 @@ public abstract class AbstractPersistingAdapter implements Adapter {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             final CacheKey cacheKey = (CacheKey) o;
             final boolean equals = Objects.equals(hostAddress, cacheKey.hostAddress)
                     && Objects.equals(protocol, cacheKey.protocol);
             return equals;
+        }
+    }
+
+    /*
+     * This method checks and reloads script if there is an update else returns
+     * existing builder
+     */
+    protected ScriptedCollectionSetBuilder getCollectionBuilder() throws Exception {
+
+        ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
+        // Reload script if reload() happened or earlier invocation of script didn't compile
+        if ((builder != null && scriptUpdateMap.get(builder)) || !scriptCompiled.get()) {
+            scriptedCollectionSetBuilders.remove();
+            builder = scriptedCollectionSetBuilders.get();
+        }
+        if (builder == null) {
+            // script didn't compile, set flag to false
+            scriptCompiled.set(false);
+            throw new Exception(String.format("Error compiling script '%s'. See logs for details.", script));
+        } else if (!scriptCompiled.get()) {
+            scriptCompiled.set(true);
+        }
+        return builder;
+    }
+
+    private ScriptedCollectionSetBuilder loadCollectionBuilder(BundleContext bundleContext, String script)
+            throws IOException, ScriptException {
+        ScriptedCollectionSetBuilder builder;
+        if (bundleContext != null) {
+            builder = new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+            scriptUpdateMap.put(builder, false);
+            return builder;
+        } else {
+            builder = new ScriptedCollectionSetBuilder(new File(script));
+            scriptUpdateMap.put(builder, false);
+            return builder;
+        }
+    }
+
+    private ScriptedCollectionSetBuilder checkScript(BundleContext bundleContext, String script)
+            throws IOException, ScriptException {
+        if (bundleContext != null) {
+            return new ScriptedCollectionSetBuilder(new File(script), bundleContext);
+        } else {
+            return new ScriptedCollectionSetBuilder(new File(script));
+        }
+    }
+
+    private void setFileUpdateCallback(String script) {
+        if (!Strings.isNullOrEmpty(script)) {
+            try {
+                scriptUpdateWatcher = new FileUpdateWatcher(script, reloadScript());
+            } catch (Exception e) {
+                LOG.info("Script reload Utils is not registered", e);
+            }
+        }
+    }
+
+    private FileUpdateCallback reloadScript() {
+
+        return new FileUpdateCallback() {
+            /* Callback method for script update */
+            @Override
+            public void reload() {
+                try {
+                    checkScript(bundleContext, script);
+                    LOG.debug(" Updated script compiled");
+                    // Set all the values in Map to true to trigger reload of script in all threads
+                    scriptUpdateMap.replaceAll((builder, Boolean) -> true);
+                } catch (Exception e) {
+                    LOG.error("Updated script failed to build , using existing script'{}'.", script, e);
+                }
+            }
+
+        };
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    public String getScript() {
+        return script;
+    }
+
+    public void setScript(String script) {
+        this.script = script;
+        setFileUpdateCallback(script);
+    }
+
+    public void destroy() {
+        if (scriptUpdateWatcher != null) {
+            scriptUpdateWatcher.destroy();
         }
     }
 }

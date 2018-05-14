@@ -134,11 +134,15 @@
       <!-- Not fully needed, but a convenient way to install netty4 -->
       <feature>camel-netty4</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.udp/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.flow/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.sflow/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.minion/${project.version}</bundle>
     </feature>
 </features>

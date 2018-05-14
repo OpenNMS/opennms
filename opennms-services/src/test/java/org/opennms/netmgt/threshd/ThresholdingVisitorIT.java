@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -281,7 +281,7 @@ public class ThresholdingVisitorIT {
     }
 
     @Test
-    public void testCreateVisitor() {
+    public void testCreateVisitor() throws Exception {
         createVisitor();
     }
 
@@ -291,7 +291,7 @@ public class ThresholdingVisitorIT {
      * - test-thresholds.xml
      */
     @Test
-    public void testResourceGaugeData() {
+    public void testResourceGaugeData() throws Exception {
         addHighThresholdEvent(1, 10000, 5000, 15000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 15000);
@@ -1654,13 +1654,13 @@ public class ThresholdingVisitorIT {
         verifyEvents(0);
     }
 
-    private ThresholdingVisitor createVisitor() {
+    private ThresholdingVisitor createVisitor() throws ThresholdInitializationException {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         return createVisitor(params);
     }
 
-    private ThresholdingVisitor createVisitor(Map<String,Object> params) {
+    private ThresholdingVisitor createVisitor(Map<String,Object> params) throws ThresholdInitializationException {
         ServiceParameters svcParams = new ServiceParameters(params);
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), svcParams, m_resourceStorageDao);
         assertNotNull(visitor);

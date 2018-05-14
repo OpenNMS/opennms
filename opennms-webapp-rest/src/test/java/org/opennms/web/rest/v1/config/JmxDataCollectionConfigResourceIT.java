@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -79,27 +81,27 @@ public class JmxDataCollectionConfigResourceIT extends AbstractSpringJerseyRestT
 
         assertNotNull(config);
 
-        assertEquals(6, config.getJmxCollectionCount());
+        assertThat(config.getJmxCollectionCount(), greaterThanOrEqualTo(6));
 
         assertEquals("jmx-jboss", config.getJmxCollection("jmx-jboss").getName());
         assertEquals(300, config.getJmxCollection("jmx-jboss").getRrd().getStep());
-        assertEquals(4, config.getJmxCollection("jmx-jboss").getMbeanCount());
+        assertThat(config.getJmxCollection("jmx-jboss").getMbeanCount(), greaterThanOrEqualTo(4));
 
         assertEquals("jsr160", config.getJmxCollection("jsr160").getName());
         assertEquals(300, config.getJmxCollection("jsr160").getRrd().getStep());
-        assertEquals(39, config.getJmxCollection("jsr160").getMbeanCount());
+        assertThat(config.getJmxCollection("jsr160").getMbeanCount(), greaterThanOrEqualTo(38));
 
         assertEquals("jmx-minion", config.getJmxCollection("jmx-minion").getName());
         assertEquals(300, config.getJmxCollection("jmx-minion").getRrd().getStep());
-        assertEquals(11, config.getJmxCollection("jmx-minion").getMbeanCount());
+        assertThat(config.getJmxCollection("jmx-minion").getMbeanCount(), greaterThanOrEqualTo(10));
 
         assertEquals("jmx-cassandra30x", config.getJmxCollection("jmx-cassandra30x").getName());
         assertEquals(300, config.getJmxCollection("jmx-cassandra30x").getRrd().getStep());
-        assertEquals(53, config.getJmxCollection("jmx-cassandra30x").getMbeanCount());
+        assertThat(config.getJmxCollection("jmx-cassandra30x").getMbeanCount(), greaterThanOrEqualTo(53));
 
         assertEquals("jmx-cassandra30x-newts", config.getJmxCollection("jmx-cassandra30x-newts").getName());
         assertEquals(300, config.getJmxCollection("jmx-cassandra30x-newts").getRrd().getStep());
-        assertEquals(22, config.getJmxCollection("jmx-cassandra30x-newts").getMbeanCount());
+        assertThat(config.getJmxCollection("jmx-cassandra30x-newts").getMbeanCount(), greaterThanOrEqualTo(22));
     }
 
 }

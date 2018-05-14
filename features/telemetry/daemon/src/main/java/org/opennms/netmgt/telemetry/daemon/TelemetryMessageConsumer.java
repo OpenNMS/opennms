@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.telemetry.daemon;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.logging.Logging;
@@ -39,24 +46,11 @@ import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.context.ApplicationContext;
 
-import javax.annotation.PostConstruct;
-
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessage, TelemetryProtos.TelemetryMessageLog> {
     private final Logger LOG = LoggerFactory.getLogger(TelemetryMessageConsumer.class);
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Autowired
     private TelemetryAdapterRegistry adapterRegistry;
@@ -75,11 +69,17 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
         for (org.opennms.netmgt.telemetry.config.model.Adapter adapterDef : protocolDef.getAdapters()) {
+            final Adapter adapter;
             try {
-                adapters.add(buildAdapter(adapterDef));
+                adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
             } catch (Exception e) {
                 throw new Exception("Failed to create adapter from definition: " + adapterDef, e);
             }
+
+            if (adapter == null) {
+                throw new Exception("No adapter found for class: " + adapterDef.getClassName());
+            }
+            adapters.add(adapter);
         }
     }
 
@@ -92,50 +92,16 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
                 try {
                     adapter.handleMessageLog(messageLog);
                 } catch (RuntimeException e) {
-                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog);
+                    LOG.warn("Adapter: {} failed to handle message log: {}. Skipping.", adapter, messageLog, e);
                     continue;
                 }
             }
         }
     }
 
-    private Adapter buildAdapter(org.opennms.netmgt.telemetry.config.model.Adapter adapterDef) throws Exception {
-
-        Adapter adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
-
-        if (adapter == null) {
-            final Object adapterInstance;
-            try {
-                final Class<?> clazz = Class.forName(adapterDef.getClassName());
-                final Constructor<?> ctor = clazz.getConstructor();
-                adapterInstance = ctor.newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException(String.format("Failed to instantiate adapter with class name '%s'.",
-                        adapterDef.getClassName(), e));
-            }
-
-            // Cast
-            if (!(adapterInstance instanceof Adapter)) {
-                throw new IllegalArgumentException(String.format("%s must implement %s", adapterDef.getClassName(),
-                        Adapter.class.getCanonicalName()));
-            }
-            adapter = (Adapter) adapterInstance;
-
-            // Apply the parameters
-            final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);
-            wrapper.setPropertyValues(adapterDef.getParameterMap());
-
-            // Autowire!
-            final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
-            beanFactory.autowireBean(adapter);
-            beanFactory.initializeBean(adapter, "adapter");
-
-            // Set the protocol reference
-            adapter.setProtocol(protocolDef);
-
-        }
-
-        return adapter;
+    @PreDestroy
+    public void destroy() {
+        adapters.forEach((adapter) -> adapter.destroy());
     }
 
     @Override

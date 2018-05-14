@@ -570,6 +570,11 @@ public class ConfigTesterTest {
     }
 
     @Test
+    public void testElasticCredentialsConfig() {
+        ignoreConfigFile("elastic-credentials.xml");
+    }
+
+    @Test
     public void zz001testAllConfigs() {
         ConfigTester.main(new String[] { "-a" });
     }

@@ -21,11 +21,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>
-              org.opennms.core.collections;version="${project.version}",
-              org.opennms.core.time;version="${project.version}",
-              org.opennms.core.utils;version="${project.version}"
-            </Export-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -49,6 +44,11 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

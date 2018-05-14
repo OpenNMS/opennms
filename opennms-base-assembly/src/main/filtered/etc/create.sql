@@ -2525,3 +2525,38 @@ CREATE VIEW node_outage_status AS
         WHERE outages.svcregainedeventid IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
+
+--##################################################################
+--# Classification tables
+--##################################################################
+CREATE TABLE classification_groups (
+  id integer not null,
+  name text not null,
+  readonly boolean,
+  enabled boolean,
+  priority integer not null,
+  description text,
+  CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
+);
+ALTER TABLE classification_groups ADD CONSTRAINT classification_groups_name_key UNIQUE (name);
+
+CREATE TABLE classification_rules (
+  id integer NOT NULL,
+  name TEXT NOT NULL,
+  dst_address TEXT,
+  dst_port TEXT,
+  src_address TEXT,
+  src_port TEXT,
+  exporter_filter TEXT,
+  protocol TEXT,
+  position integer not null,
+  groupid integer NOT NULL,
+  CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_classification_rules_groupid FOREIGN KEY (groupId) REFERENCES classification_groups (id) ON DELETE CASCADE
+);
+ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (dst_address,dst_port,src_address,src_port,protocol,exporter_filter,groupid);
+
+--# Sequence for the id column in classification_rules table
+--#          sequence, column, table
+--# install: rulenxtid id classification_rules
+create sequence rulenxtid minvalue 1;

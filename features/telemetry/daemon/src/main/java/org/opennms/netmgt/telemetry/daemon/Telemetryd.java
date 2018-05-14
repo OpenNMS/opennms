@@ -162,6 +162,7 @@ public class Telemetryd implements SpringServiceDaemon {
         }
         dispatchers.clear();
 
+        final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
         // Stop the consumers
         for (TelemetryMessageConsumer consumer : consumers) {
             try {
@@ -170,6 +171,7 @@ public class Telemetryd implements SpringServiceDaemon {
             } catch (Exception e) {
                 LOG.error("Error while stopping consumer.", e);
             }
+            beanFactory.destroyBean(consumer);
         }
         consumers.clear();
 

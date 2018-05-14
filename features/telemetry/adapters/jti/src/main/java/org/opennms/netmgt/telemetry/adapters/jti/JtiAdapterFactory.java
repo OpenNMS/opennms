@@ -30,7 +30,6 @@ package org.opennms.netmgt.telemetry.adapters.jti;
 
 import java.util.Map;
 
-import org.opennms.features.telemetry.adapters.factory.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractCollectionAdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
@@ -38,14 +37,23 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 
-public class JtiAdapterFactory extends AbstractCollectionAdapterFactory implements AdapterFactory {
+public class JtiAdapterFactory extends AbstractCollectionAdapterFactory {
+
+    public JtiAdapterFactory() {
+        super(null);
+    }
 
     public JtiAdapterFactory(BundleContext bundleContext) {
         super(bundleContext);
     }
 
-    public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
+    @Override
+    public Class<? extends Adapter> getAdapterClass() {
+        return JtiGpbAdapter.class;
+    }
 
+    @Override
+    public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
         final JtiGpbAdapter adapter = new JtiGpbAdapter();
         adapter.setProtocol(protocol);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
@@ -60,5 +68,4 @@ public class JtiAdapterFactory extends AbstractCollectionAdapterFactory implemen
         wrapper.setPropertyValues(properties);
         return adapter;
     }
-
 }

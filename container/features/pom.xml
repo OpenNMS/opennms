@@ -133,13 +133,19 @@
             <repository>mvn:org.opennms.plugins/alarm-change-notifier/${project.version}/xml/features</repository> 
     
             <!-- ReST Elasticsearch Integration -->
-            <repository>mvn:org.opennms.plugins/opennms-es-rest/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/org.opennms.features.opennms-es-rest/${project.version}/xml/features</repository>
             
             <!-- Internal Plugins Descriptor -->
             <repository>mvn:org.opennms.plugins/internal-plugins-descriptor/${project.version}/xml/features</repository>
 
             <!-- IFTTT Integration -->
             <repository>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}/xml/features</repository>
+
+            <!-- Jest Feature -->
+            <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
+
+            <!-- Flow Integration -->
+            <repository>mvn:org.opennms.features/opennms-flows/${project.version}/xml/features</repository>
 
           </repositories>
 
@@ -338,6 +344,7 @@
             <feature>vaadin-adminpage</feature>
 
             <!-- features defined as internal opennms plugins -->
+            <feature>opennms-jest</feature>
             <feature>vaadin-opennms-pluginmanager</feature>
             <feature>alarm-change-notifier</feature>
             <feature>opennms-es-rest</feature>
@@ -345,6 +352,9 @@
 
             <!-- IFTTT Integration -->
             <feature>ifttt-integration</feature>
+
+            <!-- Flows -->
+            <feature>opennms-flows</feature>
           </features>
         </configuration>
       </plugin>
@@ -759,10 +769,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.plugins</groupId>
-      <artifactId>opennms-es-rest</artifactId>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.opennms-es-rest</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -794,8 +810,26 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-flows</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>bundle-refresher</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.adapters</groupId>
+      <artifactId>org.opennms.features.telemetry.adapters.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

@@ -573,6 +573,7 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
+	@Ignore
 	public void testInstallFeatureOpennmsTelemetryDaemon() {
 		//installFeature("gemini-blueprint", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));
 		installFeature("opennms-telemetry-daemon", EnumSet.of(FeaturesService.Option.NoAutoRefreshBundles));

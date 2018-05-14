@@ -115,5 +115,51 @@ angular.module('onms-ksc', [
       growl.error(msg);
     });
   };
+}])
+.factory('flowsRestFactory', function ($http, $q) {
+  var resources = {};
 
+  resources.getFlowGraphUrl = function(nodeId, ifIndex , start, end) {
+      var deferred = $q.defer();
+      $http({
+        url: 'rest/flows/flowGraphUrl',
+        method: 'GET',
+        params: { exporterNode : nodeId,
+                  ifIndex : ifIndex,
+                  start : start,
+                  end : end,
+                  limit: 0 }
+      }).success(function(data) {
+        deferred.resolve(data);
+      });
+      return deferred.promise;
+  };
+
+  return resources;
+})
+.controller('checkFlowsCtrl', ['$scope', '$http', '$filter', 'flowsRestFactory', function($scope, $http, $filter, flowsRestFactory) {
+
+  $scope.flowCount = 0;
+  $scope.flowsEnabled = false;
+  $scope.hasFlows = false;
+  $scope.flowGraphUrl = '';
+  $scope.getFlowInfo = function(nodeId, ifIndex , start, end) {
+    if (nodeId == 0 || ifIndex == 0) {
+      return;
+    }
+    flowsRestFactory.getFlowGraphUrl(nodeId, ifIndex, start, end)
+      .then(function (data) {
+        $scope.flowGraphUrl = data.flowGraphUrl;
+        $scope.flowCount = data.flowCount;
+        if ($scope.flowGraphUrl) {
+            $scope.flowsEnabled = true;
+            if ( $scope.flowCount > 0) {
+                     $scope.hasFlows = true;
+            } else {
+              $scope.flowGraphUrl = null;
+            }
+        }
+
+      });
+  };
 }]);

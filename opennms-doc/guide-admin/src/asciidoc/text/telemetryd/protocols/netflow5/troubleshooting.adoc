@@ -1,0 +1,44 @@
+
+[[telemetryd-netflow5-troubleshooting]]
+===== NetFlow v5 Troubleshooting
+
+.Verify in Karaf Console if the `flows` feature is installed and started
+[source]
+----
+feature:list | grep flows
+----
+
+.Test the connectivity to ElasticSearch using curl
+[source]
+----
+curl -v http://elastic:9200
+
+* About to connect() to elastic port 9200 (#0)
+*   Trying 172.18.0.3...
+* Connected to elastic (172.18.0.3) port 9200 (#0)
+> GET / HTTP/1.1
+> User-Agent: curl/7.29.0
+> Host: elastic:9200
+> Accept: */*
+>
+< HTTP/1.1 200 OK
+< content-type: application/json; charset=UTF-8
+< content-length: 341
+<
+{
+  "name" : "tyUkFjW",
+  "cluster_name" : "opennms.drift.elasticsearch",
+  "cluster_uuid" : "kKU7VB2iQFesX7rCQqwrHg",
+  "version" : {
+    "number" : "5.6.3",
+    "build_hash" : "1a2f265",
+    "build_date" : "2017-10-06T20:33:39.012Z",
+    "build_snapshot" : false,
+    "lucene_version" : "6.6.1"
+  },
+  "tagline" : "You Know, for Search"
+}
+* Connection #0 to host elastic left intact
+----
+
+TIP: Use `curl -u` when authentication with X-Pack security is installed and enabled.

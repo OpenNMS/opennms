@@ -19,7 +19,7 @@
 		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
 
-	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.features.telemetry.adapters.factory.api.AdapterFactory">
+	<service id="nxosFactoryService" ref="nxosAdapterFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
 			<entry key="registration.export" value="true" />
 			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.nxos.NxosGpbAdapter" />

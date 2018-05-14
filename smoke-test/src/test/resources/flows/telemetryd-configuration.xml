@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<telemetryd-config>
+    <protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="true">
+        <listener name="Netflow-5-UDP-50000" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+            <parameter key="port" value="50000"/>
+            <parameter key="host" value="0.0.0.0"/>
+        </listener>
+
+        <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter">
+        </adapter>
+    </protocol>
+
+    <protocol name="Netflow-9" description="Listener for Netflow 9 UDP packets" enabled="true">
+        <listener name="Netflow-9-UDP-50001" class-name="org.opennms.netmgt.telemetry.listeners.flow.netflow9.UdpListener">
+            <parameter key="port" value="50001"/>
+            <parameter key="host" value="0.0.0.0"/>
+        </listener>
+
+        <adapter name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.v9.Netflow9Adapter">
+        </adapter>
+    </protocol>
+
+    <protocol name="IPFIX" description="Listener for IPFIX UDP packets" enabled="true">
+        <listener name="IPFIX-UDP-50002" class-name="org.opennms.netmgt.telemetry.listeners.flow.ipfix.UdpListener">
+            <parameter key="port" value="50002"/>
+            <parameter key="host" value="0.0.0.0"/>
+        </listener>
+
+        <adapter name="IPFIX-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.ipfix.IpfixAdapter">
+        </adapter>
+    </protocol>
+
+    <protocol name="SFlow" description="Listener for SFlow UDP packets" enabled="true">
+        <listener name="SFlow-UDP-50003" class-name="org.opennms.netmgt.telemetry.listeners.sflow.Listener">
+            <parameter key="port" value="50003"/>
+            <parameter key="host" value="0.0.0.0"/>
+        </listener>
+
+        <adapter name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter">
+        </adapter>
+    </protocol>
+</telemetryd-config>
