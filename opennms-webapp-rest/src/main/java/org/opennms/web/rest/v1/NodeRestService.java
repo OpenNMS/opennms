@@ -292,7 +292,7 @@ public class NodeRestService extends OnmsRestService {
             Event e = EventUtils.createDeleteNodeEvent("OpenNMS.REST", node.getId(), -1L);
             sendEvent(e);
 
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }

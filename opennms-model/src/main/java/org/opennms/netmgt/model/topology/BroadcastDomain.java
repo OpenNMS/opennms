@@ -592,8 +592,6 @@ public class BroadcastDomain implements BridgeTopology {
                 strbfr.append(bfte.printTopology());
             }
         }
-        strbfr.append("\n");
-        strbfr.append("------broadcast domain-----");
     	return strbfr.toString();
     }
     
@@ -607,19 +605,18 @@ public class BroadcastDomain implements BridgeTopology {
         strbfr.append("bridges on level:");
         strbfr.append(bridgeIds);
         strbfr.append("\n");
-        for (Integer bridgeid : bridgeIds) {
-        	for (SharedSegment segment: getSharedSegments(bridgeid)) {
-        		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
-        			strbfr.append(segment.printTopology());
-                                strbfr.append("\n");
-        			bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
-        		}
-        	}
-        }
         
-        strbfr.append("------level ");
-    	strbfr.append(level);
-        strbfr.append(" -----");
+        bridgeIds.stream()
+                .map(id -> getBridge(id))
+                .filter(bridge -> bridge != null)
+                .forEach(bridge -> {
+                    for (SharedSegment segment: getSharedSegments(bridge.getNodeId())) {
+                        if (segment.getDesignatedBridge().intValue() == bridge.getNodeId().intValue()) {
+                            strbfr.append(segment.printTopology());
+                            bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
+                        }
+                    }
+                });
         bridgesDownLevel.removeAll(bridgeIds);
     	if (!bridgesDownLevel.isEmpty())
     		strbfr.append(printTopologyFromLevel(bridgesDownLevel,level+1));

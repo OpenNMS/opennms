@@ -61,6 +61,8 @@ public abstract class ResourceTypeUtils {
 
     private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
 
+    private static final Pattern s_responseDirectoryPattern =  Pattern.compile("^" + RESPONSE_DIRECTORY + ".+$");
+
     /**
      * <p>isNumericType</p>
      *
@@ -102,7 +104,7 @@ public abstract class ResourceTypeUtils {
      * @return a boolean.
      */
     public static boolean isResponseTime(String relativePath) {
-        return Pattern.matches("^" + RESPONSE_DIRECTORY + ".+$", relativePath);
+        return s_responseDirectoryPattern.matcher(relativePath).matches();
     }
 
     /**

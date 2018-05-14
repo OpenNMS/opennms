@@ -31,6 +31,7 @@ package org.opennms.netmgt.newts.support;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.newts.api.Context;
@@ -155,6 +156,21 @@ public abstract class NewtsUtils {
     }
 
     /**
+     * Extracts the metric name from the resource id.
+     *
+     * @param resourceId Newts resource id
+     * @return metric name
+     */
+    public static String toMetricName(String resourceId) {
+        if (resourceId == null) {
+            return null;
+        }
+
+        List<String> els = s_splitter.splitIdIntoElements(resourceId);
+        return els.get(els.size() - 1);
+    }
+
+    /**
      * Creates a sample used to index string attributes.
      *
      * These should only be index and not be persisted.
@@ -162,4 +178,5 @@ public abstract class NewtsUtils {
     public static Sample createSampleForIndexingStrings(Context context, Resource resource) {
         return new Sample(EPOCH, context, resource, "strings", MetricType.GAUGE, ZERO);
     }
+
 }
