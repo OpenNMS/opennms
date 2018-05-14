@@ -1439,38 +1439,38 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
         BroadcastDomain domain = new BroadcastDomain();
-        Bridge.create(domain,topology.nodeId1571);
-        Bridge.create(domain,topology.nodeId1572);
+        Bridge.create(domain,topology.spiazzofasw01Id);
+        Bridge.create(domain,topology.spiasvigasw01Id);
         Bridge.create(domain,topology.nodeId2473);
-        Bridge.create(domain,topology.nodeId5099);
+        Bridge.create(domain,topology.villpizzasw01Id);
         Bridge.create(domain,topology.nodeId6796);
         Bridge.create(domain,topology.nodeId2673);
         Bridge.create(domain,topology.nodeId2674);
-        Bridge.create(domain,topology.nodeId1619);
+        Bridge.create(domain,topology.vigrenmuasw01Id);
         Bridge.create(domain,topology.nodeId2676);
-        Bridge.create(domain,topology.nodeId1396);
-        Bridge.create(domain,topology.nodeId6740);
+        Bridge.create(domain,topology.daremunasw01Id);
+        Bridge.create(domain,topology.spiazzomepe01Id);
         Bridge.create(domain,topology.nodeId6772);
-        Bridge.create(domain,topology.nodeId1622);
+        Bridge.create(domain,topology.vrendmunasw01Id);
         Bridge.create(domain,topology.nodeId6777);
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd);
         ndbtB.setDomain(domain);
-        ndbtB.addUpdatedBFT((topology.nodeId1571),topology.bft1571);
-        ndbtB.addUpdatedBFT((topology.nodeId1572),topology.bft1572);
+        ndbtB.addUpdatedBFT((topology.spiazzofasw01Id),topology.bftspiazzofasw01);
+        ndbtB.addUpdatedBFT((topology.spiasvigasw01Id),topology.bftspiasvigasw01);
         ndbtB.addUpdatedBFT((topology.nodeId2473),topology.bft2473);
-        ndbtB.addUpdatedBFT((topology.nodeId5099),topology.bft5099);
-        ndbtB.addUpdatedBFT((topology.nodeId6796),topology.bft6796);
-        ndbtB.addUpdatedBFT((topology.nodeId2673),topology.bft2673);
-        ndbtB.addUpdatedBFT((topology.nodeId2674),topology.bft2674);
-        ndbtB.addUpdatedBFT((topology.nodeId1619),topology.bft1619);
-        ndbtB.addUpdatedBFT((topology.nodeId2676),topology.bft2676);
-        ndbtB.addUpdatedBFT((topology.nodeId1396),topology.bft1396);
-        ndbtB.addUpdatedBFT((topology.nodeId6740),topology.bft6740);
-        ndbtB.addUpdatedBFT((topology.nodeId6772),topology.bft6772);
-        ndbtB.addUpdatedBFT((topology.nodeId1622),topology.bft1622);
-        ndbtB.addUpdatedBFT((topology.nodeId6777),topology.bft6777);
+        ndbtB.addUpdatedBFT((topology.villpizzasw01Id),topology.bftvillpizzasw01);
+//        ndbtB.addUpdatedBFT((topology.nodeId6796),topology.bft6796);
+//        ndbtB.addUpdatedBFT((topology.nodeId2673),topology.bft2673);
+//        ndbtB.addUpdatedBFT((topology.nodeId2674),topology.bft2674);
+//        ndbtB.addUpdatedBFT((topology.nodeId2676),topology.bft2676);
+//        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
+//        ndbtB.addUpdatedBFT((topology.spiazzomepe01Id),topology.bftspiazzomepe01);
+//        ndbtB.addUpdatedBFT((topology.nodeId6772),topology.bft6772);
+//         ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
+//         ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
+//        ndbtB.addUpdatedBFT((topology.nodeId6777),topology.bft6777);
         
         ndbtB.calculate();
     }
