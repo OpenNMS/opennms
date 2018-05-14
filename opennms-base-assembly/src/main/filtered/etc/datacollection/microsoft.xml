@@ -28,9 +28,6 @@
          <includeGroup>compaq-insight-manager-stats</includeGroup>
          <includeGroup>domino-stats</includeGroup>
          <includeGroup>microsoft-http</includeGroup>
-         <includeGroup>openmanage-coolingdevices</includeGroup>
-         <includeGroup>openmanage-temperatureprobe</includeGroup>
-         <includeGroup>openmanage-powerusage</includeGroup>
          <includeGroup>snmpinformant-cpu</includeGroup>
          <includeGroup>snmpinformant-adv-cpu</includeGroup>
          <includeGroup>snmpinformant-disk</includeGroup>
