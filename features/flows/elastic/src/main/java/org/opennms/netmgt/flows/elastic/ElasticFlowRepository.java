@@ -42,6 +42,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -49,6 +50,10 @@ import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
+import org.opennms.netmgt.flows.classification.ClassificationRequest;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocol;
+import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.elastic.index.IndexSelector;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
@@ -95,6 +100,8 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
+    private final ClassificationEngine classificationEngine;
+
     private final int bulkRetryCount;
 
     /**
@@ -124,11 +131,13 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private final IndexSelector indexSelector;
 
-    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy
-            , DocumentEnricher documentEnricher, int bulkRetryCount, long maxFlowDurationMs) {
+    public ElasticFlowRepository(MetricRegistry metricRegistry, JestClient jestClient, IndexStrategy indexStrategy,
+                                 DocumentEnricher documentEnricher, ClassificationEngine classificationEngine,
+                                 int bulkRetryCount, long maxFlowDurationMs) {
         this.client = Objects.requireNonNull(jestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.documentEnricher = Objects.requireNonNull(documentEnricher);
+        this.classificationEngine = Objects.requireNonNull(classificationEngine);
         this.bulkRetryCount = bulkRetryCount;
         this.indexSelector = new IndexSelector(TYPE, indexStrategy, maxFlowDurationMs);
 
@@ -239,11 +248,12 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<List<TrafficSummary<ConversationKey>>> getTopNConversations(int N, List<Filter> filters) {
+    public CompletableFuture<List<TrafficSummary<Conversation>>> getTopNConversations(int N, List<Filter> filters) {
         return getTotalBytesFromTopN(N, "netflow.convo_key", null, false, filters).thenApply((res) -> res.stream()
                 .map(summary -> {
-                    // Map the strings to the corresponding conversation keys
-                    final TrafficSummary<ConversationKey> out = new TrafficSummary<>(ConversationKeyUtils.fromJsonString(summary.getEntity()));
+                    final ConversationKey convo = ConversationKeyUtils.fromJsonString(summary.getEntity());
+                    final Conversation conversation = new Conversation(convo, classify(convo));
+                    final TrafficSummary<Conversation> out = new TrafficSummary<>(conversation);
                     out.setBytesIn(summary.getBytesIn());
                     out.setBytesOut(summary.getBytesOut());
                     return out;
@@ -252,8 +262,12 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     @Override
-    public CompletableFuture<Table<Directional<ConversationKey>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
-        return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters).thenApply((res) -> mapTable(res, ConversationKeyUtils::fromJsonString));
+    public CompletableFuture<Table<Directional<Conversation>, Long, Double>> getTopNConversationsSeries(int N, long step, List<Filter> filters) {
+        return getSeriesFromTopN(N, step, "netflow.convo_key", null, false, filters).thenApply((res) -> mapTable(res, (key) -> {
+            final ConversationKey convo = ConversationKeyUtils.fromJsonString(key);
+            final String application = classify(convo);
+            return new Conversation(convo, application);
+        }));
     }
 
     private CompletableFuture<List<String>> getTopN(int N, String groupByTerm, String keyForMissingTerm, List<Filter> filters) {
@@ -452,6 +466,46 @@ public class ElasticFlowRepository implements FlowRepository {
     private CompletableFuture<List<TrafficSummary<String>>> getTotalBytesFromTopN(int N, String groupByTerm, String keyForMissingTerm, boolean includeOther, List<Filter> filters) {
         return getTopN(N, groupByTerm, keyForMissingTerm, filters)
                 .thenCompose((topN) -> getTotalBytesFromTopN(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
+    }
+
+    /**
+     * Perform a best-effort classification of the application based on
+     * the context of the conversation key.
+     *
+     * This currently has the following limitations:
+     *  * The application will be classified using the current configuration which may not match
+     *    that at the time that the flow were originally classified
+     *  * The classification does not take the exporter into account, and as a result can be classified
+     *    differently then the related flows
+     *
+     * @param convo the conversation key to classify
+     * @return the classified application name
+     */
+    private String classify(ConversationKey convo) {
+        final ClassificationRequest request = new ClassificationRequest();
+        request.setSrcAddress(convo.getSrcIp());
+        request.setSrcPort(convo.getSrcPort());
+        request.setDstAddress(convo.getSrcIp());
+        request.setDstPort(convo.getDstPort());
+
+        Protocol protocol = Protocols.getProtocol(convo.getProtocol());
+        if (protocol == null) {
+            protocol = new Protocol(convo.getProtocol(), null, null);
+        }
+        request.setProtocol(protocol);
+        request.setLocation(convo.getLocation());
+
+        String application = classificationEngine.classify(request);
+        if (application != null) {
+            return application;
+        }
+
+        // Flip the source and destination addresses and try again
+        request.setSrcAddress(convo.getDstIp());
+        request.setSrcPort(convo.getDstPort());
+        request.setDstAddress(convo.getSrcIp());
+        request.setDstPort(convo.getSrcPort());
+        return classificationEngine.classify(request);
     }
 
     private CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {

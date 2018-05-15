@@ -55,16 +55,17 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
-import org.opennms.netmgt.flows.api.ConversationKey;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.api.TrafficSummary;
-import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
-import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -96,12 +97,13 @@ public class FlowQueryIT {
         MockLogAppender.setupLogging(true, "DEBUG");
         final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
         final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         final MetricRegistry metricRegistry = new MetricRegistry();
         final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT, null, null);
         final JestClient client = restClientFactory.createClient();
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher
-                , 3, 12000);
+        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY, documentEnricher,
+                classificationEngine, 3, 12000);
         final IndexSettings settings = new IndexSettings();
         final ElasticFlowRepositoryInitializer initializer = new ElasticFlowRepositoryInitializer(client, settings);
 
@@ -200,19 +202,21 @@ public class FlowQueryIT {
     @Test
     public void canGetTopNConversations() throws ExecutionException, InterruptedException {
         // Retrieve the Top N conversation over the entire time range
-        final List<TrafficSummary<ConversationKey>> convoTrafficSummary = flowRepository.getTopNConversations(2, getFilters()).get();
+        final List<TrafficSummary<Conversation>> convoTrafficSummary = flowRepository.getTopNConversations(2, getFilters()).get();
         assertThat(convoTrafficSummary, hasSize(2));
 
         // Expect the conversations, with the sum of all the bytes from all the flows
-        TrafficSummary<ConversationKey> convo = convoTrafficSummary.get(0);
-        assertThat(convo.getEntity().getSrcIp(), equalTo("192.168.1.101"));
-        assertThat(convo.getEntity().getDstIp(), equalTo("10.1.1.12"));
+        TrafficSummary<Conversation> convo = convoTrafficSummary.get(0);
+        assertThat(convo.getEntity().getKey().getSrcIp(), equalTo("192.168.1.101"));
+        assertThat(convo.getEntity().getKey().getDstIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(110L));
         assertThat(convo.getBytesOut(), equalTo(1100L));
 
         convo = convoTrafficSummary.get(1);
-        assertThat(convo.getEntity().getSrcIp(), equalTo("192.168.1.100"));
-        assertThat(convo.getEntity().getDstIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getKey().getSrcIp(), equalTo("192.168.1.100"));
+        assertThat(convo.getEntity().getKey().getDstIp(), equalTo("10.1.1.12"));
+        assertThat(convo.getEntity().getApplication(), equalTo("https"));
         assertThat(convo.getBytesIn(), equalTo(100L));
         assertThat(convo.getBytesOut(), equalTo(1000L));
     }
@@ -285,7 +289,7 @@ public class FlowQueryIT {
 
     @Test
     public void canRetrieveTopNConversationsSeries() throws ExecutionException, InterruptedException {
-        final Table<Directional<ConversationKey>, Long, Double> convoTraffic = flowRepository.getTopNConversationsSeries(10, 10, getFilters()).get();
+        final Table<Directional<Conversation>, Long, Double> convoTraffic = flowRepository.getTopNConversationsSeries(10, 10, getFilters()).get();
         assertThat(convoTraffic.rowKeySet(), hasSize(8));
     }
 

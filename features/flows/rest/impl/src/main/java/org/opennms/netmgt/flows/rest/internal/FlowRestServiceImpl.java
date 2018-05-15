@@ -50,6 +50,7 @@ import javax.ws.rs.core.UriInfo;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowRepository;
@@ -190,20 +191,21 @@ public class FlowRestServiceImpl implements FlowRestService {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
 
-        final List<TrafficSummary<ConversationKey>> summary =
+        final List<TrafficSummary<Conversation>> summary =
                 waitForFuture(flowRepository.getTopNConversations(N, filters));
 
         final FlowSummaryResponse response = new FlowSummaryResponse();
         response.setStart(timeRangeFilter.getStart());
         response.setEnd(timeRangeFilter.getEnd());
         response.setHeaders(Lists.newArrayList("Location", "Protocol", "Source IP", "Source Port",
-                "Dest. IP", "Dest. Port", "Bytes In", "Bytes Out"));
+                "Dest. IP", "Dest. Port", "Application", "Bytes In", "Bytes Out"));
         response.setRows(summary.stream()
                 .map(sum -> {
-                    final ConversationKey key = sum.getEntity();
+                    final Conversation convo = sum.getEntity();
+                    final ConversationKey key = convo.getKey();
                     return Lists.newArrayList((Object)key.getLocation(), key.getProtocol(),
                             key.getSrcIp(), key.getSrcPort(), key.getDstIp(), key.getDstPort(),
-                            sum.getBytesIn(), sum.getBytesOut());
+                            convo.getApplication(), sum.getBytesIn(), sum.getBytesOut());
                 })
                 .collect(Collectors.toList()));
         return response;
@@ -213,7 +215,7 @@ public class FlowRestServiceImpl implements FlowRestService {
     public FlowSeriesResponse getTopNConversationsSeries(long step, int N, UriInfo uriInfo) {
         final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
         final TimeRangeFilter timeRangeFilter = getRequiredTimeRangeFilter(filters);
-        final Table<Directional<ConversationKey>, Long, Double> series =
+        final Table<Directional<Conversation>, Long, Double> series =
                 waitForFuture(flowRepository.getTopNConversationsSeries(N, step, filters));
 
         final FlowSeriesResponse response = new FlowSeriesResponse();
@@ -221,10 +223,12 @@ public class FlowRestServiceImpl implements FlowRestService {
         response.setEnd(timeRangeFilter.getEnd());
         response.setColumns(series.rowKeySet().stream()
                 .map(d -> {
-                    final ConversationKey key = d.getValue();
+                    final Conversation convo = d.getValue();
+                    final ConversationKey key = convo.getKey();
+                    final String applicationTag = convo.getApplication() != null ? String.format(" [%s]", convo.getApplication()) : "";
                     final FlowSeriesColumn column = new FlowSeriesColumn();
-                    column.setLabel(String.format("%s:%d <-> %s:%d", key.getSrcIp(), key.getSrcPort(),
-                            key.getDstIp(), key.getDstPort()));
+                    column.setLabel(String.format("%s:%d <-> %s:%d%s", key.getSrcIp(), key.getSrcPort(),
+                            key.getDstIp(), key.getDstPort(), applicationTag));
                     column.setIngress(d.isIngress());
                     return column;
                 })
