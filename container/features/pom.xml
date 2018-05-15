@@ -144,9 +144,6 @@
             <!-- Jest Feature -->
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
 
-            <!-- Flow Integration -->
-            <repository>mvn:org.opennms.features/opennms-flows/${project.version}/xml/features</repository>
-
           </repositories>
 
           <!--
