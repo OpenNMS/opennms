@@ -16,8 +16,8 @@ const isValidIPAddress = function(ip) {
 
 const checkIpRange = function(ip1, ip2){
     if (verifyIPv4Address(ip1) && verifyIPv4Address(ip2)) {
-        const a = ipaddress.Address4(ip1).bigInteger();
-        const b = ipaddress.Address4(ip2).bigInteger();
+        const a = new ipaddress.Address4(ip1).bigInteger();
+        const b = new ipaddress.Address4(ip2).bigInteger();
         return b >= a;
     }
     if (verifyIPv6Address(ip1) && verifyIPv6Address(ip2)) {
@@ -33,6 +33,7 @@ console.log('init: ipaddress-js'); // eslint-disable-line no-console
 module.exports = {
 	Address4: ipaddress.Address4,
 	Address6: ipaddress.Address6,
+	v6: ipaddress.v6,
 	verifyIPv4Address: verifyIPv4Address,
 	verifyIPv6Address: verifyIPv6Address,
 	isValidIPAddress: isValidIPAddress,
