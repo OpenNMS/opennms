@@ -144,6 +144,7 @@
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.udp/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.flow/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.listeners/org.opennms.features.telemetry.listeners.sflow/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>
 
