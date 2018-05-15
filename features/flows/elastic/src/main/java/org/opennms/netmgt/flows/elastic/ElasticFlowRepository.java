@@ -201,11 +201,17 @@ public class ElasticFlowRepository implements FlowRepository {
     public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
         final String query = searchQueryProvider.getUniqueNodeExporters(limit, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
-                .thenApply(res -> res.getAggregations().getTermsAggregation("criterias")
-                .getBuckets()
-                .stream()
-                .map(e -> Integer.parseInt(e.getKey()))
-                .collect(Collectors.toSet()));
+                .thenApply(res -> {
+                    final TermsAggregation criterias = res.getAggregations().getTermsAggregation("criterias");
+                    if (criterias == null) {
+                        // No results
+                        return Collections.emptySet();
+                    }
+                    return criterias.getBuckets()
+                            .stream()
+                            .map(e -> Integer.parseInt(e.getKey()))
+                            .collect(Collectors.toSet());
+                });
     }
 
     @Override
@@ -214,16 +220,22 @@ public class ElasticFlowRepository implements FlowRepository {
         return searchAsync(query, extractTimeRangeFilter(filters))
                 .thenApply(res -> {
             final Set<Integer> interfaces = Sets.newHashSet();
-            res.getAggregations().getTermsAggregation("input_snmp").getBuckets()
-                    .stream()
-                    .map(TermsAggregation.Entry::getKey)
-                    .map(Integer::valueOf)
-                    .forEach(interfaces::add);
-            res.getAggregations().getTermsAggregation("output_snmp").getBuckets()
-                    .stream()
-                    .map(TermsAggregation.Entry::getKey)
-                    .map(Integer::valueOf)
-                    .forEach(interfaces::add);
+            final TermsAggregation inputSnmp = res.getAggregations().getTermsAggregation("input_snmp");
+            if (inputSnmp != null) {
+                inputSnmp.getBuckets()
+                        .stream()
+                        .map(TermsAggregation.Entry::getKey)
+                        .map(Integer::valueOf)
+                        .forEach(interfaces::add);
+            }
+            final TermsAggregation outputSnmp = res.getAggregations().getTermsAggregation("output_snmp");
+            if (outputSnmp != null) {
+                outputSnmp.getBuckets()
+                        .stream()
+                        .map(TermsAggregation.Entry::getKey)
+                        .map(Integer::valueOf)
+                        .forEach(interfaces::add);
+            }
             return interfaces;
         });
     }
@@ -267,10 +279,17 @@ public class ElasticFlowRepository implements FlowRepository {
         final int multiplier = 2;
         final String query = searchQueryProvider.getTopNQuery(multiplier*N, groupByTerm, keyForMissingTerm, filters);
         return searchAsync(query, extractTimeRangeFilter(filters))
-                .thenApply(res -> res.getAggregations().getTermsAggregation("grouped_by").getBuckets().stream()
-                .map(TermsAggregation.Entry::getKey)
-                .limit(N)
-                .collect(Collectors.toList()));
+                .thenApply(res -> {
+                    final TermsAggregation groupedBy = res.getAggregations().getTermsAggregation("grouped_by");
+                    if (groupedBy == null) {
+                        // No results
+                        return Collections.emptyList();
+                    }
+                    return groupedBy.getBuckets().stream()
+                            .map(TermsAggregation.Entry::getKey)
+                            .limit(N)
+                            .collect(Collectors.toList());
+                });
     }
 
     private CompletableFuture<Table<Directional<String>, Long, Double>> getSeriesFromTopN(List<String> topN, long step, String groupByTerm,
