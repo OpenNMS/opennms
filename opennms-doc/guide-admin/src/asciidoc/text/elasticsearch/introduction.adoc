@@ -1,0 +1,3 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images

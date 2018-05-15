@@ -331,6 +331,15 @@ include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
 === Listener Reference
 include::text/telemetryd/listener/udp-listener.adoc[]
 
+[[ga-elasticsearch-integration]]
+== Elasticsearch Integration
+include::text/elasticsearch/introduction.adoc[]
+
+[[ga-flow-support]]
+== Flow Support
+include::text/flows/classification-engine.adoc[]
+include::text/flows/elasticsearch-persistence.adoc[]
+
 [[ga-kafka-producer]]
 == Kafka Producer
 include::text/kafka-producer/kafka-producer.adoc[]
