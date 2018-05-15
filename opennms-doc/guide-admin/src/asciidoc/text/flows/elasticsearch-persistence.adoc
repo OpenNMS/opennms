@@ -3,3 +3,9 @@
 :imagesdir: ../../../images
 
 === Elasticsearch Persistence
+
+All flows are persisted to _Elasticsearch_ (TODO MVR add link to elasticsearch.org?).
+
+For general configuration refer to chapter TODO.
+
+Flow specific elastic onfigurations are: TODO...

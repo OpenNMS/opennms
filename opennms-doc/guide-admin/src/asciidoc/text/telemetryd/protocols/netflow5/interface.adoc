@@ -33,6 +33,7 @@ ${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/inte
 
 By default, this will open a UDP socket bound to `0.0.0.0:8877` to which _NetFlow v5_ messages can be forwarded.
 
+TODO MVR delete this chapter
 [[configure-elasticsearch-persistence]]
 ===== Configure ElasticSearch Persistence
 
@@ -188,6 +189,7 @@ The following cache properties are available:
 
 |===
 
+TODO MVR delete this chapter
 ====== Configure ElasticSearch Credentials
 
 It is possible to define credentials for each ElasticSearch node individually.

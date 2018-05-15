@@ -1,0 +1,11 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+The following features have been installed....
+
+
+==== Version Matrix
+
+TODO MVR add matrix which explains which features are available for {opennms-product-name} and which version of elastic is required.
+

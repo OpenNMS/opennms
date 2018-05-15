@@ -2,9 +2,9 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-==== Mapping of Alarms and Events to Elasticsearch
+===== Mapping of Alarms and Events to Elasticsearch
 
-===== Overview of index mapping
+====== Overview of index mapping
 
 In _{opennms-product-name}_, Alarm and Event table entries contain references to associated node, asset, service and journal message tables. 
 In _Elasticsearch_, we must flatten these entries into a single index entry for each insertion. Thus each index entry contains 
@@ -33,7 +33,7 @@ will have a `p_` prefix (ie. `%parm[newalarmvalues]%` becomes `p_newalarmvalues`
 Alarms and Events have `severity` fields defined as integers (long) and also corresponding `severity_text` fields which give the 
 text equivalent (`Critical`, `Major`, `Minor`, `Normal`, `Cleared`).
 
-===== Additional Alarm Fields
+====== Additional Alarm Fields
 
 The id of each alarm is included in the `_source` `alarmid` field and also duplicated in the internal `_id` reference for the alarms index. 
 Alarm Change Events reference their associated alarm using the `p_alarmid` parameter. To make it easier to search for alarm change events associated
