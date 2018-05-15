@@ -68,7 +68,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
     private EventForwarder m_eventForwarder;
-    private static EventUtil s_eventUtil;
+    private EventUtil m_eventUtil;
     private TransactionOperations m_transactionOperations;
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
@@ -174,7 +174,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
-    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
 
         //Always set these
         alarm.setLastEvent(e);
@@ -212,7 +212,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                     } else if (fieldName.toLowerCase().contains("descr")) {
                         alarm.setDescription(e.getEventDescr());
                     } else if (fieldName.toLowerCase().startsWith("acktime")) {
-                        final String expandedAckTime = s_eventUtil.expandParms(field.getValueExpression(), event);
+                        final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
                         if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
                             alarm.unacknowledge("admin");
                         } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) { 
@@ -232,13 +232,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
                                 alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                             }
                         } else if (expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{22}$") || expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{16}$")) {
-                            alarm.setAlarmAckTime(s_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
+                            alarm.setAlarmAckTime(m_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
                         } else {
                             LOG.warn("Not sure what to do with update-field 'acktime' value '{}'. Using current time instead.", expandedAckTime);
                             alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                         }
                     } else if (fieldName.toLowerCase().startsWith("ackuser")) {
-                        final String expandedAckUser = s_eventUtil.expandParms(field.getValueExpression(), event);
+                        final String expandedAckUser = m_eventUtil.expandParms(field.getValueExpression(), event);
                         if ("null".equalsIgnoreCase(expandedAckUser) || "".equals(expandedAckUser)) {
                             alarm.unacknowledge("admin");
                         } else {
@@ -376,7 +376,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
      * @param eventUtil
      */
     public void setEventUtil(EventUtil eventUtil) {
-        s_eventUtil = eventUtil;
+        m_eventUtil = eventUtil;
     }
     
     /**
@@ -385,7 +385,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
      * @return a {@link org.opennms.netmgt.eventd.EventUtil} object.
      */
     public EventUtil getEventUtil() {
-        return s_eventUtil;
+        return m_eventUtil;
     }
 
     public void setEventForwarder(EventForwarder eventForwarder) {
