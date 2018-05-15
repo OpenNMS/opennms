@@ -211,7 +211,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
                     } else if (fieldName.toLowerCase().contains("descr")) {
                         alarm.setDescription(e.getEventDescr());
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                    } else if (fieldName.toLowerCase().startsWith("ack")) {
+                        alarm.unacknowledge("admin");
                     } else {
                         LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                     }
