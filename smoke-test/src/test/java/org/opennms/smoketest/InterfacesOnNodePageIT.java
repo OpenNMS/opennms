@@ -116,7 +116,7 @@ public class InterfacesOnNodePageIT extends OpenNMSSeleniumTestCase {
      */
     @After
     public void tearDown() throws Exception {
-        sendDelete("rest/nodes/SmokeTests:TestMachine1", 204);
+        sendDelete("rest/nodes/SmokeTests:TestMachine1", 202);
     }
 
     /**

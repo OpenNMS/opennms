@@ -327,8 +327,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
             final DeleteEventVisitor visitor = new DeleteEventVisitor(m_eventForwarder);
 
-            m_ipInterfaceDao.delete(iface);
-            m_ipInterfaceDao.flush();
+            node.removeIpInterface(iface);
+            m_nodeDao.saveOrUpdate(node);
+            m_nodeDao.flush();
             iface.visit(visitor);
 
             if (lastInterface) {
