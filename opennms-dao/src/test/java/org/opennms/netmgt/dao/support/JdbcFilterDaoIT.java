@@ -36,7 +36,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -54,7 +53,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -150,9 +148,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
     public void testAfterPropertiesSetValid() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_dataSource);
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
-        is.close();
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory());
         dao.afterPropertiesSet();
     }
 
@@ -160,9 +156,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
     public void testAfterPropertiesSetNoNodeDao() throws Exception {
         JdbcFilterDao dao = new JdbcFilterDao();
         dao.setDataSource(m_dataSource);
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
-        is.close();
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory());
 
         // The nodeDao isn't required because this ends up getting used outside of a Spring context quite a bit
         dao.afterPropertiesSet();
@@ -173,9 +167,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
         ThrowableAnticipator ta = new ThrowableAnticipator();
 
         JdbcFilterDao dao = new JdbcFilterDao();
-        InputStream is = ConfigurationTestUtils.getInputStreamForConfigFile("database-schema.xml");
-        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory(is));
-        is.close();
+        dao.setDatabaseSchemaConfigFactory(new DatabaseSchemaConfigFactory());
 
         ta.anticipate(new IllegalStateException("property dataSource cannot be null"));
         try {

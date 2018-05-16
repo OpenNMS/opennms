@@ -266,11 +266,6 @@ public abstract class ConfigFileConstants {
     public static final int EVENT_CONF_FILE_NAME;
 
     /**
-     * the database schema file
-     */
-    public static final int DB_SCHEMA_FILE_NAME;
-
-    /**
      * the SNMP data collection conf file
      */
     public static final int DATA_COLLECTION_CONF_FILE_NAME;
@@ -490,7 +485,6 @@ public abstract class ConfigFileConstants {
 
         SNMP_CONF_FILE_NAME = 26;
         EVENT_CONF_FILE_NAME = 27;
-        DB_SCHEMA_FILE_NAME = 28;
         DATA_COLLECTION_CONF_FILE_NAME = 29;
         REPORT_PDF_XSL = 30;
 
@@ -610,7 +604,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SNMP_CONF_FILE_NAME] = "snmp-config.xml";
         FILE_ID_TO_NAME[EVENT_CONF_FILE_NAME] = "eventconf.xml";
-        FILE_ID_TO_NAME[DB_SCHEMA_FILE_NAME] = "database-schema.xml";
         FILE_ID_TO_NAME[DATA_COLLECTION_CONF_FILE_NAME] = "datacollection-config.xml";
         FILE_ID_TO_NAME[REPORT_PDF_XSL] = "PDFAvailReport.xsl";
 

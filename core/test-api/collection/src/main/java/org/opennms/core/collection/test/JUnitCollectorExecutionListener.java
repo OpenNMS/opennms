@@ -70,9 +70,8 @@ public class JUnitCollectorExecutionListener extends AbstractTestExecutionListen
         }
 
         // make a fake database schema with hibernate
-        InputStream is = ConfigurationTestUtils.getInputStreamForResource(testContext.getTestInstance(), config.schemaConfig());
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(is));
-        is.close();
+        InputStream is = null;
+        DatabaseSchemaConfigFactory.init();
 
         // set up temporary directories for RRD files
         m_snmpRrdDirectory = m_fileAnticipator.tempDir("snmp");
