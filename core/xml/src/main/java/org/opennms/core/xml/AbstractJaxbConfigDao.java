@@ -57,6 +57,7 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean, J
     private FileReloadContainer<V> m_container;
     private JaxbReloadCallback m_callback = new JaxbReloadCallback();
     private Long m_reloadCheckInterval = null;
+    private boolean initializeContainerOnInit = true;
 
 
     public AbstractJaxbConfigDao(final Class<K> entityClass, final Class<V> configClass, final String description) {
@@ -99,6 +100,12 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean, J
     @Override
     public void afterPropertiesSet() {
         Assert.state(m_configResource != null, "property configResource must be set and be non-null");
+
+        // This is required to delay the initialization of the container.
+        // This is required for the usage of @ConfigProxy
+        if (initializeContainerOnInit) {
+            getContainer();
+        }
     }
 
     /**
@@ -180,5 +187,10 @@ public abstract class AbstractJaxbConfigDao<K, V> implements InitializingBean, J
     @Override
     public V getConfig() {
         return getContainer().getObject();
+    }
+
+    @Override
+    public void setInitializeContainerOnInit(boolean initializeContainerOnInit) {
+        this.initializeContainerOnInit = initializeContainerOnInit;
     }
 }

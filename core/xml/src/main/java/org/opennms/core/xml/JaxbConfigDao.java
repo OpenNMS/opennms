@@ -31,4 +31,5 @@ package org.opennms.core.xml;
 public interface JaxbConfigDao<T> {
     T getConfig();
     Class<T> getConfigType();
+    void setInitializeContainerOnInit(boolean initializeContainerOnInit);
 }

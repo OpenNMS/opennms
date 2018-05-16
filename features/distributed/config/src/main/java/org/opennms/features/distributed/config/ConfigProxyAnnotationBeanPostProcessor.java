@@ -61,6 +61,9 @@ public class ConfigProxyAnnotationBeanPostProcessor implements BeanPostProcessor
 
     @Override
     public Object postProcessBeforeInitialization(final Object bean, String beanName) throws BeansException {
+        if (isRunningInOpennmsJvm) {
+            return bean;
+        }
         final ConfigProxy annotation = bean.getClass().getAnnotation(ConfigProxy.class);
         if (annotation != null) {
             if (!(bean instanceof JaxbConfigDao)) {
@@ -73,9 +76,10 @@ public class ConfigProxyAnnotationBeanPostProcessor implements BeanPostProcessor
                         + "' has @" + ConfigProxy.class.getSimpleName()
                         + " annotation, but does not define proxied methods");
             }
-            if (isRunningInOpennmsJvm) {
-                return bean;
-            }
+
+            // Prevent loading of configuration from disk, as in this case we want to load it via the OpenNMS ReST API
+            ((JaxbConfigDao) bean).setInitializeContainerOnInit(false);
+
             // Proxy call
             return Proxy.newProxyInstance(getClass().getClassLoader(), bean.getClass().getInterfaces(), (proxy, method, args) -> {
                 // The call to loading the configuration is proxied, everything else is kept as is
