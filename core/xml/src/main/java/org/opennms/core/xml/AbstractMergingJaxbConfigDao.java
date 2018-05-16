@@ -182,6 +182,11 @@ public abstract class AbstractMergingJaxbConfigDao<K, V> implements org.opennms.
     }
 
     @Override
+    public void setInitializeContainerOnInit(boolean initializeContainerOnInit) {
+        // TODO MVR is ignored for now
+    }
+
+    @Override
     public Class<V> getConfigType() {
         return m_configClass;
     }
