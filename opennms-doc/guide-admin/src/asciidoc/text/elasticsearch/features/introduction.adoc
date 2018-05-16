@@ -2,10 +2,23 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-The following features have been installed....
-
-
 ==== Version Matrix
 
-TODO MVR add matrix which explains which features are available for {opennms-product-name} and which version of elastic is required.
+Not all features are enabled by default and may require a certain version of _Elasticsearch_.
+Therefore the following table provides a version overview.
+
+|===
+| Name | Supported Elastic Version | Enabled by default | Feature
+
+| Event and Alarm Forwarder
+| >= 5.0
+| no
+| `opennms-es-rest`
+
+| Flow Support
+| >= 6.2.2
+| yes
+| `opennms-flows`
+
+|===
 

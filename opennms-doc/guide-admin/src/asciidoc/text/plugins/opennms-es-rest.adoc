@@ -5,4 +5,4 @@
 === Elasticsearch ReST plugin
 
 The _Elasticsearch ReST plugin_ has been renamed to _Event & Alarm Forwarder_ and since the release of version 22.0.0 is no longer a plugin.
-Refer to TODO for the documentation.
+Refer to <<ga-flow-support>> for the documentation.

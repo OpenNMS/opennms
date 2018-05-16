@@ -4,8 +4,8 @@
 
 === Elasticsearch Persistence
 
-All flows are persisted to _Elasticsearch_ (TODO MVR add link to elasticsearch.org?).
+All flows are persisted to _Elasticsearch_.
 
-For general configuration refer to chapter TODO.
+The configuration of the plugin is located in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
-Flow specific elastic onfigurations are: TODO...
+Please refer to the <<ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for supported properties.

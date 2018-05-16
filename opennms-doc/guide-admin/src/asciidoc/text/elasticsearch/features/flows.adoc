@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== Flows
+[[ga-elasticsearch-integration-flow-support]]
+==== Flow Support
 
-Link to Flow-Support (TODO)
+The _Flow Support_ is described <<ga-flow-support, here>>.
