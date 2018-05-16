@@ -96,6 +96,47 @@ For more details please refer to link:../guide-admin/index.html#configure-elasti
 * The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
 * The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
+* By default the data collection tries to gather all SNMP Informant statistics from every Microsoft Windows system, nevertheless the SNMP Informant is available or not.
+  To reduce unnecessary SNMP queries on Windows SNMP agents, the SNMP Informant statistics are removed from the default.
+  This version also splits up the configuration to reflect the metrics by the SNMP Informant packages, e.g. Microsoft SQL, Exchange, Terminal Server etc.
+
+IMPORTANT: If you have SNMP Informant agents deployed, the data collection for these metrics will stop with upgrading to Horizon 22.0.0.
+           To get them enabled, you have to create a data collection package and add the SNMP-Informant data collection groups manually for this devices with the example below.
+           You can create data collection packages more granular for the type of server you have, e.g. Microsoft Exchange or MSSQL.
+
+.Assign the SNMP Informant enabled nodes which are assigned in this example to a category configured in collectd-configuration.xml
+[source, xml]
+----
+<package name="MS Windows SNMP-Informant" remote="false">
+    <filter>categoryName == 'MS-Windows-SNMP-Informant'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254"/>
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+
+    <service name="SNMP" interval="300000" user-defined="false" status="on">
+        <parameter key="collection" value="ms-windows-snmp-informant"/>
+        <parameter key="thresholding-enabled" value="true"/>
+    </service>
+</package>
+----
+
+.Load the SNMP-Informant data collection groups configured in the datacollection-config.xml
+[source, xml]
+----
+<snmp-collection name="ms-windows-snmp-informant" snmpStorageFlag="select">
+    <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <include-collection dataCollectionGroup="SNMP-Informant-Adv"/>
+    <include-collection dataCollectionGroup="SNMP-Informant-Exchange"/>
+    <include-collection dataCollectionGroup="SNMP-Informant-MSSQL"/>
+    <include-collection dataCollectionGroup="SNMP-Informant-Std"/>
+    <include-collection dataCollectionGroup="SNMP-Informant-Termsvc"/>
+</snmp-collection>
+----
 
 === New Features
 
