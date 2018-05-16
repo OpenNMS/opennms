@@ -54,3 +54,5 @@ PUT requires form data using application/x-www-form-urlencoded as a Content-Type
 ===== DELETEs (Removing Data)
 
 Perform a DELETE to the singleton URLs specified in <<rest-api-nodes-put, PUT>> above to delete that object.
+
+NOTE: Deletion of nodes, ipinterfaces and services are asynchronous so they will return 202 (ACCEPTED). Deletion of snmpinterfaces and categories are synchronous calls so they will return 204 (NO_CONTENT) on success.
