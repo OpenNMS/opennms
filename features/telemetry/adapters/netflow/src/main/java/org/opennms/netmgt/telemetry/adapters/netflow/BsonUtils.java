@@ -41,7 +41,8 @@ import org.bson.BsonValue;
 
 public class BsonUtils {
 
-    private BsonUtils() {}
+    private BsonUtils() {
+    }
 
     public static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
         BsonValue value = doc;
@@ -59,16 +60,16 @@ public class BsonUtils {
         return get(doc, path).map(BsonValue::asInt64).map(BsonInt64::getValue);
     }
 
+    public static Optional<Double> getDouble(final BsonDocument doc, final String... path) {
+        return get(doc, path).map(BsonValue::asDouble).map(BsonDouble::getValue);
+    }
+
     public static Optional<Integer> getInt32(final BsonDocument doc, final String... path) {
         return get(doc, path).map(BsonValue::asInt32).map(BsonInt32::getValue);
     }
 
     public static Optional<String> getString(final BsonDocument doc, final String... path) {
         return get(doc, path).map(BsonValue::asString).map(BsonString::getValue);
-    }
-
-    public static Optional<Double> getDouble(final BsonDocument doc, final String... path) {
-        return get(doc, path).map(BsonValue::asDouble).map(BsonDouble::getValue);
     }
 
     public static <V> Optional<V> first(final Optional<V>... values) {

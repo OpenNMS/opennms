@@ -44,6 +44,17 @@ public interface Flow {
         EGRESS,
     }
 
+    enum SamplingAlgorithm {
+        Unassigned,
+        SystematicCountBasedSampling,
+        SystematicTimeBasedSampling,
+        RandomNoutOfNSampling,
+        UniformProbabilisticSampling,
+        PropertyMatchFiltering,
+        HashBasedFiltering,
+        FlowStateDependentIntermediateFlowSelectionProcess;
+    }
+
     /**
      * Flow timestamp in milliseconds.
      */
@@ -144,12 +155,12 @@ public interface Flow {
     /**
      * Sampling algorithm ID
      */
-    Integer getSamplingAlgorithm();
+    SamplingAlgorithm getSamplingAlgorithm();
 
     /**
      * Sampling interval
      */
-    Integer getSamplingInterval();
+    Double getSamplingInterval();
 
     /**
      * Source address.

@@ -41,6 +41,7 @@ import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.test.elastic.ExecutionTime;
 import org.opennms.netmgt.flows.api.FlowException;
 import org.opennms.netmgt.flows.api.FlowRepository;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
@@ -97,10 +98,13 @@ public class ElasticFlowRepositoryRetryIT {
             executionTime.resetStartTime();
             elasticServerRule.startServer();
 
-            final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
+            final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+            final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+            final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
+
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher
-                            , 3, 12000), client);
+                    new ElasticFlowRepository(new MetricRegistry(), client, IndexStrategy.MONTHLY, documentEnricher,
+                            classificationEngine, 3, 12000), client);
 
             consumer.accept(elasticFlowRepository);
 

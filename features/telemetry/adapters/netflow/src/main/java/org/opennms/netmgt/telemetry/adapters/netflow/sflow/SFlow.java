@@ -81,9 +81,9 @@ class SFlow implements Flow {
     @Override
     public Long getBytes() {
         return first(get(document, "flows", "0:3", "length"),
-                     get(document, "flows", "0:4", "length"),
-                     get(document, "flows", "0:1", "ipv4", "length"),
-                     get(document, "flows", "0:1", "ipv6", "length"))
+                get(document, "flows", "0:4", "length"),
+                get(document, "flows", "0:1", "ipv4", "length"),
+                get(document, "flows", "0:1", "ipv6", "length"))
                 .map(v -> (long) v.asInt32().getValue())
                 .orElse(null);
     }
@@ -96,9 +96,9 @@ class SFlow implements Flow {
     @Override
     public String getDstAddr() {
         return first(get(document, "flows", "0:3", "dst_ip"),
-                     get(document, "flows", "0:4", "dst_ip"),
-                     get(document, "flows", "0:1", "ipv4", "dst_ip"),
-                     get(document, "flows", "0:1", "ipv6", "dst_ip"))
+                get(document, "flows", "0:4", "dst_ip"),
+                get(document, "flows", "0:1", "ipv4", "dst_ip"),
+                get(document, "flows", "0:1", "ipv6", "dst_ip"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }
@@ -119,9 +119,9 @@ class SFlow implements Flow {
     @Override
     public Integer getDstPort() {
         return first(get(document, "flows", "0:3", "dst_port"),
-                     get(document, "flows", "0:4", "dst_port"),
-                     get(document, "flows", "0:1", "ipv4", "dst_port"),
-                     get(document, "flows", "0:1", "ipv6", "dst_port"))
+                get(document, "flows", "0:4", "dst_port"),
+                get(document, "flows", "0:1", "ipv4", "dst_port"),
+                get(document, "flows", "0:1", "ipv6", "dst_port"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
     }
@@ -162,36 +162,39 @@ class SFlow implements Flow {
     @Override
     public Integer getInputSnmp() {
         return get(document, "input")
-                .map(v -> v.asInt64().getValue()==0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
+                .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public Integer getOutputSnmp() {
         return get(document, "output")
-                .map(v -> v.asInt64().getValue()==0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
+                .map(v -> v.asInt64().getValue() == 0x3FFFFFFFL ? null : (int) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public Integer getIpProtocolVersion() {
         return first(get(document, "flows", "0:1", "protocol")
-                         .flatMap(v -> {
-                             switch (v.asInt32().getValue()) {
-                                 case 11: return Optional.of(4);
-                                 case 12: return Optional.of(6);
-                                 default: return Optional.empty();
-                             }
-                         }),
-                     get(document, "flows", "0:3").map(v -> 4),
-                     get(document, "flows", "0:4").map(v -> 6))
+                        .flatMap(v -> {
+                            switch (v.asInt32().getValue()) {
+                                case 11:
+                                    return Optional.of(4);
+                                case 12:
+                                    return Optional.of(6);
+                                default:
+                                    return Optional.empty();
+                            }
+                        }),
+                get(document, "flows", "0:3").map(v -> 4),
+                get(document, "flows", "0:4").map(v -> 6))
                 .orElse(null);
     }
 
     @Override
     public String getNextHop() {
         return first(get(document, "flows", "0:1002", "netxhop", "ipv6"),
-                     get(document, "flows", "0:1002", "netxhop", "ipv4"))
+                get(document, "flows", "0:1002", "netxhop", "ipv4"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }
@@ -204,31 +207,31 @@ class SFlow implements Flow {
     @Override
     public Integer getProtocol() {
         return first(get(document, "flows", "0:3", "protocol"),
-                     get(document, "flows", "0:4", "protocol"),
-                     get(document, "flows", "0:1", "ipv4", "protocol"),
-                     get(document, "flows", "0:1", "ipv6", "protocol"))
+                get(document, "flows", "0:4", "protocol"),
+                get(document, "flows", "0:1", "ipv4", "protocol"),
+                get(document, "flows", "0:1", "ipv6", "protocol"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
     }
 
     @Override
-    public Integer getSamplingAlgorithm() {
-        return null;
+    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
+        return Flow.SamplingAlgorithm.Unassigned;
     }
 
     @Override
-    public Integer getSamplingInterval() {
+    public Double getSamplingInterval() {
         return get(document, "sampling_rate")
-                .map(v -> (int) v.asInt64().getValue())
+                .map(v -> (double) v.asInt64().getValue())
                 .orElse(null);
     }
 
     @Override
     public String getSrcAddr() {
         return first(get(document, "flows", "0:3", "src_ip"),
-                     get(document, "flows", "0:4", "src_ip"),
-                     get(document, "flows", "0:1", "ipv4", "src_ip"),
-                     get(document, "flows", "0:1", "ipv6", "src_ip"))
+                get(document, "flows", "0:4", "src_ip"),
+                get(document, "flows", "0:1", "ipv4", "src_ip"),
+                get(document, "flows", "0:1", "ipv6", "src_ip"))
                 .map(v -> v.asString().getValue())
                 .orElse(null);
     }
@@ -250,9 +253,9 @@ class SFlow implements Flow {
     @Override
     public Integer getSrcPort() {
         return first(get(document, "flows", "0:3", "src_port"),
-                     get(document, "flows", "0:4", "src_port"),
-                     get(document, "flows", "0:1", "ipv4", "src_port"),
-                     get(document, "flows", "0:1", "ipv6", "src_port"))
+                get(document, "flows", "0:4", "src_port"),
+                get(document, "flows", "0:1", "ipv4", "src_port"),
+                get(document, "flows", "0:1", "ipv6", "src_port"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
     }
@@ -260,9 +263,9 @@ class SFlow implements Flow {
     @Override
     public Integer getTcpFlags() {
         return first(get(document, "flows", "0:3", "tcp_flags"),
-                     get(document, "flows", "0:4", "tcp_flags"),
-                     get(document, "flows", "0:1", "ipv4", "tcp_flags"),
-                     get(document, "flows", "0:1", "ipv6", "tcp_flags"))
+                get(document, "flows", "0:4", "tcp_flags"),
+                get(document, "flows", "0:1", "ipv4", "tcp_flags"),
+                get(document, "flows", "0:1", "ipv6", "tcp_flags"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
     }
@@ -270,9 +273,9 @@ class SFlow implements Flow {
     @Override
     public Integer getTos() {
         return first(get(document, "flows", "0:3", "tos"),
-                     get(document, "flows", "0:4", "tos"),
-                     get(document, "flows", "0:1", "ipv4", "tos"),
-                     get(document, "flows", "0:1", "ipv6", "tos"))
+                get(document, "flows", "0:4", "tos"),
+                get(document, "flows", "0:1", "ipv4", "tos"),
+                get(document, "flows", "0:1", "ipv6", "tos"))
                 .map(v -> v.asInt32().getValue())
                 .orElse(null);
     }
@@ -285,7 +288,7 @@ class SFlow implements Flow {
     @Override
     public Integer getVlan() {
         return first(get(document, "flows", "0:1001", "src_vlan"),
-                     get(document, "flows", "0:1", "ethernet", "vlan"))
+                get(document, "flows", "0:1", "ethernet", "vlan"))
                 .map(v -> (int) v.asInt64().getValue())
                 .orElse(null);
     }

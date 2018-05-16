@@ -139,13 +139,20 @@ class Netflow5Flow implements Flow {
     }
 
     @Override
-    public Integer getSamplingAlgorithm() {
-        return null;
+    public Flow.SamplingAlgorithm getSamplingAlgorithm() {
+        if (this.packet.getSamplingAlgorithm() == 1) {
+            return Flow.SamplingAlgorithm.SystematicCountBasedSampling;
+        }
+        if (this.packet.getSamplingAlgorithm() == 2) {
+            return Flow.SamplingAlgorithm.RandomNoutOfNSampling;
+        }
+
+        return Flow.SamplingAlgorithm.Unassigned;
     }
 
     @Override
-    public Integer getSamplingInterval() {
-        return this.packet.getSamplingInterval();
+    public Double getSamplingInterval() {
+        return (double) this.packet.getSamplingInterval();
     }
 
     @Override
@@ -189,8 +196,8 @@ class Netflow5Flow implements Flow {
     }
 
     /**
-     * @param timestampMs Current unix timestamp in milliseconds.
-     * @param sysUptimeMs Current time in milliseconds since the export device booted.
+     * @param timestampMs      Current unix timestamp in milliseconds.
+     * @param sysUptimeMs      Current time in milliseconds since the export device booted.
      * @param switchedUptimeMs System uptime at which the this.packet was switched.
      * @return Unix timestamp in milliseconds at which the this.packet was switched.
      */
