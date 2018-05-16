@@ -39,6 +39,7 @@ import javax.jms.Session;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.RestClient;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -50,6 +51,9 @@ public abstract class AbstractPingCommand implements Action {
 
     @Reference
     public RestClient restClient;
+
+    @Reference
+    private Identity identity;
 
     @Option(name = "-j", description = "Maximum number of milliseconds to wait before failing when attempting to establish a JMS session.")
     public long jmsTimeoutMillis = 20L * 1000L;
@@ -100,7 +104,7 @@ public abstract class AbstractPingCommand implements Action {
                 }
             }
         });
-        t.setName("minion:ping"); // TODO MVR set to sentinel:ping or minion:ping
+        t.setName(String.format("%s:ping", identity.getType().toLowerCase()));
         t.start();
         t.join(maxDurationMillis);
         if (t.isAlive()) {
