@@ -114,7 +114,7 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <!-- REPLACE THE FOLLOWING WITH THE ES VERSION USED IN TESTS -->
-            <version>6.2.2</version>
+            <version>6.2.4</version>
           </dependency>
         </dependencies>
       </plugin>
