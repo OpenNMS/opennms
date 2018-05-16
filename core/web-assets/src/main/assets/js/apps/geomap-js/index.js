@@ -403,7 +403,7 @@ const render = function(options) {
         // create map
         theMap = L.map(mapId, {
             zoom: 1,
-            maxZoom: 15,
+            maxZoom: 18,
             zoomControl: false
         });
 
