@@ -35,6 +35,6 @@ import org.opennms.distributed.core.impl.IdentityImpl;
 public class MinionIdentityImpl extends IdentityImpl implements MinionIdentity {
 
     public MinionIdentityImpl(String location, String id) {
-        super(location, id,SystemType.Minion);
+        super(id, location, SystemType.Minion);
     }
 }
