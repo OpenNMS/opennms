@@ -984,6 +984,12 @@
          <includeGroup>cisco-ccm</includeGroup>
       </collect>
    </systemDef>
+   <systemDef name="Cisco Virtual CallManager">
+      <sysoid>.1.3.6.1.4.1.9.1.1348</sysoid>
+      <collect>
+         <includeGroup>cisco-ccm</includeGroup>
+      </collect>
+   </systemDef>
    <systemDef name="Cisco ACE Load Balancer 10K9">
       <sysoid>.1.3.6.1.4.1.9.1.730</sysoid>
       <collect>

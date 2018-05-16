@@ -133,7 +133,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumTestCase {
             Assert.assertNotNull(banner);
         } finally {
             // CLEANUP
-            sendDelete("rest/nodes/SmokeTests:TestMachine1", 204);
+            sendDelete("rest/nodes/SmokeTests:TestMachine1", 202);
         }
     }
 }

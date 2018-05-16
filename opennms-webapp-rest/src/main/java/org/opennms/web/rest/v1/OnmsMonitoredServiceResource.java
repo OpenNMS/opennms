@@ -281,7 +281,7 @@ public class OnmsMonitoredServiceResource extends OnmsRestService {
             Event e = EventUtils.createDeleteServiceEvent("OpenNMS.REST", node.getId(), ipAddress, serviceName, -1L);
             sendEvent(e);
 
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }
