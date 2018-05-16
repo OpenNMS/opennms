@@ -33,6 +33,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.bson.BsonDocument;
+import org.bson.BsonDouble;
 import org.bson.BsonInt32;
 import org.bson.BsonInt64;
 import org.bson.BsonString;
@@ -64,6 +65,10 @@ public class BsonUtils {
 
     public static Optional<String> getString(final BsonDocument doc, final String... path) {
         return get(doc, path).map(BsonValue::asString).map(BsonString::getValue);
+    }
+
+    public static Optional<Double> getDouble(final BsonDocument doc, final String... path) {
+        return get(doc, path).map(BsonValue::asDouble).map(BsonDouble::getValue);
     }
 
     public static <V> Optional<V> first(final Optional<V>... values) {

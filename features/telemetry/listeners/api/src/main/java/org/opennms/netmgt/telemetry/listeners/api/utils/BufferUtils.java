@@ -53,7 +53,7 @@ public class BufferUtils {
     }
 
     public static float sfloat(final ByteBuffer buffer) {
-        return Float.intBitsToFloat(buffer.get() ^ buffer.get() << 8 ^ buffer.get() << 16 ^ buffer.get() << 24);
+        return Float.intBitsToFloat(sint32(buffer));
     }
 
     public static UnsignedLong uint(final ByteBuffer buffer, final int octets) {

@@ -28,12 +28,13 @@
 
 package org.opennms.netmgt.telemetry.adapters.netflow.sflow;
 
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.first;
+import static org.opennms.netmgt.telemetry.adapters.netflow.BsonUtils.get;
+
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import org.bson.BsonDocument;
-import org.bson.BsonValue;
 import org.opennms.netmgt.flows.api.Flow;
 
 class SFlow implements Flow {
@@ -287,24 +288,5 @@ class SFlow implements Flow {
                      get(document, "flows", "0:1", "ethernet", "vlan"))
                 .map(v -> (int) v.asInt64().getValue())
                 .orElse(null);
-    }
-
-    private static Optional<BsonValue> get(final BsonDocument doc, final String... path) {
-        BsonValue value = doc;
-        for (final String p : path) {
-            value = value.asDocument().get(p);
-            if (value == null) {
-                return Optional.empty();
-            }
-        }
-
-        return Optional.of(value);
-    }
-
-    private static <V> Optional<V> first(final Optional<V>... values) {
-        return Stream.of(values)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .findFirst();
     }
 }
