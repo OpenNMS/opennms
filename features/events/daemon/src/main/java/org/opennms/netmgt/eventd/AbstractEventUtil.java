@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -840,17 +841,7 @@ public abstract class AbstractEventUtil implements EventUtil {
                 offsetM = octetStringValue.and(new BigInteger("00000000000000000000ff", 16));
 	    } else {
 	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.");
-	        Calendar now = Calendar.getInstance();
-	        year =   BigInteger.valueOf(now.get(Calendar.YEAR));
-	        month =  BigInteger.valueOf(now.get(Calendar.MONTH));
-	        dom =    BigInteger.valueOf(now.get(Calendar.DAY_OF_MONTH));
-	        hour =   BigInteger.valueOf(now.get(Calendar.HOUR_OF_DAY));
-	        min =    BigInteger.valueOf(now.get(Calendar.MINUTE));
-	        sec =    BigInteger.valueOf(now.get(Calendar.SECOND));
-	        millis = BigInteger.valueOf(now.get(Calendar.MILLISECOND));
-	        offsetD = new BigInteger("2b", 16);  // '+' for positive offset versus UTC
-	        offsetH = BigInteger.valueOf(0L);
-	        offsetM = BigInteger.valueOf(0L);
+	        return null;
 	    }
 
 	    if (offsetD.intValueExact() == '-') {
@@ -862,7 +853,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	    offsetMs.multiply(BigInteger.valueOf(offsetMultiplier));
 
 	    // Now we can build our Date
-	    Calendar cal = Calendar.getInstance();
+	    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
 	    cal.set(Calendar.YEAR, year.intValue());
 	    cal.set(Calendar.MONTH, month.intValue());
 	    cal.set(Calendar.DAY_OF_MONTH, dom.intValue());
@@ -870,7 +861,7 @@ public abstract class AbstractEventUtil implements EventUtil {
 	    cal.set(Calendar.MINUTE, min.intValue());
 	    cal.set(Calendar.SECOND, sec.intValue());
 	    cal.set(Calendar.MILLISECOND, millis.intValue());
-	    cal.set(Calendar.ZONE_OFFSET, 0);
+	    cal.set(Calendar.ZONE_OFFSET, offsetMs.intValue());
 	    return cal.getTime();
 	}
 }

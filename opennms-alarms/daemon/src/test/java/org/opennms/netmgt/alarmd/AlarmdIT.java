@@ -554,7 +554,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             }
         });
         assertEquals("someotheractortz", newAckUser);
-        assertEquals("1526042578500", newAckTime);
+        assertEquals("1526046178500", newAckTime);
         
         // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime excluding time zone
         eventParams.put("extSourcedAckUser", "someotheractornotz");
@@ -575,7 +575,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             }
         });
         assertEquals("someotheractornotz", newAckUser);
-        assertEquals("1526042578900", newAckTime);
+        assertEquals("1526046178900", newAckTime);
         
         // De-acknowledge the alarm via update-field. Verify this nulls both acktime and ackuser.
         eventParams.clear();
