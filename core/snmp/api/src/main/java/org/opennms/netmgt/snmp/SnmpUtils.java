@@ -177,7 +177,9 @@ public abstract class SnmpUtils {
     }
 
     public static void setStrategyResolver(StrategyResolver strategyResolver) {
-    	s_strategyResolver = strategyResolver;
+        if (!isClassBasedStrategyInstantiable()) {
+            s_strategyResolver = strategyResolver;
+        }
     }
 
     public static String getStrategyClassName() {
