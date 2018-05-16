@@ -61,6 +61,7 @@ public class MockDocumentEnricherFactory {
     private final MockAssetRecordDao assetRecordDao;
     private final MockCategoryDao categoryDao;
     private final DocumentEnricher enricher;
+    private final ClassificationEngine classificationEngine;
 
     private final AtomicInteger nodeDaoGetCounter = new AtomicInteger(0);
 
@@ -72,7 +73,7 @@ public class MockDocumentEnricherFactory {
         assetRecordDao = new MockAssetRecordDao();
         categoryDao = new MockCategoryDao();
 
-        final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
+        classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
                 new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
@@ -111,6 +112,10 @@ public class MockDocumentEnricherFactory {
 
     public AtomicInteger getNodeDaoGetCounter() {
         return nodeDaoGetCounter;
+    }
+
+    public ClassificationEngine getClassificationEngine() {
+        return classificationEngine;
     }
 
     private NodeDao createNodeDao() {

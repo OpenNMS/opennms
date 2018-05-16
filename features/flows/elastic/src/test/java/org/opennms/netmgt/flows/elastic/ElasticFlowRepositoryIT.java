@@ -31,13 +31,13 @@ package org.opennms.netmgt.flows.elastic;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
-import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.FlowException;
+import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 
 import com.codahale.metrics.MetricRegistry;
@@ -65,14 +65,16 @@ public class ElasticFlowRepositoryIT {
                             .withHeader("Content-Type", "application/json")
                             .withBody(ERROR_RESPONSE)));
 
-        final DocumentEnricher documentEnricher = mock(DocumentEnricher.class);
+        final MockDocumentEnricherFactory mockDocumentEnricherFactory = new MockDocumentEnricherFactory();
+        final DocumentEnricher documentEnricher = mockDocumentEnricherFactory.getEnricher();
+        final ClassificationEngine classificationEngine = mockDocumentEnricherFactory.getClassificationEngine();
 
         // Verify exception is thrown
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder("http://localhost:" + wireMockRule.port()).build());
         try (JestClient client = factory.getObject()) {
             final ElasticFlowRepository elasticFlowRepository = new ElasticFlowRepository(new MetricRegistry(),
-                    client, IndexStrategy.MONTHLY, documentEnricher, 3, 12000);
+                    client, IndexStrategy.MONTHLY, documentEnricher, classificationEngine, 3, 12000);
 
             // It does not matter what we persist here, as the response is fixed.
             // We only have to ensure that the list is not empty
