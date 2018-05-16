@@ -203,13 +203,13 @@ public class FlowDocument {
      * Sampling algorithm ID
      */
     @SerializedName("netflow.sampling_algorithm")
-    private Integer samplingAlgorithm;
+    private SamplingAlgorithm samplingAlgorithm;
 
     /**
      * Sampling interval
      */
     @SerializedName("netflow.sampling_interval")
-    private Integer samplingInterval;
+    private Double samplingInterval;
 
     /**
      * Source address.
@@ -491,19 +491,19 @@ public class FlowDocument {
         this.protocol = protocol;
     }
 
-    public Integer getSamplingAlgorithm() {
+    public SamplingAlgorithm getSamplingAlgorithm() {
         return samplingAlgorithm;
     }
 
-    public void setSamplingAlgorithm(Integer samplingAlgorithm) {
+    public void setSamplingAlgorithm(SamplingAlgorithm samplingAlgorithm) {
         this.samplingAlgorithm = samplingAlgorithm;
     }
 
-    public Integer getSamplingInterval() {
+    public Double getSamplingInterval() {
         return samplingInterval;
     }
 
-    public void setSamplingInterval(Integer samplingInterval) {
+    public void setSamplingInterval(Double samplingInterval) {
         this.samplingInterval = samplingInterval;
     }
 
@@ -624,7 +624,7 @@ public class FlowDocument {
         doc.setOutputSnmp(flow.getOutputSnmp());
         doc.setPackets(flow.getPackets());
         doc.setProtocol(flow.getProtocol());
-        doc.setSamplingAlgorithm(flow.getSamplingAlgorithm());
+        doc.setSamplingAlgorithm(SamplingAlgorithm.from(flow.getSamplingAlgorithm()));
         doc.setSamplingInterval(flow.getSamplingInterval());
         doc.setSrcAddr(flow.getSrcAddr());
         doc.setSrcAs(flow.getSrcAs());
