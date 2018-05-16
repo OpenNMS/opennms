@@ -304,6 +304,8 @@ public class BridgeForwardingTableEntry implements BridgeTopology {
         strbfr.append(getBridgePort());
         strbfr.append(", ifindex:");
         strbfr.append(getBridgePortIfIndex());
+        strbfr.append(", vlan:");
+        strbfr.append(getVlan());
         if (getBridgeDot1qTpFdbStatus() != null) {
             strbfr.append(", status:");
             strbfr.append(BridgeDot1qTpFdbStatus.getTypeString(getBridgeDot1qTpFdbStatus().getValue()));
