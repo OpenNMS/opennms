@@ -16,9 +16,8 @@ Therefore the following table provides a version overview.
 | `opennms-es-rest`
 
 | Flow Support
-| >= 6.2.2
+| >= 6.2.4
 | yes
 | `opennms-flows`
 
 |===
-

@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
+[[ga-flow-support-classification-engine]]
 === Classification Engine
 
 The _Classification Engine_ applies a set of user- and/or system-defined rules to each flow to classify it.
