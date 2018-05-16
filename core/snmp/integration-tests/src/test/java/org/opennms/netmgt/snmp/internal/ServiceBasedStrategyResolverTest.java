@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
@@ -54,6 +55,7 @@ public class ServiceBasedStrategyResolverTest {
      * Validates all of the code paths in {@link ServiceBasedStrategyResolver#getStrategy}.
      */
     @Test
+    @Ignore
     public void canResolveAndFallback() {
         StrategyResolver currentStrategyResolver = SnmpUtils.getStrategyResolver();
         assertTrue("ServiceBasedStrategyResolver should not be used by default.",

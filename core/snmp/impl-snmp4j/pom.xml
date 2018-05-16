@@ -33,6 +33,7 @@
             </Import-Package>
             <Embed-Dependency>snmp4j*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Bundle-Activator>org.opennms.netmgt.snmp.snmp4j.Snmp4JActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -42,6 +43,11 @@
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
