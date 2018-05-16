@@ -380,7 +380,7 @@ define(['jquery', 'leaflet', 'markercluster'], function($, L) {
             // create map
             theMap = L.map(mapId, {
                 zoom: 1,
-                maxZoom: 15,
+                maxZoom: 18,
                 zoomControl: false
             });
 
