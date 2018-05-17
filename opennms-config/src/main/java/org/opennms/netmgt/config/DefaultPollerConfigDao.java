@@ -49,8 +49,6 @@ import org.springframework.util.Assert;
 public class DefaultPollerConfigDao implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerConfigDao.class);
     private Resource m_configResource;
-    private String m_localServer;
-    private Boolean m_verifyServer;
 
     private PollerConfig m_pollerConfig;
 

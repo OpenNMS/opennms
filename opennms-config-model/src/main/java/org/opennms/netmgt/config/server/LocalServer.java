@@ -54,9 +54,6 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class LocalServer implements Serializable {
     private static final long serialVersionUID = 2L;
 
-    @XmlAttribute(name="server-name")
-    private String m_serverName;
-
     @XmlAttribute(name="defaultCriticalPathIp")
     @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress m_defaultCriticalPathIp;
@@ -70,22 +67,7 @@ public class LocalServer implements Serializable {
     @XmlAttribute(name="defaultCriticalPathRetries")
     private Integer m_defaultCriticalPathRetries;
 
-    /**
-     * A flag to indicate if poller has to identify the nms
-     *  server to restrict services to poll.
-     */
-    @XmlAttribute(name="verify-server")
-    private Boolean m_verifyServer;
-
     public LocalServer() {
-    }
-
-    public String getServerName() {
-        return m_serverName == null? "localhost" : m_serverName;
-    }
-
-    public void setServerName(final String serverName) {
-        m_serverName = ConfigUtils.normalizeString(serverName);
     }
 
     public Optional<InetAddress> getDefaultCriticalPathIp() {
@@ -120,22 +102,12 @@ public class LocalServer implements Serializable {
         m_defaultCriticalPathRetries = retries;
     }
 
-    public Boolean getVerifyServer() {
-        return m_verifyServer == null? Boolean.FALSE : m_verifyServer;
-    }
-
-    public void setVerifyServer(final Boolean verifyServer) {
-        m_verifyServer = verifyServer;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(m_serverName,
-                            m_defaultCriticalPathIp,
+        return Objects.hash(m_defaultCriticalPathIp,
                             m_defaultCriticalPathService,
                             m_defaultCriticalPathTimeout,
-                            m_defaultCriticalPathRetries,
-                            m_verifyServer);
+                            m_defaultCriticalPathRetries);
     }
 
     @Override
@@ -145,12 +117,10 @@ public class LocalServer implements Serializable {
         }
         if (obj instanceof LocalServer) {
             final LocalServer that = (LocalServer) obj;
-            return Objects.equals(this.m_serverName, that.m_serverName) &&
-                    Objects.equals(this.m_defaultCriticalPathIp, that.m_defaultCriticalPathIp) &&
+            return  Objects.equals(this.m_defaultCriticalPathIp, that.m_defaultCriticalPathIp) &&
                     Objects.equals(this.m_defaultCriticalPathService, that.m_defaultCriticalPathService) &&
                     Objects.equals(this.m_defaultCriticalPathTimeout, that.m_defaultCriticalPathTimeout) &&
-                    Objects.equals(this.m_defaultCriticalPathRetries, that.m_defaultCriticalPathRetries) &&
-                    Objects.equals(this.m_verifyServer, that.m_verifyServer);
+                    Objects.equals(this.m_defaultCriticalPathRetries, that.m_defaultCriticalPathRetries);
         }
         return false;
     }
