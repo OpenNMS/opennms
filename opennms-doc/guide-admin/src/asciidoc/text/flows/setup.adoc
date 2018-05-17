@@ -130,3 +130,38 @@ The following cache properties are available to be set in `${OPENNMS_HOME/etc/or
 | `true`
 
 |===
+
+==== Classification Exporter Filter cache configuration (Optional)
+
+A rule in the _Classification Engine_ may define an `exporterFilter`.
+In order to resolve if the filter criteria matches the address of an exporter a database query is executed.
+A cache can be configured to cache the result to improve performance.
+
+The following cache properties are available to be set in `${OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| `cache.classificationFilter.enabled`
+| Enables or disables the cache.
+| `false`
+| `false`
+
+| `cache.classificationFilter.maxSize`
+| The maximum size of the cache
+| `false`
+| `5000`
+
+| `cache.classificationFilter.expireAfterRead`
+| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+  The timer is reset every time an entry is read.
+| `false`
+| `300`
+
+| `nodeCache.recordStats`
+| Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
+| `false`
+| `true`
+
+|===
