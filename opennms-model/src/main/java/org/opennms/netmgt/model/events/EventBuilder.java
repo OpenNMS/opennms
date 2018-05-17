@@ -37,6 +37,7 @@ import java.util.List;
 
 import org.opennms.core.time.ZonedDateTimeBuilder;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
@@ -99,6 +100,7 @@ public class EventBuilder {
         setUei(uei);
         setTime(date);
         setSource(source);
+        checkForIllegalUei();
     }
 
     /**
@@ -110,6 +112,15 @@ public class EventBuilder {
         m_event = event;
         Date now = new Date();
         setTime(now);
+        checkForIllegalUei();
+    }
+
+
+    protected void checkForIllegalUei(){
+        if(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI.equals(this.m_event.getUei())){
+            LOG.warn("The use of EventBuilder is deprecated for UEI="+EventConstants.NODE_LABEL_CHANGED_EVENT_UEI
+                    +", use NodeLabelChangedEventBuilder instead");
+        }
     }
 
     public Date currentEventTime() {
@@ -158,6 +169,7 @@ public class EventBuilder {
 
     public EventBuilder setUei(final String uei) {
         m_event.setUei(uei);
+        checkForIllegalUei();
         return this;
     }
 
