@@ -39,6 +39,7 @@ import java.util.Properties;
 
 import org.junit.After;
 import org.junit.Test;
+import org.opennms.netmgt.snmp.ClassBasedStrategyResolver;
 import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.StrategyResolver;
@@ -50,29 +51,32 @@ public class ServiceBasedStrategyResolverTest {
         sysProps.remove("org.opennms.snmp.strategyClass");
     }
 
+    @Test
+    public void verifyThatClassBasedStrategyIsDefault() {
+        StrategyResolver currentStrategyResolver = SnmpUtils.getStrategyResolver();
+        assertTrue("ServiceBasedStrategyResolver should not be used by default.",
+                !(currentStrategyResolver instanceof ServiceBasedStrategyResolver));
+
+        ServiceBasedStrategyResolver.register();
+        currentStrategyResolver = SnmpUtils.getStrategyResolver();
+        assertTrue("ClassBasedStrategyResolver should be default when it is instantiable",
+                currentStrategyResolver instanceof ClassBasedStrategyResolver);
+
+        SnmpStrategy strategy = SnmpUtils.getStrategy();
+        assertEquals("Should fall back to using the ClassBasedStrategyResolver when no strategies are registered",
+                SnmpUtils.getStrategyClassName(), strategy.getClass().getCanonicalName());
+
+    }
+
     /**
      * Validates all of the code paths in {@link ServiceBasedStrategyResolver#getStrategy}.
      */
     @Test
     public void canResolveAndFallback() {
-        StrategyResolver currentStrategyResolver = SnmpUtils.getStrategyResolver();
-        assertTrue("ServiceBasedStrategyResolver should not be used by default.",
-                   !(currentStrategyResolver instanceof ServiceBasedStrategyResolver));
-
+          // Now create and bind a new mock strategy
+        ServiceBasedStrategyResolver serviceBasedResolver = new ServiceBasedStrategyResolver();
         ServiceBasedStrategyResolver.register();
-        currentStrategyResolver = SnmpUtils.getStrategyResolver();
-        assertTrue("Calling register() should set the strategy resolver.",
-                   currentStrategyResolver instanceof ServiceBasedStrategyResolver);
-
-        final ServiceBasedStrategyResolver serviceBasedResolver = (ServiceBasedStrategyResolver)currentStrategyResolver;
-        assertEquals("No services should be registered by default.",
-                     0, serviceBasedResolver.getStrategies().size());
-
-        SnmpStrategy strategy = SnmpUtils.getStrategy();
-        assertEquals("Should fall back to using the ClassBasedStrategyResolver when no strategies are registered",
-                     SnmpUtils.getStrategyClassName(), strategy.getClass().getCanonicalName());
-
-        // Now create and bind a new mock strategy
+        SnmpStrategy strategy = serviceBasedResolver.getStrategy();
         SnmpStrategy mockStrategy = mock(SnmpStrategy.class);
         Map<String, String> props = new HashMap<>();
         props.put("implementation", "org.opennms.mock.MyMockStrategy");
@@ -80,13 +84,13 @@ public class ServiceBasedStrategyResolverTest {
 
         try {
             // Grab the mock, as a fall-back
-            strategy = SnmpUtils.getStrategy();
+            strategy = serviceBasedResolver.getStrategy();
             assertEquals("Should fall back to using the first regitered strategy when the requested class is not registered"
                          , mockStrategy, strategy);
 
             // Now use the mock explicitly
             System.setProperty("org.opennms.snmp.strategyClass", "org.opennms.mock.MyMockStrategy");
-            strategy = SnmpUtils.getStrategy();
+            strategy = serviceBasedResolver.getStrategy();
             assertEquals(mockStrategy, strategy);
 
             // Unbind the mock
@@ -95,7 +99,7 @@ public class ServiceBasedStrategyResolverTest {
             // Grabbing the strategy should fail now, we fall-back to the ClassBasedResolver
             // but it won't be able to instantiate our mock strategy
             try {
-                SnmpUtils.getStrategy();
+                serviceBasedResolver.getStrategy();
                 fail("Should not be able to instantiate org.opennms.mock.MyMockStrategy");
             } catch (RuntimeException e) { }
         } finally {

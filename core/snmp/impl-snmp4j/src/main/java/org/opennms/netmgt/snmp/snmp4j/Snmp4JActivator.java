@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.snmp.snmp4j;
 
-public class ClassBasedStrategyResolver implements StrategyResolver {
+import java.util.Dictionary;
+import java.util.Hashtable;
 
-    private static SnmpStrategy snmpStrategy;
+import org.opennms.netmgt.snmp.SnmpStrategy;
 
-    public SnmpStrategy getStrategyInstance() {
-        final String strategyClass = SnmpUtils.getStrategyClassName();
-        try {
-            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class " + strategyClass, e);
+import org.opennms.netmgt.snmp.snmp4j.Snmp4JStrategy;
+import org.opennms.netmgt.snmp.SnmpUtils;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
+
+public class Snmp4JActivator implements BundleActivator {
+
+    @Override
+    public void start(BundleContext context) throws Exception {
+        if (!SnmpUtils.isClassBasedStrategyInstantiable()) {
+            Dictionary<String, String> props = new Hashtable<String, String>();
+            props.put("implementation", Snmp4JStrategy.class.getName());
+            Snmp4JStrategy strategy = new Snmp4JStrategy();
+            context.registerService(SnmpStrategy.class.getName(), strategy, props);
         }
     }
 
     @Override
-    public SnmpStrategy getStrategy() {
-        if (snmpStrategy == null) {
-            return getStrategyInstance();
-        }
-        if (SnmpUtils.getStrategyClassName().equals(snmpStrategy.getClass().getName())) {
-            return snmpStrategy;
-        } else {
-            return getStrategyInstance();
-        }
+    public void stop(BundleContext context) throws Exception {
+
     }
+
 }
