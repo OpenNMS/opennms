@@ -39,13 +39,6 @@ import java.net.InetAddress;
 public interface OpennmsServerConfig {
 
 	/**
-	 * <p>getServerName</p>
-	 * 
-	 * @return a String
-	 */
-	String getServerName();
-
-	/**
 	 * <p>getDefaultCriticalPathService</p>
 	 * 
 	 * @return a String
@@ -73,10 +66,4 @@ public interface OpennmsServerConfig {
 	 */
 	int getDefaultCriticalPathRetries();
 	
-	/**
-	 * <p>verifyServer</p>
-	 * 
-	 * @return a boolean
-	 */
-	boolean verifyServer();
 }

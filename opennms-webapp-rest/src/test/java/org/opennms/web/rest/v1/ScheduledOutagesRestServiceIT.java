@@ -138,7 +138,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</package>"
                 + "<collector service=\"SNMP\" class-name=\"org.opennms.netmgt.collectd.SnmpCollector\"/>"
                 + "</collectd-configuration>");
-        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig), "localhost", false);
+        CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory(new FileInputStream(collectdConfig));
 
         // Setup Pollerd Configuration
         File pollerdConfig = new File(etc, "poller-configuration.xml");
@@ -158,7 +158,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</package>"
                 + "<monitor service=\"ICMP\" class-name=\"org.opennms.netmgt.mock.MockMonitor\"/>"
                 + "</poller-configuration>");
-        PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig), "localserver", false));
+        PollerConfigFactory.setInstance(new PollerConfigFactory(1, new FileInputStream(pollerdConfig)));
 
         // Setup Threshd Configuration
         File threshdConfig = new File(etc, "threshd-configuration.xml");
@@ -172,7 +172,7 @@ public class ScheduledOutagesRestServiceIT extends AbstractSpringJerseyRestTestC
                 + "</service>"
                 + "</package>"
                 + "</threshd-configuration>");
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(new FileInputStream(threshdConfig), "localserver", false));
+        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(new FileInputStream(threshdConfig)));
 
         // Setup Notifid Configuration
         FileUtils.writeStringToFile(new File(etc, "notifd-configuration.xml"), "<?xml version=\"1.0\"?>"

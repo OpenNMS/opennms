@@ -40,7 +40,6 @@ import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.api.PersisterFactory;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfig;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.poller.Package;
@@ -499,19 +498,14 @@ public class Poller extends AbstractServiceDaemon {
 
         closeOutageIfSvcLostEventIsMissing(outage);
 
-        // We don't want to adjust the management state of the service if we're
-        // on a machine that uses multiple servers with access to the same database
-        // so check the value of OpennmsServerConfigFactory.getInstance().verifyServer()
-        // before doing any updates.
         final Package pkg = findPackageForService(ipAddr, serviceName);
-        final boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
         if (pkg == null) {
-            if(active && !verifyServer){
+            if(active){
                 LOG.warn("Active service {} on {} not configured for any package. Marking as Not Polled.", serviceName, ipAddr);
                 updateServiceStatus(service, "N");
             }
             return false;
-        } else if (!active && !verifyServer) {
+        } else if (!active) {
             LOG.info("Active service {} on {} is now configured for a package. Marking as active.", serviceName, ipAddr);
             updateServiceStatus(service, "A");
         }
@@ -709,4 +703,4 @@ public class Poller extends AbstractServiceDaemon {
     public static String getLoggingCategory() {
         return LOG4J_CATEGORY;
     }
-}    
+}

@@ -48,6 +48,7 @@
   <jsp:param name="breadcrumb" value="Path Outages" />
 </jsp:include>
 
+<!-- TODO MVR make this work with spring capabilities :) -->
 <% OpennmsServerConfigFactory.init(); %>
 
 <%

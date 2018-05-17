@@ -40,12 +40,13 @@ import org.opennms.netmgt.config.server.LocalServer;
 /**
  * <p>OpennmsServerConfigManager class.</p>
  */
+// TODO MVR rename this to pathoutageconfigmanager or something like this
 public class OpennmsServerConfigManager implements OpennmsServerConfig {
     /**
      * The config class loaded from the config file
      */
     private LocalServer m_config;
-    
+
     /**
      * <p>Constructor for OpennmsServerConfigManager.</p>
      *
@@ -59,15 +60,6 @@ public class OpennmsServerConfigManager implements OpennmsServerConfig {
         } finally {
             IOUtils.closeQuietly(isr);
         }
-    }
-
-    /**
-     * Return the local opennms server name.
-     *
-     * @return the name of the local opennms server
-     */
-    public String getServerName() {
-        return m_config.getServerName();
     }
 
     /**
@@ -104,16 +96,6 @@ public class OpennmsServerConfigManager implements OpennmsServerConfig {
      */
     public int getDefaultCriticalPathRetries() {
         return m_config.getDefaultCriticalPathRetries();
-    }
-
-    /**
-     * Return the boolean flag verify server to determine if poller what to use
-     * server to restrict services to poll.
-     *
-     * @return boolean flag
-     */
-    public boolean verifyServer() {
-        return Boolean.valueOf(m_config.getVerifyServer());
     }
 
 }

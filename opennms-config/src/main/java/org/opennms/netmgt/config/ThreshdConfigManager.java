@@ -81,33 +81,19 @@ public abstract class ThreshdConfigManager {
      * rules, so as to avoid repetitive database access.
      */
     private Map<Package, List<InetAddress>> m_pkgIpMap;
-    /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    protected boolean m_verifyServer;
-    /**
-     * The name of the local OpenNMS server
-     */
-    protected String m_localServer;
-    
+
     /**
      * <p>Constructor for ThreshdConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
-     * @throws IOException 
+     * @throws IOException
      */
-    public ThreshdConfigManager(InputStream stream, String localServer, boolean verifyServer) throws IOException {
+    public ThreshdConfigManager(InputStream stream) throws IOException {
         try (final Reader reader = new InputStreamReader(stream)) {
             m_config = JaxbUtils.unmarshal(ThreshdConfiguration.class, reader);
         }
 
         createUrlIpMap();
-
-        m_verifyServer = verifyServer;
-        m_localServer = localServer;
 
         createPackageIpListMap();
     }
@@ -149,18 +135,6 @@ public abstract class ThreshdConfigManager {
                 filterRules.append(pkg.getFilter().getContent().get());
             }
             try {
-                if (m_verifyServer) {
-                    if (filterRules.length() > 0) {
-                        filterRules.append(" & ");
-                    }
-                    filterRules.append("(serverName == ");
-                    filterRules.append('\"');
-                    filterRules.append(m_localServer);
-                    filterRules.append('\"');
-                    filterRules.append(")");
-                }
-    
-
                 LOG.debug("createPackageIpMap: package is {}. filer rules are {}", filterRules, pkg.getName());
     
                 FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
