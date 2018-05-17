@@ -144,6 +144,8 @@ public class BridgePort implements Topology {
         strbfr.append(getBridgePort());
         strbfr.append("], ifindex:[");
         strbfr.append(getBridgePortIfIndex());
+        strbfr.append("], vlan:[");
+        strbfr.append(getVlan());
         strbfr.append("]");
 
         return strbfr.toString();
