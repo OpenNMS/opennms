@@ -40,7 +40,6 @@ import org.opennms.netmgt.config.server.LocalServer;
 /**
  * <p>OpennmsServerConfigManager class.</p>
  */
-// TODO MVR rename this to pathoutageconfigmanager or something like this
 public class OpennmsServerConfigManager implements OpennmsServerConfig {
     /**
      * The config class loaded from the config file

@@ -73,7 +73,6 @@ public final class OpennmsServerConfigFactory extends OpennmsServerConfigManager
      *                Thrown if the specified config file cannot be read
      * @throws java.io.IOException if any.
      */
-    // TODO MVR remove this...
     public static synchronized void init() throws IOException {
         if (m_loaded) {
             // init already called - return

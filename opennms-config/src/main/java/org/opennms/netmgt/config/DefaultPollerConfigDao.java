@@ -45,7 +45,6 @@ import org.springframework.util.Assert;
  * @author <a href="mailto:dj@opennms.org">DJ Gregor</a>
  * @version $Id: $
  */
-// TODO MVR ich glaub das hier kann weg
 public class DefaultPollerConfigDao implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultPollerConfigDao.class);
     private Resource m_configResource;
