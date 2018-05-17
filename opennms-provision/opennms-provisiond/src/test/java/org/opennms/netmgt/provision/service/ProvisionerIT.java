@@ -97,6 +97,7 @@ import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.provision.detector.snmp.SnmpDetector;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
@@ -1412,12 +1413,12 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         nodeCopy = policy.apply(nodeCopy);
         assertTrue(nodeCopy.getRequisitionedCategories().contains(TEST_CATEGORY));
 
-        final EventBuilder eb = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+        final NodeLabelChangedEventBuilder eb = new NodeLabelChangedEventBuilder("OnmsNode.mergeNodeAttributes");
         eb.setNodeid(node.getId());
-        eb.addParam("oldNodeLabel", OLD_LABEL);
-        eb.addParam("oldNodeLabelSource", "U");
-        eb.addParam("newNodeLabel", NEW_LABEL);
-        eb.addParam("newNodeLabelSource", "U");
+        eb.setOldNodeLabel(OLD_LABEL);
+        eb.setOldNodeLabelSource("U");
+        eb.setNewNodeLabel(NEW_LABEL);
+        eb.setNewNodeLabelSource("U");
         eventAnticipator.anticipateEvent(eb.getEvent());
 
         // Change the label of the node so that we can trigger a NODE_LABEL_CHANGED_EVENT_UEI event

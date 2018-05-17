@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,30 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp;
 
-public class ClassBasedStrategyResolver implements StrategyResolver {
+package org.opennms.netmgt.model.events;
 
-    private static SnmpStrategy snmpStrategy;
+import org.junit.Test;
 
-    public SnmpStrategy getStrategyInstance() {
-        final String strategyClass = SnmpUtils.getStrategyClassName();
-        try {
-            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class " + strategyClass, e);
-        }
+public class NodeLabelChangedEventBuilderTest {
+
+
+    @Test(expected = IllegalStateException.class)
+    public void ensureThatBuilderFailsOnMissingParameterNewNodeLabel(){
+        new NodeLabelChangedEventBuilder(this.getClass().getName()).setOldNodeLabel("aa").getEvent();
     }
 
-    @Override
-    public SnmpStrategy getStrategy() {
-        if (snmpStrategy == null) {
-            return getStrategyInstance();
-        }
-        if (SnmpUtils.getStrategyClassName().equals(snmpStrategy.getClass().getName())) {
-            return snmpStrategy;
-        } else {
-            return getStrategyInstance();
-        }
+    @Test(expected = IllegalStateException.class)
+    public void ensureThatBuilderFailsOnMissingParameterOldNodeLabel(){
+        new NodeLabelChangedEventBuilder(this.getClass().getName()).setNewNodeLabel("aa").getEvent();
     }
+
+    @Test
+    public void ensureThatBuilderSucceedsWhenAllRequiredParameterAreSet(){
+        new NodeLabelChangedEventBuilder(this.getClass().getName()).setNewNodeLabel("aa").setOldNodeLabel("aa").getEvent();
+    }
+
 }
