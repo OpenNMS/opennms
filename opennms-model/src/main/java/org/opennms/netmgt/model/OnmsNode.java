@@ -87,6 +87,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1361,7 +1362,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         if (send) {
             LOG.debug("mergeNodeAttributes(): sending NODE_LABEL_CHANGED_EVENT_UEI");
             // Create a NODE_LABEL_CHANGED_EVENT_UEI event
-            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            final EventBuilder bldr = new NodeLabelChangedEventBuilder("OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
             bldr.setHost(InetAddressUtils.getLocalHostAddressAsString());
@@ -1429,7 +1430,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void mergeAdditionalCategories(OnmsNode scannedNode) {
+    private void mergeAdditionalCategories(OnmsNode scannedNode) {
         getCategories().addAll(scannedNode.getCategories());
     }
 
