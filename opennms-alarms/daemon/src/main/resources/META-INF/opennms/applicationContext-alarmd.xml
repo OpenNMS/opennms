@@ -17,6 +17,7 @@
     <property name="alarmDao" ref="alarmDao" />
     <property name="eventDao" ref="eventDao" />
     <property name="eventForwarder" ref="eventForwarder"/>
+    <property name="eventUtil" ref="eventUtil"/>
   </bean>
 
   <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >

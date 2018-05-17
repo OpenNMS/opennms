@@ -615,6 +615,7 @@
     <complexType>
       <attribute name="field-name" type="string" use="required" />
       <attribute name="update-on-reduction" type="boolean" use="optional" default="true" />
+      <attribute name="value-expression" type="string" use="optional" default="" />
     </complexType>
   </element>
   

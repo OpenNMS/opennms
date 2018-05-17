@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,6 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -39,8 +40,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
@@ -468,6 +471,134 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         assertTrue("The logMsg should have changed.", !"new logMsg".equals(newLogMsg));
         assertEquals("The logMsg should new be the default logMsg.", newLogMsg, defaultLogMsg);
         
+        // Acknowledge the alarm via update-field for "acktime" / "ackuser"
+        Map<String,String> eventParams = new LinkedHashMap<>();
+        long timeWhenSent = System.currentTimeMillis();
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "swivelchair", "", eventParams);
+        String newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        String newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("New alarmackuser must be as in event parameter", "swivelchair", newAckUser);
+        assertTrue("New alarmacktime must be non-null", newAckTime != null);
+        assertTrue("New alarmacktime must be within 5s of current system time", System.currentTimeMillis() - Long.valueOf(newAckTime) < 5000);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in whole seconds
+        eventParams.put("extSourcedAckUser", "somebodyelse");
+        eventParams.put("extSourcedAckTime", "1000000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("somebodyelse", newAckUser);
+        assertEquals("1000000000", newAckTime);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be in milliseconds
+        eventParams.put("extSourcedAckUser", "somethirdactor");
+        eventParams.put("extSourcedAckTime", "1526040190000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("somethirdactor", newAckUser);
+        assertEquals("1526040190000", newAckTime);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime including time zone
+        eventParams.put("extSourcedAckUser", "someotheractortz");
+        eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a052d0000");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("someotheractortz", newAckUser);
+        assertEquals("1526046178500", newAckTime);
+        
+        // Change the alarm's ackuser / acktime via update-field -- acktime heuristically assumed to be an SNMPv2-TC::DateAndTime excluding time zone
+        eventParams.put("extSourcedAckUser", "someotheractornotz");
+        eventParams.put("extSourcedAckTime", "0x07e2050b0d2a3a09");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[#1]%", "%parm[extSourcedAckTime]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertEquals("someotheractornotz", newAckUser);
+        assertEquals("1526046178900", newAckTime);
+        
+        // De-acknowledge the alarm via update-field. Verify this nulls both acktime and ackuser.
+        eventParams.clear();
+        eventParams.put("extSourcedAckUser", "somethirdactor");
+        eventParams.put("extSourcedAckTime", "null");
+        sendNodeDownEventWithUpdateFieldsAckUserAndTime(reductionKey, node1, "%parm[extSourcedAckUser]%", "%parm[#2]%", eventParams);
+        newAckUser = m_jdbcTemplate.query("select alarmackuser from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        newAckTime = m_jdbcTemplate.query("select extract(epoch from alarmacktime) * 1000 from alarms", new ResultSetExtractor<String>() {
+            @Override
+            public String extractData(ResultSet results) throws SQLException, DataAccessException {
+                results.next();
+                return results.getString(1);
+            }
+        });
+        assertNull(newAckUser);
+        assertNull(newAckTime);
+        
     }
 
     //Supporting method for test
@@ -587,5 +718,48 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
             }
         });
         assertEquals("Found one or more alarms: " + alarmDescriptions, 0, alarmDescriptions.size());
+    }
+    
+    private void sendNodeDownEventWithUpdateFieldsAckUserAndTime(String reductionKey, MockNode node, String ackUserExpr, String ackTimeExpr, Map<String,String> params) throws SQLException {
+        EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
+
+        if (reductionKey != null) {
+            AlarmData data = new AlarmData();
+            data.setAlarmType(1);
+            data.setReductionKey(reductionKey);
+            
+            List<UpdateField> fields = new ArrayList<>();
+            
+            UpdateField field = new UpdateField();
+            if (ackUserExpr != null) {
+                field.setFieldName("AckUser");
+                field.setUpdateOnReduction(Boolean.TRUE);
+                field.setValueExpression(ackUserExpr);
+                fields.add(field);
+            }
+            
+            field = new UpdateField();
+            if (ackTimeExpr != null) {
+                field.setFieldName("AckTime");
+                field.setUpdateOnReduction(Boolean.TRUE);
+                field.setValueExpression(ackTimeExpr);
+                fields.add(field);
+            }
+            
+            data.setUpdateField(fields);
+            
+            event.setAlarmData(data);
+        } else {
+            event.setAlarmData(null);
+        }
+
+        event.setLogDest("logndisplay");
+        event.setLogMessage("testing");
+        
+        for (String paramName : params.keySet()) {
+            event.addParam(paramName, params.get(paramName), "OctetString", null);
+        }
+
+        m_eventdIpcMgr.sendNow(event.getEvent());
     }
 }
