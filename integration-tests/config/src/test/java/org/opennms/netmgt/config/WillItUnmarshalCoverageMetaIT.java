@@ -207,7 +207,7 @@ public class WillItUnmarshalCoverageMetaIT {
      * {@link WillItUnmarshalIT#FILES} in the static constructor of
      * {@link WillItUnmarshalIT} or mark the file as ignored by calling
      * {@link #ignoreFile(java.io.File)} in the static constructor of
-     * {@link WillItUnmarshalMetaTest}.
+     * {@link WillItUnmarshalCoverageMetaIT}.
      */
     @Test
     public void testCoverage() {

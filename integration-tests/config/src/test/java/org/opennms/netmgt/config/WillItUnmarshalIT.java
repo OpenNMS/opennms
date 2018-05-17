@@ -144,14 +144,14 @@ import junit.framework.AssertionFailedError;
  * During test run, all tests methods are executed for each test.
  * 
  * To ensure, that all provided files are covered, a meta test is used
- * ({@link WillItUnmarshalMetaTest}).
+ * ({@link WillItUnmarshalCoverageMetaIT}).
  * 
  * The name of this class is a tribute to
  * <a href="http://www.willitblend.com/">www.willitblend.com</a>.
  * 
  * @author Dustin Frisch<fooker@lab.sh>
  * 
- * @see WillItUnmarshalMetaTest
+ * @see WillItUnmarshalCoverageMetaIT
  */
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalIT {
