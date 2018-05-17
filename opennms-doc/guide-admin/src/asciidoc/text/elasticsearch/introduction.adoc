@@ -11,7 +11,7 @@ Internally all _Elasticsearch_ integrations use the https://github.com/searchbox
 [[ga-elasticsearch-integration-configuration]]
 === Configuration
 
-The configuration is feature dependant and therefore must take place in the feature configuration file (see below).
+The configuration is feature dependant and therefore must take place in the feature configuration file in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
 
 The following properties can be set:
 
