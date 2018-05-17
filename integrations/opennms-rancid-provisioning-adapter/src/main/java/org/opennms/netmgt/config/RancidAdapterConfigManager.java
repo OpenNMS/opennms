@@ -127,7 +127,7 @@ public abstract class RancidAdapterConfigManager implements RancidAdapterConfig 
     /**
      * <p>reloadXML</p>
      *
-     * @param reader a {@link java.io.InputStream} object.
+     * @param is a {@link java.io.InputStream} object.
      * @throws java.io.IOException if any.
      */
     protected void reloadXML(final InputStream is) throws IOException {

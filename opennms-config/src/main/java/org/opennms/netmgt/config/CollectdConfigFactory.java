@@ -150,7 +150,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
     /**
      * <p>getCollectdConfig</p>
      *
-     * @return a {@link org.opennms.netmgt.config.CollectdConfig} object.
+     * @return a {@link org.opennms.netmgt.config.collectd.CollectdConfiguration} object.
      */
     public CollectdConfiguration getCollectdConfig() {
         synchronized (m_collectdConfigMutex) {
@@ -175,7 +175,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * <p>getPackage</p>
      *
      * @param name a {@link java.lang.String} object.
-     * @return a {@link org.opennms.netmgt.config.CollectdPackage} object.
+     * @return a {@link org.opennms.netmgt.config.collectd.Package} object.
      */
     public Package getPackage(final String name) {
         synchronized (m_collectdConfigMutex) {
@@ -257,7 +257,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * to "on").
      *
      * @deprecated This function should take normal model objects instead of bare IP addresses
-     * and service names. Use {@link CollectdConfig#isServiceCollectionEnabled(OnmsIpInterface, String)}
+     * and service names. Use {@link #isServiceCollectionEnabled(OnmsIpInterface, String)}
      * instead.
      *
      * @param ipAddr
@@ -324,7 +324,7 @@ public class CollectdConfigFactory implements org.opennms.netmgt.config.api.Coll
      * filter will only work if the IP is already in the database.
      *
      * @deprecated This function should take normal model objects instead of bare IP 
-     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface)}.
+     * addresses. Move this implementation into {@link #interfaceInPackage(OnmsIpInterface, Package)}.
      *
      * @param iface
      *            The interface to test against the package.
