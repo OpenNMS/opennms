@@ -19,7 +19,7 @@ From a Karaf shell on your _{opennms-product-name}_ instance, start by configuri
 $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
-admin@opennms()> property:set elasticUrl http://elastic:9200
+admin@opennms()> config:property-set elasticUrl http://elastic:9200
 admin@opennms()> config:update
 ----
 
