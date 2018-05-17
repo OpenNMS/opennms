@@ -14,7 +14,16 @@
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
        ">
 
-  <!-- NOTE: Contains only OpenNMS Runtime Environment-specific beans -->
+  <!--
+      Small HACK:
+      Originally only applicationContext-dao.xml was required.
+      But with the introduction of sentinel, applicationContext-dao.xml AND applicationContext-shared.xml need to be loaded.
+      Importing the applicationContext-shared.xml file here, did not require us to rewrite all ITs and manually include "applicationContext-shared.xml"
+
+  -->
+  <import resource="applicationContext-shared.xml"/>
+
+  <!-- NOTE: FROM HERE ON, only contains OpenNMS Runtime Environment-specific beans -->
 
   <context:annotation-config />
   <cache:annotation-driven />
