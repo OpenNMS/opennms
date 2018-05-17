@@ -379,7 +379,7 @@ final class PollerEventProcessor implements EventListener {
             if (parmValue == null) {
                 continue;
             } else {
-                if (parmName.equals(EventConstants.PARM_NODE_LABEL)) {
+                if (parmName.equals(EventConstants.PARM_NEW_NODE_LABEL)){
                     String label = parmValue.getContent();
                     LOG.debug("nodeLabelChangedHandler: parmName: {} /parmContent: {}", parmName, label);
                     PollableNode node = getNetwork().getNode(nodeId.intValue());
