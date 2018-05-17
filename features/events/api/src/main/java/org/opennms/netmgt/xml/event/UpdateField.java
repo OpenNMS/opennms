@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,9 @@ public class UpdateField implements Serializable {
     @XmlAttribute(name="update-on-reduction", required=false)
     private java.lang.Boolean m_updateOnReduction = Boolean.TRUE;
     
+    @XmlAttribute(name="value-expression", required=false)
+    private java.lang.String m_valueExpression;
+    
     public String getFieldName() {
         return m_fieldName;
     }
@@ -67,5 +70,13 @@ public class UpdateField implements Serializable {
     
     public void setUpdateOnReduction(Boolean update) {
         m_updateOnReduction = update;
+    }
+    
+    public String getValueExpression() {
+        return m_valueExpression;
+    }
+    
+    public void setValueExpression(String valueExpression) {
+        m_valueExpression = valueExpression;
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,9 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Map;
 
 import org.opennms.netmgt.eventd.processor.expandable.ExpandableParameterResolver;
@@ -136,4 +138,8 @@ public interface EventUtil {
 	String getNodeLocation(long nodeId) throws SQLException;
 
 	ExpandableParameterResolver getResolver(String token);
+	
+	Date decodeSnmpV2TcDateAndTime(BigInteger octetStringValue);
+	
 }
+
