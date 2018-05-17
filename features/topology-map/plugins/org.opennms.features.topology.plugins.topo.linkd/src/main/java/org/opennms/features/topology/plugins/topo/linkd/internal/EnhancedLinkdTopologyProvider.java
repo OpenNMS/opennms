@@ -1018,8 +1018,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     continue;
                 }
 
-                if (sourceLink.getIsisISAdjIndex().intValue() == link.getIsisCircIndex().intValue() && 
-                        link.getIsisISAdjIndex().intValue() == sourceLink.getIsisCircIfIndex().intValue()) {
+                if (sourceLink.getIsisISAdjIndex().intValue() == 
+                        link.getIsisISAdjIndex().intValue()  ) {
                     targetLink=link;
                     LOG.info("loadtopology: found isis mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     break;
