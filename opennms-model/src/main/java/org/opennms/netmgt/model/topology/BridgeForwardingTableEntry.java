@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 
-public class BridgeForwardingTableEntry implements BridgeTopology {
+public class BridgeForwardingTableEntry implements Topology {
 
     private Integer m_node;
     private Integer m_bridgePort;

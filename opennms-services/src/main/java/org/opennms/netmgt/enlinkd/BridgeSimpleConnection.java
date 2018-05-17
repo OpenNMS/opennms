@@ -38,7 +38,7 @@ import java.util.Set;
 import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgePort;
-import org.opennms.netmgt.model.topology.BridgeTopology;
+import org.opennms.netmgt.model.topology.Topology;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +89,7 @@ import org.slf4j.LoggerFactory;
 // then we work on this set (if the size is only 2......no way)
 // get m_1 m_2 m_3 and check the ports on the two bridges...to match rules
 // 
-public class BridgeSimpleConnection implements BridgeTopology {
+public class BridgeSimpleConnection implements Topology {
     
     private static final Logger LOG = LoggerFactory.getLogger(BridgeSimpleConnection.class);
 

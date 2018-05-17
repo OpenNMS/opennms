@@ -33,7 +33,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,8 +40,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
-import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
@@ -52,13 +49,10 @@ import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qT
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
-import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfElement;
-import org.opennms.netmgt.model.OspfElement.Status;
-import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -86,58 +80,19 @@ public abstract class EnLinkdTestHelper {
     }
 
     protected static void printCdpElement(final CdpElement cdpElement) {
-        System.err.println("----------cdp element --------");
-        System.err.println("Nodeid: " + cdpElement.getNode().getId());
-        System.err.println("Cdp Global Device Id: " + cdpElement.getCdpGlobalDeviceId());
-        System.err.println("Cdp Global Run: " + TruthValue.getTypeString(cdpElement.getCdpGlobalRun().getValue()));
+        System.err.println(cdpElement.printTopology());
     }
 
     protected static void printCdpLink(CdpLink link) {
-        System.err.println("----------cdp link --------");
-        System.err.println("Create time: " + link.getCdpLinkCreateTime());
-        System.err.println("Last Poll time: " + link.getCdpLinkLastPollTime());
-        System.err.println("----------Source Node--------");
-        System.err.println("Nodeid: " + link.getNode().getId());
-        System.err.println("----------Source Port--------");
-        System.err.println("cdpcacheifindex: " + link.getCdpCacheIfIndex());
-        System.err.println("cdpcachedeviceindex: " + link.getCdpCacheDeviceIndex());
-        System.err.println("cdpinterfacename: " + link.getCdpInterfaceName());
-        System.err.println("----------Rem Node--------");
-        System.err.println("cdpcacheaddresstype: " + CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()));
-        System.err.println("cdpcacheaddress: " + link.getCdpCacheAddress());
-        System.err.println("cdpcacheversion: " + link.getCdpCacheVersion());
-        System.err.println("cdpcachedeviceid: " + link.getCdpCacheDeviceId());
-        System.err.println("cdpcachedeviceplatform: " + link.getCdpCacheDevicePlatform());
-        System.err.println("----------Remote Port--------");
-        System.err.println("cdpcachedeviceport: " + link.getCdpCacheDevicePort());
-        System.err.println("");
+        System.err.println(link.printTopology());
     }
 
     protected static void printLldpElement(final LldpElement lldpElement) {
-        System.err.println("----------lldp element --------");
-        System.err.println("Nodeid: " + lldpElement.getNode().getId());
-        System.err.println("lldp chassis type/id: " + LldpChassisIdSubType.getTypeString(lldpElement.getLldpChassisIdSubType().getValue()) + "/" + lldpElement.getLldpChassisId());
-        System.err.println("lldp sysname: " + lldpElement.getLldpSysname());
+        System.err.println(lldpElement.printTopology());
     }
 
     protected static void printLldpLink(LldpLink link) {
-        System.err.println("----------lldp link --------");
-        System.err.println("Create time: " + link.getLldpLinkCreateTime());
-        System.err.println("Last Poll time: " + link.getLldpLinkLastPollTime());
-        System.err.println("----------Source Node--------");
-        System.err.println("Nodeid: " + link.getNode().getId());
-        System.err.println("----------Source Port--------");
-        System.err.println("lldp port num: " + link.getLldpLocalPortNum());
-        System.err.println("lldp port ifindex: " + link.getLldpPortIfindex());
-        System.err.println("lldp port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpPortIdSubType().getValue()) + "/" + link.getLldpPortId());
-        System.err.println("lldp port descr: " + link.getLldpPortDescr());
-        System.err.println("----------Rem Node--------");
-        System.err.println("lldp rem chassis type/id: " + LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue()) + "/" + link.getLldpRemChassisId());
-        System.err.println("lldp rem sysname: " + link.getLldpRemSysname());
-        System.err.println("----------Remote Port--------");
-        System.err.println("lldp rem port type/id: " + LldpPortIdSubType.getTypeString(link.getLldpRemPortIdSubType().getValue()) + "/" + link.getLldpRemPortId());
-        System.err.println("lldp rem port descr: " + link.getLldpRemPortDescr());
-        System.err.println("");
+        System.err.println(link.printTopology());
     }
 
     protected static void printOspfTopology(List<OspfLink> ospflinks) {
@@ -151,30 +106,11 @@ public abstract class EnLinkdTestHelper {
     }
 
     protected static void printOspfElement(final OspfElement element) {
-        System.err.println("----------ospf element --------");
-        System.err.println("Nodeid: " + element.getNode().getId());
-        System.err.println("ospf router id/mask/ifindex: " + str(element.getOspfRouterId()) + "/" + str(element.getOspfRouterIdNetmask()) + "/" + element.getOspfRouterIdIfindex());
-        System.err.println("ospf admin status: " + Status.getTypeString(element.getOspfAdminStat().getValue()));
-        System.err.println("ospf version number: " + element.getOspfVersionNumber());
-        System.err.println("ospf Border Router Status: " + TruthValue.getTypeString(element.getOspfBdrRtrStatus().getValue()));
-        System.err.println("ospf AS Boder Router Status: " + TruthValue.getTypeString(element.getOspfASBdrRtrStatus().getValue()));
-        System.err.println("");
+        System.err.println(element.printTopology()); 
     }
 
     protected static void printOspfLink(OspfLink link) {
-        System.err.println("----------ospf link --------");
-        System.err.println("Create time: " + link.getOspfLinkCreateTime());
-        System.err.println("Last Poll time: " + link.getOspfLinkLastPollTime());
-        System.err.println("----------Source Node--------");
-        System.err.println("Nodeid: " + link.getNode().getId());
-        System.err.println("----------Source Port--------");
-        System.err.println("ospf router id/mask/ifindex/addressleifindex: " + str(link.getOspfIpAddr()) + "/" + str(link.getOspfIpMask()) + "/" + link.getOspfIfIndex() + "/" + link.getOspfAddressLessIndex());
-        System.err.println("----------Rem Node--------");
-        System.err.println("ospf rem router id: " + str(link.getOspfRemRouterId()));
-        System.err.println("----------Remote Port--------");
-        System.err.println("ospf rem router ip: " + str(link.getOspfRemIpAddr()));
-        System.err.println("ospf rem router address less ifindex: " + link.getOspfRemAddressLessIndex());
-        System.err.println("");
+        System.err.println(link.printTopology());
     }
 
     public void setBridgeElements(BroadcastDomain domain, List<BridgeElement> elements) {
@@ -195,6 +131,16 @@ public abstract class EnLinkdTestHelper {
         }        
     }
     
+    public BridgeForwardingTableEntry addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac, Integer vlan) {
+        BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
+        link.setNodeId(node.getId());
+        link.setBridgePort(bridgeport);
+        link.setMacAddress(mac);
+        link.setVlan(vlan);
+        link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+        return link;
+    }
+    
     public BridgeForwardingTableEntry addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, String mac) {
         BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
         link.setNodeId(node.getId());
@@ -203,7 +149,18 @@ public abstract class EnLinkdTestHelper {
         link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
         return link;
     }
-    
+
+    public BridgeForwardingTableEntry addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, Integer ifindex,String mac,Integer vlan) {
+        BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
+        link.setNodeId(node.getId());
+        link.setBridgePort(bridgeport);
+        link.setBridgePortIfIndex(ifindex);
+        link.setMacAddress(mac);
+        link.setVlan(vlan);
+        link.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
+        return link;
+    }
+
     public BridgeForwardingTableEntry addBridgeForwardingTableEntry(OnmsNode node, Integer bridgeport, Integer ifindex,String mac) {
         BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
         link.setNodeId(node.getId());
@@ -235,83 +192,99 @@ public abstract class EnLinkdTestHelper {
     
     class TwentyNodeTopology {
 
-        //bridge identifiers
-        String macspiazzofasw01="00e0b1bb39b4";
-        String macspiasvigasw01="00e0b1bba38e";
-        String mac2473="0010e724168b";
-        String macvillpizzasw01="0012cf5d3180";
-        String mac6796="d4ca6deafe24";
-        String mac2673="0010e7448f7f";
-        String mac2674="0010e744f3de";
-        String mac1619="00e0b1bb3ec8";
-        String mac2676="0010e7241894";
-        String macdaremunasw01="00e0b1bbac4a";
-        String macspiazzomepe01="0c8525e8f380";
-        String mac6772="000c42c54e75";
-        String macvrendmunasw01="00e0b1bba8f0";
-        String mac6777="000c42679d1d";
-
+        final int spiazzomepe01Id=6740; // cisco ME 
+        
         final int spiazzofasw01Id=1571; // alcatel switch
         final int spiasvigasw01Id=1572; // alcatel switch
-        final int nodeId2473=2473; // alvarion breeze
         final int villpizzasw01Id=5099; // alcatel switch
-        final int nodeId6796=6796; // mikrotik
-        final int nodeId2673=2673; // alvarion breeze
-        final int nodeId2674=2674; // alvarion breeze
         final int vigrenmuasw01Id=1619; // alcatel switch
-        final int nodeId2676=2676; // alvarion breeze
         final int daremunasw01Id=1396; // alcatel switch
-        final int spiazzomepe01Id=6740; // cisco ME 
-        final int nodeId6772=6772; // mikrotik
         final int vrendmunasw01Id=1622; // alcatel switch
-        final int nodeId6777=6777; // mikrotik
         
+        final int daremunalv01Id=2473; // alvarion breeze
+        final int vigrenmualv01Id=2673; // alvarion breeze
+        final int vigrenmualv02Id=2674; // alvarion breeze
+        final int vrendmunalv02Id=2676; // alvarion breeze
+        
+        final int rsaspiazzowl1Id=6796; // mikrotik
+        final int comunespiazzowl1Id=6772; // mikrotik
+        final int comunevillarendenawl1Id=6777; // mikrotik
+
+        //bridge identifiers
+        String macspiazzomepe01="0c8525e8f380";
+        
+        String macspiazzofasw01="00e0b1bb39b4";
+        String macspiasvigasw01="00e0b1bba38e";
+        String macvillpizzasw01="0012cf5d3180";
+        String macdaremunasw01="00e0b1bbac4a";
+        String macvrendmunasw01="00e0b1bba8f0";
+        String macvigrenmuasw01="00e0b1bb3ec8";
+        
+        String macdaremunalv01="0010e724168b";
+        String macvigrenmualv01="0010e7448f7f";
+        String macvigrenmualv02="0010e744f3de";
+        String macvrendmunalv02="0010e7241894";
+
+        String macrsaspiazzowl1="d4ca6deafe24";
+        String macomunespiazzowl1="000c42c54e75";
+        String maccomunevillarendenawl1="000c42679d1d";
+
+
+        OnmsNode spiazzomepe01=new OnmsNode();
+
         OnmsNode spiazzofasw01=new OnmsNode();
         OnmsNode spiasvigasw01=new OnmsNode();
-        OnmsNode node2473=new OnmsNode();
         OnmsNode villpizzasw01=new OnmsNode();
-        OnmsNode node6796=new OnmsNode();
-        OnmsNode node2673=new OnmsNode();
-        OnmsNode node2674=new OnmsNode();
-        OnmsNode vigrenmuasw01=new OnmsNode();
-        OnmsNode node2676=new OnmsNode();
         OnmsNode daremunasw01=new OnmsNode();
-        OnmsNode spiazzomepe01=new OnmsNode();
-        OnmsNode node6772=new OnmsNode();
         OnmsNode vrendmunasw01=new OnmsNode();
-        OnmsNode node6777=new OnmsNode();
+        OnmsNode vigrenmuasw01=new OnmsNode();
         
+        OnmsNode daremunalv01 = new OnmsNode();
+        OnmsNode vigrenmualv01=new OnmsNode();
+        OnmsNode vigrenmualv02=new OnmsNode();
+        OnmsNode vrendmunalv02=new OnmsNode();
+
+        OnmsNode rsaspiazzowl1=new OnmsNode();
+        OnmsNode comunespiazzowl1=new OnmsNode();
+        OnmsNode comunevillarendenawl1=new OnmsNode();
+
+        BridgeElement elemspiazzomepe01=new BridgeElement();
+
         BridgeElement elemspiazzofasw01=new BridgeElement();
         BridgeElement elemspiasvigasw01=new BridgeElement();
-        BridgeElement element2473=new BridgeElement();
         BridgeElement elemvillpizzasw01=new BridgeElement();
-        BridgeElement element6796=new BridgeElement();
-        BridgeElement element2673=new BridgeElement();
-        BridgeElement element2674=new BridgeElement();
         BridgeElement elemvigrenmuasw01=new BridgeElement();
-        BridgeElement element2676=new BridgeElement();
         BridgeElement elemdaremunasw01=new BridgeElement();
-        BridgeElement elemspiazzomepe01=new BridgeElement();
-        BridgeElement element6772=new BridgeElement();
         BridgeElement elemvrendmunasw01=new BridgeElement();
-        BridgeElement element6777=new BridgeElement();
+        
+        BridgeElement elemdaremunalv01=new BridgeElement();
+        BridgeElement elemvigrenmualv01=new BridgeElement();
+        BridgeElement elemvigrenmualv02=new BridgeElement();
+        BridgeElement elemvrendmunalv02=new BridgeElement();
+
+        BridgeElement elemrsaspiazzowl1=new BridgeElement();
+        BridgeElement elemcomunespiazzowl1=new BridgeElement();
+        BridgeElement elemcomunevillarendenawl1=new BridgeElement();
         
         List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
 
-        Set<BridgeForwardingTableEntry> bftspiazzofasw01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftspiasvigasw01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft2473 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftvillpizzasw01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft6796 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft2673 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft2674 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftvigrenmuasw01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft2676 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bftdaremunasw01 = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftspiazzomepe01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft6772 = new HashSet<BridgeForwardingTableEntry>();
+
+        Set<BridgeForwardingTableEntry> bftspiazzofasw01 = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftvrendmunasw01 = new HashSet<BridgeForwardingTableEntry>();
-        Set<BridgeForwardingTableEntry> bft6777 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftspiasvigasw01 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftvillpizzasw01 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftvigrenmuasw01 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftdaremunasw01 = new HashSet<BridgeForwardingTableEntry>();
+        
+        Set<BridgeForwardingTableEntry> bftdaremunalv01 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftvigrenmualv01 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftvigrenmualv02 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftvrendmunalv02 = new HashSet<BridgeForwardingTableEntry>();
+        
+        Set<BridgeForwardingTableEntry> bftrsaspiazzowl1 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftcomunespiazzowl1 = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftcomunevillarendenawl1 = new HashSet<BridgeForwardingTableEntry>();
         
         //5099
         String mac00e0b1bba8f2="00e0b1bba8f2";
@@ -391,141 +364,154 @@ public abstract class EnLinkdTestHelper {
         String mac00176301057d="00176301057d";
         
         public TwentyNodeTopology() {
+        
+            spiazzomepe01.setId(spiazzomepe01Id);
+
             spiazzofasw01.setId(spiazzofasw01Id);
             spiasvigasw01.setId(spiasvigasw01Id);
-            node2473.setId(nodeId2473);
             villpizzasw01.setId(villpizzasw01Id);
-            node6796.setId(nodeId6796);
-            node2673.setId(nodeId2673);
-            node2674.setId(nodeId2674);
             vigrenmuasw01.setId(vigrenmuasw01Id);
-            node2676.setId(nodeId2676);
             daremunasw01.setId(daremunasw01Id);
-            spiazzomepe01.setId(spiazzomepe01Id);
-            node6772.setId(nodeId6772);
             vrendmunasw01.setId( vrendmunasw01Id);
-            node6777.setId(nodeId6777);
+
+            daremunalv01.setId(daremunalv01Id);
+            vigrenmualv01.setId(vigrenmualv01Id);
+            vigrenmualv02.setId(vigrenmualv02Id);
+            vrendmunalv02.setId(vrendmunalv02Id);
             
+            rsaspiazzowl1.setId(rsaspiazzowl1Id);
+            comunespiazzowl1.setId(comunespiazzowl1Id);
+            comunevillarendenawl1.setId(comunevillarendenawl1Id);
+            
+            elemspiazzomepe01.setNode(spiazzomepe01);
+
             elemspiazzofasw01.setNode(spiazzofasw01);
             elemspiasvigasw01.setNode(spiasvigasw01);
-            element2473.setNode(node2473);
             elemvillpizzasw01.setNode(villpizzasw01);
-            element6796.setNode(node6796);
-            element2673.setNode(node2673);
-            element2674.setNode(node2674);
             elemvigrenmuasw01.setNode(vigrenmuasw01);
-            element2676.setNode(node2676);
-            elemdaremunasw01.setNode(daremunasw01);
-            elemspiazzomepe01.setNode(spiazzomepe01);
-            element6772.setNode(node6772);
             elemvrendmunasw01.setNode(vrendmunasw01);
-            element6777.setNode(node6777);
+            elemdaremunasw01.setNode(daremunasw01);
+
+            elemdaremunalv01.setNode(daremunalv01);
+            elemvigrenmualv01.setNode(vigrenmualv01);
+            elemvigrenmualv02.setNode(vigrenmualv02);
+            elemvrendmunalv02.setNode(vrendmunalv02);
+
+            elemrsaspiazzowl1.setNode(rsaspiazzowl1);
+            elemcomunespiazzowl1.setNode(comunespiazzowl1);
+            elemcomunevillarendenawl1.setNode(comunevillarendenawl1);
             
+            elemspiazzomepe01.setBaseBridgeAddress(macspiazzomepe01);
+
             elemspiazzofasw01.setBaseBridgeAddress(macspiazzofasw01);
             elemspiasvigasw01.setBaseBridgeAddress(macspiasvigasw01);
-            element2473.setBaseBridgeAddress(mac2473);
             elemvillpizzasw01.setBaseBridgeAddress(macvillpizzasw01);
-            element6796.setBaseBridgeAddress(mac6796);
-            element2673.setBaseBridgeAddress(mac2673);
-            element2674.setBaseBridgeAddress(mac2674);
-            elemvigrenmuasw01.setBaseBridgeAddress(mac1619);
-            element2676.setBaseBridgeAddress(mac2676);
-            elemdaremunasw01.setBaseBridgeAddress(macdaremunasw01);
-            elemspiazzomepe01.setBaseBridgeAddress(macspiazzomepe01);
-            element6772.setBaseBridgeAddress(mac6772);
+            elemvigrenmuasw01.setBaseBridgeAddress(macvigrenmuasw01);
             elemvrendmunasw01.setBaseBridgeAddress( macvrendmunasw01);
-            element6777.setBaseBridgeAddress(mac6777);
+            elemdaremunasw01.setBaseBridgeAddress(macdaremunasw01);
             
+            elemdaremunalv01.setBaseBridgeAddress(macdaremunalv01);
+            elemvigrenmualv01.setBaseBridgeAddress(macvigrenmualv01);
+            elemvigrenmualv02.setBaseBridgeAddress(macvigrenmualv02);
+            elemvrendmunalv02.setBaseBridgeAddress(macvrendmunalv02);
+
+            elemrsaspiazzowl1.setBaseBridgeAddress(macrsaspiazzowl1);
+            elemcomunespiazzowl1.setBaseBridgeAddress(macomunespiazzowl1);
+            elemcomunevillarendenawl1.setBaseBridgeAddress(maccomunevillarendenawl1);
+            
+            elemlist.add(elemspiazzomepe01);
+
+            elemlist.add(elemdaremunasw01);
             elemlist.add(elemspiazzofasw01);
             elemlist.add(elemspiasvigasw01);
-            elemlist.add(element2473);
             elemlist.add(elemvillpizzasw01);
-            elemlist.add(element6796);
-            elemlist.add(element2673);
-            elemlist.add(element2674);
             elemlist.add(elemvigrenmuasw01);
-            elemlist.add(element2676);
-            elemlist.add(elemdaremunasw01);
-            elemlist.add(elemspiazzomepe01);
-            elemlist.add(element6772);
             elemlist.add(elemvrendmunasw01);
-            elemlist.add(element6777);
             
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 0,  10100, mac000c29f49b8a)); 
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 0,  10100, mace48d8c3b04b7));
+            elemlist.add(elemdaremunalv01);
+            elemlist.add(elemvigrenmualv01);
+            elemlist.add(elemvigrenmualv02);
+            elemlist.add(elemvrendmunalv02);
             
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac0017c8288325));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac9cb65475cca4));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac000424ab02d9));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac0011323f881d));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac000074f204a6));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac3ca82a7efb8f));
+            elemlist.add(elemrsaspiazzowl1);
+            elemlist.add(elemcomunespiazzowl1);
+            elemlist.add(elemcomunevillarendenawl1);
+            
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 0,  10100, mac000c29f49b8a,2204)); 
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 0,  10100, mace48d8c3b04b7,2204));
+            
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac0017c8288325,3001));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac9cb65475cca4,3001));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac000424ab02d9,3001));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac0011323f881d,3001));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac000074f204a6,3001));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 3,  10103, mac3ca82a7efb8f,3001));
 
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 5,  10105, macdaremunasw01));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 5,  10105, mac001ebe70cec0));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macdaremunasw01)); //duplicated entry see port 5
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001ebe70cec0)); //duplicated entry see port 5
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 5,  10105, macdaremunasw01,3050));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 5,  10105, mac001ebe70cec0,3050));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macdaremunasw01,25)); //duplicated entry see port 5
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001ebe70cec0,25)); //duplicated entry see port 5
             
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 6,  10106, mac0022557fd68f));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0022557fd68f));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 6,  10106, mac0022557fd68f,3060));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0022557fd68f,803));
 
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 7,  10107, mace48d8c2e100c));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 7,  10107, mace48d8c2e100c,3072));
             
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 8,  10108,  macvrendmunasw01));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 8,  10108, mac001906d5cf50));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124,  macvrendmunasw01)); //duplicated entry see port 8
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001906d5cf50)); //duplicated entry see port 8
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 8,  10108, macvrendmunasw01,3080));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 8,  10108, mac001906d5cf50,3080));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvrendmunasw01,25)); //duplicated entry see port 8
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001906d5cf50, 25)); //duplicated entry see port 8
 
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macspiazzofasw01));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac2473));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac1619));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macspiasvigasw01));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac2673));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac6777));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac2674));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac6772));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvillpizzasw01));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac6796));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac2676));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0003ea0175d6));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804867f4e7));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6dff4217));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804867f17e));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001763010f41));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001763010eb7));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00176301092d));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c5e0c8007a1));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce581));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac008048676c89));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c5e0c8076b0));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce614));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac000d48160cd3));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00176301057d));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mace48d8cf17bcb));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac002255362620));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce59d));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804864187d));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0012cf68d780));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c0082245938));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce623));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0003ea0176ca));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac002255362ba7));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00e0b1bb39cd));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6d4f1ab2));
-            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6d7953fe));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macspiazzofasw01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macdaremunalv01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvigrenmuasw01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macspiasvigasw01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvigrenmualv01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, maccomunevillarendenawl1,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvigrenmualv02,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macomunespiazzowl1,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvillpizzasw01,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macrsaspiazzowl1,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macvrendmunalv02,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0003ea0175d6,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804867f4e7,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6dff4217,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804867f17e,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001763010f41,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac001763010eb7,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00176301092d,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c5e0c8007a1,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce581,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac008048676c89,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c5e0c8076b0,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce614,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac000d48160cd3,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00176301057d,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mace48d8cf17bcb,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac002255362620,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce59d,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00804864187d,2204));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0012cf68d780,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac4c0082245938,811));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macc067af3ce623,811));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac0003ea0176ca,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac002255362ba7,800));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, mac00e0b1bb39cd,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6d4f1ab2,25));
+            bftspiazzomepe01.add(addBridgeForwardingTableEntry(spiazzomepe01, 24, 10124, macd4ca6d7953fe,25));
 
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macspiasvigasw01));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac6777));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, maccomunevillarendenawl1));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001,  macvrendmunasw01));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macdaremunasw01));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macvillpizzasw01));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac2676));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac2674));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac6772));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac2673));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac1619));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac2473));
-            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac6796));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macvrendmunalv02));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macvigrenmualv02));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macomunespiazzowl1));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macvigrenmualv01));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macvigrenmuasw01));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macdaremunalv01));
+            bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, macrsaspiazzowl1));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac001763010eb7));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac00176301092d));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 1, 1001, mac001ebe70cec0));
@@ -559,16 +545,16 @@ public abstract class EnLinkdTestHelper {
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 24, 1024, mace48d8c3b04b7));
             bftspiazzofasw01.add(addBridgeForwardingTableEntry(spiazzofasw01, 24, 1024, mac0c8525e8f3c0));
 
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac2676));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac2674));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macvrendmunalv02));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macvigrenmualv02));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001,  macvrendmunasw01));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macdaremunasw01));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac6772));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac6777));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macomunespiazzowl1));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, maccomunevillarendenawl1));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macspiazzofasw01));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac1619));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac2473));
-            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac6796));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macvigrenmuasw01));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macdaremunalv01));
+            bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, macrsaspiazzowl1));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac001ebe70cec0));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac00804867f4e7));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 1, 1001, mac4c5e0c8007a1));
@@ -594,58 +580,58 @@ public abstract class EnLinkdTestHelper {
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 15, 1015, mac0003ea0176ca));
             bftspiasvigasw01.add(addBridgeForwardingTableEntry(spiasvigasw01, 24, 1024, mac002255362ba7));
 
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, mac001ebe70cec0));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac00e0b1bb3ed5));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac00804867f17e));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macc067af3ce623));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, mac001763010eb7));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1,  macvrendmunasw01));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac0003ea0176ca));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac6772));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, mac4c5e0c8007a1));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac00804867f4e7));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac1619));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac4c5e0c8076b0));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macspiazzofasw01));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, mac00e0b1bbac56));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macd4ca6d7953fe));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, macc067af3ce581));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macd4ca6dff4217));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac6796));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac0003ea0175d6));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macspiasvigasw01));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macc067af3ce614));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 2, 2, macdaremunasw01));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macc067af3ce59d));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac00804864187d));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac0022557fd68f));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac4c0082245938));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mace48d8cf17bcb));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mace48d8c3b04b7));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac001906d5cf50));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, macd4ca6d4f1ab2));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac6777));
-            bft2473.add(addBridgeForwardingTableEntry(node2473, 1, 1, mac0c8525e8f3c0));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, mac001ebe70cec0));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac00e0b1bb3ed5));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac00804867f17e));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macc067af3ce623));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, mac001763010eb7));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1,  macvrendmunasw01));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac0003ea0176ca));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macomunespiazzowl1));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, mac4c5e0c8007a1));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac00804867f4e7));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macvigrenmuasw01));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac4c5e0c8076b0));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macspiazzofasw01));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, mac00e0b1bbac56));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macd4ca6d7953fe));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, macc067af3ce581));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macd4ca6dff4217));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macrsaspiazzowl1));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac0003ea0175d6));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macspiasvigasw01));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macc067af3ce614));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 2, 2, macdaremunasw01));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macc067af3ce59d));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac00804864187d));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac0022557fd68f));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac4c0082245938));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mace48d8cf17bcb));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mace48d8c3b04b7));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac001906d5cf50));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, macd4ca6d4f1ab2));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, maccomunevillarendenawl1));
+            bftdaremunalv01.add(addBridgeForwardingTableEntry(daremunalv01, 1, 1, mac0c8525e8f3c0));
             
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac00804867f17e));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macc067af3ce623));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1,  macvrendmunasw01));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac2674));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macvigrenmualv02));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac0003ea0176ca));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac00e0b1bba8f2));
-//FIXME            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 15, 15, mac0003ea0175d6));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac6772));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 15, 15, mac0003ea0175d6));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macomunespiazzowl1));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac00804867f4e7));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac4c5e0c8007a1));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac1619));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac6796));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macvigrenmuasw01));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macrsaspiazzowl1));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macc067af3ce581));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac4c5e0c8076b0));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macd4ca6dff4217));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macc067af3ce614));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mace48d8cf17bcb));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macspiasvigasw01));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac2673));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macvigrenmualv01));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macdaremunasw01));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macspiazzofasw01));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac0022557fd68f));
@@ -655,131 +641,131 @@ public abstract class EnLinkdTestHelper {
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac001906d5cf50));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macd4ca6d4f1ab2));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mace48d8c3b04b7));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac6777));
+            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, maccomunevillarendenawl1));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac0c8525e8f3c0));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macd4ca6d7953fe));
             
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac2473));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac008048676c89));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, macd4ca6dff4217));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac001906d5cf50));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macvillpizzasw01));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00176301057d));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macc067af3ce614));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 1, 1, mac6796));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac000c29f49b8a));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac1619));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macdaremunasw01));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, macspiazzofasw01));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macc067af3ce59d));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 1, 1, macspiasvigasw01));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac4c5e0c8076b0));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mace48d8cf17bcb));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac00e0b1bb39b6));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac001763010eb7));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac0012cf68d780));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac0c8525e8f3c0));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac4c0082245938));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, macd4ca6d7953fe));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac4c5e0c104aac));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, macd4ca6d4f1ab2));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mace48d8c3b04b7));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00804867f4e7));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac6777));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac4c5e0c104bfa));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macc067af3ce623));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5,  macvrendmunasw01));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac001763010f41));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00804864187d));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac0022557fd68f));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00e0b1bba8f4));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00804867f17e));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 1, 1, mac0003ea0176ca));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac00176301092d));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 1, 1, mac00e0b1bba390));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 4, 4, mac6772));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac2673));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac2674));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac2676));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac001ebe70cec0));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 1, 1, mac002255362ba7));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac0003ea0175d6));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, mac4c5e0c8007a1));
-            bft6796.add(addBridgeForwardingTableEntry(node6796, 5, 5, macc067af3ce581));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macdaremunalv01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac008048676c89));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, macd4ca6dff4217));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac001906d5cf50));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macvillpizzasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00176301057d));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macc067af3ce614));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 1, 1, macrsaspiazzowl1));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mac000c29f49b8a));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macvigrenmuasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macdaremunasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, macspiazzofasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macc067af3ce59d));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 1, 1, macspiasvigasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac4c5e0c8076b0));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mace48d8cf17bcb));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mac00e0b1bb39b6));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac001763010eb7));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac0012cf68d780));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mac0c8525e8f3c0));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mac4c0082245938));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, macd4ca6d7953fe));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mac4c5e0c104aac));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, macd4ca6d4f1ab2));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, mace48d8c3b04b7));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00804867f4e7));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, maccomunevillarendenawl1));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac4c5e0c104bfa));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macc067af3ce623));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5,  macvrendmunasw01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac001763010f41));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00804864187d));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac0022557fd68f));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00e0b1bba8f4));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00804867f17e));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 1, 1, mac0003ea0176ca));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac00176301092d));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 1, 1, mac00e0b1bba390));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 4, 4, macomunespiazzowl1));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macvigrenmualv01));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macvigrenmualv02));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macvrendmunalv02));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac001ebe70cec0));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 1, 1, mac002255362ba7));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac0003ea0175d6));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, mac4c5e0c8007a1));
+            bftrsaspiazzowl1.add(addBridgeForwardingTableEntry(rsaspiazzowl1, 5, 5, macc067af3ce581));
             
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac4c5e0c8007a1));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macc067af3ce623));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac00804867f4e7));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mace48d8c3b04b7));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macd4ca6d4f1ab2));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac6777));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1,  macvrendmunasw01));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac0003ea0176ca));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac00804864187d));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac0022557fd68f));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac00804867f17e));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac6772));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac2674));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac001ebe70cec0));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, macc067af3ce581));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac0003ea0175d6));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac00e0b1bba8fc));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macspiasvigasw01));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac001906d5cf50));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, macdaremunasw01));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac0c8525e8f3c0));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, macc067af3ce614));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macc067af3ce59d));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac4c5e0c8076b0));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macspiazzofasw01));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac6796));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mace48d8cf17bcb));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac001763010eb7));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac1619));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macd4ca6d7953fe));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac2473));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, macd4ca6dff4217));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 2, 2, mac00e0b1bb3ed4));
-            bft2673.add(addBridgeForwardingTableEntry(node2673, 1, 1, mac4c0082245938));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, mac4c5e0c8007a1));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macc067af3ce623));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac00804867f4e7));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mace48d8c3b04b7));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macd4ca6d4f1ab2));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, maccomunevillarendenawl1));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1,  macvrendmunasw01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac0003ea0176ca));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac00804864187d));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac0022557fd68f));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac00804867f17e));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macomunespiazzowl1));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macvigrenmualv02));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, mac001ebe70cec0));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macc067af3ce581));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac0003ea0175d6));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac00e0b1bba8fc));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macspiasvigasw01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac001906d5cf50));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macdaremunasw01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac0c8525e8f3c0));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macc067af3ce614));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macc067af3ce59d));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac4c5e0c8076b0));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macspiazzofasw01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macrsaspiazzowl1));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mace48d8cf17bcb));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, mac001763010eb7));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macvigrenmuasw01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macd4ca6d7953fe));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, macdaremunalv01));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, macd4ca6dff4217));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 2, 2, mac00e0b1bb3ed4));
+            bftvigrenmualv01.add(addBridgeForwardingTableEntry(vigrenmualv01, 1, 1, mac4c0082245938));
             
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac00804867f4e7));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macc067af3ce623));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2,  macvrendmunasw01));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mace48d8c3b04b7));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac6777));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macd4ca6d4f1ab2));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, macdaremunasw01));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac0022557fd68f));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac0003ea0176ca));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac00804867f17e));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac00804864187d));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, mac001763010eb7));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac2673));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macspiazzofasw01));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, mac00e0b1bbac56));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac0003ea0175d6));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac00e0b1bb3ed5));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, mac4c5e0c8007a1));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macc067af3ce614));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac001906d5cf50));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mace48d8cf17bcb));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macspiasvigasw01));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac0c8525e8f3c0));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac6796));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac6772));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macc067af3ce59d));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac4c5e0c8076b0));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macd4ca6d7953fe));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac1619));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, macc067af3ce581));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, mac4c0082245938));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 32769, 32769, mac001ebe70cec0));
-            bft2674.add(addBridgeForwardingTableEntry(node2674, 2, 2, macd4ca6dff4217));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac00804867f4e7));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macc067af3ce623));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2,  macvrendmunasw01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mace48d8c3b04b7));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, maccomunevillarendenawl1));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macd4ca6d4f1ab2));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, macdaremunasw01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac0022557fd68f));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac0003ea0176ca));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac00804867f17e));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac00804864187d));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, mac001763010eb7));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macvigrenmualv01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macspiazzofasw01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, mac00e0b1bbac56));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac0003ea0175d6));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac00e0b1bb3ed5));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, mac4c5e0c8007a1));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macc067af3ce614));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac001906d5cf50));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mace48d8cf17bcb));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macspiasvigasw01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac0c8525e8f3c0));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macrsaspiazzowl1));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macomunespiazzowl1));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macc067af3ce59d));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac4c5e0c8076b0));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macd4ca6d7953fe));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macvigrenmuasw01));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, macc067af3ce581));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, mac4c0082245938));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 32769, 32769, mac001ebe70cec0));
+            bftvigrenmualv02.add(addBridgeForwardingTableEntry(vigrenmualv02, 2, 2, macd4ca6dff4217));
             
-            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac6777));
-            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac6772));
+            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, maccomunevillarendenawl1));
+            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, macomunespiazzowl1));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011,  macvrendmunasw01));
-            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac6796));
+            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, macrsaspiazzowl1));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, macspiasvigasw01));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, macspiazzofasw01));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac0003ea0175d6));
@@ -800,8 +786,8 @@ public abstract class EnLinkdTestHelper {
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac0003ea0176ca));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac00804864187d));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 11, 1011, mac0022557fd68f));
-            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, mac2473));
-            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, mac2674));
+            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, macdaremunalv01));
+            bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, macvigrenmualv02));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, macdaremunasw01));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, mac4c5e0c8007a1));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, mac00e0b1bbac56));
@@ -809,52 +795,52 @@ public abstract class EnLinkdTestHelper {
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 12, 1012, mac001763010eb7));
             bftvigrenmuasw01.add(addBridgeForwardingTableEntry(vigrenmuasw01, 19, 1019, macc067af3ce614));
             
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, macc067af3ce614));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac4c0082245938));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac6777));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, macdaremunasw01));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2,  macvrendmunasw01));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mace48d8c3b04b7));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac0003ea0176ca));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macd4ca6d4f1ab2));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac00804864187d));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac0022557fd68f));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac00804867f17e));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac00804867f4e7));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac001763010eb7));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac00e0b1bb3ed4));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macspiazzofasw01));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac0003ea0175d6));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac1619));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac00e0b1bba8fc));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac2473));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac4c5e0c8007a1));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac0c8525e8f3c0));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mace48d8cf17bcb));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macspiasvigasw01));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac6796));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac6772));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macc067af3ce59d));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac4c5e0c8076b0));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, mac001906d5cf50));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, macc067af3ce581));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac2674));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macd4ca6d7953fe));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 32769, 32769, mac001ebe70cec0));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macd4ca6dff4217));
-            bft2676.add(addBridgeForwardingTableEntry(node2676, 2, 2, macc067af3ce623));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macc067af3ce614));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac4c0082245938));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, maccomunevillarendenawl1));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macdaremunasw01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2,  macvrendmunasw01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mace48d8c3b04b7));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac0003ea0176ca));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macd4ca6d4f1ab2));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac00804864187d));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac0022557fd68f));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac00804867f17e));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac00804867f4e7));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, mac001763010eb7));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, mac00e0b1bb3ed4));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macspiazzofasw01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac0003ea0175d6));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macvigrenmuasw01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac00e0b1bba8fc));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macdaremunalv01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, mac4c5e0c8007a1));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac0c8525e8f3c0));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mace48d8cf17bcb));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macspiasvigasw01));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macrsaspiazzowl1));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macomunespiazzowl1));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macc067af3ce59d));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac4c5e0c8076b0));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, mac001906d5cf50));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macc067af3ce581));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, macvigrenmualv02));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macd4ca6d7953fe));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 32769, 32769, mac001ebe70cec0));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macd4ca6dff4217));
+            bftvrendmunalv02.add(addBridgeForwardingTableEntry(vrendmunalv02, 2, 2, macc067af3ce623));
             
 
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 1, 1001, mac4c5e0c8007a1));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 1, 1001, mac001763010eb7));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 4, 1004, mac0c8525e8f3c0));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macspiazzofasw01));
-            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac6772));
+            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macomunespiazzowl1));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macspiasvigasw01));
-            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac2674));
-            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac6796));
-            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac6777));
-            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac1619));
+            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macvigrenmualv02));
+            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macrsaspiazzowl1));
+            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, maccomunevillarendenawl1));
+            bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, macvigrenmuasw01));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011,  macvrendmunasw01));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac0022557fd68f));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 11, 1011, mac4c0082245938));
@@ -877,11 +863,11 @@ public abstract class EnLinkdTestHelper {
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 18, 1018, mac001ebe70cec0));
             bftdaremunasw01.add(addBridgeForwardingTableEntry(daremunasw01, 19, 1019, macc067af3ce581));
 
-            bft6772.add(addBridgeForwardingTableEntry(node6772, 6, 6, mac0003ea0176ca));
-            bft6772.add(addBridgeForwardingTableEntry(node6772, 6, 6, mac0003ea0175d6));
-            bft6772.add(addBridgeForwardingTableEntry(node6772, 1, 1, mac000c29f49b8a));
-            bft6772.add(addBridgeForwardingTableEntry(node6772, 1, 1, mac6772));
-            bft6772.add(addBridgeForwardingTableEntry(node6772, 6, 6, mac6777));
+            bftcomunespiazzowl1.add(addBridgeForwardingTableEntry(comunespiazzowl1, 6, 6, mac0003ea0176ca));
+            bftcomunespiazzowl1.add(addBridgeForwardingTableEntry(comunespiazzowl1, 6, 6, mac0003ea0175d6));
+            bftcomunespiazzowl1.add(addBridgeForwardingTableEntry(comunespiazzowl1, 1, 1, mac000c29f49b8a));
+            bftcomunespiazzowl1.add(addBridgeForwardingTableEntry(comunespiazzowl1, 1, 1, macomunespiazzowl1));
+            bftcomunespiazzowl1.add(addBridgeForwardingTableEntry(comunespiazzowl1, 6, 6, maccomunevillarendenawl1));
             
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 1, 1001, macvillpizzasw01));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 1, 1001, mace48d8cf17bcb));
@@ -897,10 +883,10 @@ public abstract class EnLinkdTestHelper {
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 1, 1001, mac0012cf68d780));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 1, 1001, mac00804867f4e7));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macspiazzofasw01));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac6777));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, maccomunevillarendenawl1));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macspiasvigasw01));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac6772));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac6796));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macomunespiazzowl1));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macrsaspiazzowl1));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac0c8525e8f3c0));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macd4ca6d7953fe));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, macd4ca6dff4217));
@@ -911,11 +897,11 @@ public abstract class EnLinkdTestHelper {
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac00e0b1bba390));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 3, 1003, mac00e0b1bb39b6));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macdaremunasw01));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac2473));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac2674));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac2676));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac1619));
-            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac2673));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macdaremunalv01));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macvigrenmualv02));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macvrendmunalv02));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macvigrenmuasw01));
+            bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macvigrenmualv01));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macc067af3ce581));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, macc067af3ce614));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 11, 1011, mac4c5e0c8007a1));
@@ -924,50 +910,50 @@ public abstract class EnLinkdTestHelper {
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 19, 1019, macc067af3ce623));
             bftvrendmunasw01.add(addBridgeForwardingTableEntry(vrendmunasw01, 24, 1024, mac001906d5cf50));
             
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac0022557fd68f));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00e0b1bba8f4));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac0012cf68d780));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00804864187d));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac00e0b1bba390));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00804867f4e7));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac4c0082245938));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac6777));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac4c5e0c8007a1));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, macd4ca6d4f1ab2));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mace48d8c3b04b7));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, macd4ca6d7953fe));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac6796));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macc067af3ce581));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac0003ea0175d6));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac4c5e0c8076b0));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macc067af3ce614));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mace48d8cf17bcb));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00176301057d));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac2673));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00176301092d));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac00e0b1bb39b6));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, macspiasvigasw01));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac2674));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, macspiazzofasw01));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac6772));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macc067af3ce59d));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 2, 2, mac00156d56ae1b));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 2, 2, mac008048676c89));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac001906d5cf50));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac0c8525e8f3c0));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac2676));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macvillpizzasw01));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac00804867f17e));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac001763010f41));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, macd4ca6dff4217));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac000c42736e85));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac1619));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac2473));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macc067af3ce623));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, mac001763010eb7));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3,  macvrendmunasw01));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 3, 3, macdaremunasw01));
-            bft6777.add(addBridgeForwardingTableEntry(node6777, 5, 5, mac0003ea0176ca));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac0022557fd68f));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00e0b1bba8f4));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac0012cf68d780));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00804864187d));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mac00e0b1bba390));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00804867f4e7));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mac4c0082245938));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, maccomunevillarendenawl1));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac4c5e0c8007a1));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macd4ca6d4f1ab2));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mace48d8c3b04b7));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macd4ca6d7953fe));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macrsaspiazzowl1));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macc067af3ce581));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac0003ea0175d6));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac4c5e0c8076b0));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macc067af3ce614));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mace48d8cf17bcb));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00176301057d));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macvigrenmualv01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00176301092d));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mac00e0b1bb39b6));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macspiasvigasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macvigrenmualv02));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macspiazzofasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macomunespiazzowl1));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macc067af3ce59d));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 2, 2, mac00156d56ae1b));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 2, 2, mac008048676c89));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac001906d5cf50));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mac0c8525e8f3c0));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macvrendmunalv02));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macvillpizzasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac00804867f17e));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac001763010f41));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, macd4ca6dff4217));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac000c42736e85));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macvigrenmuasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macdaremunalv01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macc067af3ce623));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, mac001763010eb7));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3,  macvrendmunasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 3, 3, macdaremunasw01));
+            bftcomunevillarendenawl1.add(addBridgeForwardingTableEntry(comunevillarendenawl1, 5, 5, mac0003ea0176ca));
             
         }
         

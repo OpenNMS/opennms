@@ -35,7 +35,7 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeElement;
 
-public class Bridge implements BridgeTopology {
+public class Bridge implements Topology {
 
     public static Set<String> getIdentifier(List<BridgeElement> elems) {
         Set<String> identifiers = new HashSet<String>();

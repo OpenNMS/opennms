@@ -44,11 +44,11 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.opennms.netmgt.model.topology.BridgeTopology;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeBridgeLink")
-public class BridgeBridgeLink implements BridgeTopology {
+public class BridgeBridgeLink implements Topology {
 
     private Integer m_id;
     private OnmsNode m_node;

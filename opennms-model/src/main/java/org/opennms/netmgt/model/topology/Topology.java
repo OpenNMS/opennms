@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.model.topology;
 
-public interface BridgeTopology {
+public interface Topology {
 
     String printTopology();
 }

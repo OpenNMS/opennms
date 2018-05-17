@@ -28,14 +28,14 @@
 
 package org.opennms.netmgt.model.topology;
 
-public class BridgeTopologyException extends Exception implements BridgeTopology {
+public class BridgeTopologyException extends Exception implements Topology {
 
     /**
      * 
      */
     private static final long serialVersionUID = -6913989384724814658L;
 
-    BridgeTopology m_topology;
+    Topology m_topology;
 
     public BridgeTopologyException(String message) {
         super(message);
@@ -45,12 +45,12 @@ public class BridgeTopologyException extends Exception implements BridgeTopology
         super(message, throwable);
     }
 
-    public BridgeTopologyException(String message, BridgeTopology topology) {
+    public BridgeTopologyException(String message, Topology topology) {
         super(message);
         m_topology=topology;
     }
 
-    public BridgeTopologyException(String message,BridgeTopology topology, Throwable throwable) {
+    public BridgeTopologyException(String message,Topology topology, Throwable throwable) {
         super(message, throwable);
         m_topology=topology;
     }

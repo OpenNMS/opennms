@@ -31,7 +31,7 @@ package org.opennms.netmgt.model.topology;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 
-public class BridgePort implements BridgeTopology {
+public class BridgePort implements Topology {
 
     private Integer m_node;
     private Integer m_bridgePort;

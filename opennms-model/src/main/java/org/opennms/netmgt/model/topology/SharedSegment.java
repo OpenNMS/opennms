@@ -39,7 +39,7 @@ import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class SharedSegment implements BridgeTopology{
+public class SharedSegment implements Topology{
     
     public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
         BridgePort designatedPort = segment.getDesignatedPort();

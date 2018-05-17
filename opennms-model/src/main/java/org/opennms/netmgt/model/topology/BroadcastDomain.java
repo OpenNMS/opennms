@@ -37,7 +37,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 
-public class BroadcastDomain implements BridgeTopology {
+public class BroadcastDomain implements Topology {
     
     public static int maxlevel = 30;
     public static final int DOMAIN_MATCH_MIN_SIZE = 20;

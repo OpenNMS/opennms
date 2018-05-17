@@ -47,11 +47,11 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
-import org.opennms.netmgt.model.topology.BridgeTopology;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeMacLink")
-public class BridgeMacLink implements BridgeTopology {
+public class BridgeMacLink implements Topology {
 
     
     public enum BridgeMacLinkType {
@@ -242,10 +242,14 @@ public class BridgeMacLink implements BridgeTopology {
         public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
 
-        strbfr.append("link: nodeid:["); 
+        strbfr.append("maclink: nodeid:["); 
         strbfr.append(getNode().getId());
         strbfr.append("], bridgeport:[");
         strbfr.append(getBridgePort());
+        strbfr.append("], ifindex:[");
+        strbfr.append(getBridgePortIfIndex());
+        strbfr.append("], vlan:[");
+        strbfr.append(getVlan());
         strbfr.append("],");
         strbfr.append(getMacAddress());
         strbfr.append(",");

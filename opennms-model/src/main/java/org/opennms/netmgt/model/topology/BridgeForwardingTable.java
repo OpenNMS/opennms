@@ -32,7 +32,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class BridgeForwardingTable implements BridgeTopology {
+public class BridgeForwardingTable implements Topology {
 
     public static BridgeForwardingTable create(Bridge bridge, Set<BridgeForwardingTableEntry> entries) throws BridgeTopologyException {
         if (bridge == null) {

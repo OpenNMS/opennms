@@ -42,14 +42,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="lldpElement")
-public final class LldpElement implements Serializable {
+public final class LldpElement implements Serializable,Topology {
 
 	/**
 	 * 
@@ -181,6 +183,20 @@ public final class LldpElement implements Serializable {
 			.toString();
 	}
 	
+	@Transient
+	public String printTopology() {
+            StringBuffer strb = new StringBuffer();
+            strb.append("lldpelement: nodeid:["); 
+            strb.append(getNode().getId());
+            strb.append("], chassis type/id:[");
+            strb.append(LldpChassisIdSubType.getTypeString(getLldpChassisIdSubType().getValue()));
+            strb.append("/");
+            strb.append(getLldpChassisId());
+            strb.append("], sysname: ");
+            strb.append(getLldpSysname());
+            strb.append("]");
+            return strb.toString();
+	}
 	public void merge(LldpElement element) {
 		if (element == null)
 			return;

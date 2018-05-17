@@ -33,7 +33,7 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 
 
-public class BridgeMacTopologyLink extends TopologyLink implements BridgeTopology {
+public class BridgeMacTopologyLink extends TopologyLink implements Topology {
 
     private final int m_id;
     private final Integer m_bridgePort;
