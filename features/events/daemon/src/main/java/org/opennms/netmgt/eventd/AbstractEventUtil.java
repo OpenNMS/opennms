@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,14 @@
 
 package org.opennms.netmgt.eventd;
 
+import java.math.BigInteger;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -806,5 +810,58 @@ public abstract class AbstractEventUtil implements EventUtil {
 	@Override
 	public ExpandableParameterResolver getResolver(String token) {
 		return resolverRegistry.getResolver(token);
+	}
+	
+	@Override
+	public Date decodeSnmpV2TcDateAndTime(BigInteger octetStringValue) {
+	    BigInteger year, month, dom, hour, min, sec, millis, offsetD, offsetH, offsetM;
+	    int offsetMultiplier = 1;
+	    octetStringValue.bitCount();
+	    if (octetStringValue.bitLength() == 59) {
+	        year =   octetStringValue.and(new BigInteger("ffff000000000000", 16)).shiftRight(6*8);
+	        month =  octetStringValue.and(new BigInteger("0000ff0000000000", 16)).shiftRight(5*8).subtract(BigInteger.valueOf(1L));
+	        dom =    octetStringValue.and(new BigInteger("000000ff00000000", 16)).shiftRight(4*8);
+	        hour =   octetStringValue.and(new BigInteger("00000000ff000000", 16)).shiftRight(3*8);
+	        min =    octetStringValue.and(new BigInteger("0000000000ff0000", 16)).shiftRight(2*8);
+	        sec =    octetStringValue.and(new BigInteger("000000000000ff00", 16)).shiftRight(1*8);
+	        millis = octetStringValue.and(new BigInteger("00000000000000ff", 16)).multiply(BigInteger.valueOf(100L));
+	        offsetD = new BigInteger("2b", 16);  // '+' for positive offset versus UTC
+	        offsetH = BigInteger.valueOf(0L);
+	        offsetM = BigInteger.valueOf(0L);
+	    } else if (octetStringValue.bitLength() == 83) {
+                year =    octetStringValue.and(new BigInteger("ffff000000000000000000", 16)).shiftRight(9*8);
+                month =   octetStringValue.and(new BigInteger("0000ff0000000000000000", 16)).shiftRight(8*8).subtract(BigInteger.valueOf(1L));
+                dom =     octetStringValue.and(new BigInteger("000000ff00000000000000", 16)).shiftRight(7*8);
+                hour =    octetStringValue.and(new BigInteger("00000000ff000000000000", 16)).shiftRight(6*8);
+                min =     octetStringValue.and(new BigInteger("0000000000ff0000000000", 16)).shiftRight(5*8);
+                sec =     octetStringValue.and(new BigInteger("000000000000ff00000000", 16)).shiftRight(4*8);
+                millis =  octetStringValue.and(new BigInteger("00000000000000ff000000", 16)).shiftRight(3*8).multiply(BigInteger.valueOf(100L));
+                offsetD = octetStringValue.and(new BigInteger("0000000000000000ff0000", 16)).shiftRight(2*8);
+                offsetH = octetStringValue.and(new BigInteger("000000000000000000ff00", 16)).shiftRight(1*8);
+                offsetM = octetStringValue.and(new BigInteger("00000000000000000000ff", 16));
+	    } else {
+	        LOG.warn("Not sure what to do with the DateAndTime value '{}'. Using current time instead.");
+	        return null;
+	    }
+
+	    if (offsetD.intValueExact() == '-') {
+	        offsetMultiplier = -1;
+	    }
+	    BigInteger offsetMs = offsetH.multiply(BigInteger.valueOf(3600));
+	    offsetMs.add(offsetM.multiply(BigInteger.valueOf(60L)));
+	    offsetMs.multiply(BigInteger.valueOf(1000L));
+	    offsetMs.multiply(BigInteger.valueOf(offsetMultiplier));
+
+	    // Now we can build our Date
+	    Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+	    cal.set(Calendar.YEAR, year.intValue());
+	    cal.set(Calendar.MONTH, month.intValue());
+	    cal.set(Calendar.DAY_OF_MONTH, dom.intValue());
+	    cal.set(Calendar.HOUR_OF_DAY, hour.intValue());
+	    cal.set(Calendar.MINUTE, min.intValue());
+	    cal.set(Calendar.SECOND, sec.intValue());
+	    cal.set(Calendar.MILLISECOND, millis.intValue());
+	    cal.set(Calendar.ZONE_OFFSET, offsetMs.intValue());
+	    return cal.getTime();
 	}
 }
