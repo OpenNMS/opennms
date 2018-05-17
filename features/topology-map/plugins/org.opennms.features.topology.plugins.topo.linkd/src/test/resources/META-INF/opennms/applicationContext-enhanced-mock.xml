@@ -32,6 +32,10 @@
         <constructor-arg value="org.opennms.netmgt.dao.api.IsIsLinkDao"/>
     </bean>
 
+    <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="isisElementDao">
+        <constructor-arg value="org.opennms.netmgt.dao.api.IsIsElementDao"/>
+    </bean>
+
     <bean class="org.easymock.EasyMock" factory-method="createNiceMock" primary="true" id="lldpLinkDao">
         <constructor-arg value="org.opennms.netmgt.dao.api.LldpLinkDao"/>
     </bean>

@@ -51,7 +51,6 @@ import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qT
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.BridgeMacTopologyLink;
 import org.opennms.netmgt.nb.Nms4930NetworkBuilder;
 
 /*
@@ -446,8 +445,6 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
       assertEquals(30, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink1.getId(), 24).size());
 
       assertEquals(58,m_bridgeMacLinkDao.countAll());
-      assertEquals(2,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
-      assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
       for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
               assertNotNull(maclink.getBridgePortIfIndex());
@@ -511,73 +508,12 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
         assertEquals(1,m_bridgeBridgeLinkDao.countAll());        
         // we have 2 that links "real mac nodes" to bridge.
         // we have 8 macs on bridge cloud between dlink1 and dlink2
-        assertEquals(2,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
-        
-        assertEquals(8,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
         for (BridgeMacLink link: m_bridgeMacLinkDao.findAll()) {
             assertNotNull(link.getNode());
             assertNotNull(link.getBridgePort());
             assertNotNull(link.getBridgePortIfIndex());
             assertNotNull(link.getMacAddress());
-        }
-
-        for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes()) {
-            System.err.println(link.printTopology());
-            assertNotNull(link.getSrcNodeId());
-            assertNotNull(link.getBridgePort());
-            assertNotNull(link.getBridgePortIfIndex());
-            assertNotNull(link.getTargetNodeId());
-            assertNotNull(link.getMacAddr());
-            assertNotNull(link.getTargetPortIfName());
-            if (link.getSrcNodeId().intValue() == dlink1.getId().intValue()) {
-                if (link.getBridgePort().intValue() == 6) {
-                    assertEquals(link.getBridgePortIfIndex().intValue(), 6);
-                    assertEquals(link.getTargetNodeId().intValue(), nodeonlink1dport6.getId().intValue());
-                    assertEquals(link.getMacAddr(), "000ffeb10e26");
-                    assertEquals(link.getTargetPortIfName(), "10.100.2.6");
-                    assertEquals(link.getTargetIfIndex(), null);
-                } else if (link.getBridgePort().intValue() == 24) {
-                    assertEquals(link.getBridgePortIfIndex().intValue(), 24);
-                    assertEquals(link.getTargetNodeId().intValue(), nodebetweendlink1dlink2.getId().intValue());
-                    assertEquals(link.getMacAddr(), "001e58a6aed7");
-                    assertEquals(link.getTargetPortIfName(), "10.100.1.7");
-                    assertEquals(link.getTargetIfIndex().intValue(), 101);
-                } else {
-                    assertTrue(false);
-                }
-            } else if (link.getSrcNodeId().intValue() == dlink2.getId().intValue()) {
-                assertEquals(link.getBridgePortIfIndex().intValue(), 10);
-                assertEquals(link.getTargetNodeId().intValue(), nodebetweendlink1dlink2.getId().intValue());
-                assertEquals(link.getMacAddr(), "001e58a6aed7");
-                assertEquals(link.getTargetPortIfName(), "10.100.1.7");
-                assertEquals(link.getTargetIfIndex().intValue(), 101);
-            } else {
-                assertTrue(false);
-            }
-        }
-        
-        for (BridgeMacTopologyLink link: m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes()) {
-            System.err.println(link.printTopology());
-            assertNotNull(link.getSrcNodeId());
-            assertNotNull(link.getBridgePort());
-            assertNotNull(link.getBridgePortIfIndex());
-            assertNotNull(link.getTargetNodeId());
-            assertNotNull(link.getMacAddr());
-            assertNotNull(link.getTargetBridgePort());
-            assertNotNull(link.getTargetIfIndex());
-            assertNotNull(link.getTargetId());
-            if (reverse) {
-                assertEquals(dlink2.getId().intValue(), link.getSrcNodeId().intValue());
-                assertEquals(dlink1.getId().intValue(), link.getTargetNodeId().intValue());
-                assertEquals(10, link.getBridgePort().intValue());
-                assertEquals(24, link.getTargetBridgePort().intValue());
-            } else {
-                assertEquals(dlink1.getId().intValue(), link.getSrcNodeId().intValue());
-                assertEquals(dlink2.getId().intValue(), link.getTargetNodeId().intValue());
-                assertEquals(24, link.getBridgePort().intValue());
-                assertEquals(10, link.getTargetBridgePort().intValue());
-            }
         }
         
 
@@ -622,8 +558,6 @@ public class Nms4930EnIT extends EnLinkdBuilderITCase {
       assertEquals(163, m_bridgeMacLinkDao.findByNodeIdBridgePort(dlink2.getId(), 12).size());
 //      total number of entry in bridgemaclink: 977
       assertEquals(977,m_bridgeMacLinkDao.countAll());
-      assertEquals(1,m_bridgeMacLinkDao.getAllBridgeLinksToIpAddrToNodes().size());
-      assertEquals(0,m_bridgeMacLinkDao.getAllBridgeLinksToBridgeNodes().size());
 
       for (BridgeMacLink maclink: m_bridgeMacLinkDao.findAll()) {
               assertNotNull(maclink.getBridgePortIfIndex());

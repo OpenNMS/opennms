@@ -68,6 +68,7 @@ import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
+import org.opennms.netmgt.dao.api.IsIsElementDao;
 import org.opennms.netmgt.dao.api.IsIsLinkDao;
 import org.opennms.netmgt.dao.api.LldpElementDao;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
@@ -78,6 +79,8 @@ import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -89,7 +92,6 @@ import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
-import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -235,27 +237,18 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    class IsIsLinkDetail extends LinkDetail<Integer>{
+    class IsIsLinkDetail extends LinkDetail<IsIsLink>{
 
 
-        private final int m_sourceIfindex;
-        private final int m_targetIfindex;
-        private final int m_sourceLinkId;
-        private final int m_targetLinkId;
-
-        public IsIsLinkDetail(String id, Vertex source, int sourceLinkId, Integer sourceIfIndex, Vertex target, int targetLinkId, Integer targetIfIndex) {
-            super(id, source, null, target, null);
-            m_sourceLinkId = sourceLinkId;
-            m_targetLinkId = targetLinkId;
-            m_sourceIfindex = sourceIfIndex;
-            m_targetIfindex = targetIfIndex;
+        public IsIsLinkDetail(String id, Vertex source, IsIsLink sourceLink, Vertex target, IsIsLink targetLink) {
+            super(id, source, sourceLink, target, targetLink);
         }
 
         @Override
         public int hashCode() {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : m_sourceLinkId) + ((getTargetLink() == null) ? 0 : m_targetLinkId);
+            result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId());
             result = prime * result
                     + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
             return result;
@@ -274,12 +267,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         @Override
         public Integer getSourceIfIndex() {
-            return m_sourceIfindex;
+            return getSourceLink().getIsisCircIfIndex();
         }
 
         @Override
         public Integer getTargetIfIndex() {
-            return m_targetIfindex;
+            return getTargetLink().getIsisCircIfIndex();
         }
 
         @Override
@@ -424,6 +417,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private CdpElementDao m_cdpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
+    private IsIsElementDao m_isisElementDao;
     private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
     private BridgeMacLinkDao m_bridgeMacLinkDao;
     private BridgeTopologyDao m_bridgeTopologyDao;
@@ -636,7 +630,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         context = m_loadCdpLinksTimer.time();
         try{
             LOG.info("Loading IsIs link");
-            getIsIsLinks(nodesnmpmap,nodeipprimarymap);
+            getIsIsLinks(nodemap,nodesnmpmap,nodeipprimarymap);
             LOG.info("IsIs link loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
@@ -939,8 +933,9 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         Set<Integer> parsed = new HashSet<Integer>();
 
         for (CdpLink sourceLink : allLinks) {
-            if (parsed.contains(sourceLink.getId())) 
+            if (parsed.contains(sourceLink.getId())) { 
                 continue;
+            }
             LOG.debug("loadtopology: cdp link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
             CdpLink targetLink = null;
@@ -994,51 +989,60 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
-    private void getIsIsLinks(Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap){
-        List<IsisTopologyLink> isislinks = m_isisLinkDao.getLinksForTopology();
+    private void getIsIsLinks(Map<Integer,OnmsNode> nodemap,Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap){
 
-        if (isislinks != null && isislinks.size() > 0) {
-            for (IsisTopologyLink link : isislinks) {
-                LOG.debug("loadtopology: adding isis link: '{}'", link );
-                String id = Math.min(link.getSourceId(), link.getTargetId()) + "|" + Math.max(link.getSourceId(), link.getTargetId());
-                Vertex source = getVertex(getVertexNamespace(), link.getSrcNodeId().toString());
-                if (source == null) {
-                    OnmsIpInterface primary= ipprimarymap.get(link.getSrcNodeId());
-                     source = getDefaultVertex(link.getSrcNodeId(),
-                                       link.getSrcSysoid(),
-                                       link.getSrcLabel(),
-                                     link.getSrcLocation(),
-                                     link.getSrcNodeType(),
-                                     primary.isManaged(),
-                                     InetAddressUtils.str(primary.getIpAddress()));
-                    addVertices(source);
+        Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
+        for (IsIsElement element: m_isisElementDao.findAll()) {
+            elementmap.put(element.getNode().getId(), element);
+        }
 
-                }
-                Vertex target = getVertex(getVertexNamespace(), link.getTargetNodeId().toString());
-                if (target == null) {
-                    OnmsIpInterface targetprimary= ipprimarymap.get(link.getSrcNodeId());
-                    target = getDefaultVertex(link.getTargetNodeId(),
-                                       link.getTargetSysoid(),
-                                       link.getTargetLabel(),
-                                         link.getTargetLocation(),
-                                         link.getTargetNodeType(),
-                                         targetprimary.isManaged(),
-                                         InetAddressUtils.str(targetprimary.getIpAddress()));
-                    addVertices(target);
-                }
-                IsIsLinkDetail linkDetail = new IsIsLinkDetail(
-                        id,
-                        source,
-                        link.getSourceId(),
-                        link.getSrcIfIndex(),
-                        target,
-                        link.getTargetId(),
-                        link.getTargetIfIndex()
-                );
+        List<IsIsLink> isislinks = m_isisLinkDao.findAll();
+        Set<IsIsLinkDetail> combinedLinkDetails = new HashSet<IsIsLinkDetail>();
+        Set<Integer> parsed = new HashSet<Integer>();
 
-                LinkdEdge edge = connectVertices(linkDetail, ISIS_EDGE_NAMESPACE);
-                edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
+        for (IsIsLink sourceLink : isislinks) {
+            if (parsed.contains(sourceLink.getId())) { 
+                continue;
             }
+            LOG.debug("loadtopology: isis link with id '{}' link '{}' ", sourceLink.getId(), sourceLink);
+            IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
+            IsIsLink targetLink = null;
+            for (IsIsLink link : isislinks) {
+                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
+                    continue;
+                LOG.debug("loadtopology: checking isis link with id '{}' link '{}' ", link.getId(), link);
+                IsIsElement targetElement = elementmap.get(link.getNode().getId());
+                //Compare the remote data to the targetNode element data
+                if (!sourceLink.getIsisISAdjNeighSysID().equals(targetElement.getIsisSysID())  
+                        || !link.getIsisISAdjNeighSysID().equals(sourceElement.getIsisSysID())) { 
+                    continue;
+                }
+
+                if (sourceLink.getIsisISAdjIndex().intValue() == link.getIsisCircIndex().intValue() && 
+                        link.getIsisISAdjIndex().intValue() == sourceLink.getIsisCircIfIndex().intValue()) {
+                    targetLink=link;
+                    LOG.info("loadtopology: found isis mutual link: '{}' and '{}' ", sourceLink,targetLink);
+                    break;
+                }
+            }
+            
+            if (targetLink == null) {
+                LOG.info("loadtopology: cannot found isis target node for link: '{}'", sourceLink);
+                continue;
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            Vertex source =  getOrCreateVertex(nodemap.get(sourceLink.getNode().getId()),
+                                               ipprimarymap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(nodemap.get(targetLink.getNode().getId()),ipprimarymap.get(targetLink.getNode().getId()));
+            combinedLinkDetails.add(new IsIsLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+                                                       source, sourceLink, target, targetLink));
+        }
+
+        for (IsIsLinkDetail linkDetail : combinedLinkDetails) {
+            LinkdEdge edge = connectVertices(linkDetail, ISIS_EDGE_NAMESPACE);
+            edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
 
@@ -1324,6 +1328,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
         m_isisLinkDao = isisLinkDao;
+    }
+
+    public IsIsElementDao getIsisElementDao() {
+        return m_isisElementDao;
+    }
+
+    public void setIsisElementDao(IsIsElementDao isisElementDao) {
+        m_isisElementDao = isisElementDao;
     }
 
     public BridgeMacLinkDao getBridgeMacLinkDao() {

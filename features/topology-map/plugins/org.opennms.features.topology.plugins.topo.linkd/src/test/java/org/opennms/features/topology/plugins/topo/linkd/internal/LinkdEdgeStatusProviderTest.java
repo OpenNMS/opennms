@@ -141,7 +141,8 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link2.setId(105);
         
         m_edges.add(connectVertices(
-                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1.getId(), link1.getIsisCircIfIndex(), target, link2.getId(), link2.getIsisCircIfIndex()), ISIS_EDGE_NAMESPACE));
+                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
+                                    ISIS_EDGE_NAMESPACE));
 
         // lldp link
         LldpLink link3 = new LldpLink(m_node4, 12, 1, "node4PortId", "node4PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
