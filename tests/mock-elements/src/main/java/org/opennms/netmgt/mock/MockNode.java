@@ -32,6 +32,7 @@ package org.opennms.netmgt.mock;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -251,9 +252,10 @@ public class MockNode extends MockContainer<MockNetwork, MockElement> {
      * @return a {@link org.opennms.netmgt.xml.event.Event} object.
      */
     public Event createNodeLabelChangedEvent(String newLabel) {
-        EventBuilder event = MockEventUtil.createEventBuilder("Test", EventConstants.NODE_LABEL_CHANGED_EVENT_UEI);
+        NodeLabelChangedEventBuilder event = new NodeLabelChangedEventBuilder("Test");
         event.setNodeid(m_nodeid);
-        event.addParam(EventConstants.PARM_NODE_LABEL, newLabel);
+        event.setNewNodeLabel(newLabel);
+        event.setOldNodeLabel("oldLabel");
         return event.getEvent();
     }
     
