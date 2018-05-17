@@ -29,12 +29,12 @@ The following properties can be set:
 | optional
 | `daily`
 
-| _elasticGlobalUser_
+| _globalElasticUser_
 | Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
 | optional
 | -
 
-| _elasticGlobalPassword_
+| _globalElasticPassword_
 | Password to use for all nodes, when _X-Pack Security_ is configured.
 | optional
 | -
