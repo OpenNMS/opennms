@@ -97,8 +97,8 @@ public class BridgeSimpleConnection implements Topology {
     private final BridgeForwardingTable m_yBridge;
     private BridgePort m_xyPort;
     private BridgePort m_yxPort;
-    private Map<String,BridgeForwardingTableEntry> m_xmactoport = new HashMap<String, BridgeForwardingTableEntry>();
-    private Map<String,BridgeForwardingTableEntry> m_ymactoport = new HashMap<String, BridgeForwardingTableEntry>();
+    private Map<String,BridgeForwardingTableEntry> m_xmactoport;
+    private Map<String,BridgeForwardingTableEntry> m_ymactoport;
 
     public BridgeForwardingTable getFirst() {
         return m_xBridge;
@@ -123,70 +123,112 @@ public class BridgeSimpleConnection implements Topology {
         super();
         m_xBridge = xBridge;
         m_yBridge = yBridge;
-        for (BridgeForwardingTableEntry xlink: m_xBridge.getBFTEntries()) {
-            if (m_xBridge.getNodeId().intValue() == xlink.getNodeId().intValue() 
-                    && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
-                m_xmactoport.put(xlink.getMacAddress(), xlink);
+    }
+    
+    public static void updateIdentifiers(BridgeForwardingTable bridgeFt) {
+        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
+            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
+                bridgeFt.getIdentifiers().add(link.getMacAddress());
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("doit: adding bridge identifier {}",
+                              link.printTopology());
+                }
             }
-            if (m_xBridge.getNodeId().intValue() == xlink.getNodeId().intValue() 
-                    && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                m_xBridge.getIdentifiers().add(xlink.getMacAddress());
-        }
-        for (BridgeForwardingTableEntry ylink: m_yBridge.getBFTEntries()) {
-            if (m_yBridge.getNodeId().intValue() == ylink.getNodeId().intValue() && 
-                    ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
-                m_ymactoport.put(ylink.getMacAddress(), ylink);
-            }
-            if (m_yBridge.getNodeId().intValue() == ylink.getNodeId().intValue() 
-                    && ylink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) 
-                m_yBridge.getIdentifiers().add(ylink.getMacAddress());
         }
     }
     
-    //FIXME parsed only three macs...but what happens if there is a wrong
-    //      because obsolete entry? For example you can have 
-    //      a new bft with changed a mac position check.....
-    //      and remove
-    //FIXME duplicated mac address must addressed
-    //FIXME if only one port that is the forwarding port
-    public boolean findSimpleConnection() {
+    public static Map<String, Set<BridgeForwardingTableEntry>> deleteDuplicatedMac(BridgeForwardingTable bridgeFt) {
+        Map<Integer,Set<String>> bft=new HashMap<Integer, Set<String>>();
+        Map<String, Set<BridgeForwardingTableEntry>> duplicated = new HashMap<String, Set<BridgeForwardingTableEntry>>();
+        Map<String, BridgeForwardingTableEntry> mactoport = new HashMap<String, BridgeForwardingTableEntry>();
+        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
+            if (!bft.containsKey(link.getBridgePort())) {
+                bft.put(link.getBridgePort(), new HashSet<String>());
+            }
+            bft.get(link.getBridgePort()).add(link.getMacAddress());
+            if (mactoport.containsKey(link.getMacAddress())) {
+                duplicated.put(link.getMacAddress(), new HashSet<BridgeForwardingTableEntry>());
+                duplicated.get(link.getMacAddress()).add(link);
+                duplicated.get(link.getMacAddress()).add(mactoport.remove(link.getMacAddress()));
+                continue;
+            }
+            if (duplicated.containsKey(link.getMacAddress())) {
+                duplicated.get(link.getMacAddress()).add(link);
+                continue;
+            }
+            mactoport.put(link.getMacAddress(), link);
+        }
+        for (String mac: duplicated.keySet()) {
+            Set<String> container = new HashSet<String>();
+            BridgeForwardingTableEntry saved = null;
+            for (BridgeForwardingTableEntry link: duplicated.get(mac)) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("deleteDuplicatedMac: mac:[{}], duplicated {}",
+                          mac,link.printTopology());
+                }
+                if (container.size() < bft.get(link.getBridgePort()).size()) {
+                    saved=link;
+                    container = bft.get(link.getBridgePort());
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("deleteDuplicatedMac: mac:[{}] saved {}",
+                      mac,saved.printTopology());
+            }
+            mactoport.put(mac, saved);
+        }
+        
+        bridgeFt.getBFTEntries().clear();
+        bridgeFt.getBFTEntries().addAll(mactoport.values());
+        return duplicated;
+    }
+    
+    
+    public static Map<String, BridgeForwardingTableEntry> getMacMap(BridgeForwardingTable bridgeFt) {
+        Map<String, BridgeForwardingTableEntry> mactoport = new HashMap<String, BridgeForwardingTableEntry>();
+        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
+            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
+                if (bridgeFt.getIdentifiers().contains(link.getMacAddress())) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("getMacMap: removing from bft bridge identifier {}",
+                                  link.printTopology());
+                    }
+                    continue;
+                }
+            }
+            mactoport.put(link.getMacAddress(), link);
+            
+        }
+
+        return mactoport;
+        
+    }
+    public boolean doit() {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("findSimpleConnection: ->\n first bridge -> \n{}\n second bridge -> \n{}",
+            LOG.debug("doit: ->\n first bridge -> \n{}\n second bridge -> \n{}",
                       m_xBridge.printTopology(),
                       m_yBridge.printTopology());
         }
 
+        BridgeSimpleConnection.deleteDuplicatedMac(m_xBridge);
+        BridgeSimpleConnection.deleteDuplicatedMac(m_yBridge);
+        BridgeSimpleConnection.updateIdentifiers(m_xBridge);
+        BridgeSimpleConnection.updateIdentifiers(m_xBridge);
+        m_xmactoport = BridgeSimpleConnection.getMacMap(m_xBridge);
+        m_ymactoport = BridgeSimpleConnection.getMacMap(m_yBridge);
+
+        
         // there is a mac of Y found on X BFT
         
         m_xyPort = BridgeSimpleConnection.condition1(m_yBridge.getIdentifiers(), m_xmactoport);
-        if (m_xyPort != null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("findSimpleConnection: {} --> nodeid:[{}]",
-                      m_xyPort.printTopology(),
-                      m_yBridge.getNodeId());
-            }
-        }
 
         // there is a mac of X found on Y BFT
         m_yxPort = BridgeSimpleConnection.condition1(m_xBridge.getIdentifiers(), m_ymactoport);
-        if (m_yxPort != null) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("findSimpleConnection: nodeid:[{}] <-- {}",
-                      m_xBridge.getNodeId(),
-                      m_yxPort.printTopology());
-            }
-        }
         	            
         if (m_xyPort == null || m_yxPort == null) {
             Set<String> commonlearnedmacs = new HashSet<String>(m_xmactoport.keySet()); 
             commonlearnedmacs.retainAll(new HashSet<String>(m_ymactoport.keySet()));
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("findSimpleConnection: nodeid:[{}] <--> nodeid:[{}] common (learned mac): -> \n{}",
-                      m_xBridge.getNodeId(),
-                      m_yBridge.getNodeId(),
-                      commonlearnedmacs);
-            }
             if (m_yxPort != null && m_xyPort == null) { 
                 m_xyPort = BridgeSimpleConnection.condition2(commonlearnedmacs,m_yxPort,m_ymactoport,m_xmactoport);
             } else if (m_yxPort == null && m_xyPort != null) {
@@ -222,6 +264,11 @@ public class BridgeSimpleConnection implements Topology {
     //                                                  m_2 belongs to FDB(p2,X) FDB(yx,Y) 
     //                                                  m_3 belongs to FDB(xy,X) FDB(p3,Y)
     //
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("condition3: common (learned mac): -> {}",
+                  commonlearnedmacs);
+        }
         String mac1=null;
         String mac2=null;
         BridgePort yp1=null;
@@ -235,7 +282,7 @@ public class BridgeSimpleConnection implements Topology {
                 yp1=BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
                 xp1=BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("condition3: mac1: {} -> \nxp1: {} \nyp1: {} ", mac1,
+                    LOG.debug("condition3: mac:[{}] {} - {} ", mac1,
                               xp1.printTopology(),
                               yp1.printTopology());
                 }
@@ -250,7 +297,7 @@ public class BridgeSimpleConnection implements Topology {
                 yp2=BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
                 xp2=BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("condition3: mac2: {} -> \nxp2: {} \nyp2: {} ", mac2,
+                    LOG.debug("condition3: mac:[{}] {} - {} ", mac2,
                           xp2.printTopology(),
                           yp2.printTopology());
                 }
@@ -263,7 +310,7 @@ public class BridgeSimpleConnection implements Topology {
             BridgePort yp3 = BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
             BridgePort xp3 = BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
             if (LOG.isDebugEnabled()) {
-                LOG.debug("condition3: mac3: {} -> \nx3: {} \nyp3: {} ", mac,
+                LOG.debug("condition3: mac:[{}] {} - {} ", mac,
                           xp3.printTopology(),
                           yp3.printTopology());
             }
@@ -356,27 +403,33 @@ public class BridgeSimpleConnection implements Topology {
     //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
     private static BridgePort condition2(Set<String> commonlearnedmacs, BridgePort yx, Map<String,BridgeForwardingTableEntry> ybft, Map<String,BridgeForwardingTableEntry> xbft) {
         if (LOG.isDebugEnabled()) {
-            LOG.debug("condition2: bridge port {}",yx.printTopology());
+            LOG.debug("condition2: {}",yx.printTopology());
         }
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("condition2: common (learned mac): -> {}",
+                  commonlearnedmacs);
+        }
+
+        Set<BridgePort> ports =  new HashSet<BridgePort>();
         for (String mac: commonlearnedmacs) {
             BridgePort y1 = BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
             BridgePort x1= BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
+            ports.add(x1);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("condition2: mac:[{}] {} - {}", mac, y1.printTopology(), x1.printTopology());
             }
             if (y1.getBridgePort().intValue() != yx.getBridgePort().intValue()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("condition2: connection found on port {}",x1.printTopology());
-                }
                 return x1;
             }
-        }        
+        }
+        if (ports.size() == 1) {
+            return ports.iterator().next();
+        }
         return null;
     }
     
     private static BridgePort condition1(Set<String> bridgemacaddressess, Map<String,BridgeForwardingTableEntry> otherbridgebft) {
         for (String mac: bridgemacaddressess) {
-            LOG.debug("condition1: parsing bridge mac identifier:[{}]",mac);
             if (otherbridgebft.containsKey(mac)) {
                 BridgePort bp = BridgePort.getFromBridgeForwardingTableEntry(otherbridgebft.get(mac));
                 if (LOG.isDebugEnabled()) {
@@ -388,25 +441,25 @@ public class BridgeSimpleConnection implements Topology {
         return null;
     }
             
-    public Set<String> getSimpleConnectionMacs() {
+    public Set<String> getMacs() {
         Set<String> macsOnSegment=new HashSet<String>();
-        for (BridgeForwardingTableEntry xlink: m_xBridge.getBFTEntries()) {
-            if (xlink.getBridgePort() == m_xyPort.getBridgePort() 
-                    && xlink.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED) {
-                if (m_ymactoport.get(xlink.getMacAddress()) != null 
+        for (String mac : m_xmactoport.keySet()) {
+            BridgeForwardingTableEntry xlink = m_xmactoport.get(mac);
+            if (xlink.getBridgePort() == m_xyPort.getBridgePort()) {
+                if (m_ymactoport.get(mac) != null 
                                 && m_yxPort.getBridgePort() == m_ymactoport.get(xlink.getMacAddress()).getBridgePort()) {
                     macsOnSegment.add(xlink.getMacAddress());
                 }
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getSimpleConnectionMacs: inter set ->\n{}.", 
+            LOG.debug("getMacs: inter set ->\n{}.", 
                   macsOnSegment);
         }
         return macsOnSegment;
     }
 
-    public Set<BridgePort> getSimpleConnectionPorts() {
+    public Set<BridgePort> getPorts() {
         Set<BridgePort> ports = new HashSet<BridgePort>();
         ports.add(m_xyPort);
         ports.add(m_yxPort);
@@ -431,6 +484,7 @@ public class BridgeSimpleConnection implements Topology {
             if (link.getBridgePort() == m_xyPort.getBridgePort() 
                 && link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED
                 && m_ymactoport.get(link.getMacAddress()) == null 
+                && !m_xBridge.getIdentifiers().contains(link.getMacAddress())
             ) {
                 forwarders.add(link);
             }
@@ -439,12 +493,13 @@ public class BridgeSimpleConnection implements Topology {
             if (link.getBridgePort() == m_yxPort.getBridgePort() 
                 && link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED
                 && m_xmactoport.get(link.getMacAddress()) == null 
+                && !m_yBridge.getIdentifiers().contains(link.getMacAddress())
             ) {
                 forwarders.add(link);
             }
         }
         if (LOG.isDebugEnabled()) {
-            LOG.debug("getForwarders: ->\n{}", 
+            LOG.debug("getForwarders: -> \n{}", 
               BridgeForwardingTableEntry.printTopology(forwarders));
         }
         return forwarders;

@@ -36,13 +36,19 @@ public class BridgeForwardingTable implements Topology {
 
     public static BridgeForwardingTable create(Bridge bridge, Set<BridgeForwardingTableEntry> entries) throws BridgeTopologyException {
         if (bridge == null) {
-            throw new BridgeTopologyException(" bridge must not be null");
+            throw new BridgeTopologyException("bridge must not be null");
         }
         if (entries == null) {
-            throw new BridgeTopologyException(" must not be null");
+            throw new BridgeTopologyException("bridge forwarding table must not be null");
         }
         BridgeForwardingTable bft = new BridgeForwardingTable(bridge);
-        bft.setBFTEntries(entries);
+        bft.setBFTEntries(new HashSet<BridgeForwardingTableEntry>());
+        for (BridgeForwardingTableEntry link: entries) {
+            if (link.getNodeId().intValue() != bridge.getNodeId().intValue()) {
+                throw new BridgeTopologyException("bridge:["+ bridge.getNodeId()+ "] and forwarding table must have the same nodeid", link);                
+            }
+            bft.getBFTEntries().add(link);
+        }
         return bft;
     }
     

@@ -226,9 +226,11 @@ public class DiscoveryBridgeTopology extends Discovery {
                     LOG.debug("calculate: bridge:[{}] elected [root] is first.",
                         electedRoot.getNodeId());
                 }
-                goDown(BridgeForwardingTableEntry.getThroughSet(rootBft, 
-                                                                new HashSet<BridgePort>()),0);
                 electedRoot.setRootBridge();
+                BridgeForwardingTable rootFT = BridgeForwardingTable.create(electedRoot, rootBft);
+                BridgeSimpleConnection.deleteDuplicatedMac(rootFT);
+                goDown(BridgeForwardingTableEntry.getThroughSet(rootFT.getBFTEntries(), 
+                                                                new HashSet<BridgePort>()),0);
            } else {
                 goDown(
                   BridgeForwardingTable.create(
@@ -322,11 +324,10 @@ public class DiscoveryBridgeTopology extends Discovery {
          
     private boolean goDown(BridgeForwardingTable bridgeUpFT,  
             BridgeForwardingTable bridgeFT) {
-        
         BridgeSimpleConnection upsimpleconn = 
                 new BridgeSimpleConnection(bridgeUpFT, 
                                              bridgeFT);
-        if (upsimpleconn.findSimpleConnection()) {
+        if (upsimpleconn.doit()) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("goDown: level: 1, bridge:[{}]. simple connection found: ->\n{}", 
                          bridgeFT.getNodeId(),
@@ -403,7 +404,7 @@ public class DiscoveryBridgeTopology extends Discovery {
             BridgeSimpleConnection bridgesimpleconn = 
                     new BridgeSimpleConnection(curBridgeFT,
                                        upsimpleconn.getSecond());
-            if (bridgesimpleconn.findSimpleConnection()) {
+            if (bridgesimpleconn.doit()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("goDown: level: {}, bridge:[{}]. simple connection found: ->\n{}", 
                              level,
@@ -499,12 +500,12 @@ public class DiscoveryBridgeTopology extends Discovery {
                     }
                     forwarders.add(forward);
                 }
-                ports.addAll(simpleconn.getSimpleConnectionPorts());
+                ports.addAll(simpleconn.getPorts());
                 if (macs == null) {
                     macs = new HashSet<String>(
-                                               simpleconn.getSimpleConnectionMacs());
+                                               simpleconn.getMacs());
                 } else {
-                    macs.retainAll(simpleconn.getSimpleConnectionMacs());
+                    macs.retainAll(simpleconn.getMacs());
                 }
                 SharedSegment splitseg = SharedSegment.split(m_domain,
                                                              upSegment, macs,
@@ -521,13 +522,13 @@ public class DiscoveryBridgeTopology extends Discovery {
             }
         }
         SharedSegment.merge(m_domain, upSegment,
-                            upsimpleconn.getSimpleConnectionMacs(),
-                            upsimpleconn.getSimpleConnectionPorts(),
+                            upsimpleconn.getMacs(),
+                            upsimpleconn.getPorts(),
                             upsimpleconn.getForwarders());
         for (BridgeSimpleConnection simpleconn : merged) {
             SharedSegment.merge(m_domain, upSegment,
-                                simpleconn.getSimpleConnectionMacs(),
-                                simpleconn.getSimpleConnectionPorts(),
+                                simpleconn.getMacs(),
+                                simpleconn.getPorts(),
                                 simpleconn.getForwarders());
         }
         if (LOG.isDebugEnabled()) {

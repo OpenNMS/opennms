@@ -170,7 +170,12 @@ public class BroadcastDomain implements Topology {
                 if (forwarder.getBridgePort().intValue() == removedBridgePort.intValue()) {
                     continue;
                 }
-                bft.get(bridgeport).add(forwarder.getMacAddress());
+                //FIXME
+                if (!bft.containsKey(bridgeport)) {
+                    bft.put(bridgeport, new HashSet<String>());
+                }
+                bft.get(bridgeport).add(
+                                        forwarder.getMacAddress());
             }
         }
 

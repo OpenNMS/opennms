@@ -29,10 +29,15 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -40,8 +45,11 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.config.EnhancedLinkdConfig;
 import org.opennms.netmgt.config.EnhancedLinkdConfigManager;
 import org.opennms.netmgt.config.enlinkd.EnlinkdConfiguration;
+import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -177,6 +185,200 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         // this resulted in a NPE because of the unknown Id 3333, see NMS-9852
         domain.printTopologyFromLevel(Sets.newHashSet( topology.nodeAId, topology.nodeBId, 3333), 5);
+    }
+
+    @Test
+    public void testTwoSwitchWithOnlyOnePortcondition3() throws Exception {
+        Integer portAB = 16;
+        Integer portBA = 24;
+
+        String mac1 = "000daaaa0001"; // port AB ---port BA
+        String mac2 = "000daaaa0002"; // port AB ---port BA
+        String maca = "000daaaa000a"; // port AB ---port BA
+        String macb = "000daaaa000b"; // port AB ---port BA
+        Integer nodeAId  = 1100011;
+        Integer nodeBId  = 2200022;
+        OnmsNode nodeA= new OnmsNode();
+        OnmsNode nodeB= new OnmsNode();
+        BridgeElement elementA = new BridgeElement();
+        BridgeElement elementB = new BridgeElement();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+
+        nodeA.setId(nodeAId);
+        elementA.setNode(nodeA);
+        elementA.setBaseBridgeAddress(maca);
+        elemlist.add(elementA);
+
+        nodeB.setId(nodeBId);
+        elementB.setNode(nodeB);
+        elementB.setBaseBridgeAddress(macb);
+        elemlist.add(elementB);
+
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac1));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac2));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, maca));
+
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac2));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macb));
+
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,nodeAId);
+        Bridge.create(domain,nodeBId);
+        setBridgeElements(domain,elemlist);
+        
+        DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(linkd);
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT((nodeAId),bftA);
+        ndbt.addUpdatedBFT((nodeBId),bftB);
+        ndbt.calculate();
+        
+        assertEquals(1,domain.getSharedSegments().size());
+        SharedSegment shared = domain.getSharedSegments().iterator().next();
+        assertEquals(2,shared.getBridgePortsOnSegment().size());
+        assertEquals(2,shared.getMacsOnSegment().size());
+        assertTrue(shared.containsMac(mac1));
+        assertTrue(shared.containsMac(mac2));
+        assertEquals(0, domain.getForwarding().size());
+        
+    }
+
+    @Test
+    public void testTwoSwitchWithOnlyOnePortCondition2() throws Exception {
+        Integer portAB = 16;
+        Integer portBA = 24;
+
+        String mac1 = "000daaaa0001"; // port AB ---port BA
+        String mac2 = "000daaaa0002"; // port AB ---port BA
+        String maca = "000daaaa000a"; // port AB ---port BA
+        String macb = "000daaaa000b"; // port AB ---port BA
+        Integer nodeAId  = 1100011;
+        Integer nodeBId  = 2200022;
+        OnmsNode nodeA= new OnmsNode();
+        OnmsNode nodeB= new OnmsNode();
+        BridgeElement elementA = new BridgeElement();
+        BridgeElement elementB = new BridgeElement();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+
+        nodeA.setId(nodeAId);
+        elementA.setNode(nodeA);
+        elementA.setBaseBridgeAddress(maca);
+        elemlist.add(elementA);
+
+        nodeB.setId(nodeBId);
+        elementB.setNode(nodeB);
+        elementB.setBaseBridgeAddress(macb);
+        elemlist.add(elementB);
+
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac1));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac2));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, maca));
+
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac2));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, maca));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macb));
+
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,nodeAId);
+        Bridge.create(domain,nodeBId);
+        setBridgeElements(domain,elemlist);
+        
+        DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(linkd);
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT((nodeAId),bftA);
+        ndbt.addUpdatedBFT((nodeBId),bftB);
+        ndbt.calculate();
+        
+        assertEquals(1,domain.getSharedSegments().size());
+        SharedSegment shared = domain.getSharedSegments().iterator().next();
+        assertEquals(2,shared.getBridgePortsOnSegment().size());
+        assertEquals(2,shared.getMacsOnSegment().size());
+        assertTrue(shared.containsMac(mac1));
+        assertTrue(shared.containsMac(mac2));
+        assertEquals(1, domain.getForwarding().size());
+        assertEquals(1, domain.getForwarders(nodeBId).size());
+        BridgeForwardingTableEntry forwarder = domain.getForwarders(nodeBId).iterator().next();
+        assertEquals(maca, forwarder.getMacAddress());
+        assertEquals(portBA, forwarder.getBridgePort());
+
+    }
+
+    @Test
+    public void testTwoSwitchWithOnlyOnePortCondition1() throws Exception {
+        Integer portAB = 16;
+        Integer portBA = 24;
+
+        String mac1 = "000daaaa0001"; // port AB ---port BA
+        String mac2 = "000daaaa0002"; // port AB ---port BA
+        String maca = "000daaaa000a"; // port AB ---port BA
+        String macb = "000daaaa000b"; // port AB ---port BA
+        Integer nodeAId  = 1100011;
+        Integer nodeBId  = 2200022;
+        OnmsNode nodeA= new OnmsNode();
+        OnmsNode nodeB= new OnmsNode();
+        BridgeElement elementA = new BridgeElement();
+        BridgeElement elementB = new BridgeElement();
+        Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
+        Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+
+        nodeA.setId(nodeAId);
+        elementA.setNode(nodeA);
+        elementA.setBaseBridgeAddress(maca);
+        elemlist.add(elementA);
+
+        nodeB.setId(nodeBId);
+        elementB.setNode(nodeB);
+        elementB.setBaseBridgeAddress(macb);
+        elemlist.add(elementB);
+
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac1));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, mac2));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, maca));
+        bftA.add(addBridgeForwardingTableEntry(nodeA,portAB, macb));
+
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac1));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, mac2));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, macb));
+        bftB.add(addBridgeForwardingTableEntry(nodeB,portBA, maca));
+
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,nodeAId);
+        Bridge.create(domain,nodeBId);
+        setBridgeElements(domain,elemlist);
+        
+        DiscoveryBridgeTopology ndbt= new DiscoveryBridgeTopology(linkd);
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT((nodeAId),bftA);
+        ndbt.addUpdatedBFT((nodeBId),bftB);
+        ndbt.calculate();
+        
+        assertEquals(1,domain.getSharedSegments().size());
+        SharedSegment shared = domain.getSharedSegments().iterator().next();
+        assertEquals(2,shared.getBridgePortsOnSegment().size());
+        assertEquals(2,shared.getMacsOnSegment().size());
+        assertTrue(shared.containsMac(mac1));
+        assertTrue(shared.containsMac(mac2));
+        
+        assertEquals(2, domain.getForwarding().size());
+        assertEquals(1, domain.getForwarders(nodeAId).size());
+        assertEquals(1, domain.getForwarders(nodeBId).size());
+        BridgeForwardingTableEntry forwarderA = domain.getForwarders(nodeAId).iterator().next();
+        BridgeForwardingTableEntry forwarderB = domain.getForwarders(nodeBId).iterator().next();
+        assertEquals(macb, forwarderA.getMacAddress());
+        assertEquals(portAB, forwarderA.getBridgePort());
+        assertEquals(maca, forwarderB.getMacAddress());
+        assertEquals(portBA, forwarderB.getBridgePort());
+
+
     }
 
     @Test
@@ -1483,18 +1685,99 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         ndbtB.addUpdatedBFT((topology.spiasvigasw01Id),topology.bftspiasvigasw01);
         ndbtB.addUpdatedBFT((topology.daremunalv01Id),topology.bftdaremunalv01);
         ndbtB.addUpdatedBFT((topology.villpizzasw01Id),topology.bftvillpizzasw01);
-//        ndbtB.addUpdatedBFT((topology.nodeId6796),topology.bft6796);
-//        ndbtB.addUpdatedBFT((topology.nodeId2673),topology.bft2673);
-//        ndbtB.addUpdatedBFT((topology.nodeId2674),topology.bft2674);
-//        ndbtB.addUpdatedBFT((topology.nodeId2676),topology.bft2676);
-//        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
-//        ndbtB.addUpdatedBFT((topology.spiazzomepe01Id),topology.bftspiazzomepe01);
-//        ndbtB.addUpdatedBFT((topology.nodeId6772),topology.bft6772);
-//         ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
-//         ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
-//        ndbtB.addUpdatedBFT((topology.nodeId6777),topology.bft6777);
+        ndbtB.addUpdatedBFT((topology.rsaspiazzowl1Id),topology.bftrsaspiazzowl1);
+        ndbtB.addUpdatedBFT((topology.vigrenmualv01Id),topology.bftvigrenmualv01);
+        ndbtB.addUpdatedBFT((topology.vigrenmualv02Id),topology.bftvigrenmualv02);
+        ndbtB.addUpdatedBFT((topology.vrendmunalv02Id),topology.bftvrendmunalv02);
+        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
+        ndbtB.addUpdatedBFT((topology.spiazzomepe01Id),topology.bftspiazzomepe01);
+        ndbtB.addUpdatedBFT((topology.comunespiazzowl1Id),topology.bftcomunespiazzowl1);
+        ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
+        ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
+        ndbtB.addUpdatedBFT((topology.comunevillarendenawl1Id),topology.bftcomunevillarendenawl1);
         
         ndbtB.calculate();
+    }
+    
+    @Test
+    public void testDuplicatedMac() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.spiazzofasw01Id);
+        Bridge.create(domain,topology.spiasvigasw01Id);
+        Bridge.create(domain,topology.daremunalv01Id);
+        Bridge.create(domain,topology.villpizzasw01Id);
+        Bridge.create(domain,topology.rsaspiazzowl1Id);
+        Bridge.create(domain,topology.vigrenmualv01Id);
+        Bridge.create(domain,topology.vigrenmualv02Id);
+        Bridge.create(domain,topology.vigrenmuasw01Id);
+        Bridge.create(domain,topology.vrendmunalv02Id);
+        Bridge.create(domain,topology.daremunasw01Id);
+        Bridge.create(domain,topology.spiazzomepe01Id);
+        Bridge.create(domain,topology.comunespiazzowl1Id);
+        Bridge.create(domain,topology.vrendmunasw01Id);
+        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        setBridgeElements(domain,topology.elemlist);
+
+        BridgeForwardingTable bridgeFtpe = 
+                BridgeForwardingTable.create(domain.getBridge(topology.spiazzomepe01Id), topology.bftspiazzomepe01);
+        
+        Map<String, Set<BridgeForwardingTableEntry>> duplicated = BridgeSimpleConnection.deleteDuplicatedMac(bridgeFtpe);
+        assertEquals(5, duplicated.size());
+        assertTrue(duplicated.keySet().contains(topology.macdaremunasw01)); //port 5
+        assertTrue(duplicated.keySet().contains(topology.mac001ebe70cec0)); //port 5
+        assertTrue(duplicated.keySet().contains(topology.mac0022557fd68f)); //port 6
+        assertTrue(duplicated.keySet().contains(topology.macvrendmunasw01)); //port 8
+        assertTrue(duplicated.keySet().contains(topology.mac001906d5cf50)); //port 8
+
+        assertEquals(2,duplicated.get(topology.macdaremunasw01).size()); //port 5
+        assertEquals(2,duplicated.get(topology.mac001ebe70cec0).size()); //port 5
+        assertEquals(2,duplicated.get(topology.mac0022557fd68f).size()); //port 8
+        assertEquals(2,duplicated.get(topology.macvrendmunasw01).size()); //port 5
+        assertEquals(2,duplicated.get(topology.mac001906d5cf50).size()); //port 5
+
+        System.err.println(BridgeForwardingTableEntry.printTopology(bridgeFtpe.getBFTEntries()));
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                              create(domain.getBridge(topology.daremunasw01Id), topology.bftdaremunasw01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                              create(domain.getBridge(topology.vigrenmuasw01Id), topology.bftvigrenmuasw01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                            create(domain.getBridge(topology.vrendmunasw01Id), topology.bftvrendmunasw01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.spiazzofasw01Id), topology.bftspiazzofasw01)).size());
+                     
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.spiasvigasw01Id), topology.bftspiasvigasw01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.villpizzasw01Id), topology.bftvillpizzasw01)).size());
+        
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.daremunalv01Id), topology.bftdaremunalv01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.vigrenmualv01Id), topology.bftvigrenmualv01)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.vigrenmualv02Id), topology.bftvigrenmualv02)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.vrendmunalv02Id), topology.bftvrendmunalv02)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.rsaspiazzowl1Id), topology.bftrsaspiazzowl1)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.comunespiazzowl1Id), topology.bftcomunespiazzowl1)).size());
+
+        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+                          create(domain.getBridge(topology.comunevillarendenawl1Id), topology.bftcomunevillarendenawl1)).size());
+        
     }
 
 }

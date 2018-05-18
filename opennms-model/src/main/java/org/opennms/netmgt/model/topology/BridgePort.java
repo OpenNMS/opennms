@@ -36,6 +36,9 @@ public class BridgePort implements Topology {
     private Integer m_node;
     private Integer m_bridgePort;
     private Integer m_bridgePortIfIndex;
+    //FIXME a BridgePort is identified by nodeid and port
+    //      the vlan is an attribute of the shared segment 
+    //      and of the domain must be moved there
     private Integer m_vlan;
 
 
