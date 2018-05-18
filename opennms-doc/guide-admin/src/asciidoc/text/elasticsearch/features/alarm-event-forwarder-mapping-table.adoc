@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-===== Table of Index Mapping
+====== Table of Index Mapping
 
 The following table describes the mapping of simple
 _{opennms-product-name}_ events to the Raw Events Index and the mapping of Alarm

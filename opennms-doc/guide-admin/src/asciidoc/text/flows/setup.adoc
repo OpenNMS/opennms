@@ -1,0 +1,167 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-flow-support-setup]]
+=== Setup
+
+Here we assume that you already have:
+
+* An Elasticsearch cluster setup with the link:https://github.com/OpenNMS/elasticsearch-drift-plugin[elasticsearch-drift-plugin] installed on every Elasticsearch node.
+* An instance of Grafana link:https://github.com/OpenNMS/opennms-helm[OpenNMS Helm] v2.0.0 or greater installed.
+
+==== Configuration Elasticsearch persistence
+
+From a Karaf shell on your _{opennms-product-name}_ instance, start by configuring the flow persistence to use your Elasticsearch cluster:
+
+[source]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.flows.persistence.elastic
+admin@opennms()> config:property-set elasticUrl http://elastic:9200
+admin@opennms()> config:update
+----
+
+NOTE: This configuration is stored in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+      See <<ga-elasticsearch-integration-configuration, General Elasticsearch Configuration>> for a complete set of options.
+
+==== Enabling a protocol
+
+Next, enable one or more of the protocols you would like to handle in `${OPENNMS_HOME}/etc/telemetryd-configuration.xml`.
+
+NOTE: In this example we enable the NetFlow v5 protocol, but the same process can be repeated for any of the other flow related protocols.
+
+.Enable NetFlow v5 in telemetryd-configuration.xml
+[source, xml]
+----
+<protocol name="Netflow-5" description="Listener for Netflow 5 UDP packets" enabled="true">
+   <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.udp.UdpListener">
+        <parameter key="port" value="8877"/>
+    </listener>
+
+    <adapter name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.adapters.netflow.Netflow5Adapter">
+    </adapter>
+ </protocol>
+----
+
+Apply the changes without restarting by sending a `reloadDaemonConfig` event via the CLI:
+
+.Send a reloadDaemonConfig event through CLI
+[source]
+----
+${OPENNMS_HOME}bin/send-event.pl -p 'daemonName Telemetryd' uei.opennms.org/internal/reloadDaemonConfig
+----
+
+This will open a UDP socket bound to `0.0.0.0:8877` to which _NetFlow v5_ messages can be forwarded.
+
+==== Linking to OpenNMS Helm in the Web UI
+
+In order to access flow related graphs from the _{opennms-product-name}_ web interface, you must configure a link to your instance of _OpenNMS Helm_.
+
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.netmgt.flows.rest
+admin@opennms()> config:property-set flowGraphUrl 'http://grafana:3000/dashboard/flows?node=$nodeId&interface=$ifIndex'
+admin@opennms()> config:update
+----
+
+NOTE: This URL can optionally point to other tools as well.
+      It supports placeholders for `$nodeId`, `$ifIndex`, `$start` and `$end`.
+
+Once configured, an icon will appear on the top right corner of a resource graph for an SNMP interface if there is flow data for that interface.
+
+===== Configuring a listener on a Minion (Optional)
+
+In this example we'll look at enabling a generic listener for the NetFlow v5 protocol on Minion.
+
+IMPORTANT: NetFlow v5 uses the generic UDP listener, but other protocols require a specific listener.
+           See the examples in `${OPENNMS_HOME}/etc/telemetryd-configuration.xml`, or <<ga-telemetryd-listener, Telemetryd Listener Reference>> for details.
+
+To enable and configure an _UDP Listener_ for NetFlow v5 on Minion, connect to the _Karaf Console_ and set the following properties:
+
+[source]
+----
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
+admin@minion()> config:property-set name Netflow-5
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:update
+----
+
+TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration in `${MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-8877.cfg`.
+
+[source]
+----
+name = Netflow-5
+class-name = org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+listener.port = 8877
+----
+
+NOTE: The associated protocol, in this case `Netflow-5` must also be enabled on _{opennms-product-name}_ for the messages to be processed.
+
+==== Node cache configuration (Optional)
+
+By default each _Flow Document_ is - if known by _{opennms-product-name}_ - enriched with node information.
+To reduce the number of queries to the database, the data is cached.
+
+The following cache properties are available to be set in `${OPENNMS_HOME/etc/org.opennms.features.flows.persistence.elastic.cfg`:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| `nodeCache.maximumSize`
+| The maximum size of the cache
+| `false`
+| `1000`
+
+| `nodeCache.expireAfterWrite`
+| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+| `false`
+| `300`
+
+| `nodeCache.recordStats`
+| Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
+| `false`
+| `true`
+
+|===
+
+==== Classification Exporter Filter cache configuration (Optional)
+
+A rule in the _Classification Engine_ may define an `exporterFilter`.
+In order to resolve if the filter criteria matches the address of an exporter a database query is executed.
+A cache can be configured to cache the result to improve performance.
+
+The following cache properties are available to be set in `${OPENNMS_HOME/etc/org.opennms.features.flows.classification.cfg`:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| `cache.classificationFilter.enabled`
+| Enables or disables the cache.
+| `false`
+| `false`
+
+| `cache.classificationFilter.maxSize`
+| The maximum size of the cache
+| `false`
+| `5000`
+
+| `cache.classificationFilter.expireAfterRead`
+| Number of seconds until an entry in the node cache is evicted. Set to 0 to disable eviction.
+  The timer is reset every time an entry is read.
+| `false`
+| `300`
+
+| `nodeCache.recordStats`
+| Defines if cache statistics are exposed via JMX. Set to `false` to disable statistic recording.
+| `false`
+| `true`
+
+|===
