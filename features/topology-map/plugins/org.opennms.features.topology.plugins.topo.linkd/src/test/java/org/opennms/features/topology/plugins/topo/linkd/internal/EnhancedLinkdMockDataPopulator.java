@@ -442,6 +442,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.replay(m_cdpElementDao);
         EasyMock.replay(m_lldpLinkDao);
         EasyMock.replay(m_lldpElementDao);
+        EasyMock.replay(m_isisElementDao);
         EasyMock.replay(m_ospfLinkDao);
         EasyMock.replay(m_nodeDao);
         EasyMock.replay(m_snmpInterfaceDao);
@@ -453,6 +454,7 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.reset(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, m_cdpLinkDao, m_isisLinkDao,m_bridgeTopologyDao);
         EasyMock.reset(m_cdpElementDao);
         EasyMock.reset(m_lldpElementDao);
+        EasyMock.reset(m_isisElementDao);
         EasyMock.reset(m_lldpLinkDao);
         EasyMock.reset(m_ospfLinkDao);
         EasyMock.reset(m_nodeDao);
