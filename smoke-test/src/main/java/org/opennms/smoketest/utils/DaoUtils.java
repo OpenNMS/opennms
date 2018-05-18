@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,31 +25,38 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
+package org.opennms.smoketest.utils;
 
-package org.opennms.netmgt.snmp;
+import java.util.concurrent.Callable;
 
-public class ClassBasedStrategyResolver implements StrategyResolver {
+import org.opennms.core.criteria.Criteria;
+import org.opennms.netmgt.dao.api.OnmsDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    private static SnmpStrategy snmpStrategy;
+import com.google.common.collect.Iterables;
 
-    public SnmpStrategy getStrategyInstance() {
-        final String strategyClass = SnmpUtils.getStrategyClassName();
-        try {
-            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class " + strategyClass, e);
-        }
+/**
+ * DAO utility thingies.
+ *
+ * @author jwhite
+ */
+public class DaoUtils {
+
+    private static final Logger LOG = LoggerFactory.getLogger(DaoUtils.class);
+
+    public static Callable<Integer> countMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return new Callable<Integer>() {
+              public Integer call() throws Exception {
+                  Integer count = dao.countMatching(criteria);
+                  LOG.info("Count: {}", count);
+                  return count;
+              }
+        };
     }
 
-    @Override
-    public SnmpStrategy getStrategy() {
-        if (snmpStrategy == null) {
-            return getStrategyInstance();
-        }
-        if (SnmpUtils.getStrategyClassName().equals(snmpStrategy.getClass().getName())) {
-            return snmpStrategy;
-        } else {
-            return getStrategyInstance();
-        }
+    @SuppressWarnings("unchecked")
+    public static <T> Callable<T> findMatchingCallable(OnmsDao<?,?> dao, Criteria criteria) {
+        return () -> (T) Iterables.getFirst(dao.findMatching(criteria), null);
     }
 }
