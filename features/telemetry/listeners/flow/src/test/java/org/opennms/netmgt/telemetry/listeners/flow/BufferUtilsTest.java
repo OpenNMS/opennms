@@ -31,6 +31,7 @@ package org.opennms.netmgt.telemetry.listeners.flow;
 import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.sint;
 import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint32;
 import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.uint64;
+import static org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils.sfloat;
 
 import java.nio.ByteBuffer;
 
@@ -68,6 +69,13 @@ public class BufferUtilsTest {
         Assert.assertEquals(UnsignedLong.valueOf(65536L -1L), uint64(from("000000000000FFFF")));
         Assert.assertEquals(UnsignedLong.valueOf(65536L * 65536L - 1L), uint64(from("00000000FFFFFFFF")));
         Assert.assertEquals(UnsignedLong.MAX_VALUE, uint64(from("FFFFFFFFFFFFFFFF")));
+    }
+
+    @Test
+    public void testSignedFloat() throws Exception {
+        Assert.assertEquals(1.47F, sfloat(from("3FBC28F6")), 0.0);
+        Assert.assertEquals(-1.47F, sfloat(from("BFBC28F6")), 0.0);
+        Assert.assertEquals(0.0F, sfloat(from("00000000")), 0.0);
     }
 
 
