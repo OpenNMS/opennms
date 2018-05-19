@@ -49,7 +49,6 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -1723,7 +1722,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BridgeForwardingTable bridgeFtpe = 
                 BridgeForwardingTable.create(domain.getBridge(topology.spiazzomepe01Id), topology.bftspiazzomepe01);
         
-        Map<String, Set<BridgeForwardingTableEntry>> duplicated = BridgeSimpleConnection.deleteDuplicatedMac(bridgeFtpe);
+        Map<String, Set<BridgeForwardingTableEntry>> duplicated = BridgeForwardingTable.deleteDuplicatedMac(bridgeFtpe);
         assertEquals(5, duplicated.size());
         assertTrue(duplicated.keySet().contains(topology.macdaremunasw01)); //port 5
         assertTrue(duplicated.keySet().contains(topology.mac001ebe70cec0)); //port 5
@@ -1739,43 +1738,43 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         System.err.println(BridgeForwardingTableEntry.printTopology(bridgeFtpe.getBFTEntries()));
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                               create(domain.getBridge(topology.daremunasw01Id), topology.bftdaremunasw01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                               create(domain.getBridge(topology.vigrenmuasw01Id), topology.bftvigrenmuasw01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                             create(domain.getBridge(topology.vrendmunasw01Id), topology.bftvrendmunasw01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.spiazzofasw01Id), topology.bftspiazzofasw01)).size());
                      
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.spiasvigasw01Id), topology.bftspiasvigasw01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.villpizzasw01Id), topology.bftvillpizzasw01)).size());
         
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.daremunalv01Id), topology.bftdaremunalv01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.vigrenmualv01Id), topology.bftvigrenmualv01)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.vigrenmualv02Id), topology.bftvigrenmualv02)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.vrendmunalv02Id), topology.bftvrendmunalv02)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.rsaspiazzowl1Id), topology.bftrsaspiazzowl1)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.comunespiazzowl1Id), topology.bftcomunespiazzowl1)).size());
 
-        assertEquals(0,BridgeSimpleConnection.deleteDuplicatedMac(BridgeForwardingTable.
+        assertEquals(0,BridgeForwardingTable.deleteDuplicatedMac(BridgeForwardingTable.
                           create(domain.getBridge(topology.comunevillarendenawl1Id), topology.bftcomunevillarendenawl1)).size());
         
     }

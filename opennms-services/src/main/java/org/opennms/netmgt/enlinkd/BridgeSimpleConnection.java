@@ -29,13 +29,11 @@
 package org.opennms.netmgt.enlinkd;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.Topology;
@@ -91,7 +89,7 @@ import org.slf4j.LoggerFactory;
 // 
 public class BridgeSimpleConnection implements Topology {
     
-    private static final Logger LOG = LoggerFactory.getLogger(BridgeSimpleConnection.class);
+    static final Logger LOG = LoggerFactory.getLogger(BridgeSimpleConnection.class);
 
     private final BridgeForwardingTable m_xBridge;
     private final BridgeForwardingTable m_yBridge;
@@ -125,84 +123,6 @@ public class BridgeSimpleConnection implements Topology {
         m_yBridge = yBridge;
     }
     
-    public static void updateIdentifiers(BridgeForwardingTable bridgeFt) {
-        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
-            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
-                bridgeFt.getIdentifiers().add(link.getMacAddress());
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("doit: adding bridge identifier {}",
-                              link.printTopology());
-                }
-            }
-        }
-    }
-    
-    public static Map<String, Set<BridgeForwardingTableEntry>> deleteDuplicatedMac(BridgeForwardingTable bridgeFt) {
-        Map<Integer,Set<String>> bft=new HashMap<Integer, Set<String>>();
-        Map<String, Set<BridgeForwardingTableEntry>> duplicated = new HashMap<String, Set<BridgeForwardingTableEntry>>();
-        Map<String, BridgeForwardingTableEntry> mactoport = new HashMap<String, BridgeForwardingTableEntry>();
-        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
-            if (!bft.containsKey(link.getBridgePort())) {
-                bft.put(link.getBridgePort(), new HashSet<String>());
-            }
-            bft.get(link.getBridgePort()).add(link.getMacAddress());
-            if (mactoport.containsKey(link.getMacAddress())) {
-                duplicated.put(link.getMacAddress(), new HashSet<BridgeForwardingTableEntry>());
-                duplicated.get(link.getMacAddress()).add(link);
-                duplicated.get(link.getMacAddress()).add(mactoport.remove(link.getMacAddress()));
-                continue;
-            }
-            if (duplicated.containsKey(link.getMacAddress())) {
-                duplicated.get(link.getMacAddress()).add(link);
-                continue;
-            }
-            mactoport.put(link.getMacAddress(), link);
-        }
-        for (String mac: duplicated.keySet()) {
-            Set<String> container = new HashSet<String>();
-            BridgeForwardingTableEntry saved = null;
-            for (BridgeForwardingTableEntry link: duplicated.get(mac)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("deleteDuplicatedMac: mac:[{}], duplicated {}",
-                          mac,link.printTopology());
-                }
-                if (container.size() < bft.get(link.getBridgePort()).size()) {
-                    saved=link;
-                    container = bft.get(link.getBridgePort());
-                }
-            }
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("deleteDuplicatedMac: mac:[{}] saved {}",
-                      mac,saved.printTopology());
-            }
-            mactoport.put(mac, saved);
-        }
-        
-        bridgeFt.getBFTEntries().clear();
-        bridgeFt.getBFTEntries().addAll(mactoport.values());
-        return duplicated;
-    }
-    
-    
-    public static Map<String, BridgeForwardingTableEntry> getMacMap(BridgeForwardingTable bridgeFt) {
-        Map<String, BridgeForwardingTableEntry> mactoport = new HashMap<String, BridgeForwardingTableEntry>();
-        for (BridgeForwardingTableEntry link: bridgeFt.getBFTEntries()) {
-            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
-                if (bridgeFt.getIdentifiers().contains(link.getMacAddress())) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("getMacMap: removing from bft bridge identifier {}",
-                                  link.printTopology());
-                    }
-                    continue;
-                }
-            }
-            mactoport.put(link.getMacAddress(), link);
-            
-        }
-
-        return mactoport;
-        
-    }
     public boolean doit() {
 
         if (LOG.isDebugEnabled()) {
@@ -211,12 +131,12 @@ public class BridgeSimpleConnection implements Topology {
                       m_yBridge.printTopology());
         }
 
-        BridgeSimpleConnection.deleteDuplicatedMac(m_xBridge);
-        BridgeSimpleConnection.deleteDuplicatedMac(m_yBridge);
-        BridgeSimpleConnection.updateIdentifiers(m_xBridge);
-        BridgeSimpleConnection.updateIdentifiers(m_xBridge);
-        m_xmactoport = BridgeSimpleConnection.getMacMap(m_xBridge);
-        m_ymactoport = BridgeSimpleConnection.getMacMap(m_yBridge);
+        BridgeForwardingTable.deleteDuplicatedMac(m_xBridge);
+        BridgeForwardingTable.deleteDuplicatedMac(m_yBridge);
+        BridgeForwardingTable.updateIdentifiers(m_xBridge);
+        BridgeForwardingTable.updateIdentifiers(m_xBridge);
+        m_xmactoport = BridgeForwardingTable.getMacMap(m_xBridge);
+        m_ymactoport = BridgeForwardingTable.getMacMap(m_yBridge);
 
         
         // there is a mac of Y found on X BFT

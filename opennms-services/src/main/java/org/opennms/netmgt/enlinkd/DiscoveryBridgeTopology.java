@@ -38,7 +38,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
@@ -228,7 +227,7 @@ public class DiscoveryBridgeTopology extends Discovery {
                 }
                 electedRoot.setRootBridge();
                 BridgeForwardingTable rootFT = BridgeForwardingTable.create(electedRoot, rootBft);
-                BridgeSimpleConnection.deleteDuplicatedMac(rootFT);
+                BridgeForwardingTable.deleteDuplicatedMac(rootFT);
                 goDown(BridgeForwardingTableEntry.getThroughSet(rootFT.getBFTEntries(), 
                                                                 new HashSet<BridgePort>()),0);
            } else {
