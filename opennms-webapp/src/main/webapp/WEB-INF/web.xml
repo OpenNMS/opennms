@@ -274,6 +274,14 @@
     <url-pattern>/event/list</url-pattern>
   </filter-mapping>
   <filter-mapping>
+    <filter-name>AddRefreshHeader-120</filter-name>
+    <url-pattern>/alarm/list</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>AddRefreshHeader-30</filter-name>
+    <url-pattern>/event/list.htm</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
     <filter-name>AddRefreshHeader-30</filter-name>
     <url-pattern>/alarm/list.htm</url-pattern>
   </filter-mapping>
