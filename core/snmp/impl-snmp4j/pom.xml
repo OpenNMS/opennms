@@ -27,6 +27,7 @@
             <Import-Package>org.apache.commons.lang.*;org.apache.log4j.*;resolution:=optional,*</Import-Package>
             <Embed-Dependency>snmp4j;inline=true</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Bundle-Activator>org.opennms.netmgt.snmp.snmp4j.Snmp4JActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -37,6 +38,11 @@
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.api</artifactId>
       <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>
