@@ -1,0 +1,4 @@
+<trapd-configuration xmlns="http://xmlns.opennms.org/xsd/config/trapd" 
+snmp-trap-address="*" snmp-trap-port="162" new-suspect-on-trap="true"> 
+<snmpv3-user security-name="traptest" auth-passphrase="0p3nNMSv3" auth-protocol="MD5" privacy-passphrase="0p3nNMSv3" privacy-protocol="DES" />
+</trapd-configuration>
