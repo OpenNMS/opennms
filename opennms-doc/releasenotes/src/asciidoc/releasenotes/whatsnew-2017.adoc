@@ -178,6 +178,11 @@ This reduces the complexity of the UI code and will make it easier for developer
 
 ==== Release Meridian-2017.1.8
 
+Release 2017.1.8 is a small update to OpenNMS Meridian 2017.1.7.
+It contains a few bug fixes and an update to support Newts cache priming.
+
+The codename for 2017.1.8 is _IERS Reference Meridian_.
+
 ===== Bug
 
 * ONMS starts with broken threshold configuration file (Issue http://issues.opennms.org/browse/NMS-9064[NMS-9064])
