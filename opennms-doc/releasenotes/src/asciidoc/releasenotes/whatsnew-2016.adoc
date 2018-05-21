@@ -141,6 +141,20 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.13]
+
+==== Release Meridian-2016.1.13
+
+===== Bug
+
+* Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
+* foreign-id with space (%20) at end causes issues with Newts (Issue http://issues.opennms.org/browse/NMS-9961[NMS-9961])
+* Backport intermittent SNMPv3 failures to foundation-2016 (Issue http://issues.opennms.org/browse/NMS-10153[NMS-10153])
+
+===== Enhancement
+
+* Improve performance of newts.indexing to avoid overwhelm Cassandra cluster (Issue http://issues.opennms.org/browse/NMS-9959[NMS-9959])
+
 [releasenotes-changelog-Meridian-2016.1.12]
 
 ==== Release Meridian-2016.1.12
