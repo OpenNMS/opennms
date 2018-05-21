@@ -157,7 +157,7 @@ public class TimestampUtils {
         end = firstNonDigit(s, start);
         result.day = number(s, start, end);
 
-        start = skipWhitespace(s, end); // Skip trailing whitespace
+        start = skipWhitespaceOrChar(s, end, 'T'); // Skip trailing whitespace
       }
 
       // Possibly read time.
@@ -611,6 +611,15 @@ public class TimestampUtils {
     int slen = s.length;
     for (int i = start; i < slen; i++) {
       if (!Character.isSpaceChar(s[i]))
+        return i;
+    }
+    return slen;
+  }
+
+  private static int skipWhitespaceOrChar(char []s, int start, char character) {
+    int slen = s.length;
+    for (int i = start; i < slen; i++) {
+      if (!Character.isSpaceChar(s[i]) && s[i] != character)
         return i;
     }
     return slen;
