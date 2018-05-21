@@ -51,25 +51,6 @@ public class PropertiesFileChecker {
         loadProperties();
     }
 
-    public void against(ConfigCheck definitions) {
-
-        loadProperties();
-
-        for (ConfigEntryDefinition entry : definitions.getChecks()) {
-            String value = this.properties.getProperty(entry.getName());
-            if (entry.isMandatoryProperty() && value == null) {
-                throw new ConfigCheckValidationException(
-                        String.format("Could not find mandatory property=%s in file %s"
-                                , entry.getName(), this.file));
-            }
-            if (!entry.isValidValue(value)) {
-                throw new ConfigCheckValidationException(
-                        String.format("Found invalid value for property=%s in file %s, invalid value=%s"
-                                , entry.getName(), this.file, value));
-            }
-        }
-    }
-
     private void loadProperties() {
         properties = new Properties();
 

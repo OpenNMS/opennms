@@ -38,13 +38,13 @@ import org.junit.Test;
 public class XMLFileCheckerTest {
 
     @Test
-    public void shouldSucceedOnUnknownFileWithCorrectSyntax() throws IOException {
+    public void shouldSucceedOnFileWithCorrectSyntax() throws IOException {
         File file = saveXmltoFile("<?xml version=\"1.0\" encoding=\"UTF-8\"?><element></element>");
         XMLFileChecker.checkFile(file.toPath()).forSyntax();
     }
 
     @Test(expected = ConfigCheckValidationException.class)
-    public void shouldFailOnUnknownFileWithIncorrectSyntax() throws IOException {
+    public void shouldFailOnFileWithIncorrectSyntax() throws IOException {
         File file = saveXmltoFile("<?xml version=\"1.0\" encoding=\"UTF-8\"?><elementThatIsNotClosed>");
         XMLFileChecker.checkFile(file.toPath()).forSyntax();
     }
