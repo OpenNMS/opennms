@@ -1,7 +1,9 @@
 [[release-22-changelog]]
+
 === Changelog
 
 [[releasenotes-changelog-22.0.0]]
+
 ==== Release 22.0.0
 
 Release 22.0.0 is the latest stable release of OpenNMS.
