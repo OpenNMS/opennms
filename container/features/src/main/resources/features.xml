@@ -1197,6 +1197,7 @@
         <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
     </feature>
 
+    <!-- TODO MVR this is distributed only and should probably go somewhere else -->
     <feature name="opennms-persistence" description="OpenNMS :: Persistence" version="${project.version}">
         <feature>opennms-model</feature>
         <feature>opennms-dao</feature>
