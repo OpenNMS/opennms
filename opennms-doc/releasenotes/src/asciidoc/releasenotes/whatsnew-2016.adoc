@@ -145,6 +145,10 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 
 ==== Release Meridian-2016.1.13
 
+Release 2016.1.13 is an update to 2016.1.12 that provides a few small bug fixes and an update to support Newts cache priming.
+
+The codename for 2016.1.13 is _HEALPix_.
+
 ===== Bug
 
 * Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
