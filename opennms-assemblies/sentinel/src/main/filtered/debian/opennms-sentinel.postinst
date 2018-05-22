@@ -15,11 +15,6 @@ if [ ! -f "${ETCDIR}/host.key" ]; then
 	chown "${SENTINELUSER}:${SENTINELUSER}" "${ETCDIR}/host.key"
 fi
 
-# Generate a new UUID to replace the default UUID if it is still present
-UUID="$(uuidgen -t)"
-sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ETCDIR}/org.opennms.sentinel.controller.cfg"
-chown -R "${SENTINELUSER}:${SENTINELUSER}" "${ETCDIR}" "${SENTINELHOME}" "${SENTINELDATA}" "${SENTINELLOG}"
-
 # Remove the directory used as the local Maven repo cache
 rm -rf "${SENTINELHOME}/.local"
 
