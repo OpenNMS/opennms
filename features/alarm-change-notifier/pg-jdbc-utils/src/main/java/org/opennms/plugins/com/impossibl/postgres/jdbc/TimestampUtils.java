@@ -157,7 +157,9 @@ public class TimestampUtils {
         end = firstNonDigit(s, start);
         result.day = number(s, start, end);
 
-        start = skipWhitespaceOrChar(s, end, 'T'); // Skip trailing whitespace
+        // Skip trailing whitespace or T as separator between date and time,
+        // e.g. 2017-03-03 23:04:01... or 2017-03-03T23:04:01
+        start = skipWhitespaceOrChar(s, end, 'T');
       }
 
       // Possibly read time.
