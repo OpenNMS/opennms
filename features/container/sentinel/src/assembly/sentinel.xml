@@ -9,14 +9,16 @@
   </formats>
   <includeBaseDirectory>true</includeBaseDirectory>
   <fileSets>
-    <fileSet>
-      <useDefaultExcludes>false</useDefaultExcludes>
-      <directory>${project.build.directory}/unpacked/org.opennms.container.shared-${project.version}</directory>
-      <outputDirectory></outputDirectory>
-    </fileSet>
+    <!-- assembly plugin does not overwrite files, so the "overlay" goes *first* -->
     <fileSet>
       <useDefaultExcludes>false</useDefaultExcludes>
       <directory>${project.build.directory}/filtered-resources</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+    <!-- ...*then* the shared bits -->
+    <fileSet>
+      <useDefaultExcludes>false</useDefaultExcludes>
+      <directory>${project.build.directory}/unpacked/org.opennms.container.shared-${project.version}</directory>
       <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
