@@ -36,7 +36,7 @@ import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
 public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcDataCollectionConfig, JdbcDataCollectionConfig> implements JdbcDataCollectionConfigDao {
 
     public JdbcDataCollectionConfigDaoJaxb() {
-        super(JdbcDataCollectionConfig.class, JdbcDataCollectionConfig.class,"JDBC Data Collection Configuration");
+        super(JdbcDataCollectionConfig.class, "JDBC Data Collection Configuration");
     }
 
     @Override
@@ -55,6 +55,11 @@ public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcD
     public JdbcDataCollection getDataCollectionByIndex(int idx) {
         JdbcDataCollectionConfig jdcc = getContainer().getObject();
         return jdcc.getJdbcDataCollections().get(idx);
+    }
+
+    @Override
+    public JdbcDataCollectionConfig getConfig() {
+        return getContainer().getObject();
     }
 
     @Override

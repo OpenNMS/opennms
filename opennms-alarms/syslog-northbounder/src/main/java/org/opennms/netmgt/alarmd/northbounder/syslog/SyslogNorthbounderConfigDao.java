@@ -45,7 +45,7 @@ public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNor
      * Instantiates a new Syslog northbounder configiguration DAO.
      */
     public SyslogNorthbounderConfigDao() {
-        super(SyslogNorthbounderConfig.class, SyslogNorthbounderConfig.class,"Config for Syslog Northbounder");
+        super(SyslogNorthbounderConfig.class, "Config for Syslog Northbounder");
     }
 
     /* (non-Javadoc)
@@ -55,6 +55,16 @@ public class SyslogNorthbounderConfigDao extends AbstractJaxbConfigDao<SyslogNor
     protected SyslogNorthbounderConfig translateConfig( SyslogNorthbounderConfig config) {
         return config;
     }
+
+    /**
+     * Gets the Syslog northbounder configuration.
+     *
+     * @return the configuration object
+     */
+    public SyslogNorthbounderConfig getConfig() {
+        return getContainer().getObject();
+    }
+
 
     /**
      * Reload.

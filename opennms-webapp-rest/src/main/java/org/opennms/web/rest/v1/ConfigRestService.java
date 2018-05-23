@@ -28,19 +28,11 @@
 
 package org.opennms.web.rest.v1;
 
-import java.util.Map;
-import java.util.Optional;
-
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.opennms.core.config.api.ConfigurationResourceException;
-import org.opennms.core.xml.JaxbConfigDao;
 import org.opennms.web.rest.v1.config.AgentConfigurationResource;
 import org.opennms.web.rest.v1.config.CollectionConfigurationResource;
 import org.opennms.web.rest.v1.config.DataCollectionConfigResource;
@@ -52,8 +44,6 @@ import org.opennms.web.rest.v1.config.SnmpConfigurationResource;
 import org.opennms.web.rest.v1.config.SnmpTrapNorthbounderConfigurationResource;
 import org.opennms.web.rest.v1.config.SyslogNorthbounderConfigurationResource;
 import org.opennms.web.rest.v1.config.TrapdConfigurationResource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
 /**
@@ -63,9 +53,6 @@ import org.springframework.stereotype.Component;
 @Component("configRestService")
 @Path("config")
 public class ConfigRestService extends OnmsRestService {
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Path("{location}/polling")
     public PollerConfigurationResource getPollerConfiguration(@Context final ResourceContext context) {
@@ -120,33 +107,6 @@ public class ConfigRestService extends OnmsRestService {
     @Path("email-nbi")
     public EmailNorthbounderConfigurationResource getEmailNorthbounderConfigurationResource(@Context final ResourceContext context) throws ConfigurationResourceException {
         return context.getResource(EmailNorthbounderConfigurationResource.class);
-    }
-
-    @GET
-    public Response getConfiguration(@QueryParam("configType") String requestedConfigType) {
-        final Optional<JaxbConfigDao> configDaoOptional = findConfigDaoByType(applicationContext, requestedConfigType);
-        if (configDaoOptional.isPresent()) {
-            Object entity = configDaoOptional.get().getConfig();
-            return Response.status(Status.OK).entity(entity).build();
-        }
-        return Response.status(Status.NOT_FOUND).build();
-    }
-
-    private Optional<JaxbConfigDao> findConfigDaoByType(ApplicationContext applicationContext, String requestedConfigType) {
-        if (applicationContext == null) {
-            return Optional.empty();
-        }
-        final Map<String, JaxbConfigDao> configDaos = applicationContext.getBeansOfType(JaxbConfigDao.class);
-        final Optional<JaxbConfigDao> configDaoOptional = configDaos.values()
-                .stream()
-                .filter(dao -> dao.getConfigType().getSimpleName().equalsIgnoreCase(requestedConfigType)
-                        || dao.getConfigType().getName().equalsIgnoreCase(requestedConfigType))
-                .findFirst();
-        if (configDaoOptional.isPresent()) {
-            return configDaoOptional;
-        }
-        // Try parent context
-        return findConfigDaoByType(applicationContext.getParent(), requestedConfigType);
     }
 
 }

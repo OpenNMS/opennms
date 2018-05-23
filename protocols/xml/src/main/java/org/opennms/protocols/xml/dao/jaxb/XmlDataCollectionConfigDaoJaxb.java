@@ -56,7 +56,7 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
      * Instantiates a new XML data collection configuration DAO using JAXB.
      */
     public XmlDataCollectionConfigDaoJaxb() {
-        super(XmlDataCollectionConfig.class, XmlDataCollectionConfig.class,"XML Data Collection Configuration");
+        super(XmlDataCollectionConfig.class, "XML Data Collection Configuration");
     }
 
     /* (non-Javadoc)
@@ -80,6 +80,14 @@ public class XmlDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<XmlDat
     public XmlDataCollection getDataCollectionByIndex(int idx) {
         XmlDataCollectionConfig config = getContainer().getObject();
         return config.getXmlDataCollections().get(idx);
+    }
+
+    /* (non-Javadoc)
+     * @see org.opennms.protocols.xml.dao.XmlDataCollectionConfigDao#getConfig()
+     */
+    @Override
+    public XmlDataCollectionConfig getConfig() {
+        return getContainer().getObject();
     }
 
     /* (non-Javadoc)

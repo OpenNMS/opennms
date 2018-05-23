@@ -82,7 +82,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     private static boolean m_loaded = false;
 
     public WmiPeerFactory() {
-        super(WmiConfig.class, WmiConfig.class,"WMI peer configuration");
+        super(WmiConfig.class, "WMI peer configuration");
     }
 
     /**
@@ -92,7 +92,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      *                Thrown if the specified config file cannot be read
      */
     WmiPeerFactory(final String configFile) {
-        this();
+        super(WmiConfig.class, "WMI peer configuration");
         setConfigResource(new FileSystemResource(configFile));
     }
 
@@ -100,7 +100,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * Create a PollOutagesConfigFactory using the specified Spring resource.
      */
     public WmiPeerFactory(final Resource resource) {
-        this();
+        super(WmiConfig.class, "WMI peer configuration");
         setConfigResource(resource);
     }
 
@@ -172,6 +172,10 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
     @Override
     public WmiConfig translateConfig(WmiConfig config) {
         return config;
+    }
+
+    public WmiConfig getConfig() {
+        return super.getObject();
     }
 
     /**

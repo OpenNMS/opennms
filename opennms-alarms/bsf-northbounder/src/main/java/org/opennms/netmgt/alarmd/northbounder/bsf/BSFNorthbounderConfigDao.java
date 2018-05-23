@@ -51,7 +51,7 @@ public class BSFNorthbounderConfigDao extends AbstractJaxbConfigDao<BSFNorthboun
      * Instantiates a new BSF northbounder configuration DAO.
      */
     public BSFNorthbounderConfigDao() {
-        super(BSFNorthbounderConfig.class, BSFNorthbounderConfig.class, "Config for BSF Northbounder");
+        super(BSFNorthbounderConfig.class, "Config for BSF Northbounder");
     }
 
     /* (non-Javadoc)
@@ -60,6 +60,15 @@ public class BSFNorthbounderConfigDao extends AbstractJaxbConfigDao<BSFNorthboun
     @Override
     protected BSFNorthbounderConfig translateConfig(BSFNorthbounderConfig config) {
         return config;
+    }
+
+    /**
+     * Gets the BSF northbounder configuration.
+     *
+     * @return the configuration object
+     */
+    public BSFNorthbounderConfig getConfig() {
+        return getContainer().getObject();
     }
 
     /**

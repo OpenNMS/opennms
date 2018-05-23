@@ -57,7 +57,7 @@ public class DataCollectionConfigResourceTest {
     public static class TestDataCollectionConfigDao extends AbstractJaxbConfigDao<DatacollectionConfig,DatacollectionConfig> implements DataCollectionConfigDao {
 
         public TestDataCollectionConfigDao() {
-            super(DatacollectionConfig.class, DatacollectionConfig.class,"data-collection");
+            super(DatacollectionConfig.class, "data-collection");
         }
 
         @Override

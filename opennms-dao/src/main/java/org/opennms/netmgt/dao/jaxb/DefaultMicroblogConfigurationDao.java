@@ -58,7 +58,17 @@ public class DefaultMicroblogConfigurationDao extends AbstractJaxbConfigDao<Micr
      * <p>Constructor for DefaultMicroblogConfigurationDao.</p>
      */
     public DefaultMicroblogConfigurationDao() {
-        super(MicroblogConfiguration.class, MicroblogConfiguration.class, "Microblog Configuration");
+        super(MicroblogConfiguration.class, "Microblog Configuration");
+    }
+
+    /**
+     * <p>getConfig</p>
+     *
+     * @return a {@link org.opennms.netmgt.config.microblog.MicroblogConfiguration} object.
+     */
+    @Override
+    public MicroblogConfiguration getConfig() {
+        return getContainer().getObject();
     }
 
     /** {@inheritDoc} */

@@ -47,7 +47,6 @@
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-persistence</feature>
-                                <feature>opennms-config-proxy</feature>
                                 <feature>opennms-spring-extender</feature>
                                 <feature>opennms-core-ipc-sink-camel-server</feature>
 
@@ -276,11 +275,6 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>shell</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.distributed</groupId>
-            <artifactId>org.opennms.features.distributed.config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

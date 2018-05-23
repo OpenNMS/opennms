@@ -33,7 +33,6 @@ import java.util.Objects;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
-import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
@@ -150,22 +149,6 @@ public class ScvEnabledRestClientImpl implements RestClient {
         responseString = EntityUtils.toString(entity);
         response.close();
         return responseString;
-    }
-
-    @Override
-    public String getConfiguration(String simpleConfigClassName) throws Exception {
-        final HttpGet httpGet = new HttpGet(url.toExternalForm() + "/rest/config?configType=" + simpleConfigClassName);
-        try (CloseableHttpResponse response = getResponse(httpGet)) {
-            final StatusLine statusLine = response.getStatusLine();
-            if (statusLine.getStatusCode() == 200) {
-                final HttpEntity entity = response.getEntity();
-                return EntityUtils.toString(entity);
-            }
-            if (statusLine.getStatusCode() == 404) {
-                return null;
-            }
-            throw new Exception("Server sent an unexpected response: " + statusLine);
-        }
     }
 
 }

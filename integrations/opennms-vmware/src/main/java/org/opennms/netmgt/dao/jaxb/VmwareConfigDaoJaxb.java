@@ -48,7 +48,7 @@ public class VmwareConfigDaoJaxb extends AbstractJaxbConfigDao<VmwareConfig, Vmw
      * Default constructor
      */
     public VmwareConfigDaoJaxb() {
-        super(VmwareConfig.class, VmwareConfig.class,"Vmware Configuration");
+        super(VmwareConfig.class, "Vmware Configuration");
     }
 
     /**

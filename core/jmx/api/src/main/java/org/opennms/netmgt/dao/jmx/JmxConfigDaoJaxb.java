@@ -40,7 +40,7 @@ public class JmxConfigDaoJaxb extends AbstractJaxbConfigDao<JmxConfig, JmxConfig
      * Default constructor
      */
     public JmxConfigDaoJaxb() {
-        super(JmxConfig.class, JmxConfig.class, "Jmx Configuration");
+        super(JmxConfig.class, "Jmx Configuration");
     }
 
     /**

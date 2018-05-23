@@ -57,7 +57,7 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
     private static final Logger LOG = LoggerFactory.getLogger(WSManDataCollectionConfigDaoJaxb.class);
 
     public WSManDataCollectionConfigDaoJaxb() {
-        super(WsmanDatacollectionConfig.class, WsmanDatacollectionConfig.class,"WS-Man Data Collection Configuration",
+        super(WsmanDatacollectionConfig.class, "WS-Man Data Collection Configuration",
                 Paths.get("etc", "wsman-datacollection-config.xml"),
                 Paths.get("etc", "wsman-datacollection.d"));
     }
@@ -73,6 +73,11 @@ public class WSManDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigD
             target = new WsmanDatacollectionConfig();
         }
         return target.merge(source);
+    }
+
+    @Override
+    public WsmanDatacollectionConfig getConfig() {
+        return getObject();
     }
 
     @Override

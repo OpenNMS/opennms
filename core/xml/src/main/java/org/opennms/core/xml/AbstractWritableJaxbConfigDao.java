@@ -50,8 +50,8 @@ public abstract class AbstractWritableJaxbConfigDao<K,V> extends AbstractJaxbCon
     private final Lock m_readLock = m_globalLock.readLock();
     private final Lock m_writeLock = m_globalLock.writeLock();
 
-    public AbstractWritableJaxbConfigDao(final Class<K> entityClass, final Class<V> configClass, final String description) {
-        super(entityClass, configClass, description);
+    public AbstractWritableJaxbConfigDao(final Class<K> entityClass, final String description) {
+        super(entityClass, description);
     }
 
     public Lock getReadLock() {

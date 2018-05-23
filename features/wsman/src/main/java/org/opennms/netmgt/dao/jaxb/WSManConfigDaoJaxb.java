@@ -43,7 +43,12 @@ import org.opennms.netmgt.dao.WSManConfigDao;
 public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, WsmanConfig> implements WSManConfigDao {
 
     public WSManConfigDaoJaxb() {
-        super(WsmanConfig.class, WsmanConfig.class, "WS-Man Configuration");
+        super(WsmanConfig.class, "WS-Man Configuration");
+    }
+
+    @Override
+    public WsmanConfig getConfig() {
+        return getContainer().getObject();
     }
 
     @Override

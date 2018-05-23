@@ -90,7 +90,7 @@ public class Telemetryd implements SpringServiceDaemon {
             throw new IllegalStateException(NAME + " is already started.");
         }
         LOG.info("{} is starting.", NAME);
-        final TelemetrydConfiguration config = telemetrydConfigDao.getConfig();
+        final TelemetrydConfiguration config = telemetrydConfigDao.getContainer().getObject();
         final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
 
         for (Protocol protocol : config.getProtocols()) {

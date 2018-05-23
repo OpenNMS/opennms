@@ -80,7 +80,7 @@ public class DefaultDataCollectionConfigDao extends AbstractJaxbConfigDao<Dataco
     private Map<String, ResourceType> resourceTypes = new HashMap<String, ResourceType>();
 
     public DefaultDataCollectionConfigDao() {
-        super(DatacollectionConfig.class, DatacollectionConfig.class,"data-collection");
+        super(DatacollectionConfig.class, "data-collection");
     }
 
     @Override

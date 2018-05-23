@@ -37,20 +37,20 @@ import org.opennms.features.reporting.model.LocalReports;
 import org.opennms.features.reporting.model.Report;
 import org.opennms.netmgt.dao.api.DatabaseReportConfigDao;
 
-public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalReports, LocalReports>
+public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalReports, List<Report>>
         implements DatabaseReportConfigDao {
 
     /**
      * <p>Constructor for DefaultDatabaseReportConfigDao.</p>
      */
     public DefaultDatabaseReportConfigDao() {
-        super(LocalReports.class, LocalReports.class,"Database Report Configuration");
+        super(LocalReports.class, "Database Report Configuration");
     }
 
     /** {@inheritDoc} */
     @Override
-    public LocalReports translateConfig(LocalReports reports) {
-        return reports;
+    public List<Report> translateConfig(LocalReports reports) {
+        return Collections.unmodifiableList(reports.getReportList());
     }
 
     /** {@inheritDoc} */
@@ -82,15 +82,15 @@ public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalR
     }
 
     private Report getReport(String name) {
-
-        for(Report report : getReports()) {
+        
+        for(Report report : getContainer().getObject()) {
             if (name.equals(report.getId())) {
                 return report;
             }
         }
-
+        
         return null;
-
+        
     }
 
     /**
@@ -100,7 +100,9 @@ public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalR
      */
     @Override
     public List<Report> getReports() {
-        return Collections.unmodifiableList(getConfig().getReportList());
+        
+        return getContainer().getObject();
+    
     }
     
     /**
@@ -110,14 +112,14 @@ public class DefaultDatabaseReportConfigDao extends AbstractJaxbConfigDao<LocalR
      */
     @Override
     public List<Report> getOnlineReports() {
-
+        
         List<Report> onlineReports = new ArrayList<>();
-        for(Report report : getReports()) {
+        for(Report report : getContainer().getObject()) {
             if (report.isOnline()) {
                 onlineReports.add(report);
             }
         }
-
+        
         return onlineReports;
         
     }

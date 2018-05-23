@@ -51,7 +51,17 @@ public class VmwareCimDatacollectionConfigDaoJaxb extends AbstractJaxbConfigDao<
      * Default constructor
      */
     public VmwareCimDatacollectionConfigDaoJaxb() {
-        super(VmwareCimDatacollectionConfig.class, VmwareCimDatacollectionConfig.class, "Vmware Cim Data Collection Configuration");
+        super(VmwareCimDatacollectionConfig.class, "Vmware Cim Data Collection Configuration");
+    }
+
+    /**
+     * Returns the loaded config object.
+     *
+     * @return the current config object
+     */
+    @Override
+    public VmwareCimDatacollectionConfig getConfig() {
+        return getContainer().getObject();
     }
 
     /**

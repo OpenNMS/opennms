@@ -48,7 +48,7 @@ import org.springframework.util.Assert;
  */
 abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfigDao<Outages, Outages> implements PollOutagesConfig {
     public PollOutagesConfigManager() {
-        super(Outages.class, Outages.class,"poll outage configuration");
+        super(Outages.class, "poll outage configuration");
     }
 
     /** {@inheritDoc} */
@@ -82,11 +82,6 @@ abstract public class PollOutagesConfigManager extends AbstractWritableJaxbConfi
         } finally {
             getReadLock().unlock();
         }
-    }
-
-    @Override
-    public Outages getConfig() {
-        return getObject();
     }
 
     /**

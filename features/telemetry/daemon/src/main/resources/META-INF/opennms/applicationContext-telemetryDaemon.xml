@@ -16,6 +16,10 @@
   <context:annotation-config />
   <tx:annotation-driven/>
 
+  <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
+  </bean>
+
   <bean id="daemon" class="org.opennms.netmgt.telemetry.daemon.Telemetryd" />
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">

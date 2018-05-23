@@ -1222,16 +1222,6 @@
         <bundle>mvn:org.opennms.container/spring-extender/${project.version}</bundle>
     </feature>
 
-    <!-- TODO MVR this is distributed only and should probably go somewhere else -->
-    <feature name="opennms-config-proxy" description="OpenNMS :: Config :: Proxy" version="${project.version}">
-        <feature>opennms-core</feature>
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
-        <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.config/${project.version}</bundle>
-    </feature>
 
     <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
         <details>Feature definition to start all required bundles related to *flow-support.</details>

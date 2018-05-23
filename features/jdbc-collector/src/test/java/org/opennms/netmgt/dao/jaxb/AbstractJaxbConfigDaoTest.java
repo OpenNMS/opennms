@@ -86,7 +86,7 @@ public class AbstractJaxbConfigDaoTest extends TestCase {
     
     public static class TestJaxbConfigDao extends AbstractJaxbConfigDao<JdbcDataCollectionConfig, JdbcDataCollectionConfig> {
         public TestJaxbConfigDao() {
-            super(JdbcDataCollectionConfig.class, JdbcDataCollectionConfig.class,"jdbc data collection configuration");
+            super(JdbcDataCollectionConfig.class, "jdbc data collection configuration");
         }
         
         @Override
@@ -95,7 +95,7 @@ public class AbstractJaxbConfigDaoTest extends TestCase {
         }
         
         public JdbcDataCollectionConfig getDataCollectionConfig() {
-            return getConfig();
+            return getContainer().getObject();
         }
     }
 }

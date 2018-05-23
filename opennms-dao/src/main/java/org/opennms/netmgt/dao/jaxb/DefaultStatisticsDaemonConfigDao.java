@@ -53,7 +53,7 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractJaxbConfigDao<Stat
      * <p>Constructor for DefaultStatisticsDaemonConfigDao.</p>
      */
     public DefaultStatisticsDaemonConfigDao() {
-        super(StatisticsDaemonConfiguration.class, StatsdConfig.class, "statistics daemon configuration");
+        super(StatisticsDaemonConfiguration.class, "statistics daemon configuration");
     }
     
     /** {@inheritDoc} */
@@ -62,6 +62,10 @@ public class DefaultStatisticsDaemonConfigDao extends AbstractJaxbConfigDao<Stat
         return new StatsdConfig(config);
     }
     
+    private StatsdConfig getConfig() {
+        return getContainer().getObject();
+    }
+
     /**
      * <p>getReports</p>
      *

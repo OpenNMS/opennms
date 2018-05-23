@@ -70,7 +70,7 @@ public class JMXDataCollectionConfigDao extends AbstractMergingJaxbConfigDao<Jmx
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
 
     public JMXDataCollectionConfigDao() {
-        super(JmxDatacollectionConfig.class, JmxDatacollectionConfig.class, "JMX Data Collection Configuration",
+        super(JmxDatacollectionConfig.class, "JMX Data Collection Configuration",
                 Paths.get("etc", "jmx-datacollection-config.xml"),
                 Paths.get("etc", "jmx-datacollection-config.d"));
     }
@@ -88,6 +88,10 @@ public class JMXDataCollectionConfigDao extends AbstractMergingJaxbConfigDao<Jmx
             }
         }
         return config;
+    }
+
+    public JmxDatacollectionConfig getConfig() {
+        return getObject();
     }
 
     @Override

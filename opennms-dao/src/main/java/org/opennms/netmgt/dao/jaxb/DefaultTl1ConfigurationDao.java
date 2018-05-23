@@ -49,7 +49,7 @@ public class DefaultTl1ConfigurationDao extends AbstractJaxbConfigDao<Tl1dConfig
      * <p>Constructor for DefaultTl1ConfigurationDao.</p>
      */
     public DefaultTl1ConfigurationDao() {
-        super(Tl1dConfiguration.class, Tl1dConfiguration.class, "TL1d configuration");
+        super(Tl1dConfiguration.class, "TL1d configuration");
     }
 
     /* (non-Javadoc)

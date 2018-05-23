@@ -23,7 +23,6 @@
     </feature>
 
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
-        <feature>opennms-config-proxy</feature>
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
     </feature>

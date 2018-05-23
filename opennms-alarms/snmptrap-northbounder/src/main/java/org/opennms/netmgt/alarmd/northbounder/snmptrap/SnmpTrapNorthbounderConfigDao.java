@@ -55,7 +55,7 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
      * Instantiates a new SNMP Trap northbounder configuration DAO.
      */
     public SnmpTrapNorthbounderConfigDao() {
-        super(SnmpTrapNorthbounderConfig.class, SnmpTrapNorthbounderConfig.class, "Config for SNMP Trap Northbounder");
+        super(SnmpTrapNorthbounderConfig.class, "Config for SNMP Trap Northbounder");
     }
 
     /* (non-Javadoc)
@@ -96,6 +96,15 @@ public class SnmpTrapNorthbounderConfigDao extends AbstractJaxbConfigDao<SnmpTra
             m_configDirectory = new File(sb.toString());
         }
         return m_configDirectory;
+    }
+
+    /**
+     * Gets the SNMP Trap northbounder configuration.
+     *
+     * @return the configuration object
+     */
+    public SnmpTrapNorthbounderConfig getConfig() {
+        return getContainer().getObject();
     }
 
     /**

@@ -148,17 +148,4 @@
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-config-proxy" description="Minion :: Config :: Proxy" version="${project.version}">
-        <feature>opennms-core</feature>
-        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
-        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
-        <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
-        <bundle>mvn:org.opennms.features.minion/core-api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.persistence/org.opennms.features.persistence.config/${project.version}</bundle>
-
-        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
-
-    </feature>
 </features>

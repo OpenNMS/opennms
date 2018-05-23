@@ -51,7 +51,7 @@ public class EmailNorthbounderConfigDao extends AbstractJaxbConfigDao<EmailNorth
      * Instantiates a new Email northbounder configuration DAO.
      */
     public EmailNorthbounderConfigDao() {
-        super(EmailNorthbounderConfig.class, EmailNorthbounderConfig.class,"Config for E-mail Northbounder");
+        super(EmailNorthbounderConfig.class, "Config for E-mail Northbounder");
     }
 
     /* (non-Javadoc)

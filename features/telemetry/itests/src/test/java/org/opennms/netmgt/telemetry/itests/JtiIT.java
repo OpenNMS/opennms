@@ -55,7 +55,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.jti.JtiGpbAdapter;
-import org.opennms.netmgt.telemetry.config.dao.DefaultTelemetrydConfigDao;
+import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.Adapter;
 import org.opennms.netmgt.telemetry.config.model.Filter;
 import org.opennms.netmgt.telemetry.config.model.Listener;
@@ -96,7 +96,7 @@ import com.google.common.io.Resources;
 public class JtiIT {
 
     @Autowired
-    private DefaultTelemetrydConfigDao telemetrydConfigDao;
+    private TelemetrydConfigDao telemetrydConfigDao;
 
     @Autowired
     private Telemetryd telemetryd;

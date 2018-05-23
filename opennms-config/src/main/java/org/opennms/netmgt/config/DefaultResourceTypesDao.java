@@ -41,7 +41,7 @@ import org.opennms.netmgt.config.datacollection.ResourceTypes;
 public class DefaultResourceTypesDao extends AbstractMergingJaxbConfigDao<ResourceTypes, ResourceTypes> implements ResourceTypesDao {
 
     public DefaultResourceTypesDao() {
-        super(ResourceTypes.class, ResourceTypes.class, "Resource Type Definitions",
+        super(ResourceTypes.class, "Resource Type Definitions",
                 Paths.get("etc", "resource-types.d"));
     }
 

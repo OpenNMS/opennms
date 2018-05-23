@@ -475,7 +475,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />
   </bean>
 
-  <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.DefaultTelemetrydConfigDao">
+  <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
   </bean>
 

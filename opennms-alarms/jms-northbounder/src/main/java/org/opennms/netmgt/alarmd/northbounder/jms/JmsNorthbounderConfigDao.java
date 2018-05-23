@@ -42,7 +42,7 @@ public class JmsNorthbounderConfigDao extends AbstractJaxbConfigDao<JmsNorthboun
      * Instantiates a new JMX northbounder configuration DAO.
      */
     public JmsNorthbounderConfigDao() {
-        super(JmsNorthbounderConfig.class, JmsNorthbounderConfig.class,"Config for JMS Northbounder");
+        super(JmsNorthbounderConfig.class, "Config for JMS Northbounder");
     }
 
     /* (non-Javadoc)

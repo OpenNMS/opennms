@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,9 +28,17 @@
 
 package org.opennms.netmgt.telemetry.config.dao;
 
-import org.opennms.core.xml.JaxbConfigDao;
+import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
 
-public interface TelemetrydConfigDao extends JaxbConfigDao<TelemetrydConfiguration> {
+public class TelemetrydConfigDao extends AbstractJaxbConfigDao<TelemetrydConfiguration, TelemetrydConfiguration> {
 
+    public TelemetrydConfigDao() {
+        super(TelemetrydConfiguration.class, "Telemetryd configuration");
+    }
+
+    @Override
+    protected TelemetrydConfiguration translateConfig(TelemetrydConfiguration config) {
+        return config;
+    }
 }

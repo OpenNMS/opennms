@@ -54,7 +54,7 @@ public class DefaultSnmpHwInventoryAdapterConfigDao extends AbstractJaxbConfigDa
      * The Constructor.
      */
     public DefaultSnmpHwInventoryAdapterConfigDao() {
-        super(HwInventoryAdapterConfiguration.class, HwInventoryAdapterConfiguration.class,"hardware-inventory-adapter-configuration");
+        super(HwInventoryAdapterConfiguration.class, "hardware-inventory-adapter-configuration");
     }
 
     /* (non-Javadoc)
@@ -62,7 +62,7 @@ public class DefaultSnmpHwInventoryAdapterConfigDao extends AbstractJaxbConfigDa
      */
     @Override
     public HwInventoryAdapterConfiguration getConfiguration() {
-        return getConfig();
+        return getContainer().getObject();
     }
 
     /* (non-Javadoc)
