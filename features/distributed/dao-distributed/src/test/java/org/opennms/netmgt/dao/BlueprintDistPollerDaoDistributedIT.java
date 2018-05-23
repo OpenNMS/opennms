@@ -37,6 +37,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -52,7 +53,7 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
     @SuppressWarnings("rawtypes")
     @Override
     protected void addServicesOnStartup( Map<String, KeyValueHolder<Object, Dictionary>> services ) {
-        services.put( MinionIdentity.class.getName(), new KeyValueHolder<Object, Dictionary>(new MinionIdentity() {
+        MinionIdentity identity = new MinionIdentity() {
             @Override
             public String getId() {
                 return DistPollerDao.DEFAULT_DIST_POLLER_ID;
@@ -66,7 +67,10 @@ public class BlueprintDistPollerDaoDistributedIT extends CamelBlueprintTest {
             public String getType() {
                 return SystemType.Minion.name();
             }
-        }, new Properties()));
+        };
+
+        services.put(MinionIdentity.class.getName(), new KeyValueHolder<>(identity, new Properties()));
+        services.put(Identity.class.getName(), new KeyValueHolder<>(identity, new Properties()));
     }
 
     // The location of our Blueprint XML file to be used for testing
