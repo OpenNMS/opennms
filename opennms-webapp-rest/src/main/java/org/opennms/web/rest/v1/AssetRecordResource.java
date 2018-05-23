@@ -30,12 +30,14 @@ package org.opennms.web.rest.v1;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -101,7 +103,9 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria
+            , @Context final HttpServletRequest request
+            , final MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
@@ -128,6 +132,8 @@ public class AssetRecordResource extends OnmsRestService {
         }
         if (modified) {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
+            assetRecord.setLastModifiedBy(request.getRemoteUser());
+            assetRecord.setLastModifiedDate(new Date());
             assetRecord.setNode(node);
             m_assetRecordDao.saveOrUpdate(assetRecord);
             try {
