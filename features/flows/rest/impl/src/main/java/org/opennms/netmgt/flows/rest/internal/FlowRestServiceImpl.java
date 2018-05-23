@@ -98,52 +98,25 @@ public class FlowRestServiceImpl implements FlowRestService {
     }
 
     @Override
-    public List<FlowNodeSummary> getFlowExporters(int limit, UriInfo uriInfo) {
-        final Set<Integer> nodeIds = waitForFuture(flowRepository.getExportersWithFlows(limit,
-                getFiltersFromQueryString(uriInfo.getQueryParameters())));
-        return transactionOperations.execute(status -> nodeIds.stream()
-                .map(nodeDao::get)
-                .filter(Objects::nonNull)
+    public List<FlowNodeSummary> getFlowExporters() {
+        return transactionOperations.execute(status -> this.nodeDao.findAllHavingFlows().stream())
                 .map(n -> new FlowNodeSummary(n.getId(),
                         n.getForeignId(), n.getForeignSource(), n.getLabel(),
                         n.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toList())))
                 .sorted(Comparator.comparingInt(FlowNodeSummary::getId))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList());
     }
 
     @Override
-    public FlowNodeDetails getFlowExporter(String nodeCriteria, int limit, UriInfo uriInfo) {
-        final List<Filter> filters = getFiltersFromQueryString(uriInfo.getQueryParameters());
-        // Always filter for the exporter node
-        filters.add(new ExporterNodeFilter(new NodeCriteria(nodeCriteria)));
-        // Retrieve all the matching SNMP interface ids
-        final Set<Integer> snmpInterfaceIds = waitForFuture(flowRepository.getSnmpInterfaceIdsWithFlows(limit, filters));
-        // Build up the node details
-        final FlowNodeDetails nodeDetails = transactionOperations.execute(status -> {
-            final OnmsNode node = nodeDao.get(nodeCriteria);
-            if (node == null) {
-                // No matching node
-                return null;
-            }
+    public FlowNodeDetails getFlowExporter(Integer nodeId) {
+        final List<FlowSnmpInterface> ifaces = transactionOperations.execute(status -> this.snmpInterfaceDao.findAllHavingFlows(nodeId)).stream()
+                .map(iface -> new FlowSnmpInterface(iface.getIfIndex(),
+                            iface.getIfName(),
+                            iface.getIfAlias(),
+                            iface.getIfDescr()))
+                .collect(Collectors.toList());
 
-            final List<FlowSnmpInterface> flowSnmpInterfaces = snmpInterfaceIds.stream().map(ifIndex -> {
-                final FlowSnmpInterface flowSnmpInterface = new FlowSnmpInterface(ifIndex);
-                flowSnmpInterface.setIfIndex(ifIndex);
-                final OnmsSnmpInterface snmpInterface = snmpInterfaceDao.findByNodeIdAndIfIndex(node.getId(), ifIndex);
-                if (snmpInterface != null) {
-                    // Set the ifName and ifDescr if we found a match in the database
-                    flowSnmpInterface.setIfName(snmpInterface.getIfName());
-                    flowSnmpInterface.setIfDescr(snmpInterface.getIfDescr());
-                }
-                return flowSnmpInterface;
-            }).collect(Collectors.toList());
-
-            return new FlowNodeDetails(node.getId(), flowSnmpInterfaces);
-        });
-        if (nodeDetails == null) {
-            throw new BadRequestException("No such node " + nodeCriteria);
-        }
-        return nodeDetails;
+        return new FlowNodeDetails(nodeId, ifaces);
     }
 
     @Override
