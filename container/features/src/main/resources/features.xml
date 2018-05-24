@@ -626,7 +626,8 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-aws-sqs</feature>
       <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.aws-sqs-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.client/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc-api" description="OpenNMS :: Core :: IPC :: RPC :: API" version="${project.version}">
