@@ -618,7 +618,8 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-kafka</feature>
       <feature>opennms-core-camel</feature>
-      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.client/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-aws-sqs" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl." version="${project.version}">
