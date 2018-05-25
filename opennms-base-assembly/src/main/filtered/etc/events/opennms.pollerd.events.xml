@@ -457,8 +457,8 @@
       <descr>&lt;p>Service %service% was deleted from interface
             %interface%, associated with Node ID# %nodeid%.&lt;/p>
             &lt;p>When a service is deleted from an interface, it is
-            due to extended downtime of that service of over seven (7)
-            days.&lt;/p> &lt;p>If a previously deleted service
+            due to extended downtime model configured in pollerd
+            configuration.&lt;/p> &lt;p>If a previously deleted service
             becomes active again on an interface, it will be re-added to
             the OpenNMS database as a new occurrence of that service and
             will be disassociated with any historic outages.&lt;/p></descr>
