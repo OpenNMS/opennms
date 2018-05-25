@@ -28,10 +28,14 @@
 
 package org.opennms.web.utils;
 
+import static org.opennms.web.utils.UriInfoUtils.hasKey;
+
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-public class QueryParametersBuilder {
+public abstract class QueryParametersBuilder {
+
+    private QueryParametersBuilder() {}
 
     public static QueryParameters buildFrom(UriInfo uriInfo) {
         return buildFrom(uriInfo.getQueryParameters());
@@ -39,13 +43,13 @@ public class QueryParametersBuilder {
 
     public static QueryParameters buildFrom(MultivaluedMap<String, String> params) {
         final QueryParameters queryParameters = new QueryParameters();
-        if (params.containsKey("limit") && params.getFirst("limit") != null && !"".equals(params.getFirst("limit").trim())) {
+        if (hasKey(params, "limit")) {
             queryParameters.setLimit(Integer.valueOf(params.getFirst("limit").trim()));
         }
-        if (params.containsKey("offset") && params.getFirst("offset") != null && !"".equals(params.getFirst("offset").trim())) {
+        if (hasKey(params, "offset")) {
             queryParameters.setOffset(Integer.valueOf(params.getFirst("offset").trim()));
         }
-        if (params.containsKey("orderBy") && params.getFirst("orderBy") != null && !"".equals(params.getFirst("orderBy").trim())) {
+        if (hasKey(params, "orderBy")) {
             String orderBy = params.getFirst("orderBy").trim();
             String order = params.getFirst("order");
             if (order != null) {

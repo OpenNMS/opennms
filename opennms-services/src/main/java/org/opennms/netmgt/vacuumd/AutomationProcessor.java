@@ -55,7 +55,6 @@ import org.opennms.netmgt.config.vacuumd.Assignment;
 import org.opennms.netmgt.config.vacuumd.AutoEvent;
 import org.opennms.netmgt.config.vacuumd.Automation;
 import org.opennms.netmgt.config.vacuumd.Trigger;
-import org.opennms.netmgt.events.api.EventParameterUtils;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Schedule;
@@ -545,9 +544,9 @@ public class AutomationProcessor implements ReadyRunnable {
             m_actionEvent = actionEvent;
             
             if (actionEvent != null) {
-                m_assignments = actionEvent.getAssignments().parallelStream().map(a -> {
-                    return new EventAssignment(a);
-                }).collect(Collectors.toList());
+                m_assignments = actionEvent.getAssignments().parallelStream()
+                    .map(EventAssignment::new)
+                    .collect(Collectors.toList());
             } else {
                 m_assignments = null;
             }

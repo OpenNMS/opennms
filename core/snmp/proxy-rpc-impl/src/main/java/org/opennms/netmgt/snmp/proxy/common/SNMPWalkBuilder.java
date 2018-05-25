@@ -51,7 +51,7 @@ public class SNMPWalkBuilder extends AbstractSNMPRequestBuilder<List<SnmpResult>
     protected List<SnmpResult> processResponse(SnmpMultiResponseDTO response) {
         return response.getResponses().stream()
                 .findFirst()
-                .map(res -> res.getResults())
+                .map(SnmpResponseDTO::getResults)
                 .orElse(Collections.emptyList());
     }
 }

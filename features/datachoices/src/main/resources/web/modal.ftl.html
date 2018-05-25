@@ -5,7 +5,7 @@
                 <h4 class="modal-title">Help Improve OpenNMS</h4>
             </div>
             <div class="modal-body">
-                <p>Please opt-in to send anonymous OpenNMS usage statistics to <a target="_blank" href="https://stats.opennms.org">OpenNMS Statistics</a>. This will help us improve your OpenNMS software and you can change this setting at anytime from the Admin menu.<p>
+                <p>Please opt-in to send anonymous OpenNMS usage statistics to <a target="_blank" href="https://stats.opennms.org">OpenNMS Statistics</a>. This will help us improve your OpenNMS software and you can change this setting at anytime from the Admin menu.</p>
 				<div class="panel panel-default">
 				    <div class="panel-heading" role="tab" id="headingThree">
 				      <h4 class="panel-title">
@@ -34,7 +34,7 @@
 (function(){
     $(document).ready(function() {
     	$('#datachoices-preview').on('show.bs.collapse', function () {
-    		$.get('datachoices')
+    		$.get('rest/datachoices')
     		  .done(function(data) {
     			  $('#datachoices-preview-content').html("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
     		  })
@@ -50,10 +50,10 @@
    			$('#datachoices-enable').focus();
  		});
     	$('#datachoices-enable').click(function() {
-    		$.post('datachoices?action=enable');
+    		$.post('rest/datachoices?action=enable');
     	});
     	$('#datachoices-disable').click(function() {
-    		$.post('datachoices?action=disable');
+    		$.post('rest/datachoices?action=disable');
     	});
     	<#if showOnLoad>
     	$('#datachoices-modal').modal({

@@ -149,7 +149,7 @@ public class KSCEditorIT extends OpenNMSSeleniumTestCase {
         clickElementByXpath("//button[text()='View']");
         findElementByXpath("//h3[text()='Custom View: Smoke Test Report 1']");
         findElementByXpath("//div[contains(@class, 'graph-container')]");
-        findElementByXpath("//img[contains(@class, 'graphImg')]");
+        findElementByXpath("//div[contains(@class, 'graph-container')]//canvas");
     }
 
     protected void editExistingReport() throws Exception {

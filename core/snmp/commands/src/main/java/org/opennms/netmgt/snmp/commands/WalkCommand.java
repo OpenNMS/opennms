@@ -77,7 +77,7 @@ public class WalkCommand implements Action {
     public Object execute() throws Exception {
         LOG.debug("snmp:walk {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
-                    .map(oid -> SnmpObjId.get(oid))
+                    .map(SnmpObjId::get)
                     .collect(Collectors.toList());
         final SnmpAgentConfig agent = snmpAgentConfigFactory.getAgentConfig(InetAddress.getByName(m_host), m_location);
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)

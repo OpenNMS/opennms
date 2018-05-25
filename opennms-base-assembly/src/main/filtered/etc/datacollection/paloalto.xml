@@ -58,11 +58,10 @@
       <mibObj oid=".1.3.6.1.4.1.25461.2.1.2.3.8" instance="0" alias="panSessionSslProxy" type="Integer32"/>
    </group>
    <systemDef name="Palo Alto PA-4050">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.1</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.1</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -73,11 +72,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-4020">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.2</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.2</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -88,11 +86,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-2050">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.3</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.3</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -103,11 +100,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-2020">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.4</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.4</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -118,11 +114,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-4060">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.5</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.5</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -133,11 +128,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-500">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.6</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.6</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -148,7 +142,7 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto Panorama">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.7</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.7</sysoid>
       <collect>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -157,11 +151,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-5060">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.8</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.8</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -172,11 +165,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-5050">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.9</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.9</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -187,11 +179,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-5020">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.11</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.11</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -202,10 +193,9 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-200">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.12</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.12</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -216,11 +206,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-3050">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.17</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.17</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -231,11 +220,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-3020">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.18</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.18</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -246,11 +234,10 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-3060">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.19</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.19</sysoid>
       <collect>
          <includeGroup>pan-global-protect</includeGroup>
          <includeGroup>pan-vsys-sessions</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
@@ -261,11 +248,11 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto PA-VM">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.29</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.29</sysoid>
       <collect/>
    </systemDef>
    <systemDef name="Palo Alto M-100">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.30</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.30</sysoid>
       <collect>
          <includeGroup>pan-log-collector-disk</includeGroup>
          <includeGroup>pan-log-collector-rate</includeGroup>
@@ -278,7 +265,7 @@
       </collect>
    </systemDef>
    <systemDef name="Palo Alto M-500">
-      <sysoidMask>.1.3.6.1.4.1.25461.2.3.35</sysoidMask>
+      <sysoid>.1.3.6.1.4.1.25461.2.3.35</sysoid>
       <collect>
          <includeGroup>pan-log-collector-disk</includeGroup>
          <includeGroup>pan-log-collector-rate</includeGroup>

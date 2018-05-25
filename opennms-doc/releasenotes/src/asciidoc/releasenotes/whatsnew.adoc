@@ -1,0 +1,169 @@
+[[releasenotes-22]]
+== What's New in OpenNMS Horizon 22
+
+=== System Requirements
+
+* *Java 8*: OpenNMS Horizon 22 requires Java 8 as the runtime environment.
+  To run Horizon 22, we recommend the most recent version of Oracle JDK 8 for your platform.
+* *PostgreSQL 9.3 or higher*: Horizon 22 requires PostgreSQL 9.3 or higher.
+
+=== Important Upgrade Notes
+
+* All collectors using the `JMXSecureCollector`, `MX4JCollector` or `JBossCollector` must be migrated to use the `Jsr160Collector` instead.
+* All monitors using the `JBossMonitor` or `JMXSecureMonitor` must be migrated to use the `Jsr160Monitor` instead.
+* All detectors using the `JBossDetector` or `MX4JDetector` must be migrated to use the `Jsr160Detector` instead.
+* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
+* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
+* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
+* All JavaScript code in OpenNMS has been unified under a single build system. While we did quite a bit of testing of the resulting changes, it's possible something was missed. If you run into any JS-related issues in the UI please link:https://issues.opennms.org/[create an issue].
+* The default database access implementation is now using _HikariCP_, rather than _C3P0_. This will probably not affect you (other than give better peformance) but could affect unusual workloads.
+* Backshift is now the default rendering engine for graphs.
+
+[[releasenotes-22-opennms-es-rest]]
+==== Configuration of the _Elasticsearch ReST plugin_
+
+The configuration of the _Elasticsearch ReST plugin_ has been changed.
+Some properties have new defaults and have been renamed.
+It is now also possible to define index settings and provide a index strategy to have more control over the index creation.
+
+[[releasenotes-22-opennms-es-rest-properties]]
+===== Changed Properties with new defaults
+
+Some properties of the plugin have changed.
+The following table shows the old (no longer supported) and the new property name, as well as the new default, which is used if the configuration is not updated manually.
+Please update the configuration file `etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg` accordingly.
+For more details on how to configure the plugin to use elasticsearch refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
+
+[options="header, autowidth"]
+|===
+| Old parameter | New parameter | Default Value
+
+| `elasticsearchUrl`
+| `elasticUrl`
+| `http://localhost:9200`
+
+| `esusername`
+| `globalElasticUser`
+| `-`
+
+| `espassword`
+| `globalElasticPassword`
+| `-`
+
+| `timeout`
+| `connTimeout`
+| `5000`
+
+| `socketTimeout`
+| `readTimeout`
+| `30000`
+
+|===
+
+Besides that the following default values have been changed:
+
+[options="header, autowidth"]
+|===
+| Parameter | Old default | New default
+
+| `batchSize`
+| `1
+| `200`
+
+| `batchInterval`
+| `0`
+| `500`
+
+|`connTimeout`
+| `3000`
+| `5000`
+
+| `readTimeout`
+| `3000`
+| `30000`
+
+|===
+
+[[releasenotes-22-opennms-es-rest-index-properties]]
+===== Index Properties
+
+It is now possible to define index-related properties, e.g. the number of shards and replicas.
+It is also possible to define a property  `elasticIndexStrategy` to determine if a `hourly`, `daily`, `monthly` or `yearly` index should be created.
+It defaults to `monthly`.
+
+For more details please refer to link:../guide-admin/index.html#ga-elasticsearch-integration-configuration[Configure Elasticsearch].
+
+=== Breaking Changes
+
+* `JMXSecureCollector`, `MX4JCollector` and `JBossCollector` have been removed. Please use the `Jsr160Collector` instead.
+* `JBossMonitor` and `JMXSecureMonitor` have been removed. Use the `Jsr160Monitor` instead.
+* `JBossDetector` and `MX4JDetector` have been removed. Use the `Jsr160Detector` instead.
+* The configuration of the _Elasticsearch ReST plugin_ has changed. Please refer to <<releasenotes-22-opennms-es-rest-properties>>.
+* The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
+* The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
+* By default the data collection gathered data twice from SNMP agents supporting the MIB-II with 32bit and 64bit counter on network interfaces.
+  The default 32bit interface counters are no disabled by default and only 64bit counters are collected.
+
+IMPORTANT: If you have legacy SNMP agents which only support 32bit interface counters, the data collection for this interfaces will stop after you upgraded to 22.0.0.
+  To get them enabled, you have to create a data collection package and add the `mib2-interfaces` data collection group manually for this devices with the example below.
+
+.Example to collect 32bit MIB-2 Interface counter from nodes in a category configured in collectd-configuration.xml
+[source, xml]
+----
+<package name="Legacy-MIB2-Interfaces" remote="false">
+    <filter>categoryName == 'Legacy-MIB2-Interfaces'</filter>
+    <include-range begin="1.1.1.1" end="254.254.254.254"/>
+    <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+
+    <service name="SNMP" interval="300000" user-defined="false" status="on">
+        <parameter key="collection" value="legacy-32bit-mib2"/>
+        <parameter key="thresholding-enabled" value="true"/>
+    </service>
+</package>
+----
+
+.Load the Legacy MIB-2 Interfaces metrics configured in the datacollection-config.xml
+[source, xml]
+----
+<snmp-collection name="legacy-32bit-mib2" snmpStorageFlag="select">
+    <rrd step="300">
+        <rra>RRA:AVERAGE:0.5:1:2016</rra>
+        <rra>RRA:AVERAGE:0.5:12:1488</rra>
+        <rra>RRA:AVERAGE:0.5:288:366</rra>
+        <rra>RRA:MAX:0.5:288:366</rra>
+        <rra>RRA:MIN:0.5:288:366</rra>
+    </rrd>
+    <include-collection dataCollectionGroup="Legacy_MIB2-Interfaces"/>
+    <include-collection dataCollectionGroup="REF_MIB2-Interfaces"/>
+</snmp-collection>
+----
+
+=== New Features
+
+==== Telemetryd (Drift)
+
+The focus of OpenNMS Horizon 22 is the introduction of support for consuming and indexing flow data in a new subsystem called _Telemetryd_ (code name: Drift).
+
+Telemetryd supports receiving real-time telemetry data in a variety of formats, including JTI (Junos Telemetry Interface), Netflow 5 and 9, IPFIX, SFlow, and Cisco NX-OS.
+Data is then stored in Elasticsearch for display using the OpenNMS Grafana-based companion application, link:https://docs.opennms.org/helm/releases/latest/helm/latest/welcome/introduction.html[Helm].
+
+Accessing flow data from Helm requires Helm 2.0 or higher.
+
+==== SNMP Session Tracking
+
+To aid in debugging problematic SNMP hosts, an SNMP session tracker/logger has been added.
+
+By default it will print a summary of the top 10 oldest threads every 60 seconds to the SNMP debug log.
+
+It can be enabled by adding `-Dorg.opennms.core.snmp.trackSessions=true` in `opennms.properties` (or a file in `opennms.properties.d`).
+
+To change how often the summary is printed, set `-Dorg.opennms.core.snmp.trackSummaryDelay=number-of-seconds`.
+
+To change how many sessions are posted to the debug log, set `-Dorg.opennms.core.snmp.trackSummaryLimit=number-of-sessions`.
+
+=== New/Updated Device Support (Data Collection and/or Traps)
+
+* AsyncOS Mail
+* Cisco Virtual CallManager
+* Dell (OpenManage cooling devices, temperature probe, and power usage)
+* Net-SNMP disk I/O and load

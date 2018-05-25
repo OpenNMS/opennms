@@ -251,14 +251,14 @@ public class AggregationTest {
 
     public static class SinkModuleWithIdentityAggregate extends AbstractSinkModule<UDPPacketLog, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+        public AggregationPolicy<UDPPacketLog, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
             return new IdentityAggregationPolicy<>();
         }
     }
 
     private static class SinkModuleWithMappingAggregate extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
             return new MappingAggregationPolicy<UDPPacket, UDPPacketLog>() {
                 @Override
                 public UDPPacketLog map(UDPPacket message) {
@@ -270,8 +270,8 @@ public class AggregationTest {
 
     private static class SinkModuleWithAggregateNoInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return COMPLETION_SIZE;
@@ -297,14 +297,19 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
 
     private static class SinkModuleWithAggregateAndInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return COMPLETION_SIZE;
@@ -330,14 +335,19 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
 
     private static class SinkModuleWithAggregateAndAggressiveInterval extends AbstractSinkModule<UDPPacket, UDPPacketLog> {
         @Override
-        public AggregationPolicy<UDPPacket, UDPPacketLog> getAggregationPolicy() {
-            return new AggregationPolicy<UDPPacket, UDPPacketLog>() {
+        public AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog> getAggregationPolicy() {
+            return new AggregationPolicy<UDPPacket, UDPPacketLog, UDPPacketLog>() {
                 @Override
                 public int getCompletionSize() {
                     return 1;
@@ -364,6 +374,11 @@ public class AggregationTest {
                         return oldPacketLog;
                     }
                 }
+
+                @Override
+                public UDPPacketLog build(UDPPacketLog accumulator) {
+                    return accumulator;
+                }
             };
         }
     }
@@ -381,12 +396,12 @@ public class AggregationTest {
         }
 
         @Override
-        public String marshal(T message) {
+        public byte[] marshal(T message) {
             return null;
         }
 
         @Override
-        public T unmarshal(String message) {
+        public T unmarshal(byte[] bytes) {
             return null;
         }
 

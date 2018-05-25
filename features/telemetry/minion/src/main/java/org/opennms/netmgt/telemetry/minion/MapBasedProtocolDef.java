@@ -28,12 +28,15 @@
 
 package org.opennms.netmgt.telemetry.minion;
 
-import org.opennms.netmgt.telemetry.ipc.ProtocolDefinition;
+import org.opennms.netmgt.telemetry.config.api.Package;
+import org.opennms.netmgt.telemetry.config.api.Protocol;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class MapBasedProtocolDef implements ProtocolDefinition {
+public class MapBasedProtocolDef implements Protocol {
     private final String name;
     private final Optional<Integer> threads;
     private final Optional<Integer> queueSize;
@@ -71,5 +74,10 @@ public class MapBasedProtocolDef implements ProtocolDefinition {
     @Override
     public Optional<Integer> getQueueSize() {
         return threads;
+    }
+
+    @Override
+    public List<? extends Package> getPackages() {
+        return Collections.emptyList();
     }
 }

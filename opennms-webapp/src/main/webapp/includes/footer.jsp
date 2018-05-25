@@ -54,53 +54,65 @@
 --%>
 
 <%@page language="java"
-	contentType="text/html"
-	session="true"
-	import="java.io.File"
+        contentType="text/html"
+        session="true"
+        import="java.io.File,
+                org.opennms.core.resource.Vault,
+                org.opennms.web.servlet.XssRequestWrapper"
 %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-  <!-- End of Content -->
-  <div class="spacer"><!-- --></div>
+<%
+    XssRequestWrapper req = new XssRequestWrapper(request);
+%>
+
+<!-- End of Content -->
+<div class="spacer"><!-- --></div>
 <%-- This </div> tag is unmatched in this file (its matching tag is in the
      header), so we hide it in a JSP code fragment so the Eclipse HTML
      validator doesn't complain.  See bug #1728. --%>
 <%= "</div>" %><!-- id="content" -->
 
 <c:choose>
-  <c:when test="${param.quiet == 'true'}">
-    <!-- Not displaying footer -->
-  </c:when>
+    <c:when test="${param.quiet == 'true'}">
+        <!-- Not displaying footer -->
+    </c:when>
 
-  <c:otherwise>
-    <!-- Footer -->
+    <c:otherwise>
+        <!-- Footer -->
 
-    <div id="prefooter"></div>
+        <div id="prefooter"></div>
 
-    <div id="footer">
-      <p>
-        OpenNMS <a href="support/about.jsp">Copyright</a> &copy; 2002-2018
-	    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
-	    OpenNMS&reg; is a registered trademark of
-        <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
-	  </p>
-    </div>
-  </c:otherwise>
+        <div id="footer">
+            <p>
+                OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2018
+                <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+                OpenNMS&reg; is a registered trademark of
+                <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
+                <%
+                    if (req.getUserPrincipal() != null) {
+                        out.print(" - Version: " + Vault.getProperty("version.display"));
+                    }
+                %>
+
+            </p>
+        </div>
+    </c:otherwise>
 </c:choose>
 
 <%
-  File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
-  if (extraIncludes.exists()) {
-	  for (File file : extraIncludes.listFiles()) {
-		  if (file.isFile()) {
-			  pageContext.setAttribute("file", "custom-footer/" + file.getName());
+    File extraIncludes = new File(request.getSession().getServletContext().getRealPath("includes") + File.separator + "custom-footer");
+    if (extraIncludes.exists()) {
+        for (File file : extraIncludes.listFiles()) {
+            if (file.isFile()) {
+                pageContext.setAttribute("file", "custom-footer/" + file.getName());
 %>
-<jsp:include page="${file}" />
+<jsp:include page="${file}"/>
 <%
-		  }
-	  }
-  }
+            }
+        }
+    }
 %>
 <%-- The </body> and </html> tags are unmatched in this file (the matching
      tags are in the header), so we hide them in JSP code fragments so the

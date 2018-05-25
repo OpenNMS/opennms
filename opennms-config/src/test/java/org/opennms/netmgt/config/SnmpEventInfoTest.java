@@ -50,7 +50,6 @@ import org.junit.Test;
 import org.opennms.core.network.IPAddress;
 import org.opennms.core.network.IPAddressRange;
 import org.opennms.core.network.IPAddressRangeSet;
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.config.snmp.Definition;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.xml.event.Event;

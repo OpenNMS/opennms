@@ -84,8 +84,7 @@ public abstract class IPLike {
         if (address.indexOf('.') != -1) {
             return AddressType.IPv4;
         }
-
-        return null;
+        throw new IllegalArgumentException("Cannot determine whether address is a IPv4 or IPv6 address");
     }
 
     private static String[] parseIPv4Address(final String address) {

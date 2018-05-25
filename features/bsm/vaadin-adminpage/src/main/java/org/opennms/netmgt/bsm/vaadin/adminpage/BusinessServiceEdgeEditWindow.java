@@ -162,7 +162,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_childServiceComponent.setFilteringMode(FilteringMode.CONTAINS);
         m_childServiceComponent.addItems(businessServiceManager.getFeasibleChildServices(businessService).stream()
                                                                .sorted(Ordering.natural()
-                                                                               .onResultOf(s -> BusinessServiceEditWindow.describeBusinessService(s)))
+                                                                               .onResultOf(BusinessServiceEditWindow::describeBusinessService))
                                                                .collect(Collectors.toList()));
         m_childServiceComponent.getItemIds().forEach(item -> m_childServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeBusinessService((BusinessService) item)));
         formLayout.addComponent(m_childServiceComponent);
@@ -180,7 +180,7 @@ public class BusinessServiceEdgeEditWindow extends Window {
         m_ipServiceComponent.setFilteringMode(FilteringMode.CONTAINS);
         m_ipServiceComponent.addItems(businessServiceManager.getAllIpServices().stream()
                                                             .sorted(Ordering.natural()
-                                                                            .onResultOf(s -> BusinessServiceEditWindow.describeIpService(s)))
+                                                                            .onResultOf(BusinessServiceEditWindow::describeIpService))
                                                             .collect(Collectors.toList()));
         m_ipServiceComponent.getItemIds().forEach(item -> m_ipServiceComponent.setItemCaption(item, BusinessServiceEditWindow.describeIpService((IpService) item)));
         formLayout.addComponent(m_ipServiceComponent);

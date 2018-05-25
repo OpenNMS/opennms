@@ -115,7 +115,7 @@ public class DroolsNorthbounderManager implements Northbounder, InitializingBean
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
     }
 
     /**

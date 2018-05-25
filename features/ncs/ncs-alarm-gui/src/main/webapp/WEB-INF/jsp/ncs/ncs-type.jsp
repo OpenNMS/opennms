@@ -107,8 +107,6 @@ LI.Collapsed ul
 </style>
 <script type="text/javascript">
 
-Array.prototype.indexOf = IndexOf;
-
 //Toggles between two classes for an element
 function ToggleClass(element, firstClass, secondClass, event)
 {
@@ -133,20 +131,6 @@ function ToggleClass(element, firstClass, secondClass, event)
     
     element.className = classes.join(" ");
     
-}
-
-//Finds the index of an item in an array
-function IndexOf(item)
-{
-    for (var i=0; i < this.length; i++)
-    {        
-        if (this[i] == item)
-        {
-            return i;
-        }
-    }
-    
-    return -1;
 }
 
 //The toggle event handler for each expandable/collapsable node

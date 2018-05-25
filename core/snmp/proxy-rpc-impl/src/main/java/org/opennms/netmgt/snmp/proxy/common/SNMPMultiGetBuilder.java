@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
+import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 
 public class SNMPMultiGetBuilder extends AbstractSNMPRequestBuilder<List<SnmpValue>> {
@@ -52,7 +53,7 @@ public class SNMPMultiGetBuilder extends AbstractSNMPRequestBuilder<List<SnmpVal
     protected List<SnmpValue> processResponse(SnmpMultiResponseDTO response) {
         return response.getResponses().stream()
                     .flatMap(res -> res.getResults().stream())
-                    .map(res -> res.getValue())
+                    .map(SnmpResult::getValue)
                     .collect(Collectors.toList());
     }
 }

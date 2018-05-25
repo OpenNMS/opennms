@@ -32,7 +32,6 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.AmazonSQSException;
 import com.codahale.metrics.JmxReporter;
 import org.opennms.core.ipc.common.aws.sqs.AmazonSQSManager;
-import org.opennms.core.ipc.common.aws.sqs.AmazonSQSQueueException;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -43,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * A factory for creating AwsRemoteMessageDispatcher objects.
@@ -72,7 +72,7 @@ public class AmazonSQSRemoteMessageDispatcherFactory extends AbstractMessageDisp
             LOG.trace("dispatch({}): sending message {}", topic, message);
             try {
                 final String queueUrl = awsSqsManager.getSinkQueueUrlAndCreateIfNecessary(module.getId());
-                final String messageId = awsSqsManager.sendMessage(queueUrl, module.marshal((T)message));
+                final String messageId = awsSqsManager.sendMessage(queueUrl, new String(module.marshal((T)message), StandardCharsets.UTF_8));
                 LOG.debug("SQS Message with ID {} has been successfully sent to {}", messageId, queueUrl);
             } catch (InterruptedException ex) {
                 LOG.warn("Interrupted while trying to send message. Aborting.", ex);

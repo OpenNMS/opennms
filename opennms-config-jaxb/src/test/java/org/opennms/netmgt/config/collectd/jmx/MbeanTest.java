@@ -65,6 +65,7 @@ public class MbeanTest extends XmlTestNoCastor<Mbean> {
         final Mbean bean = new Mbean();
         bean.setName("JVM MemoryPool:Eden Space");
         bean.setObjectname("java.lang:type=MemoryPool,name=Eden Space");
+        bean.setResourceType("jvm-default");
         final Attrib a = new Attrib();
         a.setName("CollectionUsageThreshold");
         a.setAlias("EdenCollUseThrsh");
@@ -88,7 +89,7 @@ public class MbeanTest extends XmlTestNoCastor<Mbean> {
 
         return Arrays.asList(new Object[][] { {
             bean,
-            "<mbean name=\"JVM MemoryPool:Eden Space\" objectname=\"java.lang:type=MemoryPool,name=Eden Space\">"
+            "<mbean name=\"JVM MemoryPool:Eden Space\" objectname=\"java.lang:type=MemoryPool,name=Eden Space\" resource-type=\"jvm-default\">"
             + "<attrib name=\"CollectionUsageThreshold\" alias=\"EdenCollUseThrsh\" type=\"gauge\" />"
             + "<comp-attrib name=\"PeakUsage\" alias=\"EdenPeakUsage\" type=\"Composite\">"
             + "<comp-member name=\"used\" alias=\"EdenPeakUsageUsed\" type=\"gauge\" />"

@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>21.1.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-services</artifactId>
@@ -223,6 +223,10 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
     </dependency>
     <dependency>
@@ -396,6 +400,16 @@
     <dependency>
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.client-rpc</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.collectors</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.test-api</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

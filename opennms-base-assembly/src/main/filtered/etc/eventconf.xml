@@ -57,6 +57,7 @@
    <event-file>events/Aruba.Switch.events.xml</event-file>
    <event-file>events/Aruba.events.xml</event-file>
    <event-file>events/Ascend.events.xml</event-file>
+   <event-file>events/ASYNCOS-MAIL-MIB.events.xml</event-file>
    <event-file>events/Avocent.ACS.events.xml</event-file>
    <event-file>events/Avocent.ACS5000.events.xml</event-file>
    <event-file>events/Avocent.AMX5000.events.xml</event-file>

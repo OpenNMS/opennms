@@ -44,7 +44,7 @@ public class Slf4jLogAdapter implements LogAdapter {
 
     private final Logger logger;
 
-    public Slf4jLogAdapter(Class clazz) {
+    public Slf4jLogAdapter(Class<?> clazz) {
       this.logger = LoggerFactory.getLogger(clazz);
     }
 

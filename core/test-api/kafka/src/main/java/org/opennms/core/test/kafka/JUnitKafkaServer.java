@@ -122,6 +122,7 @@ public class JUnitKafkaServer extends ExternalResource {
         properties.put("port", String.valueOf(kafkaPort.get()));
         properties.put("zookeeper.connect", zkServer.getConnectString());
         properties.put("offsets.topic.replication.factor", (short)1);
+        properties.put("listeners", "PLAINTEXT://" + "localhost:" + String.valueOf(kafkaPort.get()));
 
         System.err.println("Kafka server properties: " + properties);
         kafkaConfig = new KafkaConfig(properties);
@@ -130,7 +131,7 @@ public class JUnitKafkaServer extends ExternalResource {
         final Buffer<KafkaMetricsReporter> metricsList = scala.collection.JavaConversions.asScalaBuffer(kmrList);
         kafkaServer = new KafkaServer(kafkaConfig, new SystemTime(), Option.<String>empty(), metricsList);
         kafkaServer.startup();
-        await().atMost(1, MINUTES).until(() -> getBrokerMetadatas(), hasSize(greaterThanOrEqualTo(1)));
+        await().atMost(1, MINUTES).until(this::getBrokerMetadatas, hasSize(greaterThanOrEqualTo(1)));
 
         System.err.println("Kafka Address: " + getKafkaConnectString());
         System.err.println("Zookeeper Address: " + getZookeeperConnectString());
@@ -155,7 +156,7 @@ public class JUnitKafkaServer extends ExternalResource {
     private List<BrokerMetadata> getBrokerMetadatas() {
         ZkClient zkClient = new ZkClient(getZookeeperConnectString(), 1000, 1000, ZKStringSerializer$.MODULE$);
         ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(getZookeeperConnectString()), false);
-        return JavaConversions.seqAsJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
+        return JavaConversions.asJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
     }
 
     private static int getAvailablePort(final AtomicInteger current, final int max) {

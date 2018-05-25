@@ -16,6 +16,11 @@
  */
 package org.opennms.container.web.felix.base.internal.service;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeListener;
 
@@ -44,13 +49,38 @@ public final class HttpServiceFactory
     @Override
     public HttpServiceImpl getService(Bundle bundle, ServiceRegistration<HttpServiceImpl> reg)
     {
-        return new HttpServiceImpl(bundle, this.context, this.handlerRegistry, this.attributeListener,
-            this.sharedContextAttributes);
+        return new HttpServiceImpl(
+                bundle, this.context, this.handlerRegistry, this.attributeListener,
+                this.sharedContextAttributes, getRestAliases());
     }
 
     @Override
     public void ungetService(Bundle bundle, ServiceRegistration<HttpServiceImpl> reg, HttpServiceImpl service)
     {
         service.unregisterAll();
+    }
+
+    protected static Set<String> getRestAliases() {
+        final String aliases = System.getProperty("org.opennms.features.osgi.bridge.restAliases", "/rest,/api/v2");
+        return getRestAliases(aliases);
+    }
+
+    protected static Set<String> getRestAliases(String aliases) {
+        if (aliases == null) {
+            return new HashSet<>();
+        }
+        return Arrays.stream(aliases.split(","))
+                .filter(alias -> alias != null && !alias.trim().isEmpty())
+                .map(alias -> {
+                    alias = alias.trim();
+                    if (!alias.startsWith("/")) {
+                        alias = "/" + alias;
+                    }
+                    if (!"/".equals(alias) && alias.endsWith("/")) {
+                        alias = alias.substring(0, alias.lastIndexOf("/"));
+                    }
+                    return alias;
+                })
+                .collect(Collectors.toSet());
     }
 }

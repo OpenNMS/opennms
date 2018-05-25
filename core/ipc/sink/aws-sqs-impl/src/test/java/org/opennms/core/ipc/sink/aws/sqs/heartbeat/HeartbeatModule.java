@@ -69,7 +69,7 @@ public class HeartbeatModule extends AbstractXmlSinkModule<Heartbeat,Heartbeat> 
      * @see org.opennms.core.ipc.sink.api.SinkModule#getAggregationPolicy()
      */
     @Override
-    public AggregationPolicy<Heartbeat, Heartbeat> getAggregationPolicy() {
+    public AggregationPolicy<Heartbeat, Heartbeat, Heartbeat> getAggregationPolicy() {
         // No aggregation
         return null;
     }

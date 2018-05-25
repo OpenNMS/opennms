@@ -29,17 +29,13 @@
 package org.opennms.web.rest.support;
 
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.SecurityContext;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertNotNull;

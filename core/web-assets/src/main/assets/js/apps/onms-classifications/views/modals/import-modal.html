@@ -1,0 +1,68 @@
+<div class="modal-header">
+  <h4 class="modal-title">Import Classification Rules</h4>
+</div>
+<div class="modal-body">
+  <form class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-3 control-label">Group</label>
+      <div class="col-sm-9">
+        <p class="form-control-static">{{group.name}}</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-3 control-label" for="importFile">Select file to import</label>
+      <div class="col-sm-9">
+        <div class="input-group">
+          <span class="input-group-btn">
+              <button ng-click="openFileDialogue()" class="btn btn-default" type="button">Choose</button>
+          </span>
+          <input ng-click="openFileDialogue()" type="text" id="importFile" class="form-control" placeholder='Choose a file...' ng-model="fileToUpload.name"/>
+          <span class="input-group-btn">
+             <button class="btn btn-default" type="button" ng-click="resetInput()">Reset</button>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-3 col-sm-9">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="containsHeader"> Contains header
+          </label>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" ng-model="deleteExistingRules"> Delete existing rules
+          </label>
+        </div>
+      </div>
+    </div>
+    <input id="fileToImport" type="file" style="visibility:hidden; display:none" onchange="angular.element(this).scope().setFile(this)" />
+  </form>
+  <div class="alert alert-danger" ng-show="error">
+    {{error}}
+  </div>
+  <div ng-show="failedRows.length > 0">
+    <pagination model="pagination" position="bottom" on-change="navigateWithinErrors">
+      <table class="table table-bordered table-striped">
+        <tbody>
+        <tr>
+          <th class="col-md-1 text-nowrap">Row Index</th>
+          <th class="col-md-11 text-nowrap">Error Message</th>
+        </tr>
+
+        <tr ng-repeat="failedRow in failedRows">
+          <td class="text-nowwrap">{{failedRow['index']}}</td>
+          <td class="text-nowwrap">{{failedRow['message']}}</td>
+        </tr>
+        </tbody>
+      </table>
+    </pagination>
+  </div>
+</div>
+<div class="modal-footer">
+  <div style="display: inline" title="Please confirm deletion">
+    <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" title="Upload Rule">Upload</button>
+  </div>
+  <button type="button" class="btn btn-default" ng-click="$dismiss('cancelled by user')" >Cancel</button>
+</div>

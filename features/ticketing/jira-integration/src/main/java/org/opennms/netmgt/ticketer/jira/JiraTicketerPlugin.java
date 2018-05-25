@@ -353,7 +353,7 @@ public class JiraTicketerPlugin implements Plugin {
         }
 
         // Inform if required attribute has not been set
-        final List<CimFieldInfo> requiredFieldsNotSet = fields.stream().filter(f -> f.isRequired()).filter(f -> !populatedFields.contains(f)).collect(Collectors.toList());
+        final List<CimFieldInfo> requiredFieldsNotSet = fields.stream().filter(CimFieldInfo::isRequired).filter(f -> !populatedFields.contains(f)).collect(Collectors.toList());
         if (!requiredFieldsNotSet.isEmpty()) {
             final String missingFields = requiredFieldsNotSet.stream().map(f -> String.format("id: %s, name: %s", f.getId(), f.getName())).collect(Collectors.joining(", "));
             LOG.warn("Not all required (custom) jira fields have been set. The following are unset: {}", missingFields);

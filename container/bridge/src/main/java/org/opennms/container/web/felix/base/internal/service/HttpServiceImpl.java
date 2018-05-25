@@ -16,16 +16,25 @@
  */
 package org.opennms.container.web.felix.base.internal.service;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import javax.servlet.*;
+import javax.servlet.Filter;
+import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextAttributeListener;
+import javax.servlet.ServletException;
 
 import org.apache.felix.http.api.ExtHttpService;
 import org.opennms.container.web.felix.base.internal.context.ExtServletContext;
 import org.opennms.container.web.felix.base.internal.context.ServletContextManager;
-import org.opennms.container.web.felix.base.internal.handler.*;
+import org.opennms.container.web.felix.base.internal.handler.FilterHandler;
+import org.opennms.container.web.felix.base.internal.handler.HandlerRegistry;
+import org.opennms.container.web.felix.base.internal.handler.RestServletHandler;
+import org.opennms.container.web.felix.base.internal.handler.ServletHandler;
 import org.opennms.container.web.felix.base.internal.logger.SystemLogger;
 import org.osgi.framework.Bundle;
 import org.osgi.service.http.HttpContext;
@@ -40,13 +49,22 @@ public final class HttpServiceImpl
     private final Set<Filter> localFilters = new HashSet<>();
     private final ServletContextManager contextManager;
 
+    /**
+     * Servlet-Path/Aliases for the OpenNMS rest endpoints.
+     * This is required to determine if the rest request must be dispatched to an OSGI endpoint
+     * as all calls are automatically dispatched to OSGI first. With rest calls this would lead to a pre-mature 404.
+     */
+    private final List<String> restServiceAliases = new ArrayList<>();
+
     public HttpServiceImpl(Bundle bundle, ServletContext context, HandlerRegistry handlerRegistry,
-        ServletContextAttributeListener servletAttributeListener, boolean sharedContextAttributes)
+        ServletContextAttributeListener servletAttributeListener, boolean sharedContextAttributes,
+        Set<String> restAliases)
     {
         this.bundle = bundle;
         this.handlerRegistry = handlerRegistry;
-        this.contextManager = new ServletContextManager(this.bundle, context, servletAttributeListener,
-            sharedContextAttributes);
+        this.contextManager = new ServletContextManager(this.bundle, context, servletAttributeListener, sharedContextAttributes);
+
+        this.restServiceAliases.addAll(restAliases);
     }
 
     private ExtServletContext getServletContext(HttpContext context)
@@ -95,10 +113,20 @@ public final class HttpServiceImpl
         if (!isAliasValid(alias)) {
             throw new IllegalArgumentException( "Malformed servlet alias [" + alias + "]");
         }
-        ServletHandler handler = new ServletHandler(getServletContext(context), servlet, alias);
+
+        ServletHandler handler = createHandler(context, servlet, alias);
         handler.setInitParams(initParams);
         this.handlerRegistry.addServlet(handler);
         this.localServlets.add(servlet);
+    }
+
+    // Determine which handler to use. Rest calls must be handled differently
+    private ServletHandler createHandler(HttpContext context, Servlet servlet, String alias) {
+        ExtServletContext extServletContext = getServletContext(context);
+        if (restServiceAliases.contains(alias)) {
+            return new RestServletHandler(extServletContext, servlet, alias, bundle.getBundleContext());
+        }
+        return new ServletHandler(extServletContext, servlet, alias);
     }
 
     @Override

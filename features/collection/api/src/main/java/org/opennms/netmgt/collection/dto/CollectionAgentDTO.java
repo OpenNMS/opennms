@@ -51,9 +51,6 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CollectionAgentDTO implements CollectionAgent {
 
-    @XmlAttribute(name = "type")
-    private int type;
-
     @XmlElement(name = "attribute")
     private List<CollectionAttributeDTO> attributes = new ArrayList<>();
 
@@ -82,9 +79,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     @XmlAttribute(name = "storage-resource-path")
     private String storageResourcePath;
 
-    @XmlAttribute(name = "sys-object-id")
-    private String sysObjectId;
-
     @XmlAttribute(name = "sys-up-time")
     private long sysUpTime;
 
@@ -95,7 +89,6 @@ public class CollectionAgentDTO implements CollectionAgent {
         for (String attribute : agent.getAttributeNames()) {
             setAttribute(attribute, agent.getAttribute(attribute));
         }
-        type = agent.getType();
         address = agent.getAddress();
         storeByForeignSource = agent.isStoreByForeignSource();
         nodeId = agent.getNodeId();
@@ -104,17 +97,7 @@ public class CollectionAgentDTO implements CollectionAgent {
         foreignId = agent.getForeignId();
         location = agent.getLocationName();
         setStorageResourcePath(agent.getStorageResourcePath());
-        sysObjectId = agent.getSysObjectId();
         sysUpTime = agent.getSavedSysUpTime();
-    }
-
-    @Override
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
     }
 
     @Override
@@ -175,11 +158,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     }
 
     @Override
-    public void setSavedIfCount(int ifCount) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public int getNodeId() {
         return nodeId;
     }
@@ -234,15 +212,6 @@ public class CollectionAgentDTO implements CollectionAgent {
     }
 
     @Override
-    public String getSysObjectId() {
-        return sysObjectId;
-    }
-
-    public void setSysObjectId(String sysObjectId) {
-        this.sysObjectId = sysObjectId;
-    }
-
-    @Override
     public long getSavedSysUpTime() {
         return sysUpTime;
     }
@@ -254,18 +223,18 @@ public class CollectionAgentDTO implements CollectionAgent {
 
     @Override
     public String toString() {
-        return String.format("CollectionAgentDTO[type=%d, attributes=%s, address=%s, storeByForeignSource=%s, "
+        return String.format("CollectionAgentDTO[attributes=%s, address=%s, storeByForeignSource=%s, "
                 + "nodeId=%d, nodeLabel=%s, foreignSource=%s, foreignId=%s, location=%s, storageDir=%s, "
                 + "sysObjectId=%s, sysUpTime=%d]",
-                type, attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
-                nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysObjectId, sysUpTime);
+                attributes, address != null ? InetAddrUtils.str(address) : null, storeByForeignSource,
+                nodeId, nodeLabel, foreignSource, foreignId, location, storageResourcePath, sysUpTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(type, attributes, address, storeByForeignSource,
+        return Objects.hash(attributes, address, storeByForeignSource,
                 nodeId, nodeLabel, foreignSource, foreignId, location,
-                storageResourcePath, sysObjectId, sysUpTime);
+                storageResourcePath, sysUpTime);
     }
 
     @Override
@@ -278,8 +247,7 @@ public class CollectionAgentDTO implements CollectionAgent {
             return false;
         }
         CollectionAgentDTO other = (CollectionAgentDTO) obj;
-        return Objects.equals(this.type, other.type) &&
-                Objects.equals(this.attributes, other.attributes) &&
+        return Objects.equals(this.attributes, other.attributes) &&
                 Objects.equals(this.address, other.address) &&
                 Objects.equals(this.storeByForeignSource, other.storeByForeignSource) &&
                 Objects.equals(this.nodeId, other.nodeId) &&
@@ -288,7 +256,6 @@ public class CollectionAgentDTO implements CollectionAgent {
                 Objects.equals(this.foreignId, other.foreignId) &&
                 Objects.equals(this.location, other.location) &&
                 Objects.equals(this.storageResourcePath, other.storageResourcePath) &&
-                Objects.equals(this.sysObjectId, other.sysObjectId) &&
                 Objects.equals(this.sysUpTime, other.sysUpTime);
     }
 }

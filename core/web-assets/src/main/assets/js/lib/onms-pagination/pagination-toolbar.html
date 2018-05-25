@@ -1,0 +1,31 @@
+<div>
+    <!-- Content for pagination -->
+    <div ng-transclude ng-if="position === 'bottom'"></div>
+
+    <!-- Paging controls -->
+    <div class="row">
+        <div class="col-md-6 col-lg-6 col-sm-8" ng-show="(model.totalItems / model.limit) > 1">
+            <div style="margin: 0px;"
+                 uib-pagination
+                 ng-model="model.page"
+                 total-items="model.totalItems"
+                 items-per-page="model.limit"
+                 rotate="true"
+                 boundary-links="true"
+                 max-size="5"
+                 boundary-link-numbers="true"
+                 ng-change="onChange()">
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-6 col-sm-4">
+            <pre class="pull-right" ng-show="model.totalItems == 0">No items found.</pre>
+            <pre class="pull-right" ng-show="model.totalItems > 0">{{model.totalItems / model.page === 1
+            ? "Item " + (model.offset + 1)
+            : "Items " + ((model.page - 1) * model.limit + 1) + " - " + (model.page * model.limit > model.totalItems ? model.totalItems : model.page * model.limit)}} ({{model.totalItems}} total)</pre>
+        </div>
+    </div>
+
+    <!-- Content for pagination -->
+    <div ng-transclude ng-if="position === 'top' || position === undefined"></div>
+
+</div>

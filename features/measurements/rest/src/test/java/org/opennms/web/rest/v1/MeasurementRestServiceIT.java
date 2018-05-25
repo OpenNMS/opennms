@@ -28,6 +28,10 @@
 
 package org.opennms.web.rest.v1;
 
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -50,9 +54,11 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.measurements.api.MeasurementsService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -92,6 +98,9 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
     protected NodeDao m_nodeDao;
 
     @Autowired
+    protected SnmpInterfaceDao m_snmpInterfaceDao;
+
+    @Autowired
     private ServletContext m_context;
 
     @Autowired
@@ -118,6 +127,10 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);
+
+        OnmsSnmpInterface snmpInterface = new OnmsSnmpInterface(node, 12);
+        snmpInterface.setIfName("eth0");
+        snmpInterface.setPhysAddr("04013f75f101");
         m_nodeDao.save(node);
         m_nodeDao.flush();
 
@@ -161,20 +174,38 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
         request.addHeader("Accept", MediaType.APPLICATION_JSON);
         String json = sendRequest(request, 200);
 
-        assertTrue(xml.contains("<columns>"));
-        assertTrue(json.contains("\"columns\":"));
+        assertThat(xml, containsString("<columns>"));
+        assertThat(json, containsString("\"columns\":"));
+    }
+
+    /**
+     * Here we query the same resource as above, but refer to it using the ifIndex
+     * instead of the interface name.
+     */
+    @Test
+    public void canRetrieveMeasurementsUsingIfIndexAlias() throws Exception {
+        final String url = String.format("/measurements/%s/%s",
+                URLEncoder.encode("node[1].interfaceSnmpByIfIndex[12]", StandardCharsets.UTF_8.name()),
+                "ifInOctets");
+
+        final Map<String, String> parameters = Maps.newHashMap();
+        parameters.put("start", Long.toString(1414602000000L));
+        parameters.put("end", Long.toString(1417046400000L));
+
+        final MockHttpServletRequest request = createRequest(m_context, GET, url);
+        request.setParameters(parameters);
+        String xml = sendRequest(request, 200);
+        assertThat(xml, containsString("<columns>"));
     }
 
     @Test
     public void canRetrieveFilters() throws Exception {
         // Retrieve all filters
         String filtersXml = sendRequest(GET, "/measurements/filters", 200);
-        System.err.println("Filters XML: " + filtersXml);
-        assertTrue(filtersXml.contains("Chomp"));
+        assertThat(filtersXml, containsString("Chomp"));
 
         // Retrieve a specific filter by name
         String filterXml = sendRequest(GET, "/measurements/filters/chomp", 200);
-        System.err.println("Filter XML: " + filterXml);
-        assertTrue(filterXml.contains("Chomp"));
+        assertThat(filtersXml, containsString("Chomp"));
     }
 }

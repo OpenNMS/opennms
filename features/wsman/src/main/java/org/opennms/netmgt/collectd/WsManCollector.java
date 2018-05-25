@@ -95,7 +95,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
     private static final Map<String, Class<?>> TYPE_MAP = Collections.unmodifiableMap(Stream.of(
             new SimpleEntry<>(WSMAN_AGENT_CONFIG_KEY, Definition.class),
             new SimpleEntry<>(WSMAN_GROUPS_KEY, Groups.class))
-            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+            .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue)));
 
     private WSManClientFactory m_factory = new CXFWSManClientFactory();
 
@@ -157,7 +157,7 @@ public class WsManCollector extends AbstractRemoteServiceCollector {
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
 
         if (LOG.isDebugEnabled()) {
-            String groupNames = groups.getGroups().stream().map(g -> g.getName()).collect(Collectors.joining(", "));
+            String groupNames = groups.getGroups().stream().map(Group::getName).collect(Collectors.joining(", "));
             LOG.debug("Collecting attributes on {} from groups: {}", agent, groupNames);
         }
 

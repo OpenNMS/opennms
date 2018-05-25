@@ -51,7 +51,9 @@ import com.vaadin.ui.VerticalLayout;
 @SuppressWarnings("serial")
 @Theme("opennms")
 @Title("OpenNMS Surveillance Views")
-@JavaScript({"../../../lib/jquery/dist/jquery.js","../../../lib/bootstrap/dist/js/bootstrap.js"})
+@JavaScript({
+    "theme://../opennms/assets/surveillance-init.vaadin.js"
+})
 public class SurveillanceViewsUI extends UI {
     /**
      * the logger instance

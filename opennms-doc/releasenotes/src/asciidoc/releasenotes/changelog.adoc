@@ -1,0 +1,83 @@
+[[release-22-changelog]]
+=== Changelog
+
+[[releasenotes-changelog-22.0.0]]
+==== Release 22.0.0
+
+Release 22.0.0 is the latest stable release of OpenNMS.
+It contains a large number of bug fixes and enhancements, most notably adding support for real-time telemetry flow processing.
+For a high-level overview of what's changed in OpenNMS 22, see link:http://docs.opennms.org/opennms/releases/22.0.0/releasenotes/releasenotes.html#releasenotes-22[What's New in OpenNMS 22].
+
+The codename for 22.0.0 is _link:http://marvelcinematicuniverse.wikia.com/wiki/Space_Stone[Space]_.
+
+===== Bug
+
+* MockLogAppender.setupLogging() doesn't override default log level (Issue http://issues.opennms.org/browse/NMS-8905[NMS-8905])
+* ONMS starts with broken threshold configuration file (Issue http://issues.opennms.org/browse/NMS-9064[NMS-9064])
+* rescan-exitsing attibute of requisition-def tag in provisiond-configuration.xml is not passed to scanNode() in CoreImportActivities (Issue http://issues.opennms.org/browse/NMS-9492[NMS-9492])
+* Interface delete from a node does not work (Issue http://issues.opennms.org/browse/NMS-9506[NMS-9506])
+* Topology map node icons vanish (IE10, IE11 only) when alarm status unchecked (Issue http://issues.opennms.org/browse/NMS-9614[NMS-9614])
+* Access Denied With Surveillance View In Ops Board (Issue http://issues.opennms.org/browse/NMS-9678[NMS-9678])
+* Topology Default Theme has too many dependencies (Issue http://issues.opennms.org/browse/NMS-9716[NMS-9716])
+* Karaf client shell script fails on missing inc directory (Issue http://issues.opennms.org/browse/NMS-9728[NMS-9728])
+* Release notes are duplicated with every release (Issue http://issues.opennms.org/browse/NMS-9807[NMS-9807])
+* Karaf opennms-es-rest Plugin - Creating OID mappings causing ES index mappings to exceed 1000 (Issue http://issues.opennms.org/browse/NMS-9831[NMS-9831])
+* Enlinkd startup fails due to NPE in BroadcastDomain class (Issue http://issues.opennms.org/browse/NMS-9852[NMS-9852])
+* opennms-flows feature does not depend on opennms-web-api (Issue http://issues.opennms.org/browse/NMS-9865[NMS-9865])
+* Inconsistent handling of keyboard navigation on top menu (Issue http://issues.opennms.org/browse/NMS-9867[NMS-9867])
+* Error message is not cleared in Test Classification Panel (Issue http://issues.opennms.org/browse/NMS-9880[NMS-9880])
+* PageSequenceMonitor broken in Minion (Issue http://issues.opennms.org/browse/NMS-9882[NMS-9882])
+* Cached values interfere with typeahead functionality in "Test Classification" form (Issue http://issues.opennms.org/browse/NMS-9883[NMS-9883])
+* collection:collect command fails with ClassCastException (Issue http://issues.opennms.org/browse/NMS-9885[NMS-9885])
+* Value of ${nodeLabel} for PSM services apparently not eagerly updated (Issue http://issues.opennms.org/browse/NMS-9900[NMS-9900])
+* Thousands of non harmful errors on ipc.log when using Kafka (Issue http://issues.opennms.org/browse/NMS-9910[NMS-9910])
+* JasperStudio extension dependency error (Issue http://issues.opennms.org/browse/NMS-9915[NMS-9915])
+* SNMP Interface Poller shows wrong information on the logs (Issue http://issues.opennms.org/browse/NMS-9917[NMS-9917])
+* Flows API doesn't recognize the exporters (Issue http://issues.opennms.org/browse/NMS-9919[NMS-9919])
+* Possible StackOverflow in DefaultRequestExecutor (Issue http://issues.opennms.org/browse/NMS-9920[NMS-9920])
+* Backshift graph fails to load with jQuery error (Issue http://issues.opennms.org/browse/NMS-9927[NMS-9927])
+* Wrong initial message displayed on AngularJS based tables. (Issue http://issues.opennms.org/browse/NMS-9932[NMS-9932])
+* Alarm favorite link URL does not have AddRefreshHeader-30 applied (Issue http://issues.opennms.org/browse/NMS-9938[NMS-9938])
+* webpack compilation fails on Windows (due to invalid path separator) (Issue http://issues.opennms.org/browse/NMS-9942[NMS-9942])
+* Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
+* Vaadin Maven Plugin fails on Windows (Issue http://issues.opennms.org/browse/NMS-9948[NMS-9948])
+* The JDBC Collector doesn't work (Issue http://issues.opennms.org/browse/NMS-9952[NMS-9952])
+* Correct sysoidmask lines in default datacollection files (Issue http://issues.opennms.org/browse/NMS-9958[NMS-9958])
+* foreign-id with space (%20) at end causes issues with Newts (Issue http://issues.opennms.org/browse/NMS-9961[NMS-9961])
+* Kafka Producer: Alarm datasync does not respect alarm filter (Issue http://issues.opennms.org/browse/NMS-9964[NMS-9964])
+* perfdata-receiver doesn't compile (Issue http://issues.opennms.org/browse/NMS-9967[NMS-9967])
+* Home Page Map does not display node details (Issue http://issues.opennms.org/browse/NMS-10008[NMS-10008])
+* Downtime model documentation is deprecated (Issue http://issues.opennms.org/browse/NMS-10069[NMS-10069])
+* /rest/flows/exporters throws NPE when no flows are found (Issue http://issues.opennms.org/browse/NMS-10134[NMS-10134])
+* Add button is not working in "Add Ranges" in opennms (Issue http://issues.opennms.org/browse/NMS-10135[NMS-10135])
+* Remove Dell Open-Manage from all Net-SNMP devices (Issue http://issues.opennms.org/browse/NMS-10136[NMS-10136])
+* Remove default PoE data collection (Issue http://issues.opennms.org/browse/NMS-10138[NMS-10138])
+* Remove Checkpoint Firewall data collection from all Windows devices (Issue http://issues.opennms.org/browse/NMS-10142[NMS-10142])
+* Remove default data collection for Compaq Insight Manager stats from all Windows Server (Issue http://issues.opennms.org/browse/NMS-10143[NMS-10143])
+* Remove Cisco Call Manager statistics from all Windows Servers (Issue http://issues.opennms.org/browse/NMS-10144[NMS-10144])
+* wrong statement in event description for serviceDeleted (Issue http://issues.opennms.org/browse/NMS-10148[NMS-10148])
+* NPEs when making REST requests to the /flows endpoints when no data is present (Issue http://issues.opennms.org/browse/NMS-10149[NMS-10149])
+
+===== Enhancement
+
+* Installer should check DB time (Issue http://issues.opennms.org/browse/NMS-9448[NMS-9448])
+* Refactor the compatibility matrix in the documentation (Issue http://issues.opennms.org/browse/NMS-9684[NMS-9684])
+* Admin Guide Typos (Issue http://issues.opennms.org/browse/NMS-9707[NMS-9707])
+* Refactor JavaScript Web Assets to Share Code (Issue http://issues.opennms.org/browse/NMS-9761[NMS-9761])
+* Split Help/Support in "Documentation" and "Support" (Issue http://issues.opennms.org/browse/NMS-9771[NMS-9771])
+* Suppress HTTP Basic Auth Requests for AJAX Calls (Issue http://issues.opennms.org/browse/NMS-9783[NMS-9783])
+* Add Ironport AsyncOS Mail Gateway Events (Issue http://issues.opennms.org/browse/NMS-9794[NMS-9794])
+* Monitor Linux disk performance with Net-SNMP by default (Issue http://issues.opennms.org/browse/NMS-9816[NMS-9816])
+* Improve spaces and label in the Test Classification panel (Issue http://issues.opennms.org/browse/NMS-9878[NMS-9878])
+* Improve placeholder in Test Classification field (Issue http://issues.opennms.org/browse/NMS-9879[NMS-9879])
+* Add filtering support to events forwarded to kafka (Issue http://issues.opennms.org/browse/NMS-9898[NMS-9898])
+* Make NodeCache configurable (Issue http://issues.opennms.org/browse/NMS-9931[NMS-9931])
+* Datacollection for Cisco Call Manager has old OID (Issue http://issues.opennms.org/browse/NMS-9936[NMS-9936])
+* Improve performance of newts.indexing to avoid overwhelm Cassandra cluster (Issue http://issues.opennms.org/browse/NMS-9959[NMS-9959])
+* Enhance SSLCertMonitor.java warning message (Issue http://issues.opennms.org/browse/NMS-9962[NMS-9962])
+* Can't receive SNMP v3 Trap (Issue http://issues.opennms.org/browse/NMS-10009[NMS-10009])
+* Enhance AlarmPersisterImpl to support updating acknowledgment values on reduction (Issue http://issues.opennms.org/browse/NMS-10067[NMS-10067])
+* Make interface octet counter 64bit as default instead of 32bit (Issue http://issues.opennms.org/browse/NMS-10139[NMS-10139])
+* Remove overlapping data collections for MIB2-X-Interfaces (Issue http://issues.opennms.org/browse/NMS-10141[NMS-10141])
+* Make Backshift the Default Graph Strategy (Issue http://issues.opennms.org/browse/NMS-10152[NMS-10152])
+

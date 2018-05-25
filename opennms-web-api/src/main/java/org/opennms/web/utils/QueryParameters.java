@@ -48,6 +48,10 @@ public class QueryParameters {
         public boolean isDesc() {
             return desc;
         }
+
+        public boolean isAsc() {
+            return !isDesc();
+        }
     }
 
     private Order order;

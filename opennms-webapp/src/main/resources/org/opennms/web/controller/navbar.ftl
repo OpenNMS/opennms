@@ -95,11 +95,15 @@
               <#if isAdmin || isProvision >
                 <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
               </#if>
-              <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Help/Support</a></li>
+              <#if isAdmin >
+                <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Support</a></li>
+              </#if>
               <#if request.remoteUser?has_content >
                 <li><a name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
                 <li><a name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
               </#if>
+              <li><a name="nav-admin-help" href="${baseHref}help/index.jsp" style="white-space: nowrap">Help</a></li>
+              <li><a name="nav-admin-about" href="${baseHref}about/index.jsp" style="white-space: nowrap">About</a></li>
             </ul>
           </li>
 		</#if>

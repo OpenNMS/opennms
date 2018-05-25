@@ -267,9 +267,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List<String> getTranslationUEIs() {
-        return getConfig().getEventTranslationSpecs().parallelStream().map(ets -> {
-            return ets.getUei();
-        }).distinct().collect(Collectors.toList());
+        return getConfig().getEventTranslationSpecs().parallelStream()
+            .map(EventTranslationSpec::getUei)
+            .distinct().collect(Collectors.toList());
     }
 
     static class TranslationFailedException extends RuntimeException {
@@ -308,9 +308,9 @@ public final class EventTranslatorConfigFactory implements EventTranslatorConfig
     }
 
     private List<TranslationSpec> constructTranslationSpecs() {
-        return getConfig().getEventTranslationSpecs().parallelStream().map(ets -> {
-            return new TranslationSpec(ets);
-        }).collect(Collectors.toList());
+        return getConfig().getEventTranslationSpecs().parallelStream()
+            .map(TranslationSpec::new)
+            .collect(Collectors.toList());
     }
 
     class TranslationSpec {

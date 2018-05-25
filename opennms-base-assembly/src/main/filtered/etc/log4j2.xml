@@ -197,6 +197,7 @@
         <KeyValuePair key="rtc"                  value="DEBUG" />
         <KeyValuePair key="statsd"               value="DEBUG" />
         <KeyValuePair key="scriptd"              value="DEBUG" />
+        <KeyValuePair key="snmp"                 value="DEBUG" />
         <KeyValuePair key="snmp-poller"          value="DEBUG" />
         <KeyValuePair key="syslogd"              value="DEBUG" />
         <KeyValuePair key="telemetryd"           value="DEBUG" />

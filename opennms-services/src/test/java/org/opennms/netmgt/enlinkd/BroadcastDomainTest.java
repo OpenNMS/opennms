@@ -29,7 +29,6 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;

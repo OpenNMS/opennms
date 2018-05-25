@@ -131,8 +131,8 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
     public void refresh() {
         resetContainer();
 
-        getEntities("HostSystem").stream().forEach(e -> addHostSystem(e));
-        getEntities("VirtualMachine").stream().forEach(e -> addVirtualMachine(e));
+        getEntities("HostSystem").stream().forEach(this::addHostSystem);
+        getEntities("VirtualMachine").stream().forEach(this::addVirtualMachine);
     }
 
     private List<OnmsNode> getEntities(String entityType) {
@@ -300,7 +300,7 @@ public class VmwareTopologyProvider extends AbstractTopologyProvider {
 
         Map<String, ParsedEntity> parsedEntities = parseNodeAssets(virtualMachine);
 
-        String vmwareHostSystemId = parsedEntities.values().stream().filter(e -> "host".equals(e.getEntityType())).findFirst().map(e -> e.getEntityId()).orElse(null);
+        String vmwareHostSystemId = parsedEntities.values().stream().filter(e -> "host".equals(e.getEntityType())).findFirst().map(ParsedEntity::getEntityId).orElse(null);
 
         if (vmwareHostSystemId == null) {
             LOG.warn("Cannot find host system id for virtual machine {}/{}", vmwareManagementServer, vmwareManagedObjectId);

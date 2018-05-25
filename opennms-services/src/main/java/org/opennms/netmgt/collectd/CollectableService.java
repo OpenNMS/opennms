@@ -39,14 +39,19 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionFailed;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectionTimedOut;
+import org.opennms.netmgt.collection.api.CollectionUnknown;
+import org.opennms.netmgt.collection.api.CollectionWarning;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
 import org.opennms.netmgt.collection.support.AttributeGroupWrapper;
 import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
 import org.opennms.netmgt.collection.support.CollectionResourceWrapper;
@@ -155,7 +160,7 @@ class CollectableService implements ReadyRunnable {
             Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
             PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
 
-        m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+        m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -195,7 +200,7 @@ class CollectableService implements ReadyRunnable {
     /**
      * <p>getSpecification</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSpecification} object.
+     * @return a {@link org.opennms.netmgt.collection.core.CollectionSpecification} object.
      */
     public CollectionSpecification getSpecification() {
     	return m_spec;
@@ -329,20 +334,14 @@ class CollectableService implements ReadyRunnable {
      */
     @Override
     public void run() {
-        Logging.withPrefix(Collectd.LOG4J_CATEGORY, new Runnable() {
-
-            @Override
-            public void run() {
-                Logging.putThreadContext("service", m_spec.getServiceName());
-                Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
-                Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
-                Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
-                Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
-                Logging.putThreadContext("foreignId", m_agent.getForeignId());
-                Logging.putThreadContext("sysObjectId", m_agent.getSysObjectId());
-                doRun();
-            }
-            
+        Logging.withPrefix(Collectd.LOG4J_CATEGORY, () -> {
+            Logging.putThreadContext("service", m_spec.getServiceName());
+            Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
+            Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
+            Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
+            Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
+            Logging.putThreadContext("foreignId", m_agent.getForeignId());
+            doRun();
         });
     }
 
@@ -635,7 +634,7 @@ class CollectableService implements ReadyRunnable {
 
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
         m_spec.release(m_agent);
-        m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
+        m_agent = DefaultSnmpCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
         m_spec.initialize(m_agent);
     }

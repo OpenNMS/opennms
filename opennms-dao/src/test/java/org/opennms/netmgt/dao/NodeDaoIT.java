@@ -66,6 +66,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PathElement;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -695,5 +696,40 @@ public class NodeDaoIT implements InitializingBean {
     @Transactional
     public void testGetPreviousNodeId() {
         assertEquals(m_populator.getNode1().getId(), m_nodeDao.getPreviousNodeId(m_populator.getNode2().getId()));
+    }
+    
+    @Test
+    @Transactional
+    public void testGetNodeLabelForLocation() {
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "openNMS@Apex");
+        m_nodeDao.saveOrUpdate(node);
+        List<OnmsNode> nodes = m_nodeDao.findByLabelForLocation("openNMS@Apex", m_locationDao.getDefaultLocation().getLocationName());
+        assertEquals(nodes.get(0), node);
+        
+    }
+    
+    @Test
+    @Transactional
+    public void testGetForeignIdForLocation() {
+        //Verify foreignId without specifying location assuming it's only one present
+        OnmsNode node1 = getNode1();
+        node1.setForeignSource("Apex");
+        node1.setForeignId("TheOpenNMSGroup");
+        m_nodeDao.saveOrUpdate(node1);
+        List<OnmsNode> nodes1 = m_nodeDao.findByForeignId("TheOpenNMSGroup");
+        assertEquals(nodes1.get(0), node1);
+        
+        //Verify same foreignId with different locations
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation();
+        location.setLocationName("Apex");
+        location.setMonitoringArea("Apex");
+        m_locationDao.saveOrUpdate(location);
+        OnmsNode node2 = new OnmsNode(location, "openNMS@Apex");
+        node2.setForeignSource("Triangle");
+        node2.setForeignId("TheOpenNMSGroup");
+        m_nodeDao.saveOrUpdate(node2);
+        List<OnmsNode> nodes2 = m_nodeDao.findByForeignIdForLocation("TheOpenNMSGroup", location.getLocationName());
+        assertEquals(nodes2.get(0), node2);
+        
     }
 }

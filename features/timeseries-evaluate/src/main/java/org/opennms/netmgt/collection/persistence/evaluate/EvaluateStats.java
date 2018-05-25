@@ -130,7 +130,7 @@ public class EvaluateStats {
         // Cache Dump, for debugging purposes
         Logging.withPrefix(LOGGING_PREFFIX + LOGGING_SUFFIX, () -> {
             ScheduledExecutorService svc = Executors.newScheduledThreadPool(1);
-            svc.scheduleAtFixedRate(() -> { dumpCache(); }, 0, dumpCacheFreq, TimeUnit.MINUTES);
+            svc.scheduleAtFixedRate(this::dumpCache, 0, dumpCacheFreq, TimeUnit.MINUTES);
         });
     }
 

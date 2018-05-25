@@ -294,7 +294,7 @@ public class MenuBuilder {
 				if (eachChildElement.getCommand() != null) {
 					childMenuItem.setCommand((MenuBar.Command) selectedItem -> {
 						eachChildElement.getCommand().execute(targets, operationContext);
-						hooks.forEach(hook -> hook.run());
+						hooks.forEach(Runnable::run);
 					});
 				}
 			}

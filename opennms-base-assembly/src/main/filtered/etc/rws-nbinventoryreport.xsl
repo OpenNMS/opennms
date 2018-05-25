@@ -985,7 +985,7 @@ li.pagination {
 					</xsl:for-each>
 				</xsl:for-each>
 				        <p><center>
-        OpenNMS <a href="help/about.jsp">Copyright</a> 2002-2009
+        OpenNMS <a href="about/index.jsp">Copyright</a> 2002-2018
             <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
             OpenNMS is a registered trademark of
         <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://www.osgi.org/xmlns/blueprint-ext/v1.1.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0" xsi:schemaLocation=" http://www.osgi.org/xmlns/blueprint/v1.0.0 https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0 http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
  
     <bean id="nrtBroker" class="org.opennms.nrtg.nrtbroker.jms.internal.NrtBrokerJms" >
         <property name="jmsTemplate" ref="jmsTemplate" />

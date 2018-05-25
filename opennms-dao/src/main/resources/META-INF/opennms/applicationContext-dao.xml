@@ -73,6 +73,7 @@
         <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
         <value>org.opennms.netmgt.topology</value>
+        <value>org.opennms.netmgt.flows</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
@@ -471,8 +472,10 @@
       </bean>
     </property>
   </bean>
-  
+ 
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+  
+  <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/> 
 
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

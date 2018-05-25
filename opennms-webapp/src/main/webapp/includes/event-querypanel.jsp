@@ -34,21 +34,6 @@
 	session="true"
 %>
 
-<script type="text/javascript">
-<!--
-function Blank_TextField_Validator()
-{
-  if(document.event_search.msgmatchany.value == "" && document.event_search.relativetime.value == 0)
-     {
-     alert("Please enter an event text query.");
-     document.event_search.msgmatchany.focus();
-     return false;
-     }
-  return true;
-}
--->
-</script>
-
 <form class="form-inline" name="event_search" action="event/query" method="get" onsubmit="return Blank_TextField_Validator()">
     <div class="form-group">
       <label for="msgmatchany">Event Text:&nbsp;</label><input class="form-control" type="text" name="msgmatchany" />

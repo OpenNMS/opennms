@@ -127,6 +127,10 @@
     }
 </style>
 
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="jquery-ui-js" />
+</jsp:include>
+
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
@@ -154,124 +158,121 @@
         }
 
         addOnLoadEvent(function() {
-            require(['jquery', 'jquery-ui-treemap'], function( $ ) {
+            var tooltipDelay = 500;
+            var tooltipFadeIn = 500;
+            var tooltipTimeout;
 
-                var tooltipDelay = 500;
-                var tooltipFadeIn = 500;
-                var tooltipTimeout;
+            function clearAndHideTooltip() {
+                clearTimeout(tooltipTimeout);
+                $(".tooltipbox").hide();
+            }
 
-                function clearAndHideTooltip() {
-                    clearTimeout(tooltipTimeout);
-                    $(".tooltipbox").hide();
+            var mousemoveHandler = function(e, data) {
+                clearAndHideTooltip();
+
+                $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
+
+                var tooltipWidth = $("#tooltipbox").width();
+                var tooltipHeight = $("#tooltipbox").height();
+                var treemapWidth = $("#treemap").width();
+                var treemapHeight = $("#treemap").height();
+
+                if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
+                  $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
+                } else {
+                  $("#tooltipbox").css({ "left" : e.offsetX + 16 });
                 }
 
-                var mousemoveHandler = function(e, data) {
-                    clearAndHideTooltip();
-
-                    $("#tooltipbox").html("<span><p><b>" + data.nodes[0].id + "</b></p></span>");
-
-                    var tooltipWidth = $("#tooltipbox").width();
-                    var tooltipHeight = $("#tooltipbox").height();
-                    var treemapWidth = $("#treemap").width();
-                    var treemapHeight = $("#treemap").height();
-
-                    if (e.offsetX + tooltipWidth + 16 > treemapWidth) {
-                      $("#tooltipbox").css({ "left" : e.offsetX - tooltipWidth - 8 });
-                    } else {
-                      $("#tooltipbox").css({ "left" : e.offsetX + 16 });
-                    }
-
-                    if (e.offsetY + tooltipHeight > treemapHeight) {
-                      $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
-                    } else {
-                      $("#tooltipbox").css({ "top" : e.offsetY });
-                    }
-
-                    tooltipTimeout = setTimeout(function(event){
-                        $("#tooltipbox").fadeIn(tooltipFadeIn);
-                    }, tooltipDelay);
-                };
-
-                var mouseleaveHandler = function (e, data) {
-                    clearAndHideTooltip();
+                if (e.offsetY + tooltipHeight > treemapHeight) {
+                  $("#tooltipbox").css({ "top" : e.offsetY - tooltipHeight });
+                } else {
+                  $("#tooltipbox").css({ "top" : e.offsetY });
                 }
 
+                tooltipTimeout = setTimeout(function(event){
+                    $("#tooltipbox").fadeIn(tooltipFadeIn);
+                }, tooltipDelay);
+            };
 
-                var mouseclickHandler = function (e, data) {
-                    var nodes = data.nodes;
-                    var ids = data.ids;
-                    <%
-                      if ("foreignSources".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
+            var mouseleaveHandler = function (e, data) {
+                clearAndHideTooltip();
+            }
 
-                      if ("categories".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
 
-                      if ("monitoredServices".equals(heatmap)) {
-                    %>
-                    location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
-                    <%
-                      }
+            var mouseclickHandler = function (e, data) {
+                var nodes = data.nodes;
+                var ids = data.ids;
+                <%
+                  if ("foreignSources".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByForeignSource&foreignSource=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                      if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
-                    %>
-                    location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
-                    <%
-                      }
-                    %>
-                };
+                  if ("categories".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByCategory&category=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                var url = "<%=url%>";
-                var children;
+                  if ("monitoredServices".equals(heatmap)) {
+                %>
+                location.href = "<%=request.getRequestURI()%>?mode=<%=Util.encode(mode)%>&heatmap=nodesByMonitoredService&monitoredService=" + encodeURIComponent(nodes[0].id);
+                <%
+                  }
 
-                function refresh() {
-                    clearAndHideTooltip();
+                  if ("nodesByCategory".equals(heatmap) || "nodesByForeignSource".equals(heatmap) || "nodesByMonitoredService".equals(heatmap)) {
+                %>
+                location.href = "/opennms/element/node.jsp?node=" + encodeURIComponent(nodes[0].elementId);
+                <%
+                  }
+                %>
+            };
 
-                    var height = $(window).height() - 105 - $("#treemap").offset().top;
+            var url = "<%=url%>";
+            var children;
 
-                    if (height < 0) {
-                        height = $(window).width();
-                    }
+            function refresh() {
+                clearAndHideTooltip();
 
-                    height = Math.min(height, $(window).width());
+                var height = $(window).height() - 105 - $("#treemap").offset().top;
 
-                    $("#treemap").treemap({
-                        "dimensions": [
-                            $("#treemap").width(),
-                            height
-                        ],
-                        "colorStops": [
-                            {"val": 1.0, "color": "#CC0000"},
-                            {"val": 0.4, "color": "#FF3300"},
-                            {"val": 0.2, "color": "#FF9900"},
-                            {"val": 0.1, "color": "#FFCC00"},
-                            {"val": 0.0, "color": "#336600"}
-                        ],
-                        "labelsEnabled": true,
-                        "nodeData": {
-                            "id": "<%=Util.encode(heatmap)%>",
-                            "children": children
-                        }
-                    }).bind('treemapmousemove', mousemoveHandler)
-                      .bind('treemapclick', mouseclickHandler)
-                      .mouseleave(function(){mouseleaveHandler()});
+                if (height < 0) {
+                    height = $(window).width();
                 }
 
-                $(window).resize(function() {
+                height = Math.min(height, $(window).width());
+
+                $("#treemap").treemap({
+                    "dimensions": [
+                        $("#treemap").width(),
+                        height
+                    ],
+                    "colorStops": [
+                        {"val": 1.0, "color": "#CC0000"},
+                        {"val": 0.4, "color": "#FF3300"},
+                        {"val": 0.2, "color": "#FF9900"},
+                        {"val": 0.1, "color": "#FFCC00"},
+                        {"val": 0.0, "color": "#336600"}
+                    ],
+                    "labelsEnabled": true,
+                    "nodeData": {
+                        "id": "<%=Util.encode(heatmap)%>",
+                        "children": children
+                    }
+                }).bind('treemapmousemove', mousemoveHandler)
+                  .bind('treemapclick', mouseclickHandler)
+                  .mouseleave(function(){mouseleaveHandler()});
+            }
+
+            $(window).resize(function() {
+                refresh();
+            });
+
+            $(document).ready(function () {
+                $.getJSON(url, function (data) {
+                    children = data.children;
                     refresh();
-                });
-
-                $(document).ready(function () {
-                    $.getJSON(url, function (data) {
-                        children = data.children;
-                        refresh();
-                    });
                 });
             });
         });

@@ -325,4 +325,22 @@ public class MockNodeDao implements NodeDao {
     public Map<String, Long> getNumberOfNodesBySysOid() {
         return null;
     }
+
+    @Override
+    public List<OnmsNode> findByLabelForLocation(String label, String location) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsNode> findByForeignId(String foreignId) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

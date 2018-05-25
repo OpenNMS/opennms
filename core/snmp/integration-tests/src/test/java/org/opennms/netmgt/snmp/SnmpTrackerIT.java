@@ -120,17 +120,17 @@ public class SnmpTrackerIT implements InitializingBean {
         }
 
         @Override
-        public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) {
+        public ResponseProcessor buildNextPdu(PduBuilder pduBuilder) throws SnmpException {
             final ResponseProcessor rp = super.buildNextPdu(pduBuilder);
             final ResponseProcessor errorRp = new ResponseProcessor() {
 
                 @Override
-                public void processResponse(final SnmpObjId snmpObjId, SnmpValue val) {
+                public void processResponse(final SnmpObjId snmpObjId, SnmpValue val) throws SnmpException {
                     rp.processResponse(snmpObjId, val);
                 }
 
                 @Override
-                public boolean processErrors(final int errorStatus, final int errorIndex) {
+                public boolean processErrors(final int errorStatus, final int errorIndex) throws SnmpException {
                     final boolean retry = rp.processErrors(errorStatus, errorIndex);
                     m_errors.add(new ResponseError(ErrorStatus.fromStatus(errorStatus), retry));
                     return retry;

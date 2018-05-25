@@ -257,6 +257,7 @@ public class Installer {
 
         if (doDatabase) {
             m_installerDb.checkUnicode();
+            m_installerDb.checkTime();
         }
         
         handleConfigurationChanges();

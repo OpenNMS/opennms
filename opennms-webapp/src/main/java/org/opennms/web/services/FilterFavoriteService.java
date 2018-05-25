@@ -136,7 +136,7 @@ public class FilterFavoriteService {
      */
     public List<OnmsFilterFavorite> getFavorites(String userName, OnmsFilterFavorite.Page page) {
         List<OnmsFilterFavorite> favorites = favoriteDao.findBy(userName, page);
-        favorites.forEach(f -> sanitizeFavorite(f));
+        favorites.forEach(this::sanitizeFavorite);
         return favorites;
     }
 

@@ -108,7 +108,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
         try {
             Syslog.shutdown(); // Shutdown all Syslog instances.
         } catch (Exception e) {

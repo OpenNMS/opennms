@@ -29,7 +29,7 @@ Then create a new file called `slack.properties` in the `opennms.properties.d` d
 
 [source, properties]
 ----
-org.opennms.netmgt.notifd.slack.webhookURL= https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
+org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
 ----
 
 Restart OpenNMS so that the `slack.properties` file will be loaded. Your new `slack` notification command is now available for use in a destination path.

@@ -68,7 +68,7 @@ public class EventTemplate implements ExpandableToken {
         this.input = Objects.requireNonNull(input);
         this.eventUtil = Objects.requireNonNull(eventUtil);
         parse();
-        this.requiresTransaction = tokens.stream().filter(t -> t.requiresTransaction()).findAny().isPresent();
+        this.requiresTransaction = tokens.stream().filter(ExpandableToken::requiresTransaction).findAny().isPresent();
     }
 
     /**
