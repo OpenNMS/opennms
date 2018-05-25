@@ -61,7 +61,7 @@ public class DiscoveryBridgeDomains extends Discovery {
         BroadcastDomain domain = null;
         
         for (BroadcastDomain curBDomain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
-            if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnDomain())) {
+            if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnSegments())) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("find: node:{}, found:\n{}",
                              nodes, 
@@ -167,8 +167,7 @@ public class DiscoveryBridgeDomains extends Discovery {
             try {
                 BroadcastDomain domain = find(nodeondomainbft.get(nodeid).keySet(),
                                               nodeMacs.get(nodeid));
-                DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology();
-                nodebridgetopology.setDomain(domain);
+                DiscoveryBridgeTopology nodebridgetopology = m_linkd.getNodeBridgeDiscoveryTopology(domain);
                 for (Integer bridgeId : nodeondomainbft.get(nodeid).keySet()) {
                     nodebridgetopology.addUpdatedBFT(bridgeId,
                                                      nodeondomainbft.get(nodeid).get(bridgeId));

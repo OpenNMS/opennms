@@ -1403,77 +1403,8 @@ public abstract class EnLinkdTestHelper {
                     assertEquals(BridgeMacLinkType.BRIDGE_LINK, bridgeMacLink.getLinkType());
                }
             }
-            checkBcalcBC(domain.getForwarders(nodeBId));
-            checkCcalcBC(domain.getForwarders(nodeCId));
-
-            
         }
-
-        public void checkBcalcBCA(Set<BridgeForwardingTableEntry> forwarders) {
-            assertEquals(5, forwarders.size());
-            Set<String> macs = new HashSet<String>();
-            for (BridgeForwardingTableEntry forward: forwarders) {
-                assertTrue(!macs.contains(forward.getMacAddress()));
-                assertEquals(nodeBId, forward.getNodeId().intValue());
-                assertEquals(2, forward.getBridgePort().intValue());
-                assertEquals(1002, forward.getBridgePortIfIndex().intValue());
-                macs.add(forward.getMacAddress());
-            }
-            assertTrue(macs.contains(macC));
-            assertTrue(macs.contains(macE));
-            for (String mac: forwardersABD) {
-                assertTrue(macs.contains(mac));                
-            }
-            for (String mac: forwardersBE) {
-                assertTrue(macs.contains(mac));                
-            }
-        }     
-
-        public void checkAcalcBCA(Set<BridgeForwardingTableEntry> forwarders) {
-            assertEquals(2, forwarders.size());
-            Set<String> macs = new HashSet<String>();
-            for (BridgeForwardingTableEntry forward: forwarders) {
-                assertTrue(!macs.contains(forward.getMacAddress()));
-                assertEquals(nodeAId, forward.getNodeId().intValue());
-                assertEquals(24, forward.getBridgePort().intValue());
-                assertEquals(10124, forward.getBridgePortIfIndex().intValue());
-                macs.add(forward.getMacAddress());
-            }
-            assertTrue(macs.contains(macB));
-            assertTrue(macs.contains(macD));
-            
-        }
-        
-        public void checkCcalcBC(Set<BridgeForwardingTableEntry> forwarders) {
-            assertEquals(1, forwarders.size());
-            BridgeForwardingTableEntry forward = forwarders.iterator().next();
-            assertEquals(nodeCId, forward.getNodeId().intValue());
-            assertEquals(11, forward.getBridgePort().intValue());
-            assertEquals(1011, forward.getBridgePortIfIndex().intValue());
-            assertTrue(macB.equals(forward.getMacAddress()));
-        }        
-
-        public void checkBcalcBC(Set<BridgeForwardingTableEntry> forwarders) {
-            assertEquals(5, forwarders.size());
-            Set<String> macs = new HashSet<String>();
-            for (BridgeForwardingTableEntry forward: forwarders) {
-                assertTrue(!macs.contains(forward.getMacAddress()));
-                assertEquals(nodeBId, forward.getNodeId().intValue());
-                assertEquals(2, forward.getBridgePort().intValue());
-                assertEquals(1002, forward.getBridgePortIfIndex().intValue());
-                macs.add(forward.getMacAddress());
-            }
-            assertTrue(macs.contains(macC));
-            assertTrue(macs.contains(macE));
-            for (String mac: forwardersABD) {
-                assertTrue(macs.contains(mac));                
-            }
-            for (String mac: forwardersBE) {
-                assertTrue(macs.contains(mac));                
-            }
-        }        
-
-        
+                
         public void checkCcalcBC(SharedSegment segment) throws BridgeTopologyException {
             assertEquals(nodeCId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());
@@ -1549,7 +1480,6 @@ public abstract class EnLinkdTestHelper {
             }
             
         }
-
         
         public void check(BroadcastDomain domain) throws BridgeTopologyException {
             assertEquals(5, domain.getBridgeNodesOnDomain().size());
@@ -1604,6 +1534,7 @@ public abstract class EnLinkdTestHelper {
             checkE(domain.getForwarders(nodeEId));
             
         }
+        
         public void checkE(Set<BridgeForwardingTableEntry> forwarders) {
             assertEquals(5, forwarders.size());
             Set<String> macs = new HashSet<String>();
@@ -1624,8 +1555,8 @@ public abstract class EnLinkdTestHelper {
             }
         }        
 
-        public void checkD(Set<BridgeForwardingTableEntry> forwarders) {
-            //assertEquals(7, forwarders.size());
+        public void checkDcalcBCAD(Set<BridgeForwardingTableEntry> forwarders) {
+            assertEquals(6, forwarders.size());
             Set<String> macs = new HashSet<String>();
             for (BridgeForwardingTableEntry forward: forwarders) {
                 assertTrue(!macs.contains(forward.getMacAddress()));
@@ -1635,9 +1566,56 @@ public abstract class EnLinkdTestHelper {
                 macs.add(forward.getMacAddress());
             }
             assertTrue(macs.contains(macB));
+            assertTrue(macs.contains(macC));
+            assertTrue(macs.contains(macE));
+            for (String mac: forwardersABD) {
+                assertTrue(macs.contains(mac));                
+            }
             for (String mac: forwardersD) {
                 assertTrue(macs.contains(mac));                
             }
+       
+        }
+        
+        public void checkD(Set<BridgeForwardingTableEntry> forwarders) {
+            assertEquals(7, forwarders.size());
+            Set<String> macs = new HashSet<String>();
+            for (BridgeForwardingTableEntry forward: forwarders) {
+                assertTrue(!macs.contains(forward.getMacAddress()));
+                assertEquals(nodeDId, forward.getNodeId().intValue());
+                assertEquals(50, forward.getBridgePort().intValue());
+                assertEquals(50, forward.getBridgePortIfIndex().intValue());
+                macs.add(forward.getMacAddress());
+            }
+            assertTrue(macs.contains(macB));
+            assertTrue(macs.contains(macC));
+            assertTrue(macs.contains(macE));
+            for (String mac: forwardersABD) {
+                assertTrue(macs.contains(mac));                
+            }
+            for (String mac: forwardersABCD) {
+                assertTrue(macs.contains(mac));                
+            }
+            for (String mac: forwardersD) {
+                assertTrue(macs.contains(mac));                
+            }
+        }        
+
+        public void checkCcalcBC(Set<BridgeForwardingTableEntry> forwarders) {
+            checkCcalcBCAD(forwarders);
+        }
+
+        public void checkCcalcBCA(Set<BridgeForwardingTableEntry> forwarders) {
+            checkCcalcBCAD(forwarders);
+        }
+
+        public void checkCcalcBCAD(Set<BridgeForwardingTableEntry> forwarders) {
+            assertEquals(1, forwarders.size());
+            BridgeForwardingTableEntry forward = forwarders.iterator().next();
+            assertEquals(nodeCId, forward.getNodeId().intValue());
+            assertEquals(11, forward.getBridgePort().intValue());
+            assertEquals(1011, forward.getBridgePortIfIndex().intValue());
+            assertTrue(macB.equals(forward.getMacAddress()));
         }        
 
         public void checkC(Set<BridgeForwardingTableEntry> forwarders) {
@@ -1652,6 +1630,34 @@ public abstract class EnLinkdTestHelper {
             }
             assertTrue(macs.contains(macB));
             for (String mac: forwardersABCD) {
+                assertTrue(macs.contains(mac));                
+            }
+        }        
+
+        public void checkBcalcBC(Set<BridgeForwardingTableEntry> forwarders) {
+            checkBcalcBCAD(forwarders);
+        }     
+
+        public void checkBcalcBCA(Set<BridgeForwardingTableEntry> forwarders) {
+            checkBcalcBCAD(forwarders);
+        }        
+
+        public void checkBcalcBCAD(Set<BridgeForwardingTableEntry> forwarders) {
+            assertEquals(5, forwarders.size());
+            Set<String> macs = new HashSet<String>();
+            for (BridgeForwardingTableEntry forward: forwarders) {
+                assertTrue(!macs.contains(forward.getMacAddress()));
+                assertEquals(nodeBId, forward.getNodeId().intValue());
+                assertEquals(2, forward.getBridgePort().intValue());
+                assertEquals(1002, forward.getBridgePortIfIndex().intValue());
+                macs.add(forward.getMacAddress());
+            }
+            assertTrue(macs.contains(macC));
+            assertTrue(macs.contains(macE));
+            for (String mac: forwardersABD) {
+                assertTrue(macs.contains(mac));                
+            }
+            for (String mac: forwardersBE) {
                 assertTrue(macs.contains(mac));                
             }
         }        
@@ -1678,8 +1684,13 @@ public abstract class EnLinkdTestHelper {
                 assertTrue(macs.contains(mac));                
             }
         }     
-        public void checkA(Set<BridgeForwardingTableEntry> forwarders) {
-            assertEquals(1, forwarders.size());
+
+        public void checkAcalcBCA(Set<BridgeForwardingTableEntry> forwarders) {
+            checkAcalcBCAD(forwarders);
+        }
+
+        public void checkAcalcBCAD(Set<BridgeForwardingTableEntry> forwarders) {
+            assertEquals(6, forwarders.size());
             Set<String> macs = new HashSet<String>();
             for (BridgeForwardingTableEntry forward: forwarders) {
                 assertTrue(!macs.contains(forward.getMacAddress()));
@@ -1688,8 +1699,38 @@ public abstract class EnLinkdTestHelper {
                 assertEquals(10124, forward.getBridgePortIfIndex().intValue());
                 macs.add(forward.getMacAddress());
             }
+            assertTrue(macs.contains(macB));
+            assertTrue(macs.contains(macC));
             assertTrue(macs.contains(macD));
+            assertTrue(macs.contains(macE));
+            for (String mac: forwardersABD) {
+                assertTrue(macs.contains(mac));
+            }
         }
+        
+
+        public void checkA(Set<BridgeForwardingTableEntry> forwarders) {
+//            assertEquals(7, forwarders.size());
+            Set<String> macs = new HashSet<String>();
+            for (BridgeForwardingTableEntry forward: forwarders) {
+                assertTrue(!macs.contains(forward.getMacAddress()));
+                assertEquals(nodeAId, forward.getNodeId().intValue());
+                assertEquals(24, forward.getBridgePort().intValue());
+                assertEquals(10124, forward.getBridgePortIfIndex().intValue());
+                macs.add(forward.getMacAddress());
+            }
+            assertTrue(macs.contains(macB));
+            assertTrue(macs.contains(macC));
+            assertTrue(macs.contains(macD));
+            assertTrue(macs.contains(macE));
+            for (String mac: forwardersABD) {
+                assertTrue(macs.contains(mac));
+            }
+            for (String mac: forwardersABCD) {
+                assertTrue(macs.contains(mac));
+            }
+        }
+        
         public void checkA(SharedSegment segment) throws BridgeTopologyException {
             assertEquals(nodeAId, segment.getDesignatedBridge().intValue());
             assertEquals(1, segment.getBridgePortsOnSegment().size());

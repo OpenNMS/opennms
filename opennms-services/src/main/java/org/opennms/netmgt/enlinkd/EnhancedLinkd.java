@@ -218,8 +218,8 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         return snmpcolls;
     }
 
-    public DiscoveryBridgeTopology getNodeBridgeDiscoveryTopology() {
-        return new DiscoveryBridgeTopology(this);
+    public DiscoveryBridgeTopology getNodeBridgeDiscoveryTopology(BroadcastDomain domain) {
+        return new DiscoveryBridgeTopology(this,domain);
     }
     /**
      * <p>
@@ -330,8 +330,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
     }
     
     public void scheduleNodeBridgeTopologyDiscovery(BroadcastDomain domain, Map<Integer,Set<BridgeForwardingTableEntry>> updateBfpMap) {
-        final DiscoveryBridgeTopology bridgediscovery = getNodeBridgeDiscoveryTopology();
-        bridgediscovery.setDomain(domain);
+        final DiscoveryBridgeTopology bridgediscovery = getNodeBridgeDiscoveryTopology(domain);
         for (Integer bridgeid: updateBfpMap.keySet()) {
             bridgediscovery.addUpdatedBFT(bridgeid, updateBfpMap.get(bridgeid));
         }
