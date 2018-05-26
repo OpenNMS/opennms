@@ -1307,10 +1307,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(0, domain.getForwarders(topology.nodeEId).size());
 
         DiscoveryBridgeTopology ndbtA= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtA.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbtA.calculate();
-
         topology.checkAcalcBCA(domain.getForwarders(topology.nodeAId));
         topology.checkBcalcBCA(domain.getForwarders(topology.nodeBId));
         topology.checkCcalcBCA(domain.getForwarders(topology.nodeCId));
@@ -1318,10 +1316,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(0, domain.getForwarders(topology.nodeEId).size());
         
         DiscoveryBridgeTopology ndbtD= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtD.addUpdatedBFT((topology.nodeDId),topology.bftD);
         ndbtD.calculate();
-
         topology.checkAcalcBCAD(domain.getForwarders(topology.nodeAId));
         topology.checkBcalcBCAD(domain.getForwarders(topology.nodeBId));
         topology.checkCcalcBCAD(domain.getForwarders(topology.nodeCId));
@@ -1348,33 +1344,65 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         setBridgeElements(domain,topology.elemlist);
         
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtB.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbtB.calculate();
-        
-        DiscoveryBridgeTopology ndbtC= new DiscoveryBridgeTopology(linkd,domain);
-        
-        ndbtC.addUpdatedBFT((topology.nodeCId),topology.bftC);
-        ndbtC.calculate();
-
-        DiscoveryBridgeTopology ndbtA= new DiscoveryBridgeTopology(linkd,domain);
-        
-        ndbtA.addUpdatedBFT((topology.nodeAId),topology.bftA);
-        ndbtA.calculate();
+        ndbtB.addUpdatedBFT((topology.nodeCId),topology.bftC);
+        ndbtB.calculate();
+        ndbtB.addUpdatedBFT((topology.nodeAId),topology.bftA);
+        ndbtB.calculate();
+        topology.checkAcalcBCA(domain.getForwarders(topology.nodeAId));
+        topology.checkBcalcBCA(domain.getForwarders(topology.nodeBId));
+        topology.checkCcalcBCA(domain.getForwarders(topology.nodeCId));
+        assertEquals(0, domain.getForwarders(topology.nodeDId).size());
+        assertEquals(0, domain.getForwarders(topology.nodeEId).size());
 
         DiscoveryBridgeTopology ndbtE= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtE.addUpdatedBFT((topology.nodeEId),topology.bftE);
         ndbtE.calculate();
+        topology.checkAcalcBCAE(domain.getForwarders(topology.nodeAId));
+        topology.checkBcalcBCAE(domain.getForwarders(topology.nodeBId));
+        topology.checkCcalcBCAE(domain.getForwarders(topology.nodeCId));
+        assertEquals(0, domain.getForwarders(topology.nodeDId).size());
+        topology.checkEcalcBCAE(domain.getForwarders(topology.nodeEId));
 
         DiscoveryBridgeTopology ndbtD= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtD.addUpdatedBFT((topology.nodeDId),topology.bftD);
         ndbtD.calculate();
-
         topology.check(domain);
     }
 
+    @Test
+    public void testFiveSwitchTopologyBCAThenED() throws BridgeTopologyException {
+
+        FiveSwitchTopology topology = new FiveSwitchTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.nodeAId);
+        Bridge.create(domain,topology.nodeBId);
+        Bridge.create(domain,topology.nodeCId);
+        Bridge.create(domain,topology.nodeDId);
+        Bridge.create(domain,topology.nodeEId);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        ndbtB.addUpdatedBFT((topology.nodeBId),topology.bftB);
+        ndbtB.addUpdatedBFT((topology.nodeCId),topology.bftC);
+        ndbtB.addUpdatedBFT((topology.nodeAId),topology.bftA);
+        ndbtB.calculate();
+        topology.checkAcalcBCA(domain.getForwarders(topology.nodeAId));
+        topology.checkBcalcBCA(domain.getForwarders(topology.nodeBId));
+        topology.checkCcalcBCA(domain.getForwarders(topology.nodeCId));
+        assertEquals(0, domain.getForwarders(topology.nodeDId).size());
+        assertEquals(0, domain.getForwarders(topology.nodeEId).size());
+
+        DiscoveryBridgeTopology ndbtE= new DiscoveryBridgeTopology(linkd,domain);
+        ndbtE.addUpdatedBFT((topology.nodeEId),topology.bftE);
+        ndbtE.addUpdatedBFT((topology.nodeDId),topology.bftD);
+        ndbtE.calculate();
+        Bridge bridgeB = domain.getBridge(topology.nodeBId);
+        BroadcastDomain.hierarchySetUp(domain,bridgeB);
+        topology.check(domain);
+    }
 
     @Test
     public void testFiveSwitchTopologyEDCBA() throws BridgeTopologyException {
@@ -1390,27 +1418,22 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         setBridgeElements(domain,topology.elemlist);
 
         DiscoveryBridgeTopology ndbtE= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtE.addUpdatedBFT((topology.nodeEId),topology.bftE);
         ndbtE.calculate();
         
         DiscoveryBridgeTopology ndbtD= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtD.addUpdatedBFT((topology.nodeDId),topology.bftD);
         ndbtD.calculate();
         
         DiscoveryBridgeTopology ndbtC= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtC.addUpdatedBFT((topology.nodeCId),topology.bftC);
         ndbtC.calculate();
 
         DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtB.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbtB.calculate();
 
         DiscoveryBridgeTopology ndbtA= new DiscoveryBridgeTopology(linkd,domain);
-        
         ndbtA.addUpdatedBFT((topology.nodeAId),topology.bftA);
         ndbtA.calculate();
 

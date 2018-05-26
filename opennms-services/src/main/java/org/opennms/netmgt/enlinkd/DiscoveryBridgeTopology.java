@@ -300,8 +300,6 @@ public class DiscoveryBridgeTopology extends Discovery {
             }
         }
         
-        bridgeFtMapCalcul.keySet().stream().forEach(id -> m_domain.cleanForwarders(id));
-
         BridgeForwardingTable rootBft = 
                 m_bridgeFtMapUpdate.get(electedRoot.getNodeId());
         
@@ -346,9 +344,12 @@ public class DiscoveryBridgeTopology extends Discovery {
                 m_failed.add(bridgeid);
             }                
         }  
-        
-        m_parsed.stream().forEach( parsed -> m_bridgeFtMapUpdate.remove(parsed));
+
+        m_bridgeFtMapUpdate.values().stream().
+            filter(ft -> m_parsed.contains(ft.getNodeId())).
+                forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
         bridgeFtMapCalcul.values().stream().forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+        m_parsed.stream().forEach( parsed -> m_bridgeFtMapUpdate.remove(parsed));
     }
     
     private void down(BridgeForwardingTable bridgeUpFT,  

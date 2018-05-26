@@ -45,6 +45,7 @@ public class BroadcastDomain implements Topology {
     
     public static void addforwarders(BroadcastDomain domain, BridgeForwardingTable bridgeFT) {
         Set<String> macs = domain.getMacsOnSegments();
+        domain.cleanForwarders(bridgeFT.getNodeId());
         bridgeFT.getMactoport().keySet().stream().
             filter(forward -> !macs.contains(forward)).forEach(forward -> {
                 domain.addForwarding(bridgeFT.getMactoport().get(forward));
