@@ -64,7 +64,7 @@
         <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms-server.xml" value="opennmsServerConfigFactory"/>
-        <!-- <entry key="opennms.properties" value="unknown"/> -->
+        <entry key="opennms.properties" value="unknown"/>
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
@@ -113,6 +113,7 @@
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
         <entry key="wsman-datacollection-config.xml" value="wsManDataCollectionConfigDao"/>
+        <entry key="opennms.properties.d" value="directory" />
       </map>
     </property>
   </bean>
