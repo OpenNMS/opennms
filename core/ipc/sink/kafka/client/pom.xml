@@ -24,8 +24,12 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!--
+              org.opennms.core.ipc.sink.kafka.server is required by KafkaLocalMessageDispatcherFactory but that is only
+              required when running in OpenNMS, thus never when running inside karaf
+            -->
             <Import-Package>
-              org.apache.kafka.common.serialization,
+              !org.opennms.core.ipc.sink.kafka.server,
               *
             </Import-Package>
           </instructions>

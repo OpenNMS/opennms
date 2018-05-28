@@ -25,8 +25,13 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <!--
+              org.opennms.core.ipc.sink.camel.server is only used by CamelLocalMessageDispatcherFactory, which
+              requires a LocalDispatcherFactory, which is available via the server module but only used when running
+              inside OpenNMS (via Spring) and never when running in an OSGI container, thus we exclude it here.
+            -->
             <Import-Package>
-              org.opennms.core.ipc.sink.camel.server;resolution:=optional,
+              !org.opennms.core.ipc.sink.camel.server,
               *
             </Import-Package>
           </instructions>
