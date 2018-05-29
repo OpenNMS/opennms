@@ -15,7 +15,6 @@
 		<complexType>
 			<simpleContent>
 				<extension base="string">
-					<attribute default="localhost" name="server-name" type="string" use="optional" />
 					<attribute default="" name="defaultCriticalPathIp" type="string" use="optional" />
 					<attribute default="" name="defaultCriticalPathService" type="string" use="optional" />
 					<attribute default="1500" name="defaultCriticalPathTimeout" use="optional">
@@ -31,15 +30,6 @@
 								<minInclusive value="0" />
 							</restriction>
 						</simpleType>
-					</attribute>
-
-					<attribute type="boolean" default="false" name="verify-server" use="optional">
-						<annotation>
-							<documentation>
-								A flag to indicate if poller has to identify the
-								nms server to restrict services to poll.
-							</documentation>
-						</annotation>
 					</attribute>
 				</extension>
 			</simpleContent>
