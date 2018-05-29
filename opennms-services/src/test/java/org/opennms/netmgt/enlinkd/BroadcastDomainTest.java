@@ -51,6 +51,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTable;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BridgePortWithMacs;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -312,10 +314,11 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertTrue(shared.containsMac(mac2));
         assertEquals(1, domain.getForwarding().size());
         assertEquals(1, domain.getForwarders(nodeBId).size());
-        BridgeForwardingTableEntry forwarder = domain.getForwarders(nodeBId).iterator().next();
-        assertEquals(maca, forwarder.getMacAddress());
-        assertEquals(portBA, forwarder.getBridgePort());
-
+        BridgePortWithMacs forwarder = domain.getForwarders(nodeBId).iterator().next();
+        assertEquals(1, forwarder.getMacs().size());
+        assertEquals(maca, forwarder.getMacs().iterator().next());
+        assertEquals(portBA, forwarder.getPort().getBridgePort());
+        assertEquals(nodeBId, forwarder.getPort().getNodeId());
     }
 
     @Test
@@ -379,13 +382,17 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(2, domain.getForwarding().size());
         assertEquals(1, domain.getForwarders(nodeAId).size());
         assertEquals(1, domain.getForwarders(nodeBId).size());
-        BridgeForwardingTableEntry forwarderA = domain.getForwarders(nodeAId).iterator().next();
-        BridgeForwardingTableEntry forwarderB = domain.getForwarders(nodeBId).iterator().next();
-        assertEquals(macb, forwarderA.getMacAddress());
-        assertEquals(portAB, forwarderA.getBridgePort());
-        assertEquals(maca, forwarderB.getMacAddress());
-        assertEquals(portBA, forwarderB.getBridgePort());
-
+        BridgePortWithMacs forwarderA = domain.getForwarders(nodeAId).iterator().next();
+        BridgePortWithMacs forwarderB = domain.getForwarders(nodeBId).iterator().next();
+        assertEquals(1, forwarderA.getMacs().size());
+        assertEquals(macb, forwarderA.getMacs().iterator().next());
+        assertEquals(portAB, forwarderA.getPort().getBridgePort());
+        assertEquals(nodeAId, forwarderA.getPort().getNodeId());
+        assertEquals(1, forwarderB.getMacs().size());
+        assertEquals(maca, forwarderB.getMacs().iterator().next());
+        assertEquals(portBA, forwarderB.getPort().getBridgePort());
+        assertEquals(nodeBId, forwarderB.getPort().getNodeId());
+        
 
     }
 
@@ -572,7 +579,9 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         
         ndbt.addUpdatedBFT((topology.nodeBId),topology.bftB);
         ndbt.calculate();
-        
+
+        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getRootBridge())));
+
         List<SharedSegment> shsegs = ndbt.getDomain().getSharedSegments();
         assertEquals(3, shsegs.size());
         
@@ -585,8 +594,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.check2nodeTopology(ndbt.getDomain(),true);
         assertEquals(topology.nodeBId, domain.getRootBridge().getNodeId());
 
-        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getRootBridge())));
-        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeAId))));
+        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeAId))));
     }
 
     @Test 
@@ -615,8 +623,8 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         topology.check2nodeTopology(ndbt.getDomain(),false);
         assertEquals(topology.nodeAId, domain.getRootBridge().getNodeId());
         
-        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain, domain.getRootBridge())));
-        System.out.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeBId))));
+        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain, domain.getRootBridge())));
+        System.err.println(BridgeForwardingTableEntry.printTopology(BroadcastDomain.calculateBFT(domain,domain.getBridge(topology.nodeBId))));
 
     }
 
@@ -1769,21 +1777,21 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         BridgeForwardingTable bridgeFtpe = 
                 BridgeForwardingTable.create(domain.getBridge(topology.spiazzomepe01Id), topology.bftspiazzomepe01);
         
-        Map<String, Set<BridgeForwardingTableEntry>> duplicated = bridgeFtpe.getDuplicated();
+        Map<String, Set<BridgePort>> duplicated = bridgeFtpe.getDuplicated();
         assertEquals(5, duplicated.size());
-        assertTrue(duplicated.keySet().contains(topology.macdaremunasw01)); //port 5
-        assertTrue(duplicated.keySet().contains(topology.mac001ebe70cec0)); //port 5
-        assertTrue(duplicated.keySet().contains(topology.mac0022557fd68f)); //port 6
+
+        assertTrue(duplicated.keySet().contains(topology.macdaremunasw01));  //port 5
+        assertTrue(duplicated.keySet().contains(topology.mac001ebe70cec0));  //port 5
+        assertTrue(duplicated.keySet().contains(topology.mac0022557fd68f));  //port 6
         assertTrue(duplicated.keySet().contains(topology.macvrendmunasw01)); //port 8
-        assertTrue(duplicated.keySet().contains(topology.mac001906d5cf50)); //port 8
-
-        assertEquals(2,duplicated.get(topology.macdaremunasw01).size()); //port 5
-        assertEquals(2,duplicated.get(topology.mac001ebe70cec0).size()); //port 5
-        assertEquals(2,duplicated.get(topology.mac0022557fd68f).size()); //port 8
+        assertTrue(duplicated.keySet().contains(topology.mac001906d5cf50));  //port 8
+        assertEquals(2,duplicated.get(topology.macdaremunasw01).size());  //port 5
+        assertEquals(2,duplicated.get(topology.mac001ebe70cec0).size());  //port 5
+        assertEquals(2,duplicated.get(topology.mac0022557fd68f).size());  //port 8
         assertEquals(2,duplicated.get(topology.macvrendmunasw01).size()); //port 5
-        assertEquals(2,duplicated.get(topology.mac001906d5cf50).size()); //port 5
+        assertEquals(2,duplicated.get(topology.mac001906d5cf50).size());  //port 5
 
-        System.err.println(BridgeForwardingTableEntry.printTopology(bridgeFtpe.getBftEntries()));
+        System.err.println(BridgeForwardingTableEntry.printTopology(bridgeFtpe.getEntries()));
 
         assertEquals(0,BridgeForwardingTable.
                               create(domain.getBridge(topology.daremunasw01Id), topology.bftdaremunasw01).getDuplicated().

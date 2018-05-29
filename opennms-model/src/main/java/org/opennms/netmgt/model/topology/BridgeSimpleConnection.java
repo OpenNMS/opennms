@@ -99,14 +99,14 @@ public class BridgeSimpleConnection implements Topology {
                     + yBridge.getNodeId() + "]", simple);
         }
 
-        if (xBridge.getNodeId() != simple.getFirstPort().getNodeId()) {
+        if (xBridge.getNodeId().intValue() != simple.getFirstPort().getNodeId().intValue()) {
             throw new BridgeTopologyException("getMacs: node mismatch ["
-                    + xBridge.getNodeId() + "]", simple);
+                    + xBridge.getNodeId() + "] found " , simple.getFirstPort());
         }
 
-        if (yBridge.getNodeId() != simple.getSecondPort().getNodeId()) {
+        if (yBridge.getNodeId().intValue() != simple.getSecondPort().getNodeId().intValue()) {
             throw new BridgeTopologyException("getMacs: node mismatch ["
-                    + yBridge.getNodeId() + "]", simple);
+                    + yBridge.getNodeId() + "]", simple.getSecondPort());
         }
 
         Set<String> macsOnSegment = xBridge.getBridgePortWithMacs(simple.getFirstPort()).getMacs();
@@ -194,7 +194,7 @@ public class BridgeSimpleConnection implements Topology {
         return true;
     }
 
-    private static List<BridgePort> condition3(Set<String> commonlearnedmacs,Map<String,BridgeForwardingTableEntry> xbft,Map<String,BridgeForwardingTableEntry> ybft) {
+    private static List<BridgePort> condition3(Set<String> commonlearnedmacs,Map<String,BridgePort> xbft,Map<String,BridgePort> ybft) {
     
     //
     // condition 3XY
@@ -221,8 +221,8 @@ public class BridgeSimpleConnection implements Topology {
         for (String mac: commonlearnedmacs) {
             if (mac1 == null) {
                 mac1=mac;
-                yp1=BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
-                xp1=BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
+                yp1=ybft.get(mac);
+                xp1=xbft.get(mac);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("condition3: mac:[{}] {} - {} ", mac1,
                               xp1.printTopology(),
@@ -236,8 +236,8 @@ public class BridgeSimpleConnection implements Topology {
             }
             if (mac2 == null) {
                 mac2=mac;
-                yp2=BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
-                xp2=BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
+                yp2=ybft.get(mac);
+                xp2=xbft.get(mac);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("condition3: mac:[{}] {} - {} ", mac2,
                           xp2.printTopology(),
@@ -249,8 +249,8 @@ public class BridgeSimpleConnection implements Topology {
                     && xbft.get(mac).getBridgePort() == xp2.getBridgePort()) {
                 continue;
             }
-            BridgePort yp3 = BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
-            BridgePort xp3 = BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
+            BridgePort yp3 = ybft.get(mac);
+            BridgePort xp3 = xbft.get(mac);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("condition3: mac:[{}] {} - {} ", mac,
                           xp3.printTopology(),
@@ -343,7 +343,7 @@ public class BridgeSimpleConnection implements Topology {
     // condition 2 yx found                         m_x belongs to FDB(yx,Y)
     // if exists m_1 and m_2, p1 and p2 on Y :      m_1 belongs to FDB(p1,Y) FDB(xy,X)
     //                                              m_2 belongs to FDB(p2,Y) FDB(xy,X)
-    private static BridgePort condition2(Set<String> commonlearnedmacs, BridgePort yx, Map<String,BridgeForwardingTableEntry> ybft, Map<String,BridgeForwardingTableEntry> xbft) {
+    private static BridgePort condition2(Set<String> commonlearnedmacs, BridgePort yx, Map<String,BridgePort> ybft, Map<String,BridgePort> xbft) {
         if (LOG.isDebugEnabled()) {
             LOG.debug("condition2: {}",yx.printTopology());
         }
@@ -354,8 +354,8 @@ public class BridgeSimpleConnection implements Topology {
 
         Set<BridgePort> ports =  new HashSet<BridgePort>();
         for (String mac: commonlearnedmacs) {
-            BridgePort y1 = BridgePort.getFromBridgeForwardingTableEntry(ybft.get(mac));
-            BridgePort x1= BridgePort.getFromBridgeForwardingTableEntry(xbft.get(mac));
+            BridgePort y1 = ybft.get(mac);
+            BridgePort x1 = xbft.get(mac);
             ports.add(x1);
             if (LOG.isDebugEnabled()) {
                 LOG.debug("condition2: mac:[{}] {} - {}", mac, y1.printTopology(), x1.printTopology());
@@ -370,10 +370,10 @@ public class BridgeSimpleConnection implements Topology {
         return null;
     }
     
-    private static BridgePort condition1(Set<String> bridgemacaddressess, Map<String,BridgeForwardingTableEntry> otherbridgebft) {
+    private static BridgePort condition1(Set<String> bridgemacaddressess, Map<String,BridgePort> otherbridgebft) {
         for (String mac: bridgemacaddressess) {
             if (otherbridgebft.containsKey(mac)) {
-                BridgePort bp = BridgePort.getFromBridgeForwardingTableEntry(otherbridgebft.get(mac));
+                BridgePort bp = otherbridgebft.get(mac);
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("condition1: matched {}, bridge mac identifier:[{}]",bp.printTopology(), mac);
                 }

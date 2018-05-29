@@ -236,7 +236,7 @@ public class DiscoveryBridgeTopology extends Discovery {
         }
         if (m_domain.getSharedSegments().isEmpty()) {
             rootBft.getBridge().setRootBridge();
-            rootBft.getPorttomac().values().
+            rootBft.getPorttomac().
                         stream().
                         forEach(ts -> 
                             SharedSegment.createAndAddToBroadcastDomain(m_domain,ts));
@@ -348,7 +348,16 @@ public class DiscoveryBridgeTopology extends Discovery {
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
                 forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculate: upated forwarders\n{}", 
+                 m_domain.printTopology());
+        }
+
         bridgeFtMapCalcul.values().stream().forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculate: calculated forwarders\n{}", 
+                 m_domain.printTopology());
+        }
         m_parsed.stream().forEach( parsed -> m_bridgeFtMapUpdate.remove(parsed));
     }
     
@@ -382,7 +391,7 @@ public class DiscoveryBridgeTopology extends Discovery {
             LOG.debug("down: level: {}, bridge:[{}]. set root port:[{}]", 
                       level,
                          bridgeFT.getNodeId(),
-                         bridgeFT.getRootPort().getBridgePort());
+                         upsimpleconn.getSecondBridgePort());
         }
 
         SharedSegment upSegment = m_domain.getSharedSegment(upsimpleconn.getFirstPort());

@@ -45,7 +45,6 @@ import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.topology.Bridge;
-import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
@@ -92,7 +91,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
             try {
-                segments.add(SharedSegment.createFrom(link));
+                segments.add(SharedSegment.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", 
                           e.getMessage(),
@@ -116,7 +115,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                }
            }
            try {
-               segments.add(SharedSegment.createFrom(link));
+               segments.add(SharedSegment.create(link));
            } catch (BridgeTopologyException e) {
                LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", 
                   e.getMessage(),
@@ -138,7 +137,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
             try {
-                segments.add(SharedSegment.createFrom(link));
+                segments.add(SharedSegment.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getBridgeNodeSharedSegments: cannot create shared segment {}", e.getMessage(),e);
                 return new ArrayList<SharedSegment>();
@@ -170,7 +169,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
                 }
             }
             try {
-                segments.add(SharedSegment.createFrom(link));
+                segments.add(SharedSegment.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getHostNodeSharedSegment: cannot create shared segment {}", e.getMessage(),e);
                 return SharedSegment.create();
@@ -228,7 +227,7 @@ public class BridgeTopologyDaoInMemory implements BridgeTopologyDao {
             }
             if (segmentnotfound)  {
                 try {
-                    bblsegments.add(SharedSegment.createFrom(link));
+                    bblsegments.add(SharedSegment.create(link));
                 } catch (BridgeTopologyException e) {
                     LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(),e);
                     return new CopyOnWriteArraySet<BroadcastDomain>();
@@ -302,7 +301,7 @@ BML:    for (BridgeMacLink link : bridgeMacLinkDao.findAll()) {
                 }
             }
             try {
-                bmlsegments.add(SharedSegment.createFrom(link));
+                bmlsegments.add(SharedSegment.create(link));
             } catch (BridgeTopologyException e) {
                 LOG.error("getAllPersisted: cannot create shared segment {}", e.getMessage(), e);
                 return new CopyOnWriteArraySet<BroadcastDomain>();
@@ -346,7 +345,7 @@ SEG:        for (SharedSegment segment : bmlsegments) {
             for (BroadcastDomain domain: domains) {
                 Bridge bridge = domain.getBridge(forwarder.getNode().getId());
                 if (bridge != null) {
-                    domain.addForwarding(BridgeForwardingTableEntry.getFromBridgeMacLink(forwarder));
+                    domain.addForwarding(BridgePort.getFromBridgeMacLink(forwarder),forwarder.getMacAddress());
                     break;
                 }
             }

@@ -60,6 +60,7 @@ import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -76,7 +77,6 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
-//import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
@@ -727,16 +727,14 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
             }
         }
         
-        for (Integer nodeId: domain.getBridgeNodesOnDomain()) {
-            Set<BridgeForwardingTableEntry> forwarders = domain.getForwarders(nodeId);
-            if (forwarders == null || forwarders.size() == 0)
-                continue;
-            for (BridgeForwardingTableEntry forward: forwarders) {
-                BridgeMacLink link = BridgeForwardingTableEntry.getBridgeMacLink(forward);
-                link.setBridgeMacLinkLastPollTime(new Date());
-                saveBridgeMacLink(link);
-            }
-        }
+        domain.getForwarding().stream().filter(forward -> forward.getMacs().size() > 0).
+            forEach( forward -> {
+                for ( BridgeMacLink link : BridgeForwardingTableEntry.create(forward, BridgeMacLinkType.BRIDGE_FORWARDER)) {
+                    link.setBridgeMacLinkLastPollTime(new Date());
+                    saveBridgeMacLink(link);
+                }
+            });
+        
 
         
         for (Integer nodeid: domain.getBridgeNodesOnDomain()) {

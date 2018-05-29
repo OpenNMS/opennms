@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.model.topology;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,49 +36,19 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 
 public class SharedSegment implements Topology{
     
     public static List<BridgeBridgeLink> getBridgeBridgeLinks(SharedSegment segment) throws BridgeTopologyException {
-        BridgePort designatedPort = segment.getDesignatedPort();
-        OnmsNode designatedNode = new OnmsNode();
-        designatedNode.setId(designatedPort.getNodeId());
-        List<BridgeBridgeLink> links = new ArrayList<BridgeBridgeLink>();
-        for (BridgePort port:segment.getBridgePortsOnSegment()) {
-            if (port.equals(designatedPort)) {
-                continue;
-            }
-            BridgeBridgeLink link = new BridgeBridgeLink();
-            OnmsNode node = new OnmsNode();
-            node.setId(port.getNodeId());
-            link.setNode(node);
-            link.setBridgePort(port.getBridgePort());
-            link.setBridgePortIfIndex(port.getBridgePortIfIndex());
-            link.setVlan(port.getVlan());
-            link.setDesignatedNode(designatedNode);
-            link.setDesignatedPort(designatedPort.getBridgePort());
-            link.setDesignatedPortIfIndex(designatedPort.getBridgePortIfIndex());
-            link.setDesignatedVlan(designatedPort.getVlan());
-            links.add(link);
-        }
-        return links;
-
+        return BridgeForwardingTableEntry.create(segment.getDesignatedPort(), segment.getBridgePortsOnSegment());
     }
 
     public static List<BridgeMacLink> getBridgeMacLinks(SharedSegment segment) throws BridgeTopologyException {
-        List<BridgeMacLink> maclinks = new ArrayList<BridgeMacLink>();
-        for (String mac: segment.getMacsOnSegment()) {
-                maclinks.add(BridgeForwardingTableEntry.
-                             getBridgeMacLinkFromBridgePort(
-                                segment.getDesignatedPort(), 
-                                mac));
-        }
-        return maclinks;
+        return BridgeForwardingTableEntry.create(segment.getDesignatedPort(), segment.getMacsOnSegment(), BridgeMacLinkType.BRIDGE_LINK);
     }
-
     
-    public static SharedSegment createFrom(BridgeMacLink link) throws BridgeTopologyException {
+    public static SharedSegment create(BridgeMacLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
@@ -87,7 +56,7 @@ public class SharedSegment implements Topology{
         return segment;
     }
 
-    public static SharedSegment createFrom(BridgeBridgeLink link) throws BridgeTopologyException {
+    public static SharedSegment create(BridgeBridgeLink link) throws BridgeTopologyException {
         SharedSegment segment = new SharedSegment();
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
         segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
@@ -99,58 +68,57 @@ public class SharedSegment implements Topology{
         SharedSegment upsegment, 
         Map<BridgePortWithMacs, Set<BridgePortWithMacs>> splitted, 
         Set<String> macsonsegment, 
-        BridgePort designatedport,
+        BridgePort rootport,
         Set<BridgePortWithMacs> throughset) {
         
         splitted.keySet().stream().forEach( designated -> {
             Set<BridgePortWithMacs> ports = splitted.get(designated);
-            ports.stream().forEach( bft -> 
-            {
-                upsegment.getBridgePortsOnSegment().remove(bft.getPort());
-                domain.cleanForwarders(bft.getPort().getNodeId());
-            });
-
-            //Add macs from forwarders
-            Map<String, Integer> forfpmacs = new HashMap<String, Integer>();
-            upsegment.getBridgePortsOnSegment().stream().forEach( port ->  
-            {
-                domain.getForwarders(port.getNodeId()).stream().forEach( forward -> 
-                {    
-                    if (forward.getBridgePort() == port.getBridgePort() ) {
-                        int itemsfound=1;
-                        if (forfpmacs.containsKey(forward.getMacAddress())) {
-                            itemsfound = forfpmacs.get(forward.getMacAddress());
-                            itemsfound++;
-                        } 
-                        forfpmacs.put(forward.getMacAddress(), itemsfound);   
-                    }
-                });
-            });
-            
-            forfpmacs.keySet().stream().forEach( mac -> {
-                if (forfpmacs.get(mac).intValue() == upsegment.getBridgePortsOnSegment().size()) {
-                    upsegment.getMacsOnSegment().add(mac);
-                }
-            });
-            
-            //create segment
             SharedSegment splitsegment = new SharedSegment();
             splitsegment.getBridgePortsOnSegment().add(designated.getPort());
             splitsegment.setDesignatedBridge(designated.getPort().getNodeId());
             Set<String> macs = new HashSet<String>(designated.getMacs());
-            ports.stream().forEach(bft -> 
+            ports.stream().forEach( bft -> 
             {
                 macs.retainAll(bft.getMacs());
+                domain.cleanForwarders(bft.getPort().getNodeId());
+                upsegment.getBridgePortsOnSegment().remove(bft.getPort());
                 splitsegment.getBridgePortsOnSegment().add(bft.getPort());
             });
             splitsegment.getMacsOnSegment().addAll(macs);
             domain.getSharedSegments().add(splitsegment);
             domain.cleanForwarders(macs);
         });
+        
+        //Add macs from forwarders
+        Map<String, Integer> forfpmacs = new HashMap<String, Integer>();
+        upsegment.getBridgePortsOnSegment().stream().forEach( port ->  
+        {
+            domain.getForwarders(port.getNodeId()).stream().filter(forward -> forward.getPort().equals(port)).
+            forEach( forward -> 
+            {    
+                forward.getMacs().stream().forEach(mac -> {
+                    int itemsfound=1;
+                    if (forfpmacs.containsKey(mac)) {
+                        itemsfound = forfpmacs.get(mac);
+                        itemsfound++;
+                    } 
+                    forfpmacs.put(mac, itemsfound);   
+                });
+            });
+            
+            Set<String> clearmacs = new HashSet<String>();
+            forfpmacs.keySet().stream().forEach( mac -> {
+                if (forfpmacs.get(mac).intValue() == upsegment.getBridgePortsOnSegment().size()) {
+                    upsegment.getMacsOnSegment().add(mac);
+                    clearmacs.add(mac);
+                }
+            });
+            domain.cleanForwarders(clearmacs);
+            
+        });
 
-        upsegment.getBridgePortsOnSegment().add(designatedport);
+        upsegment.getBridgePortsOnSegment().add(rootport);
         upsegment.getMacsOnSegment().retainAll(macsonsegment);
-
         domain.cleanForwarders(upsegment.getMacsOnSegment());
 
         throughset.stream().forEach(bft -> SharedSegment.createAndAddToBroadcastDomain(domain,

@@ -45,74 +45,14 @@ public class BridgeForwardingTable implements Topology {
     public static Set<BridgePortWithMacs> getThroughSet(BridgeForwardingTable bridgeFt, Set<BridgePort> excluded) throws BridgeTopologyException {
 
         for (BridgePort exclude: excluded) {
-            if (exclude.getNodeId() != bridgeFt.getNodeId()) {
+            if (exclude.getNodeId().intValue() != bridgeFt.getNodeId().intValue()) {
                 throw new BridgeTopologyException("getThroughSet: node mismatch ["
                         + bridgeFt.getNodeId() + "]", exclude);
             }
         }
         Set<BridgePortWithMacs> throughSet= new HashSet<BridgePortWithMacs>();
-BFT:    for (BridgePort bp: bridgeFt.getPorttomac().keySet()) {
-            for (BridgePort exclude: excluded) {
-                    if (bp.getBridgePort() == exclude.getBridgePort()
-                    ) {
-                    continue BFT;
-                }
-            }
-            throughSet.add(bridgeFt.getPorttomac().get(bp));
-        }
+        bridgeFt.getPorttomac().stream().filter(ptm ->!excluded.contains(ptm.getPort())).forEach(ptm -> throughSet.add(ptm));
         return throughSet;
-    }
-
-    public static Set<BridgeForwardingTableEntry> upForwarders(BridgeForwardingTable upBridge, BridgeForwardingTable dwBridge,
-                                                                  BridgePort upPort, BridgePort dwPort) throws BridgeTopologyException {
-          
-          if (upBridge.getNodeId() != upPort.getNodeId()) {
-              throw new BridgeTopologyException("upForwarders: node mismatch ["+upBridge.getNodeId()+"]",upPort);
-          }
-
-          if (dwBridge.getNodeId() != dwPort.getNodeId()) {
-              throw new BridgeTopologyException("upForwarders: node mismatch ["+dwBridge.getNodeId()+"]",dwPort);
-          }
-          Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
-          for (BridgeForwardingTableEntry ylink: dwBridge.getBftEntries()) {
-              if (ylink.getBridgePort() == dwPort.getBridgePort() 
-                  && upBridge.getMactoport().get(ylink.getMacAddress()) == null 
-              ) {
-                  forwarders.add(ylink);
-              }
-          }
-          if (LOG.isDebugEnabled()) {
-              LOG.debug("upForwarders: -> \n{}", 
-                BridgeForwardingTableEntry.printTopology(forwarders));
-          }
-          return forwarders;
-    }
-
-    public static Set<BridgeForwardingTableEntry> downForwarders(BridgeForwardingTable upBridge, BridgeForwardingTable dwBridge,
-        BridgePort upPort, BridgePort dwPort) throws BridgeTopologyException {
-        
-        if (upBridge.getNodeId() != upPort.getNodeId()) {
-            throw new BridgeTopologyException("downForwarders: node mismatch ["+upBridge.getNodeId()+"]",upPort);
-        }
-
-        if (dwBridge.getNodeId() != dwPort.getNodeId()) {
-            throw new BridgeTopologyException("downForwarders: node mismatch ["+dwBridge.getNodeId()+"]",dwPort);
-        }
-
-        Set<BridgeForwardingTableEntry> forwarders = new HashSet<BridgeForwardingTableEntry>();
-        for (BridgeForwardingTableEntry xlink: upBridge.getBftEntries()) {
-            if (xlink.getBridgePort() == upPort.getBridgePort() 
-                && dwBridge.getMactoport().get(xlink.getMacAddress()) == null 
-               
-            ) {
-                forwarders.add(xlink);
-            }
-        }
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("downForwarders: -> \n{}", 
-              BridgeForwardingTableEntry.printTopology(forwarders));
-        }
-        return forwarders;
     }
 
     public static BridgeForwardingTable create(Bridge bridge, Set<BridgeForwardingTableEntry> entries) throws BridgeTopologyException {
@@ -122,136 +62,129 @@ BFT:    for (BridgePort bp: bridgeFt.getPorttomac().keySet()) {
         if (entries == null) {
             throw new BridgeTopologyException("bridge forwarding table must not be null");
         }
-        BridgeForwardingTable bridgeFt = new BridgeForwardingTable(bridge,entries);
-
+        
         for (BridgeForwardingTableEntry link: entries) {
             if (link.getNodeId().intValue() != bridge.getNodeId().intValue()) {
                 throw new BridgeTopologyException("create: bridge:["+ bridge.getNodeId()+ "] and forwarding table must have the same nodeid", link);                
             }
-            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF) {
-                bridgeFt.getIdentifiers().add(link.getMacAddress());
+        }
+        final BridgeForwardingTable bridgeFt = new BridgeForwardingTable(bridge,entries);
+
+        entries.stream().filter(link -> link.getBridgeDot1qTpFdbStatus() 
+                                == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_SELF).
+                                forEach(link -> {
+            bridgeFt.getIdentifiers().add(link.getMacAddress());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("create: bridge:[{}] adding bid {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
+            }
+        });
+        
+        for (BridgeForwardingTableEntry link: entries) {
+            if (link.getBridgeDot1qTpFdbStatus() 
+                                != BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
+                continue;
+            }
+            if (bridgeFt.getIdentifiers().contains(link.getMacAddress())) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("create: bridge:[{}]  adding bridge identifier {}",
+                    LOG.debug("create: bridge:[{}] skip bid {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
+                }
+                continue;
+            }
+                
+            BridgePort bridgeport = BridgePort.getFromBridgeForwardingTableEntry(link);
+                
+            BridgePortWithMacs bpwm = bridgeFt.getBridgePortWithMacs(bridgeport);
+            if (bpwm == null ) {
+                bridgeFt.getPorttomac().add(BridgePortWithMacs.create(bridgeport,new HashSet<String>()));
+            }
+            bridgeFt.getBridgePortWithMacs(bridgeport).getMacs().add(link.getMacAddress());
+
+            if (bridgeFt.getMactoport().containsKey(link.getMacAddress())) {
+                bridgeFt.getDuplicated().put(link.getMacAddress(), new HashSet<BridgePort>());
+                bridgeFt.getDuplicated().get(link.getMacAddress()).add(bridgeport);
+
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("create: bridge:[{}] duplicated {}",
                               bridge.getNodeId(),
                               link.printTopology());
                 }
                 continue;
             }
-        }
-        Map<BridgePort, Set<String>> porttomac = new HashMap<BridgePort, Set<String>>();
-        for (BridgeForwardingTableEntry link: entries) {
-            if (link.getBridgeDot1qTpFdbStatus() == BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED ) {
-                if (bridgeFt.getIdentifiers().contains(link.getMacAddress())) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("create: bridge:[{}] skipping bft bridge identifier {}",
-                                  bridge.getNodeId(),
-                                  link.printTopology());
-                    }
-                    continue;
-                }
-            }
-
-            if (bridgeFt.getMactoport().containsKey(link.getMacAddress())) {
-                bridgeFt.getDuplicated().put(link.getMacAddress(), new HashSet<BridgeForwardingTableEntry>());
-                bridgeFt.getDuplicated().get(link.getMacAddress()).add(link);
-                BridgeForwardingTableEntry firstDuplicated = bridgeFt.getMactoport().remove(link.getMacAddress());
-                BridgePort firstduplicatedbridgeport = BridgePort.getFromBridgeForwardingTableEntry(firstDuplicated);
-                bridgeFt.getDuplicated().get(link.getMacAddress()).add(firstDuplicated);
-                porttomac.get(firstduplicatedbridgeport).
-                remove(link.getMacAddress());
-                continue;
-            }
-            if (bridgeFt.getDuplicated().containsKey(link.getMacAddress())) {
-                bridgeFt.getDuplicated().get(link.getMacAddress()).add(link);
-                continue;
-            }
-            bridgeFt.getMactoport().put(link.getMacAddress(), link);
             
-            BridgePort bridgeport = BridgePort.getFromBridgeForwardingTableEntry(link);
-            if (!porttomac.containsKey(bridgeport)) {       
-                porttomac.put(bridgeport, new HashSet<String>());
+            if (LOG.isDebugEnabled()) {
+                    LOG.debug("create: bridge:[{}] adding {}",
+                          bridge.getNodeId(),
+                          link.printTopology());
             }
-            porttomac.get(bridgeport).add(link.getMacAddress());
+            bridgeFt.getMactoport().put(link.getMacAddress(), bridgeport);
         }
 
         for (String mac: bridgeFt.getDuplicated().keySet()) {
-            Set<String> container = new HashSet<String>();
-            BridgeForwardingTableEntry saved = null;
-            for (BridgeForwardingTableEntry link: bridgeFt.getDuplicated().get(mac)) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("create: bridge:[{}] mac:[{}], duplicated {}",
-                              bridge.getNodeId(),
-                              mac,
-                              link.printTopology());
-                }
-                BridgePort bridgeport = BridgePort.getFromBridgeForwardingTableEntry(link);
-                if (container.size() < porttomac.get(bridgeport).size()) {
-                    saved=link;
-                    container = porttomac.get(bridgeport);
-                }
-            }
+            BridgePort saved = bridgeFt.getMactoport().remove(mac);            
             if (LOG.isDebugEnabled()) {
-                LOG.debug("create: bridge:[{}] mac:[{}] saved {}",
+                LOG.debug("create: bridge:[{}] remove duplicated [{}] from {}",
                           bridge.getNodeId(),
                           mac,
                           saved.printTopology());
             }
-            
-            bridgeFt.getMactoport().put(mac, saved);
-            
-            BridgePort bridgeport = BridgePort.getFromBridgeForwardingTableEntry(saved);
-            if (!bridgeFt.getPorttomac().containsKey(bridgeport)) {       
-                porttomac.put(bridgeport, new HashSet<String>());
-            }
-            porttomac.get(bridgeport).add(saved.getMacAddress());
 
+            BridgePortWithMacs savedwithmacs = bridgeFt.getBridgePortWithMacs(saved);
+            savedwithmacs.getMacs().remove(mac);
+            
+            for (BridgePort dupli: bridgeFt.getDuplicated().get(mac)) {
+                BridgePortWithMacs dupliwithmacs = bridgeFt.getBridgePortWithMacs(dupli);
+                dupliwithmacs.getMacs().remove(mac);
+            }
+            bridgeFt.getDuplicated().get(mac).add(saved);
         }
-        
-        for (BridgePort port: porttomac.keySet()) {
-            bridgeFt.getPorttomac().put(port, BridgePortWithMacs.create(port, porttomac.get(port)));
-        }
+
         return bridgeFt;
     }
     
     private final Bridge m_bridge;
     private final Set<BridgeForwardingTableEntry> m_entries;
-    private Map<String, BridgeForwardingTableEntry> m_mactoport = new HashMap<String, BridgeForwardingTableEntry>();
-    private Map<String, Set<BridgeForwardingTableEntry>> m_duplicated = new HashMap<String, Set<BridgeForwardingTableEntry>>();
-    private Map<BridgePort, BridgePortWithMacs> m_porttomac = new HashMap<BridgePort, BridgePortWithMacs>();
+    private Map<String, BridgePort> m_mactoport = new HashMap<String, BridgePort>();
+    private Map<String, Set<BridgePort>> m_duplicated = new HashMap<String, Set<BridgePort>>();
+    private Set<BridgePortWithMacs> m_porttomac = new HashSet<BridgePortWithMacs>();
 
     private BridgeForwardingTable(Bridge bridge, Set<BridgeForwardingTableEntry> entries) {
         m_bridge = bridge;
         m_entries = entries;
     }
 
-    public Map<BridgePort,BridgePortWithMacs> getPorttomac() {
+    public Set<BridgePortWithMacs> getPorttomac() {
         return m_porttomac;
     }
 
     public BridgePortWithMacs getBridgePortWithMacs(BridgePort port) {
-            return m_porttomac.get(port);
-    }
-
-    public Set<BridgeForwardingTableEntry> getBftEntries() {
-        return new HashSet<BridgeForwardingTableEntry>(m_mactoport.values());
+        for (BridgePortWithMacs bpmx: m_porttomac) {
+            if (bpmx.getPort().equals(port)) {
+                return bpmx;
+            }
+        }
+        return null;
     }
     
-    public Map<String, BridgeForwardingTableEntry> getMactoport() {
+    public Map<String, BridgePort> getMactoport() {
         return m_mactoport;
     }
 
 
-    public void setMactoport(Map<String, BridgeForwardingTableEntry> mactoport) {
+    public void setMactoport(Map<String, BridgePort> mactoport) {
         m_mactoport = mactoport;
     }
 
-    public Map<String, Set<BridgeForwardingTableEntry>> getDuplicated() {
+    public Map<String, Set<BridgePort>> getDuplicated() {
         return m_duplicated;
     }
 
 
     public void setDuplicated(
-            Map<String, Set<BridgeForwardingTableEntry>> duplicated) {
+            Map<String, Set<BridgePort>> duplicated) {
         m_duplicated = duplicated;
     }
 
@@ -290,12 +223,11 @@ BFT:    for (BridgePort bp: bridgeFt.getPorttomac().keySet()) {
     }
 
     public BridgePort getPort(Integer bp) {
-        for (BridgePort bridgeport: m_porttomac.keySet()) {
-            if (bridgeport.getBridgePort() == bp) {
-                return bridgeport;
-            }
-        }
-        return null;        
+        BridgePortWithMacs bpwm = 
+            m_porttomac.stream().filter(bpm -> bpm.getPort().getBridgePort() == bp).iterator().next();
+        if (bpwm == null)
+            return null;    
+        return bpwm.getPort();
     }
 
     public void setRootPort(Integer rootPort) {
