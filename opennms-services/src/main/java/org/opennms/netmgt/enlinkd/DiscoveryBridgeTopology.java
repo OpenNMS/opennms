@@ -348,12 +348,10 @@ public class DiscoveryBridgeTopology extends Discovery {
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
                 forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("calculate: upated forwarders\n{}", 
-                 m_domain.printTopology());
-        }
+        
+        bridgeFtMapCalcul.values().stream().
+            forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
 
-        bridgeFtMapCalcul.values().stream().forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
         if (LOG.isDebugEnabled()) {
             LOG.debug("calculate: calculated forwarders\n{}", 
                  m_domain.printTopology());
@@ -373,17 +371,12 @@ public class DiscoveryBridgeTopology extends Discovery {
              upsimpleconn = 
                     new BridgeSimpleConnection(bridgeUpFT, 
                                                  bridgeFT);
-            if (upsimpleconn.doit()) {
-                if (LOG.isDebugEnabled()) {
+             upsimpleconn.doit();
+            if (LOG.isDebugEnabled()) {
                     LOG.debug("down: level: {}, bridge:[{}] -> {}", 
                               level,
                              bridgeFT.getNodeId(),
                              upsimpleconn.printTopology());
-                }
-            } else {
-                throw new BridgeTopologyException(
-                      "down: level: " + level +", bridge:["+bridgeFT.getNodeId()+"], no simple connection", 
-                      upsimpleconn);
             }
         }
         if (level == 1) {
@@ -442,17 +435,12 @@ public class DiscoveryBridgeTopology extends Discovery {
             BridgeSimpleConnection simpleconn = 
                     new BridgeSimpleConnection(curBridgeFT,
                                        bridgeFT);
-            if (simpleconn.doit()) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("down: level: {}, bridge:[{}]. {}", 
-                             level,
-                             bridgeFT.getNodeId(),
-                             simpleconn.printTopology());
-                }
-            } else {
-                throw new BridgeTopologyException(
-                              "down: level: " + level +", bridge:["+bridgeFT.getNodeId()+"], no simple connection", 
-                              simpleconn);
+            simpleconn.doit();
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("down: level: {}, bridge:[{}]. {}", 
+                         level,
+                         bridgeFT.getNodeId(),
+                         simpleconn.printTopology());
             }
             if (simpleconn.getSecondBridgePort() != 
                     bridgeFT.getBridge().getRootPort()
@@ -527,14 +515,7 @@ public class DiscoveryBridgeTopology extends Discovery {
                             maconupsegment,
                             bridgeFT.getRootPort(),
                             BridgeForwardingTable.getThroughSet(bridgeFT, parsed));
-        checkforwarders.stream().forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));
-        
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("down: level: {}, bridge:[{}], merged ->\n{}", 
-                      level,
-                      bridgeFT.getNodeId(),
-                      m_domain.printTopology());
-        }        
+        checkforwarders.stream().forEach(ft -> BroadcastDomain.addforwarders(m_domain, ft));        
     }
     
 }

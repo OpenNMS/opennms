@@ -195,7 +195,7 @@ public class BridgeForwardingTable implements Topology {
 
 
     public int getBftSize() {
-        return m_mactoport.size();
+        return m_entries.size();
     }
     
     public Set<String> getBftMacs() {
