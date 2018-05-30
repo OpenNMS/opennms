@@ -620,7 +620,6 @@ public abstract class EnLinkdTestHelper {
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macvigrenmualv02));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac0003ea0176ca));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac00e0b1bba8f2));
-            bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 15, 15, mac0003ea0175d6));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, macomunespiazzowl1));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac00804867f4e7));
             bftvillpizzasw01.add(addBridgeForwardingTableEntry(villpizzasw01, 1, 1, mac4c5e0c8007a1));

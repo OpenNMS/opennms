@@ -148,23 +148,23 @@ public class BridgeSimpleConnection implements Topology {
     public void doit() throws BridgeTopologyException {
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("doit: ->\n first bridge -> \n{}\n second bridge -> \n{}",
+            LOG.debug("\n first bridge -> \n{}\n second bridge -> \n{}",
                       m_xBridge.printTopology(),
                       m_yBridge.printTopology());
         }
 
         if (m_xBridge.getPorttomac().size() == 1) {
             m_xyPort=m_xBridge.getPorttomac().iterator().next().getPort();
-            LOG.debug("doit: only one port found: {} -> bridge:[{}] ", 
-                      m_xyPort.printTopology(),
-                      m_yBridge.getNodeId());
+            LOG.debug("only one port found: bridge:[{}] <- {} ", 
+                      m_yBridge.getNodeId(),
+                      m_xyPort.printTopology());
         }
 
         if (m_yBridge.getPorttomac().size() == 1) {
             m_yxPort=m_yBridge.getPorttomac().iterator().next().getPort();
-            LOG.debug("doit: only one port found: {} -> bridge:[{}] ", 
-                      m_yxPort.printTopology(),
-                      m_xBridge.getNodeId());
+            LOG.debug("only one port found: bridge:[{}] <- {} ", 
+                      m_xBridge.getNodeId(),
+                      m_yxPort.printTopology());
         }
 
         // there is a mac of Y found on X BFT
@@ -172,9 +172,9 @@ public class BridgeSimpleConnection implements Topology {
              try {
                 m_xyPort = BridgeSimpleConnection.condition1(m_yBridge, m_xBridge);
             } catch (BridgeTopologyException e) {
-                LOG.debug("doit: bridge[{}] -> [{}], {}",
-                      m_yBridge.getNodeId(),
+                LOG.debug("bridge: [{}] -> [{}], {}",
                       m_xBridge.getNodeId(),
+                      m_yBridge.getNodeId(),
                       e.getMessage());
             }
         }        
@@ -184,9 +184,9 @@ public class BridgeSimpleConnection implements Topology {
             try {
                m_yxPort = BridgeSimpleConnection.condition1(m_xBridge, m_yBridge);
             } catch (BridgeTopologyException e) {
-                LOG.debug("doit: bridge[{}] -> [{}], {}",
-                      m_xBridge.getNodeId(),
+                LOG.debug("bridge: [{}] -> [{}], {}",
                       m_yBridge.getNodeId(),
+                      m_xBridge.getNodeId(),
                       e.getMessage());
             }
         }        
@@ -198,7 +198,7 @@ public class BridgeSimpleConnection implements Topology {
         Set<String> commonlearnedmacs = new HashSet<String>(m_xBridge.getMactoport().keySet()); 
         commonlearnedmacs.retainAll(new HashSet<String>(m_yBridge.getMactoport().keySet()));
         if (LOG.isDebugEnabled()) {
-            LOG.debug("doit: bridge[{}] <-> [{}] common (learned mac): {}",
+            LOG.debug("bridge: [{}] <-> [{}] common (learned mac): {}",
                   m_yBridge.getNodeId(),
                   m_xBridge.getNodeId(),
                   commonlearnedmacs);
@@ -393,11 +393,28 @@ public class BridgeSimpleConnection implements Topology {
             BridgePort bridge2port1 = bridge2Ft.getMactoport().get(mac);
             ports.add(bridge2port1);
             if (bridge1port.getBridgePort().intValue() != bridge1port1.getBridgePort().intValue()) {
-                LOG.debug("condition2: bridge[{}] -> {}", 
+                LOG.debug("condition2: bridge:[{}] <- {}", 
                           bridge1Ft.getNodeId(),
                           bridge2port1.printTopology());
                 return bridge2port1;
             }
+        }
+
+        //FIXME This is a particolar condition in which I get the root port with more mac address
+        if (bridge2Ft.getBridge().isRootBridge()) {
+            BridgePort port = null;
+            int size = 0;
+            for (BridgePortWithMacs bft: bridge2Ft.getPorttomac()) {
+                if (size <= bft.getMacs().size()) {
+                    port = bft.getPort();
+                }
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("condition2: root bridge port: bridge:[{}] <- {}", 
+                          bridge1Ft.getNodeId(),
+                          port.printTopology());
+            }
+            return port;
         }
         
         //FIXME This is a particolar condition in which I get the root port || the only port without intersection
@@ -408,15 +425,15 @@ public class BridgeSimpleConnection implements Topology {
                 }
                 if (bridge2Ft.getBridge().isNewTopology() && bridge2Ft.getPorttomac().size() == 2) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("condition2: new bridge and port: bridge[{}] -> {}", 
+                        LOG.debug("condition2: new bridge and port: bridge:[{}] <- {}", 
                           bridge1Ft.getNodeId(),
                           bft.printTopology());
                     }
                     return bft.getPort();
                 }
-                if ( bft.getPort().getBridgePort().intValue() == bridge2Ft.getRootBridgePort().intValue()) {
+                if (!bridge2Ft.getBridge().isRootBridge() && bft.getPort().getBridgePort().intValue() == bridge2Ft.getRootBridgePort().intValue()) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("condition2: root port: bridge[{}] -> {}", 
+                        LOG.debug("condition2: root port: bridge:[{}] <- {}", 
                           bridge1Ft.getNodeId(),
                           bft.printTopology());
                     }
