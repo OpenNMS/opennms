@@ -1052,6 +1052,7 @@ ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (red
 
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+    dtype                   TEXT NOT NULL,
     eventUei                VARCHAR(256) NOT NULL,
     systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
@@ -1121,6 +1122,12 @@ CREATE TABLE alarm_attributes (
 
 CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
 CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
+
+CREATE TABLE situation_alarms (
+    situation_id    INTEGER,
+    alarms_alarmid  INTEGER
+);
+
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
