@@ -16,7 +16,7 @@
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
 * The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
 * All JavaScript code in OpenNMS has been unified under a single build system. While we did quite a bit of testing of the resulting changes, it's possible something was missed. If you run into any JS-related issues in the UI please link:https://issues.opennms.org/[create an issue].
-* The default database access implementation is now using _HikariCP_, rather than _C3P0_. This will probably not affect you (other than give better peformance) but could affect unusual workloads.
+* The default database access implementation is now using _HikariCP_, rather than _C3P0_. This will probably not affect you (other than give better performance) but could affect unusual workloads.
 * Backshift is now the default rendering engine for graphs.
 
 [[releasenotes-22-opennms-es-rest]]
@@ -67,7 +67,7 @@ Besides that the following default values have been changed:
 | Parameter | Old default | New default
 
 | `batchSize`
-| `1
+| `1`
 | `200`
 
 | `batchInterval`
@@ -102,7 +102,7 @@ For more details please refer to link:../guide-admin/index.html#ga-elasticsearch
 * The index creation of the _Elasticsearch ReST plugin_ has changed and is now configurable. Please refer to <<releasenotes-22-opennms-es-rest-index-properties>>.
 * The _Elasticsearch ReST plugin_ no longer supports ElasticSearch version 2.4. A version >= 5.x must be used.
 * By default the data collection gathered data twice from SNMP agents supporting the MIB-II with 32bit and 64bit counter on network interfaces.
-  The default 32bit interface counters are no disabled by default and only 64bit counters are collected.
+  The default 32bit interface counters are now disabled by default and only 64bit counters are collected.
 
 IMPORTANT: If you have legacy SNMP agents which only support 32bit interface counters, the data collection for this interfaces will stop after you upgraded to 22.0.0.
   To get them enabled, you have to create a data collection package and add the `mib2-interfaces` data collection group manually for this devices with the example below.
