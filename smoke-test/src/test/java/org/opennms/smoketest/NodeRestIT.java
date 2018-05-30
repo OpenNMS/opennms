@@ -84,13 +84,6 @@ public class NodeRestIT {
         final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
         restClient = new RestClient(opennmsHttp);
     }
-    
-    @Before
-    public void initializeRest() {
-        final InetSocketAddress opennmsHttp = new LocalTestEnvironment().getServiceAddress(ContainerAlias.OPENNMS,
-                8980);
-        restClient = new RestClient(opennmsHttp);
-    }
 
     @Test
     public void testRestCallsOnNodesInterfacesAndServices() {
