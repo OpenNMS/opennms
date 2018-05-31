@@ -356,7 +356,7 @@ public final class BroadcastEventProcessor implements EventListener {
                 return;
             }
             final AutoAcknowledgeAlarm autoAck = getNotifdConfigManager().getConfiguration().getAutoAcknowledgeAlarm().get();
-            if ( autoAck.getUeis().isEmpty() || !autoAck.getUeis().contains(event.getUei()) ) {
+            if ( !autoAck.getUeis().isEmpty() && !autoAck.getUeis().contains(event.getUei()) ) {
                 return;
             }
             Collection<Integer> notifIDs = getNotificationManager().acknowledgeNoticeBasedOnAlarms(event);
