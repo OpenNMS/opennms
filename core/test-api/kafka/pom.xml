@@ -62,9 +62,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka_2.11</artifactId>
-      <version>${kafkaStreamsVersion}</version>
+      <groupId>org.apache.servicemix.bundles</groupId>
+      <artifactId>org.apache.servicemix.bundles.kafka_2.11</artifactId>
+      <version>${kafkaStreamsBundleVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
