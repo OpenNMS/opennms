@@ -63,9 +63,9 @@ public class DiscoveryBridgeDomains extends Discovery {
         for (BroadcastDomain curBDomain : m_linkd.getQueryManager().getAllBroadcastDomains()) {
             if (BroadcastDomain.checkMacSets(setA, curBDomain.getMacsOnSegments())) {
                 if (LOG.isDebugEnabled()) {
-                    LOG.debug("find: node:{}, found:\n{}",
+                    LOG.debug("find: node:{}, domain:{}",
                              nodes, 
-                          curBDomain.printTopology());
+                          curBDomain.getBridgeNodesOnDomain());
                 }
                 if (domain != null) {
                     throw new BridgeTopologyException("at least two domains found", domain);
@@ -74,31 +74,25 @@ public class DiscoveryBridgeDomains extends Discovery {
             }
         }
 
+        if (domain == null) {
+            LOG.debug("find: nodes: [{}]. No domain found, creating new Domain", nodes);
+            domain = new BroadcastDomain();
+            m_linkd.getQueryManager().save(domain);
+        }
+
         for (Integer nodeid: nodes) {
             BroadcastDomain olddomain = m_linkd.getQueryManager().getBroadcastDomain(nodeid);
             if (olddomain == null) {
                 continue;
             }
-            if (domain == null || domain != olddomain ) {
-                m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("find: node:[{}]. Removed from Old Domain \n{}", 
-                         nodeid, olddomain.printTopology());
-                }
+            if ( domain == olddomain ) {
                 continue;
-            }            
-            if (domain == olddomain) {
-                if (LOG.isDebugEnabled()) {
-                               LOG.debug("find: node:[{}]. node found on previuos Domain\n{}", 
-                         nodeid,domain.printTopology());
-                }
-                continue;
-            } 
-        }
-        if (domain == null) {
-            LOG.debug("find: nodes: [{}]. No domain found, creating new Domain", nodes);
-            domain = new BroadcastDomain();
-            m_linkd.getQueryManager().save(domain);
+            }
+            m_linkd.getQueryManager().reconcileTopologyForDeleteNode(olddomain, nodeid);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("find: node:[{}]. Removed from Old Domain \n{}", 
+                     nodeid, olddomain.printTopology());
+            }
         }
 
         return domain;        
@@ -200,7 +194,7 @@ public class DiscoveryBridgeDomains extends Discovery {
                     LOG.info("run: {}", future.get());
                 }
             } catch (InterruptedException | ExecutionException e) {
-                LOG.error("run: executing tasks {}", e.getMessage(), e);
+                LOG.error("run: executing task {}", e.getMessage(), e);
             }
             executorService.shutdown();
         } else {

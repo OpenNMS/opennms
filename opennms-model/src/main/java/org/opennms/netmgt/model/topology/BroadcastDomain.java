@@ -300,10 +300,24 @@ public class BroadcastDomain implements Topology {
         if (bridge.getNodeId() == null) {
             throw new BridgeTopologyException("clearTopologyForBridge: Bridge Nodeid must be not null:", domain);
         }
-        if (domain.getBridges().size() == 1) {
+        
+        if (bridge.isNewTopology()) {
+            return;
+        }
+
+        Set<Bridge> notnew = new HashSet<Bridge>();
+        for (Bridge cbridge: domain.getBridges()) {
+            if (cbridge.isNewTopology()) {
+                continue;
+            }
+            notnew.add(cbridge);
+        }
+
+        if (notnew.size() == 1) {
             domain.clearTopology();
             return;
         }
+
         SharedSegment topsegment = null;
         if (bridge.isRootBridge()) {
             for (SharedSegment segment: domain.getSharedSegments(bridge.getNodeId())) {
@@ -336,6 +350,8 @@ public class BroadcastDomain implements Topology {
         }
         
         BridgePort toberemoved = topsegment.getBridgePort(bridge.getNodeId());
+        domain.getForwarding().remove(bridge.getNodeId());
+        bridge.setRootPort(null);
         if (toberemoved == null) {
             return;
         } else {
@@ -359,8 +375,6 @@ public class BroadcastDomain implements Topology {
         }
         
         domain.m_topology = topology;
-        domain.getForwarding().remove(bridge.getNodeId());
-        bridge.setRootPort(null);
         //assigning again the forwarders to segment if is the case 
         Map<String, Set<BridgePort>> forwardermap =  new HashMap<String, Set<BridgePort>>();
         for (BridgePortWithMacs forwarder: domain.getForwarding()) {
