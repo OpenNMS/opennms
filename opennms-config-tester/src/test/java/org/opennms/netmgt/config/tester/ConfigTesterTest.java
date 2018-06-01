@@ -33,14 +33,22 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Ignore;
@@ -48,12 +56,20 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.test.DaoTestConfigBean;
 import org.springframework.util.StringUtils;
 
+import com.google.common.io.Files;
+
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ConfigTesterTest {
+
+    private final static String OPENNMS_HOME_NAME = "opennms.home";
+    private String opennmsHomeOriginal;
+    private File opennmsHomeDir;
+
     private static Set<String> m_filesTested = new HashSet<>();
     private static Set<String> m_filesIgnored = new HashSet<>();
     private ConfigTesterDataSource m_dataSource;
@@ -65,6 +81,18 @@ public class ConfigTesterTest {
         m_dataSource = new ConfigTesterDataSource();
         DataSourceFactory.setInstance(m_dataSource);
         FilterDaoFactory.setInstance(new ConfigTesterFilterDao());
+    }
+
+    @After
+    public void resetOpennmsHome() {
+        if (opennmsHomeOriginal == null) {
+            System.clearProperty(OPENNMS_HOME_NAME);
+        } else {
+            System.setProperty(OPENNMS_HOME_NAME, opennmsHomeOriginal);
+        }
+        if(opennmsHomeDir != null){
+            opennmsHomeDir.delete();
+        }
     }
 
     @Test
@@ -312,11 +340,8 @@ public class ConfigTesterTest {
     }
 
     @Test
-    /**
-     * FIXME: Don't know why this is off.
-     */
     public void testOpennms() {
-        ignoreConfigFile("opennms.properties");
+        testConfigFile("opennms.properties");
     }
 
     @Test
@@ -617,5 +642,73 @@ public class ConfigTesterTest {
             Collections.sort(files);
             fail("These files in " + configDir.getAbsolutePath() + " were not tested: \n\t" + StringUtils.collectionToDelimitedString(files, "\n\t"));
         }
+    }
+
+
+    private void setUpOpennmsHomeInTmpDir() {
+        opennmsHomeOriginal = System.getProperty(OPENNMS_HOME_NAME);
+        opennmsHomeDir = com.google.common.io.Files.createTempDir();
+        System.setProperty(OPENNMS_HOME_NAME, opennmsHomeDir.getAbsolutePath());
+    }
+
+    @Test
+    public void testOpennmsPropertiesD() throws IOException {
+
+        setUpOpennmsHomeInTmpDir();
+
+        // create valid properties file in opennms.properties.d:
+        Properties properties = new Properties();
+        properties.setProperty("key", "value");
+        savePropertiesToPropertiesD(properties);
+
+        // create valid xml file in opennms.properties.d:
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><element></element>";
+        saveXmlToPropertiesD(xml);
+
+        // test it => shouldn't complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testDetectionOfMalformedPropertiesFile() throws IOException {
+
+        setUpOpennmsHomeInTmpDir();
+
+        // create broken properties file in opennms.properties.d:
+        File file = createPropertiesFileInPropertiesD("properties");
+        String invalidCharacter="'\\u0zb9";
+        Files.write(invalidCharacter, file, StandardCharsets.UTF_8);
+
+        // test it => should complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    @Test(expected = ConfigCheckValidationException.class)
+    public void testDetectionOfMalformedXmlFile() throws IOException {
+        setUpOpennmsHomeInTmpDir();
+
+        // create broken xml file in opennms.properties.d:
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><elementThatIsNotClosed>";
+        saveXmlToPropertiesD(xml);
+
+        // test it => should complain
+        testConfigFile("opennms.properties.d");
+    }
+
+    private void saveXmlToPropertiesD(String xml) throws IOException{
+        File file = createPropertiesFileInPropertiesD("xml");
+        Files.write(xml, file, StandardCharsets.UTF_8);
+    }
+
+    private void savePropertiesToPropertiesD(Properties properties) throws IOException{
+        File file = createPropertiesFileInPropertiesD("properties");
+        properties.store(new FileOutputStream(file), "");
+    }
+
+    private File createPropertiesFileInPropertiesD(String sufffix) throws IOException{
+        Path etcDir = java.nio.file.Files.createDirectories(Paths.get(this.opennmsHomeDir.getPath(), "etc/opennms.properties.d"));
+        File file = new File(etcDir.toFile(), this.getClass().getSimpleName() + "." + sufffix);
+        file.createNewFile();
+        return file;
     }
 }

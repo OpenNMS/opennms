@@ -36,7 +36,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD,ElementType.TYPE})
 public @interface JUnitCollector {
-    String schemaConfig() default "/org/opennms/netmgt/config/test-database-schema.xml";
     String datacollectionConfig();
     String datacollectionType();
     String[] anticipateRrds() default {};

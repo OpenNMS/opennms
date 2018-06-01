@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,38 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.kafka;
+package org.opennms.netmgt.config.tester.checks;
 
-import java.util.concurrent.TimeUnit;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Properties;
 
-import org.apache.kafka.common.utils.Time;
 
+public class PropertiesFileChecker {
 
-public class SystemTime implements Time {
-    @Override
-    public long milliseconds() {
-        return System.currentTimeMillis();
+    private Path file;
+    private Properties properties;
+
+    private PropertiesFileChecker(Path file) {
+        this.file = file;
     }
 
-    @Override
-    public long nanoseconds() {
-        return System.nanoTime();
+    public static PropertiesFileChecker checkFile(Path file) {
+        return new PropertiesFileChecker(file);
     }
 
-    @Override
-    public void sleep(long ms) {
+    public void forSyntax() {
+        loadProperties();
+    }
+
+    private void loadProperties() {
+        properties = new Properties();
+
         try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
+            properties.load(new FileReader(file.toFile()));
+        } catch (IOException | IllegalArgumentException e) {
+            throw new ConfigCheckValidationException(e);
         }
-    }
-
-    @Override
-    public long hiResClockMs() {
-        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
     }
 }

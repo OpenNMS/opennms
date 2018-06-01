@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.config;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -43,7 +42,6 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
 import org.opennms.netmgt.config.filter.Column;
@@ -95,15 +93,8 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      */
     private static boolean m_loaded = false;
 
-    /**
-     * Private constructor
-     *
-     * @exception java.io.IOException
-     *                Thrown if the specified config file cannot be read
-     */
-    private DatabaseSchemaConfigFactory(final String configFile) throws IOException {
-        m_config = JaxbUtils.unmarshal(DatabaseSchema.class, new File(configFile));
-        finishConstruction();
+    public DatabaseSchemaConfigFactory() throws IOException {
+        this(DatabaseSchemaConfigFactory.class.getResourceAsStream("/database-schema.xml"));
     }
 
     /**
@@ -142,8 +133,7 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
             return;
         }
 
-        final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.DB_SCHEMA_FILE_NAME);
-        m_singleton = new DatabaseSchemaConfigFactory(cfgFile.getPath());
+        m_singleton = new DatabaseSchemaConfigFactory();
         m_loaded = true;
     }
 

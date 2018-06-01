@@ -156,7 +156,7 @@ public class JUnitKafkaServer extends ExternalResource {
     private List<BrokerMetadata> getBrokerMetadatas() {
         ZkClient zkClient = new ZkClient(getZookeeperConnectString(), 1000, 1000, ZKStringSerializer$.MODULE$);
         ZkUtils zkUtils = new ZkUtils(zkClient, new ZkConnection(getZookeeperConnectString()), false);
-        return JavaConversions.asJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
+        return JavaConversions.seqAsJavaList(AdminUtils.getBrokerMetadatas(zkUtils, Enforced$.MODULE$, Option.empty()));
     }
 
     private static int getAvailablePort(final AtomicInteger current, final int max) {

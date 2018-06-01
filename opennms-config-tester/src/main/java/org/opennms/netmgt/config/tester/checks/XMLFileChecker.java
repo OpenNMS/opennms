@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.kafka;
+package org.opennms.netmgt.config.tester.checks;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
+import java.nio.file.Path;
 
-import org.apache.kafka.common.utils.Time;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.xml.sax.SAXException;
 
-public class SystemTime implements Time {
-    @Override
-    public long milliseconds() {
-        return System.currentTimeMillis();
+public class XMLFileChecker {
+    private Path file;
+
+    private XMLFileChecker(Path file) {
+        this.file = file;
     }
 
-    @Override
-    public long nanoseconds() {
-        return System.nanoTime();
+    public static XMLFileChecker checkFile(Path file) {
+        return new XMLFileChecker(file);
     }
 
-    @Override
-    public void sleep(long ms) {
+    public void forSyntax() {
         try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
+            DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(file.toFile());
+            // Document was parsed => we assume its a valid XML
+        } catch (SAXException | ParserConfigurationException | IOException e) {
+            throw new ConfigCheckValidationException(e);
         }
-    }
-
-    @Override
-    public long hiResClockMs() {
-        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
     }
 }

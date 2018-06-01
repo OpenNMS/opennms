@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,35 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.test.kafka;
+package org.opennms.netmgt.config.tester.checks;
 
-import java.util.concurrent.TimeUnit;
-
-import org.apache.kafka.common.utils.Time;
-
-
-public class SystemTime implements Time {
-    @Override
-    public long milliseconds() {
-        return System.currentTimeMillis();
+public class ConfigCheckValidationException extends RuntimeException{
+    public ConfigCheckValidationException(String message){
+        super(message);
     }
 
-    @Override
-    public long nanoseconds() {
-        return System.nanoTime();
-    }
-
-    @Override
-    public void sleep(long ms) {
-        try {
-            Thread.sleep(ms);
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-    }
-
-    @Override
-    public long hiResClockMs() {
-        return TimeUnit.NANOSECONDS.toMillis(nanoseconds());
+    public ConfigCheckValidationException(Exception e){
+        super(e);
     }
 }

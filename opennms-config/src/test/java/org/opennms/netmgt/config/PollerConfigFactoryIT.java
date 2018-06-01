@@ -34,10 +34,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import junit.framework.TestCase;
-
 import org.opennms.core.db.DataSourceFactory;
-import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.xml.JaxbUtils;
@@ -50,6 +47,8 @@ import org.opennms.netmgt.config.poller.Rrd;
 import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.mock.MockNetwork;
+
+import junit.framework.TestCase;
 
 public class PollerConfigFactoryIT extends TestCase {
 
@@ -85,7 +84,7 @@ public class PollerConfigFactoryIT extends TestCase {
         super.setUp();
         MockLogAppender.setupLogging();
         
-        DatabaseSchemaConfigFactory.setInstance(new DatabaseSchemaConfigFactory(ConfigurationTestUtils.getInputStreamForResource(this, "/org/opennms/netmgt/config/test-database-schema.xml")));
+        DatabaseSchemaConfigFactory.init();
 
         MockNetwork network = new MockNetwork();
         network.setCriticalService("ICMP");
