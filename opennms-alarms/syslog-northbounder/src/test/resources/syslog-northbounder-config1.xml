@@ -4,9 +4,8 @@
   <nagles-delay>1000</nagles-delay>
   <batch-size>100</batch-size>
   <queue-size>300000</queue-size>
-
-  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
-
+  <date-format>yyyy-MM-dd HH:mm:ss</date-format>
+  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} FIRST:${firstOccurrence} LAST:${lastOccurrence} ; ${logMsg}</message-format>
   <destination>
     <destination-name>localTest1</destination-name>
     <host>127.0.0.1</host>
@@ -19,7 +18,7 @@
     <truncate-message>false</truncate-message>
     <filter name="Filter 1 : Match Node">
       <rule>parameters['owner'] == 'agalue' and uei matches '^.*interfaceDown$'</rule>
-      <message-format>ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource}: ${logMsg}</message-format>
+      <message-format>ALARM ${alarmId} FROM NODE ${nodeLabel}@${foreignSource} FIRST:${firstOccurrence} LAST:${lastOccurrence} : ${logMsg}</message-format>
     </filter>
   </destination>
 
