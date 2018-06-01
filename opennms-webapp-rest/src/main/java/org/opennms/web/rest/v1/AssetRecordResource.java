@@ -62,6 +62,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.base.Strings;
+
 @Component("assetRecordResource")
 @Path("assetRecord")
 @Transactional
@@ -132,7 +134,7 @@ public class AssetRecordResource extends OnmsRestService {
         }
         if (modified) {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-            assetRecord.setLastModifiedBy(request.getRemoteUser());
+            assetRecord.setLastModifiedBy(Strings.nullToEmpty(request.getRemoteUser()));
             assetRecord.setLastModifiedDate(new Date());
             assetRecord.setNode(node);
             m_assetRecordDao.saveOrUpdate(assetRecord);
