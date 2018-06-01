@@ -43,8 +43,7 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Situation extends OnmsAlarm {
 
     private static final long serialVersionUID = 1L;
-    private Set<OnmsAlarm> alarms = new HashSet();
-
+    private Set<OnmsAlarm> alarms = new HashSet<>();
     
     /**
      * <p>getAlarms</p>
@@ -53,7 +52,7 @@ public class Situation extends OnmsAlarm {
      */
     @XmlTransient
     @ElementCollection
-    @JoinTable(name="situation_alarms", joinColumns = @JoinColumn(name="situation_id"))
+    @JoinTable(name="alarm_situations", joinColumns = @JoinColumn(name="situation_id"))
     @Column(name="alarm_id", nullable=false)
     public Set<OnmsAlarm> getAlarms() {
         return alarms;

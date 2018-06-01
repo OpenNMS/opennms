@@ -79,7 +79,7 @@ import org.springframework.core.style.ToStringCreator;
 @Entity
 @Table(name="alarms")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "dtype", discriminatorType=DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "discriminator", discriminatorType=DiscriminatorType.STRING)
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAlarm implements Acknowledgeable, Serializable {
