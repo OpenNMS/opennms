@@ -187,7 +187,7 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
      */
     private String convertAlarmToText(NorthboundAlarm alarm) {
         String alarmXml = null;
-        Map<String, Object> mapping = createMapping(alarm);
+        Map<String, Object> mapping = createMapping(alarm, null);
         LOG.debug("Making substitutions for tokens in message format for alarm: {}.", alarm.getId());
         if (m_jmsDestination.getMessageFormat() != null) {
             alarmXml = PropertiesUtils.substitute(m_jmsDestination.getMessageFormat(), mapping);

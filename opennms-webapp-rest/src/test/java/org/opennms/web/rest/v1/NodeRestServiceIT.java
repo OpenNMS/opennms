@@ -72,7 +72,10 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -256,10 +259,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
-
-        JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/nodes.json")));
-        JSONAssert.assertEquals(expectedObject, restObject, true);
+        String expectedJson = IOUtils.toString(new FileInputStream("src/test/resources/v1/nodes.json"));
+        JSONAssert.assertEquals(expectedJson, json,
+            new CustomComparator(JSONCompareMode.STRICT,
+                // we need to exclude lastModifiedDate since it was just updated in the PUT method:
+                new Customization("node[0].assetRecord.lastModifiedDate", (o1, o2) -> true)));
     }
 
     @Test
