@@ -177,7 +177,8 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
                 if (msgFormat == null) {
                     msgFormat = getConfig().getMessageFormat();
                 }
-                syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm));
+                String dateFormat = getConfig().getDateFormat();
+                syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm, dateFormat));
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
                 level = SyslogUtils.determineLogLevel(alarm.getSeverity());

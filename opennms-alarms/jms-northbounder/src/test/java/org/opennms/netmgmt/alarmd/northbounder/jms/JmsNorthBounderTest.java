@@ -30,6 +30,7 @@ package org.opennms.netmgmt.alarmd.northbounder.jms;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -373,7 +374,7 @@ public class JmsNorthBounderTest {
                 " ossState: qosAlarmState ticketId: tticketId alarmUei: uei.uei.org/uei alarmKey: reductionKey clearKey: clearKey description: eventdescr operInstruct: operInstruct ackTime: \n" +
                 " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence:  nodeId: 1\n" +
                 " nodeLabel: schlazor distPoller: 00000000-0000-0000-0000-000000000000 ifService:  severity: WARNING ticketState:  x733AlarmType: other\n"+
-                " x733ProbableCause: other firstOccurrence: " + StringUtils.iso8601LocalOffsetString(new Date(0)) + " lastOccurrence  eventParmsXml: <eventParms/>";
+                " x733ProbableCause: other firstOccurrence: " + convertDateToDefaultFormat(new Date(0)) + " lastOccurrence  eventParmsXml: <eventParms/>";
         String response = ((TextMessage)m).getText();
         Assert.assertEquals("Contents of message\n'" + response + "'\n not equals\n'" + escapedResponse+"'.", response, escapedResponse);
     }
@@ -618,9 +619,9 @@ public class JmsNorthBounderTest {
         Message m = m_template.receive("MappingTestQueue");
         String escapedResponse = "ackUser:  appDn: applicationDN logMsg: eventlogmsg objectInstance: managedObjectInstance objectType: managedObjectType ossKey: ossPrimaryKey\n" +
                 " ossState: qosAlarmState ticketId: tticketId alarmUei: uei.uei.org/uei alarmKey: reductionKey clearKey: clearKey description: eventdescr operInstruct: operInstruct ackTime: \n" +
-                " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence: " + StringUtils.iso8601LocalOffsetString(date2) + " nodeId: 1\n" +
+                " alarmType: PROBLEM count: 1 alarmId: 9 ipAddr: 127.0.0.1 lastOccurrence: " + convertDateToDefaultFormat(date2) + " nodeId: 1\n" +
                 " nodeLabel: schlazor distPoller: 00000000-0000-0000-0000-000000000000 ifService:  severity: WARNING ticketState:  x733AlarmType: other\n"+
-                " x733ProbableCause: other firstOccurrence: " + StringUtils.iso8601LocalOffsetString(date1) + " lastOccurrence " + StringUtils.iso8601LocalOffsetString(date2) + " eventParmsXml: <eventParms>\n" +
+                " x733ProbableCause: other firstOccurrence: " + convertDateToDefaultFormat(date1) + " lastOccurrence " + convertDateToDefaultFormat(date2) + " eventParmsXml: <eventParms>\n" +
                 "    <parm name=\"syslogmessage\" value=\"Dec 22 2015 20:12:57.1 UTC :  %UC_CTI-3-CtiProviderOpenFailure: %[CTIconnectionId%61232238][ Login User Id%61pguser][Reason code.%61-1932787616][UNKNOWN_PARAMNAME:IPAddress%61172.17.12.73][UNKNOWN_PARAMNAME:IPv6Address%61][App ID%61Cisco CTIManager][Cluster ID%61SplkCluster][Node ID%61splkcucm6p]: CTI application failed to open provider%59 application startup failed\" type=\"string\"/>\n" +
                 "    <parm name=\"severity\" value=\"Error\" type=\"string\"/>\n" +
                 "    <parm name=\"timestamp\" value=\"Dec 22 14:13:21\" type=\"string\"/>\n" +
@@ -635,6 +636,13 @@ public class JmsNorthBounderTest {
         m = m_template.receive("MappingTestQueue");
         Assert.assertNull(m);
     }
+
+    private String convertDateToDefaultFormat(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSSXXX");
+        return simpleDateFormat.format(date);
+
+    }
+
     /**
      * Generate configuration XML.
      *
