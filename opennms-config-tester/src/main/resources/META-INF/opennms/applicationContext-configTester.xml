@@ -314,12 +314,6 @@
     <constructor-arg value="${opennms.home}/etc/opennms-datasources.xml"/>
   </bean>
 
-  <bean id="opennmsServerConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="opennmsServerConfigFactory" class="org.opennms.netmgt.config.OpennmsServerConfigFactory" depends-on="opennmsServerConfigFactory-init" factory-method="getInstance"/>
-
   <bean id="otrsConfigDao" class="org.opennms.netmgt.ticketer.otrs.DefaultOtrsConfigDao"/>
 
   <bean id="otrsConfigDaoCheck" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

@@ -326,6 +326,36 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public int getDefaultCriticalPathRetries() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathRetries();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getDefaultCriticalPathTimeout() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathTimeout();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathIp();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * This method returns the configured critical service name.
      *

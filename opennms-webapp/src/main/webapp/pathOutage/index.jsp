@@ -38,7 +38,6 @@
 		org.opennms.features.topology.link.TopologyLinkBuilder"
 %>
 <%@ page import="org.opennms.features.topology.link.TopologyProvider" %>
-<%@ page import="org.opennms.netmgt.config.OpennmsServerConfigFactory" %>
 <%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
@@ -48,11 +47,9 @@
   <jsp:param name="breadcrumb" value="Path Outages" />
 </jsp:include>
 
-<% OpennmsServerConfigFactory.init(); %>
-
 <%
         List<String[]> testPaths = PathOutageManagerDaoImpl.getInstance().getAllCriticalPaths();
-        InetAddress dcpip = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathIp();
+        InetAddress dcpip = PathOutageManagerDaoImpl.getInstance().getDefaultCriticalPathIp();
         String dcpipString = dcpip != null ? InetAddressUtils.toIpAddrString(dcpip) : null;
         String[] pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(dcpipString, "ICMP");
 %>
