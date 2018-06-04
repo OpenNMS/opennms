@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<notifd-configuration 
+        status="on"
+	match-all="true">
+       <auto-acknowledge-alarm resolution-prefix="RESOLVED: "/> 
+        <queue>
+                <queue-id>default</queue-id>
+                <interval>5s</interval>
+                <handler-class>
+                        <name>org.opennms.netmgt.notifd.DefaultQueueHandler</name>
+                </handler-class>
+        </queue>
+</notifd-configuration>
+
