@@ -36,7 +36,7 @@ When _OpenNMS_ has started again, login to the _Karaf Shell_ and install the fea
 
 [source]
 ----
-features:install tsrm-troubleticketer
+feature:install tsrm-troubleticketer
 ----
 
 The plugin should be ready to use. When troubleshooting, consult the following log files:

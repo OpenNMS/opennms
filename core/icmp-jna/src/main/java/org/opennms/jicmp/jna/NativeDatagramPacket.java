@@ -87,7 +87,7 @@ public class NativeDatagramPacket {
     @Override
     public String toString() {
     
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         
         buf.append("Address: ");
         buf.append(m_address);

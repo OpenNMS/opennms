@@ -1,9 +1,12 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SystemExecuteMonitor
 
-If it is required to execute a system call or run a script to determine a service status, the SystemExecuteMonitor can be used.
+If it is required to execute a system call or run a script to determine a service status, the _SystemExecuteMonitor_ can be used.
 It is calling a script or system command, if required it provides additional arguments to the call.
-To determine the status of the service the SystemExecuteMonitor can rely on 0 or a non-0 exit code of system call.
+To determine the status of the service the _SystemExecuteMonitor_ can rely on `0` or a _non-0_ exit code of system call.
 As an alternative, the output of the system call can be matched against a banner.
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as down.
@@ -29,6 +32,8 @@ If the banner is not available in the output the status is determined as down.
 |===
 
 The parameter `args` supports variable replacement for the following set of variables.
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the configuration
 [options="header, autowidth"]

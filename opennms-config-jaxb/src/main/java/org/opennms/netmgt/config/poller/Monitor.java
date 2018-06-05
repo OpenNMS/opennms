@@ -67,7 +67,7 @@ public class Monitor implements Serializable {
      * to the service monitor.
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Monitor() {
         super();

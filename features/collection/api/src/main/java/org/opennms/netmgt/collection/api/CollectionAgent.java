@@ -28,9 +28,9 @@
 
 package org.opennms.netmgt.collection.api;
 
-import java.io.File;
 import java.net.InetAddress;
 
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.poller.NetworkInterface;
 
 /**
@@ -97,12 +97,7 @@ public interface CollectionAgent extends NetworkInterface<InetAddress> {
      */
     String getLocationName();
 
-    /**
-     * <p>getStorageDir</p>
-     * 
-     * @return a {@link java.io.File} object.
-     */
-    File getStorageDir();
+    ResourcePath getStorageResourcePath();
     
     /**
      * <p>getSysObjectId</p>

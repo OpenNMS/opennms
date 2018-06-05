@@ -30,6 +30,7 @@ package org.opennms.netmgt.config.collectd.jmx;
 
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.netmgt.collection.api.AttributeType;
 
 import java.text.ParseException;
 import java.util.Arrays;
@@ -64,7 +65,7 @@ public class JmxDatacollectionConfigTest extends XmlTestNoCastor<JmxDatacollecti
         final Attrib a = new Attrib();
         a.setName("CollectionUsageThreshold");
         a.setAlias("EdenCollUseThrsh");
-        a.setType("gauge");
+        a.setType(AttributeType.GAUGE);
 
         final CompAttrib comp = new CompAttrib();
         comp.setName("PeakUsage");
@@ -73,12 +74,12 @@ public class JmxDatacollectionConfigTest extends XmlTestNoCastor<JmxDatacollecti
         final CompMember m1 = new CompMember();
         m1.setName("used");
         m1.setAlias("EdenPeakUsageUsed");
-        m1.setType("gauge");
+        m1.setType(AttributeType.GAUGE);
         comp.addCompMember(m1);
         final CompMember m2 = new CompMember();
         m2.setName("committed");
         m2.setAlias("EdenPeakUsgCmmttd");
-        m2.setType("gauge");
+        m2.setType(AttributeType.GAUGE);
         comp.addCompMember(m2);
         
         final Mbean bean = new Mbean();

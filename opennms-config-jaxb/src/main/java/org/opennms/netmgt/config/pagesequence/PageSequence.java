@@ -69,7 +69,7 @@ public class PageSequence implements Serializable {
      * </p>
      */
     @XmlElement(name="page", required=true)
-    private List<Page> m_pages = new ArrayList<Page>();
+    private List<Page> m_pages = new ArrayList<>();
 
     public PageSequence() {
         super();

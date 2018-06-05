@@ -172,7 +172,7 @@ public class RadixTreeParser implements ByteBufferParser<SyslogMessage> {
 
 		@Override
 		public String toString() {
-			StringBuffer buffer = new StringBuffer();
+			final StringBuilder buffer = new StringBuilder();
 			buffer.append("[");
 			buffer.append(members.stream().map(ParserStage::toString).collect(Collectors.joining(", ")));
 			buffer.append("]");

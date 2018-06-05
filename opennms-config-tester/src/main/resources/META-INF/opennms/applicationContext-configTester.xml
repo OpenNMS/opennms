@@ -4,9 +4,9 @@
        xmlns:context="http://www.springframework.org/schema/context" 
        xmlns:tx="http://www.springframework.org/schema/tx" 
        xsi:schemaLocation="
-           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
-           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd"
+           http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd"
        default-lazy-init="true">
 
   <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -64,7 +64,7 @@
         <!-- <entry key="nsclient-datacollection-config.xml" value="nsClientDataCollectionConfigFactory"/> -->
         <entry key="opennms-datasources.xml" value="dataSourceTester"/>
         <entry key="opennms-server.xml" value="opennmsServerConfigFactory"/>
-        <!-- <entry key="opennms.properties" value="unknown"/> -->
+        <entry key="opennms.properties" value="unknown"/>
         <!-- <entry key="otrs.properties" value="otrsConfigDaoCheck"/> --> <!-- Not part of standard build -->
         <entry key="poll-outages.xml" value="pollOutagesConfigFactory"/>
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
@@ -90,6 +90,7 @@
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
+        <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
         <entry key="threshd-configuration.xml" value="threshdConfigFactory"/>
         <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
@@ -112,6 +113,7 @@
         <!-- WS-Man configuration files -->
         <entry key="wsman-config.xml" value="wsManConfigDao"/>
         <entry key="wsman-datacollection-config.xml" value="wsManDataCollectionConfigDao"/>
+        <entry key="opennms.properties.d" value="directory" />
       </map>
     </property>
   </bean>
@@ -472,6 +474,10 @@
   
   <bean name="syslogNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.syslog.SyslogNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/syslog-northbounder-configuration.xml" />
+  </bean>
+
+  <bean id="telemetrydConfigDao" class="org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao">
+    <property name="configResource" value="file:${opennms.home}/etc/telemetryd-configuration.xml" />
   </bean>
 
   <bean id="threshdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

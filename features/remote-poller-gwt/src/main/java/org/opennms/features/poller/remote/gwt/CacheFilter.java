@@ -48,7 +48,7 @@ import javax.servlet.http.HttpServletResponse;
  * @since 1.8.1
  */
 public class CacheFilter implements Filter {
-	private static final long ONE_DAY = 1000 * 60 * 60 * 24;
+	private static final long ONE_DAY = 1000L * 60L * 60L * 24L;
 
 	/** {@inheritDoc} */
         @Override

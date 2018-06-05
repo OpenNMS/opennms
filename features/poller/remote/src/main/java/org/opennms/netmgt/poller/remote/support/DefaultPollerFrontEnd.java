@@ -317,11 +317,11 @@ public class DefaultPollerFrontEnd implements PollerFrontEnd, InitializingBean, 
     private TimeAdjustment m_timeAdjustment;
 
     // listeners
-    private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<PropertyChangeListener>();
+    private LinkedList<PropertyChangeListener> m_propertyChangeListeners = new LinkedList<>();
 
-    private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<ServicePollStateChangedListener>();
+    private LinkedList<ServicePollStateChangedListener> m_servicePollStateChangedListeners = new LinkedList<>();
 
-    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<ConfigurationChangedListener>();
+    private LinkedList<ConfigurationChangedListener> m_configChangeListeners = new LinkedList<>();
 
     // current configuration
     private PollerConfiguration m_pollerConfiguration;

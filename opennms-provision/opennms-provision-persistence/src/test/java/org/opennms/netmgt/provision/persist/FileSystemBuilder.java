@@ -37,7 +37,7 @@ import org.apache.commons.io.FileUtils;
 class FileSystemBuilder {
 
 	private File m_baseDir;
-	private Stack<File> m_dirs = new Stack<File>();
+	private Stack<File> m_dirs = new Stack<>();
 
 	public FileSystemBuilder(String dir, String name) {
 		m_baseDir = new File(dir, name);

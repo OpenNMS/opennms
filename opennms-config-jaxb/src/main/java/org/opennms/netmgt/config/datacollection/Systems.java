@@ -50,7 +50,7 @@ public class Systems implements Serializable {
      * list of system definitions
      */
     @XmlElement(name="systemDef")
-    private List<SystemDef> m_systemDefs = new ArrayList<SystemDef>();
+    private List<SystemDef> m_systemDefs = new ArrayList<>();
 
     public Systems() {
         super();

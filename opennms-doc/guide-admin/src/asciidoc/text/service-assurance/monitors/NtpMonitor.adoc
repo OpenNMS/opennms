@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== NtpMonitor
 
 The NTP monitor tests for NTP service availability.
@@ -24,6 +27,8 @@ If the response is a valid NTP response, the service is considered available.
 | `retry`   | Number of attempts to get a response.                      | optional | `0`
 | `timeout` | Time in milliseconds to wait for a response.               | optional | `5000`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

@@ -1,7 +1,10 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== PrTableMonitor
 
-The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a net-snmp SNMP agent.
+The _PrTableMonitor_ monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a _Net-SNMP_ agent.
 
 .prTable definition
 [quote,,UCD-SNMP-MIB]
@@ -16,7 +19,7 @@ If the value of a _prErrorFlag_ entry in this table is set to "1" the service is
 .prErrorFlag definition
 [quote,,UCD-SNMP-MIB]
 ____
-A Error flag to indicate trouble with a process.
+An Error flag to indicate trouble with a process.
 It goes to 1 if there is an error, 0 if no error.
 ____
 
@@ -35,12 +38,12 @@ ____
 |===
 | Parameter | Description                                                        | Required | Default value
 | `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
-| `retry`   | Number of polls to attempt.                                        | optional | from `snmp-config.xml`
 | `retries` | *Deprecated*.
               Same as `retry`.
               Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
-| `timeout` | Time in milliseconds to wait before receiving the SNMP response.   | optional | from `snmp-config.xml`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

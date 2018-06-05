@@ -41,6 +41,11 @@ public interface RpcRequest {
     String getLocation();
 
     /**
+     * Used to route the request to a particular system at the given location.
+     */
+    String getSystemId();
+
+    /**
      * When using JMS, the request will fail if no response was received in this
      * many milliseconds.
      */

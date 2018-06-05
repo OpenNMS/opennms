@@ -62,7 +62,7 @@ public class DataSourceConfiguration implements java.io.Serializable {
     private java.util.List<JdbcDataSource> jdbcDataSourceList;
 
     public DataSourceConfiguration() {
-        this.jdbcDataSourceList = new java.util.ArrayList<JdbcDataSource>();
+        this.jdbcDataSourceList = new java.util.ArrayList<>();
     }
 
     /**

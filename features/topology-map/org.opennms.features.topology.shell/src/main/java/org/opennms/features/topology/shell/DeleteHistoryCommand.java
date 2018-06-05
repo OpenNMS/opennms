@@ -28,22 +28,22 @@
 
 package org.opennms.features.topology.shell;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.HistoryManager;
 
 @Command(scope = "topo", name = "delete-history", description="Deletes history of all users.")
-public class DeleteHistoryCommand extends OsgiCommandSupport {
+@Service
+public class DeleteHistoryCommand implements Action {
 
-    private HistoryManager historyManager;
+    @Reference
+    public HistoryManager historyManager;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         historyManager.deleteHistory();
         return null;
-    }
-
-    public void setHistoryManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
     }
 }

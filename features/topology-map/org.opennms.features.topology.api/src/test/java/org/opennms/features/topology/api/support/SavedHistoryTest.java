@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,10 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.bind.JAXB;
-
 import org.junit.Assert;
 import org.junit.Test;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
@@ -68,7 +67,7 @@ public class SavedHistoryTest {
 				settings,
 				Collections.emptyList()
 		);
-		JAXB.marshal(savedHistory, System.out);
+		System.out.print(JaxbUtils.marshal(savedHistory));
 
 		// Specify a focus node
 		savedHistory = new SavedHistory(
@@ -80,7 +79,7 @@ public class SavedHistoryTest {
 				settings,
 				Collections.emptyList()
 		);
-		JAXB.marshal(savedHistory, System.out);
+		System.out.print(JaxbUtils.marshal(savedHistory));
 	}
 
 	/**

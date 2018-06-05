@@ -255,7 +255,7 @@ public class NodeMapsApplication extends UI {
                 LOG.debug("got event: {}", eventObject);
                 if (eventObject instanceof VerticesUpdateEvent) {
                     final VerticesUpdateEvent event = (VerticesUpdateEvent)eventObject;
-                    final List<Integer> nodeIds = new ArrayList<Integer>();
+                    final List<Integer> nodeIds = new ArrayList<>();
                     for (final VertexRef ref : event.getVertexRefs()) {
                         if ("nodes".equals(ref.getNamespace()) && ref.getId() != null) {
                             nodeIds.add(Integer.valueOf(ref.getId()));

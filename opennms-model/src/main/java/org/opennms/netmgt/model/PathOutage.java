@@ -42,9 +42,9 @@ public class PathOutage {
 	 *
 	 * @return a {@link java.lang.String} object.
 	 */
-        @Override
+	@Override
 	public String toString() {
-		StringBuffer result = new StringBuffer(50);
+		final StringBuilder result = new StringBuilder(50);
 		result.append("pathOutage { nodeID: ");
 		result.append(nodeId);
 		result.append(", criticalPathIp: ");

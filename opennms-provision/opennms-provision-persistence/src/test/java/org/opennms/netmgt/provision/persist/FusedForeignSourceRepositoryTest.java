@@ -293,7 +293,7 @@ public class FusedForeignSourceRepositoryTest extends ForeignSourceRepositoryTes
     }
 
     protected List<String> getImports(final String foreignSource) {
-        final List<String> entries = new ArrayList<String>();
+        final List<String> entries = new ArrayList<>();
 
         final File importsDirectory = new File("target/opennms-home/etc/imports");
         for (final File file : importsDirectory.listFiles()) {

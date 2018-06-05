@@ -1,9 +1,12 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[OmsaStorageMonitor]]
 ==== OmsaStorageMonitor
 
-With OmsaStorageMonitor you are able to monitor your http://de.community.dell.com/techcenter/systems-management/w/wiki/438.dell-openmanage-server-administrator-omsa.aspx[Dell OpenManaged] servers RAID array status.
-The following OIDS from the http://support.dell.com/support/systemsinfo/document.aspx?~file=/software/svradmin/2.2/en/snmp/snmpc22.htm[STORAGEMANAGEMENT-MIB] are supported by this monitor:
+With _OmsaStorageMonitor_ you are able to monitor your http://de.community.dell.com/techcenter/systems-management/w/wiki/438.dell-openmanage-server-administrator-omsa.aspx[Dell OpenManaged] servers _RAID_ array status.
+The following _OIDs_ from the http://support.dell.com/support/systemsinfo/document.aspx?~file=/software/svradmin/2.2/en/snmp/snmpc22.htm[STORAGEMANAGEMENT-MIB] are supported by this monitor:
 
  virtualDiskRollUpStatus                     .1.3.6.1.4.1.674.10893.1.20.140.1.1.19
  arrayDiskLogicalConnectionVirtualDiskNumber .1.3.6.1.4.1.674.10893.1.20.140.3.1.5
@@ -27,9 +30,9 @@ If the result of the `virtualDiskRollUpStatus` is not `3` the monitors is marked
 |===
 
 IMPORTANT: You'll need to know the maximum number of possible logical disks you have in your environment.
-For example: If you have 3 RAID arrays, you need for each logical disk array a service poller.
+           For example: If you have 3 RAID arrays, you need for each logical disk array a service poller.
 
-To give more detailed information in case of an disk array error, the monitor tries to identify the problem using the other OIDs.
+To give more detailed information in case of an disk array error, the monitor tries to identify the problem using the other _OIDs_.
 This values are used to enrich the error reason in the service down event.
 The disk array state is resolved to a human readable value by the following status table.
 
@@ -62,24 +65,21 @@ The disk array state is resolved to a human readable value by the following stat
 
 ===== Configuration and Usage
 
-Monitor specific parameters for the OmsaStorageMonitor
+.Monitor specific parameters for the OmsaStorageMonitor
 [options="header, autowidth"]
 |===
 | Parameter           | Description                                                                                     | Required | Default value
 | `virtualDiskNumber` | The disk index of your RAID array                                                               | optional | `1`
-| `retry`             | Amount of attempts opening a connection and try to get the greeting banner before the service
-                        goes down.                                                                                      | optional | from `snmp-config.xml`
-| `timeout`           | Time in milliseconds to wait before receiving the
-                        SNMP response.                                                                                  | optional | from `snmp-config.xml`
 | `port`              | The TCP port OpenManage is listening                                                            | optional | from `snmp-config.xml`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.
+The _RAID_ array monitor for your first array is configured with `virtualDiskNumber = 1` and can look like this:
 
-The RAID array monitor for your first array is configured with `virtualDiskNumber = 1` and can look like this:
 [source, xml]
 ----
 <service name="OMSA-Disk-Array-1" interval="300000" user-defined="false" status="on">
@@ -91,7 +91,8 @@ The RAID array monitor for your first array is configured with `virtualDiskNumbe
 <monitor service="OMSA-Disk-Array-1" class-name="org.opennms.netmgt.poller.monitors.OmsaStorageMonitor"/>
 ----
 
-If there is more than one RAID array to monitor you need an additional configuration. In this case `virtualDiskNumber = 2`. And so on...
+If there is more than one RAID array to monitor you need an additional configuration.
+In this case `virtualDiskNumber = 2`.
 
 [source, xml]
 ----

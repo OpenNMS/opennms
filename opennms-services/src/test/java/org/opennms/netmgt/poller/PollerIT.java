@@ -584,7 +584,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         assertEquals("Router", m_poller.getNetwork().getNode(1).getNodeLabel());
 
-        // now delete the node and send a nodeDeleted event
         element.setLabel(newLabel);
         m_eventMgr.sendEventToListeners(event);
 
@@ -1078,7 +1077,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         MockInterface iface = m_network.addInterface(nodeid, ipAddr);
         m_db.writeInterface(iface);
 
-        List<MockService> services = new ArrayList<MockService>();
+        List<MockService> services = new ArrayList<>();
         for(String svcName : svcNames) {
             MockService svc = m_network.addService(nodeid, ipAddr, svcName);
             m_db.writeService(svc);
@@ -1102,11 +1101,11 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         anticipator.anticipateAllServices(svc1);
 
-        StringBuffer didNotOccur = new StringBuffer();
+        final StringBuilder didNotOccur = new StringBuilder();
         for (MockService service : anticipator.waitForAnticipated(10000)) {
             didNotOccur.append(service.toString());
         }
-        StringBuffer unanticipatedStuff = new StringBuffer();
+        final StringBuilder unanticipatedStuff = new StringBuilder();
         for (MockService service : anticipator.unanticipatedPolls()) {
             unanticipatedStuff.append(service.toString());
         }
@@ -1512,7 +1511,7 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Remove the reference to the lost service event from all of the outages,
         // and let's pretend that they weren't even there in the first place
-        Set<Integer> outageIds = new HashSet<Integer>();
+        Set<Integer> outageIds = new HashSet<>();
         for (OnmsOutage outage : m_outageDao.findAll()) {
             outage.setServiceLostEvent(null);
             m_outageDao.update(outage);

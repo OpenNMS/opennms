@@ -47,10 +47,13 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @ValidateUsing("notificationCommands.xsd")
 public class Command implements Serializable {
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 3L;
 
     @XmlAttribute(name = "binary")
     private Boolean m_binary;
+
+    @XmlAttribute(name = "service-registry")
+    private Boolean m_serviceRegistry;
 
     @XmlElement(name = "name", required = true)
     private String m_name;
@@ -75,6 +78,14 @@ public class Command implements Serializable {
 
     public void setBinary(final Boolean binary) {
         m_binary = binary;
+    }
+
+    public Boolean getServiceRegistry() {
+        return m_serviceRegistry != null ? m_serviceRegistry : Boolean.FALSE;
+    }
+
+    public void setServiceRegistry(final Boolean serviceRegistry) {
+        m_serviceRegistry = serviceRegistry;
     }
 
     public String getName() {
@@ -129,7 +140,8 @@ public class Command implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_binary, 
+        return Objects.hash(m_binary,
+                            m_serviceRegistry,
                             m_name, 
                             m_execute, 
                             m_comment, 
@@ -146,6 +158,7 @@ public class Command implements Serializable {
         if (obj instanceof Command) {
             final Command that = (Command)obj;
             return Objects.equals(this.m_binary, that.m_binary)
+                    && Objects.equals(this.m_serviceRegistry, that.m_serviceRegistry)
                     && Objects.equals(this.m_name, that.m_name)
                     && Objects.equals(this.m_execute, that.m_execute)
                     && Objects.equals(this.m_comment, that.m_comment)

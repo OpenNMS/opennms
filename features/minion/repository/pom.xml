@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>19.0.0-SNAPSHOT</version>
+        <version>21.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -18,23 +18,20 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.opennms.maven.plugins</groupId>
-                <artifactId>features-maven-plugin</artifactId>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>features.xml</id>
-                        <phase>none</phase>
-                    </execution>
-                    <execution>
-                        <id>features-add-to-repo</id>
-                        <phase>generate-resources</phase>
+                        <id>features-add-to-repository</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>generate-features-maven-repo</goal>
+                            <goal>features-add-to-repository</goal>
                         </goals>
                         <configuration>
                             <descriptors>
-                                <descriptor>mvn:org.apache.karaf.features/standard/${minionKarafVersion}/xml/features</descriptor>
-                                <descriptor>mvn:org.apache.karaf.features/spring/${minionKarafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring/${karafVersion}/xml/features</descriptor>
+                                <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</descriptor>
                                 <!-- Add Minion features -->
@@ -45,8 +42,11 @@
                             <!-- To ensure that all JAR files for a feature 
                                 are included in the repository tar.gz file, add the feature to this list. -->
                             <features>
+                                <feature>opennms-core-ipc-rpc-jms</feature>
+                                <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
+                                <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-trapd-listener</feature>
@@ -54,8 +54,11 @@
                                 <feature>minion-heartbeat-producer</feature>
                                 <feature>minion-snmp-proxy</feature>
                                 <feature>minion-provisiond-detectors</feature>
+                                <feature>minion-provisiond-requisitions</feature>
                                 <feature>minion-poller</feature>
+                                <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
+                                <feature>minion-telemetryd-listeners</feature>
                                 <feature>hawtio-offline</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
@@ -139,6 +142,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.minion</groupId>
+            <artifactId>jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.minion.shell</groupId>
+            <artifactId>org.opennms.features.minion.shell.collection</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.minion.shell</groupId>
             <artifactId>org.opennms.features.minion.shell.poller</artifactId>
             <version>${project.version}</version>
@@ -152,6 +165,10 @@
             <groupId>org.opennms.features.minion.heartbeat</groupId>
             <artifactId>org.opennms.features.minion.heartbeat.producer</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-requisition-service</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
@@ -210,13 +227,23 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.collection</groupId>
+            <artifactId>org.opennms.features.collection.collectors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features</groupId>
             <artifactId>org.opennms.features.wsman</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
-            <artifactId>org.opennms.core.ipc.rpc.camel-impl</artifactId>
+            <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.aws-sqs-impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -230,6 +257,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.core.ipc.sink</groupId>
+            <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.poller</groupId>
             <artifactId>org.opennms.features.poller.client-rpc</artifactId>
         </dependency>
@@ -238,32 +270,20 @@
             <artifactId>org.opennms.features.poller.monitors.core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.jdbc-collector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-vmware</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.protocols</groupId>
+            <artifactId>org.opennms.protocols.xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <id>opennms-snapshots</id>
-            <name>OpenNMS Snapshot Maven Repository</name>
-            <url>http://maven.opennms.org/content/groups/opennms.org-snapshot</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>apache-snapshots</id>
-            <name>Apache Snapshots Repository</name>
-            <url>http://repository.apache.org/content/groups/snapshots-group</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
 
     <repositories>
         <repository>
@@ -307,17 +327,6 @@
             <id>coova</id>
             <name>Coova Repository</name>
             <url>http://maven.opennms.org/content/repositories/coova/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <id>jboss-repo</id>
-            <name>JBoss Repository</name>
-            <url>http://maven.opennms.org/content/repositories/jboss-repo/</url>
         </repository>
     </repositories>
 </project>

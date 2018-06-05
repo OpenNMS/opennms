@@ -67,7 +67,7 @@ public class EventFormat {
     }
     
     public List<String> getSubstTokens() {
-        List<String> tokens = new ArrayList<String>();
+        List<String> tokens = new ArrayList<>();
         
         Matcher m = Pattern.compile("(?s)(\\{.*?\\})").matcher(m_contents);
         while (m.find()) {

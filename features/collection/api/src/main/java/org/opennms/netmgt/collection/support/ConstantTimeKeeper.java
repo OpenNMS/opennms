@@ -29,6 +29,7 @@
 package org.opennms.netmgt.collection.support;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import org.opennms.netmgt.collection.api.TimeKeeper;
@@ -46,12 +47,12 @@ public class ConstantTimeKeeper implements TimeKeeper {
     /**
      * Instantiates a new constant time keeper.
      *
-     * @param date the date
+     * @param timestamp the timestamp
      */
-    public ConstantTimeKeeper(final Date date) {
-        m_date = date;
+    public ConstantTimeKeeper(Date timestamp) {
+        m_date = Objects.requireNonNull(timestamp);
     }
-
+    
     /* (non-Javadoc)
      * @see org.opennms.core.utils.TimeKeeper#getCurrentTime()
      */

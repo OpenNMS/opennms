@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== DnsMonitor
 
 This monitor is build to test the availability of the _DNS service_ on remote IP interfaces.
@@ -62,6 +65,8 @@ If you want to monitor the DNS resolution of some of your nodes from a client's 
 | `min-answers`          | Minmal number of records in the DNS server respone for the given lookup                      | optional | `-`
 | `max-answers`          | Maximal number of records in the DNS server respone for the given lookup                     | optional | `-`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

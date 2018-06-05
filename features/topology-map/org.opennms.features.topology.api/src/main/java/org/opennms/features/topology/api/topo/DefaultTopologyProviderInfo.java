@@ -30,15 +30,20 @@ package org.opennms.features.topology.api.topo;
 
 public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
     private boolean hierarchical;
+    private boolean supportsCategorySearch;
     protected String name = "Undefined";
     protected String description = "No description available";
 
     public DefaultTopologyProviderInfo() {
     }
 
-    public DefaultTopologyProviderInfo(String name, String description) {
+    public DefaultTopologyProviderInfo(String name, String description, Boolean isHierarchichal, boolean supportsCategorySearch) {
         this.name = name;
         this.description = description;
+        if (isHierarchichal != null) {
+            this.hierarchical = isHierarchichal;
+        }
+        this.supportsCategorySearch = supportsCategorySearch;
     }
 
     @Override
@@ -56,6 +61,11 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
         return hierarchical;
     }
 
+    @Override
+    public boolean isSupportsCategorySearch() {
+        return this.supportsCategorySearch;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
@@ -66,5 +76,9 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
 
     public void setHierarchical(boolean hierarchical) {
         this.hierarchical = hierarchical;
+    }
+
+    public void setSupportsCategorySearch(boolean supportsCategorySearch) {
+        this.supportsCategorySearch = supportsCategorySearch;
     }
 }

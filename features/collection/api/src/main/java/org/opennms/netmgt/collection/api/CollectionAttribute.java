@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.api;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * <p>CollectionAttribute interface.</p>
@@ -85,11 +86,11 @@ public interface CollectionAttribute extends CollectionVisitable, Persistable {
      * @return a {@link org.opennms.netmgt.collectd.CollectionAttributeType} object.
      */
     CollectionAttributeType getAttributeType();
-    
+
     /**
-     * Returns type of value (typically one of "counter", "gauge", "timeticks", "integer", "octetstring" - see {@link NumericAttributeType})
+     * <p>The type of metric that the attribute represents.</p>
      *
-     * @return type of value stored in this attribute (SNMP semantics)
+     * @return a {@link AttributeType} object.
      */
-    String getType();
+    AttributeType getType();
 }

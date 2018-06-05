@@ -340,7 +340,7 @@ public class MockNetwork extends MockContainer<MockContainer<?,?>,MockElement> {
     }
 
 	public List<MockService> getServices(int nodeId) {
-		final List<MockService> services = new ArrayList<MockService>();
+		final List<MockService> services = new ArrayList<>();
 		for (final MockElement me : getMembers()) {
 			if (me instanceof MockService) {
 				services.add((MockService)me);

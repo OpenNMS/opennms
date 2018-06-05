@@ -99,7 +99,7 @@ public class DefaultCollectionAgentTest {
         iface.setIpAddress(InetAddressUtils.ONE_TWENTY_SEVEN);
 
         IpInterfaceDao ifaceDao = EasyMock.createMock(IpInterfaceDao.class);
-        EasyMock.expect(ifaceDao.load(iface.getId())).andReturn(iface).times(2);
+        EasyMock.expect(ifaceDao.load(iface.getId())).andReturn(iface).times(5);
         EasyMock.replay(ifaceDao);
 
         PlatformTransactionManager transMgr = new MockPlatformTransactionManager();

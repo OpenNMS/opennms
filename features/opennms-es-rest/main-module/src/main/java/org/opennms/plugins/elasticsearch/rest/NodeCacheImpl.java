@@ -135,7 +135,7 @@ public class NodeCacheImpl implements NodeCache {
         body.put("foreignsource", node.getForeignSource());
         body.put("foreignid", node.getForeignId());
         body.put("operatingsystem", node.getOperatingSystem());
-        StringBuilder categories=new StringBuilder();
+        final StringBuilder categories=new StringBuilder();
         for (Iterator<OnmsCategory> i=node.getCategories().iterator();i.hasNext();) {
             categories.append(((OnmsCategory)i.next()).getName());
             if(i.hasNext()) {

@@ -38,19 +38,27 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
 
 @Command(scope = "provision", name = "detect", description = "Detect the service on a host at specified location")
-public class Detect extends OsgiCommandSupport {
+@Service
+public class Detect implements Action {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
 
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
     @Argument(index = 0, name = "detectorType", description = "Service to detect", required = true, multiValued = false)
+    @Completion(ServiceNameCompleter.class)
     String serviceName;
 
     @Argument(index = 1, name = "host", description = "Hostname or IP Address of the system to detect", required = true, multiValued = false)
@@ -59,13 +67,15 @@ public class Detect extends OsgiCommandSupport {
     @Argument(index = 2, name = "attributes", description = "Detector attributes in key=value form", multiValued = true)
     List<String> attributes;
 
-    private LocationAwareDetectorClient locationAwareDetectorClient;
+    @Reference
+    public LocationAwareDetectorClient locationAwareDetectorClient;
 
     @Override
-    protected Object doExecute() throws UnknownHostException {
+    public Object execute() throws UnknownHostException {
         System.out.printf("Trying to detect '%s' on '%s' ", serviceName, m_host);
         final CompletableFuture<Boolean> future = locationAwareDetectorClient.detect()
                 .withLocation(m_location)
+                .withSystemId(m_systemId)
                 .withServiceName(serviceName)
                 .withAddress(InetAddress.getByName(m_host))
                 .withAttributes(parse(attributes))
@@ -94,11 +104,7 @@ public class Detect extends OsgiCommandSupport {
         return null;
     }
 
-    public void setLocationAwareDetectorClient(LocationAwareDetectorClient locationAwareDetectorClient) {
-        this.locationAwareDetectorClient = locationAwareDetectorClient;
-    }
-
-    private Map<String, String> parse(List<String> attributeList) {
+    private static Map<String, String> parse(List<String> attributeList) {
         Map<String, String> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {

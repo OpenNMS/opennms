@@ -33,10 +33,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.icmp.proxy.LocationAwarePingClient;
 import org.opennms.netmgt.icmp.proxy.PingRequestBuilder;
 import org.opennms.netmgt.icmp.proxy.PingStringUtils;
@@ -45,23 +47,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Command(scope = "ping", name = "ping", description = "Ping")
-public class PingCommand extends OsgiCommandSupport {
+@Service
+public class PingCommand implements Action {
 
     private static final Logger LOG = LoggerFactory.getLogger(PingCommand.class);
 
-    private LocationAwarePingClient locationAwarePingClient;
+    @Reference
+    public LocationAwarePingClient locationAwarePingClient;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
-    String m_location = "Default";
+    String m_location;
 
-    @Option (name="-c", aliases = "--count", description="number of requests")
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId;
+
+    @Option (name="-c", aliases = "--count", description="Number of requests")
     int m_count = 1;
 
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)
     String m_host;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         LOG.debug("ping:ping {} {}", m_location != null ? "-l " + m_location : "", m_host);
         final InetAddress byName = InetAddress.getByName(m_host);
         final PingRequestBuilder.Callback callback = (newSequence, summary) -> {
@@ -80,6 +87,7 @@ public class PingCommand extends OsgiCommandSupport {
 
         final CompletableFuture<PingSummary> future = locationAwarePingClient.ping(byName)
             .withLocation(m_location)
+            .withSystemId(m_systemId)
             .withNumberOfRequests(m_count)
             .withProgressCallback(callback).execute();
 
@@ -100,9 +108,5 @@ public class PingCommand extends OsgiCommandSupport {
             System.out.print(".");
         }
         return null;
-    }
-
-    public void setLocationAwarePingClient(LocationAwarePingClient locationAwarePingClient) {
-        this.locationAwarePingClient = locationAwarePingClient;
     }
 }

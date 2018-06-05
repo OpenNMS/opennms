@@ -130,7 +130,7 @@ class MailAckProcessor implements AckProcessor {
         List<OnmsAcknowledgment> acks = null;
         
         if (msgs != null && msgs.size() > 0) {
-            acks = new ArrayList<OnmsAcknowledgment>();
+            acks = new ArrayList<>();
             
             Iterator<Message> it = msgs.iterator();
             while (it.hasNext()) {
@@ -331,7 +331,7 @@ class MailAckProcessor implements AckProcessor {
 
     @SuppressWarnings("unchecked")
     private static String createLog(final Message msg) {
-        StringBuilder bldr = new StringBuilder();
+        final StringBuilder bldr = new StringBuilder();
         Enumeration<Header> allHeaders;
         try {
             allHeaders = msg.getAllHeaders();

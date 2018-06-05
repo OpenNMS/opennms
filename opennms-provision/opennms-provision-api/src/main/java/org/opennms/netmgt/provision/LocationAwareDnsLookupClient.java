@@ -35,6 +35,10 @@ public interface LocationAwareDnsLookupClient {
 
     CompletableFuture<String> lookup(String hostName, String location);
 
+    CompletableFuture<String> lookup(String hostName, String location, String systemId);
+
     CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location);
+
+    CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location, String systemId);
 
 }

@@ -28,8 +28,6 @@
 
 package org.opennms.netmgt.poller.remote.support;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -40,6 +38,7 @@ import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * Used to persist distributed latency statistics collected by the remote poller.
@@ -122,8 +121,8 @@ public class DistributedLatencyCollectionResource implements CollectionResource 
     }
 
     @Override
-    public Path getPath() {
-        return Paths.get("distributed", m_locationMonitorId, m_ipAddress);
+    public ResourcePath getPath() {
+        return ResourcePath.get("distributed", m_locationMonitorId, m_ipAddress);
     }
 
     @Override
@@ -132,8 +131,8 @@ public class DistributedLatencyCollectionResource implements CollectionResource 
     }
 
     @Override
-    public String getParent() {
-        return m_ipAddress;
+    public ResourcePath getParent() {
+        return ResourcePath.get(m_ipAddress);
     }
 
     @Override

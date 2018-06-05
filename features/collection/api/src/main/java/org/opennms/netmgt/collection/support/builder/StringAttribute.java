@@ -28,9 +28,15 @@
 
 package org.opennms.netmgt.collection.support.builder;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.netmgt.collection.adapters.StringAttributeAdapter;
+import org.opennms.netmgt.collection.api.AttributeType;
+
+@XmlJavaTypeAdapter(StringAttributeAdapter.class)
 public class StringAttribute extends Attribute<String> {
-    public StringAttribute(Resource resource, String group, String name, String value) {
-        super(resource, group, name, value, AttributeType.STRING);
+    public StringAttribute(String group, String name, String value, String identifier) {
+        super(group, name, value, AttributeType.STRING, identifier);
     }
 
     @Override

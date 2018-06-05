@@ -218,7 +218,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
 		
                 @Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
+			final StringBuilder sb = new StringBuilder("CiscoPingEntry: [ciscoPingSerialNumber=");
 			sb.append(m_ciscoPingSerialNumber).append(",");
 			sb.append("ciscoPingProtocol=").append(m_ciscoPingProtocol).append(",");
 			sb.append("ciscoPingAddress=").append(m_ciscoPingAddress).append(",");
@@ -389,7 +389,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         pingEntry.setCiscoPingEntryOwner(ParameterMap.getKeyedString(parameters, PARM_ENTRY_OWNER, PARM_ENTRY_OWNER_DEFAULT));
         pingEntry.setCiscoPingVrfName(ParameterMap.getKeyedString(parameters, PARM_VRF_NAME, PARM_VRF_NAME_DEFAULT));
         
-        pingEntry.setCiscoPingSerialNumber(Double.valueOf(System.currentTimeMillis() / 1000).intValue());
+        pingEntry.setCiscoPingSerialNumber(Double.valueOf(System.currentTimeMillis() / 1000d).intValue());
         pingEntry.setCiscoPingProtocol(pingProtocol);
         pingEntry.setCiscoPingAddress(targetIpAddr);
         pingEntry.setCiscoPingEntryStatus(ROWSTATUS_CREATE_AND_GO);
@@ -426,7 +426,7 @@ public class CiscoPingMibMonitor extends SnmpMonitorStrategy {
         // complete.  Twice the time it would take assuming a zero response time per ping seems like
         // a good starting point.
         try {
-			Thread.sleep(pingEntry.calculateMinInitialWait() * 2);
+			Thread.sleep(pingEntry.calculateMinInitialWait() * 2L);
 		} catch (InterruptedException e) { }
         
         // Now check whether the ping has completed and, if so, whether it succeeded and its times

@@ -260,7 +260,12 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     @SuppressWarnings("unchecked")
     @Override
     public List<T> findMatching(final org.opennms.core.criteria.Criteria criteria) {
-        final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
+        final HibernateCallback<List<T>> callback = buildHibernateCallback(criteria);
+        return getHibernateTemplate().execute(callback);
+    }
+
+    protected <T> HibernateCallback<List<T>> buildHibernateCallback(org.opennms.core.criteria.Criteria criteria) {
+        return new HibernateCallback<List<T>>() {
             @Override
             public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
                 LOG.debug("criteria = {}", criteria);
@@ -268,7 +273,6 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
                 return (List<T>)(hibernateCriteria.list());
             }
         };
-        return getHibernateTemplate().execute(callback);
     }
 
     /** {@inheritDoc} */

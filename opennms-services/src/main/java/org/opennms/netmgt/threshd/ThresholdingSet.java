@@ -78,8 +78,8 @@ public class ThresholdingSet {
     private boolean m_initialized = false;
     private boolean m_hasThresholds = false;
 
-    protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<ThresholdGroup>();
-    protected final List<String> m_scheduledOutages = new ArrayList<String>();
+    protected final List<ThresholdGroup> m_thresholdGroups = new LinkedList<>();
+    protected final List<String> m_scheduledOutages = new ArrayList<>();
 
     /**
      * <p>Constructor for ThresholdingSet.</p>
@@ -199,7 +199,7 @@ public class ThresholdingSet {
                     }
                 }
             }
-            final List<ThresholdGroup> newThresholdGroupList = new LinkedList<ThresholdGroup>();
+            final List<ThresholdGroup> newThresholdGroupList = new LinkedList<>();
             for (final String groupName : newGroupNameList) {
                 // Check if group exist on current configured list
                 final Optional<ThresholdGroup> foundGroup = m_thresholdGroups.stream().filter(tg -> groupName.equals(tg.getName())).findFirst();
@@ -301,7 +301,7 @@ public class ThresholdingSet {
      * @return a {@link java.util.List} object.
      */
     protected final List<Event> applyThresholds(CollectionResourceWrapper resourceWrapper, Map<String, CollectionAttribute> attributesMap) {
-        List<Event> eventsList = new LinkedList<Event>();
+        List<Event> eventsList = new LinkedList<>();
         if (attributesMap == null || attributesMap.size() == 0) {
             LOG.debug("applyThresholds: Ignoring resource {} because required attributes map is empty.", resourceWrapper);
             return eventsList;
@@ -440,7 +440,7 @@ public class ThresholdingSet {
      * - For each match, create new ThresholdableService object and schedule it for collection
      */
     private static final List<String> getThresholdGroupNames(int nodeId, String hostAddress, String serviceName) throws ThresholdInitializationException {
-        List<String> groupNameList = new LinkedList<String>();
+        List<String> groupNameList = new LinkedList<>();
 
         ThreshdConfigManager configManager = null;
 

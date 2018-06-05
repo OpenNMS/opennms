@@ -217,7 +217,7 @@ public class Migrator {
                                              "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
                                                      + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
                                                      + "to find and fix bugs found yourself.",
-                                                     dbv.floatValue(), POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
+                                                     dbv, POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
                 );
 
         if (dbv < POSTGRESQL_MIN_VERSION_INCLUSIVE || dbv >= POSTGRESQL_MAX_VERSION_EXCLUSIVE) {
@@ -494,7 +494,7 @@ public class Migrator {
      */
     protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
         final File changeLog = new File(migration.getChangeLog());
-        final List<URL> urls = new ArrayList<URL>();
+        final List<URL> urls = new ArrayList<>();
         try {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURI().toURL());

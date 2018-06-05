@@ -30,7 +30,8 @@ package org.opennms.core.test.kafka;
 
 import java.util.concurrent.TimeUnit;
 
-import kafka.utils.Time;
+import org.apache.kafka.common.utils.Time;
+
 
 public class SystemTime implements Time {
     @Override

@@ -293,7 +293,7 @@ public class UserInfo extends Object implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("user id           = " + m_userId + "\n");
         buffer.append("full name         = " + m_fullName + "\n");

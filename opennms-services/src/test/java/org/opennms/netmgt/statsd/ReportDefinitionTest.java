@@ -143,7 +143,7 @@ public class ReportDefinitionTest extends TestCase {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
 
-        Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>();
+        Set<OnmsAttribute> attributes = new HashSet<>();
         attributes.add(rrdAttribute);
         attributes.add(externalValueAttribute);
 
@@ -161,7 +161,7 @@ public class ReportDefinitionTest extends TestCase {
         rrdAttribute.setResource(new OnmsResource("1", "Node One", resourceType, Collections.singleton(rrdAttribute), ResourcePath.get("foo")));
         Source source = new Source();
         source.setLabel("result");
-        source.setResourceId(rrdAttribute.getResource().getId());
+        source.setResourceId(rrdAttribute.getResource().getId().toString());
         source.setAttribute(rrdAttribute.getName());
         source.setAggregation("AVERAGE");
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},
@@ -224,7 +224,7 @@ public class ReportDefinitionTest extends TestCase {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
 
-        Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>();
+        Set<OnmsAttribute> attributes = new HashSet<>();
         attributes.add(rrdAttribute);
         attributes.add(externalValueAttribute);
 
@@ -251,7 +251,7 @@ public class ReportDefinitionTest extends TestCase {
 
         Source source = new Source();
         source.setLabel("result");
-        source.setResourceId(resource.getId());
+        source.setResourceId(resource.getId().toString());
         source.setAttribute(rrdAttribute.getName());
         source.setAggregation("AVERAGE");
         FetchResults results = new FetchResults(new long[] {report.getStartTime()},

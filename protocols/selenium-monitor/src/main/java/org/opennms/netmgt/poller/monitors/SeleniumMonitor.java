@@ -152,7 +152,7 @@ public class SeleniumMonitor extends AbstractServiceMonitor {
 
     private String getFailureMessage(Result result, MonitoredService svc)
     {
-        StringBuffer stringBuilder = new StringBuffer();
+        final StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("Failed: ");
         for(Failure failure : result.getFailures()) { 
             stringBuilder.append(" " + failure.getMessage() + "\n");

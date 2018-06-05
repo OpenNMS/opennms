@@ -29,19 +29,21 @@
 package org.opennms.netmgt.bsm.karaf.shell;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.bsm.service.BusinessServiceManager;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.functions.map.Identity;
 import org.opennms.netmgt.bsm.service.model.functions.reduce.HighestSeverity;
 
 @Command(scope = "bsm", name = "generate-hierarchies", description="Generates hierarchies.")
-public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
+@Service
+public class GenerateHierarchiesShellCommand implements Action {
 
     private static final int DEFAULT_NUM_SERVICES = 1000;
     private static final int DEFAULT_DEPTH = 10;
@@ -52,10 +54,11 @@ public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
     @Argument(index = 1, name = "depth", description = "The depth to use for each hierarchy.", required = false, multiValued = false)
     Integer depth = null;
 
-    private BusinessServiceManager businessServiceManager;
+    @Reference
+    public BusinessServiceManager businessServiceManager;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final Map<String, BusinessService> businessServicesByName = businessServiceManager.getAllBusinessServices()
                 .stream().collect(Collectors.toMap(b -> b.getName(), b -> b));
 
@@ -100,9 +103,5 @@ public class GenerateHierarchiesShellCommand extends OsgiCommandSupport {
 
     public void setDepth(Integer depth) {
         this.depth = depth;
-    }
-
-    public void setBusinessServiceManager(BusinessServiceManager businessServiceManager) {
-        this.businessServiceManager = Objects.requireNonNull(businessServiceManager);
     }
 }

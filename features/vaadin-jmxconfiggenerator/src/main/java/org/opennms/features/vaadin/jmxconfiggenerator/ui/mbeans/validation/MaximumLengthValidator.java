@@ -28,12 +28,13 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.data.validator.StringLengthValidator;
 import org.opennms.features.vaadin.jmxconfiggenerator.Config;
+
+import com.vaadin.data.validator.StringLengthValidator;
 
 public class MaximumLengthValidator extends StringLengthValidator {
 
-    protected static final String ERROR_MESSAGE = String.format("Maximal length is %d", Config.ATTRIBUTES_ALIAS_MAX_LENGTH);
+    protected static final String ERROR_MESSAGE = "You must specify a valid attribute name. Only characters a-z, A-Z and 0-9 are allowed.";
 
     public MaximumLengthValidator() {
         super(ERROR_MESSAGE, 0, Config.ATTRIBUTES_ALIAS_MAX_LENGTH, false);

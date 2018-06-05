@@ -38,6 +38,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.opennms.core.xml.ValidateUsing;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.config.utils.ConfigUtils;
 
 
@@ -75,10 +76,12 @@ public class Attrib implements Serializable {
 
     @XmlAttribute(name = "alias", required = true)
     protected String m_alias;
+
     @XmlAttribute(name = "match-group", required = true)
     protected int m_matchGroup;
+
     @XmlAttribute(name = "type", required = true)
-    protected String m_type;
+    protected AttributeType m_type;
 
     public String getAlias() {
         return m_alias;
@@ -96,12 +99,12 @@ public class Attrib implements Serializable {
         m_matchGroup = value;
     }
 
-    public String getType() {
+    public AttributeType getType() {
         return m_type;
     }
 
-    public void setType(final String value) {
-        m_type = ConfigUtils.assertNotEmpty(value, "type");
+    public void setType(final AttributeType value) {
+        m_type = ConfigUtils.assertNotNull(value, "type");
     }
 
     @Override

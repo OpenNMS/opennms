@@ -42,7 +42,6 @@ Additionally, it is possible to configure a page sequence containing a path thro
 [options="header, autowidth"]
 |===
 | Parameter        | Description                                                                                          | Required | Default value
-| `timeout`        | Time in milliseconds to wait before assuming that a packet has not responded.                        | optional | `3000`
 | `retry`          | The number of retries per page.                                                                      | optional | `0`
 | `strict-timeout` | Defines a timer to wait before a retry attempt is made.
                      It is only used if at least one (1) retry is configured.
@@ -52,6 +51,8 @@ Additionally, it is possible to configure a page sequence containing a path thro
 | `page-sequence`  | Definition of the page-sequence to execute, see table with _Page Sequence Parameter_                 | required | `-`
 | `sequence-retry` | The retry parameter for the entire page sequence.                                                    | optional | `0`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Page Sequence Parameter
 [options="header, autowidth"]

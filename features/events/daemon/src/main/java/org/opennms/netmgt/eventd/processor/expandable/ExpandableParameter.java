@@ -70,7 +70,7 @@ public class ExpandableParameter implements ExpandableToken {
 
         if (value != null) {
             if (decode != null && decode.containsKey(token) && decode.get(token).containsKey(value)) {
-                StringBuilder ret = new StringBuilder();
+                final StringBuilder ret = new StringBuilder();
                 ret.append(decode.get(token).get(value));
                 ret.append("(");
                 ret.append(value);

@@ -1,8 +1,11 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== TcpMonitor
 
-This monitor is used to test IP Layer 4 connectivity using TCP.
-The monitor establishes an TCP connection to a specific port.
+This monitor is used to test IP Layer 4 connectivity using _TCP_.
+The monitor establishes an _TCP_ connection to a specific port.
 To test the availability of the service, the greetings banner of the application is evaluated.
 The behavior is similar to a simple test using the `telnet` command as shown in the example.
 
@@ -33,13 +36,14 @@ SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2 <1>
 | Parameter | Description                                                                                        | Required | Default value
 | `port`    | TCP port of the application.                                                                       | required | `-1`
 | `retry`   | Number of retries before the service is marked as _down_.                                          | optional | `0`
-| `timeout` | Time in milliseconds to wait for the TCP service.                                                  | optional | `3000`
 | `banner`  | Evaluation of the service connection banner with regular expression. By default any banner result
               is valid.                                                                                          | optional | `*`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
 ===== Examples
-This example shows to test if the link:https://en.wikipedia.org/wiki/Independent_Computing_Architecture[ICA] service is available on TCP port 1494.
+This example shows to test if the link:https://en.wikipedia.org/wiki/Independent_Computing_Architecture[ICA] service is available on _TCP_ port 1494.
 The test evaluates the connection banner starting with `ICA`.
 
 [source, xml]

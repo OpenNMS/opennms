@@ -58,7 +58,7 @@ import org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory;
 import org.opennms.netmgt.collection.support.CollectionSetVisitorWrapper;
 import org.opennms.netmgt.config.datacollection.MibObject;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.ResourceStorageDao;
+import org.opennms.netmgt.dao.support.FilesystemResourceStorageDao;
 import org.opennms.netmgt.mock.MockDataCollectionConfig;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -86,7 +86,7 @@ public class SnmpAttributeTest {
     @SuppressWarnings("unchecked")
     private RrdStrategy<Object, Object> m_rrdStrategy = m_mocks.createMock(RrdStrategy.class);
 
-    private ResourceStorageDao m_resourceStorageDao = m_mocks.createMock(ResourceStorageDao.class);
+    private FilesystemResourceStorageDao m_resourceStorageDao = m_mocks.createMock(FilesystemResourceStorageDao.class);
 
     private LocationAwareSnmpClient m_locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
 

@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== VmwareCimMonitor
 
 This monitor is part of the VMware integration provided in _Provisiond_.
@@ -49,9 +52,10 @@ state can be changed see the `ignoreStandBy` configuration parameter.
 |===
 | Parameter       | Description                                                    | Required | Default value
 | `retry`         | Number of retries before the service is marked as down.        | optional | `0`
-| `timeout`       | Time in milliseconds to wait collecting the _CIM_ sensor data. | optional | `3000`
 | `ignoreStandBy` | Treat power state _standBy_ as _up_.                           | optional | `false`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 Some example configuration how to configure the monitor in the `poller-configuration.xml`.

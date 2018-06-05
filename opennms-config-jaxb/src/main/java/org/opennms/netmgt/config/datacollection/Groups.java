@@ -54,7 +54,7 @@ public class Groups implements Serializable {
      * a MIB object group
      */
     @XmlElement(name="group")
-    private List<Group> m_groups = new ArrayList<Group>();
+    private List<Group> m_groups = new ArrayList<>();
 
     public Groups() {
         super();

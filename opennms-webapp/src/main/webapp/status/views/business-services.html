@@ -1,0 +1,37 @@
+<div ng-controller="BusinessServiceStatusController">
+    <filter-controls>
+
+    </filter-controls>
+
+    <pagination model="query">
+        <div class="panel panel-default">
+            <table class="table table-bordered severity">
+                <tbody>
+                <tr>
+                    <th class="col-md-3 text-nowrap">
+                        <a ng-click="changeOrderBy('severity')">Severity</a>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'severity' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    </th>
+                    <th class="col-md-9 text-nowrap">
+                        <a ng-click="changeOrderBy('name')">Name</a>
+                        <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'asc'" class="fa fa-sort-asc"/>
+                        <i ng-show="query.orderBy === 'name' &amp;&amp; query.order === 'desc'" class="fa fa-sort-desc"/>
+                    </th>
+                </tr>
+
+                <tr ng-repeat="item in items" class="severity-{{item.severity | lowercase}}">
+                    <td class="text-nowrap divider bright">
+                        {{item['severity'] | severity}}
+                    </td>
+                    <td class="text-nowrap">
+                        <a href="topology?provider=Business Services&focus-vertices={{item['id']}}&layout=Hierarchy Layout">
+                            {{item['name']}}
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </pagination>
+</div>

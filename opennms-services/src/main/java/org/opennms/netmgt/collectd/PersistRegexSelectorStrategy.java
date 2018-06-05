@@ -32,9 +32,9 @@ import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
-import org.opennms.netmgt.config.datacollection.Parameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.expression.Expression;
@@ -70,8 +70,9 @@ public class PersistRegexSelectorStrategy implements PersistenceSelectorStrategy
 
         @Override
         public void visitAttribute(CollectionAttribute attribute) {
-            if (StringAttributeType.supportsType(attribute.getType()))
+            if (!attribute.getType().isNumeric()) {
                 context.setVariable(attribute.getName(), attribute.getStringValue());
+            }
         }
 
         public StandardEvaluationContext getEvaluationContext() {

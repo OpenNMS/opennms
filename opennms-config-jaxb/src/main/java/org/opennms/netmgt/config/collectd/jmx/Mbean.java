@@ -28,14 +28,15 @@
 
 package org.opennms.netmgt.config.collectd.jmx;
 
+import java.util.Collections;
+import java.util.Objects;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import java.util.Collections;
-import java.util.Objects;
 
 @XmlRootElement(name="mbean")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -58,13 +59,13 @@ public class Mbean implements java.io.Serializable {
     private String _keyAlias;
 
     @XmlElement(name="attrib")
-    private java.util.List<Attrib> _attribList = new java.util.ArrayList<Attrib>();
+    private java.util.List<Attrib> _attribList = new java.util.ArrayList<>();
 
     @XmlTransient
-    private java.util.List<String> _includeMbeanList = new java.util.ArrayList<String>();
+    private java.util.List<String> _includeMbeanList = new java.util.ArrayList<>();
 
     @XmlElement(name="comp-attrib")
-    private java.util.List<CompAttrib> _compAttribList = new java.util.ArrayList<CompAttrib>();
+    private java.util.List<CompAttrib> _compAttribList = new java.util.ArrayList<>();
 
     public void addAttrib(final Attrib vAttrib) {
         this._attribList.add(vAttrib);
@@ -184,4 +185,11 @@ public class Mbean implements java.io.Serializable {
         this._objectname = objectname;
     }
 
+    public void clearAttribs() {
+        this._attribList.clear();        
+    }
+
+    public void clearCompAttribs() {
+        this._compAttribList.clear();
+    }
 }

@@ -26,17 +26,6 @@
         class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
         <argument ref="bsmTopologyProvider" />
     </bean>
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider"
-        ref="bsmTopologyHopProvider">
-        <service-properties>
-            <entry key="label" value="Business Services" />
-        </service-properties>
-    </service>
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="bsmTopologyHopProvider">
-        <service-properties>
-            <entry key="label" value="Business Services" />
-        </service-properties>
-    </service>
 
     <!-- Meta topology provider -->
     <bean id="bsmMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">

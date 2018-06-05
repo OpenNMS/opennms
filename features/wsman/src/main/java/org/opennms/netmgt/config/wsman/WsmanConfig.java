@@ -126,7 +126,7 @@ public class WsmanConfig implements WsmanAgentConfig {
      */
     public List<Definition> getDefinition() {
         if (definition == null) {
-            definition = new ArrayList<Definition>();
+            definition = new ArrayList<>();
         }
         return this.definition;
     }

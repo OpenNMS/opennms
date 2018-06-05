@@ -99,7 +99,7 @@ public abstract class AbstractFilterCallback implements FilterCallback {
 
     @Override
     public String createLink(String urlBase, QueryParameters parameters, OnmsFilterFavorite favorite) {
-        StringBuffer buffer = new StringBuffer(urlBase);
+        final StringBuilder buffer = new StringBuilder(urlBase);
         buffer.append("?sortby=");
         buffer.append(parameters.getSortStyleShortName());
         buffer.append("&amp;acktype=");

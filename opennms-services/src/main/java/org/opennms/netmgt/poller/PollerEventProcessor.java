@@ -73,7 +73,7 @@ final class PollerEventProcessor implements EventListener {
     private void createMessageSelectorAndSubscribe() {
         // Create the selector for the UEIs this service is interested in
         //
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -379,7 +379,7 @@ final class PollerEventProcessor implements EventListener {
             if (parmValue == null) {
                 continue;
             } else {
-                if (parmName.equals(EventConstants.PARM_NODE_LABEL)) {
+                if (parmName.equals(EventConstants.PARM_NEW_NODE_LABEL)){
                     String label = parmValue.getContent();
                     LOG.debug("nodeLabelChangedHandler: parmName: {} /parmContent: {}", parmName, label);
                     PollableNode node = getNetwork().getNode(nodeId.intValue());

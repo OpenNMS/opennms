@@ -28,11 +28,10 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.nio.file.Path;
-
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * This class encapsulates all of the node-level data required by the SNMP data
@@ -72,8 +71,8 @@ public final class NodeInfo extends SnmpCollectionResource {
 
     /** {@inheritDoc} */
     @Override
-    public Path getPath() {
-        return getCollectionAgent().getStorageDir().toPath();
+    public ResourcePath getPath() {
+        return getCollectionAgent().getStorageResourcePath();
     }
 
     /**
@@ -142,8 +141,8 @@ public final class NodeInfo extends SnmpCollectionResource {
     }
 
         @Override
-    public String getParent() {
-        return m_agent.getStorageDir().toString();
+    public ResourcePath getParent() {
+        return m_agent.getStorageResourcePath();
     }
 
 } // end class

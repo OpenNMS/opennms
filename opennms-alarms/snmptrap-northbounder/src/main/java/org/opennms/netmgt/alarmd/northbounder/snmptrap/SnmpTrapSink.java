@@ -92,11 +92,11 @@ public class SnmpTrapSink implements Destination {
 
     /** The mapping groups. */
     @XmlElement(name = "mapping-group", required = false)
-    private List<SnmpTrapMappingGroup> m_mappings = new ArrayList<SnmpTrapMappingGroup>();
+    private List<SnmpTrapMappingGroup> m_mappings = new ArrayList<>();
 
     /** The import mappings. */
     @XmlElement(name = "import-mappings", required = false)
-    private List<String> m_importMappings = new ArrayList<String>();
+    private List<String> m_importMappings = new ArrayList<>();
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.Destination#isFirstOccurrenceOnly()

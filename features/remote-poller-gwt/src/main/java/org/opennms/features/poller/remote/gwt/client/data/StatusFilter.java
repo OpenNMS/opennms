@@ -36,7 +36,7 @@ import org.opennms.features.poller.remote.gwt.client.location.LocationInfo;
 
 public class StatusFilter implements LocationFilter {
     
-    private final Set<Status> m_selectedStatuses = new HashSet<Status>();
+    private final Set<Status> m_selectedStatuses = new HashSet<>();
 
     public Set<Status> getSelectedStatuses() {
         return m_selectedStatuses;

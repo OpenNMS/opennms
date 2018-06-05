@@ -199,7 +199,7 @@ public abstract class ConfigurationTestUtils extends Assert {
      * @throws java.io.IOException if any.
      */
     public static Resource getResourceForConfigWithReplacements(String config,
-            String[] ... replacements) throws IOException {
+            String[] ... replacements) {
         String newConfig = performReplacements(config, replacements);
         return new ByteArrayResource(newConfig.getBytes());
     }
@@ -219,7 +219,7 @@ public abstract class ConfigurationTestUtils extends Assert {
         Reader inputReader = getReaderForResource(obj, resource);
         BufferedReader bufferedReader = new BufferedReader(inputReader);
         
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         String line;
         while ((line = bufferedReader.readLine()) != null) {

@@ -31,8 +31,8 @@ package org.opennms.netmgt.collection.support;
 import java.util.List;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.PersistenceSelectorStrategy;
-import org.opennms.netmgt.config.datacollection.Parameter;
 
 /**
  * PersistAllSelectorStrategy (default implementation of the PersistenceSelectorStrategy interface).

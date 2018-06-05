@@ -92,7 +92,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
                                         isisSysObject.getIsisElement());
     
         
-        final List<IsIsLink> links = new ArrayList<IsIsLink>();
+        final List<IsIsLink> links = new ArrayList<>();
         final IsisISAdjTableTracker isisISAdjTableTracker = new IsisISAdjTableTracker() {
     	   @Override
     	   public void processIsisAdjRow(IsIsAdjRow row) {

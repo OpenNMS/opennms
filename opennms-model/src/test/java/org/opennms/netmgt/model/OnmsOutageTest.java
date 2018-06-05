@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.opennms.core.test.xml.XmlTest;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 
 import java.io.IOException;
 import java.util.Date;
@@ -45,6 +46,7 @@ public class OnmsOutageTest {
 
         XmlTest.assertXmlEquals("<outage id=\"1\">\n" +
                 "   <ipAddress>127.0.0.1</ipAddress>\n" +
+                "   <locationName>Default</locationName>\n" +
                 "   <monitoredService down=\"false\" id=\"1\">\n" +
                 "      <applications>\n" +
                 "         <application id=\"100\">\n" +
@@ -102,6 +104,7 @@ public class OnmsOutageTest {
                 "  \"serviceRegainedEvent\" : null,\n" +
                 "  \"suppressTime\" : null,\n" +
                 "  \"suppressedBy\" : null,\n" +
+                "  \"locationName\" : \"Default\",\n" +
                 "  \"nodeId\" : 1,\n" +
                 "  \"nodeLabel\" : \"Dummy Node 1\",\n" +
                 "  \"ipAddress\" : \"127.0.0.1\",\n" +
@@ -152,6 +155,8 @@ public class OnmsOutageTest {
         node.setId(id);
         node.setLabel(label);
         node.setCreateTime(new Date());
+        OnmsMonitoringLocation location = new OnmsMonitoringLocation("Default", "Default");
+        node.setLocation(location);
         return node;
     }
 

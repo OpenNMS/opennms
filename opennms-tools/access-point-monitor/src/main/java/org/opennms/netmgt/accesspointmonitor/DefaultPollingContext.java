@@ -221,7 +221,7 @@ public class DefaultPollingContext implements PollingContext {
         // Keep track of all APs that we've confirmed to be ONLINE
         OnmsAccessPointCollection apsUp = new OnmsAccessPointCollection();
 
-        Set<Callable<OnmsAccessPointCollection>> callables = new HashSet<Callable<OnmsAccessPointCollection>>();
+        Set<Callable<OnmsAccessPointCollection>> callables = new HashSet<Callable<>();
 
         // Iterate over all of the matched interfaces
         for (final OnmsIpInterface iface : ifaces.getIpInterfaces()) {
@@ -347,7 +347,7 @@ public class DefaultPollingContext implements PollingContext {
     }
 
     protected Event createApStatusEvent(String physAddr, Integer nodeId, String status) {
-        final List<Parm> parms = new ArrayList<Parm>();
+        final List<Parm> parms = new ArrayList<>();
 
         OnmsNode node = getNodeDao().get(nodeId);
         parms.add(buildParm(EventConstants.PARM_PASSIVE_IPADDR, getNodeIpAddress(node).getHostAddress()));

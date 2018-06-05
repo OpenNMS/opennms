@@ -65,10 +65,10 @@ public class CommandExecutor implements ExecutorStrategy {
     public int execute(String commandLine, List<Argument> arguments) {
         int returnCode = 0;
 
-        List<String> commandList = new ArrayList<String>();
+        List<String> commandList = new ArrayList<>();
         commandList.add(commandLine);
 
-        StringBuffer streamBuffer = new StringBuffer();
+        final StringBuilder streamBuffer = new StringBuilder();
         boolean streamed = false;
 
         // put the non streamed arguments into the argument array

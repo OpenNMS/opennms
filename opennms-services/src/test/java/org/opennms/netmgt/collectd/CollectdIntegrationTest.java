@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,25 +30,26 @@ package org.opennms.netmgt.collectd;
 
 import static org.easymock.EasyMock.anyObject;
 import static org.easymock.EasyMock.eq;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.easymock.EasyMock;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestName;
 import org.opennms.core.utils.InsufficientInformationException;
-import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.CollectionSetVisitor;
-import org.opennms.netmgt.collection.api.ServiceCollector;
-import org.opennms.netmgt.collection.support.AbstractCollectionSet;
+import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -65,7 +66,6 @@ import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.events.api.EventIpcManagerFactory;
-import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.mock.MockPersisterFactory;
@@ -76,7 +76,6 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.test.mock.EasyMockUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -86,9 +85,9 @@ import org.springframework.core.io.Resource;
  *
  * @author brozow
  */
-public class CollectdIntegrationTest extends TestCase {
+public class CollectdIntegrationTest {
     
-    private static final String TEST_KEY_PARM_NAME = "key";
+    protected static final String TEST_KEY_PARM_NAME = "key";
 
     private static Map<String, CollectdIntegrationTest> m_tests = new HashMap<String, CollectdIntegrationTest>();
 
@@ -106,8 +105,11 @@ public class CollectdIntegrationTest extends TestCase {
 
     private FilterDao m_filterDao;
 
-    @Override
-    protected void setUp() throws Exception {
+    @Rule
+    public TestName m_testName = new TestName();
+
+    @Before
+    public void setUp() throws Exception {
 
         m_eventIpcManager = new MockEventIpcManager();
         EventIpcManagerFactory.setIpcManager(m_eventIpcManager);
@@ -132,9 +134,9 @@ public class CollectdIntegrationTest extends TestCase {
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(resource.getInputStream()));
 
         // set up test using a string key
-        m_key = getName()+System.nanoTime();
+        m_key = m_testName.getMethodName()+System.nanoTime();
         m_tests.put(m_key, this);
-        
+
         //create a collector definition
         Collector collector = new Collector();
         collector.setService("SNMP");
@@ -197,6 +199,8 @@ public class CollectdIntegrationTest extends TestCase {
         m_collectd.setNodeDao(m_nodeDao);
         m_collectd.setFilterDao(m_filterDao);
         m_collectd.setPersisterFactory(new MockPersisterFactory());
+        m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
+        m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
 
         // Inits the class
         m_collectd.afterPropertiesSet();
@@ -213,11 +217,12 @@ public class CollectdIntegrationTest extends TestCase {
         m_serviceCollector = collector;
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() {
         m_tests.remove(m_key);
     }
-    
+
+    @Test
     public void testIt() throws InterruptedException {
 
         m_collectd.start();
@@ -264,81 +269,5 @@ public class CollectdIntegrationTest extends TestCase {
         EasyMock.expect(m_collectdConfiguration.getPackages()).andReturn(Collections.singletonList(pkg));
         EasyMock.expect(m_collectdConfigFactory.interfaceInPackage(anyObject(OnmsIpInterface.class), eq(pkg))).andReturn(true);
     }
-
-    public static class MockServiceCollector implements ServiceCollector {
-        
-        int m_collectCount = 0;
-        
-        public MockServiceCollector() {
-            System.err.println("Created a MockServiceCollector");
-        }
-
-        @Override
-        public CollectionSet collect(CollectionAgent agent, EventProxy eproxy, Map<String, Object> parameters) {
-            m_collectCount++;
-            CollectionSet collectionSetResult=new AbstractCollectionSet() {
-                private Date m_timestamp = new Date();
-
-                @Override
-                public int getStatus() {
-                    return ServiceCollector.COLLECTION_SUCCEEDED;
-                }
-
-                @Override
-                public void visit(CollectionSetVisitor visitor) {
-                    visitor.visitCollectionSet(this);   
-                    visitor.completeCollectionSet(this);
-                }
-
-                @Override
-                public Date getCollectionTimestamp() {
-                    return m_timestamp;
-                }
-            }; 
-            return collectionSetResult;
-        }
-
-        public Object getCollectCount() {
-            return m_collectCount;
-        }
-
-        @Override
-        public void initialize(Map<String, String> parameters) {
-            // This fails because collectd does NOT actually passed in configured monitor parameters
-            // since no collectors actually use them (except this one)
-//            String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
-//            assertNotNull(testKey);
-//            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
-        }
-
-        @Override
-        public void initialize(CollectionAgent agent, Map<String, Object> parameters) {
-            String testKey = (String)parameters.get(TEST_KEY_PARM_NAME);
-            assertNotNull(testKey);
-            CollectdIntegrationTest.setServiceCollectorInTest(testKey, this);
-        }
-
-        @Override
-        public void release() {
-            throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
-        }
-
-        @Override
-        public void release(CollectionAgent agent) {
-            throw new UnsupportedOperationException("MockServiceCollector.release() is not yet implemented");
-        }
-        
-        @Override
-        public RrdRepository getRrdRepository(String collectionName) {
-            RrdRepository repo = new RrdRepository();
-            repo.setRrdBaseDir(new File("/usr/local/opennms/share/rrd/snmp/"));
-            repo.setRraList(Collections.singletonList("RRA:AVERAGE:0.5:1:8928"));
-            repo.setStep(300);
-            repo.setHeartBeat(2 * 300);
-            return repo;
-        }
-        
-    }
-    
 
 }

@@ -512,7 +512,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     private List<BridgeStpLink> walkSpanningTree(SnmpAgentConfig peer,
             final String baseBridgeAddress) {
 
-        final List<BridgeStpLink> stplinks = new ArrayList<BridgeStpLink>();
+        final List<BridgeStpLink> stplinks = new ArrayList<>();
         Dot1dStpPortTableTracker stpPortTableTracker = new Dot1dStpPortTableTracker() {
 
             @Override

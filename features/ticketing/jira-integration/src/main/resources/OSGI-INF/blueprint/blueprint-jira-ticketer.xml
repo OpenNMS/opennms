@@ -21,29 +21,29 @@
     </service-properties>
   </service>
 
-  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.0.0">
-    <command name="jira/list-components">
+  <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ListComponentsCommand"/>
     </command>
-    <command name="jira/list-issue-types">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
-    </command>
-    <command name="jira/list-priorities">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
-    </command>
-    <command name="jira/list-projects">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
-    </command>
-    <command name="jira/list-versions">
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
-    </command>
-    <command name="jira/list-fields">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ListFieldsCommand"/>
     </command>
-    <command name="jira/show-config">
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
+    </command>
+    <command>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
+    </command>
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.ShowConfigCommand"/>
     </command>
-    <command name="jira/verify">
+    <command>
       <action class="org.opennms.netmgt.ticketer.jira.commands.VerifyCommand"/>
     </command>
   </command-bundle>

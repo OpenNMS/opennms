@@ -33,6 +33,7 @@ import static org.opennms.netmgt.newts.support.NewtsUtils.toMetricName;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourceId;
 import static org.opennms.netmgt.newts.support.NewtsUtils.toResourcePath;
 
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -316,5 +317,4 @@ public class NewtsResourceStorageDao implements ResourceStorageDao {
     protected void setContext(Context context) {
         m_context = context;
     }
-
 }

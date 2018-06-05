@@ -28,13 +28,13 @@
 
 package org.opennms.netmgt.collectd;
 
-import java.nio.file.Path;
 import java.util.Map;
 
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.ServiceParameters;
+import org.opennms.netmgt.model.ResourcePath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -213,12 +213,12 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     @Override
-    public Path getPath() {
+    public ResourcePath getPath() {
         String label = getInterfaceLabel();
         if (label == null || "".equals(label)) {
             throw new IllegalStateException("Could not construct resource directory because interface label is null or blank: nodeId: " + getNodeId());
         }
-        return getCollectionAgent().getStorageDir().toPath().resolve(label);
+        return ResourcePath.get(getCollectionAgent().getStorageResourcePath(), label);
     }
 
     /**
@@ -269,8 +269,8 @@ public final class IfInfo extends SnmpCollectionResource {
     }
 
     @Override
-    public String getParent() {
-        return getCollectionAgent().getStorageDir().toString();
+    public ResourcePath getParent() {
+        return getCollectionAgent().getStorageResourcePath();
     }
 
 } // end class

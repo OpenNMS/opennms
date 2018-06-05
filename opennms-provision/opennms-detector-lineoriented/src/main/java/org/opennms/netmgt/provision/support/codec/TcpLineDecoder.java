@@ -134,7 +134,7 @@ public class TcpLineDecoder extends CumulativeProtocolDecoder {
     }
     
     private String convertToString(final IoBuffer in) {
-        final StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         while(in.hasRemaining()){
             byte current = in.get();
             sb.append((char)current);

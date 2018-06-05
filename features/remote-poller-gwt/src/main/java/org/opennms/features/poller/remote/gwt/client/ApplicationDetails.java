@@ -301,7 +301,7 @@ public class ApplicationDetails implements Serializable, IsSerializable {
         // service id -> location id -> outages
         final Map<Integer, Map<String, List<GWTServiceOutage>>> outages = getOutages();
 
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<div id=\"applicationDetails\">\n");
         sb.append("<dl class=\"statusContents\">\n");
 

@@ -47,9 +47,6 @@ import org.springframework.core.io.FileSystemResource;
 
 public class JaxbResourceConfigurationTest {
 
-    @Rule
-    public TemporaryFolder tempFolder = new TemporaryFolder();
-
     protected File getConfigFile() throws IOException {
         final File configFile = new File("target/test-classes/collectd-configuration.xml");
         final File tempFile = File.createTempFile("collectd", ".xml", configFile.getParentFile());

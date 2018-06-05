@@ -128,7 +128,7 @@ public class Correlation {
      */
     public List<String> getCuei() {
         if (cuei == null) {
-            cuei = new ArrayList<String>();
+            cuei = new ArrayList<>();
         }
         return this.cuei;
     }

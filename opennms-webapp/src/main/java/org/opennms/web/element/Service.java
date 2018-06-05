@@ -167,7 +167,7 @@ public class Service {
      */
     @Override
     public String toString() {
-        StringBuffer str = new StringBuffer("Node Id = " + getNodeId() + "\n");
+        final StringBuilder str = new StringBuilder("Node Id = " + getNodeId() + "\n");
         str.append("Ipaddr = " + getIpAddress() + "\n");
         str.append("Service id = " + getServiceId() + "\n");
         str.append("Service name = " + getServiceName() + "\n");

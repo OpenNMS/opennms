@@ -993,7 +993,7 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementC = new BridgeElement();
         BridgeElement elementD = new BridgeElement();
         BridgeElement elementE = new BridgeElement();
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
@@ -1919,12 +1919,11 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementB = new BridgeElement();
         BridgeElement elementC = new BridgeElement();
 
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftC = new HashSet<BridgeForwardingTableEntry>();
-
 
         Integer portA = 1;
         Integer portAB = 12;
@@ -2372,7 +2371,7 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementI = new BridgeElement();
         BridgeElement elementL = new BridgeElement();
 
-        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<>();
 
         Set<BridgeForwardingTableEntry> bftD = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftE = new HashSet<BridgeForwardingTableEntry>();
@@ -3195,10 +3194,11 @@ public abstract class EnLinkdTestHelper {
         
         OnmsNode nodeA= new OnmsNode();
         OnmsNode nodeB= new OnmsNode();
+
         Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
         List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
-
+        
         public TwoNodeTopology() {
             nodeA.setId(nodeAId);
             elementA.setNode(nodeA);
@@ -3809,7 +3809,7 @@ public abstract class EnLinkdTestHelper {
         BridgeElement elementA = new BridgeElement();
         Set<BridgeForwardingTableEntry> bftA = new HashSet<BridgeForwardingTableEntry>();
         Set<BridgeForwardingTableEntry> bftB = new HashSet<BridgeForwardingTableEntry>();
-               List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
+        List<BridgeElement> elemlist = new ArrayList<BridgeElement>();
         OnmsNode nodeB= new OnmsNode();
         BridgeElement elementB = new BridgeElement();
 

@@ -78,7 +78,7 @@ public class NetScalerGroupHealthMonitor extends SnmpMonitorStrategy {
         }
 
         int snLength = groupName.length();
-        StringBuffer serviceOidBuf = new StringBuffer(SVC_GRP_MEMBER_STATE);
+        final StringBuilder serviceOidBuf = new StringBuilder(SVC_GRP_MEMBER_STATE);
         serviceOidBuf.append(".").append(Integer.toString(snLength));
         for (byte thisByte : groupName.getBytes()) {
             serviceOidBuf.append(".").append(Byte.toString(thisByte));

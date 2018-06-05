@@ -15,17 +15,18 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 
 		http://camel.apache.org/schema/blueprint
-		http://camel.apache.org/schema/blueprint/camel-blueprint-2.12.2.xsd
+		http://camel.apache.org/schema/blueprint/camel-blueprint-2.19.1.xsd
 ">
 
   <!-- Configuration properties -->
   <cm:property-placeholder id="alarmNorthbounderProperties" persistent-id="org.opennms.features.amqp.alarmnorthbounder" update-strategy="reload">
     <cm:default-properties>
-        <!-- amqp://username:password@virtualhost?brokerlist='tcp://127.0.0.1:5672?options -->
-        <cm:property name="connectionUrl" value="amqp://guest:guest@onms/test?brokerlist='tcp://127.0.0.1:5672'"/>
-        <!-- amqp:exchange/routingkey?options -->
-        <cm:property name="destination" value="amqp:OpenNMS-Exchange/opennms-routing-key"/>
-        <cm:property name="processorName" value="default-alarm-northbounder-processor"/>
+      <cm:property name="connectionUrl" value="amqp://localhost:5672"/>
+      <cm:property name="username" value="guest"/>
+      <cm:property name="password" value="guest"/>
+      <!-- amqp:[queue:|topic:]destinationName[?options] -->
+      <cm:property name="destination" value="amqp:topic:opennms-alarms"/>
+      <cm:property name="processorName" value="default-alarm-northbounder-processor"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -78,11 +79,10 @@
     </route>
   </camelContext>
 
-  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent">
-    <property name="connectionFactory">
-      <bean class="org.apache.qpid.client.AMQConnectionFactory">
-        <property name="connectionURLString" value="${connectionUrl}" />
-      </bean>
-    </property>
+  <bean id="amqp" class="org.apache.camel.component.amqp.AMQPComponent" factory-method="amqpComponent">
+    <argument value="${connectionUrl}"/>
+    <argument value="${username}"/>
+    <argument value="${password}"/>
   </bean>
+
 </blueprint>

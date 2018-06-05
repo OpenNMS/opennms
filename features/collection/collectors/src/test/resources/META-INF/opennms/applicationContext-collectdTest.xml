@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:jdbc="http://www.springframework.org/schema/jdbc" 
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.0.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+  <tx:annotation-driven/>
+
+	<!-- Override the collectd-configuration with one that includes the HttpCollector -->
+	<bean id="collectdConfigStream" class="org.opennms.core.test.ConfigurationTestUtils" factory-method="getInputStreamForResource">
+		<!-- Dummy string value that will fetch the current classloader -->
+		<constructor-arg value="SOME_JAVA_LANG_STRING"/>
+		<!-- Classpath resource that contains a minimal capsd configuration -->
+		<constructor-arg value="/org/opennms/netmgt/capsd/collectd-configuration.xml"/>
+	</bean>
+
+	<bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory">
+		<constructor-arg ref="collectdConfigStream"/>
+		<constructor-arg value="nms1"/>
+		<constructor-arg value="false"/>
+	</bean>
+
+	<!-- Initialize the PollOutagesConfigFactory -->
+	<bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
+	</bean>
+
+	<!-- <bean id="pollOutagesConfig" class="org.opennms.netmgt.config.PollOutagesConfigFactory" depends-on="init-pollOutagesConfig-factory" factory-method="getInstance"/> -->
+
+	<bean id="daemon" class="org.opennms.netmgt.collectd.Collectd" depends-on="init-pollOutagesConfig-factory">
+		<!-- Override Eventd with the mock version -->
+		<property name="eventIpcManager" ref="mockEventIpcManager"/>
+	</bean>
+
+</beans>

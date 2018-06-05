@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 
 import net.sf.json.JSONObject;
 
+import net.sf.json.JSONSerializer;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -64,7 +65,7 @@ public class MockDocumentBuilder {
         try {
             inputStream = new FileInputStream(m_jsonFileName);
             String everything = IOUtils.toString(inputStream);
-            json = JSONObject.fromObject(everything);
+            json = AbstractJsonCollectionHandler.wrapArray(JSONSerializer.toJSON(everything));
         } catch (Exception e) {
         } finally {
             if (inputStream != null)
@@ -74,11 +75,6 @@ public class MockDocumentBuilder {
         return json;
     }
 
-    /**
-     * Sets the XML file name.
-     *
-     * @param xmlFileName the new XML file name
-     */
     public static void setJSONFileName(String jsonFileName) {
         m_jsonFileName = jsonFileName;
     }

@@ -57,7 +57,7 @@ public class OpenNMSJUnit4ClassRunner extends SpringJUnit4ClassRunner {
         "org.opennms.core.test.snmp.JUnitSnmpAgentExecutionListener",
         "org.opennms.core.test.http.JUnitHttpServerExecutionListener",
         "org.opennms.core.test.dns.JUnitDNSServerExecutionListener",
-        "org.opennms.netmgt.collectd.JUnitCollectorExecutionListener",
+        "org.opennms.core.collection.test.JUnitCollectorExecutionListener",
         "org.springframework.test.context.support.DependencyInjectionTestExecutionListener",
         "org.springframework.test.context.support.DirtiesContextTestExecutionListener",
         "org.springframework.test.context.transaction.TransactionalTestExecutionListener"

@@ -100,7 +100,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
     public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
     	LOG.info("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        List<SearchResult> results = new ArrayList<SearchResult>();
+        List<SearchResult> results = new ArrayList<>();
         
 		String queryString = searchQuery.getQueryString();
 		
@@ -137,7 +137,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
                 }
             }
 
-            Set<String> ipAddrs = new HashSet<String>();
+            Set<String> ipAddrs = new HashSet<>();
             
             LOG.info("SearchProvider->query: creating IP address set.");
             for (OnmsIpInterface ip : ips) {
@@ -296,7 +296,7 @@ public class IpLikeSearchProvider extends AbstractSearchProvider implements Hist
 	}
 
 	@Override
-	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input) {
+	public org.opennms.features.topology.api.topo.Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
 		IpLikeHopCriteria criteria = createCriteria(input);
 		return criteria;
 	}

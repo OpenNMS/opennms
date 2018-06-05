@@ -41,6 +41,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 
 @XmlRootElement(name = "resource")
@@ -178,12 +179,12 @@ public class ResourceDTO {
 
     public static ResourceDTO fromResource(final OnmsResource resource, final int depth) {
         final ResourceDTO dto = new ResourceDTO();
-        dto.setId(resource.getId());
+        dto.setId(resource.getId().toString());
         dto.setLabel(resource.getLabel());
         dto.setName(resource.getName());
         dto.setLink(resource.getLink());
         dto.setTypeLabel(resource.getResourceType().getLabel());
-        dto.setParentId(resource.getParent() == null ? null : resource.getParent().getId());
+        dto.setParentId(resource.getParent() == null ? null : resource.getParent().getId().toString());
         dto.setStringPropertyAttributes(resource.getStringPropertyAttributes());
         dto.setExternalValueAttributes(resource.getExternalValueAttributes());
         dto.setRrdGraphAttributes(resource.getRrdGraphAttributes());

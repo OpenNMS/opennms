@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>19.0.0-SNAPSHOT</version>
+        <version>21.1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.container</groupId>
@@ -161,6 +161,16 @@
                       <file>${project.build.directory}/filtered-resources/features/features.xml</file>
                       <type>xml</type>
                       <classifier>features</classifier>
+                    </artifact>
+                    <artifact>
+                      <file>target/filtered-resources/features/spring.xml</file>
+                      <type>xml</type>
+                      <classifier>spring</classifier>
+                    </artifact>
+                    <artifact>
+                      <file>target/filtered-resources/features/spring-legacy.xml</file>
+                      <type>xml</type>
+                      <classifier>spring-legacy</classifier>
                     </artifact>
                   </artifacts>
                 </configuration>

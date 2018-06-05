@@ -69,8 +69,8 @@ public class GroupInfo {
     public GroupInfo() {
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList<String>();
-        m_dutySchedules = new Vector<DutySchedule>();
+        m_users = new ArrayList<>();
+        m_dutySchedules = new Vector<>();
     }
 
     /**
@@ -223,7 +223,7 @@ public class GroupInfo {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("name     = " + m_groupName + "\n");
         buffer.append("comments = " + m_groupComments + "\n");

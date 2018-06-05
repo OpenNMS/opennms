@@ -159,6 +159,21 @@
            <Item>
                <New id="DefaultHandler" class="org.eclipse.jetty.server.handler.DefaultHandler"/>
            </Item>
+         <!-- NCSA Request Logging
+           <Item>
+               <New id="RequestLog" class="org.eclipse.jetty.server.handler.RequestLogHandler">
+                 <Set name="requestLog">
+                   <New id="RequestLogImpl" class="org.eclipse.jetty.server.NCSARequestLog">
+                     <Arg>logs/jetty-requests-yyyy_mm_dd.log</Arg>
+                     <Set name="retainDays">90</Set>
+                     <Set name="append">true</Set>
+                     <Set name="extended">true</Set>
+                     <Set name="logTimeZone">US/Central</Set>
+                   </New>
+                 </Set>
+               </New>
+           </Item>
+         -->
        </Array>
       </Set>
   </New>

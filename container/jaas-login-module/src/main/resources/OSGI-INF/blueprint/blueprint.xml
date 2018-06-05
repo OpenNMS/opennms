@@ -10,9 +10,13 @@
     <reference id="userConfig" interface="org.opennms.netmgt.config.api.UserConfig" availability="mandatory" />
     <reference id="springSecurityUserDao" interface="org.opennms.web.springframework.security.SpringSecurityUserDao" availability="mandatory" />
 
-	<!-- Override the JAAS LoginModule in the Karaf Container -->
-	<jaas:config name="karaf" rank="1">
-		<jaas:module className="org.opennms.container.jaas.OpenNMSLoginModule" flags="required" />
-	</jaas:config>
+    <!-- Override the JAAS LoginModule in the Karaf Container -->
+    <jaas:config name="karaf" rank="1">
+        <jaas:module className="org.opennms.container.jaas.OpenNMSLoginModule" flags="required" />
+    </jaas:config>
 
+    <service interface="org.apache.karaf.jaas.modules.BackingEngineFactory">
+        <bean class="org.opennms.container.jaas.OpenNMSBackingEngineFactory"/>
+    </service>
 </blueprint>
+

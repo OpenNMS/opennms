@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?castor class-name="org.opennms.netmgt.collectd.CollectdConfiguration"?>
+<collectd-configuration 
+   threads="50">
+   
+   <package name="example1">
+       <filter>IPADDR IPLIKE *.*.*.*</filter>   
+       <specific>0.0.0.0</specific>
+       <include-range begin="1.1.1.1" end="254.254.254.254"/>
+       <exclude-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+       
+       <service name="SNMP" interval="300000" user-defined="false" status="on">
+           <parameter key="collection" value="default"/>
+           <parameter key="port" value="161"/>
+           <parameter key="retry" value="3"/>
+           <parameter key="timeout" value="3000"/>
+       </service>
+       
+       <service name="HTTP" interval="300000" user-defined="false" status="on">
+           <parameter key="collection" value="default"/>
+           <parameter key="port" value="80"/>
+           <parameter key="retry" value="3"/>
+           <parameter key="timeout" value="3000"/>
+       </service>
+
+   </package>
+   
+   <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
+   <collector service="HTTP" class-name="org.opennms.netmgt.collectd.HttpCollector"/>
+</collectd-configuration>

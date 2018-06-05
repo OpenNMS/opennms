@@ -80,7 +80,7 @@ public class Group implements Cloneable {
 
         m_groupName = "";
         m_groupComments = "";
-        m_users = new ArrayList<String>();
+        m_users = new ArrayList<>();
         m_groupInfo = new GroupInfo();
     }
 
@@ -248,7 +248,7 @@ public class Group implements Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("name     = " + m_groupName + "\n");
         buffer.append("comments = " + m_groupComments + "\n");

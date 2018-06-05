@@ -381,7 +381,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected void zipDir(File zipFile, File sourceFolder) throws OnmsUpgradeException {
-        List<File> filesToCompress = new ArrayList<File>();
+        List<File> filesToCompress = new ArrayList<>();
         try {
             populateFilesList(sourceFolder, filesToCompress);
         } catch (IOException e) {
@@ -605,7 +605,7 @@ public abstract class AbstractOnmsUpgrade implements OnmsUpgrade {
      * @param properties the properties
      */
     private void printProperties(String title, Properties properties) {
-        List<String> keys = new ArrayList<String>();
+        List<String> keys = new ArrayList<>();
         for (Object k : properties.keySet()) {
             keys.add((String) k);
         }

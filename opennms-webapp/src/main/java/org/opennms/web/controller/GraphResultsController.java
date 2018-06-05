@@ -35,6 +35,7 @@ import org.jrobin.core.timespec.TimeParser;
 import org.jrobin.core.timespec.TimeSpec;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.servlet.MissingParameterException;
 import org.opennms.web.svclayer.api.GraphResultsService;
 import org.opennms.web.svclayer.model.GraphResults;
@@ -50,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
@@ -83,7 +85,7 @@ public class GraphResultsController extends AbstractController implements Initia
             }
         }
 
-        String[] resourceIds = request.getParameterValues("resourceId");
+        ResourceId[] resourceIds = Arrays.stream(request.getParameterValues("resourceId")).map(ResourceId::fromString).toArray(ResourceId[]::new);
         String[] reports = request.getParameterValues("reports");
         
         // see if the start and end time were explicitly set as params
@@ -245,8 +247,8 @@ public class GraphResultsController extends AbstractController implements Initia
      *
      * @return an array of {@link java.lang.String} objects.
      */
-	public String[] getSuggestedReports(String resourceId, String matching) {
-		List<String> metricList = new ArrayList<String>();
+	public String[] getSuggestedReports(ResourceId resourceId, String matching) {
+		List<String> metricList = new ArrayList<>();
 		JexlEngine expressionParser = new JexlEngine();
 		try {
 		    ExpressionImpl e = (ExpressionImpl) expressionParser.createExpression(matching);
@@ -263,7 +265,7 @@ public class GraphResultsController extends AbstractController implements Initia
 		} catch (Exception e) {
 		}
 		if (!metricList.isEmpty()) {
-		    List<String> templates = new ArrayList<String>();
+		    List<String> templates = new ArrayList<>();
 		    for (PrefabGraph graph : m_graphResultsService.getAllPrefabGraphs(resourceId)) {
 		        boolean found = false;
 		        for (String c : graph.getColumns()) {

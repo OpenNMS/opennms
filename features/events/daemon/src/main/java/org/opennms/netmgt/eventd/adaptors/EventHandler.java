@@ -37,7 +37,6 @@ import org.opennms.netmgt.xml.event.EventReceipt;
  *
  * @author <a href="mailto:weave@oculan.com">Brian Weaver </a>
  * @author <a href="http;//www.opennms.org">OpenNMS </a>
- * @version $Id: $
  */
 public interface EventHandler {
     /**

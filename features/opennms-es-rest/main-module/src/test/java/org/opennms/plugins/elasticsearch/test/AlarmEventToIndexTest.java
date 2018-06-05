@@ -29,22 +29,37 @@
 package org.opennms.plugins.elasticsearch.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
+import org.opennms.netmgt.xml.event.Value;
 import org.opennms.plugins.elasticsearch.rest.EventToIndex;
 import org.opennms.plugins.elasticsearch.rest.IndexNameFunction;
-import org.opennms.plugins.elasticsearch.rest.NodeCache;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Search;
@@ -105,6 +120,34 @@ public class AlarmEventToIndexTest {
 			+ "\"qosalarmstate\":null,\"clearkey\":null,\"ifindex\":null,\"eventparms\":\"eventReason=Unknown(string,text)\","
 			+ "\"stickymemo\":null,\"systemid\":\"00000000-0000-0000-0000-000000000000\"}";
 
+	private EventToIndex eventToIndex;
+	private JestClient jestClient;
+
+	@Before
+	public void setUp() throws MalformedURLException {
+		jestClient = new RestClientFactory("http://localhost:9200","", "").getJestClient();
+
+		eventToIndex = new EventToIndex();
+		eventToIndex.setRestClientFactory(new RestClientFactory("http://localhost:9200","", ""));
+		eventToIndex.setNodeCache(new MockNodeCache());
+		eventToIndex.setIndexNameFunction(new IndexNameFunction("yyyy.MM"));
+		eventToIndex.setLogEventDescription(true);
+		eventToIndex.setArchiveRawEvents(true);
+		eventToIndex.setArchiveAlarms(true);
+		eventToIndex.setArchiveAlarmChangeEvents(true);
+		eventToIndex.setArchiveOldAlarmValues(true);
+		eventToIndex.setArchiveNewAlarmValues(true);
+	}
+
+	@After
+	public void tearDown() {
+		if (jestClient != null) {
+			jestClient.shutdownClient();
+		}
+		if (eventToIndex != null) {
+			eventToIndex.close();
+		}
+	}
 
 	/**
 	 * simple test to create an alarm change event which will create a new alarm in the alarm index
@@ -114,31 +157,8 @@ public class AlarmEventToIndexTest {
 	public void jestClientAlarmToESTest(){
 		LOG.debug("***************** start of test jestClientAlarmToESTest");
 
-		EventToIndex eventToIndex = new EventToIndex();
-		JestClient jestClient=null;
 
 		try {
-
-			// Get Jest client
-			String esusername="";
-			String espassword="";
-			String elasticsearchUrl="http://localhost:9200";
-
-			RestClientFactory restClientFactory = new RestClientFactory(elasticsearchUrl,esusername,espassword);
-
-			IndexNameFunction indexNameFunction = new IndexNameFunction("yyyy.MM");
-
-			NodeCache nodeCache = new MockNodeCache();
-
-			eventToIndex.setRestClientFactory(restClientFactory);
-			eventToIndex.setNodeCache(nodeCache);
-			eventToIndex.setIndexNameFunction(indexNameFunction);
-			eventToIndex.setLogEventDescription(true);
-			eventToIndex.setArchiveRawEvents(true);
-			eventToIndex.setArchiveAlarms(true);
-			eventToIndex.setArchiveAlarmChangeEvents(true);
-			eventToIndex.setArchiveOldAlarmValues(true);
-			eventToIndex.setArchiveNewAlarmValues(true);
 
 			// create an alarm change event
 			EventBuilder eb = new EventBuilder( ALARM_ACKNOWLEDGED_EVENT, EVENT_SOURCE_NAME);
@@ -159,8 +179,6 @@ public class AlarmEventToIndexTest {
 			} catch (InterruptedException e) { }
 
 			// send query to check that alarm has been created
-			jestClient = restClientFactory.getJestClient();
-
 			// search for resulting alarm
 			String query = "{\n" 
 					+"\n       \"query\": {"
@@ -201,14 +219,7 @@ public class AlarmEventToIndexTest {
             } catch (InterruptedException e) { }
 			
 			// search for resulting alarm change event
-			String eventquery = "{\n" 
-					+"\n       \"query\": {"
-					+ "\n         \"match\": {"
-					+ "\n         \"id\": \"100\""
-					+ "\n          }"
-					+ "\n        }"
-					+ "\n     }";
-			
+			final String eventquery = buildSearchQuery(100);
 			LOG.debug("event check search query: "+eventquery);
 
 			Search eventsearch = new Search.Builder(eventquery)
@@ -261,5 +272,124 @@ public class AlarmEventToIndexTest {
 		LOG.debug("***************** end of test jestClientAlarmToESTest");
 	}
 
+	// See NMS-9831 for more information
+	@Test
+	public void verifyOidMapping() throws InterruptedException, IOException {
+		int eventId = 13;
+		final Event event = createDummyEventWithOids(eventId);
+		eventToIndex.forwardEvents(Arrays.asList(event));
 
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		final String query = buildSearchQuery(eventId);
+		final Search search = new Search.Builder(query)
+			.addIndex("opennms-events-raw-*")
+			.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Integer.valueOf(1), result.getTotal());
+	}
+
+	// See NMS-9831 for more information
+	@Test
+	public void verifyOidGrouping() throws InterruptedException, IOException {
+		int eventId = 15;
+		final Event event = createDummyEventWithOids(eventId);
+		eventToIndex.setGroupOidParameters(true);
+		eventToIndex.forwardEvents(Arrays.asList(event));
+
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		final String query = buildSearchQuery(eventId);
+		final Search search = new Search.Builder(query)
+				.addIndex("opennms-events-raw-*")
+				.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Integer.valueOf(1), result.getTotal());
+
+		// Verify oids
+		final JsonArray oids = result.getJsonObject()
+				.get("hits").getAsJsonObject()
+					.get("hits").getAsJsonArray()
+						.get(0).getAsJsonObject()
+							.get("_source").getAsJsonObject()
+								.get("p_oids").getAsJsonArray();
+		assertNotNull(oids);
+		assertEquals(99, oids.size());
+	}
+
+	// See HZN-1272
+	@Test
+	public void verifyJsonEventParameters() throws InterruptedException, IOException {
+		final int eventId = 17;
+		final Event event = createDummyEvent(eventId);
+
+		final JsonObject addressObject = new JsonObject();
+		addressObject.addProperty("street", "950 Windy Rd, Ste 300");
+		addressObject.addProperty("city", "Apex");
+		addressObject.addProperty("state", "NC");
+		final JsonObject jsonObject = new JsonObject();
+		jsonObject.add("address", addressObject);
+		jsonObject.addProperty("name", "The OpenNMS Group");
+
+				// Create Event Parameter, which carries a json representation
+						final Value value = new Value();
+		value.setType("json");
+		value.setEncoding("text");
+		value.setContent(jsonObject.toString());
+		final Parm p = new Parm();
+		p.setValue(value);
+		p.setParmName("name");
+		event.addParm(p);
+
+		// Forward event...
+		eventToIndex.forwardEvents(Arrays.asList(event));
+		TimeUnit.SECONDS.sleep(INDEX_WAIT_SECONDS);
+
+		// ... and verify that the json was actually persisted as json and not as string
+		final String query = buildSearchQuery(eventId);
+		final Search search = new Search.Builder(query)
+						.addIndex("opennms-events-raw-*")
+						.build();
+		final SearchResult result = jestClient.execute(search);
+		assertEquals(200, result.getResponseCode());
+		assertEquals(Integer.valueOf(1), result.getTotal());
+		final JsonArray jsonArray = result.getJsonObject().get("hits").getAsJsonObject().get("hits").getAsJsonArray();
+		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
+	}
+
+	private static Event createDummyEvent(int eventId) {
+		final Event event = new Event();
+		event.setUei(EventConstants.ALARM_CLEARED_UEI);
+		event.setCreationTime(new Date());
+		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
+		event.setDescr("Dummy Event");
+		event.setSeverity(OnmsSeverity.WARNING.getLabel());
+		event.setDbid(eventId);
+		return event;
+	}
+
+	private static Event createDummyEventWithOids(int eventId) {
+		final Event event = createDummyEvent(eventId);
+		IntStream.range(1, 100).forEach(i -> {
+			Parm parm = new Parm();
+			parm.setParmName("." + i + ".0.0.0.0.0.0.0.0.0"); // 10 * 100 -> 1000 fields at least
+			parm.setValue(new Value("dummy value"));
+			event.addParm(parm);
+		});
+		return event;
+	}
+
+
+	private static String buildSearchQuery(int eventId) {
+		return "{\n"
+					+"\n       \"query\": {"
+					+ "\n         \"match\": {"
+					+ "\n         \"id\": \"" + eventId + "\""
+					+ "\n          }"
+					+ "\n        }"
+					+ "\n     }";
+
+	}
 }

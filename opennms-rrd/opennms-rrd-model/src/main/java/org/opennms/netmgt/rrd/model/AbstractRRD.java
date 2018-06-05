@@ -354,7 +354,7 @@ public abstract class AbstractRRD {
         if (getDataSources().size() <= 1) {
             throw new IllegalArgumentException("Cannot split an RRD composed by 1 or less data-sources.");
         }
-        List<AbstractRRD> rrds = new ArrayList<AbstractRRD>();
+        List<AbstractRRD> rrds = new ArrayList<>();
         for (int i = 0; i < getDataSources().size(); i++) {
             AbstractRRD rrd = createRRD();
             rrd.addDataSource(getDataSource(i));

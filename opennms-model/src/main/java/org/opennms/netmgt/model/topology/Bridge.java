@@ -165,7 +165,6 @@ public class Bridge implements Topology {
         strbfr.append("], identifiers:");
         strbfr.append(m_identifiers);
         return strbfr.toString();
-
     }
 
     public Set<String> getIdentifiers() {

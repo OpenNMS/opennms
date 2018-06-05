@@ -272,7 +272,7 @@ public class OnmsProblemEventHandler implements ProblemEventHandler {
      * @return the dependencies
      */
     public List<String> getDependencies() {
-        List<String> dependencies = new ArrayList<String>();
+        List<String> dependencies = new ArrayList<>();
         if (m_outputStream.size() > 0) {
             Matcher m = DEPENDENCY_PATERN.matcher(m_outputStream.toString());
             while (m.find()) {

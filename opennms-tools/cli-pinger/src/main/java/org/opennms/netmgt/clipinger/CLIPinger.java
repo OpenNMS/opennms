@@ -78,7 +78,7 @@ final public class CLIPinger {
     private static boolean s_allowFragmentation = true;
 
     @Argument
-    private static List<String> s_arguments = new ArrayList<String>();
+    private static List<String> s_arguments = new ArrayList<>();
     
     public static void main(String[] args) throws CmdLineException {
         new CLIPinger().doMain(args);

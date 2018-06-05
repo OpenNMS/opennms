@@ -89,7 +89,7 @@ public class JobManager {
                 public void run() {
                     LOG.error(trex.getMessage(), trex.getCause());
 
-                    StringBuilder errorMessage = new StringBuilder(100);
+                    final StringBuilder errorMessage = new StringBuilder(100);
                     errorMessage.append(trex.getMessage());
                     if (trex.getCause() != null) {
                         errorMessage.append("<br/><br/>").append(trex.getCause().getMessage());

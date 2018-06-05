@@ -67,7 +67,7 @@
 		</annotation>
 		<complexType>
 			<sequence>
-				<element ref="ns:wpm" maxOccurs="unbounded">
+				<element ref="ns:wpm" minOccurs="0" maxOccurs="unbounded">
 					<annotation>
 						<documentation>
 							A WMI Object Group

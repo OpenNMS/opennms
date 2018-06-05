@@ -80,7 +80,7 @@ final public class OmsaStorageMonitor extends SnmpMonitorStrategy {
         PollStatus status = PollStatus.available();
         InetAddress ipaddr = svc.getAddress();
 
-        final StringBuffer returnValue = new StringBuffer();
+        final StringBuilder returnValue = new StringBuilder();
         
         SnmpAgentConfig agentConfig = configureAgent(svc, parameters);
 

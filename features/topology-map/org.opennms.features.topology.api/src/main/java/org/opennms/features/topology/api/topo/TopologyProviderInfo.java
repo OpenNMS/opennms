@@ -38,4 +38,10 @@ public interface TopologyProviderInfo {
      * @return true if hierarchical, false otherwise.
      */
     boolean isHierarchical();
+
+    /**
+     * Defines whether the topology provider supports category search
+     * @return True if supports, otherwise false
+     */
+    boolean isSupportsCategorySearch();
 }

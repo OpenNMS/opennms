@@ -96,7 +96,7 @@
 
 					    	List<Filter> queryElements = callback.parse(current.getFilter());
 					    	
-					    	StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
+					    	final StringBuilder buf = new StringBuilder("<ul class=\"list-unstyled\">"); 
 					    	for(Filter queryElement : queryElements) {
 					    	    buf.append("<li>");
 					    		buf.append(queryElement.getTextDescription());
@@ -108,7 +108,7 @@
     					%>
 
                           <li>
-                              <a href="alarm/list?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
+                              <a href="alarm/list.htm?favoriteId=${eachFavorite.id}&${eachFavorite.filter}" title='<c:out value='${favTitle}'/>' data-html="true" data-toggle="tooltip" data-placement="right">${eachFavorite.name}</a> <a href="alarm/deleteFavorite?favoriteId=${eachFavorite.id}&redirect=/alarm/index" title='Delete favorite' data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-remove text-danger"></span></a>
                           </li>
                       </c:forEach>
                   </ul>

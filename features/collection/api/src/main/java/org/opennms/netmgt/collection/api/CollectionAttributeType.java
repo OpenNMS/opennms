@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.api;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 
 /**
  * This class encapsulates the immutable parts of a {@link CollectionAttribute} such as the name,
@@ -36,16 +37,11 @@ package org.opennms.netmgt.collection.api;
 public interface CollectionAttributeType {
 
     /**
-     * <p>The type of metric that the attribute represents. Valid case-insensitive values are:</p>
-     * <ul>
-     * <li>counter</li>
-     * <li>gauge</li>
-     * <li>string</li>
-     * </ul>
+     * <p>The type of metric that the attribute represents.</p>
      *
-     * @return a {@link java.lang.String} object.
+     * @return a {@link AttributeType} object.
      */
-    String getType();
+    AttributeType getType();
 
     /**
      * Human readable name for the attribute. Normally these are specified by an "alias" field

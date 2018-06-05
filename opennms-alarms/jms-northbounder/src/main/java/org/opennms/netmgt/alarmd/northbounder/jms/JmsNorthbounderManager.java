@@ -120,6 +120,11 @@ public class JmsNorthbounderManager implements InitializingBean, Northbounder, D
         // There is no need to do something here. Only the reload method will be implemented
     }
 
+    @Override
+    public boolean isReady() {
+        return false;
+    }
+
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.Northbounder#onAlarm(org.opennms.netmgt.alarmd.api.NorthboundAlarm)
      */

@@ -220,7 +220,7 @@ public class SharedSegment implements Topology{
     }
     
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+        StringBuffer strbfr = new StringBuffer();
         strbfr.append("segment -> designated bridge:[");
         strbfr.append(getDesignatedBridge());
         strbfr.append("]\n");
@@ -235,7 +235,7 @@ public class SharedSegment implements Topology{
         }
         strbfr.append("        -> macs:");
         strbfr.append(getMacsOnSegment());
-        return strbfr.toString();    	
+        return strbfr.toString();       
     }
 
 }

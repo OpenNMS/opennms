@@ -1,0 +1,457 @@
+<div ng-controller="ListCtrl">
+<div ng-controller="NodeListCtrl">
+
+<!-- TODO: Forward to node details page if only 1 result is returned -->
+<!--
+<c:if test="${model.nodeCount == 1 && command.snmpParm == null && command.maclike == null}">
+  <jsp:forward page="/element/node.jsp?node=${model.nodes[0].node.id}"/>
+</c:if>
+
+Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
+-->
+
+	<!-- Modal form for adding filters -->
+	<div id="filterModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<label>Add Filter:</label>
+					<form class="form-inline" onSubmit="$('#filterModal').modal('hide')" ng-submit="addSearchClause(clause)">
+						<div class="form-group">
+						<select class="form-control" ng-model="clause.property" ng-init="clause.property = 'id'" ng-change="updateClauseValue(clause.property)">
+							<option ng-repeat="property in searchProperties" value="{{::property.id}}">{{::property.name}}</option>
+						</select>
+						<select class="form-control" ng-model="clause.operator" ng-init="clause.operator = 'EQ'">
+							<option value="EQ">=</option>
+							<option value="NE">!=</option>
+							<option value="LT">&lt;</option>
+							<option value="LE">&lt;=</option>
+							<option value="GT">&gt;</option>
+							<option value="GE">&gt;=</option>
+						</select>
+						<span ng-if="clauseValues.length === 0">
+							<input class="form-control" type="datetime-local"    ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'TIMESTAMP'"/>
+							<input class="form-control" type="text"              ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'STRING' || getSearchProperty(clause.property).type === 'IP_ADDRESS'"
+								placeholder="Type to search..."
+								uib-typeahead="value for value in getSearchPropertyMatches(clause.property, $viewValue)"
+							/>
+							<input class="form-control" type="number"            ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'INTEGER' || getSearchProperty(clause.property).type === 'LONG'"/>
+							<input class="form-control" type="number" step="any" ng-model="clause.value" ng-if="getSearchProperty(clause.property).type === 'FLOAT'"/>
+							<span ng-if="getSearchProperty(clause.property).iplike" class="label label-default">IPLIKE</span>
+							<span ng-if="loadingSearchProperties">
+								<i class="fa fa-spinner fa-spin fa-lg fa-fw"/>
+							</span>
+						</span>
+						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
+						</div>
+						<br/><br/>
+						<button class="btn btn-default" type="submit">Submit</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal help window -->
+	<div id="helpModal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-body">
+					<!-- Filter form -->
+					<h3>Help</h3>
+
+					<h4>Filtering</h4>
+					<p>
+						Click on the <i class="fa fa-search-plus"></i> icon to filter the list. You can match a portion of a value by using
+						the * character as a wildcard value. Click on the <i class="fa fa-ban"> icon to clear all filters.</i>
+					</p>
+
+					<h4>Filter by Example</h4>
+					<p>
+						You can click on the <i class="fa fa-plus-square-o"></i> icon next to a value to only show rows that contain that value. 
+						If you click on the <i class="fa fa-minus-square-o"></i> icon, it will remove rows with that value from the results.
+						For timestamp values, clicking on the <i class="fa fa-toggle-left"></i> icon will show timestamps newer than the specified
+						value and clicking on the <i class="fa fa-toggle-right"></i> icon will show timestamps older than the value.
+					</p>
+
+					<h4>Sorting</h4>
+					<p>Click on a column header to sort by that column. Click the same column again to reverse the sort order.</p>
+
+					<h4>Items per Page</h4>
+					<p>You can change the number of items per page by entering a numeric value in the <i class="fa fa-th-list"></i> box.</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Filter list -->
+	<div class="well well-sm">
+		<span class="h4" style="line-height:2.8;">
+			Filters&nbsp;&nbsp;
+			<a onClick="$('#filterModal').modal()"><i class="fa fa-search-plus fa-lg"></i></a>
+			&nbsp;
+			<a onClick="$('#helpModal').modal()"><i class="fa fa-question-circle fa-lg"></i></a>
+			&nbsp;
+			<a ng-click="clearSearch()"><i class="fa fa-ban fa-lg"></i></a>
+			&nbsp;
+		</span>
+		<span ng-hide="query.searchClauses.length == 0 || !searchPropertiesLoaded">
+			<span ng-repeat="clause in query.searchClauses" ng-if="clause.property !== 'location.locationName'">
+				<div class="btn-group" style="margin:3px;">
+					<button class="btn btn-primary" ng-click="removeSearchClause(clause)">
+						{{clause.property | property : searchProperties}}
+						{{clause.operator | operator : clause.value}}
+						{{clause.value | value : searchProperties : clause.property}}
+						&nbsp;
+						<i class="fa fa-close"></i>
+					</button>
+				</div>
+			</span>
+		</span>
+	</div>
+
+	<!--
+		TODO: Do we need paging controls for the node list?
+		Probably, but we don't have this in the legacy version.
+	-->
+	<!-- Paging controls -->
+	<!--
+	<div>
+		<div class="btn-toolbar">
+			<div class="btn-group">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
+				</a>
+			</div>
+			<div class="btn-group">
+				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
+				</a>
+			</div>
+
+			<div class="btn-group">
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+					{{(query.offset/query.limit) - 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+					{{(query.offset/query.limit) - 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+					{{query.offset/query.limit}}
+				</a>
+				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+					{{(query.offset/query.limit) + 1}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 2}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 3}}
+				</a>
+				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+					{{(query.offset/query.limit) + 4}}
+				</a>
+			</div>
+
+			<div class="pull-right">
+				<!- - Add 1 to each offset since they are zero-based - ->
+				<form class="form-inline" ng-submit="setLimit(query.newLimit)">
+					<div class="input-group" style="margin-left:10px;">
+						<span class="input-group-addon"><i class="fa fa-th-list"></i></span>
+						<input class="form-control" type="number" ng-model="query.newLimit"/>
+					</div>
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
+						</a>
+					</div>
+
+					<div class="btn-group" style="margin-left:5px;">
+						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
+						</a>
+					</div>
+				</form>
+			</div>
+
+			<h5 class="pull-right" ng-show="query.maxOffset &lt; 0">No items found.</h5>
+			<h5 class="pull-right" ng-show="query.maxOffset &gt;= 0">{{query.offset === query.lastOffset ? "Item " + (query.offset + 1) : "Items " + (query.offset + 1) + " - " + (query.lastOffset + 1)}} ({{query.maxOffset + 1}} total)</h5>
+		</div>
+	</div>
+
+	<br/>
+	-->
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<div class="panel-title">
+				<!-- Match the line-height of the location selector -->
+				<span ng-if="showInterfaces" style="line-height: 28px;">Nodes and their interfaces</span>
+				<span ng-if="!showInterfaces" style="line-height: 28px;">Nodes</span>
+
+				<!-- NMS-9006: Show buttons whether or not showInterfaces is true -->
+				<span style="padding-left: 32px; line-height: 28px;">
+					<a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');">
+						<i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i>
+					</a>
+					&nbsp;
+					<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');">
+						<i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i>
+					</a>
+					&nbsp;
+					<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');">
+						<i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i>
+					</a>
+					&nbsp;
+					<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');">
+						<i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i>
+					</a>
+				</span>
+
+				<!-- TODO: Move this control into the filter panel? -->
+				<!-- TODO: Change onchange into a $scope operation -->
+				<select class="form-control input-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+					<option value="" selected>All locations</option>
+					<option ng-repeat="location in getSearchPropertyValues('location.locationName')" value="{{location.id}}" selected>{{location.name}}</option>
+				</select>
+			</div>
+		</div> <!-- panel-heading -->
+
+		<div class="panel-body">
+			<div ng-if="items.length === 0" class="NLnode">
+				None found.
+			</div>
+
+			<div ng-if="items.length > 0" class="row">
+				<div class="col-md-6">
+					<ul class="list-unstyled">
+						<li ng-repeat="item in items">
+							<div class="NLnode">
+								<a href="element/node.jsp?node={{item.id}}">{{item.label}}</a>
+								&nbsp;&nbsp;
+								<span class="NLdbid">
+									<span class="label label-default" title="Database ID: {{item.id}}">
+										<i class="fa fa-database"></i>&nbsp;{{item.id}}
+									</span>
+									&nbsp;
+								</span>
+								<span ng-if="item.foreignSource !== null" class="NLfs">
+									<span class="label label-default" title="Requisition: {{item.foreignSource}}">
+										<i class="fa fa-list-alt"></i>&nbsp;{{item.foreignSource}}
+									</span>
+									&nbsp;
+								</span>
+								<span ng-if="item.foreignId !== null" class="NLfid">
+									<span class="label label-default" title="Foreign ID: {{item.foreignId}}">
+										<i class="fa fa-qrcode"></i>&nbsp;{{item.foreignId}}
+									</span>
+									&nbsp;
+								</span>
+								<span ng-if="item.foreignId !== null" class="NLloc">
+									<span class="label label-default" title="Location: {{item.location}}">
+										<i class="fa fa-map-marker"></i>&nbsp;{{item.location}}
+									</span>
+								</span>
+							</div>
+							<!-- TODO: Figure out how to replicate this interface list output -->
+							<!--
+							<ul>
+								<c:if test="${!empty nodeModel.interfaces}">
+									<c:forEach var="nodeInterface" items="${nodeModel.interfaces}">
+										<c:url var="interfaceLink" value="element/interface.jsp">
+											<c:param name="ipinterfaceid" value="${nodeInterface.id}"/>
+										</c:url>
+										
+										<li>
+											<c:choose>
+												<c:when test="${isMaclikeSearch && nodeInterface.snmpInterface.physAddr != null}">
+													<c:choose>
+														<c:when test="${nodeInterface.ipAddress != '0.0.0.0'}">
+															<c:set var="label" value="${nodeInterface.ipAddressAsString}" scope="page" />
+														</c:when>
+														<c:when test="${nodeInterface.snmpInterface.ifName != null}">
+															<c:set var="label" value="${nodeInterface.snmpInterface.ifName}" scope="page" />
+														</c:when>
+														<c:when test="${nodeInterface.snmpInterface.ifDescr != null}">
+															<c:set var="label" value="${nodeInterface.snmpInterface.ifDescr}" scope="page" />
+														</c:when>
+														<c:otherwise>
+															<c:set var="label" value="ifIndex:${nodeInterface.snmpInterface.ifIndex}" scope="page" />
+														</c:otherwise>
+													</c:choose>
+													<a href="${interfaceLink}">${label}</a> : ${nodeInterface.snmpInterface.physAddr}
+												</c:when>
+												<c:when test="${snmpParm == ('ifAlias')}">
+													<c:choose>
+														<c:when test="${nodeInterface.ipAddressAsString == '0.0.0.0'}">
+															<c:choose>
+																<c:when test="${nodeInterface.snmpInterface.ifName != null}">
+																	<a href="${interfaceLink}">${nodeInterface.snmpInterface.ifName}</a> : ${nodeInterface.snmpInterface.ifAlias}
+																</c:when>   
+																<c:when test="${nodeInterface.snmpInterface.ifDescr != null}">
+																	<a href="${interfaceLink}">${nodeInterface.snmpInterface.ifDescr}</a> : ${nodeInterface.snmpInterface.ifAlias}
+																</c:when>
+																<c:otherwise>
+																	<a href="${interfaceLink}">ifIndex ${nodeInterface.snmpInterface.ifIndex}</a> : ${nodeInterface.snmpInterface.ifAlias}
+																</c:otherwise>
+															</c:choose>
+														</c:when>
+														<c:otherwise>
+															<a href="${interfaceLink}">${nodeInterface.ipAddressAsString}</a> : ${nodeInterface.snmpInterface.ifAlias}
+														</c:otherwise>
+													</c:choose>
+												</c:when>
+												<c:when test="${snmpParm == ('ifName')}">
+													<c:choose>
+														<c:when test="${nodeInterface.ipAddressAsString == '0.0.0.0'}">
+															<c:choose>
+																<c:when test="${nodeInterface.snmpInterface.ifName != null}">
+																	<a href="${interfaceLink}">${nodeInterface.snmpInterface.ifName}</a>
+																</c:when>
+															</c:choose>
+														</c:when>
+														<c:otherwise>
+															<a href="${interfaceLink}">${nodeInterface.ipAddressAsString}</a> : ${nodeInterface.snmpInterface.ifName}
+														</c:otherwise>
+													</c:choose>
+												</c:when>   
+												<c:when test="${snmpParm == ('ifDescr')}">
+													<c:choose>
+														<c:when test="${nodeInterface.ipAddressAsString == '0.0.0.0'}">
+															<c:choose>
+																<c:when test="${nodeInterface.snmpInterface.ifName != null}">
+																	<a href="${interfaceLink}">${nodeInterface.snmpInterface.ifName}</a> : ${nodeInterface.snmpInterface.ifDescr}
+																</c:when>                  
+																<c:when test="${nodeInterface.snmpInterface.ifDescr != null}">
+																	<a href="${interfaceLink}">${nodeInterface.snmpInterface.ifDescr}</a>
+																</c:when>
+															</c:choose>
+														</c:when>
+														<c:otherwise>
+															<a href="${interfaceLink}">${nodeInterface.ipAddressAsString}</a> : ${nodeInterface.snmpInterface.ifDescr}
+														</c:otherwise>
+													</c:choose>
+												</c:when>
+												<c:otherwise>
+													<a href="${interfaceLink}">${nodeInterface.ipAddressAsString}</a>
+												</c:otherwise>
+											</c:choose>
+										</li>
+									</c:forEach>
+								</c:if>
+								<c:if test="${!empty nodeModel.snmpInterfaces}">
+									<c:forEach var="snmpInterface" items="${nodeModel.snmpInterfaces}">
+										<c:url var="interfaceLink" value="element/interface.jsp">
+											<c:param name="node" value="${snmpInterface.node.id}"/>
+											<c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
+												<c:if test="${ipInterface.snmpInterface.id == snmpInterface.id}">
+													<c:param name="intf" value="${ipInterface.ipAddressAsString}"/>
+												</c:if>
+											</c:forEach>
+										</c:url>
+										<c:url var="snmpinterfaceLink" value="element/snmpinterface.jsp">
+											<c:param name="node" value="${snmpInterface.node.id}"/>
+											<c:param name="ifindex" value="${snmpInterface.ifIndex}"/>
+										</c:url>
+										<li>
+											<c:if test="${isMaclikeSearch && snmpInterface.physAddr!=null && snmpInterface.physAddr!=''}">
+												<c:set var="notFound" value="true"/>
+												<c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
+													<c:if test="${ipInterface.snmpInterface.id == snmpInterface.id}">
+														<a href="element/interface.jsp?ipinterfaceid=${ipInterface.id}">${ipInterface.ipAddressAsString}</a> : ${snmpInterface.physAddr} (from snmp)
+														<c:remove var="notFound"/>
+													</c:if>
+												</c:forEach>
+												<c:if test="${notFound}">
+													<a href="${snmpinterfaceLink}">${snmpInterface.ifName}</a> : ${snmpInterface.physAddr} (from snmp)
+												</c:if>
+											</c:if>
+											<c:choose>
+												<c:when test="${snmpParm == ('ifAlias')}">
+													<c:set var="notFound" value="true"/>
+													<c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
+														<c:if test="${ipInterface.snmpInterface.id == snmpInterface.id}">
+															<a href="${interfaceLink}">${ipInterface.ipAddressAsString}</a> : ${snmpInterface.ifAlias}
+															<c:remove var="notFound"/>
+														</c:if>
+													</c:forEach>
+													<c:if test="${notFound}">
+															<c:choose>
+																<c:when test="${snmpInterface.ifName != null}">
+																	<a href="${snmpinterfaceLink}">${snmpInterface.ifName}</a> : ${snmpInterface.ifAlias}
+																</c:when>   
+																<c:when test="${snmpInterface.ifDescr != null}">
+																	<a href="${snmpinterfaceLink}">${snmpInterface.ifDescr}</a> : ${snmpInterface.ifAlias}
+																</c:when>
+																<c:otherwise>
+																	<a href="${snmpinterfaceLink}">ifIndex ${snmpInterface.ifIndex}</a> : ${snmpInterface.ifAlias}
+																</c:otherwise>
+															</c:choose>
+													</c:if>
+												</c:when>        
+												<c:when test="${snmpParm == ('ifName')}">
+													<c:set var="notFound" value="true"/>
+													<c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
+														<c:if test="${ipInterface.snmpInterface.id == snmpInterface.id}">
+															<a href="${interfaceLink}">${ipInterface.ipAddressAsString}</a> : ${snmpInterface.ifName}
+															<c:remove var="notFound"/>
+														</c:if>
+													</c:forEach>
+													<c:if test="${notFound}">
+															<c:choose>
+																<c:when test="${snmpInterface.ifName != null}">
+																	<a href="${snmpinterfaceLink}">${snmpInterface.ifName}</a>
+																</c:when>
+															</c:choose>
+													</c:if>
+												</c:when>   
+												<c:when test="${snmpParm == ('ifDescr')}">
+													<c:set var="notFound" value="true"/>
+													<c:forEach var="ipInterface" items="${nodeModel.node.ipInterfaces}">
+														<c:if test="${ipInterface.snmpInterface.id == snmpInterface.id}">
+															<a href="${interfaceLink}">${ipInterface.ipAddressAsString}</a> : ${snmpInterface.ifDescr}
+															<c:remove var="notFound"/>
+														</c:if>
+													</c:forEach>
+													<c:if test="${notFound}">
+															<c:choose>
+																<c:when test="${snmpInterface.ifName != null}">
+																	<a href="${snmpinterfaceLink}">${snmpInterface.ifName}</a> : ${snmpInterface.ifDescr}
+																</c:when>                  
+																<c:when test="${snmpInterface.ifDescr != null}">
+																	<a href="${snmpinterfaceLink}">${snmpInterface.ifDescr}</a>
+																</c:when>
+															</c:choose>
+													</c:if>
+												</c:when>
+											</c:choose>
+										</li>
+									</c:forEach>
+								</c:if>
+							</ul>
+							-->
+						</li>
+					</ul>
+				</div>
+
+				<div class="col-md-6">
+					<!-- TODO: Figure out how to split the node list into two columns -->
+					<!-- Second half of the nodes -->
+				</div>
+			</div>
+		</div> <!-- panel-body -->
+
+		<div class="panel-footer">
+			{{items.length}} Node{{items.length === 1 ? '' : 's'}}<span ng-if="showInterfaces">, {{interfaces.length}} Interface{{interfaces.length === 1 ? '' : 's'}}</span>
+			<!-- NMS-9003: Move this control to the top -->
+			<a href="" ng-if="!showInterfaces" ng-click="toggleShowInterfaces()">Show interfaces</a>
+			<a href="" ng-if="showInterfaces" ng-click="toggleShowInterfaces()">Hide interfaces</a>
+		</div> <!-- panel-footer -->
+
+	</div> <!-- panel -->
+
+</div>
+</div>

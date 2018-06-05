@@ -195,7 +195,7 @@ public class FileAnticipatorTest extends TestCase {
         assertEquals("temporary file name", m_anticipator.getTempDir() + File.separator + file, f.getAbsolutePath());
         assertTrue("temporary file should exist at " + f.getAbsolutePath(), f.isFile());
         
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
         FileInputStream is = new FileInputStream(f);
         int i;
         while ((i = is.read()) != -1) {
@@ -241,7 +241,7 @@ public class FileAnticipatorTest extends TestCase {
         assertEquals("temporary file name", m_anticipator.getTempDir() + File.separator + "parent" + File.separator + file, f.getAbsolutePath());
         assertTrue("temporary file should exist at " + f.getAbsolutePath(), f.isFile());
         
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
         FileInputStream is = new FileInputStream(f);
         int i;
         while ((i = is.read()) != -1) {

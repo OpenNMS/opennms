@@ -76,7 +76,7 @@ public class SendEventController extends AbstractController {
 
     private String buildEventSelect() throws IOException, FileNotFoundException {
         List<Event> events = m_eventConfDao.getEventsByLabel();
-        StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();
@@ -117,7 +117,7 @@ public class SendEventController extends AbstractController {
 
     private List<String> getExcludeList() throws IOException,
             FileNotFoundException {
-        List<String> excludes = new ArrayList<String>();
+        List<String> excludes = new ArrayList<>();
 
         Properties excludeProperties = new Properties();
         excludeProperties.load(new FileInputStream(ConfigFileConstants

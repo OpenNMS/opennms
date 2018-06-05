@@ -218,7 +218,7 @@ public abstract class AbstractDashletFactory implements DashletFactory {
      * @return the parameter help content
      */
     private String getParameterDescriptionsHTML() {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
 
         if (m_requiredParameters.size() == 0) {
             return "";

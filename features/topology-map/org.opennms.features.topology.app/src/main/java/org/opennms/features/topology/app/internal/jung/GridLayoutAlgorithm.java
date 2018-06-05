@@ -28,13 +28,13 @@
 
 package org.opennms.features.topology.app.internal.jung;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.BoundingBox;
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.LevelAware;
@@ -48,12 +48,11 @@ public class GridLayoutAlgorithm extends AbstractLayoutAlgorithm {
      * Updates the current layout by extracting the containers graph and then perform a (x,y) transformation
      * of all vertices.
      *
-     * @param graphContainer The container of the current graph. Contains all relevant information to perform the transformation
-     *                       of the {@link org.opennms.features.topology.api.Graph} by changing its {@link org.opennms.features.topology.api.Layout}
+     * @param graph The container of the current graph. Contains all relevant information to perform the transformation
+     *                       of the {@link Graph} by changing its {@link Layout}
      */
     @Override
-    public void updateLayout(GraphContainer graphContainer) {
-        final Graph graph = graphContainer.getGraph();
+    public void updateLayout(Graph graph) {
         final Layout graphLayout = graph.getLayout();
 
         // Sort the vertices
@@ -71,7 +70,7 @@ public class GridLayoutAlgorithm extends AbstractLayoutAlgorithm {
         // Find the smallest rectangle (grid) that will fit all the vertices
         // while attempting to preserve the aspect ration of the view port
         final int numberOfVertices = sortedVertices.size();
-        final BoundingBox layoutBounds = graphLayout.getBounds();
+        final BoundingBox layoutBounds = graphLayout.computeBoundingBox(new ArrayList<>(sortedVertices));
         final BoundingBox grid = calculateGrid(numberOfVertices, layoutBounds.getWidth(), layoutBounds.getHeight());
 
         // Layout the (sorted) vertices in the grid

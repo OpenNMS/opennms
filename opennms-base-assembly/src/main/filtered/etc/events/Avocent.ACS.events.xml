@@ -1,2570 +1,2458 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: ACS-TRAP-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsRebootStartedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsRebootStartedTrap</event-label>
-	<descr>
-&lt;p&gt;ACS6000 is in process of rebooting.
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsRebootStartedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsRebootStartedTrap</event-label>
+      <descr>&lt;p>ACS6000 is in process of rebooting.
 The name of the user who issued the command is contained
-in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsRebootStartedTrap trap received 
-			acsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+			acsTrapObjectUserName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDaemonStarted</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDaemonStarted</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when daemon in the appliance started.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDaemonStarted</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDaemonStarted</event-label>
+      <descr>&lt;p>This trap is generated when daemon in the appliance started.
 The daemon name is contained in acsTrapObjectDaemonName.
-The name of the user who start the daemon is contained in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who start the daemon is contained in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectDaemonName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsDaemonStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectDaemonName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDaemonStoped</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDaemonStoped</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when daemon in the appliance stopped.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDaemonStoped</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDaemonStoped</event-label>
+      <descr>&lt;p>This trap is generated when daemon in the appliance stopped.
 The daemon name is contained in acsTrapObjectDaemonName.
-The name of the user who stop the daemon is contained in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who stop the daemon is contained in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectDaemonName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectDaemonName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsDaemonStoped trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectDaemonName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectDaemonName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsSessionTerminatedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsSessionTerminatedTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when one previous session is 
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsSessionTerminatedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsSessionTerminatedTrap</event-label>
+      <descr>&lt;p>This trap is generated when one previous session is 
 terminated by another user.
 The name of the user who terminated the session is contained in acsTrapObjectUserName.
 The name of the user who was terminated from the session is contained 
-in acsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in acsTrapObjectTargetUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTargetUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsSessionTerminatedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsConfigurationStoredTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsConfigurationStoredTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when 'store backup configuration' command is successful.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsConfigurationStoredTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsConfigurationStoredTrap</event-label>
+      <descr>&lt;p>This trap is generated when 'store backup configuration' command is successful.
 acsTrapObjectUserName is name of the user who executed the command.
-acsTrapObjectFileName is name of the file where the configuration was stored.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+acsTrapObjectFileName is name of the file where the configuration was stored.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectFileName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsConfigurationStoredTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectFileName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsConfigurationRestoredTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsConfigurationRestoredTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when 'restore backup configuration' command is successful.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsConfigurationRestoredTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsConfigurationRestoredTrap</event-label>
+      <descr>&lt;p>This trap is generated when 'restore backup configuration' command is successful.
 acsTrapObjectUserName is name of the user who executed the command.
-acsTrapObjectFileName is name of the file used to restored the configuration.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+acsTrapObjectFileName is name of the file used to restored the configuration.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectFileName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectFileName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsConfigurationRestoredTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectFileName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectFileName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>8</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserAddedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserAddedTrap</event-label>
-	<descr>
-&lt;p&gt;A new user has been added to the local user database.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserAddedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserAddedTrap</event-label>
+      <descr>&lt;p>A new user has been added to the local user database.
 The name of the user who added the new user is contained in acsTrapObjectUserName.
-The name of the new user is contained in acsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the new user is contained in acsTrapObjectTargetUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTargetUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsLocalUserAddedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>9</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserDeletedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserDeletedTrap</event-label>
-	<descr>
-&lt;p&gt;A user has been deleted from the local user database.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserDeletedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserDeletedTrap</event-label>
+      <descr>&lt;p>A user has been deleted from the local user database.
 The name of the user who deleted the user is contained in acsTrapObjectUserName.
-The name of the user who was deleted is contained in acsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who was deleted is contained in acsTrapObjectTargetUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTargetUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsLocalUserDeletedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>10</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserModifiedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserModifiedTrap</event-label>
-	<descr>
-&lt;p&gt;A user has been modified in the local user database.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsLocalUserModifiedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsLocalUserModifiedTrap</event-label>
+      <descr>&lt;p>A user has been modified in the local user database.
 The name of the user who modified the data is contained in acsTrapObjectUserName.
-The name of the user who was modified is contained in acsTrapObjectTargetUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who was modified is contained in acsTrapObjectTargetUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTargetUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTargetUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsLocalUserModifiedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectTargetUserName=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>11</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsFirmwareUpgradeStarted</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsFirmwareUpgradeStarted</event-label>
-	<descr>
-&lt;p&gt;The appliance has started an upgrade of a software image.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsFirmwareUpgradeStarted</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsFirmwareUpgradeStarted</event-label>
+      <descr>&lt;p>The appliance has started an upgrade of a software image.
 The name of the user who initiate the process is contained 
 in acsTrapObjectUserName.
 The current firmware version is contained in acsTrapFirmwareVersion.
-The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapNewFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsFirmwareUpgradeStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapFirmwareVersion=%parm[#2]% 
-			acsTrapNewFirmwareVersion=%parm[#3]%&lt;/p&gt;
+			acsTrapNewFirmwareVersion=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>12</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsFirmwareUpgradeResultsTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsFirmwareUpgradeResultsTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsFirmwareUpgradeResultsTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsFirmwareUpgradeResultsTrap</event-label>
+      <descr>&lt;p>This trap is generated when Firmware upgraded is done to indicate the result.
 The new FW version is contained in acsTrapNewFirmwareVersion.
-The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapFirmwareUpgradeResult&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
 		imageUpgradeSuccess(1)
 		imageUpgradeInternalError(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapNewFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsFirmwareUpgradeResultsTrap trap received 
 			acsTrapFirmwareUpgradeResult=%parm[#1]% 
-			acsTrapNewFirmwareVersion=%parm[#2]%&lt;/p&gt;
+			acsTrapNewFirmwareVersion=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>13</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsApplianceAlertTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsApplianceAlertTrap</event-label>
-	<descr>
-&lt;p&gt;An appliance alert was detected on a ssh or telnet session.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsApplianceAlertTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsApplianceAlertTrap</event-label>
+      <descr>&lt;p>An appliance alert was detected on a ssh or telnet session.
 The name of user who was logged into the appliance when 
 trap occurred is contained in acsTrapObjectUserName.
 The index of the appliance alert that was detected in the message is 
 contained in acsTrapObjectAlertIndex.
 The appliance alert that was detected is contained in acsTrapObjectAlertString.
 The line text where the appliance alert was detected is contained 
-in acsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+in acsTrapObjectAlertMessage.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectAlertIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectAlertString&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectAlertMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsApplianceAlertTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectAlertIndex=%parm[#2]% 
 			acsTrapObjectAlertString=%parm[#3]% 
-			acsTrapObjectAlertMessage=%parm[#4]%&lt;/p&gt;
+			acsTrapObjectAlertMessage=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>14</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsApplianceStartedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsApplianceStartedTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the appliance is started.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			avctAcsApplianceStartedTrap trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsApplianceStartedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsApplianceStartedTrap</event-label>
+      <descr>&lt;p>This trap is generated when the appliance is started.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			avctAcsApplianceStartedTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>50</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsUserLoginTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsUserLoginTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when user logged into the appliance.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>50</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsUserLoginTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsUserLoginTrap</event-label>
+      <descr>&lt;p>This trap is sent when user logged into the appliance.
 The name of the user who logged in is contained in 
 acsTrapObjectUserName and the method used to log into appliance 
-is contained in acsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+is contained in acsTrapObjectSessionType.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		ssh(1)
 		telnet(2)
 		webui(3)
 		console(4)
 		plugdevice(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsUserLoginTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectSessionType=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>51</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsUserLogoutTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsUserLogoutTrap</event-label>
-	<descr>
-&lt;p&gt;A user logged out of the appliance.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>51</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsUserLogoutTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsUserLogoutTrap</event-label>
+      <descr>&lt;p>A user logged out of the appliance.
 The name of the user who logged in is contained in 
 acsTrapObjectUserName and the method used to log into appliance 
-is contained in acsTrapObjectSessionType.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+is contained in acsTrapObjectSessionType.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		ssh(1)
 		telnet(2)
 		webui(3)
 		console(4)
 		plugdevice(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsUserLogoutTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
-			acsTrapObjectSessionType=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectSessionType=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>52</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsAuthenticationFailureTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsAuthenticationFailureTrap</event-label>
-	<descr>
-&lt;p&gt;A user failed to authenticate with the appliance.
-The name of the user who failed to authenticate is contained in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>52</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsAuthenticationFailureTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsAuthenticationFailureTrap</event-label>
+      <descr>&lt;p>A user failed to authenticate with the appliance.
+The name of the user who failed to authenticate is contained in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsAuthenticationFailureTrap trap received 
-			acsTrapObjectUserName=%parm[#1]%&lt;/p&gt;
+			acsTrapObjectUserName=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>53</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortAuthenticationFailureTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPortAuthenticationFailureTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when a serial session authentication fails.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>53</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortAuthenticationFailureTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPortAuthenticationFailureTrap</event-label>
+      <descr>&lt;p>This trap is sent when a serial session authentication fails.
 The name of the user who failed to authenticate is contained in acsTrapObjectUserName.
 The serial port number on the appliance is contained in acsTrapObjectSerialPortNumber.
 The serial port name on the appliance is contained in acsTrapObjectSerialPortName
-The type of protocol configured on this port is contained in acsTrapObjectSerialSessionType.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The type of protocol configured on this port is contained in acsTrapObjectSerialSessionType.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectSerialSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
 		cas-ssh(1)
 		cas-telnet(2)
 		cas-console(3)
 		dial-in(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPortAuthenticationFailureTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
 			acsTrapObjectSerialPortNumber=%parm[#3]% 
-			acsTrapObjectSerialSessionType=%parm[#4]%&lt;/p&gt;
+			acsTrapObjectSerialSessionType=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>100</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortPowerOnDetectTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPortPowerOnDetectTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance has detected that the power on/off control signal
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>100</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortPowerOnDetectTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPortPowerOnDetectTrap</event-label>
+      <descr>&lt;p>The appliance has detected that the power on/off control signal
 (RS232C - DCD signal) is high on a serial port indicating that the
 server attached to the port is powered on.
 This trap is sent on initialization if the condition is detected.
 Subsequent traps occur only if there is a transition of the DCD
 signal from low to high.
 The affected serial port number is contained in acsTrapObjectSerialPortNumber.
-The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPortPowerOnDetectTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
-			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>101</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortPowerOffDetectTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPortPowerOffDetectTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance has detected that the power on/off control signal
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>101</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortPowerOffDetectTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPortPowerOffDetectTrap</event-label>
+      <descr>&lt;p>The appliance has detected that the power on/off control signal
 (RS232C - DCD signal) is low on a serial port indicating that the
 server attached to the port is powered off.
 This trap is sent on initialization if the condition is detected.
 Subsequent traps occur only if there is a transition of the DCD
 signal from high to low.
 The affected serial port number is contained in acsTrapObjectSerialPortNumber.
-The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The affected serial port name is contained in acsTrapObjectSerialPortName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPortPowerOffDetectTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
-			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p&gt;
+			acsTrapObjectSerialPortNumber=%parm[#2]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>150</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsSerialSessionStartedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsSerialSessionStartedTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when a serial session has started on particular port.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>150</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsSerialSessionStartedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsSerialSessionStartedTrap</event-label>
+      <descr>&lt;p>This trap is sent when a serial session has started on particular port.
 The name of the user who is connected to the session is contained in acsTrapObjectUserName.
 The serial port number on the appliance is contained in acsTrapObjectSerialPortNumber.
 The serial port name on the appliance is contained in acsTrapObjectSerialPortName
 The type of protocol running on this serial port is contained in acsTrapObjectSerialSessionType.
-The numbe of sessions openned in this port is contained in acsTrapObjecSerialSessionNumbers. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The numbe of sessions openned in this port is contained in acsTrapObjecSerialSessionNumbers. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectSerialSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
 		cas-ssh(1)
 		cas-telnet(2)
 		cas-console(3)
 		dial-in(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialSessionNumbers&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSerialSessionNumbers&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsSerialSessionStartedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
 			acsTrapObjectSerialPortNumber=%parm[#3]% 
 			acsTrapObjectSerialSessionType=%parm[#4]% 
-			acsTrapObjectSerialSessionNumbers=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSerialSessionNumbers=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>151</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsSerialSessionStoppedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsSerialSessionStoppedTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when a serial session has stopped.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>151</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsSerialSessionStoppedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsSerialSessionStoppedTrap</event-label>
+      <descr>&lt;p>This trap is sent when a serial session has stopped.
 The user who was connected to the session is contained in acsTrapObjectUserName.
 The serial port number on the appliance is contained in acsTrapObjectSerialPortNumber.
 The serial port name on the appliance is contained in acsTrapObjectSerialPortName
 The type of protocol running on this port is contained in acsTrapObjectSerialSessionType.
-The number of serial sessions openned in this port is contained in acsTrapObjectSessionNumbers.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The number of serial sessions openned in this port is contained in acsTrapObjectSessionNumbers.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialSessionType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectSerialSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
 		cas-ssh(1)
 		cas-telnet(2)
 		cas-console(3)
 		dial-in(5)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialSessionNumbers&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSerialSessionNumbers&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsSerialSessionStoppedTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortName=%parm[#2]% 
 			acsTrapObjectSerialPortNumber=%parm[#3]% 
 			acsTrapObjectSerialSessionType=%parm[#4]% 
-			acsTrapObjectSerialSessionNumbers=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSerialSessionNumbers=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>152</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortAlertTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPortAlertTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance detected a port alert on a serial port.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>152</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPortAlertTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPortAlertTrap</event-label>
+      <descr>&lt;p>The appliance detected a port alert on a serial port.
 The serial port number where the port alert was detected on is contained in acsTrapObjectSerialPortNumber.
 The serial port name where the port alert was detected on is contained in acsTrapObjectSerialPortName.
 The index of the port alert that was detected is contained in acsTrapObjectAlertIndex.
 The port alert that was detected is contained in acsTrapObjectAlertString.
-The line text where the port alert was detected is contained in acsTrapObjectAlertMessage.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The line text where the port alert was detected is contained in acsTrapObjectAlertMessage.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertIndex&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectAlertIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertString&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectAlertString&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectAlertMessage&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectAlertMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPortAlertTrap trap received 
 			acsTrapObjectSerialPortName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
 			acsTrapObjectAlertIndex=%parm[#3]% 
 			acsTrapObjectAlertString=%parm[#4]% 
-			acsTrapObjectAlertMessage=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectAlertMessage=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>153</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferNFSFailure</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferNFSFailure</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the appliance is sending data buffering data to a NFS server 
-and the write operation fails.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			avctAcsDataBufferNFSFailure trap received&lt;/p&gt;
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>153</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferNFSFailure</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferNFSFailure</event-label>
+      <descr>&lt;p>This trap is generated when the appliance is sending data buffering data to a NFS server 
+and the write operation fails.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			avctAcsDataBufferNFSFailure trap received&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>154</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferNFSRecovery</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferNFSRecovery</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the NFS server is back online after a failure in a 
-Data Buffering write operation.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			avctAcsDataBufferNFSRecovery trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>154</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferNFSRecovery</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferNFSRecovery</event-label>
+      <descr>&lt;p>This trap is generated when the NFS server is back online after a failure in a 
+Data Buffering write operation.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			avctAcsDataBufferNFSRecovery trap received&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>200</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullThresholdLowTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullThresholdLowTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>200</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullThresholdLowTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullThresholdLowTrap</event-label>
+      <descr>&lt;p>This trap is generated when the appliance is managed by DsView and 
 global data buffer has reached configured Low level Threshold.
-acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectDataBufferSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsDataBufferFullThresholdLowTrap trap received 
-			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>201</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullThresholdMedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullThresholdMedTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>201</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullThresholdMedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullThresholdMedTrap</event-label>
+      <descr>&lt;p>This trap is generated when the appliance is managed by DsView and 
 global data buffer has reached configured Med level Threshold.
-acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+acsTrapObjectDataBufferSize is current size of the buffer.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectDataBufferSize&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectDataBufferSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsDataBufferFullThresholdMedTrap trap received 
-			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p&gt;
+			acsTrapObjectDataBufferSize=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Minor</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>202</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullLostDataTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullLostDataTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the appliance is managed by DsView and 
-global data buffer has exceeded beyond the size of buffer and data lost has occurred.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			avctAcsDataBufferFullLostDataTrap trap received&lt;/p&gt;
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>202</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsDataBufferFullLostDataTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsDataBufferFullLostDataTrap</event-label>
+      <descr>&lt;p>This trap is generated when the appliance is managed by DsView and 
+global data buffer has exceeded beyond the size of buffer and data lost has occurred.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			avctAcsDataBufferFullLostDataTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>300</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduOnlineTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduOnlineTrap</event-label>
-	<descr>
-&lt;p&gt;A power device unit(PDU) attached to the appliance is online. 
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>300</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduOnlineTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduOnlineTrap</event-label>
+      <descr>&lt;p>A power device unit(PDU) attached to the appliance is online. 
 The port number on the appliance that the power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The power device ID is contained in acsTrapObjectPduId.
 The number of outlets of the power device is contained in acsTrapObjectPduSocket.
-The vendor of the power device is contained in acsTrapObjectPduVendor&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The vendor of the power device is contained in acsTrapObjectPduVendor&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduSocket&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectPduVendor&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		cyclades(1)
 		spc(2)
 		serverTech(3)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduOnlineTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduSocket=%parm[#4]% 
-			acsTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectPduVendor=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>301</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduOfflineTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduOfflineTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance is offline.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>301</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduOfflineTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduOfflineTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance is offline.
 The port number on the appliance that the power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The power device ID is contained in acsTrapObjectPduId.
 The number of outlets of the power device is contained in acsTrapObjectPduSocket.
-The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduSocket&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduSocket&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectPduVendor&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		cyclades(1)
 		spc(2)
 		serverTech(3)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduOfflineTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduSocket=%parm[#4]% 
-			acsTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectPduVendor=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>302</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduIdChangedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduIdChangedTrap</event-label>
-	<descr>
-&lt;p&gt;The ID of the PDU was changed.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>302</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduIdChangedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduIdChangedTrap</event-label>
+      <descr>&lt;p>The ID of the PDU was changed.
 The port number on the appliance that the power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The old power device ID is contained in acsTrapObjectPduIdOld.
 The new power device ID is contained in acsTrapObjectPduId.
-The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The vendor of the power device is contained in acsTrapObjectPduVendor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduIdOld&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduIdOld&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduVendor&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectPduVendor&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
 		cyclades(1)
 		spc(2)
 		serverTech(3)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduIdChangedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduIdOld=%parm[#3]% 
 			acsTrapObjectPduId=%parm[#4]% 
-			acsTrapObjectPduVendor=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectPduVendor=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>303</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMaxLoadHighTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMaxLoadHighTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance exceeded the total load maximum threshold.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>303</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMaxLoadHighTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMaxLoadHighTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance exceeded the total load maximum threshold.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The PDU# that exceeded the total load maximum threshold is contained in the acsTrapObjectPduNumber.
 The ID of the PDU that exceeded the total load maximum threshold is contained in the acsTrapObjectPduId.
 The Type of the PDU Element that detected the problem is contained in the acsTrapObjectPduElementType.
 The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.
-The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduMaxLoadHighTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduElementType=%parm[#4]% 
 			acsTrapObjectPduElementName=%parm[#5]% 
-			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>304</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMinLoadLowTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMinLoadLowTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance has gone beneath the minimum threshold for total load.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>304</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMinLoadLowTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMinLoadLowTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance has gone beneath the minimum threshold for total load.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The PDU# that exceeded the total load minimum threshold is contained in the acsTrapObjectPduNumber.
 The ID of the PDU that exceeded the total load maximum threshold is contained in the acsTrapObjectPduId.
 The Type of the PDU Element that detected the problem is contained in the acsTrapObjectPduElementType.
 The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.
-The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduMinLoadLowTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduElementType=%parm[#4]% 
 			acsTrapObjectPduElementName=%parm[#5]% 
-			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>305</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduInletTotalLoadHighTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduInletTotalLoadHighTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance has exceeded the maximum threshold for total load of an inlet.
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>305</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduInletTotalLoadHighTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduInletTotalLoadHighTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance has exceeded the maximum threshold for total load of an inlet.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The number of the PDU that has exceeded the maximum threshold for total load of an inlet is contained in the acsTrapObjectPduNumber.
 The PDU ID that has exceeded the maximum threshold for total load of an inlet is contained in the acsTrapObjectPduId.
 The Type of the PDU Element that detected the problem is contained in the acsTrapObjectPduElementType.
-The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduInletTotalLoadHighTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduElementType=%parm[#4]% 
 			acsTrapObjectPduElementName=%parm[#5]% 
-			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Major</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>306</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduInletTotalLoadLowTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduInletTotalLoadLowTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance has gone beneath the minimum threshold for total load of an inlet.
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>306</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduInletTotalLoadLowTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduInletTotalLoadLowTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance has gone beneath the minimum threshold for total load of an inlet.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The number of the PDU that has exceeded the maximum threshold for total load of an inlet is contained in the acsTrapObjectPduNumber.
 The PDU ID that has gone beneath the minimum threshold for total load of an inlet is contained in the acsTrapObjectPduId.
 The Type of the PDU Element that detected the problem is contained in the acsTrapObjectPduElementType.
-The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduInletTotalLoadLowTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduElementType=%parm[#4]% 
 			acsTrapObjectPduElementName=%parm[#5]% 
-			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>307</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduFirmwareUpgradeStarted</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduFirmwareUpgradeStarted</event-label>
-	<descr>
-&lt;p&gt;The appliance has started an upgrade of the PM software.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>307</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduFirmwareUpgradeStarted</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduFirmwareUpgradeStarted</event-label>
+      <descr>&lt;p>The appliance has started an upgrade of the PM software.
 The name of the user who initiate the process is contained in acsTrapObjectUserName.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The PDU# that gone beneath the minimum threshold is contained in the acsTrapObjectPduNumber.
 The current firmware version is contained in acsTrapFirmwareVersion.
-The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The new firmware version is contained in acsTrapNewFirmwareVersion.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapNewFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduFirmwareUpgradeStarted trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
 			acsTrapObjectPduNumber=%parm[#3]% 
 			acsTrapFirmwareVersion=%parm[#4]% 
-			acsTrapNewFirmwareVersion=%parm[#5]%&lt;/p&gt;
+			acsTrapNewFirmwareVersion=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>308</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduFirmwareUpgradeResultsTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduFirmwareUpgradeResultsTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when Firmware upgraded is done to indicate the result.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>308</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduFirmwareUpgradeResultsTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduFirmwareUpgradeResultsTrap</event-label>
+      <descr>&lt;p>This trap is generated when Firmware upgraded is done to indicate the result.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The PDU# that gone beneath the minimum threshold is contained in the acsTrapObjectPduNumber.
 The new FW version is contained in acsTrapNewFirmwareVersion.
-The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The result of the process is contained in acsTrapFirmwareUpgradeResult.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapFirmwareUpgradeResult&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapFirmwareUpgradeResult&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		imageUpgradeSuccess(1)
 		imageUpgradeInternalError(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapNewFirmwareVersion&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapNewFirmwareVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduFirmwareUpgradeResultsTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapFirmwareUpgradeResult=%parm[#3]% 
-			acsTrapNewFirmwareVersion=%parm[#4]%&lt;/p&gt;
+			acsTrapNewFirmwareVersion=%parm[#4]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>309</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduHwOcpTripped</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduHwOcpTripped</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is tripped.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>309</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduHwOcpTripped</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduHwOcpTripped</event-label>
+      <descr>&lt;p>This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is tripped.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The number of the PDU that was tripped is contained in the acsTrapObjectPduNumber.
-The ID of the PDU that was tripped is contained in the acsTrapObjectPduId. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The ID of the PDU that was tripped is contained in the acsTrapObjectPduId. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduHwOcpTripped trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
-			acsTrapObjectPduId=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectPduId=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>310</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduHwOcpReset</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduHwOcpReset</event-label>
-	<descr>
-&lt;p&gt;This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is reset.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>310</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduHwOcpReset</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduHwOcpReset</event-label>
+      <descr>&lt;p>This trap is generated when the HW overcurrent protection mechanism in Cyclades-PM42 is reset.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The number of the PDU whose HW OCP was reset is contained in the acsTrapObjectPduNumber.
-The ID of the PDU ID whose HW OCP was reset is contained in the acsTrapObjectPduId. &lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The ID of the PDU ID whose HW OCP was reset is contained in the acsTrapObjectPduId. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduHwOcpReset trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
-			acsTrapObjectPduId=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectPduId=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>311</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMaxLoadBackTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMaxLoadBackTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance is back below the alarm threshold.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>311</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPduMaxLoadBackTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPduMaxLoadBackTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance is back below the alarm threshold.
 The port number on the appliance that the power device is attached to is contained in the acsTrapObjectSerialPortNumber.
 The PDU# that exceeded the total load minimum threshold is contained in the acsTrapObjectPduNumber.
 The ID of the PDU that exceeded the total load maximum threshold is contained in the acsTrapObjectPduId.
 The Type of the PDU Element that detected the problem is contained in the acsTrapObjectPduElementType.
 The Name of the Pdu Element that detected the problem is contained in the acsTrapObjectPduElementName.
-The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current value detected when this trap was originated is contained in acsTrapObjectPduCurrentValue.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduElementName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduCurrentValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPduCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPduMaxLoadBackTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectPduElementType=%parm[#4]% 
 			acsTrapObjectPduElementName=%parm[#5]% 
-			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectPduCurrentValue=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>350</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletNameChangedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletNameChangedTrap</event-label>
-	<descr>
-&lt;p&gt;The name of socket was changed.
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>350</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletNameChangedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletNameChangedTrap</event-label>
+      <descr>&lt;p>The name of socket was changed.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The number of the power device is contained in the acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that has changed the name is contained in acsTrapObjectSocketNumber.
 The old socket name is contained in acsTrapObjectSocketOldName.
-The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketOldName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketOldName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletNameChangedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
 			acsTrapObjectSocketOldName=%parm[#5]% 
-			acsTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>351</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdOnTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdOnTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has been issued the on command.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>351</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdOnTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdOnTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has been issued the on command.
 The name of the user who issued the on command is contained in acsTrapObjectUserName.      
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that was issued the on command is contained in acsTrapObjectSocketNumber.
-The socket name that was issued the on command is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that was issued the on command is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletCmdOnTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
 			acsTrapObjectPduNumber=%parm[#3]% 
 			acsTrapObjectPduId=%parm[#4]% 
 			acsTrapObjectSocketNumber=%parm[#5]% 
-			acsTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>352</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletStatusOnTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletStatusOnTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has changed to the on state.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>352</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletStatusOnTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletStatusOnTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has changed to the on state.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that has changed to the on state is contained acsTrapObjectSocketNumber.
 The number of the power device is contained in the acsTrapObjectPduNumber.
-The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletStatusOnTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
-			acsTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>353</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdOffTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdOffTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has been issued the off command.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>353</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdOffTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdOffTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has been issued the off command.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that was issued the off command is contained in acsTrapObjectSocketNumber.
 The socket name that was issued the off command is contained in acsTrapObjectSocketName.
-The name of the user who issued the off command is contained in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who issued the off command is contained in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletCmdOffTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
 			acsTrapObjectPduNumber=%parm[#3]% 
 			acsTrapObjectPduId=%parm[#4]% 
 			acsTrapObjectSocketNumber=%parm[#5]% 
-			acsTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>354</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletStatusOffTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletStatusOffTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has changed to the off state.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>354</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletStatusOffTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletStatusOffTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has changed to the off state.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The number of the power device is contained in the acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that has changed to the off state is contained in acsTrapObjectSocketNumber.
-The socket name that has changed to the off state is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that has changed to the off state is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletStatusOffTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
-			acsTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>355</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdCycleTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdCycleTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has been issued the cycle command.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>355</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCmdCycleTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCmdCycleTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has been issued the cycle command.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that was issued the cycle command is contained in acsTrapObjectSocketNumber.
 The socket name that was issued the cycle command is contained in acsTrapObjectSocketName.
-The name of the user who issued the cycle command is contained in acsTrapObjectUserName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The name of the user who issued the cycle command is contained in acsTrapObjectUserName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectUserName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectUserName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#6]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletCmdCycleTrap trap received 
 			acsTrapObjectUserName=%parm[#1]% 
 			acsTrapObjectSerialPortNumber=%parm[#2]% 
 			acsTrapObjectPduNumber=%parm[#3]% 
 			acsTrapObjectPduId=%parm[#4]% 
 			acsTrapObjectSocketNumber=%parm[#5]% 
-			acsTrapObjectSocketName=%parm[#6]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#6]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>356</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCycleFinishedTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCycleFinishedTrap</event-label>
-	<descr>
-&lt;p&gt;An outlet on a chain of power device has completed the cycle command.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>356</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletCycleFinishedTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletCycleFinishedTrap</event-label>
+      <descr>&lt;p>An outlet on a chain of power device has completed the cycle command.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The power device number in the chain is contained in acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that was issued the cycle command is contained in acsTrapObjectSocketNumber.
-The socket name that was issued the cycle command is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that was issued the cycle command is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletCycleFinishedTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
-			acsTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>357</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletOnSenseFailTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletOnSenseFailTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance has detected an on sense failure for a socket.
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>357</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletOnSenseFailTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletOnSenseFailTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance has detected an on sense failure for a socket.
 An on sense failure occurs when a socket should be in the on state but is actually in the off state.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The number of the power device is contained in the acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that has changed to the on state is contained in acsTrapObjectSocketNumber.
-The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletOnSenseFailTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
-			acsTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>358</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletOffSenseFailTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletOffSenseFailTrap</event-label>
-	<descr>
-&lt;p&gt;A power device attached to the appliance has detected an off sense failure for a socket.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>358</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsOutletOffSenseFailTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsOutletOffSenseFailTrap</event-label>
+      <descr>&lt;p>A power device attached to the appliance has detected an off sense failure for a socket.
 An off sense failure occurs when a socket should be in the off state but is actually in the on state.
 The port number on the appliance that the chain of power device is attached to is contained in acsTrapObjectSerialPortNumber.
 The number of the power device is contained in the acsTrapObjectPduNumber.
 The ID of the power device is contained in acsTrapObjectPduId.
 The socket number that has changed to the on state is contained in acsTrapObjectSocketNumber.
-The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The socket name that has changed to the on state is contained in acsTrapObjectSocketName.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSerialPortNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSerialPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPduId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPduId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#4]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectSocketNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectSocketName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#5]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectSocketName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsOutletOffSenseFailTrap trap received 
 			acsTrapObjectSerialPortNumber=%parm[#1]% 
 			acsTrapObjectPduNumber=%parm[#2]% 
 			acsTrapObjectPduId=%parm[#3]% 
 			acsTrapObjectSocketNumber=%parm[#4]% 
-			acsTrapObjectSocketName=%parm[#5]%&lt;/p&gt;
+			acsTrapObjectSocketName=%parm[#5]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>500</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureExceededMaxTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureExceededMaxTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance temperature has exceeded the maximum threshold configured.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>500</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureExceededMaxTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureExceededMaxTrap</event-label>
+      <descr>&lt;p>The appliance temperature has exceeded the maximum threshold configured.
 The maximum temperature configured is contained in acsTrapObjectTemperatureMaximumValue.
 The threshold configured is contained in the acsTrapObjectTemperatureMaxThreshold.
-The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMaximumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMaximumValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMaxThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMaxThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTemperatureCurrent&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsTemperatureExceededMaxTrap trap received 
 			acsTrapObjectTemperatureMaximumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMaxThreshold=%parm[#2]% 
-			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Critical</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>501</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureReachedMaxTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureReachedMaxTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance temperature has gone beneath the maximum threshold configured.
+      <severity>Critical</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>501</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureReachedMaxTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureReachedMaxTrap</event-label>
+      <descr>&lt;p>The appliance temperature has gone beneath the maximum threshold configured.
 The maximum temperature configured is contained in acsTrapObjectTemperatureMaximumValue
 The threshold confiugred is contained in acsTrapObjectTemperatureMaxThreshold.
-The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMaximumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMaximumValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMaxThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMaxThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTemperatureCurrent&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsTemperatureReachedMaxTrap trap received 
 			acsTrapObjectTemperatureMaximumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMaxThreshold=%parm[#2]% 
-			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Cleared</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>502</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureExceededMinTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureExceededMinTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance temperature has exceeded the minimum threshold configured.
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>502</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureExceededMinTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureExceededMinTrap</event-label>
+      <descr>&lt;p>The appliance temperature has exceeded the minimum threshold configured.
 The minimum temperature configured is contained in acsTrapObjectTemperatureMinimumValue.
 The threshold configured is contained in the acsTrapObjectTemperatureMinThreshold.
-The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMinimumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMinimumValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMinThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMinThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTemperatureCurrent&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsTemperatureExceededMinTrap trap received 
 			acsTrapObjectTemperatureMinimumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMinThreshold=%parm[#2]% 
-			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>503</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureReachedMinTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureReachedMinTrap</event-label>
-	<descr>
-&lt;p&gt;The appliance temperature has gone beneath the minimum threshold configured.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>503</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsTemperatureReachedMinTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsTemperatureReachedMinTrap</event-label>
+      <descr>&lt;p>The appliance temperature has gone beneath the minimum threshold configured.
 The minimum temperature configured is contained in acsTrapObjectTemperatureMinimumValue
 The threshold confiugred is contained in acsTrapObjectTemperatureMinThreshold.
-The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The current temperature is contained in acsTrapObjectTemperatureCurrent.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMinimumValue&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMinimumValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureMinThreshold&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectTemperatureMinThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectTemperatureCurrent&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectTemperatureCurrent&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsTemperatureReachedMinTrap trap received 
 			acsTrapObjectTemperatureMinimumValue=%parm[#1]% 
 			acsTrapObjectTemperatureMinThreshold=%parm[#2]% 
-			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectTemperatureCurrent=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>504</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPowerSupplyTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPowerSupplyTrap</event-label>
-	<descr>
-&lt;p&gt;The state of the appliance power supply has changed.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>504</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPowerSupplyTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPowerSupplyTrap</event-label>
+      <descr>&lt;p>The state of the appliance power supply has changed.
 The number of power supply is contained in acsTrapObjectPowerSupplyNumber.
 The old state of the power supply is contained in acsTrapObjectSupplyOldState.
-The new state of the power supply is contained in acsTrapObjectSupplyNewState.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The new state of the power supply is contained in acsTrapObjectSupplyNewState.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPowerSupplyNumber&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPowerSupplyNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPowerSupplyOldState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectPowerSupplyOldState&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
 		powerSupplyOn(1)
 		powerSupplyOff(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPowerSupplyNewState&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;
+	acsTrapObjectPowerSupplyNewState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
 		powerSupplyOn(1)
 		powerSupplyOff(2)
-	&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPowerSupplyTrap trap received 
 			acsTrapObjectPowerSupplyNumber=%parm[#1]% 
 			acsTrapObjectPowerSupplyOldState=%parm[#2]% 
-			acsTrapObjectPowerSupplyNewState=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectPowerSupplyNewState=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Warning</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>505</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPlugDeviceInsertTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPlugDeviceInsertTrap</event-label>
-	<descr>
-&lt;p&gt;A plugged device has been inserted in the appliance.
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>505</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPlugDeviceInsertTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPlugDeviceInsertTrap</event-label>
+      <descr>&lt;p>A plugged device has been inserted in the appliance.
 The device name used by plugged device is contained in acsTrapObjectPlugDeviceName.
 The type of the plugged device is contained in acsTrapObjectPlugDeviceType.
-The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPlugDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPlugDeviceType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPlugDeviceInfo&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPlugDeviceInsertTrap trap received 
 			acsTrapObjectPlugDeviceName=%parm[#1]% 
 			acsTrapObjectPlugDeviceType=%parm[#2]% 
-			acsTrapObjectPlugDeviceInfo=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectPlugDeviceInfo=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>506</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/avocent/traps/avctAcsPlugDeviceEjectTrap</uei>
-	<event-label>ACS-TRAP-MIB defined trap event: avctAcsPlugDeviceEjectTrap</event-label>
-	<descr>
-&lt;p&gt;A plugged device has been ejected from the appliance.
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10418.16.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>506</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/avocent/traps/avctAcsPlugDeviceEjectTrap</uei>
+      <event-label>ACS-TRAP-MIB defined trap event: avctAcsPlugDeviceEjectTrap</event-label>
+      <descr>&lt;p>A plugged device has been ejected from the appliance.
 The device name used by plugged device is contained in acsTrapObjectPlugDeviceName.
 The type of the plugged device is contained in acsTrapObjectPlugDeviceType.
-The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+The info about the plugged device is contained in acsTrapObjectPlugDeviceInfo.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceName&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPlugDeviceName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceType&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	acsTrapObjectPlugDeviceType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	acsTrapObjectPlugDeviceInfo&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	acsTrapObjectPlugDeviceInfo&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			avctAcsPlugDeviceEjectTrap trap received 
 			acsTrapObjectPlugDeviceName=%parm[#1]% 
 			acsTrapObjectPlugDeviceType=%parm[#2]% 
-			acsTrapObjectPlugDeviceInfo=%parm[#3]%&lt;/p&gt;
+			acsTrapObjectPlugDeviceInfo=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Normal</severity>
-</event>
-<!-- End of auto generated data from MIB: ACS-TRAP-MIB -->
+      <severity>Normal</severity>
+   </event>
 </events>

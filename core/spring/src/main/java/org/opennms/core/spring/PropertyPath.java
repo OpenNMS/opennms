@@ -78,7 +78,7 @@ public class PropertyPath {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder(parent == null ? "" : parent.toString()+'.');
+        final StringBuilder buf = new StringBuilder(parent == null ? "" : parent.toString()+'.');
         buf.append(propertyName);
         if (key.length() > 0) {
             buf.append(PropertyAccessor.PROPERTY_KEY_PREFIX);

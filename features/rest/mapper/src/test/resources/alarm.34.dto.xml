@@ -12,6 +12,9 @@
   <firstEventTime>##DATE##</firstEventTime>
   <description>All services are down on interface 10.8.0.30.</description>
   <logMessage>Interface 10.8.0.30 is down.</logMessage>
+  <troubleTicket>NMS-9587</troubleTicket>
+  <troubleTicketState>0</troubleTicketState>
+  <troubleTicketLink>https://issues.opennms.org/browse/NMS-9587</troubleTicketLink>
   <suppressedUntil>##DATE##</suppressedUntil>
   <suppressedTime>##DATE##</suppressedTime>
   <lastEvent id="2035" severity="MINOR" log="Y" display="Y">
@@ -34,6 +37,9 @@
     <nodeLabel>n1</nodeLabel>
     <location>Default</location>
   </lastEvent>
+  <parameters>
+    <parameter name="test" value="testVal" type="string"/>
+  </parameters>
   <lastEventTime>##DATE##</lastEventTime>
   <x733ProbableCause>0</x733ProbableCause>
 </alarm>

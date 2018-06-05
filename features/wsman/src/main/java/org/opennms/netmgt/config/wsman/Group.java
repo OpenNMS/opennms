@@ -108,7 +108,7 @@ public class Group {
      */
     public List<Attrib> getAttrib() {
         if (attrib == null) {
-            attrib = new ArrayList<Attrib>();
+            attrib = new ArrayList<>();
         }
         return this.attrib;
     }

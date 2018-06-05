@@ -41,6 +41,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.opennms.core.criteria.Order;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeEntity;
 import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEntity;
@@ -86,9 +87,19 @@ public class BusinessServiceDaoImpl extends AbstractDaoHibernate<BusinessService
                             .add(Projections.property("name"))));
                 List<Object[]> idList = idCriteria.list();
                 if (!idList.isEmpty()) {
+                    // Prepare criteria
                     Criteria entityCriteria = session.createCriteria(criteria.getCriteriaClass());
                     entityCriteria.add(Restrictions.in("id", idList.stream().map(e -> e[0]).collect(Collectors.toList())));
                     entityCriteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+                    // Enforce ordering
+                    for (Order eachOnmsOrder : criteria.getOrders()) {
+                        if (eachOnmsOrder.asc()) {
+                            entityCriteria.addOrder(org.hibernate.criterion.Order.asc(eachOnmsOrder.getAttribute()));
+                        } else {
+                            entityCriteria.addOrder(org.hibernate.criterion.Order.desc(eachOnmsOrder.getAttribute()));
+                        }
+                    }
                     return entityCriteria.list();
                 }
                 return Collections.emptyList();

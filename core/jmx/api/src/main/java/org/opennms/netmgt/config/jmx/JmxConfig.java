@@ -43,7 +43,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "jmx-config")
 @XmlAccessorType(XmlAccessType.NONE)
 public class JmxConfig {
-    private Set<MBeanServer> m_mBeanServer = new HashSet<MBeanServer>();
+    private Set<MBeanServer> m_mBeanServer = new HashSet<>();
 
     @XmlElement(name = "mbean-server")
     public Set<MBeanServer> getMBeanServer() {

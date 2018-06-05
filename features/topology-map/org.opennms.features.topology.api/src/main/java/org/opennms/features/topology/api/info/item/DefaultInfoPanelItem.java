@@ -38,6 +38,7 @@ public class DefaultInfoPanelItem implements InfoPanelItem {
     private Component component;
     private String title;
     private int order;
+    private String id;
 
     public DefaultInfoPanelItem withComponent(Component component) {
         this.component = component;
@@ -54,6 +55,11 @@ public class DefaultInfoPanelItem implements InfoPanelItem {
         return this;
     }
 
+    public DefaultInfoPanelItem withId(String id) {
+        this.id = id;
+        return this;
+    }
+
     @Override
     public Component getComponent() {
         return component;
@@ -67,5 +73,10 @@ public class DefaultInfoPanelItem implements InfoPanelItem {
     @Override
     public int getOrder() {
         return order;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 }

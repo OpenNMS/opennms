@@ -41,9 +41,7 @@ import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.EqRestriction;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
@@ -57,10 +55,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
-import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -78,7 +73,7 @@ import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.SharedSegment;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,16 +109,13 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     private BridgeElementDao m_bridgeElementDao;
 
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
-
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-
     private BridgeStpLinkDao m_bridgeStpLinkDao;
 
     private BridgeTopologyDao m_bridgeTopologyDao;
 
     volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
-
+    volatile Set<BroadcastDomain> m_domains;
+    
     @Override
     public List<Node> getSnmpNodeList() {
         final List<Node> nodes = new ArrayList<Node>();
@@ -219,15 +211,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         if (LOG.isDebugEnabled()) {
             LOG.debug("reconcileTopologyForDeleteNode: node:[{}], domain:\n{}", nodeId, domain.printTopology());
         }
-
-        m_bridgeBridgeLinkDao.deleteByDesignatedNodeId(nodeId);
-        m_bridgeBridgeLinkDao.deleteByNodeId(nodeId);
-        m_bridgeBridgeLinkDao.flush();
-
-        m_bridgeMacLinkDao.deleteByNodeId(nodeId);
-        m_bridgeMacLinkDao.flush();
         
-
         LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
         BroadcastDomain.removeBridge(domain,nodeId);
         store(domain,now);
@@ -239,6 +223,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         
         if (domain.isEmpty()) {
             cleanBroadcastDomains();
+            m_bridgeTopologyDao.delete(nodeId);
             LOG.info("reconcileTopologyForDeleteNode: node:[{}], empty domain",nodeId);
             return domain;
         }
@@ -673,30 +658,35 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public synchronized Set<BroadcastDomain> getAllBroadcastDomains() {
-        return m_bridgeTopologyDao.getAll();
+        return m_domains;
     }
     
     @Override
     public void save(BroadcastDomain domain) {
-        m_bridgeTopologyDao.save(domain);
+        synchronized (m_domains) {
+            m_domains.add(domain);
+        }
     }
 
-    @Override
     public void cleanBroadcastDomains() {
-        m_bridgeTopologyDao.clean();
+        synchronized (m_domains) {
+            m_domains.removeIf(BroadcastDomain::isEmpty);
+        }
     }
 
     @Override
     public BroadcastDomain getBroadcastDomain(int nodeId) {
-        return m_bridgeTopologyDao.get(nodeId);
-    }
-
-    @Override
-    public boolean hasUpdatedBft(int nodeid) {
-        synchronized (m_nodetoBroadcastDomainMap) {
-            return m_nodetoBroadcastDomainMap.containsKey(nodeid);            
+        synchronized (m_domains) {
+            for (BroadcastDomain domain : m_domains) {
+                synchronized (domain) {
+                    Bridge bridge = domain.getBridge(nodeId);
+                    if (bridge != null) {
+                        return domain;
+                    }
+                }
+            }
         }
-
+        return null;
     }
     
     @Override
@@ -706,126 +696,12 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
     }
 
-    @Override
-    public synchronized Set<BridgeForwardingTableEntry> getBridgeTopologyUpdateBFT(int nodeid) {
-        return m_nodetoBroadcastDomainMap.get(nodeid);
-    }
 
     @Override
     public void store(BroadcastDomain domain, Date now) throws BridgeTopologyException {
-        for (SharedSegment segment : domain.getSharedSegments()) {
-            segment.getDesignatedPort();
-        }
-        for (SharedSegment segment : domain.getSharedSegments()) {
-            for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
-                link.setBridgeBridgeLinkLastPollTime(new Date());
-                    saveBridgeBridgeLink(link);
-            }
-            for (BridgeMacLink link : SharedSegment.getBridgeMacLinks(segment)) {
-                link.setBridgeMacLinkLastPollTime(new Date());
-                saveBridgeMacLink(link);
-            }
-        }
-        
-        domain.getForwarding().stream().filter(forward -> forward.getMacs().size() > 0).
-            forEach( forward -> {
-                for ( BridgeMacLink link : BridgeForwardingTableEntry.create(forward, BridgeMacLinkType.BRIDGE_FORWARDER)) {
-                    link.setBridgeMacLinkLastPollTime(new Date());
-                    saveBridgeMacLink(link);
-                }
-            });
-        
-
-        
-        for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
-            m_bridgeMacLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-            m_bridgeBridgeLinkDao.deleteByNodeIdOlderThen(nodeid, now);
-            m_bridgeBridgeLinkDao.deleteByDesignatedNodeIdOlderThen(nodeid, now);
-        }
-       
-        try {
-            m_bridgeMacLinkDao.flush();
-        } catch (Exception e) {
-            LOG.error("BridgeMacLinkDao: {}", e.getMessage(),e );
-        }
-        try {
-            m_bridgeBridgeLinkDao.flush();
-        } catch (Exception e) {
-            LOG.error("BridgeBridgeLinkDao: {}", e.getMessage(),e );
-        }
+        m_bridgeTopologyDao.save(domain, now);
     }
-
-    @Transactional
-    protected void saveBridgeMacLink(final BridgeMacLink saveMe) {
-        new UpsertTemplate<BridgeMacLink, BridgeMacLinkDao>(
-                                                            m_transactionManager,
-                                                            m_bridgeMacLinkDao) {
-
-            @Override
-            protected BridgeMacLink query() {
-                return m_dao.getByNodeIdBridgePortMac(saveMe.getNode().getId(),
-                                                      saveMe.getBridgePort(),
-                                                      saveMe.getMacAddress());
-            }
-
-            @Override
-            protected BridgeMacLink doUpdate(BridgeMacLink link) {
-                link.merge(saveMe);
-                m_dao.update(link);
-                return link;
-            }
-
-            @Override
-            protected BridgeMacLink doInsert() {
-                final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
-                if (node == null) {
-                    return null;
-                }
-                saveMe.setNode(node);
-                if (saveMe.getBridgeMacLinkLastPollTime() == null) {
-                    saveMe.setBridgeMacLinkLastPollTime(saveMe.getBridgeMacLinkCreateTime());
-                }
-                m_dao.saveOrUpdate(saveMe);
-                return saveMe;
-            }
-
-        }.execute();
-    }
-
-    @Transactional
-    protected void saveBridgeBridgeLink(final BridgeBridgeLink saveMe) {
-        new UpsertTemplate<BridgeBridgeLink, BridgeBridgeLinkDao>(
-                                                                  m_transactionManager,
-                                                                  m_bridgeBridgeLinkDao) {
-
-            @Override
-            protected BridgeBridgeLink query() {
-                return m_dao.getByNodeIdBridgePort(saveMe.getNode().getId(),
-                                                   saveMe.getBridgePort());
-            }
-
-            @Override
-            protected BridgeBridgeLink doUpdate(BridgeBridgeLink link) {
-                link.merge(saveMe);
-                m_dao.update(link);
-                return link;
-            }
-
-            @Override
-            protected BridgeBridgeLink doInsert() {
-                final OnmsNode node = m_nodeDao.get(saveMe.getNode().getId());
-                if (node == null)
-                    return null;
-                saveMe.setNode(node);
-                if (saveMe.getBridgeBridgeLinkLastPollTime() == null)
-                    saveMe.setBridgeBridgeLinkLastPollTime(saveMe.getBridgeBridgeLinkCreateTime());
-                m_dao.saveOrUpdate(saveMe);
-                return saveMe;
-            }
-
-        }.execute();
-    }
-
+    
     @Override
     public void store(int nodeId, IpNetToMedia ipnettomedia) {
         if (ipnettomedia == null)
@@ -875,7 +751,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     @Override
     public void loadBridgeTopology() {
-        m_bridgeTopologyDao.load(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao,m_bridgeElementDao);
+        m_domains= m_bridgeTopologyDao.load();
     }
     
     public CdpLinkDao getCdpLinkDao() {
@@ -958,22 +834,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeElementDao = bridgeElementDao;
     }
 
-    public BridgeMacLinkDao getBridgeMacLinkDao() {
-        return m_bridgeMacLinkDao;
-    }
-
-    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
-        m_bridgeMacLinkDao = bridgeMacLinkDao;
-    }
-
-    public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
-        return m_bridgeBridgeLinkDao;
-    }
-
-    public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
-        m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
-    }
-
     public BridgeStpLinkDao getBridgeStpLinkDao() {
         return m_bridgeStpLinkDao;
     }
@@ -1012,8 +872,15 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
                     bridge.setDesignated(Bridge.getDesignated(elems));
                     break;
                 }
-            }        
+            }
         }
+    }
+
+    public List<BridgeElement> getBridgeElements(Set<Integer> nodes) {
+        List<BridgeElement> elems = new ArrayList<BridgeElement>();
+        for (Integer nodeid: nodes)
+            elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
+        return elems;
     }
 
 }

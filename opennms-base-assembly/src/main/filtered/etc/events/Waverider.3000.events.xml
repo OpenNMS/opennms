@@ -1,24 +1,22 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
-<!-- Start of auto generated data from MIB: CCU3000PMAC-TRAPS-MIB -->
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2979.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>1</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/waverider/traps/ccuAddressChangeTrap</uei>
-	<event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAddressChangeTrap</event-label>
-	<descr>
-&lt;p&gt;When a packet is received from one station ID with a source MAC address that
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2979.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/waverider/traps/ccuAddressChangeTrap</uei>
+      <event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAddressChangeTrap</event-label>
+      <descr>&lt;p>When a packet is received from one station ID with a source MAC address that
 has been associated with a different station ID in the past, this trap is
 sent, along with the MAC address in question, the old station ID and the new
 station ID. Note that the CCU Ethernet port is specified by the CCU's own
@@ -26,137 +24,127 @@ station ID.
 
 This may occur due to a host moving from one modem to another, or a modem moving
 from one CCU to another on the same Ethernet domain. It may also occur due to 
-incorrectly configured networks at an EUM or attempts to spoof MAC addresses.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+incorrectly configured networks at an EUM or attempts to spoof MAC addresses.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ccuTrapACMacAddress&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ccuTrapACMacAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ccuTrapACOldId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#2]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+	ccuTrapACOldId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
 
-	ccuTrapACNewId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#3]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	ccuTrapACNewId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ccuAddressChangeTrap trap received 
 			ccuTrapACMacAddress=%parm[#1]% 
 			ccuTrapACOldId=%parm[#2]% 
-			ccuTrapACNewId=%parm[#3]%&lt;/p&gt;
+			ccuTrapACNewId=%parm[#3]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2979.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>2</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/waverider/traps/ccuDuplicateIpTrap</uei>
-	<event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuDuplicateIpTrap</event-label>
-	<descr>
-&lt;p&gt;When an ARP is received from the air with a source IP address equal to that
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2979.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/waverider/traps/ccuDuplicateIpTrap</uei>
+      <event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuDuplicateIpTrap</event-label>
+      <descr>&lt;p>When an ARP is received from the air with a source IP address equal to that
 of the CCU, the packet is discarded and this trap sent. The Station ID of
 the station the packet was received from is included.
 
 This indicates that a station or a host behind a station has been incorrectly
-configured with the same IP address as the CCU.&lt;/p&gt;&lt;table&gt;
-	&lt;tr&gt;&lt;td&gt;&lt;b&gt;
+configured with the same IP address as the CCU.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
 
-	ccuTrapDupEumId&lt;/b&gt;&lt;/td&gt;&lt;td&gt;
-	%parm[#1]%;&lt;/td&gt;&lt;td&gt;&lt;p;&gt;&lt;/p&gt;&lt;/td;&gt;&lt;/tr&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
+	ccuTrapDupEumId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
 			ccuDuplicateIpTrap trap received 
-			ccuTrapDupEumId=%parm[#1]%&lt;/p&gt;
+			ccuTrapDupEumId=%parm[#1]%&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2979.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>3</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/waverider/traps/ccuAddressTableFullTrap</uei>
-	<event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAddressTableFullTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full address table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			ccuAddressTableFullTrap trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2979.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/waverider/traps/ccuAddressTableFullTrap</uei>
+      <event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAddressTableFullTrap</event-label>
+      <descr>&lt;p>This trap is sent when the CCU attempts to add an entry to a full address table.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ccuAddressTableFullTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2979.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>4</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/waverider/traps/ccuAuthTableFullTrap</uei>
-	<event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAuthTableFullTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full authorization table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			ccuAuthTableFullTrap trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2979.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/waverider/traps/ccuAuthTableFullTrap</uei>
+      <event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuAuthTableFullTrap</event-label>
+      <descr>&lt;p>This trap is sent when the CCU attempts to add an entry to a full authorization table.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ccuAuthTableFullTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<event>
-	<mask>
-		<maskelement>
-			<mename>id</mename>
-			<mevalue>.1.3.6.1.4.1.2979.11</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>generic</mename>
-			<mevalue>6</mevalue>
-		</maskelement>
-		<maskelement>
-			<mename>specific</mename>
-			<mevalue>5</mevalue>
-		</maskelement>
-	</mask>
-	<uei>uei.opennms.org/vendor/waverider/traps/ccuRegTableFullTrap</uei>
-	<event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuRegTableFullTrap</event-label>
-	<descr>
-&lt;p&gt;This trap is sent when the CCU attempts to add an entry to a full registration table.&lt;/p&gt;&lt;table&gt;&lt;/table&gt;
-	</descr>
-		<logmsg dest='logndisplay'>&lt;p&gt;
-			ccuRegTableFullTrap trap received&lt;/p&gt;
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2979.11</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/waverider/traps/ccuRegTableFullTrap</uei>
+      <event-label>CCU3000PMAC-TRAPS-MIB defined trap event: ccuRegTableFullTrap</event-label>
+      <descr>&lt;p>This trap is sent when the CCU attempts to add an entry to a full registration table.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ccuRegTableFullTrap trap received&lt;/p>
 		</logmsg>
-	<severity>Indeterminate</severity>
-</event>
-<!-- End of auto generated data from MIB: CCU3000PMAC-TRAPS-MIB -->
+      <severity>Indeterminate</severity>
+   </event>
 </events>

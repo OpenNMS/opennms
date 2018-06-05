@@ -92,13 +92,13 @@ public class PollerConfiguration implements Serializable {
      * addresses, etc..
      */
     @XmlElement(name="package")
-    private List<Package> m_packages = new ArrayList<Package>();
+    private List<Package> m_packages = new ArrayList<>();
 
     /**
      * Service monitors
      */
     @XmlElement(name="monitor")
-    private List<Monitor> m_monitors = new ArrayList<Monitor>();
+    private List<Monitor> m_monitors = new ArrayList<>();
 
     /**
      * The maximum number of threads used for polling.
@@ -211,7 +211,7 @@ public class PollerConfiguration implements Serializable {
     public PollerConfiguration getPollerConfigurationForPackages(final List<String> pollingPackageNames) {
         if (pollingPackageNames == null || pollingPackageNames.size() < 1) return null;
         
-        final Set<String> seenMonitors = new HashSet<String>();
+        final Set<String> seenMonitors = new HashSet<>();
         final PollerConfiguration newConfig = new PollerConfiguration();
         newConfig.setThreads(getThreads());
         newConfig.setNextOutageId(getNextOutageId());

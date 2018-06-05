@@ -85,7 +85,7 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
 
     public static class UpdateCommand {
         private final String m_filename;
-        private final List<String> m_arguments = new LinkedList<String>();
+        private final List<String> m_arguments = new LinkedList<>();
 
         public UpdateCommand(String filename) {
             m_filename = filename;
@@ -125,7 +125,6 @@ public class MultithreadedJniRrdStrategy extends AbstractJniRrdStrategy<Multithr
      * RRD files takes place. The passed in rrd is actually an rrd command
      * string containing updates. This method executes this command.
      *
-     * @param rrd a {@link java.lang.StringBuffer} object.
      * @throws java.lang.Exception if any.
      */
     @Override

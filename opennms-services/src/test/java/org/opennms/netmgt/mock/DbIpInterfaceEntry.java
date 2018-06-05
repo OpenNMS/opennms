@@ -340,7 +340,7 @@ public final class DbIpInterfaceEntry {
     @Override
     public String toString() {
         String sep = System.getProperty("line.separator");
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
 
         buf.append("from database      = ").append(m_fromDb).append(sep);
         buf.append("node identifier    = ").append(m_nodeId).append(sep);

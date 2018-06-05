@@ -57,6 +57,9 @@ public class PingSweepRequestDTO implements RpcRequest {
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name = "packet-size")
     private Integer packetSize;
 
@@ -66,6 +69,15 @@ public class PingSweepRequestDTO implements RpcRequest {
     @Override
     public String getLocation() {
         return location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     public void setLocation(String location) {
@@ -102,7 +114,7 @@ public class PingSweepRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ipRanges, location, packetSize);
+        return Objects.hash(ipRanges, location, systemId, packetSize);
     }
 
     @Override
@@ -114,8 +126,11 @@ public class PingSweepRequestDTO implements RpcRequest {
         if (getClass() != obj.getClass())
             return false;
         PingSweepRequestDTO other = (PingSweepRequestDTO) obj;
-        return Objects.equals(this.ipRanges, other.ipRanges) && Objects.equals(this.location, other.location)
-                && Objects.equals(this.packetSize, other.packetSize) && Objects.equals(this.packetsPerSecond, other.packetsPerSecond);
+        return Objects.equals(this.ipRanges, other.ipRanges)
+                && Objects.equals(this.location, other.location)
+                && Objects.equals(this.systemId, other.systemId)
+                && Objects.equals(this.packetSize, other.packetSize)
+                && Objects.equals(this.packetsPerSecond, other.packetsPerSecond);
     }
 
     @Override

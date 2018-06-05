@@ -71,8 +71,8 @@ public class ThrowableAnticipator extends Assert {
     }
     
     private void init() {
-        m_anticipated = new ArrayList<Throwable>();
-        m_unanticipated = new ArrayList<Throwable>();
+        m_anticipated = new ArrayList<>();
+        m_unanticipated = new ArrayList<>();
         m_failFast = true;
     }
    

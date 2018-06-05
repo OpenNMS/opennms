@@ -59,6 +59,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
@@ -95,9 +96,10 @@ import com.google.common.collect.ImmutableMap;
 @JUnitTemporaryDatabase
 @Transactional
 public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
+
     private static final Logger LOG = LoggerFactory.getLogger(AlarmRestServiceIT.class);
     private static final String SERVER3_NAME = "w\u00EAird%20server+name";
-
+    private static final AtomicInteger ALARM_COUNTER = new AtomicInteger();
 
     public AlarmRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
@@ -115,6 +117,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
     @Override
     protected void afterServletStart() throws Exception {
+        ALARM_COUNTER.set(0);
+
         MockLogAppender.setupLogging(true, "DEBUG");
 
         final OnmsCategory linux = createCategory("Linux");
@@ -212,6 +216,120 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         executeQueryAndVerify("_s=category.name!=ma*S", 4);
         executeQueryAndVerify("_s=category.name==DoesntExist", 0);
         executeQueryAndVerify("_s=category.name!=DoesntExist", 8);
+    }
+
+    /**
+     * Test filtering for properties of {@link OnmsEventParameter}. The implementation
+     * for this filtering is different because the event-to-parameter relationship
+     * is a one-to-many relationship.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testEventParameterFiltering() throws Exception {
+        executeQueryAndVerify("_s=eventParameter.name==testParm1", 4);
+        executeQueryAndVerify("_s=eventParameter.name!=testParm1", 4);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm2", 4);
+        executeQueryAndVerify("_s=eventParameter.name!=testParm2", 4);
+
+        executeQueryAndVerify("_s=eventParameter.name==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.name!=doesntExist", 8);
+
+        executeQueryAndVerify("_s=eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value==This is a weird parm", 4);
+
+        executeQueryAndVerify("_s=eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.value!=This is a weird parm;eventParameter.value==This is an awesome parm%21", 4);
+
+        executeQueryAndVerify("_s=eventParameter.value!=This is an awesome parm%21;eventParameter.value!=This is a weird parm", 0);
+
+        executeQueryAndVerify("_s=eventParameter.value==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.value!=doesntExist", 8);
+
+        // This doesn't work because eventParameter.type is a non-unique field
+        //executeQueryAndVerify("_s=eventParameter.type==string", 8);
+        executeQueryAndVerify("_s=eventParameter.type!=string", 0);
+
+        executeQueryAndVerify("_s=eventParameter.type==doesntExist", 0);
+        executeQueryAndVerify("_s=eventParameter.type!=doesntExist", 8);
+
+        // Query with every property of eventParameter
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is an awesome parm%21;eventParameter.type==string", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm;eventParameter.type==string", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm;eventParameter.type==string", 8);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==This is a weird parm", 0);
+        executeQueryAndVerify("_s=eventParameter.name==testParm1;eventParameter.value==Here's another parm", 0);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is an awesome parm%21", 0);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm2;eventParameter.value==Here's another parm", 0);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==This is an awesome parm%21", 0);
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==This is a weird parm", 0);
+        executeQueryAndVerify("_s=eventParameter.name==testParm3;eventParameter.value==Here's another parm", 8);
+
+        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value==Here's another parm", 8);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm*", 8);
+
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*awesome*", 4);
+        // Negative filter eliminates half of the results
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*awesome*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*weird*", 4);
+        // Negative filter eliminates half of the results
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*weird*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==*another*", 8);
+        // All events have testParm3 so the negative filter will eliminate all results
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value!=*another*", 0);
+
+        // Wildcard value paired with specific non-unique value
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==This is an awesome parm%21", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==This is a weird parm", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.value==Here's another parm", 8);
+
+
+        executeQueryAndVerify("_s=eventParameter.type==*ring*;eventParameter.value==*awesome*", 4);
+        executeQueryAndVerify("_s=eventParameter.type==*ring*;eventParameter.value!=*weird*", 4);
+
+
+        // This does not work properly because:
+        // - eventParameter.type is not a wildcard value so an alias with a JOIN condition will be used 
+        //   for querying
+        // - eventParameter.type is a non-unique field so the JOIN condition will return multiple rows
+        //executeQueryAndVerify("_s=eventParameter.type==string;eventParameter.value!=*weird*", 4); // 8
+        //executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.type==string", 8); // 16
+
+        // A workaround is to use a wildcard value instead so that the query doesn't use the alias
+        executeQueryAndVerify("_s=eventParameter.type==string*;eventParameter.value!=*weird*", 4);
+        executeQueryAndVerify("_s=eventParameter.name==testParm*;eventParameter.type==string*", 8);
+
+        // Many parenthetical queries will work
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.name==testParm1*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2*),(eventParameter.value!=*awesome*)", 4);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.value==*weird*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.value!=*weird*)", 4);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value==*weird*)", 4);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm2),(eventParameter.value!=*weird*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value==*weird*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm3),(eventParameter.value!=*weird*)", 8);
+
+        // Doesn't work because join conditions for each search property combine spuriously with each other
+        // across the FIQL OR restriction (',')
+        //executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.name==testParm2)", 8);
+        //executeQueryAndVerify("_s=(eventParameter.name==testParm1),(eventParameter.name==testParm3)", 8);
+
+        // Workaround by using wildcards for the values
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm2*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*);(eventParameter.name==testParm2*)", 0);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*),(eventParameter.name==testParm3*)", 8);
+        executeQueryAndVerify("_s=(eventParameter.name==testParm1*);(eventParameter.name==testParm3*)", 4);
     }
 
     @Test
@@ -329,16 +447,33 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     /**
+     * Test filtering for netmask property of {@link OnmsIpInterface}.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testNetmaskFiltering() throws Exception {
+        executeQueryAndVerify("_s=ipInterface.netMask==255.255.255.0", 8);
+        executeQueryAndVerify("_s=ipInterface.netMask==\u0000", 0);
+        executeQueryAndVerify("_s=ipInterface.netMask!=255.255.255.0", 0);
+        executeQueryAndVerify("_s=ipInterface.netMask==255.255.127.0", 0);
+    }
+
+    /**
      * Test filtering for properties of {@link OnmsSnmpInterface}.
      * 
      * @throws Exception
      */
     @Test
     public void testSnmpFiltering() throws Exception {
-        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.255.0", 0);
-        executeQueryAndVerify("_s=snmpInterface.netMask==\u0000", 8);
-        executeQueryAndVerify("_s=snmpInterface.netMask!=255.255.255.0", 8);
-        executeQueryAndVerify("_s=snmpInterface.netMask==255.255.127.0", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==10000000", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==\u0000", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed!=500", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifSpeed==500", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifName==eth0", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifName==\u0000", 0);
+        executeQueryAndVerify("_s=snmpInterface.ifName!=eth1", 8);
+        executeQueryAndVerify("_s=snmpInterface.ifName==eth1", 0);
     }
 
     /**
@@ -502,10 +637,11 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         .setIfName("eth0")
         .setIfType(6)
         .setPhysAddr("C9D2DFC7CB68")
-        .addIpInterface(ipAddress).setIsManaged("M").setIsSnmpPrimary("S");
+        .addIpInterface(ipAddress).setIsManaged("M").setIsSnmpPrimary("S").setNetMask("255.255.255.0");
         builder.addService(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         final OnmsNode node = builder.getCurrentNode();
         m_databasePopulator.getNodeDao().save(node);
+        LOG.debug("ifspeed={}", node.getSnmpInterfaceWithIfIndex(1).getIfSpeed());
         return node;
     }
 
@@ -517,6 +653,8 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
     private void createAlarm(final OnmsNode node, final String eventUei, final OnmsSeverity severity, final long epoch) {
+        final OnmsIpInterface alarmNode = node.getIpInterfaces().iterator().next();
+
         final OnmsEvent event = new OnmsEvent();
         event.setDistPoller(m_databasePopulator.getDistPollerDao().whoami());
         event.setEventCreateTime(new Date(epoch));
@@ -527,10 +665,17 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         event.setEventSource("JUnit");
         event.setEventTime(new Date(epoch));
         event.setEventUei(eventUei);
-        event.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
+        if (ALARM_COUNTER.getAndIncrement() % 2 == 0) {
+            event.addEventParameter(new OnmsEventParameter(event, "testParm1", "This is an awesome parm!", "string"));
+        } else {
+            event.addEventParameter(new OnmsEventParameter(event, "testParm2", "This is a weird parm", "string"));
+        }
+        event.addEventParameter(new OnmsEventParameter(event, "testParm3", "Here's another parm", "string"));
+        event.setIpAddr(alarmNode.getIpAddress());
         event.setNode(node);
         event.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
         event.setEventSeverity(severity.getId());
+        event.setIfIndex(alarmNode.getIfIndex());
         m_databasePopulator.getEventDao().save(event);
         m_databasePopulator.getEventDao().flush();
 
@@ -542,13 +687,13 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
         alarm.setDescription("This is a test alarm");
         alarm.setLogMsg("this is a test alarm log message");
         alarm.setCounter(1);
-        alarm.setIpAddr(node.getIpInterfaces().iterator().next().getIpAddress());
+        alarm.setIpAddr(alarmNode.getIpAddress());
         alarm.setSeverity(severity);
         alarm.setFirstEventTime(event.getEventTime());
         alarm.setLastEventTime(event.getEventTime());
         alarm.setLastEvent(event);
-        alarm.setEventParms(event.getEventParms());
         alarm.setServiceType(m_databasePopulator.getServiceTypeDao().findByName("ICMP"));
+        alarm.setIfIndex(alarmNode.getIfIndex());
         m_databasePopulator.getAlarmDao().save(alarm);
         m_databasePopulator.getAlarmDao().flush();
     }

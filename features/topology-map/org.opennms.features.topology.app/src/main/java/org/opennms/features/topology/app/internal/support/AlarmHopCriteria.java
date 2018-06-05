@@ -74,7 +74,7 @@ public class AlarmHopCriteria extends VertexHopCriteria implements SearchCriteri
 	}
 
 	public static class AlarmVertex extends AbstractVertex implements GroupRef {
-		private Set<VertexRef> m_children = new HashSet<VertexRef>();
+		private Set<VertexRef> m_children = new HashSet<>();
 
         public AlarmVertex(String namespace, String id, String label) {
 			super(namespace, id, label);

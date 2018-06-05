@@ -144,7 +144,7 @@ public final class ResponseTimeResourceType implements OnmsResourceType {
         final String locationName = MonitoringLocationUtils.getLocationNameOrNullIfDefault(node);
 
         // Verify the existence of the individual interfaces
-        final LinkedList<OnmsResource> resources = new LinkedList<OnmsResource>();
+        final LinkedList<OnmsResource> resources = new LinkedList<>();
         for (final OnmsIpInterface i : node.getIpInterfaces()) {
             String ipAddr = InetAddressUtils.str(i.getIpAddress());
 

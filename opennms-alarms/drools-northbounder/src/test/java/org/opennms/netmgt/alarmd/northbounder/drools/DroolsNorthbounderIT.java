@@ -36,9 +36,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounder;
-import org.opennms.netmgt.alarmd.northbounder.drools.DroolsNorthbounderConfigDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
@@ -121,7 +121,11 @@ public class DroolsNorthbounderIT {
         onmsAlarm.setNode(node);
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setUei("uei.opennms.org/trap/myTrap1");
-        onmsAlarm.setEventParms("alarmId=10(Int32,text);alarmMessage=this is a test(string,text);");
+        OnmsEvent event = new OnmsEvent();
+        event.setEventParameters(Lists.newArrayList(
+                new OnmsEventParameter(event, "alarmId", "10", "Int32"),
+                new OnmsEventParameter(event, "alarmMessage", "this is a test", "string")));
+        onmsAlarm.setLastEvent(event);
         onmsAlarm.setLogMsg("Test log message");
         onmsAlarm.setDescription("Test description");
         NorthboundAlarm alarm = new NorthboundAlarm(onmsAlarm);

@@ -171,41 +171,41 @@ public class JMXDataCollectionConfigDao extends AbstractMergingJaxbConfigDao<Jmx
 
         m_lock.readLock().lock();
         try {
-            Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
-
-            LOG.debug("getMibObjectList: collection: {} sysoid: {} address: {}", anAddress, cName, aSysoid);
-
-            if (aSysoid == null) {
-
-                LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
-                return attributeMap;
-            }
-
-            // Retrieve the appropriate Collection object
-            JmxCollection collection = m_collectionMap.get(cName);
-            if (collection == null) {
-                return attributeMap;
-            }
-
-            for(Mbean mbean : collection.getMbeans()) {
-                // Make sure to create a new ArrayList because we add to it below
-                List<Attrib> list = new ArrayList<Attrib>(mbean.getAttribList());
-
-                for(CompAttrib compAttrib : mbean.getCompAttribList()) {
-                    for (CompMember compMember : compAttrib.getCompMemberList()) {
-                        Attrib attribWrapper = new Attrib();
-                        attribWrapper.setName(compAttrib.getName() + "|" + compMember.getName());
-                        attribWrapper.setAlias(compMember.getAlias());
-                        attribWrapper.setType(compMember.getType());
-                        list.add(attribWrapper);
-                    }
-                }
-                attributeMap.put(mbean.getObjectname(), list);
-            }
-            return attributeMap;
+            LOG.debug("getAttributeMap: collection: {} sysoid: {} address: {}", cName, aSysoid, anAddress);
+            return getAttributeMap(m_collectionMap.get(cName), aSysoid, anAddress);
         } finally {
             m_lock.readLock().unlock();
         }
+    }
+
+    public static Map<String, List<Attrib>> getAttributeMap(JmxCollection collection, String aSysoid, String anAddress) {
+        final Map<String, List<Attrib>> attributeMap = new HashMap<String, List<Attrib>>();
+
+        if (aSysoid == null) {
+            LOG.debug("getMibObjectList: aSysoid parameter is NULL...");
+            return attributeMap;
+        }
+
+        if (collection == null) {
+            return attributeMap;
+        }
+
+        for(Mbean mbean : collection.getMbeans()) {
+            // Make sure to create a new ArrayList because we add to it below
+            List<Attrib> list = new ArrayList<Attrib>(mbean.getAttribList());
+
+            for(CompAttrib compAttrib : mbean.getCompAttribList()) {
+                for (CompMember compMember : compAttrib.getCompMemberList()) {
+                    Attrib attribWrapper = new Attrib();
+                    attribWrapper.setName(compAttrib.getName() + "|" + compMember.getName());
+                    attribWrapper.setAlias(compMember.getAlias());
+                    attribWrapper.setType(compMember.getType());
+                    list.add(attribWrapper);
+                }
+            }
+            attributeMap.put(mbean.getObjectname(), list);
+        }
+        return attributeMap;
     }
 
     public Map<String, BeanInfo> getMBeanInfo(String cName) {
@@ -223,37 +223,49 @@ public class JMXDataCollectionConfigDao extends AbstractMergingJaxbConfigDao<Jmx
             if (collection == null) {
                 LOG.warn("no collection named '{}' was found", cName);
             } else {
-                for (Mbean mbean : collection.getMbeans()) {
-                    BeanInfo beanInfo = new BeanInfo();
-                    beanInfo.setMbeanName(mbean.getName());
-                    beanInfo.setObjectName(mbean.getObjectname());
-                    beanInfo.setKeyField(mbean.getKeyfield());
-                    beanInfo.setExcludes(mbean.getExclude());
-                    beanInfo.setKeyAlias(mbean.getKeyAlias());
-
-                    List<String> attribNameList = new ArrayList<String>();
-                    List<String> compAttribNameList = new ArrayList<String>();
-
-                    for (CompAttrib myCa : mbean.getCompAttribList()) {
-                        for (CompMember myCm : myCa.getCompMemberList()) {
-                            attribNameList.add(myCa.getName() + "|" + myCm.getName());
-                            compAttribNameList.add(myCa.getName() + "|" + myCm.getName());
-                        }
-                    }
-
-                    for (Attrib myA : mbean.getAttribList()) {
-                        attribNameList.add(myA.getName());
-                    }
-
-                    beanInfo.setAttributes(attribNameList);
-                    beanInfo.setCompositeAttributes(compAttribNameList);
-                    map.put(mbean.getObjectname(), beanInfo);
-                }
+                return getMBeanInfo(collection);
             }
             return Collections.unmodifiableMap(map);
         } finally {
             m_lock.readLock().unlock();
         }
+    }
+
+    public static Map<String, BeanInfo> getMBeanInfo(JmxCollection collection) {
+        final Map<String, BeanInfo> map = new HashMap<String, BeanInfo>();
+
+        if (collection == null) {
+            return Collections.unmodifiableMap(map);
+        }
+
+        for (Mbean mbean : collection.getMbeans()) {
+            BeanInfo beanInfo = new BeanInfo();
+            beanInfo.setMbeanName(mbean.getName());
+            beanInfo.setObjectName(mbean.getObjectname());
+            beanInfo.setKeyField(mbean.getKeyfield());
+            beanInfo.setExcludes(mbean.getExclude());
+            beanInfo.setKeyAlias(mbean.getKeyAlias());
+
+            List<String> attribNameList = new ArrayList<String>();
+            List<String> compAttribNameList = new ArrayList<String>();
+
+            for (CompAttrib myCa : mbean.getCompAttribList()) {
+                for (CompMember myCm : myCa.getCompMemberList()) {
+                    attribNameList.add(myCa.getName() + "|" + myCm.getName());
+                    compAttribNameList.add(myCa.getName() + "|" + myCm.getName());
+                }
+            }
+
+            for (Attrib myA : mbean.getAttribList()) {
+                attribNameList.add(myA.getName());
+            }
+
+            beanInfo.setAttributes(attribNameList);
+            beanInfo.setCompositeAttributes(compAttribNameList);
+            map.put(mbean.getObjectname(), beanInfo);
+        }
+
+        return Collections.unmodifiableMap(map);
     }
 
     public RrdRepository getRrdRepository(String collectionName) {

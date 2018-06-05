@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.collection.support;
 
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -76,7 +77,7 @@ public abstract class AbstractCollectionAttribute implements CollectionAttribute
     }
 
     @Override
-    public final String getType() {
+    public final AttributeType getType() {
         return m_attribType.getType();
     }
 

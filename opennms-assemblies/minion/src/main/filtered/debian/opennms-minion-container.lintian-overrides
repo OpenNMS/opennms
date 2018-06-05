@@ -1,0 +1,6 @@
+opennms-minion-container: misplaced-extra-member-in-deb
+opennms-minion-container: debian-revision-should-not-be-zero
+opennms-minion-container: debian-revision-not-well-formed
+opennms-minion-container: executable-not-elf-or-script usr/share/minion/bin/contrib/karaf-*
+opennms-minion-container: unknown-java-class-version
+opennms-minion-container: codeless-jar usr/share/minion/system/org/apache/aries/blueprint/org.apache.aries.blueprint.core.compatibility/1.0.0/org.apache.aries.blueprint.core.compatibility-1.0.0.jar

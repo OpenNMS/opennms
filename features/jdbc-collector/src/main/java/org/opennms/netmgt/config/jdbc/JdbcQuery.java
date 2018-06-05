@@ -67,7 +67,7 @@ public class JdbcQuery implements Serializable, Comparable<JdbcQuery> {
     
     @XmlElementWrapper(name="columns")
     @XmlElement(name="column")
-    private List<JdbcColumn> m_jdbcColumns = new ArrayList<JdbcColumn>();
+    private List<JdbcColumn> m_jdbcColumns = new ArrayList<>();
     
     @XmlTransient
     public String getQueryName() {

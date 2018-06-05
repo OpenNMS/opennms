@@ -49,7 +49,7 @@ public class CatSections implements java.io.Serializable {
     private java.util.List<Section> sectionList;
 
     public CatSections() {
-        this.sectionList = new java.util.ArrayList<Section>();
+        this.sectionList = new java.util.ArrayList<>();
     }
 
     /**

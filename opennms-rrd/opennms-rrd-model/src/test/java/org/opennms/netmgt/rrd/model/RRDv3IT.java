@@ -173,7 +173,7 @@ public class RRDv3IT {
         Assert.assertEquals("tempA", multimetric.getDataSource(0).getName());
         Assert.assertEquals("tempB", multimetric.getDataSource(1).getName());
         multimetric.reset();
-        List<RRDv3> singleMetricArray = new ArrayList<RRDv3>();
+        List<RRDv3> singleMetricArray = new ArrayList<>();
         RRDv3 tempA = JaxbUtils.unmarshal(RRDv3.class, new File("src/test/resources/rrd-tempA-rrd.xml"));
         Assert.assertNotNull(tempA);
         Assert.assertEquals("tempA", tempA.getDataSource(0).getName());

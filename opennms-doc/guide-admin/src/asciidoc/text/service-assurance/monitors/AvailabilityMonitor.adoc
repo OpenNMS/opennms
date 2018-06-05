@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== AvailabilityMonitor
 
 This monitor tests reachability of a node by using the _isReachable_ method of the _InetAddress_ java class.
@@ -18,13 +21,7 @@ running on unusual configurations (See <<poller-availability-monitor-vs-icmp-mon
 
 ===== Configuration and Usage
 
-.Monitor specific parameters for the AvailabilityMonitor
-[options="header, autowidth"]
-|===
-| Parameter | Description                                                         | Required | Default value
-| `retry`   | Number of attempts to have the _isReachable_ method return _true_.  | optional | `3`
-| `timeout` | Timeout for the isReachable method, in milliseconds.                | optional | `3000`
-|===
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

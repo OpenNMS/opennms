@@ -28,14 +28,12 @@
 
 package org.opennms.netmgt.mock;
 
-import java.net.InetAddress;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.opennms.core.utils.DBUtils;
-import org.opennms.core.utils.InetAddressUtils;
 
 /**
  *
@@ -66,7 +64,7 @@ public final class DbSnmpInterfaceEntry {
      * keyed by the node identifier and the ifIndex.
      */
     private static final String SQL_LOAD_REC = "SELECT "
-        + "snmpIpAdEntNetMask, snmpPhysAddr, snmpIfDescr, snmpIfType, "
+        + "snmpPhysAddr, snmpIfDescr, snmpIfType, "
         + "snmpIfName, snmpIfSpeed, snmpIfAdminStatus, snmpIfOperStatus, "
         + "snmpIfAlias, snmpCollect FROM snmpInterface WHERE nodeID = ? AND snmpIfIndex = ?";
 
@@ -84,8 +82,6 @@ public final class DbSnmpInterfaceEntry {
      * The SNMP ifIndex
      */
     private int m_ifIndex;
-
-    private InetAddress m_netmask;
 
     private String m_physAddr;
 
@@ -141,12 +137,6 @@ public final class DbSnmpInterfaceEntry {
 
             // extract the values
             int ndx = 1;
-
-            // get the netmask
-            String str = rset.getString(ndx++);
-            if (str != null && !rset.wasNull()) {
-            	m_netmask = InetAddressUtils.addr(str);
-            }
 
             // get the physical address
             m_physAddr = rset.getString(ndx++);
@@ -237,7 +227,6 @@ public final class DbSnmpInterfaceEntry {
         m_fromDb = exists;
         m_nodeId = nodeId;
         m_ifIndex = ifIndex;
-        m_netmask = null;
         m_physAddr = null;
         m_ifDescription = null;
         m_ifType = -1;
@@ -286,11 +275,10 @@ public final class DbSnmpInterfaceEntry {
     @Override
     public String toString() {
         String sep = System.getProperty("line.separator");
-        StringBuffer buf = new StringBuffer();
+        final StringBuilder buf = new StringBuilder();
 
         buf.append("from database   = ").append(m_fromDb).append(sep);
         buf.append("node identifier = ").append(m_nodeId).append(sep);
-        buf.append("IP Netmask      = ").append(InetAddressUtils.str(m_netmask)).append(sep);
         buf.append("MAC             = ").append(m_physAddr).append(sep);
         buf.append("ifIndex         = ").append(m_ifIndex).append(sep);
         buf.append("ifDescr         = ").append(m_ifDescription).append(sep);

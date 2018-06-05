@@ -119,7 +119,7 @@ public class FtpResponse {
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        final StringBuilder sb = new StringBuilder();
         int i;
         sb.append(m_code);
 
@@ -198,7 +198,7 @@ public class FtpResponse {
      */
     public static FtpResponse readResponse(BufferedReader in) throws IOException {
         int code;
-        List<String> response = new ArrayList<String>();
+        List<String> response = new ArrayList<>();
 
         String firstResponseLine = in.readLine();
         if (firstResponseLine == null) {

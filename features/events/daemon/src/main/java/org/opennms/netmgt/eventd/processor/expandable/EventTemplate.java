@@ -91,7 +91,13 @@ public class EventTemplate implements ExpandableToken {
             tempInp = tempInp.substring(index1);
 
             index2 = tempInp.indexOf(PERCENT, 1);
-            if (index2 != -1) {
+            // If another % character is the next value
+            if (index2 == 1) {
+                tokens.add(new ExpandableConstant(PERCENT));
+                tempInp = tempInp.substring(index2 + 1);
+                LOG.debug("Escaped percent %% found in value");
+                continue;
+            } else if (index2 != -1) {
                 // Get the value between the %s
                 String parm = tempInp.substring(1, index2);
                 LOG.debug("parm: {} found in value", parm);

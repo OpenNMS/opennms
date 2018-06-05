@@ -34,8 +34,9 @@ import java.util.List;
 import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.model.BridgeMacLink;
 
-
-public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLink, Integer> implements BridgeMacLinkDao {
+public class BridgeMacLinkDaoHibernate extends
+        AbstractDaoHibernate<BridgeMacLink, Integer> implements
+        BridgeMacLinkDao {
 
     /**
      * <p>
@@ -46,40 +47,39 @@ public class BridgeMacLinkDaoHibernate extends AbstractDaoHibernate<BridgeMacLin
         super(BridgeMacLink.class);
     }
 
+    @Override
+    public List<BridgeMacLink> findByNodeId(Integer id) {
+        return find("from BridgeMacLink rec where rec.node.id = ?", id);
+    }
 
-	@Override
-	public List<BridgeMacLink> findByNodeId(Integer id) {
-		return find("from BridgeMacLink rec where rec.node.id = ?", id);
-	}
+    @Override
+    public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,
+            String mac) {
+        return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? and rec.macAddress = ? ",
+                          id, port, mac);
+    }
 
+    @Override
+    public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port) {
+        return find("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? ",
+                    id, port);
+    }
 
-	@Override
-	public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port, String mac) {
-		return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? and rec.macAddress = ? ", id,port,mac);
-	}
-
-
-       @Override
-        public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port) {
-                return find("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? ", id,port);
-        }
-
-	@Override
-	public List<BridgeMacLink> findByMacAddress(String mac) {
-		return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
-	}
-
+    @Override
+    public List<BridgeMacLink> findByMacAddress(String mac) {
+        return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
+    }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?", 
-                                          new Object[] {nodeId,now});
+        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
+                                          new Object[] { nodeId, now });
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?", 
-                                          new Object[] {nodeId});
+        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?",
+                                          new Object[] { nodeId });
     }
-	        
+
 }

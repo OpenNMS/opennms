@@ -434,7 +434,7 @@ public class LifeCycleInstanceTest {
         }
         
         private String buildPrefix(int nestLevel) {
-            StringBuilder buf = new StringBuilder();
+            final StringBuilder buf = new StringBuilder();
             buildPrefixHelper(nestLevel, buf);
             return buf.toString();
 

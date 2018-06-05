@@ -69,7 +69,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JaxbListWrapper<T> implements Serializable, Iterable<T> {
     private static final long serialVersionUID = 1L;
 
-    private List<T> m_objects = new ArrayList<T>();
+    private List<T> m_objects = new ArrayList<>();
     private Integer m_totalCount;
     private Integer m_offset = 0;
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,11 +34,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.FileInputStream;
-import java.io.StringReader;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.MediaType;
-import javax.xml.bind.JAXB;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONObject;
@@ -93,7 +91,7 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // get initial categories
         String xml = sendRequest("GET", "/categories", 200);
         assertNotNull(xml);
-        OnmsCategoryCollection categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        OnmsCategoryCollection categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
         int initialSize = categories.size();
         assertNotNull(categories);
         assertEquals(initialSize,categories.size());
@@ -101,21 +99,21 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
         // add category
         createCategory("testCategory");
         xml = sendRequest("GET", "/categories", 200);
-        categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
         assertEquals(initialSize + 1, categories.size());
         assertTrue(xml.contains("name=\"testCategory\""));
 
         // add again (should fail)
         sendData("POST", MediaType.APPLICATION_XML,  "/categories", JaxbUtils.marshal(new OnmsCategory("testCategory")), 400);
         xml = sendRequest("GET", "/categories", 200);
-        categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
         assertEquals(initialSize + 1, categories.size());
         assertTrue(xml.contains("name=\"testCategory\""));
         
         // delete
         sendRequest("DELETE", "/categories/testCategory", 204);
         xml = sendRequest("GET", "/categories", 200);
-        categories = JAXB.unmarshal(new StringReader(xml), OnmsCategoryCollection.class);
+        categories = JaxbUtils.unmarshal(OnmsCategoryCollection.class, xml);
         assertEquals(initialSize, categories.size());
         assertFalse(xml.contains("name=\"testCategory\""));
     }
@@ -146,7 +144,7 @@ public class CategoryRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         // verify
         String xml = sendRequest("GET", "/categories/myName", 200);
-        OnmsCategory category = JAXB.unmarshal(new StringReader(xml), OnmsCategory.class);
+        OnmsCategory category = JaxbUtils.unmarshal(OnmsCategory.class, xml);
         assertNotNull(category.getId());
         createMe.setId(category.getId());
         assertTrue(category.getId().equals(createMe.getId()));

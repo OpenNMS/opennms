@@ -55,6 +55,15 @@ public interface InfoPanelItem extends Comparable<InfoPanelItem> {
      */
     int getOrder();
 
+    /**
+     * The id of the component.
+     *
+     * @return the id of the component.
+     */
+    default String getId() {
+        return null;
+    }
+
     default int compareTo(final InfoPanelItem that) {
         return Integer.compare(this.getOrder(), that.getOrder());
     }

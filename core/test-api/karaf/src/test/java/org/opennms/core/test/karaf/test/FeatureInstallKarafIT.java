@@ -28,6 +28,8 @@
 
 package org.opennms.core.test.karaf.test;
 
+import static org.ops4j.pax.exam.CoreOptions.maven;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.karaf.KarafTestCase;
@@ -45,35 +47,54 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllStandardFeatures() {
-        installFeature("admin");
+        //installFeature("aries-annotation");
         installFeature("aries-blueprint");
         installFeature("aries-proxy");
         installFeature("blueprint-web");
+        installFeature("bundle");
         installFeature("config");
         installFeature("deployer");
         installFeature("diagnostic");
         installFeature("eventadmin");
-        installFeature("features");
+        installFeature("feature");
+        // The 'framework-security' feature installation causes a refresh of 
+        // basically the entire container so avoid it during this test
+        //installFeature("framework-security");
         installFeature("http");
         installFeature("http-whiteboard");
+        installFeature("instance");
+        installFeature("jaas-boot");
         installFeature("jaas");
         installFeature("jasypt-encryption");
+        // TODO: Test both versions of Jetty?
         installFeature("jetty");
-        installFeature("karaf-framework");
+        installFeature("jolokia");
         installFeature("kar");
+        installFeature("log");
         installFeature("management");
-        installFeature("obr");
-        //installFeature("scr");
+        installFeature("minimal");
+        // The 'obr' feature installation causes a refresh of 
+        // the 'org.apache.karaf.deployer.features' bundle so
+        // avoid it during this test
+        //installFeature("obr");
+        installFeature("package");
+        installFeature("profile");
+        installFeature("scheduler");
+        installFeature("scr");
+        installFeature("service");
         installFeature("service-security");
         installFeature("service-wrapper");
+        installFeature("shell-compat");
         installFeature("shell");
         installFeature("ssh");
+        installFeature("standard");
+        installFeature("system");
         installFeature("war");
         installFeature("webconsole");
         installFeature("wrap");
         installFeature("wrapper");
 
-        System.out.println(executeCommand("features:list -i"));
+        System.out.println(executeCommand("feature:list -i"));
     }
 
     /**
@@ -82,20 +103,22 @@ public class FeatureInstallKarafIT extends KarafTestCase {
      */
     @Test
     public void testInstallAllSpringFeatures() {
-        installFeature("spring");
-        installFeature("spring-aspects");
-        installFeature("spring-instrument");
-        installFeature("spring-jdbc");
-        installFeature("spring-jms");
-        installFeature("spring-test");
-        installFeature("spring-orm");
-        installFeature("spring-oxm");
-        installFeature("spring-tx");
-        installFeature("spring-web");
+        addFeaturesUrl(maven().groupId("org.apache.karaf.features").artifactId("spring-legacy").version("4.1.5").type("xml").classifier("features").getURL());
+
+        installFeature("spring", "4.2.9.RELEASE_1");
+        installFeature("spring-aspects", "4.2.9.RELEASE_1");
+        installFeature("spring-instrument", "4.2.9.RELEASE_1");
+        installFeature("spring-jdbc", "4.2.9.RELEASE_1");
+        installFeature("spring-jms", "4.2.9.RELEASE_1");
+        //installFeature("spring-test", "4.2.9.RELEASE_1");
+        installFeature("spring-orm", "4.2.9.RELEASE_1");
+        installFeature("spring-oxm", "4.2.9.RELEASE_1");
+        installFeature("spring-tx", "4.2.9.RELEASE_1");
+        installFeature("spring-web", "4.2.9.RELEASE_1");
         //installFeature("spring-web-portlet");
         //installFeature("spring-websocket");
         //installFeature("spring-security");
 
-        System.out.println(executeCommand("features:list -i"));
+        System.out.println(executeCommand("feature:list -i"));
     }
 }

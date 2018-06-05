@@ -154,8 +154,8 @@ public class CollectionPolicyTest implements InitializingBean {
 
     private static void matchPolicy(List<OnmsSnmpInterface> interfaces, MatchingSnmpInterfacePolicy p, InetAddress matchingIp) {
         OnmsSnmpInterface o;
-        List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<OnmsSnmpInterface>();
-        List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<OnmsSnmpInterface>();
+        List<OnmsSnmpInterface> populatedInterfaces = new ArrayList<>();
+        List<OnmsSnmpInterface> matchedInterfaces = new ArrayList<>();
         
         for (OnmsSnmpInterface iface : interfaces) {
             System.err.println(iface);

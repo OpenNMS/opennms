@@ -46,10 +46,26 @@ public interface ApplicationDao extends OnmsDao<OnmsApplication, Integer> {
     OnmsApplication findByName(String label);
 
     /**
+     * Determine the application's status.
+     * As applications do not have a direct status attached, the status is calculated based on the nodeDown,
+     * interfaceDown or serviceLost events/alarms from the application's monitored services.
+     *
+     * @return the application's status.
+     */
+    List<ApplicationStatus> getApplicationStatus();
+
+    /**
+     * same as {@link #getApplicationStatus()} but only calculates the status for the given applications.
+     *
+     * @param applications The applications to calculate the status for.
+     * @return The application's status.
+     */
+    List<ApplicationStatus> getApplicationStatus(List<OnmsApplication> applications);
+
+    /**
      * Load all alarms from the alarm table which have a node id, ip address and service type set.
      *
      * @return all alarms from the alarm table which have a node id, ip address and service type set.
      */
     List<ApplicationStatusEntity> getAlarmStatus();
-
 }

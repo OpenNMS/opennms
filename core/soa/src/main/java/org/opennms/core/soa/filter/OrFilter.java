@@ -63,7 +63,7 @@ public class OrFilter extends AbstractFilter {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append("(|");
         for(Filter f : m_filters) {
             buf.append(f);

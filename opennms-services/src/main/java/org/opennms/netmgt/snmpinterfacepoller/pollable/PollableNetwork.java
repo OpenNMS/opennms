@@ -63,10 +63,11 @@ public class PollableNetwork {
      * @param packageName a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.snmpinterfacepoller.pollable.PollableInterface} object.
      */
-    public PollableInterface create(int nodeid, String ipaddress, String packageName) {
+    public PollableInterface create(int nodeid, String ipaddress, String netMask, String packageName) {
         PollableInterface nodeGroup = new PollableInterface(this);
         nodeGroup.setNodeid(nodeid);
         nodeGroup.setIpaddress(ipaddress);
+        nodeGroup.setNetMask(netMask);
         nodeGroup.setPackageName(packageName);
         nodeGroup.initialize();
         m_members.put(nodeGroup.getIpaddress(), nodeGroup);

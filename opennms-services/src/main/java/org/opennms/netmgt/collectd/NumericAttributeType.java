@@ -30,6 +30,7 @@ package org.opennms.netmgt.collectd;
 
 
 import org.opennms.netmgt.collection.api.AttributeGroupType;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.Persister;
@@ -45,9 +46,31 @@ import org.slf4j.LoggerFactory;
  */
 public class NumericAttributeType extends SnmpAttributeType implements NumericCollectionAttributeType {
     private static final Logger LOG = LoggerFactory.getLogger(NumericAttributeType.class);
-    
-    static final String DST_COUNTER = "COUNTER";
-    
+
+    private final AttributeType m_type;
+
+    private static final String[] s_numericTypes = new String[] { "counter", "gauge", "timeticks", "integer", "octetstring" };
+
+    /**
+     * <p>isNumericType</p>
+     *
+     * @param rawType a {@link java.lang.String} object.
+     * @return a boolean.
+     */
+    public static boolean isNumericType(String rawType) {
+        String type = rawType.toLowerCase();
+        for (int i = 0; i < s_numericTypes.length; i++) {
+            String supportedType = s_numericTypes[i];
+            if (type.startsWith(supportedType))
+                return true;
+        }
+        return false;
+    }
+
+    public static boolean supportsType(String rawType) {
+        return isNumericType(rawType);
+    }
+
     /**
      * <p>Constructor for NumericAttributeType.</p>
      *
@@ -59,10 +82,21 @@ public class NumericAttributeType extends SnmpAttributeType implements NumericCo
     public NumericAttributeType(ResourceType resourceType, String collectionName, MibObject mibObj, AttributeGroupType groupType) {
         super(resourceType, collectionName, mibObj, groupType);
 
+        if (mibObj.getType().toLowerCase().startsWith("counter")) {
+            m_type = AttributeType.COUNTER;
+        } else {
+            m_type = AttributeType.GAUGE;
+        }
+
         // Assign the data source object identifier and instance
         LOG.debug("buildDataSourceList: ds_name: {} ds_oid: {}.{}", getName(), getOid(), getInstance());
     }
-    
+
+    @Override
+    public AttributeType getType() {
+        return m_type;
+    }
+
     @Override
     public String getMaxval() {
         return m_mibObj.getMaxval();

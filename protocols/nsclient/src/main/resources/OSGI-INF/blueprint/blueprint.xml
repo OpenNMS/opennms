@@ -9,7 +9,15 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
-		<bean class="org.opennms.protocols.nsclient.detector.NsclientDetectorFactory" />
-	</service>
+  <service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+    <bean class="org.opennms.protocols.nsclient.detector.NsclientDetectorFactory" />
+  </service>
+
+  <bean id="nsclientCollector" class="org.opennms.protocols.nsclient.collector.NSClientCollector" />
+  <service ref="nsclientCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+    <service-properties>
+      <entry key="type" value="org.opennms.protocols.nsclient.collector.NSClientCollector" />
+    </service-properties>
+  </service>
+
 </blueprint>

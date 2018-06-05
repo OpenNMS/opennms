@@ -21,21 +21,7 @@
     <bean id="vmwareTopologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
         <argument ref="vmwareTopologyProvider" />
     </bean>
-    <service interface="org.opennms.features.topology.api.topo.VertexProvider" ref="vmwareTopologyHopProvider">
-        <service-properties>
-            <entry key="label" value="VMware"/>
-        </service-properties>
-    </service>
-    <service interface="org.opennms.features.topology.api.topo.EdgeProvider" ref="vmwareTopologyHopProvider">
-        <service-properties>
-            <entry key="label" value="VMware"/>
-        </service-properties>
-    </service>
-    <service interface="org.opennms.features.topology.api.topo.GraphProvider" ref="vmwareTopologyHopProvider">
-        <service-properties>
-            <entry key="label" value="VMware"/>
-        </service-properties>
-    </service>
+
 
     <!-- Meta topology provider -->
     <bean id="vmwareMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">

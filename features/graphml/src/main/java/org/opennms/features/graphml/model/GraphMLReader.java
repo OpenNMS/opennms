@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,8 +39,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXB;
-
 import org.graphdrawing.graphml.DataType;
 import org.graphdrawing.graphml.EdgeType;
 import org.graphdrawing.graphml.GraphType;
@@ -51,6 +49,7 @@ import org.graphdrawing.graphml.KeyType;
 import org.graphdrawing.graphml.KeyTypeType;
 import org.graphdrawing.graphml.NodeType;
 import org.graphdrawing.graphml.PortType;
+import org.opennms.core.xml.JaxbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class GraphMLReader {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLReader.class);
 
     public static GraphML read(InputStream input) throws InvalidGraphException {
-        return convert(JAXB.unmarshal(input, GraphmlType.class));
+        return convert(JaxbUtils.unmarshal(GraphmlType.class, input));
     }
 
     public static GraphML convert(GraphmlType input) throws InvalidGraphException {

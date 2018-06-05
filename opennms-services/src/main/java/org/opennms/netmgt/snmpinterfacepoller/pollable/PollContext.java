@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.xml.event.Event;
 
 /**
@@ -71,11 +72,12 @@ public interface PollContext {
      * @param uei a {@link java.lang.String} object.
      * @param nodeId a int.
      * @param address a {@link java.lang.String} object.
+     * @param netMask a {@link java.lang.String} object.
      * @param date a {@link java.util.Date} object.
      * @return the event
      * @param snmpinterface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
-    public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface);
+    public Event createEvent(String uei, int nodeId, String address, String netMask, Date date, OnmsSnmpInterface snmpinterface);
     
     /**
      * <p>get</p>
@@ -107,5 +109,9 @@ public interface PollContext {
      * @param snmpinteface a {@link org.opennms.netmgt.model.OnmsSnmpInterface} object.
      */
     public void update(OnmsSnmpInterface snmpinteface);
+
+    public String getLocation(Integer nodeId);
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient();
 
 }

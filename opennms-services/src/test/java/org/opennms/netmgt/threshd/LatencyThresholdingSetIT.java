@@ -223,7 +223,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         EasyMock.replay(filterDao);
 
         DateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss");
-        StringBuffer sb = new StringBuffer("<?xml version=\"1.0\"?>");
+        final StringBuilder sb = new StringBuilder("<?xml version=\"1.0\"?>");
         sb.append("<outages>");
         sb.append("<outage name=\"junit outage\" type=\"specific\">");
         sb.append("<time begins=\"");
@@ -241,7 +241,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
-        m_anticipatedEvents = new ArrayList<Event>();
+        m_anticipatedEvents = new ArrayList<>();
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
@@ -272,7 +272,7 @@ public class LatencyThresholdingSetIT implements TemporaryDatabaseAware<MockData
         attributes.put("http", 200.0);
         assertTrue(thresholdingSet.hasThresholds(attributes)); // Datasource Test
 
-        List<Event> triggerEvents = new ArrayList<Event>();
+        List<Event> triggerEvents = new ArrayList<>();
         for (int i=0; i<5; i++)
             triggerEvents.addAll(thresholdingSet.applyThresholds("http", attributes));
         assertTrue(triggerEvents.size() == 1);

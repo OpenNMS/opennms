@@ -295,7 +295,7 @@ public class JrbToRrdConverter {
      */
     private void search(String path) {
         File directory = new File(path);
-        Set<File> fileSet = new TreeSet<File>();
+        Set<File> fileSet = new TreeSet<>();
         Collections.addAll(fileSet, directory.listFiles());
 
         for (File file : fileSet) {

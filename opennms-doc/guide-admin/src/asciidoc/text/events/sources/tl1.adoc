@@ -1,0 +1,10 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-events-sources-tl1]]
+==== TL1 Autonomous Messages
+
+Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
+
+IMPORTANT: The `Tl1d` service daemon, which enables {opennms-product-name} to receive TL1 autonomous messages, must be enabled for this functionality to work. This service daemon is *disabled* by default.

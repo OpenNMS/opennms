@@ -43,6 +43,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     private List<SnmpGetRequestDTO> gets;
     private List<SnmpWalkRequestDTO> walks;
     private String location;
+    private String systemId;
     private String description;
     private Long timeToLiveInMilliseconds = null;
 
@@ -61,8 +62,20 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     }
 
     @Override
+    public SNMPRequestBuilder<T> withSystemId(String systemId) {
+        this.systemId = systemId;
+        return this;
+    }
+
+    @Override
     public SNMPRequestBuilder<T> withDescription(String description) {
         this.description = description;
+        return this;
+    }
+
+    @Override
+    public SNMPRequestBuilder<T> withTimeToLive(Long ttlInMs) {
+        timeToLiveInMilliseconds = ttlInMs;
         return this;
     }
 
@@ -76,6 +89,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     public CompletableFuture<T> execute() {
         final SnmpRequestDTO snmpRequestDTO = new SnmpRequestDTO();
         snmpRequestDTO.setLocation(location);
+        snmpRequestDTO.setSystemId(systemId);
         snmpRequestDTO.setAgent(agent);
         snmpRequestDTO.setDescription(description);
         snmpRequestDTO.setGetRequests(gets);

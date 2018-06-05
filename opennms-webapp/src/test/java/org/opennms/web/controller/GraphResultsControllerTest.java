@@ -39,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.support.PropertiesGraphDao;
 import org.opennms.netmgt.model.PrefabGraph;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.web.svclayer.api.GraphResultsService;
 import org.springframework.core.io.FileSystemResource;
 
@@ -70,7 +71,7 @@ public class GraphResultsControllerTest {
 		List<PrefabGraph> prefabs = graphDao.getAllPrefabGraphs();
 		Assert.assertNotNull(prefabs);
 		Assert.assertFalse(prefabs.isEmpty());
-		EasyMock.expect(m_service.getAllPrefabGraphs("node[1].nodeSnmp[]")).andReturn(prefabs.toArray(new PrefabGraph[prefabs.size()])).anyTimes();
+		EasyMock.expect(m_service.getAllPrefabGraphs(ResourceId.get("node", "1").resolve("nodeSnmp", ""))).andReturn(prefabs.toArray(new PrefabGraph[prefabs.size()])).anyTimes();
 
 		m_controller = new GraphResultsController();
 		m_controller.setGraphResultsService(m_service);
@@ -96,19 +97,19 @@ public class GraphResultsControllerTest {
 	@Test
 	public void testMatching() throws Exception {
 		// Test an expression
-		String[] reports = m_controller.getSuggestedReports("node[1].nodeSnmp[]", "memAvailReal / memTotalReal * 100.0");
+		String[] reports = m_controller.getSuggestedReports(ResourceId.get("node", "1").resolve("nodeSnmp", ""), "memAvailReal / memTotalReal * 100.0");
 		System.out.println(StringUtils.join(reports, ", "));
 		Assert.assertEquals(2, reports.length);
 		Assert.assertEquals("netsnmp.memStats", reports[0]);
 
 		// Test a single value
-		reports = m_controller.getSuggestedReports("node[1].nodeSnmp[]", "memAvailReal");
+		reports = m_controller.getSuggestedReports(ResourceId.get("node", "1").resolve("nodeSnmp", ""), "memAvailReal");
 		System.out.println(StringUtils.join(reports, ", "));
 		Assert.assertEquals(2, reports.length);
 		Assert.assertEquals("netsnmp.memStats", reports[0]);
 
 		// Test an unexisting metric
-		reports = m_controller.getSuggestedReports("node[1].nodeSnmp[]", "blahblah");
+		reports = m_controller.getSuggestedReports(ResourceId.get("node", "1").resolve("nodeSnmp", ""), "blahblah");
 		System.out.println(StringUtils.join(reports, ", "));
 		Assert.assertEquals(1, reports.length);
 		Assert.assertEquals("all", reports[0]);

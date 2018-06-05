@@ -57,7 +57,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 
 	private EventIpcManager m_eventIpcManager;
 	private Map<String,CorrelationEngine> m_engines = new HashMap<>();
-	private final List<EngineAdapter> m_adapters = new LinkedList<EngineAdapter>();
+	private final List<EngineAdapter> m_adapters = new LinkedList<>();
 	private boolean m_initialized = false;
 	
 	

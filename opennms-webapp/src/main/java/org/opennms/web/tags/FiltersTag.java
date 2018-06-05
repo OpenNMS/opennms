@@ -105,7 +105,7 @@ public class FiltersTag extends TagSupport {
     }
 
     private List<Filter> getFilters() {
-        if (parameters == null || parameters.getFilters() == null) return new ArrayList<Filter>();
+        if (parameters == null || parameters.getFilters() == null) return new ArrayList<>();
         return parameters.getFilters();
 
     }
@@ -113,7 +113,7 @@ public class FiltersTag extends TagSupport {
     @Override
     public int doStartTag() throws JspException {
         final String leadingString = getLeading();
-        final StringBuffer filterBuffer = new StringBuffer();
+        final StringBuilder filterBuffer = new StringBuilder();
 
         for (Filter eachFilter : getFilters()) {
             NormalizedQueryParameters params = new NormalizedQueryParameters(parameters);
@@ -170,7 +170,7 @@ public class FiltersTag extends TagSupport {
     }
 
     private String getLeading() {
-        StringBuffer leadingString = new StringBuffer();
+        final StringBuilder leadingString = new StringBuilder();
         if (isShowAcknowledgeFilter()) {
             NormalizedQueryParameters params = new NormalizedQueryParameters(parameters);
             if (isAcknowledgeType()) {

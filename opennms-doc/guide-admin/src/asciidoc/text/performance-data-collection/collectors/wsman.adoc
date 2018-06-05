@@ -1,0 +1,278 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-performance-mgmt-collectors-wsman-collector]]
+==== WsManCollector
+
+The _WsManCollector_ collects peformance metrics using the Web Services-Management (WS-Management) protocol.
+
+Web Services-Management (WS-Management) is a DMTF open standard defining a SOAP-based protocol for the management of servers, devices, applications and various Web services.
+Windows Remote Management (WinRM) is the Microsoft implementation of WS-Management Protocol.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.WsManCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the WsManCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                              | Required | Default value
+| `collection`           | The name of the _WS-Man Collection_ to use  | required |
+|===
+
+[[ga-performance-mgmt-collectors-wsman-setup]]
+===== WS-Management Setup
+
+Before setting up {opennms-product-name} to communicate with a WS-Management agent, you should confirm that it is properly configured and reachable from the {opennms-product-name} system.
+If you need help enabling the WS-Management agent, consult the documentation from the manufacturer.
+Here are some link resources that could help:
+
+* link:https://msdn.microsoft.com/en-us/library/windows/desktop/aa384372(v=vs.85).aspx[Installation and Configuration for Windows Remote Management]
+* link:http://www.hurryupandwait.io/blog/understanding-and-troubleshooting-winrm-connection-and-authentication-a-thrill-seekers-guide-to-adventure[Troubleshooting WinRM connection and authentication]
+
+We suggest using the link:https://github.com/Openwsman/openwsman/wiki/openwsman-command-line-client[Openwsman command line client] for validating authentication and connectivity.
+Packages are available for most distributions under `wsmancli`.
+
+For example:
+
+[source, shell]
+----
+wsman identify -h localhost -P 5985 -u wsman -p secret
+----
+
+Once validated, add the agent specific details to the {opennms-product-name} configuration, defined in the next section.
+
+====== Troubleshooting and Commands
+
+For troubleshooting there is a set of commands you can use in _Powershell_ verified on _Microsoft Windows Server 2012_.
+
+.Enable _WinRM_ in PowerShell
+[source, shell]
+----
+Enable-PSRemoting
+----
+
+.Setup Firewall for WinRM over HTTP
+[source, shell]
+----
+netsh advfirewall firewall add rule name="WinRM-HTTP" dir=in localport=5985 protocol=TCP action=allow
+----
+
+.Setup Firewall for WinRM over HTTPS
+[source, shell]
+----
+netsh advfirewall firewall add rule name="WinRM-HTTPS" dir=in localport=5986 protocol=TCP action=allow
+----
+
+.Test WinRM on local Windows Server
+----
+winrm id
+----
+
+.Show WinRM configuration on Windows Server
+----
+winrm get winrm/config
+----
+
+.Show listener for configuration on Windows Server
+----
+winrm e winrm/config/listener
+----
+
+.Test connectivity from a Linux system
+[source, shell]
+----
+nc -z -w1 <windows-server-ip-or-host> 5985;echo $?
+----
+
+IMPORTANT: Use BasicAuthentication just with _WinRM_ over _HTTPS_ with verifiable certificates in production environment.
+
+.Enable BasicAuthentication
+[source, shell]
+----
+winrm set winrm/config/client/auth '@{Basic="true"}'
+winrm set winrm/config/service/auth '@{Basic="true"}'
+winrm set winrm/config/service '@{AllowUnencrypted="true"}'
+----
+
+[[ga-performance-mgmt-collectors-wsman-agent-config]]
+===== WS-Management Agent Configuration
+
+The agent specific configuration details are maintained in `etc/wsman-config.xml`.
+This file has a similar structure as `etc/snmp-config.xml`, which the reader may already be familiar with.
+
+This file is consulted when a connection to a WS-Man Agent is made.
+If the IP address of the agent is matched by the `range`, `specific` or `ip-match` elements of a definition, then the attributes on that definition are used to connect to the agent.
+Otherwise, the attributes on the outer `wsman-config` definition are used.
+
+This `etc/wsman-config.xml` files is automatically reloaded when modified.
+
+Here is an example with several definitions:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-config retry="3" timeout="1500" ssl="true" strict-ssl="false" path="/wsman">
+    <definition ssl="true" strict-ssl="false" path="/wsman" username="root" password="calvin" product-vendor="Dell" product-version="iDRAC 6">
+        <range begin="192.168.1.1" end="192.168.1.10"/>
+    </definition>
+    <definition ssl="false" port="5985" path="/wsman" username="Administrator" password="P@ssword">
+        <ip-match>172.23.1-4.1-255</ip-match>
+        <specific>172.23.1.105</specific>
+    </definition>
+</wsman-config>
+----
+
+.Collector configuration attributes
+[options="header, autowidth"]
+|===
+| Attribute         | Description                                                                                   | Default
+| `timeout`         | _HTTP_ Connection and response timeout in milliseconds.                                       | _HTTP_ client default
+| `retry`           | Number of retries on connection failure.                                                      | `0`
+| `username`        | Username for basic authentication.                                                            | _none_
+| `password`        | Password used for basic authentication.                                                       | _none_
+| `port`            | _HTTP/S_ port                                                                                 | _Default for protocol_
+| `max-elements`    | Maximum number of elements to retrieve in a single request.                                   | _no limit_
+| `ssl`             | Enable _SSL_                                                                                  | `False`
+| `strict-ssl`      | Enforce _SSL_ certificate verification.                                                       | `True`
+| `path`            | Path in the URL to the WS-Management service.                                                 | `/`
+| `product-vendor`  | Used to overwrite the detected product vendor.                                                | _none_
+| `product-version` | Used to overwrite the detected product version.                                               | _none_
+| `gss-auth`        | Enables GSS authentication.
+                      When enabled a reverse lookup is performed on the target IP address in order to determine the
+                      canonical host name.                                                                          | `False`
+|===
+
+NOTE: If you try to connect against _Microsoft Windows Server_ make sure to set specific ports for _WinRM_ connections.
+      By default _Microsoft Windows Server_ uses port `TCP/5985` for plain text and port `TCP/5986` for _SSL_ connections.
+
+===== WS-Management Collection Configuration
+
+Configuration for the WS-Management collector is stored in `etc/wsman-datacollection-config.xml` and `etc/wsman-datacollection.d/*.xml`.
+
+NOTE: The contents of these files are automatically merged and reloaded when changed.
+      The `default` WS-Management collection looks as follows:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-datacollection-config rrd-repository="${install.share.dir}/rrd/snmp/">
+    <collection name="default">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+
+        <!--
+             Include all of the available system definitions
+         -->
+        <include-all-system-definitions/>
+    </collection>
+</wsman-datacollection-config>
+----
+
+The magic happens with the `<include-all-system-definitions/>` element which automatically includes all of the system definitions into the collection group.
+
+NOTE: If required, you can include a specific system-definition with `<include-system-definition>sys-def-name</include-system-definition>`.
+
+System definitions and related groups can be defined in the root `etc/wsman-datacollection-config.xml` file, but it is preferred that be added to a device specific configuration files in `etc/wsman-datacollection-config.d/*.xml`.
+
+TIP: Avoid modifying any of the distribution configuration files and create new ones to store you specific details instead.
+
+Here is an example configuration file for a _Dell iDRAC_:
+
+[source, xml]
+----
+<?xml version="1.0"?>
+<wsman-datacollection-config>
+    <group name="drac-system"
+           resource-uri="http://schemas.dell.com/wbem/wscim/1/cim-schema/2/root/dcim/DCIM_ComputerSystem"
+           resource-type="node">
+        <attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+    </group>
+
+    <group name="drac-power-supply"
+           resource-uri="http://schemas.dmtf.org/wbem/wscim/1/*"
+           dialect="http://schemas.microsoft.com/wbem/wsman/1/WQL"
+           filter="select InputVoltage,InstanceID,PrimaryStatus,SerialNumber,TotalOutputPower from DCIM_PowerSupplyView where DetailedState != 'Absent'"
+           resource-type="dracPowerSupplyIndex">
+        <attrib name="InputVoltage" alias="inputVoltage" type="Gauge"/>
+        <attrib name="InstanceID" alias="instanceId" type="String"/>
+        <attrib name="PrimaryStatus" alias="primaryStatus" type="Gauge"/>
+        <attrib name="SerialNumber" alias="serialNumber" type="String"/>
+        <attrib name="TotalOutputPower" alias="totalOutputPower" type="Gauge"/>
+    </group>
+
+    <system-definition name="Dell iDRAC (All Version)">
+        <rule>#productVendor matches '^Dell.*' and #productVersion matches '.*iDRAC.*'</rule>
+        <include-group>drac-system</include-group>
+        <include-group>drac-power-supply</include-group>
+    </system-definition>
+</wsman-datacollection-config>
+----
+
+[[ga-performance-mgmt-collectors-wsman-system-definitions]]
+====== System Definitions
+
+Rules in the system definition are written using link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SpEL] expressions.
+
+The expression has access to the following variables in it`s evaluation context:
+
+[options="header, autowidth"]
+|===
+| Name           | Type
+| (root)         | _org.opennms.netmgt.model.OnmsNode_
+| agent          | _org.opennms.netmgt.collection.api.CollectionAgent_
+| productVendor  | _java.lang.String_
+| productVersion | _java.lang.String_
+|===
+
+If a particular agent is matched by any of the rules, then the collector will attempt to collect the referenced groups from the agent.
+
+[[ga-performance-mgmt-collectors-wsman-group-definitions]]
+====== Group Definitions
+
+Groups are retrieved by issuing an Enumerate command against a particular `Resource URI` and parsing the results.
+The Enumerate commands can include an optional `filter` in order to filter the records and attributes that are returned.
+
+NOTE: When configuring a filter, you must also specify the dialect.
+
+The resource type used by the group must of be of type `node` or a generic resource type.
+Interface level resources are not supported.
+
+When using a generic resource type, the `IndexStorageStrategy` cannot be used since records have no implicit index.
+Instead, you must use an alternative such as the `SiblingColumnStorageStrategy`.
+
+If a record includes a multi-valued key, you can collect the value at a specific index with an `index-of` expression.
+This is best demonstrated with an example. Let`s assume we wanted to collect the `ServiceTag` from the following record:
+
+[source, xml]
+----
+<IdentifyingDescriptions>CIM:GUID</IdentifyingDescriptions>
+<IdentifyingDescriptions>CIM:Tag</IdentifyingDescriptions>
+<IdentifyingDescriptions>DCIM:ServiceTag</IdentifyingDescriptions>
+<OtherIdentifyingInfo>45454C4C-3700-104A-8052-C3C01BB25031</OtherIdentifyingInfo>
+<OtherIdentifyingInfo>mainsystemchassis</OtherIdentifyingInfo>
+<OtherIdentifyingInfo>C8BBBP1</OtherIdentifyingInfo>
+----
+
+Specifying, the attribute name `OtherIdentifyingInfo` would not be sufficient, since there are multiple values for that key.
+Instead, we want to retrieve the value for the `OtherIdentifyingInfo` key at the same index where `IdentifyingDescriptions` is set to `DCIM:ServiceTag`.
+
+This can be achieved using the following attribute definition:
+
+[source, xml]
+----
+<attrib name="OtherIdentifyingInfo" index-of="#IdentifyingDescriptions matches '.*ServiceTag'" alias="serviceTag" type="String"/>
+----

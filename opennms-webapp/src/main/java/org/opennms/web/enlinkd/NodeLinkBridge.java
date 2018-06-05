@@ -36,6 +36,9 @@ public class NodeLinkBridge implements Comparable<NodeLinkBridge>{
     private String m_nodeLocalPort;
     private List<BridgeLinkRemoteNode> m_bridgeLinkRemoteNodes = new ArrayList<BridgeLinkRemoteNode>();
     private List<BridgeLinkSharedHost> m_bridgeLinkSharedHost = new ArrayList<BridgeLinkSharedHost>();
+    private String m_bridgeLinkCreateTime;
+    private String m_bridgeLinkLastPollTime;
+
     public String getNodeLocalPort() {
         return m_nodeLocalPort;
     }
@@ -55,6 +58,22 @@ public class NodeLinkBridge implements Comparable<NodeLinkBridge>{
     public void setBridgeLinkSharedHost(
             List<BridgeLinkSharedHost> bridgeLinkSharedHost) {
         m_bridgeLinkSharedHost = bridgeLinkSharedHost;
+    }
+    
+    public String getBridgeLinkCreateTime() {
+        return m_bridgeLinkCreateTime;
+    }
+    
+    public void setBridgeLinkCreateTime(String bridgeLinkCreateTime) {
+        m_bridgeLinkCreateTime = bridgeLinkCreateTime;
+    }
+    
+    public String getBridgeLinkLastPollTime() {
+        return m_bridgeLinkLastPollTime;
+    }
+    
+    public void setBridgeLinkLastPollTime(String bridgeLinkLastPollTime) {
+        m_bridgeLinkLastPollTime = bridgeLinkLastPollTime;
     }
     
     @Override

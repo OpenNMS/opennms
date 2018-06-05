@@ -35,10 +35,12 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -48,16 +50,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Command(scope = "snmp", name = "walk", description = "Walk the agent on the specified host and print the results.")
-public class WalkCommand extends OsgiCommandSupport {
+@Service
+public class WalkCommand implements Action {
 
     private static final Logger LOG = LoggerFactory.getLogger(WalkCommand.class);
 
-    private SnmpAgentConfigFactory snmpAgentConfigFactory;
+    @Reference
+    public SnmpAgentConfigFactory snmpAgentConfigFactory;
 
-    private LocationAwareSnmpClient locationAwareSnmpClient;
+    @Reference
+    public LocationAwareSnmpClient locationAwareSnmpClient;
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
+
+    @Option(name = "-s", aliases = "--system-id", description = "System ID")
+    String m_systemId = null;
 
     @Argument(index = 0, name = "host", description = "Hostname or IP Address of the system to walk", required = true, multiValued = false)
     String m_host;
@@ -66,7 +74,7 @@ public class WalkCommand extends OsgiCommandSupport {
     List<String> m_oids;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         LOG.debug("snmp:walk {} {} {}", m_location != null ? "-l " + m_location : "", m_host, m_oids);
         final List<SnmpObjId> snmpObjIds = m_oids.stream()
                     .map(oid -> SnmpObjId.get(oid))
@@ -75,6 +83,7 @@ public class WalkCommand extends OsgiCommandSupport {
         final CompletableFuture<List<SnmpResult>> future = locationAwareSnmpClient.walk(agent, snmpObjIds)
             .withDescription("snmp:walk")
             .withLocation(m_location)
+            .withSystemId(m_systemId)
             .execute();
 
         while (true) {
@@ -90,13 +99,5 @@ public class WalkCommand extends OsgiCommandSupport {
             System.out.print(".");
         }
         return null;
-    }
-
-    public void setSnmpAgentConfigFactory(SnmpAgentConfigFactory snmpAgentConfigFactory) {
-        this.snmpAgentConfigFactory = snmpAgentConfigFactory;
-    }
-
-    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
-        this.locationAwareSnmpClient = locationAwareSnmpClient;
     }
 }

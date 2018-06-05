@@ -49,6 +49,7 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.xml.event.Event;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,6 +71,10 @@ public class RestClient {
     private final InetSocketAddress addr;
 
     private final String authorizationHeader;
+
+    public RestClient(String host, int port) {
+        this(InetSocketAddress.createUnresolved(host, port));
+    }
 
     public RestClient(InetSocketAddress addr) {
         this(addr, DEFAULT_USERNAME, DEFAULT_PASSWORD);
@@ -202,6 +207,24 @@ public class RestClient {
     public Response deleteMinion(String id) {
         final WebTarget target = getTargetV2().path("minions").path(id);
         return getBuilder(target).delete();
+    }
+
+    public void sendEvent(Event event) {
+        sendEvent(event, true);
+    }
+
+    public void sendEvent(Event event, boolean clearDates) {
+        if (clearDates) {
+            // Clear dates to avoid problems with date marshaling/unmarshaling
+            event.setCreationTime(null);
+            event.setTime(null);
+        }
+        final WebTarget target = getTarget().path("events");
+        final Response response = getBuilder(target).post(Entity.entity(event, MediaType.APPLICATION_XML));
+        if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
+            throw new RuntimeException(String.format("Request failed with: %s:\n%s",
+                    response.getStatusInfo().getReasonPhrase(), response.hasEntity() ? response.readEntity(String.class) : ""));
+        }
     }
 
     public List<OnmsEvent> getEvents() {

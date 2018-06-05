@@ -31,26 +31,9 @@ package org.opennms.features.topology.api.topo;
 import java.util.Collection;
 import java.util.List;
 
-public interface VertexProvider {
-	
-	/**
-	 * A string used to identify references belonging to this provider
-	 * 
-	 * May only contain characters that make for a reasonable Java identifier
-	 * such as letters digits and underscore (no colons, periods, commas etc.)
-	 * 
-	 */
-	String getVertexNamespace();
-	
-	/**
-	 * This boolean returns true if the vertices in this provider are intended
-	 * to contribute to or overlay another namespace 
+import org.opennms.features.topology.api.NamespaceAware;
 
-	 * @param namespace the namespace of a provider
-	 * @return true if this provider contributes the the given namespace, false otherwise.  Should 
-	 * return false when passing in its own namepace. A provider doesn't contribute to itself.
-	 */
-	boolean contributesTo(String namespace);
+public interface VertexProvider extends NamespaceAware {
 
 	/**
 	 * @deprecated Use {@link #containsVertexId(VertexRef, Criteria...)} instead.

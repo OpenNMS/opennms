@@ -40,8 +40,8 @@ import com.vaadin.shared.AbstractComponentState;
 public class NodeMapState extends AbstractComponentState {
     private static final long serialVersionUID = 7166424509065088284L;
     public String searchString;
-    public List<MapNode> nodes = new LinkedList<MapNode>();
-    public List<Integer> nodeIds = new ArrayList<Integer>();
+    public List<MapNode> nodes = new LinkedList<>();
+    public List<Integer> nodeIds = new ArrayList<>();
     public int minimumSeverity;
     public boolean groupByState = true;
     public int maxClusterRadius = 350;

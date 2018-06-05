@@ -67,7 +67,7 @@ public class BusinessServiceSearchProvider extends SimpleSearchProvider {
         for (BusinessService bs : businessServiceManager.findMatching(dbQueryCriteria)) {
             final BusinessServiceVertex businessServiceVertex = new BusinessServiceVertex(bs, 0);
             // Only consider results which are available in the Topology Provider, see BSM-191
-            if (container.getBaseTopology().getVertex(businessServiceVertex) != null) {
+            if (container.getTopologyServiceClient().getVertex(businessServiceVertex) != null) {
                 results.add(businessServiceVertex);
             }
         }

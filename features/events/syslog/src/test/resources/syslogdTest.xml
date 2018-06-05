@@ -2,8 +2,8 @@
 <beans xmlns="http://www.springframework.org/schema/beans" 
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:tx="http://www.springframework.org/schema/tx" 
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd">
 
   <bean id="eventConfResourceLocation" class="java.lang.String">
     <constructor-arg value="classpath:/etc/eventconf.xml" />
@@ -23,12 +23,23 @@
     <constructor-arg><ref bean="eventConfDao"/></constructor-arg>
   </bean>
 
-  <bean id="tcpIpAddress" class="java.lang.String">
-    <constructor-arg value="127.0.0.1" />
+  <bean id="syslogPort" class="org.opennms.core.test.camel.CamelBlueprintTest" factory-method="getAvailablePort">
+    <constructor-arg>
+      <bean class="java.util.concurrent.atomic.AtomicInteger">
+        <constructor-arg value="10514"/>
+      </bean>
+    </constructor-arg>
+    <constructor-arg value="11514"/>
   </bean>
 
-  <bean id="tcpPort" class="java.lang.Integer">
-    <constructor-arg value="5837" />
+  <bean id="syslogdConfigFactory" class="org.opennms.netmgt.syslogd.SyslogConfigBean">
+    <property name="listenAddress" value="127.0.0.1"/>
+    <property name="syslogPort" ref="syslogPort"/>
+    <property name="parser" value="org.opennms.netmgt.syslogd.CustomSyslogParser"/>
+    <property name="forwardingRegexp" value="^.*\\s(19|20)\\d\\d([-/.])(0[1-9]|1[012])\\2(0[1-9]|[12][0-9]|3[01])(\\s+)(\\S+)(\\s)(\\S.+)"/>
+    <property name="matchingGroupHost" value="6"/>
+    <property name="matchingGroupMessage" value="8"/>
+    <property name="discardUei" value="DISCARD-MATCHING-MESSAGES"/>
   </bean>
 
 </beans>

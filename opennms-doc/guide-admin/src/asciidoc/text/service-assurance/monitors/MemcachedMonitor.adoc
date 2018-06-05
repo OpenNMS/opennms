@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== MemcachedMonitor
 
 This monitor allows to monitor link:http://memcached.org[Memcached], a distributed memory object caching system.
@@ -44,10 +47,11 @@ The following metrics are collected:
 [options="header, autowidth"]
 |===
 | Parameter       | Description                                                                    | Required | Default value
-| `timeout`       | Timeout in milliseconds for Memcached connection establishment.                | optional | `3000`
 | `retry`         | Number of attempts to establish the Memcached connnection.                     | optional | `0`
 | `port`          | TCP port connecting to Memcached.                                              | optional | `11211`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

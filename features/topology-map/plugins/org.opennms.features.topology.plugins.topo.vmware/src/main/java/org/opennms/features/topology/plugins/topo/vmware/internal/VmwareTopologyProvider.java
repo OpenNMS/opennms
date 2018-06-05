@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.DefaultVertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.SimpleGraphProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -53,8 +53,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
-public class VmwareTopologyProvider extends SimpleGraphProvider {
+public class VmwareTopologyProvider extends AbstractTopologyProvider {
     public static final String TOPOLOGY_NAMESPACE_VMWARE = "vmware";
     private static final Logger LOG = LoggerFactory.getLogger(VmwareTopologyProvider.class);
     private static final String SPLIT_REGEXP = " *, *";
@@ -156,6 +157,11 @@ public class VmwareTopologyProvider extends SimpleGraphProvider {
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         return getSelection(TOPOLOGY_NAMESPACE_VMWARE, selectedVertices, type);
+    }
+
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return Sets.newHashSet(ContentType.Alarm, ContentType.Node).contains(type);
     }
 
     private AbstractVertex createEntityVertex(String vertexId, String vertexName, String iconKey) {
@@ -261,7 +267,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider {
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
                             networkVertex,
-                            getEdgeNamespace()
+                            getNamespace()
                     );
                 }
         );
@@ -275,7 +281,7 @@ public class VmwareTopologyProvider extends SimpleGraphProvider {
                             vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + e.getEntityId(),
                             hostSystemVertex,
                             datastoreVertex,
-                            getEdgeNamespace()
+                            getNamespace()
                     );
                 }
         );
@@ -310,8 +316,8 @@ public class VmwareTopologyProvider extends SimpleGraphProvider {
         connectVertices(
                 vmwareManagementServer + "/" + vmwareManagedObjectId + "->" + vmwareManagementServer + "/" + vmwareHostSystemId,
                 virtualMachineVertex,
-                getVertex(getVertexNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId),
-                getEdgeNamespace()
+                getVertex(getNamespace(), vmwareManagementServer + "/" + vmwareHostSystemId),
+                getNamespace()
         );
     }
 }

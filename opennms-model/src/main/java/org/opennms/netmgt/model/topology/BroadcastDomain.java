@@ -578,7 +578,7 @@ public class BroadcastDomain implements Topology {
     
     
     public String printTopology() {
-    	StringBuffer strbfr = new StringBuffer();
+    	final StringBuffer strbfr = new StringBuffer();
         strbfr.append("<--- broadcast domain ....-----");
         getBridges().stream().forEach(bridge -> {
             strbfr.append("\n");
@@ -604,7 +604,7 @@ public class BroadcastDomain implements Topology {
     
     public String printTopologyFromLevel(Set<Integer> bridgeIds, int level) {
     	Set<Integer> bridgesDownLevel = new HashSet<Integer>();
-    	StringBuffer strbfr = new StringBuffer();
+    	final StringBuffer strbfr = new StringBuffer();
         strbfr.append("\n------level ");
     	strbfr.append(level);
         strbfr.append(" -----\n");

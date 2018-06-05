@@ -64,7 +64,7 @@ public class Collector implements Serializable {
      * The parameters for performing data collection via this service
      */
     @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public Collector() {
         super();

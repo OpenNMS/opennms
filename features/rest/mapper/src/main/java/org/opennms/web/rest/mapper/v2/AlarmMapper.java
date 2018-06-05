@@ -48,6 +48,8 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", uses = {EventMapper.class})
 public abstract class AlarmMapper {
 
+    private String ticketUrlTemplate = System.getProperty("opennms.alarmTroubleTicketLinkTemplate");
+
     @Mappings({
             @Mapping(source = "distPoller.location", target = "location"),
             @Mapping(source = "ipAddr", target = "ipAddress"),
@@ -75,6 +77,9 @@ public abstract class AlarmMapper {
                     .map(this::eventParameterToEventParameterDTO)
                     .collect(Collectors.toList()));
         }
+        if (alarm.getTTicketId() != null && !alarm.getTTicketId().isEmpty() && ticketUrlTemplate != null) {
+            alarmDTO.setTroubleTicketLink(getTicketUrl(alarm.getTTicketId()));
+        }
     }
 
     protected Integer mapTicketStateToInt(TroubleTicketState state) {
@@ -93,4 +98,14 @@ public abstract class AlarmMapper {
 
     public abstract EventParameterDTO eventParameterToEventParameterDTO(OnmsEventParameter eventParameter);
 
+    public void setTicketUrlTemplate(String ticketUrlTemplate) {
+        this.ticketUrlTemplate = ticketUrlTemplate;
+    }
+
+    // DO NOT MAKE protected or public as it then will be used for ALL String mappings
+    private String getTicketUrl(String ticketId) {
+        Objects.requireNonNull(ticketUrlTemplate);
+        Objects.requireNonNull(ticketId);
+        return ticketUrlTemplate.replaceAll("\\$\\{id\\}", ticketId);
+    }
 }

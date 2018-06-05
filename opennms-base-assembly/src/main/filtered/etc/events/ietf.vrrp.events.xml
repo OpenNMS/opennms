@@ -1,0 +1,60 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.68</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/VRRP/traps/vrrpTrapNewMaster</uei>
+      <event-label>VRRP-MIB defined trap event: vrrpTrapNewMaster</event-label>
+      <descr>&lt;p>The newMaster trap indicates that the sending agent
+            has transitioned to 'Master' state.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            vrrpOperMasterIpAddr&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>VRRP Event: New Master.&lt;/p></logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.68</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/VRRP/traps/vrrpTrapAuthFailure</uei>
+      <event-label>VRRP-MIB defined trap event: vrrpTrapAuthFailure</event-label>
+      <descr>&lt;p>A vrrpAuthFailure trap signifies that a packet has
+            been received from a router whose authentication key
+            or authentication type conflicts with this router's
+            authentication key or authentication type. Implementation
+            of this trap is optional.&lt;/p>&lt;table>
+            &lt;tr>&lt;td>&lt;b>
+            vrrpTrapPacketSrc&lt;/b>&lt;/td>&lt;td>%parm[#1]%
+            &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
+            vrrpTrapAuthErrorType&lt;/b>&lt;/td>&lt;td>%parm[#2]%
+            &lt;/td>&lt;td>&lt;p;>
+            invalidAuthType(1) authTypeMismatch(2) authFailure(3)&lt;/p>
+            &lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>VRRP Event: Authentication Failure.&lt;/p></logmsg>
+      <severity>Warning</severity>
+   </event>
+</events>

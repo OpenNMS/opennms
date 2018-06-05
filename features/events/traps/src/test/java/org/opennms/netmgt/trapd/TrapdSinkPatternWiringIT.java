@@ -33,8 +33,10 @@ import static org.mockito.Mockito.when;
 
 import java.util.Dictionary;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.MessageProducer;
 
@@ -68,10 +70,19 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment
 public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
 
+    private AtomicInteger m_port = new AtomicInteger(1162);
+
     @Autowired
     private DistPollerDao distPollerDao;
 
     private final CountDownLatch messageProcessedLatch = new CountDownLatch(1);
+
+    @Override
+    protected String setConfigAdminInitialConfiguration(Properties props) {
+        getAvailablePort(m_port, 2162);
+        props.put("trapd.listen.port", String.valueOf(m_port.get()));
+        return "org.opennms.netmgt.trapd";
+    }
 
     @Override
     protected void addServicesOnStartup(Map<String, KeyValueHolder<Object, Dictionary>> services) {
@@ -101,7 +112,7 @@ public class TrapdSinkPatternWiringIT extends CamelBlueprintTest {
         builder.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
         builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
         builder.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
-        builder.send("localhost", 1162, "public");
+        builder.send("localhost", m_port.get(), "public");
 
         // Wait before continuing
         messageProcessedLatch.await(10, TimeUnit.SECONDS);

@@ -57,7 +57,7 @@ public abstract class SnmpInformantOidResolver extends JRDefaultScriptlet {
      * @return converted ASCII OID path
      */
     public static String stringToAsciiOid(String string2convert) {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         int length = 0;
 
         if (string2convert.length() > 0) {
@@ -80,7 +80,7 @@ public abstract class SnmpInformantOidResolver extends JRDefaultScriptlet {
     }
 
     public static String asciiOidToString(String string2convert) {
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
         StringTokenizer st = new StringTokenizer(string2convert, ".");
 
         // Skip the first token it is the amount characters

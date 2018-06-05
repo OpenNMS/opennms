@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.1.0-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.container</groupId>
   <artifactId>org.opennms.container.standalone</artifactId>
@@ -55,7 +55,14 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.apache.karaf.assemblies.features</groupId>
+      <groupId>org.apache.karaf.features</groupId>
+      <artifactId>framework</artifactId>
+      <version>${karafVersion}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.karaf.features</groupId>
       <artifactId>standard</artifactId>
       <version>${karafVersion}</version>
       <type>xml</type>
@@ -95,36 +102,29 @@
       </plugin>
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>features-maven-plugin</artifactId>
+        <artifactId>karaf-maven-plugin</artifactId>
         <version>${karafVersion}</version>
         <executions>
           <execution>
-           <id>add-features-to-repo</id>
+           <id>features-add-to-repository</id>
            <phase>generate-resources</phase>
            <goals>
-             <goal>add-features-to-repo</goal>
+             <goal>features-add-to-repository</goal>
            </goals>
            <configuration>
               <descriptors>
-                <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karafVersion}/xml/features</descriptor>
-                <descriptor>file:${project.build.outputDirectory}/features.xml</descriptor>
+                <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
+                <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
               </descriptors>
               <features>
-                <!-- Add http-whiteboard to the default list of features -->
+                <!-- Add http, http-whiteboard to the default list of features -->
+                <feature>http</feature>
                 <feature>http-whiteboard</feature>
               </features>
               <repository>${project.build.directory}/features-repo</repository>
            </configuration>
           </execution>
         </executions>
-        <!-- https://issues.apache.org/jira/browse/SM-2416 -->
-        <dependencies>
-          <dependency>
-            <groupId>org.apache.maven.wagon</groupId>
-            <artifactId>wagon-http-lightweight</artifactId>
-            <version>2.6</version>
-          </dependency>
-        </dependencies>
       </plugin>
 
       <plugin>
@@ -132,7 +132,7 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>copy</id>
+            <id>copy-branding</id>
             <phase>generate-resources</phase>
             <goals>
               <goal>copy</goal>
@@ -145,10 +145,28 @@
                     <groupId>org.opennms.container</groupId>
                     <artifactId>org.opennms.container.branding</artifactId>
                     <version>${project.version}</version>
-                    <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
                     <destFileName>opennms-branding.jar</destFileName>
                  </artifactItem>
                </artifactItems>
+            </configuration>
+          </execution>
+          <!-- Work around bug KARAF-5384 by including mina-core in the system repository -->
+          <execution>
+            <id>copy-mina</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.mina</groupId>
+                  <artifactId>mina-core</artifactId>
+                  <version>${minaVersion}</version>
+                  <type>jar</type>
+                  <overWrite>true</overWrite>
+                </artifactItem>
+              </artifactItems>
             </configuration>
           </execution>
           <execution>
@@ -164,7 +182,6 @@
                   <groupId>org.apache.karaf</groupId>
                   <artifactId>apache-karaf</artifactId>
                   <type>tar.gz</type>
-                  <outputDirectory>${project.build.directory}/dependencies</outputDirectory>
                   <!--
                     NMS-9332: Always unpack this artifact even if was deleted 
                     at some point during the build
@@ -198,12 +215,18 @@
               </includes>
             </fileSet>
             <fileSet>
-              <directory>${project.build.directory}/dependencies/apache-karaf-${karafVersion}/system</directory>
+              <directory>${project.build.directory}/dependency/apache-karaf-${karafVersion}/system</directory>
               <includes>
                 <include>**/*.jar</include>
                 <include>**/*.pom</include>
                 <include>**/*.war</include>
                 <include>**/*.xml</include>
+              </includes>
+            </fileSet>
+            <fileSet>
+              <directory>${project.build.directory}/dependency</directory>
+              <includes>
+                <include>*.jar</include>
               </includes>
             </fileSet>
             <fileSet>
@@ -251,8 +274,9 @@
             <configuration>
               <excludeDefaultDirectories>true</excludeDefaultDirectories>
               <filesets>
+                <!-- This is the default outputDirectory for the dependency plugin -->
                 <fileset>
-                  <directory>${project.build.directory}/dependencies</directory>
+                  <directory>${project.build.directory}/dependency</directory>
                 </fileset>
                 <fileset>
                   <directory>${project.build.directory}/features-repo</directory>

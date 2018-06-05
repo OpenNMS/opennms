@@ -70,7 +70,7 @@ public class OnmsCategory implements Serializable, Comparable<OnmsCategory> {
     /** persistent field */
     private String m_description;
 
-    private Set<String> m_authorizedGroups = new HashSet<String>();
+    private Set<String> m_authorizedGroups = new HashSet<>();
 
     //private Set<OnmsNode> m_memberNodes;
 

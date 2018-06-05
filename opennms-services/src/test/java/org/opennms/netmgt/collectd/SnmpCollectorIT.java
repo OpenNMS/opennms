@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.InetAddress;
@@ -46,6 +46,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.collection.test.JUnitCollector;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -57,7 +58,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -66,6 +67,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourcePath;
+import org.opennms.netmgt.rrd.RrdAttributeType;
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdStrategy;
 import org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy;
@@ -132,6 +134,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
     @Before
     public void setUp() throws Exception {
+        MockServiceCollector.setDelegate(null);
         MockLogAppender.setupLogging();
 
         m_rrdStrategy = new JRobinRrdStrategy();
@@ -171,7 +174,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
 
         SnmpCollector collector = new SnmpCollector();
-        collector.initialize(null);
+        collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
         m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
@@ -218,13 +221,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
     public void testCollect() throws Exception {
         System.setProperty("org.opennms.netmgt.collectd.SnmpCollector.limitCollectionToInstances", "true");
 
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
 
@@ -235,13 +235,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -276,9 +273,6 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         int stepSizeInMillis = stepSizeInSecs*1000;
         final int rangeSizeInMillis = stepSizeInMillis + 20000;
 
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         CollectorTestUtils.collectNTimes(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, m_collectionAgent, numUpdates);
 
         // This is the value from snmpTestData1.properties
@@ -298,9 +292,6 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         // by now the values should be the new values
         assertEquals(Double.valueOf(456.0), m_rrdStrategy.fetchLastValueInRange(rrdFile.getAbsolutePath(), "tcpCurrEstab", stepSizeInMillis, rangeSizeInMillis));
         assertEquals(Double.valueOf(7654321.0), m_rrdStrategy.fetchLastValueInRange(ifRrdFile.getAbsolutePath(), "ifInOctets", stepSizeInMillis, rangeSizeInMillis));
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -329,7 +320,7 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         RrdStrategy<RrdDef,RrdDb> m_rrdStrategy = new JRobinRrdStrategy();
 
-        RrdDataSource rrdDataSource = new RrdDataSource("testAttr", "GAUGE", stepSize*2, "U", "U");
+        RrdDataSource rrdDataSource = new RrdDataSource("testAttr", RrdAttributeType.GAUGE, stepSize*2, "U", "U");
         RrdDef def = m_rrdStrategy.createDefinition("test", snmpDir.getAbsolutePath(), "test", stepSize, Collections.singletonList(rrdDataSource), Collections.singletonList("RRA:AVERAGE:0.5:1:100"));
         m_rrdStrategy.createFile(def);
 
@@ -388,12 +379,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBrocadeCollect() throws Exception {
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
@@ -405,13 +394,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -460,13 +446,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void testBug2447_GenericIndexedOnlyCollect() throws Exception {
-        // don't forget to initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // now do the actual collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      collectionSet.getStatus());
 
         CollectorTestUtils.persistCollectionSet(m_rrdStrategy, m_resourceStorageDao, m_collectionSpecification, collectionSet);
@@ -478,13 +461,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
 
         // try collecting again
         assertEquals("collection status",
-                     ServiceCollector.COLLECTION_SUCCEEDED,
+                     CollectionStatus.SUCCEEDED,
                      m_collectionSpecification.collect(m_collectionAgent).getStatus());
 
         System.err.println("SECOND COLLECTION FINISHED");
-
-        // release the agent
-        m_collectionSpecification.release(m_collectionAgent);
     }
 
     @Test
@@ -533,13 +513,10 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
             )
     @JUnitSnmpAgent(resource = "/org/opennms/netmgt/snmp/brocadeTestData1.properties")
     public void verifyPersistedStringProperties() throws Exception {
-        // Initialize the agent
-        m_collectionSpecification.initialize(m_collectionAgent);
-
         // Perform the collection
         CollectionSet collectionSet = m_collectionSpecification.collect(m_collectionAgent);
         assertEquals("collection status",
-                ServiceCollector.COLLECTION_SUCCEEDED,
+                CollectionStatus.SUCCEEDED,
                 collectionSet.getStatus());
 
         // Persist
@@ -558,20 +535,25 @@ public class SnmpCollectorIT implements InitializingBean, TestContextAware {
         assertEquals("1100334455667788", value);
     }
 
-    @Test(expected=CollectionTimedOut.class)
     @Transactional
     @JUnitCollector(
                     datacollectionConfig = "/org/opennms/netmgt/config/datacollection-persistTest-config.xml",
                     datacollectionType = "snmp"
             )
     public void collectionTimedOutExceptionOnAgentTimeout() throws CollectionInitializationException, CollectionException {
-        // Initialize the agent and perform the collection
-        m_collectionSpecification.initialize(m_collectionAgent);
-        m_collectionSpecification.collect(m_collectionAgent);
-
         // There is no @JUnitSnmpAgent annotation on this method, so
         // we don't actually start the SNMP agent, which should
         // generate a CollectionTimedOut exception
+
+        CollectionException caught = null;
+        try {
+            m_collectionSpecification.collect(m_collectionAgent);
+        } catch (final CollectionException e) {
+            caught = e;
+        }
+
+        assertNotNull(caught);
+        assertEquals(CollectionTimedOut.class, caught.getCause().getClass());
     }
 
     private String rrd(String file) {

@@ -46,7 +46,7 @@ public abstract class AbstractRRA {
     private Long pdpPerRow;
 
     /** The rows. */
-    private List<Row> rows = new ArrayList<Row>();
+    private List<Row> rows = new ArrayList<>();
 
     /**
      * Creates a RRA with a single data source.

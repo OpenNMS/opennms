@@ -143,7 +143,7 @@ public class GraphmlType {
      */
     public List<KeyType> getKey() {
         if (key == null) {
-            key = new ArrayList<KeyType>();
+            key = new ArrayList<>();
         }
         return this.key;
     }
@@ -173,7 +173,7 @@ public class GraphmlType {
      */
     public List<Object> getGraphOrData() {
         if (graphOrData == null) {
-            graphOrData = new ArrayList<Object>();
+            graphOrData = new ArrayList<>();
         }
         return this.graphOrData;
     }

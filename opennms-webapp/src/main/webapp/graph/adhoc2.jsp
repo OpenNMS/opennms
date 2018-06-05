@@ -43,6 +43,7 @@
         org.springframework.web.context.support.WebApplicationContextUtils,
         org.opennms.web.servlet.XssRequestWrapper"
 %>
+<%@ page import="org.opennms.netmgt.model.ResourceId" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
@@ -80,7 +81,7 @@
     if (req.getParameterValues("resourceId").length > 1) {
         pageContext.setAttribute("tooManyResourceIds", "true");
     } else {
-        String resourceId = req.getParameter("resourceId");
+        ResourceId resourceId = ResourceId.fromString(req.getParameter("resourceId"));
         OnmsResource resource = m_resourceService.getResourceById(resourceId);
         m_resourceService.promoteGraphAttributesForResource(resource);
         pageContext.setAttribute("resource", resource);

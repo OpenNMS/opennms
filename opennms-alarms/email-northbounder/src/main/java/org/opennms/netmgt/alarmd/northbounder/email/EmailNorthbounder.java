@@ -160,6 +160,11 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return initialized && getConfig().isEnabled();
+    }
+
     /**
      * Each implementation of the AbstractNorthbounder has a nice queue (Nagle's algorithmic) and the worker thread that processes the queue
      * calls this method to send alarms to the northern NMS.
@@ -206,7 +211,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         }
         LOG.debug("getSendmailConfig: from = {}", message.getFrom());
         LOG.debug("getSendmailConfig: to = {}", message.getTo());
-        Map<String, Object> mapping = createMapping(alarm);
+        Map<String, Object> mapping = createMapping(alarm, null);
         final String subject = PropertiesUtils.substitute(message.getSubject(), mapping);
         LOG.debug("getSendmailConfig: subject = {}", subject);
         message.setSubject(subject);

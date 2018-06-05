@@ -28,20 +28,17 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.io.File;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.Map.Entry;
-
-import javax.xml.bind.JAXBException;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -60,10 +57,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.api.topo.WrappedGraph;
-import org.opennms.features.topology.api.topo.WrappedVertex;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
@@ -162,7 +155,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -206,7 +199,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -250,7 +243,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -291,15 +284,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         public BridgeLinkDetail(String vertexNamespace, Vertex source, Integer sourceIfIndex, Vertex target, Integer targetIfIndex, Integer sourceBridgePort, Integer targetBridgePort,Integer sourceLink, Integer targetLink) {
             super(EdgeAlarmStatusSummary.getDefaultEdgeId(sourceLink, targetLink), source, sourceLink, target, targetLink);
-            m_vertexNamespace = vertexNamespace;
-            m_sourceBridgePort = sourceBridgePort;
-            m_targetBridgePort = targetBridgePort;
-            m_sourceIfIndex = sourceIfIndex;
-            m_targetifIndex = targetIfIndex;
-        }
-
-        public BridgeLinkDetail(String id,String vertexNamespace, Vertex source, Integer sourceIfIndex, Vertex target, Integer targetIfIndex, Integer sourceBridgePort, Integer targetBridgePort,Integer sourceLink, Integer targetLink) {
-            super(id, source, sourceLink, target, targetLink);
             m_vertexNamespace = vertexNamespace;
             m_sourceBridgePort = sourceBridgePort;
             m_targetBridgePort = targetBridgePort;
@@ -368,7 +352,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             int result = 1;
             result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
             result = prime * result
-                    + ((getVertexNamespace() == null) ? 0 : getVertexNamespace().hashCode());
+                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
             return result;
         }
 
@@ -418,8 +402,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
     private IsIsElementDao m_isisElementDao;
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
@@ -460,21 +442,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         m_loadManualLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "manual"));
     }
 
-    @Override
-    @Transactional
-    public void load(String filename) throws MalformedURLException, JAXBException {
-        final Timer.Context context = m_loadFullTimer.time();
-        if (filename != null) {
-            LOG.warn("Filename that was specified for linkd topology will be ignored: " + filename + ", using " + getConfigurationFile() + " instead");
-        }
-        try {
-            loadCompleteTopology();
-        } finally {
-            context.stop();
-        }
-    }
-
-    private void loadCompleteTopology() throws MalformedURLException, JAXBException {
+    private void loadCompleteTopology() {
         try{
             resetContainer();
         } catch (Exception e){
@@ -659,67 +627,13 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             context.stop();
         }
 
-        context = m_loadManualLinksTimer.time();
-        try {
-            File configFile = new File(getConfigurationFile());
-            if (configFile.exists() && configFile.canRead()) {
-                LOG.debug("loadtopology: loading topology from configuration file: " + getConfigurationFile());
-                WrappedGraph graph = getGraphFromFile(configFile);
-
-                // Add all groups to the topology
-                for (WrappedVertex eachVertexInFile: graph.m_vertices) {
-                    if (eachVertexInFile.group) {
-                        LOG.debug("loadtopology: adding group to topology: " + eachVertexInFile.id);
-                        if (eachVertexInFile.namespace == null) {
-                            eachVertexInFile.namespace = getVertexNamespace();
-                            LoggerFactory.getLogger(this.getClass()).warn("Setting namespace on vertex to default: {}", eachVertexInFile);
-                        }
-                        if (eachVertexInFile.id == null) {
-                            LoggerFactory.getLogger(this.getClass()).warn("Invalid vertex unmarshalled from {}: {}", getConfigurationFile(), eachVertexInFile);
-                        }
-                        AbstractVertex newGroupVertex = addGroup(eachVertexInFile.id, eachVertexInFile.iconKey, eachVertexInFile.label);
-                        newGroupVertex.setIpAddress(eachVertexInFile.ipAddr);
-                        newGroupVertex.setLocked(eachVertexInFile.locked);
-                        if (eachVertexInFile.nodeID != null) newGroupVertex.setNodeID(eachVertexInFile.nodeID);
-                        if (!newGroupVertex.equals(eachVertexInFile.parent)) newGroupVertex.setParent(eachVertexInFile.parent);
-                        newGroupVertex.setSelected(eachVertexInFile.selected);
-                        newGroupVertex.setStyleName(eachVertexInFile.styleName);
-                        newGroupVertex.setTooltipText(eachVertexInFile.tooltipText);
-                        if (eachVertexInFile.x != null) newGroupVertex.setX(eachVertexInFile.x);
-                        if (eachVertexInFile.y != null) newGroupVertex.setY(eachVertexInFile.y);
-                    }
-                }
-                for (Vertex vertex: getVertices()) {
-                    if (vertex.getParent() != null && !vertex.equals(vertex.getParent())) {
-                        LOG.debug("loadtopology: setting parent of " + vertex + " to " + vertex.getParent());
-                        setParent(vertex, vertex.getParent());
-                    }
-                }
-                // Add all children to the specific group
-                // Attention: We ignore all other attributes, they do not need to be merged!
-                for (WrappedVertex eachVertexInFile : graph.m_vertices) {
-                    if (!eachVertexInFile.group && eachVertexInFile.parent != null) {
-                        final Vertex child = getVertex(eachVertexInFile);
-                        final Vertex parent = getVertex(eachVertexInFile.parent);
-                        if (child == null || parent == null) continue;
-                        LOG.debug("loadtopology: setting parent of " + child + " to " + parent);
-                        if (!child.equals(parent)) setParent(child, parent);
-                    }
-                }
-            } else {
-                LOG.debug("loadtopology: could not load topology configFile:" + getConfigurationFile());
-            }
-        } finally {
-            context.stop();
-        }
-
         LOG.debug("Found {} groups", getGroups().size());
         LOG.debug("Found {} vertices", getVerticesWithoutGroups().size());
         LOG.debug("Found {} edges", getEdges().size());
     }
 
     protected final Vertex getOrCreateVertex(OnmsNode sourceNode,OnmsIpInterface primary) {
-        Vertex source = getVertex(getVertexNamespace(), sourceNode.getNodeId());
+        Vertex source = getVertex(getNamespace(), sourceNode.getNodeId());
         if (source == null) {
             source = getDefaultVertex(sourceNode.getId(),
                                   sourceNode.getSysObjectId(),
@@ -988,7 +902,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
-
     private void getIsIsLinks(Map<Integer,OnmsNode> nodemap,Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap){
 
         Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
@@ -1046,9 +959,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
     }
 
+    
     private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap) throws BridgeTopologyException {
-        for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
-            LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
+        for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {
+            LOG.info("loadtopology: parsing broadcast Domain: ", domain.getBridgeNodesOnDomain());
             for (SharedSegment segment: domain.getSharedSegments()) {
                 if (segment.noMacsOnSegment() && SharedSegment.getBridgeBridgeLinks(segment).size() == 1) {
                     for (BridgeBridgeLink link : SharedSegment.getBridgeBridgeLinks(segment)) {
@@ -1106,7 +1020,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         for (Entry<Integer, OnmsNode> entry: nodemap.entrySet()) {
             Integer nodeId = entry.getKey();
             OnmsNode node = entry.getValue();
-            if (getVertex(getVertexNamespace(), nodeId.toString()) == null) {
+            if (getVertex(getNamespace(), nodeId.toString()) == null) {
                 LOG.debug("Adding link-less node: {}", node.getLabel());
                 // Use the primary interface, if set
                 OnmsIpInterface ipInterface = nodeipprimarymap.get(nodeId);
@@ -1123,13 +1037,13 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     @Override
+    @Transactional
     public void refresh() {
+        final Timer.Context context = m_loadFullTimer.time();
         try {
-            load(null);
-        } catch (MalformedURLException e) {
-            LOG.error(e.getMessage(), e);
-        } catch (JAXBException e) {
-            LOG.error(e.getMessage(), e);
+            loadCompleteTopology();
+        } finally {
+            context.stop();
         }
     }
 
@@ -1137,7 +1051,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             Vertex source, Vertex target,
             List<OnmsIpInterface> targetInterfaces,
             Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
@@ -1182,7 +1096,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
         tooltipText.append(HTML_TOOLTIP_TAG_END);
@@ -1208,7 +1122,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
 
     private String getEdgeTooltipText(BridgePort port, Vertex target, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
@@ -1236,7 +1150,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private String getEdgeTooltipText(LinkDetail<?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
 
-        StringBuffer tooltipText = new StringBuffer();
+        final StringBuilder tooltipText = new StringBuilder();
         Vertex source = linkDetail.getSource();
         Vertex target = linkDetail.getTarget();
         OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source,snmpmap);
@@ -1244,13 +1158,21 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(linkDetail.getType());
-        if (sourceInterface != null && targetInterface != null
-                && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append(" Layer3/Layer2");
-        } else {
-            tooltipText.append(" Layer2");
+        String layerText = " Layer 2";
+        if (sourceInterface != null && targetInterface != null) {
+            final List<OnmsIpInterface> sourceNonLoopback = sourceInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+            final List<OnmsIpInterface> targetNonLoopback = targetInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+
+            if (!sourceNonLoopback.isEmpty() && !targetNonLoopback.isEmpty()) {
+                // if both the source and target have non-loopback IP interfaces, assume this is a layer3 edge
+                layerText = " Layer3/Layer2";
+            }
         }
+        tooltipText.append(layerText);
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
@@ -1336,22 +1258,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     public void setIsisElementDao(IsIsElementDao isisElementDao) {
         m_isisElementDao = isisElementDao;
-    }
-
-    public BridgeMacLinkDao getBridgeMacLinkDao() {
-        return m_bridgeMacLinkDao;
-    }
-
-    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
-        m_bridgeMacLinkDao = bridgeMacLinkDao;
-    }
-
-    public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
-        return m_bridgeBridgeLinkDao;
-    }
-
-    public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
-        m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
     }
 
     public BridgeTopologyDao getBridgeTopologyDao() {

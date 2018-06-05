@@ -148,7 +148,7 @@ public class MockSnmpAgentIT  {
         Thread.sleep(200);
         System.err.println("Started MockSnmpAgent on port " + m_agent.getPort());
 
-        m_requestedVarbinds = new ArrayList<AnticipatedRequest>();
+        m_requestedVarbinds = new ArrayList<>();
     }
 
     @After

@@ -34,7 +34,6 @@ import java.util.Properties;
 
 import org.opennms.netmgt.rrd.RrdDataSource;
 import org.opennms.netmgt.rrd.RrdException;
-import org.opennms.netmgt.rrd.RrdMetaDataUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,7 +127,7 @@ public class JniRrdStrategy extends AbstractJniRrdStrategy<JniRrdStrategy.Create
             return null;
         }
 
-        StringBuffer parameter = new StringBuffer();
+        final StringBuilder parameter = new StringBuilder();
 
         parameter.append(" --start=" + (System.currentTimeMillis() / 1000L - 10L));
 

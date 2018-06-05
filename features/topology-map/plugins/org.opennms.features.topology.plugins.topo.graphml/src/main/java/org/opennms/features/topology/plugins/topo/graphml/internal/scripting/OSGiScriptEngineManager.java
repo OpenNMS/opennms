@@ -148,7 +148,7 @@ public class OSGiScriptEngineManager extends ScriptEngineManager{
         return null;
     }
     public List<ScriptEngineFactory> getEngineFactories() {
-        List<ScriptEngineFactory> osgiFactories=new ArrayList<ScriptEngineFactory>();
+        List<ScriptEngineFactory> osgiFactories=new ArrayList<>();
         for(ScriptEngineManager engineManager: classLoaders.keySet()){
             for (ScriptEngineFactory factory : engineManager.getEngineFactories()){
                 osgiFactories.add(new OSGiScriptEngineFactory(factory, classLoaders.get(engineManager)));
@@ -189,16 +189,12 @@ public class OSGiScriptEngineManager extends ScriptEngineManager{
 
     private Map<ScriptEngineManager, ClassLoader> findManagers(BundleContext context) {
         Map<ScriptEngineManager, ClassLoader> managers=new HashMap<ScriptEngineManager, ClassLoader>();
-        try {
-            for (ClassLoader classLoader: findClassLoaders(context)){
-                ScriptEngineManager manager= new ScriptEngineManager(classLoader);
-                manager.setBindings(bindings);
-                managers.put(manager, classLoader);
-            }
-            return managers;
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
+        for (ClassLoader classLoader: findClassLoaders(context)){
+            ScriptEngineManager manager= new ScriptEngineManager(classLoader);
+            manager.setBindings(bindings);
+            managers.put(manager, classLoader);
         }
+        return managers;
     }
 
     /**
@@ -206,9 +202,9 @@ public class OSGiScriptEngineManager extends ScriptEngineManager{
      * @return the names of the available ScriptEngineFactory classes
      * @throws IOException
      */
-    private List<ClassLoader> findClassLoaders(BundleContext context) throws IOException{
+    private List<ClassLoader> findClassLoaders(BundleContext context) {
         Bundle[] bundles = context.getBundles();
-        List<ClassLoader> factoryCandidates = new ArrayList<ClassLoader>();
+        List<ClassLoader> factoryCandidates = new ArrayList<>();
         for (Bundle bundle : bundles) {
             if ("system.bundle".equals(bundle.getSymbolicName())) {
                 continue;

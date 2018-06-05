@@ -30,6 +30,7 @@ package org.opennms.netmgt.poller.monitors;
 
 import java.util.Map;
 
+import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.DistributionContext;
@@ -37,7 +38,7 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
 
-/**
+ /**
  * <p>PassiveServiceMonitor class.</p>
  *
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -55,6 +56,6 @@ public class PassiveServiceMonitor extends AbstractServiceMonitor {
     @Override
     public String getEffectiveLocation(String location) {
         // Always run the PSK in the same JVM
-        return null;
+        return MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
     }
 }

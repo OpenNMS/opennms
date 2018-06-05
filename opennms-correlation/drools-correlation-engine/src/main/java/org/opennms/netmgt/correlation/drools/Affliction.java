@@ -51,7 +51,7 @@ public class Affliction implements Serializable {
         WIDE_SPREAD
     }
     
-    private List<Integer> m_reporters = new ArrayList<Integer>();
+    private List<Integer> m_reporters = new ArrayList<>();
     private Type m_type  = Type.UNDECIDED;
     
     /**

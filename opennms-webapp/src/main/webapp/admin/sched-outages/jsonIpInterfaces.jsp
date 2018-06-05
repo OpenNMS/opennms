@@ -72,7 +72,7 @@ private static class MyInterface extends org.opennms.web.element.Interface {
 }
 %>
 <%
-List<org.opennms.web.element.Interface> items = new ArrayList<org.opennms.web.element.Interface>();
+List<org.opennms.web.element.Interface> items = new ArrayList<>();
 for (int i = 0; i < 50000; i++) {
 	MyInterface item = new MyInterface();
 	item.name = ("really_super_long_hostname_that_is_longer_than_normal_" + i);

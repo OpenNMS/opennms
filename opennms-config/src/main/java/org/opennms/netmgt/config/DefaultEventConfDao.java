@@ -275,7 +275,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
             Events events = JaxbUtils.unmarshal(Events.class, m_configResource);
 
             // Hash the list of event files for efficient lookup
-            Set<String> eventFiles = new HashSet<String>();
+            Set<String> eventFiles = new HashSet<>();
             eventFiles.addAll(events.getEventFiles());
 
             // Copy the loaded event files from the current root to the new root

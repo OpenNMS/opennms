@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 [[poller-icmp-monitor]]
 ==== IcmpMonitor
 The ICMP monitor tests for ICMP service availability by sending _echo request_ ICMP messages.
@@ -18,13 +21,14 @@ The service is considered available when the node sends back an _echo reply_ ICM
 [options="header, autowidth"]
 |===
 | Parameter               | Description                                                 | Required | Default value
-| `retry`                 | Number of attempts to get a response.                       | optional | `2`
 | `timeout`               | Time in milliseconds to wait for a response.                | optional | `800`
 | `allow-fragmentation`   | Whether to set the "Don't Fragment" bit on outgoing packets | optional | `true`
 | `dscp`                  | DSCP traffic-control value.                                 | optional | `0`
 | `packet-size`           | Number of bytes of the ICMP packet to send.                 | optional | `64`
 | `thresholding-enabled`  | Enables ICMP thresholding.                                  | optional | `true`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

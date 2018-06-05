@@ -213,9 +213,9 @@ public class DefaultDataCollectionConfigDaoIT {
     }
 
     private void compareContent(DatacollectionConfig refObj, DatacollectionConfig newObj) {
-        Set<String> resourceTypes = new HashSet<String>();
-        Set<String> systemDefs = new HashSet<String>();
-        Set<String> groups = new HashSet<String>();
+        Set<String> resourceTypes = new HashSet<>();
+        Set<String> systemDefs = new HashSet<>();
+        Set<String> groups = new HashSet<>();
 
         for (SnmpCollection collection : refObj.getSnmpCollections()) {
             for (SystemDef sd : collection.getSystems().getSystemDefs()) {

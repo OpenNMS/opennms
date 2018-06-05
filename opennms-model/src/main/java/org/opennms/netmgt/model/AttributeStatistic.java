@@ -84,7 +84,7 @@ public class AttributeStatistic implements Comparable<AttributeStatistic> {
             return diff;
         }
 
-        diff = getAttribute().getResource().getId().compareToIgnoreCase(o.getAttribute().getResource().getId());
+        diff = getAttribute().getResource().getId().toString().compareToIgnoreCase(o.getAttribute().getResource().getId().toString());
         if (diff != 0) {
             return diff;
         }

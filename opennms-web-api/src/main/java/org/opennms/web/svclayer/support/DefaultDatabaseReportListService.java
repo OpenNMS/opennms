@@ -63,7 +63,7 @@ public class DefaultDatabaseReportListService implements
     @Override
     public List<DatabaseReportDescription> getAll() {
 
-        List<DatabaseReportDescription> allReports = new ArrayList<DatabaseReportDescription>();
+        List<DatabaseReportDescription> allReports = new ArrayList<>();
 
         for (ReportRepository globalRepository : m_globalReportRepository.getRepositoryList()) {
             for (BasicReportDefinition report : globalRepository.getReports()) {
@@ -82,8 +82,8 @@ public class DefaultDatabaseReportListService implements
 
     @Override
     public List<ReportRepositoryDescription> getActiveRepositories() {
-        List<ReportRepositoryDescription> result = new ArrayList<ReportRepositoryDescription>();
-        List<ReportRepository> reportRepositoryList = new ArrayList<ReportRepository>();
+        List<ReportRepositoryDescription> result = new ArrayList<>();
+        List<ReportRepository> reportRepositoryList = new ArrayList<>();
 
         reportRepositoryList = m_globalReportRepository.getRepositoryList();
 
@@ -101,7 +101,7 @@ public class DefaultDatabaseReportListService implements
 
     @Override
     public List<DatabaseReportDescription> getOnlineReportsByRepositoryId(String repositoryId) {
-        List<DatabaseReportDescription> onlineReportList = new ArrayList<DatabaseReportDescription>();
+        List<DatabaseReportDescription> onlineReportList = new ArrayList<>();
 
         for (BasicReportDefinition reportDefinition : m_globalReportRepository.getRepositoryById(repositoryId).getOnlineReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();
@@ -118,7 +118,7 @@ public class DefaultDatabaseReportListService implements
 
     @Override
     public List<DatabaseReportDescription> getReportsByRepositoryId(String repositoryId) {
-        List<DatabaseReportDescription> reportList = new ArrayList<DatabaseReportDescription>();
+        List<DatabaseReportDescription> reportList = new ArrayList<>();
 
         for (BasicReportDefinition reportDefinition : m_globalReportRepository.getRepositoryById(repositoryId).getReports()) {
             DatabaseReportDescription summary = new DatabaseReportDescription();
@@ -144,7 +144,7 @@ public class DefaultDatabaseReportListService implements
     @Override
     public List<DatabaseReportDescription> getAllOnline() {
 
-        List<DatabaseReportDescription> onlineReports = new ArrayList<DatabaseReportDescription>();
+        List<DatabaseReportDescription> onlineReports = new ArrayList<>();
         for (ReportRepository m_repo : m_globalReportRepository.getRepositoryList()) {
             for (BasicReportDefinition report : m_repo.getOnlineReports()) {
                 DatabaseReportDescription summary = new DatabaseReportDescription();

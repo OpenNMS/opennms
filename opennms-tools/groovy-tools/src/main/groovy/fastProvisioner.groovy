@@ -1273,7 +1273,7 @@ class DomBuilder extends BuilderSupport {
     }
     
     public static String indentString(int depth) {
-        StringBuilder buf = new StringBuilder(depth*4 + 1);
+        final StringBuilder buf = new StringBuilder(depth*4 + 1);
         (depth*4).times { buf.append(' '); }
         return buf.toString();
     }

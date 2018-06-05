@@ -87,7 +87,7 @@ public class AlarmSearchProvider extends AbstractSearchProvider implements Histo
     }
 
 	@Override
-	public Criteria buildCriteriaFromQuery(SearchResult input) {
+	public Criteria buildCriteriaFromQuery(SearchResult input, GraphContainer container) {
 		AlarmHopCriteria criteria = createCriteria(input);
 		return criteria;
 	}

@@ -48,6 +48,7 @@ import org.opennms.netmgt.measurements.api.MeasurementFetchStrategy;
 import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.measurements.utils.Utils;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.newts.api.Context;
 import org.opennms.newts.api.Duration;
@@ -91,11 +92,11 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5*60*1000);
+    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
 
     public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
 
-    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450*1000);
+    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
 
     public static final int PARALLELISM = Integer.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
 
@@ -124,18 +125,18 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
         // Group the sources by resource id to avoid calling the ResourceDao
         // multiple times for the same resource
-        Map<String, List<Source>> sourcesByResourceId = sources.stream()
-                .collect(Collectors.groupingBy(Source::getResourceId));
+        Map<ResourceId, List<Source>> sourcesByResourceId = sources.stream()
+                .collect(Collectors.groupingBy((source) -> ResourceId.fromString(source.getResourceId())));
 
         // Lookup the OnmsResources in parallel
-        Map<String, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (String resourceId : sourcesByResourceId.keySet()) {
+        Map<ResourceId, Future<OnmsResource>> resourceFuturesById = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
+        for (ResourceId resourceId : sourcesByResourceId.keySet()) {
             resourceFuturesById.put(resourceId, threadPool.submit(getResourceByIdCallable(resourceId)));
         }
 
         // Gather the results, fail if any of the resources were not found
         Map<OnmsResource, List<Source>> sourcesByResource = Maps.newHashMapWithExpectedSize(sourcesByResourceId.size());
-        for (Entry<String, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
+        for (Entry<ResourceId, Future<OnmsResource>> entry : resourceFuturesById.entrySet()) {
             try {
                 OnmsResource resource = entry.getValue().get();
                 if (resource == null) {
@@ -242,7 +243,7 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
         return fetchResults;
     }
 
-    private Callable<OnmsResource> getResourceByIdCallable(final String resourceId) {
+    private Callable<OnmsResource> getResourceByIdCallable(final ResourceId resourceId) {
         return new Callable<OnmsResource>() {
             @Override
             public OnmsResource call() throws IllegalArgumentException {

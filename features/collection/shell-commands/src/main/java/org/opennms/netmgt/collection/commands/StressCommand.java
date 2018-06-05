@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.collection.commands;
 
-import java.io.File;
 import java.net.InetAddress;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -44,19 +44,22 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
-import org.opennms.netmgt.collection.support.builder.AttributeType;
 import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
 import org.opennms.netmgt.collection.support.builder.Resource;
+import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.opennms.netmgt.rrd.RrdRepository;
 
@@ -75,8 +78,10 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
  * @author jwhite
  */
 @Command(scope = "metrics", name = "stress", description="Stress the current persistence strategy with generated collection sets.")
-public class StressCommand extends OsgiCommandSupport {
+@Service
+public class StressCommand implements Action {
 
+    @Reference
     private PersisterFactory persisterFactory;
 
     @Option(name="-b", aliases="--burst", description="generate the collection sets in bursts instead of continously inserting them, defaults to false", required=false, multiValued=false)
@@ -138,7 +143,7 @@ public class StressCommand extends OsgiCommandSupport {
     private AtomicInteger seed = new AtomicInteger();
 
     @Override
-    protected Void doExecute() {
+    public Void execute() throws Exception {
         // Apply sane lower bounds to all of the configurable options
         intervalInSeconds = Math.max(1, intervalInSeconds);
         numberOfNodes = Math.max(1, numberOfNodes);
@@ -237,7 +242,7 @@ public class StressCommand extends OsgiCommandSupport {
 
                 if (burst) {
                     try {
-                        Thread.sleep(intervalInSeconds);
+                        Thread.sleep(intervalInSeconds * 1000L);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -324,10 +329,6 @@ public class StressCommand extends OsgiCommandSupport {
         return builder.build();
     }
 
-    public void setPersisterFactory(PersisterFactory persisterFactory) {
-        this.persisterFactory = persisterFactory;
-    }
-
     private static class MockCollectionAgent implements CollectionAgent {
 
         private final int nodeId;
@@ -344,6 +345,11 @@ public class StressCommand extends OsgiCommandSupport {
         @Override
         public InetAddress getAddress() {
             return null;
+        }
+
+        @Override
+        public Set<String> getAttributeNames() {
+            return Collections.emptySet();
         }
 
         @Override
@@ -397,15 +403,20 @@ public class StressCommand extends OsgiCommandSupport {
         }
 
         @Override
-        public File getStorageDir() {
+        public ResourcePath getStorageResourcePath() {
             // Copied from org.opennms.netmgt.collectd.org.opennms.netmgt.collectd#getStorageDir
-            File dir = new File(Integer.toString(getNodeId()));
             final String foreignSource = getForeignSource();
             final String foreignId = getForeignId();
+
+            final ResourcePath dir;
             if(isStoreByForeignSource() && foreignSource != null && foreignId != null) {
-                File fsDir = new File(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY, foreignSource);
-                dir = new File(fsDir, foreignId);
+                dir = ResourcePath.get(ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY,
+                                       foreignSource,
+                                       foreignId);
+            } else {
+                dir = ResourcePath.get(String.valueOf(getNodeId()));
             }
+
             return dir;
         }
 

@@ -241,7 +241,7 @@ public class ShowNCSPathOperation implements Operation {
 
     private Collection<VertexRef> getVertexRefsForNCSService( NCSServiceCriteria storedCriteria ) {
         List<Edge> edges = m_ncsEdgeProvider.getEdges(storedCriteria);
-        Set<VertexRef> vertRefList = new HashSet<VertexRef>();
+        Set<VertexRef> vertRefList = new HashSet<>();
         for(Edge edge : edges) {
             vertRefList.add(edge.getSource().getVertex());
             vertRefList.add(edge.getTarget().getVertex());

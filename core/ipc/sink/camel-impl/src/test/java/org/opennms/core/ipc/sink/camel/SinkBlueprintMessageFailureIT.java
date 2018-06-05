@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -50,6 +50,7 @@ import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,8 +135,11 @@ public class SinkBlueprintMessageFailureIT extends CamelBlueprintTest {
         // Sleep slightly longer to allow the body to be logged on the sink consumer listener thread
         Thread.sleep(2000);
 
+        // Verify that the exchange error was logged
+        MockLogAppender.assertLogMatched(Level.ERROR, "Message History");
+        MockLogAppender.assertLogMatched(Level.ERROR, "queuingservice://" + SystemInfoUtils.DEFAULT_INSTANCE_ID + ".Sink.Heartbeat");
         // Verify that the message body was suppressed
-        MockLogAppender.assertLogMatched(Level.DEBUG, "[Body is not logged]");
+        MockLogAppender.assertNoLogMatched(Level.ERROR, "<heartbeat/>");
 
         consumerManager.unregisterConsumer(consumer);
     }

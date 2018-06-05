@@ -76,7 +76,7 @@ public class ReportDefinitionBuilder implements InitializingBean {
      * @throws java.lang.Exception if any.
      */
     public Collection<ReportDefinition> buildReportDefinitions() throws Exception {
-        Set<ReportDefinition> reportDefinitions = new HashSet<ReportDefinition>();
+        Set<ReportDefinition> reportDefinitions = new HashSet<>();
         
         for (StatsdPackage pkg : m_statsdConfigDao.getPackages()) {
             for (PackageReport packageReport : pkg.getReports()) {

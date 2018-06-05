@@ -30,25 +30,13 @@ package org.opennms.protocols.radius.springsecurity;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import net.jradius.client.RadiusClient;
-import net.jradius.client.auth.PAPAuthenticator;
-import net.jradius.client.auth.RadiusAuthenticator;
-import net.jradius.dictionary.Attr_UserName;
-import net.jradius.dictionary.Attr_UserPassword;
-import net.jradius.exception.RadiusException;
-import net.jradius.packet.AccessAccept;
-import net.jradius.packet.AccessRequest;
-import net.jradius.packet.RadiusPacket;
-import net.jradius.packet.attribute.AttributeFactory;
-import net.jradius.packet.attribute.AttributeList;
-import net.jradius.packet.attribute.RadiusAttribute;
-
-
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.protocols.radius.utils.RadiusUtils;
 import org.opennms.web.api.Authentication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +52,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import net.jradius.client.RadiusClient;
+import net.jradius.client.auth.PAPAuthenticator;
+import net.jradius.client.auth.RadiusAuthenticator;
+import net.jradius.dictionary.Attr_UserName;
+import net.jradius.dictionary.Attr_UserPassword;
+import net.jradius.exception.RadiusException;
+import net.jradius.packet.AccessAccept;
+import net.jradius.packet.AccessRequest;
+import net.jradius.packet.RadiusPacket;
+import net.jradius.packet.attribute.AttributeFactory;
+import net.jradius.packet.attribute.AttributeList;
+import net.jradius.packet.attribute.RadiusAttribute;
+
 /**
  * An org.springframework.security.providers.AuthenticationProvider implementation that provides integration with a Radius server.
  *
@@ -73,6 +74,9 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
 	
 	private static final Logger LOG = LoggerFactory.getLogger(RadiusAuthenticationProvider.class);
 
+    static {
+        RadiusUtils.loadSecurityProvider();
+    }
 
     private String server, secret;
     private int port = 1812, timeout = 5, retries = 3;
@@ -247,7 +251,12 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
                 new Object[] {e},
                 "Error connecting to radius server: "+e));
-        }
+        } catch (NoSuchAlgorithmException e) {
+        	LOG.error("Error no such algorithm {} : {}",this.authTypeClass.getClass().getName(), e);
+        	throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusError",
+                    new Object[] {e},
+                    "Error connecting to radius server: "+e));
+		}
         if (reply == null) {
             LOG.error("Timed out connecting to radius server {}", server);
             throw new AuthenticationServiceException(messages.getMessage("RadiusAuthenticationProvider.radiusTimeout",
@@ -284,7 +293,7 @@ public class RadiusAuthenticationProvider extends AbstractUserDetailsAuthenticat
         for (String role : rolesArray) {
             authorities.add(new SimpleGrantedAuthority(role));
         }
-            StringBuffer readRoles = new StringBuffer();
+            final StringBuilder readRoles = new StringBuilder();
             for (GrantedAuthority authority : authorities) {
                 readRoles.append(authority.toString()+", ");
             }

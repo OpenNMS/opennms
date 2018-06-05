@@ -1,81 +1,76 @@
 #!/usr/bin/make -f
 
 export DH_VERBOSE=1
-export JAVA_HOME=$(shell opennms-base-assembly/src/main/filtered/bin/find-java.sh 1.8 1.8.9999)
+export JAVA_HOME=$(shell bin/find-java.sh 1.8 1.8.9999)
+export PACKAGE_NAME="opennms-minion"
+export CONTAINER_NAME="opennms-minion-container"
 
-export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
-export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
-export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
-export OPTS_ASSEMBLIES="-Passemblies"
-export OPTS_PROFILES="-Prun-expensive-tasks"
-export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
-export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
+export MINION_PREFIX=/usr/share/minion
+export RUNTIME_PREFIX=/var/lib/minion
+export REPO_PREFIX=$(MINION_PREFIX)/repositories
+export LOGDIR=/var/log/minion
+export SYSCONFDIR=/etc/default
+export ETCDIR=/etc/minion
 
-export BUILDDEFINES=\
-	$(OPTS_MAVEN) \
-	$(OPTS_SKIP_TESTS) \
-	$(OPTS_SKIP_TARBALL) \
-	$(OPTS_PROFILES) \
-	-Duser.home=$(HOME) \
-	-Dbuild.profile=fulldir \
-	-Dopennms.home=/opt/minion \
-	-Ddist.dir=$(CURDIR)/debian \
-	-Ddist.name=temp
+%:
+	dh $@
 
-STAMP_BUILD = debian/stamp-build
-
-configure:
-
-build: configure $(STAMP_BUILD)
-
-$(STAMP_BUILD):
-	dh_testdir
-	./compile.pl -N $(BUILDDEFINES) install
-	if [ -z "$$OPENNMS_ENABLE_SNAPSHOTS" ] || [ "$$OPENNMS_ENABLE_SNAPSHOTS" = 1 ]; then export OPTS_ENABLE_SNAPSHOTS="-Denable.snapshots=true"; fi
-	if [ -z "$$OPENNMS_SKIP_COMPILE" ] || [ "$$OPENNMS_SKIP_COMPILE" = 0 ]; then \
-		./compile.pl $(OPTS_SKIP_TESTS) $(OPTS_SKIP_TARBALL) $(OPTS_UPDATE_POLICY) $(BUILDDEFINES) $$OPTS_ENABLE_SNAPSHOTS --projects $(COMPILE_PROJECTS) --also-make install; \
-	fi
-	./assemble.pl $(OPTS_SKIP_TESTS) $(OPTS_SKIP_TARBALL) $(OPTS_UPDATE_POLICY) $(BUILDDEFINES) $$OPTS_ENABLE_SNAPSHOTS --projects $(ASSEMBLY_PROJECTS) install
-	find debian/temp -type d -name .svn -exec rm -rf {} \;
-	find debian/temp -type d -name .git -exec rm -rf {} \;
-	touch $(STAMP_BUILD)
-
-clean:
-	dh_testdir
-	dh_testroot
-	./compile.pl $(OPTS_ASSEMBLIES) $(OPTS_PROFILES) $(BUILDDEFINES) clean
-	rm -f opennms-remote-poller.{init,default}
-	dh_clean
-	rm -f $(STAMP_BUILD)
-
-install:
-	dh_testdir
-	dh_clean -k --exclude=temp
-	dh_installdirs
-	dh_testroot
-
-binary-indep: build install
-	dh_testdir
-	dh_testroot
-	dh_installdocs
-	#dh_installinit --package=opennms-server --name=opennms --no-start -u"defaults 21 19"
-	#dh_installinit --package=opennms-remote-poller --no-start -u"defaults 21 19"
-	dh_installman
-	dh_installdebconf
-	dh_link
-	dh_strip
-	dh_compress
-	#dh_fixperms # Disabled to allow non-standard permissions
-	dh_makeshlibs -n
-	dh_installdeb
-	#dh_perl debian/opennms-common/usr/share/opennms/bin debian/opennms-contrib/usr/share/opennms/contrib
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-# Build architecture-dependent files here.
-binary-arch: build install
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install configure
+override_dh_auto_install:
+	# make all the target directories
+	mkdir -p \
+		$$(pwd)/debian/$(PACKAGE_NAME)-{container,features-core,features-default}$(MINION_PREFIX) \
+		$$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX) \
+		$$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX) \
+		$$(pwd)/debian/$(CONTAINER_NAME)$(LOGDIR) \
+		$$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)
+	
+	# copy all the files from the build tarball
+	rsync -avr --exclude=debian $$(pwd)/ $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/
+	
+	# translate Minion prefix and etc directories in the init script, and put it in place
+	sed -e "s,/opt/minion/etc,$(SYSCONFDIR),g" \
+			-e "s,RUNAS=root,RUNAS=minion,g" \
+			-e "s,/opt/minion,$(MINION_PREFIX),g" \
+			$$(pwd)/etc/minion.init > $$(pwd)/debian/$(CONTAINER_NAME).minion.init \
+		&& rm -f $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc/minion.init
+	
+	# move etc / data / deploy directories to where they will live
+	mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR) \
+		&& ln -s ../../..$(ETCDIR) $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/etc \
+		&& mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/data $$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/data $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/data \
+		&& mv $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/deploy $$(pwd)/debian/$(CONTAINER_NAME)$(RUNTIME_PREFIX)/ \
+		&& ln -s ../../..$(RUNTIME_PREFIX)/deploy $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/deploy \
+	
+	# take care of some packaging/lintian warnings
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides
+	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME).lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)/usr/share/lintian/overrides/$(PACKAGE_NAME)
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-container/usr/share/lintian/overrides
+	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-container.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-container/usr/share/lintian/overrides/$(PACKAGE_NAME)-container
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-core/usr/share/lintian/overrides
+	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-features-core.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-features-core/usr/share/lintian/overrides/$(PACKAGE_NAME)-features-core
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-default/usr/share/lintian/overrides
+	install -c -m 644 $$(pwd)/debian/$(PACKAGE_NAME)-features-default.lintian-overrides $$(pwd)/debian/$(PACKAGE_NAME)-features-default/usr/share/lintian/overrides/$(PACKAGE_NAME)-features-default
+	rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(MINION_PREFIX)/COPYING
+	
+	# move the minion.conf to /etc/defaults and change the default RUNAS to minion
+	sed -e "s,RUNAS=root,RUNAS=minion,g" $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf > $$(pwd)/debian/$(CONTAINER_NAME)$(SYSCONFDIR)/minion \
+		&& rm -rf $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/minion.conf
+	
+	# change the logging directory to /var/log/minion
+	sed -e "s,.{karaf.data}/log,$(LOGDIR),g" -e 's,karaf.log,minion.log,g' $$(pwd)/etc/org.ops4j.pax.logging.cfg > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.ops4j.pax.logging.cfg
+	
+	# set the default location
+	echo "location = MINION" > $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg \
+		&& echo "id = 00000000-0000-0000-0000-000000ddba11" >> $$(pwd)/debian/$(CONTAINER_NAME)$(ETCDIR)/org.opennms.minion.controller.cfg
+	
+	# split out opennms-minion-features-core
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-core$(REPO_PREFIX)
+	mv $$(pwd)/debian/$(CONTAINER_NAME)$(REPO_PREFIX)/core $$(pwd)/debian/$(PACKAGE_NAME)-features-core$(REPO_PREFIX)/core
+	
+	# split out opennms-minion-features-default
+	mkdir -p $$(pwd)/debian/$(PACKAGE_NAME)-features-default$(REPO_PREFIX)
+	mv $$(pwd)/debian/$(CONTAINER_NAME)$(REPO_PREFIX)/default $$(pwd)/debian/$(PACKAGE_NAME)-features-default$(REPO_PREFIX)/default
+	
+	# install the init script
+	dh_installinit --package=$(CONTAINER_NAME) --name=minion --no-start -u"defaults 21 19"

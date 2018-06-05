@@ -31,6 +31,7 @@ use vars qw(
 	$TESTS
 	$SINGLE_TEST
 	$VERBOSE
+	$JDK9_OR_GT
 	@DEFAULT_GOALS
 	@ARGS
 );
@@ -42,6 +43,7 @@ $LOGLEVEL      = 'debug' unless (defined $LOGLEVEL);
 $PATHSEP       = $Config{'path_sep'};
 $SKIP_OPENJDK  = $ENV{'SKIP_OPENJDK'};
 $VERBOSE       = undef;
+$JDK9_OR_GT    = undef;
 @DEFAULT_GOALS = ( "install" );
 
 @JAVA_SEARCH_DIRS = qw(
@@ -201,6 +203,20 @@ if (defined $JAVA_HOME and $JAVA_HOME ne "") {
 	info("Using \$JAVA_HOME=$JAVA_HOME");
 	$ENV{'JAVA_HOME'} = $JAVA_HOME;
 	$ENV{'PATH'}      = File::Spec->catfile($JAVA_HOME, 'bin') . $PATHSEP . $ENV{'PATH'};
+
+        my ($shortversion) = get_version_from_java(File::Spec->catfile($JAVA_HOME, 'bin', 'java'));
+        if ($shortversion >= '9') {
+                $JDK9_OR_GT = 1;
+        };
+}
+
+if ($JDK9_OR_GT) {
+        # Expose the required modules, packages and types
+        $MAVEN_OPTS .= " --add-modules java.activation,java.xml.bind";
+        $MAVEN_OPTS .= " --add-exports java.xml/com.sun.org.apache.xml.internal.resolver=ALL-UNNAMED";
+        $MAVEN_OPTS .= " --add-exports java.xml/com.sun.org.apache.xml.internal.resolver.tools=ALL-UNNAMED";
+        $MAVEN_OPTS .= " --add-opens java.base/java.lang=ALL-UNNAMED";
+        $MAVEN_OPTS .= " --add-opens java.base/java.util.regex=ALL-UNNAMED";
 }
 
 if (not exists $ENV{'JAVA_VENDOR'}) {

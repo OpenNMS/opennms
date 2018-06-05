@@ -106,7 +106,7 @@ public interface EnhancedLinkdService {
     void reconcileIpNetToMedia(int nodeId, Date now);
 
     void reconcileBridge(int nodeId, Date now);
-    
+
     void store(int nodeId, LldpLink link);
 
     void store(int nodeId, LldpElement element);
@@ -135,8 +135,6 @@ public interface EnhancedLinkdService {
     
     void save(BroadcastDomain domain);
 
-    void cleanBroadcastDomains();
-
     Set<BroadcastDomain> getAllBroadcastDomains();
     
     Map<Integer, Set<BridgeForwardingTableEntry>> getUpdateBftMap();
@@ -144,11 +142,7 @@ public interface EnhancedLinkdService {
     BroadcastDomain getBroadcastDomain(int nodeId);
 
     Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
-
-    Set<BridgeForwardingTableEntry> getBridgeTopologyUpdateBFT(int nodeid);
-
-    boolean hasUpdatedBft(int nodeid);
         
     void updateBridgeOnDomain(BroadcastDomain domain,Integer nodeid);
-        
+            
 }

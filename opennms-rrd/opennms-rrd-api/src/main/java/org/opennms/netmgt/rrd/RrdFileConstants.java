@@ -135,7 +135,7 @@ public class RrdFileConstants {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        final StringBuffer buffer = new StringBuffer(rrd);
+        final StringBuilder buffer = new StringBuilder(rrd);
 
         // truncate after the max length
         if (rrd.length() > MAX_RRD_FILENAME_LENGTH) {

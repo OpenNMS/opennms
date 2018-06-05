@@ -36,6 +36,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.ResultSet;
@@ -45,6 +46,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.sql.DataSource;
 
@@ -156,9 +159,6 @@ public class PollablesIT {
     @Autowired
     private LocationAwarePollerClient m_locationAwarePollerClient;
 
-    private int m_lockCount = 0;
-
-
     @Before
     public void setUp() throws Exception {
         DaoTestConfigBean bean = new DaoTestConfigBean();
@@ -167,8 +167,6 @@ public class PollablesIT {
         MockUtil.println("------------ Begin Test --------------------------");
 
         MockLogAppender.setupLogging();
-
-        m_lockCount = 0;
 
         m_mockNetwork = new MockNetwork();
         m_mockNetwork.addNode(1, "Router");
@@ -2364,14 +2362,14 @@ public class PollablesIT {
 
     @Test
     public void testLock() throws Exception {
+        final AtomicInteger m_lockCount = new AtomicInteger(0);
+
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                m_lockCount++;
-                assertEquals(1, m_lockCount);
+                assertEquals(1, m_lockCount.incrementAndGet());
                 try { Thread.sleep(3000); } catch (InterruptedException e) {}
-                m_lockCount--;
-                assertEquals(0, m_lockCount);
+                assertEquals(0, m_lockCount.decrementAndGet());
             }
         };
 
@@ -2395,15 +2393,171 @@ public class PollablesIT {
     }
 
     @Test
+    public void testLockWithTimeouts() throws Exception {
+        AtomicBoolean failed = new AtomicBoolean(false);
+
+        Callable<Boolean> call = new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                LOG.debug("Got lock! Sleeping for 800ms...");
+                try { Thread.sleep(800); } catch (InterruptedException e) {}
+                LOG.debug("Returning true");
+                return true;
+            }
+        };
+
+        final Runnable locker = new Runnable() {
+            @Override
+            public void run() {
+                boolean called = false;
+                while (!called) {
+                    try {
+                        called = pNode1.withTreeLock(call, 200);
+                    } catch (LockUnavailable e) {
+                        //LOG.debug(e.getMessage());
+                    } catch (Throwable e) {
+                        LOG.error("Unexpected exception caught during test", e);
+                        failed.set(true);
+                    }
+                }
+            }
+        };
+
+        Thread[] threads = new Thread[5];
+        for(int i = 0; i < 5; i++) {
+            threads[i] = new Thread(locker);
+            threads[i].start();
+        }
+
+        for(int i = 0; i < 5; i++) {
+            threads[i].join();
+        }
+
+        if (failed.get()) {
+            fail("Unexpected exception caught during test");
+        }
+    }
+
+    private static class RecursiveCallable implements Callable<Void> {
+        private final PollableElement m_lock;
+        private final AtomicInteger m_counter;
+        private final AtomicInteger m_recursionDepth;
+        private final int m_iterations;
+
+        public RecursiveCallable(final PollableElement lock, final AtomicInteger counter, final AtomicInteger invocations, final int recursionDepth) {
+            m_lock = lock;
+            m_counter = counter;
+            m_recursionDepth = invocations;
+            m_iterations = recursionDepth;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            LOG.debug("Got lock!");
+            LOG.debug("Incremented value to {}, now sleeping for 20ms", m_counter.incrementAndGet());
+            m_recursionDepth.incrementAndGet();
+            try { Thread.sleep(20); } catch (InterruptedException e) {}
+            if (m_iterations > 0) {
+                m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_recursionDepth, m_iterations - 1));
+            }
+            return null;
+        }
+    }
+
+    private static class CountingRunnable implements Runnable {
+        private final PollableElement m_lock;
+        private final AtomicInteger m_counter;
+        private final AtomicInteger m_invocations;
+        private final int m_recursionDepth;
+
+        public CountingRunnable(final PollableElement lock, final AtomicInteger counter, final AtomicInteger invocations, final int recursionDepth) {
+            m_lock = lock;
+            m_counter = counter;
+            m_invocations = invocations;
+            m_recursionDepth = recursionDepth;
+        }
+
+        @Override
+        public void run() {
+            while (m_counter.get() < 100) {
+                try {
+                    m_lock.withTreeLock(new RecursiveCallable(m_lock, m_counter, m_invocations, m_recursionDepth - 1), 5);
+                } catch (LockUnavailable e) {
+                    //LOG.debug(e.getMessage());
+                }
+            }
+        }
+
+        public int getInvocations() {
+            return m_invocations.get();
+        }
+    };
+
+    /**
+     * This test uses 5 threads that each contend over the same lock.
+     * When a thread acquires the lock, it will recursively increment a
+     * global counter and sleep a small amount 4 times, relocking the 
+     * lock each time an increment is performed. After these invocations 
+     * unwind, another thread will acquire the lock and increment the 
+     * counter and sleep 4 times. This continues until the global counter
+     * reaches a limit value.
+     * 
+     * The contending threads try to acquire the lock with a short timeout
+     * so they will time out many times before eventually acquiring the
+     * lock.
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testLockMultipleIterationsWithTimeouts() throws Exception {
+
+        AtomicBoolean failed = new AtomicBoolean(false);
+
+        AtomicInteger globalCounter = new AtomicInteger(0);
+        AtomicInteger[] threadInvocations = new AtomicInteger[] {
+            new AtomicInteger(0),
+            new AtomicInteger(0),
+            new AtomicInteger(0),
+            new AtomicInteger(0),
+            new AtomicInteger(0)
+        };
+
+        CountingRunnable[] runnables = new CountingRunnable[5];
+        Thread[] threads = new Thread[5];
+        for(int i = 0; i < 5; i++) {
+            // Recursively increment the counter and sleep 4 times
+            runnables[i] = new CountingRunnable(pNode1, globalCounter, threadInvocations[i], 4);
+            threads[i] = new Thread(runnables[i]);
+            threads[i].setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(Thread t, Throwable e) {
+                    LOG.error("Unexpected exception caught during test", e);
+                    failed.set(true);
+                }
+            });
+            threads[i].start();
+        }
+
+        for(int i = 0; i < 5; i++) {
+            threads[i].join();
+            LOG.info("Thread {} incremented the counter {} times", i, runnables[i].getInvocations());
+        }
+
+        if (failed.get()) {
+            fail("Unexpected exception caught during test");
+        }
+    }
+
+    @Test
     public void testLockTimeout() throws Exception {
+        AtomicInteger m_lockCount = new AtomicInteger(0);
+
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                m_lockCount++;
-                assertEquals(1, m_lockCount);
+                assertEquals(1, m_lockCount.incrementAndGet());
                 try { Thread.sleep(5000); } catch (InterruptedException e) {}
-                m_lockCount--;
-                assertEquals(0, m_lockCount);
+                assertEquals(0, m_lockCount.decrementAndGet());
             }
         };
 

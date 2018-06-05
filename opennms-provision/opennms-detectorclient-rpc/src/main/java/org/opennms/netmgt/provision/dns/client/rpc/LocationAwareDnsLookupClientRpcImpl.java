@@ -55,22 +55,33 @@ public class LocationAwareDnsLookupClientRpcImpl implements LocationAwareDnsLook
 
     @Override
     public CompletableFuture<String> lookup(String hostName, String location) {
-        return lookupExecute(hostName, location, QueryType.LOOKUP);
+        return lookup(hostName, location, null);
+    }
+
+    @Override
+    public CompletableFuture<String> lookup(String hostName, String location, String systemId) {
+        return lookupExecute(hostName, location, systemId, QueryType.LOOKUP);
     }
 
     @Override
     public CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location) {
-        return lookupExecute(InetAddressUtils.toIpAddrString(ipAddress), location, QueryType.REVERSE_LOOKUP);
+        return reverseLookup(ipAddress, location, null);
+    }
+
+    @Override
+    public CompletableFuture<String> reverseLookup(InetAddress ipAddress, String location, String systemId) {
+        return lookupExecute(InetAddressUtils.toIpAddrString(ipAddress), location, systemId, QueryType.REVERSE_LOOKUP);
     }
 
     public RpcClient<DnsLookupRequestDTO, DnsLookupResponseDTO> getDelegate() {
         return delegate;
     }
 
-    private CompletableFuture<String> lookupExecute(String request, String location, QueryType queryType) {
+    private CompletableFuture<String> lookupExecute(String request, String location, String systemId, QueryType queryType) {
         final DnsLookupRequestDTO dto = new DnsLookupRequestDTO();
         dto.setHostRequest(request);
         dto.setLocation(location);
+        dto.setSystemId(systemId);
         dto.setQueryType(queryType);
         CompletableFuture<DnsLookupResponseDTO> future = getDelegate().execute(dto);
         return future.thenApply(response -> response.getHostResponse());

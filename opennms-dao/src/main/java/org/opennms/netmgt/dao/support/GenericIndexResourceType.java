@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -251,7 +252,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                             return null;
                         }
 
-                        StringBuffer indexSubString = new StringBuffer();
+                        final StringBuilder indexSubString = new StringBuilder();
                         for (int i = start; i < end; i++) {
                             if (indexSubString.length() != 0) {
                                 indexSubString.append(".");
@@ -268,7 +269,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                         String subSymbol = getSymbolValue(hexMatcher.group(1));
                         List<String> indexElements = tokenizeIndex(subSymbol);
                         
-                        StringBuffer hexString = new StringBuffer();
+                        final StringBuilder hexString = new StringBuilder();
                         for (String indexElement : indexElements) {
                             if (hexString.length() > 0) {
                                 hexString.append(":");
@@ -313,7 +314,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                 }
 
                 private List<String> tokenizeIndex(final String index) {
-                    List<String> indexElements = new ArrayList<String>();
+                    List<String> indexElements = new ArrayList<>();
                     StringTokenizer t = new StringTokenizer(index, ".");
                     while (t.hasMoreTokens()) {
                         indexElements.add(t.nextToken());
@@ -336,7 +337,9 @@ public final class GenericIndexResourceType implements OnmsResourceType {
         Collections.sort(resourceTypeList, new Comparator<ResourceType>() {
             @Override
             public int compare(ResourceType r0, ResourceType r1) {
-                return r0.getLabel().compareTo(r1.getLabel());
+                // Sort by resource label, allowing the resource label to be null
+                final Comparator<? super String> comparator = (a, b) -> a.compareTo(b);
+                return Objects.compare(r0.getLabel(), r1.getLabel(), Comparator.nullsLast(comparator));
             }
         });
         for (ResourceType resourceType : resourceTypeList) {

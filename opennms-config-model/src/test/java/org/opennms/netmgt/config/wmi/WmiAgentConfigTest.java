@@ -30,10 +30,33 @@ package org.opennms.netmgt.config.wmi;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
-import org.opennms.core.utils.InetAddressUtils;
+import java.util.Arrays;
+import java.util.Collection;
 
-public class WmiAgentConfigTest {
+import org.junit.Test;
+import org.junit.runners.Parameterized.Parameters;
+import org.opennms.core.test.xml.XmlTestNoCastor;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.snmp.InetAddrUtils;
+
+public class WmiAgentConfigTest extends XmlTestNoCastor<WmiAgentConfig> {
+
+    public WmiAgentConfigTest(WmiAgentConfig sampleObject, Object sampleXml) {
+        super(sampleObject, sampleXml, null);
+    }
+
+    @Parameters
+    public static Collection<Object[]> data() {
+        WmiAgentConfig agentConfig = new WmiAgentConfig();
+        agentConfig.setAddress(InetAddrUtils.addr("127.0.0.1"));
+
+        return Arrays.asList(new Object[][] {
+            {
+                agentConfig,
+                "<wmi-agent-config address=\"127.0.0.1\" timeout=\"3000\" retries=\"1\"/>"
+            }
+        });
+    }
 
     @Test
     public void canConvertToAndFromMap() {

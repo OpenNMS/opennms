@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,6 +35,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -163,7 +164,7 @@ public abstract class JaxbUtils {
     }
 
     public static <T> List<String> getNamespacesForClass(final Class<T> clazz) {
-        final List<String> namespaces = new ArrayList<String>();
+        final List<String> namespaces = new ArrayList<>();
         final XmlSeeAlso seeAlso = clazz.getAnnotation(XmlSeeAlso.class);
         if (seeAlso != null) {
             for (final Class<?> c : seeAlso.value()) {
@@ -206,6 +207,22 @@ public abstract class JaxbUtils {
 
     public static <T> T unmarshal(final Class<T> clazz, final Reader reader, final boolean validate) {
         return unmarshal(clazz, new InputSource(reader), null, validate);
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, reader, VALIDATE_IF_POSSIBLE);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
+    }
+
+    public static <T> T unmarshal(final Class<T> clazz, final InputStream stream, final boolean validate) {
+        try (final Reader reader = new InputStreamReader(stream)) {
+            return unmarshal(clazz, new InputSource(reader), null, validate);
+        } catch (final IOException e) {
+            throw EXCEPTION_TRANSLATOR.translate("reading stream", e);
+        }
     }
 
     public static <T> T unmarshal(final Class<T> clazz, final String xml) {
@@ -265,7 +282,7 @@ public abstract class JaxbUtils {
         }
     }
 
-    public static <T> String getNamespaceForClass(final Class<T> clazz) throws SAXException {
+    public static <T> String getNamespaceForClass(final Class<T> clazz) {
         final XmlSchema schema = clazz.getPackage().getAnnotation(XmlSchema.class);
         if (schema != null) {
             final String namespace = schema.namespace();
@@ -412,7 +429,7 @@ public abstract class JaxbUtils {
     }
 
     private static List<String> getSchemaFilesFor(final Class<?> clazz) {
-        final List<String> schemaFiles = new ArrayList<String>();
+        final List<String> schemaFiles = new ArrayList<>();
         for (final Class<?> c : getAllRelatedClasses(clazz)) {
             final ValidateUsing annotation = c.getAnnotation(ValidateUsing.class);
             if (annotation == null || annotation.value() == null) {
@@ -432,7 +449,7 @@ public abstract class JaxbUtils {
             return m_schemas.get(clazz);
         }
 
-        final List<Source> sources = new ArrayList<Source>();
+        final List<Source> sources = new ArrayList<>();
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
 
         for (final String schemaFileName : getSchemaFilesFor(clazz)) {

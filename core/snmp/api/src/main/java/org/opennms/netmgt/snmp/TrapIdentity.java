@@ -75,7 +75,7 @@ public class TrapIdentity {
      * Create the standard traps list - used in v2 processing
      */
     static {
-        GENERIC_TRAPS = new ArrayList<SnmpObjId>();
+        GENERIC_TRAPS = new ArrayList<>();
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.1")); // coldStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.2")); // warmStart
         GENERIC_TRAPS.add(new SnmpObjId("1.3.6.1.6.3.1.1.5.3")); // linkDown

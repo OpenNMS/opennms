@@ -56,7 +56,7 @@ import org.opennms.web.servlet.MissingParameterException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import au.com.bytecode.opencsv.CSVReader;
+import com.opencsv.CSVReader;
 
 /**
  * <p>ImportAssetsServlet class.</p>
@@ -67,7 +67,7 @@ import au.com.bytecode.opencsv.CSVReader;
 public class ImportAssetsServlet extends HttpServlet {
     private static final long serialVersionUID = 8282814214167099107L;
     private Logger logger = LoggerFactory.getLogger(ImportAssetsServlet.class.getName());
-    private List<String> errors = new ArrayList<String>();
+    private List<String> errors = new ArrayList<>();
 
     private static class AssetException extends Exception {
         private static final long serialVersionUID = 2498335935646001342L;
@@ -140,7 +140,7 @@ public class ImportAssetsServlet extends HttpServlet {
                 }
             }
 
-            StringBuffer messageText = new StringBuffer();
+            final StringBuilder messageText = new StringBuilder();
             messageText.append("Successfully imported ").append(assets.size()).append(" asset");
             if (assets.size() > 1) {
                 messageText.append("s");
@@ -183,7 +183,7 @@ public class ImportAssetsServlet extends HttpServlet {
         CSVReader csvReader = null;
         StringReader stringReader = null;
         String[] line;
-        List<Asset> list = new ArrayList<Asset>();
+        List<Asset> list = new ArrayList<>();
         text = text.trim();
 
         int count = 0;
@@ -315,7 +315,7 @@ public class ImportAssetsServlet extends HttpServlet {
      * @throws java.sql.SQLException if any.
      */
     public List<Integer> getCurrentAssetNodesList() throws SQLException {
-        List<Integer> list = new ArrayList<Integer>();
+        List<Integer> list = new ArrayList<>();
 
         final DBUtils d = new DBUtils(getClass());
         try {

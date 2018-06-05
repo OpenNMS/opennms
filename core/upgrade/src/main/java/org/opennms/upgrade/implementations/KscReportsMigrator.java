@@ -150,8 +150,8 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
                     final String resourceId = graph.getResourceId().orElse(null);
                     if (intf.shouldUpdate(resourceId)) {
                         changed = true;
-                        log("  replacing resource ID %s with %s for %s\n", resourceId, intf.getNewResourceId(), graph.getTitle());
-                        graph.setResourceId(intf.getNewResourceId());
+                        log("  replacing resource ID %s with %s for %s\n", graph.getResourceId(), intf.getNewResourceId(), graph.getTitle());
+                        graph.setResourceId(intf.getNewResourceId().toString());
                     }
                 }
             }
@@ -178,7 +178,7 @@ public class KscReportsMigrator extends AbstractOnmsUpgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected List<SnmpInterface> getInterfacesToMerge() throws OnmsUpgradeException {
-        List<SnmpInterface> interfacesToMerge = new ArrayList<SnmpInterface>();
+        List<SnmpInterface> interfacesToMerge = new ArrayList<>();
         Connection conn = getDbConnection();
         final DBUtils db = new DBUtils(getClass());
         db.watch(conn);

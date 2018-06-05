@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== BSFMonitor
 
 This monitor runs a _Bean Scripting Framework_ http://commons.apache.org/proper/commons-bsf/[BSF] compatible script to determine the status of a service.
@@ -34,6 +37,8 @@ _BSFMonitor_ also grants access to a selection of _{opennms-product-name}_ inter
 | `lang-class`      | The BSF language class, like `groovy` or `beanshell`.          | optional | file-name extension is interpreted by default
 | `file-extensions` | comma-separated list                                           | optional | `-`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Beans which can be used in the script
 [options="header, autowidth"]

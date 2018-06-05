@@ -73,7 +73,7 @@ public class SendmailTest implements Serializable {
      * from the JavaMail class.
      */
     @XmlElement(name="javamail-property")
-    private List<JavamailProperty> m_javamailProperties = new ArrayList<JavamailProperty>();
+    private List<JavamailProperty> m_javamailProperties = new ArrayList<>();
 
     /**
      * Define the host and port of the sendmail server. If you

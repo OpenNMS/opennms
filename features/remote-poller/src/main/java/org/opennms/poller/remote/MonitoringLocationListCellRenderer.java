@@ -53,7 +53,7 @@ public class MonitoringLocationListCellRenderer extends DefaultListCellRenderer 
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         OnmsMonitoringLocation location = (OnmsMonitoringLocation)value;
 
-        StringBuffer stringValue = new StringBuffer();
+        final StringBuilder stringValue = new StringBuilder();
         if (location != null) {
             stringValue.append(location.getMonitoringArea());
             stringValue.append(" - ");

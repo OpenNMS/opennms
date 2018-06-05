@@ -3,9 +3,6 @@
 	xmlns="http://www.w3.org/2001/XMLSchema"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:this="http://xmlns.opennms.org/xsd/config/collectd"
-	xmlns:ns2="http://www.w3.org/1999/xhtml"
-	xmlns:ns="http://www.w3.org/2001/XMLSchema"
-	xmlns:hfp="http://www.w3.org/2001/XMLSchema-hasFacetAndProperty"
 	elementFormDefault="qualified">
 	<annotation>
 		<documentation>XML Schema for the collectd-configuration.xml configuration file.</documentation>
@@ -34,12 +31,15 @@
 				</element>
 			</sequence>
 
-			<attribute name="threads" type="int" use="required">
+			<attribute name="threads" use="optional" default="50">
 				<annotation>
-					<documentation>The maximum number of threads used for data
-						collection.
-					</documentation>
+					<documentation>The maximum number of threads used for data collection.</documentation>
 				</annotation>
+				<simpleType>
+					<restriction base="int">
+						<minInclusive value="1" />
+					</restriction>
+				</simpleType>
 			</attribute>
 		</complexType>
 	</element>
@@ -84,7 +84,7 @@
 		</annotation>
 
 		<complexType>
-			<sequence>
+			<choice maxOccurs="unbounded">
 				<element maxOccurs="1" minOccurs="1" ref="this:filter">
 					<annotation>
 						<documentation>
@@ -190,7 +190,7 @@
 						</documentation>
 					</annotation>
 				</element>
-			</sequence>
+			</choice>
 
 			<attribute name="name" type="string" use="required">
 				<annotation>

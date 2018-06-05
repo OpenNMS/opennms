@@ -36,8 +36,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
+import org.opennms.features.topology.api.LayoutAlgorithm;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.LevelAware;
@@ -61,7 +61,7 @@ import edu.uci.ics.jung.graph.DirectedOrderedSparseMultigraph;
  * <p>
  * The current graph to be transformed is extracted from the {@link org.opennms.features.topology.api.GraphContainer}.
  * Basically all its vertices are transformed and then the new layout is set back to the GraphContainer by executing
- * the {@link #updateLayout(GraphContainer) updateLayout} method.
+ * the {@link LayoutAlgorithm#updateLayout(Graph) updateLayout} method.
  * </p>
  *
  * The Algorithm uses the JUNG library.
@@ -77,12 +77,11 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
      * Updates the current layout by extracting the containers graph and then perform a (x,y) tranformation
      * of all vertices.
      *
-     * @param graphContainer The container of the current graph. Contains all relevant information to perform the transformation
-     *                       of the {@link org.opennms.features.topology.api.Graph} by changing its {@link org.opennms.features.topology.api.Layout}
+     * @param graph The container of the current graph. Contains all relevant information to perform the transformation
+     *                       of the {@link Graph} by changing its {@link Layout}
      */
     @Override
-    public void updateLayout(final GraphContainer graphContainer) {
-        final Graph graph = graphContainer.getGraph();
+    public void updateLayout(final Graph graph) {
         final Layout graphLayout = graph.getLayout();
 
         // Only apply if fully level aware.
@@ -94,7 +93,7 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         } else {
             // SEE NMS-8703
             LOG.warn("The selected graph is not fully level aware. Cannot layout hierarchical. Falling back to D3 Layout");
-            new D3TopoLayoutAlgorithm().updateLayout(graphContainer);
+            new D3TopoLayoutAlgorithm().updateLayout(graph);
         }
     }
 

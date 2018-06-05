@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== SnmpMonitor
 
 The SNMP monitor gives a generic possibility to monitor states and results from SNMP agents.
@@ -88,15 +91,15 @@ It won't store the time spent during the last successful attempt.
                       Defaults to a reasonable value if unset.
                       See below for an explanation of the possible template parameters.                                | optional | depends on operation mode
 
-| `retry`           | Number of polls to attempt.                                                                      | optional | from `snmp-config.xml`
 | `retries`         | *Deprecated* Same as `retry`. Parameter `retry` takes precedence if both are set.                | optional | from `snmp-config.xml`
-| `timeout`         | Timeout in milliseconds for retrieving the object's value.                                       | optional | from `snmp-config.xml`
 | `walk`            | `false`: Sets the monitor to poll for a scalar object unless if the `match-all` parameter is set
                       to `count`, in which case the `match-all` parameter takes precedence. +
                       `true`: Sets the monitor to poll for a tabular object where the `match-all` parameter defines how
                       the tabular object's values must match the criteria defined by the `operator` and `operand`
                       parameters. See also the `match-all`, `minimum`, and `maximum` parameters.                       | optional | `false`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 .Variables which can be used in the reason-template parameter
 [options="header, autowidth"]

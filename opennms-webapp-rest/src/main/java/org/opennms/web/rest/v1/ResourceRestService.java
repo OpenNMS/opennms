@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.resource.ResourceDTO;
 import org.opennms.netmgt.model.resource.ResourceDTOCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +85,7 @@ public class ResourceRestService extends OnmsRestService {
     @Transactional(readOnly=true)
     public ResourceDTO getResourceById(@PathParam("resourceId") final String resourceId,
             @DefaultValue("-1") @QueryParam("depth") final int depth) {
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(resourceId));
         if (resource == null) {
             throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);
         }
@@ -96,7 +97,7 @@ public class ResourceRestService extends OnmsRestService {
     @Path("{resourceId}")
     @Transactional(readOnly=false)
     public void deleteResourceById(@PathParam("resourceId") final String resourceId) {
-        final boolean found = m_resourceDao.deleteResourceById(resourceId);
+        final boolean found = m_resourceDao.deleteResourceById(ResourceId.fromString(resourceId));
 
         if (!found) {
             throw getException(Status.NOT_FOUND, "No resource with id '{}' found.", resourceId);

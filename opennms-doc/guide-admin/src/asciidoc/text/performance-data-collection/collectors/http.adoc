@@ -1,0 +1,67 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== HttpCollector
+
+The _HttpCollector_ is used to collect performance data via _HTTP_ and _HTTPS_.
+Attributes are extracted from the _HTTP_ responses using a regular expression.
+
+===== Collector Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.collectd.HttpCollector`
+| Package             | core
+| Supported on Minion | `Yes`
+|===
+
+===== Collector Parameters
+
+.Collector specific parameters for the HttpCollector
+[options="header, autowidth"]
+|===
+| Parameter              | Description                                                                    | Required | Default value
+| `collection`           | The name of the _HTTP Collection_ to use.                                      | required | (none)
+| `thresholding-enabled` | Whether collected performance data shall be tested against thresholds.         | optional | `true`
+| `port`                 | Override the default port in the all of the URIs                               | optional | 80
+| `timeout`              | Connection and socket timeout in milliseconds                                  | optional | 3000
+| `retry`                | Number of retries                                                              | optional | 2
+|===
+
+
+===== HTTP Collection Configuration
+
+_HTTP Collections_ are defined in the `etc/http-datacollection-config.xml`.
+
+Here is a snippet providing a collection definition named `opennms-copyright`:
+
+[source, xml]
+----
+<http-collection name="opennms-copyright">
+  <rrd step="300">
+    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+    <rra>RRA:AVERAGE:0.5:288:366</rra>
+    <rra>RRA:MAX:0.5:288:366</rra>
+    <rra>RRA:MIN:0.5:288:366</rra>
+  </rrd>
+  <uris>
+    <uri name="login-page">
+      <url path="/opennms/login.jsp"
+           matches=".*2002\-([0-9]+).*" response-range="100-399" dotall="true" >
+      </url>
+      <attributes>
+        <attrib alias="copyrightYear" match-group="1" type="gauge"/>
+      </attributes>
+    </uri>
+  </uris>
+</http-collection>
+----
+
+Once added to `etc/http-datacollection-config.xml` you can test it using the `collect` command available in the _Karaf Shell_:
+
+[source]
+----
+collection:collect org.opennms.netmgt.collectd.HttpCollector 127.0.0.1 collection=opennms-copyright port=8980
+----

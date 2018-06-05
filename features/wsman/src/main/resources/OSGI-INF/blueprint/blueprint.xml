@@ -13,4 +13,18 @@
 		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" />
 	</service>
 
+	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" />
+	<service ref="wsmanCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.collectd.WsManCollector" />
+		</service-properties>
+	</service>
+
+	<bean id="wsmanMonitor" class="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+	<service ref="wsmanMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.WsManMonitor" />
+		</service-properties>
+	</service>
+
 </blueprint>

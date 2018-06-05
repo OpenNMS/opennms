@@ -35,7 +35,7 @@
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/opennms-trendline.css" />
 
 <div class="alert alert-trend" role="alert">
-    <table width="100%" border="0">
+    <table width="100%" border="0" cellpadding="0" cellspacing="0">
         <tr>
             <td width="1%">
                 <h1 style="margin:0;"><span class="glyphicon ${trendDefinition.icon}" aria-hidden="true"></span></h1>
@@ -57,6 +57,8 @@
             </td>
         </tr>
     </table>
+
+    <hr style="margin-top:5px;margin-bottom:5px;"/>
 
     <c:choose>
         <c:when test="${trendDefinition.descriptionLink!=''}">

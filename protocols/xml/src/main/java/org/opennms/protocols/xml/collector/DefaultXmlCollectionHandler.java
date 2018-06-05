@@ -28,11 +28,11 @@
 
 package org.opennms.protocols.xml.collector;
 
-import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.support.builder.CollectionSetBuilder;
+import org.opennms.netmgt.collection.support.builder.Resource;
 import org.opennms.protocols.xml.config.Request;
 import org.opennms.protocols.xml.config.XmlSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -47,20 +47,14 @@ public class DefaultXmlCollectionHandler extends AbstractXmlCollectionHandler {
     /** The Constant LOG. */
     private static final Logger LOG = LoggerFactory.getLogger(DefaultXmlCollectionHandler.class);
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#processXmlResource(org.opennms.protocols.xml.collector.XmlCollectionResource, org.opennms.netmgt.config.collector.AttributeGroupType)
-     */
     @Override
-    protected void processXmlResource(XmlCollectionResource collectionResource, AttributeGroupType attribGroupType) {}
+    protected void processXmlResource(CollectionSetBuilder builder, Resource collectionResource, String resourceTypeName, String group) { };
 
-    /* (non-Javadoc)
-     * @see org.opennms.protocols.xml.collector.AbstractXmlCollectionHandler#fillCollectionSet(java.lang.String, org.opennms.protocols.xml.config.Request, org.opennms.netmgt.collection.api.CollectionAgent, org.opennms.protocols.xml.collector.XmlCollectionSet, org.opennms.protocols.xml.config.XmlSource)
-     */
     @Override
-    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, XmlCollectionSet collectionSet, XmlSource source) throws Exception {
+    protected void fillCollectionSet(String urlString, Request request, CollectionAgent agent, CollectionSetBuilder builder, XmlSource source) throws Exception {
         final Document doc = getXmlDocument(urlString, request);
         LOG.debug("fillCollectionSet: parsed document for source url '{}' collection", urlString);
-        fillCollectionSet(agent, collectionSet, source, doc);
+        fillCollectionSet(agent, builder, source, doc);
     }
 
 }

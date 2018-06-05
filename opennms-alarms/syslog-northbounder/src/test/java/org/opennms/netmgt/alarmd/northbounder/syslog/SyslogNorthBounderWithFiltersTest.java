@@ -32,6 +32,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.StringReader;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,15 +42,17 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
-
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
-
 import org.springframework.core.io.FileSystemResource;
+
+import com.google.common.collect.Lists;
 
 /**
  * Tests the Syslog North Bound Interface with filters.
@@ -73,7 +77,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         dao.afterPropertiesSet();
 
         // Initialize the Syslog northbound interfaces
-        List<SyslogNorthbounder> nbis = new LinkedList<SyslogNorthbounder>();
+        List<SyslogNorthbounder> nbis = new LinkedList<>();
         for (SyslogDestination syslogDestination : dao.getConfig().getDestinations()) {
             SyslogNorthbounder nbi = new SyslogNorthbounder(dao, syslogDestination.getName());
             nbi.afterPropertiesSet();
@@ -92,7 +96,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         snmpInterface.setIfDescr("en1");
         snmpInterface.setIfName("en1/0");
         snmpInterface.setPhysAddr("00:00:00:00:00:01");
-        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
+        Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
         InetAddress address = InetAddress.getByName("10.0.1.1");
         OnmsIpInterface onmsIf = new OnmsIpInterface(address, node);
         onmsIf.setSnmpInterface(snmpInterface);
@@ -114,9 +118,18 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         onmsAlarm.setIpAddr(address);
         onmsAlarm.setCounter(1);
         onmsAlarm.setLogMsg("Interface Down");
-        onmsAlarm.setEventParms("owner=agalue(String,text)");
+        onmsAlarm.setLastEvent(new OnmsEvent() {{
+            this.setEventParameters(Lists.newArrayList(
+                    new OnmsEventParameter(this, "owner", "agalue", "String")));
+        }});
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        Date firstOccurence = simpleDateFormat.parse("2017-3-1 11:59:59");
+        Date lastOccurence = simpleDateFormat.parse("2018-3-1 11:59:59");
+        onmsAlarm.setFirstEventTime(firstOccurence);
+        onmsAlarm.setLastEventTime(lastOccurence);
         NorthboundAlarm nbAlarm = new NorthboundAlarm(onmsAlarm);
-        List<NorthboundAlarm> alarms = new LinkedList<NorthboundAlarm>();
+        List<NorthboundAlarm> alarms = new LinkedList<>();
         alarms.add(nbAlarm);
 
         // Verify filters and send alarms to the northbound interfaces
@@ -133,8 +146,9 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         Assert.assertTrue("Log messages sent: 2, Log messages received: " + messages.size(), 2 == messages.size());
         Assert.assertTrue(messages.get(0).contains("ALARM 10 FROM NODE agalue@TestGroup"));
         Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE 10.0.1.1"));
+        Assert.assertTrue(messages.get(0).contains("FIRST:2017-03-01 11:59:59"));
+        Assert.assertTrue(messages.get(0).contains("LAST:2018-03-01 11:59:59"));
         reader.close();
-
         // Remove the temporary configuration file
         configFile.delete();
     }
@@ -147,7 +161,7 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
      * @throws Exception the exception
      */
     private List<String> getMessagesFromBuffer(BufferedReader reader) throws Exception {
-        List<String> messages = new LinkedList<String>();
+        List<String> messages = new LinkedList<>();
         String line = null;
         while ((line = reader.readLine()) != null) {
             messages.add(line);

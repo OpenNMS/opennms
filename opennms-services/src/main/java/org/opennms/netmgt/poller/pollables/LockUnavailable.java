@@ -34,7 +34,7 @@ package org.opennms.netmgt.poller.pollables;
  * @author <a href="mailto:brozow@opennms.org">Mathew Brozowski</a>
  * @version $Id: $
  */
-public class LockUnavailable extends RuntimeException {
+public class LockUnavailable extends Exception {
 
     private static final long serialVersionUID = 6054183865580259303L;
 
@@ -43,7 +43,6 @@ public class LockUnavailable extends RuntimeException {
      */
     public LockUnavailable() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -53,7 +52,6 @@ public class LockUnavailable extends RuntimeException {
      */
     public LockUnavailable(String message) {
         super(message);
-        // TODO Auto-generated constructor stub
     }
 
     /**

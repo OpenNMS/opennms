@@ -42,7 +42,7 @@ import org.opennms.netmgt.collectd.DefaultCollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionSet;
-import org.opennms.netmgt.collection.api.ServiceCollector;
+import org.opennms.netmgt.collection.api.CollectionStatus;
 import org.opennms.netmgt.collection.support.AbstractCollectionSetVisitor;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -127,8 +127,9 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("port", getServer().getLocalPort());
         NSClientCollector collector = getCollector(parameters);
-        CollectionSet collectionSet = collector.collect(m_collectionAgent, m_eventProxy, parameters);
-        Assert.assertEquals(ServiceCollector.COLLECTION_SUCCEEDED, collectionSet.getStatus());
+        parameters.putAll(collector.getRuntimeAttributes(m_collectionAgent, parameters));
+        CollectionSet collectionSet = collector.collect(m_collectionAgent, parameters);
+        Assert.assertEquals(CollectionStatus.SUCCEEDED, collectionSet.getStatus());
         CountResourcesVisitor visitor = new CountResourcesVisitor();
         collectionSet.visit(visitor);
         Assert.assertEquals(42, visitor.getCount());
@@ -136,7 +137,6 @@ public class NsclientCollectorTest extends AbstractNsclientTest {
 
     private NSClientCollector getCollector(Map<String, Object> parameters) {
         NSClientCollector collector = new NSClientCollector();
-        collector.initialize(m_collectionAgent, parameters);
         return collector;
     }
 

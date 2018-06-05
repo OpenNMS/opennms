@@ -34,6 +34,7 @@ import java.util.Set;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.StatisticsReportDao;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
 import org.opennms.web.svclayer.StatisticsReportService;
@@ -92,7 +93,7 @@ public class DefaultStatisticsReportService implements StatisticsReportService, 
         for (StatisticsReportData reportDatum : data) {
             Datum d = new Datum();
             d.setValue(reportDatum.getValue());
-            OnmsResource resource = m_resourceDao.getResourceById(reportDatum.getResourceId());
+            OnmsResource resource = m_resourceDao.getResourceById(ResourceId.fromString(reportDatum.getResourceId()));
             if (resource == null) {
                 LOG.warn("Could not find resource for statistics report: {}", reportDatum.getResourceId());
             } else {

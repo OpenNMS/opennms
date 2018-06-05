@@ -112,7 +112,7 @@ public class LocationInfoPanelItemProvider implements InfoPanelItemProvider {
     }
 
     private String createTooltip(Vertex vertex, AddressInfo addressInfo) {
-        StringBuilder tooltip = new StringBuilder();
+        final StringBuilder tooltip = new StringBuilder();
         tooltip.append(String.format("<b>%s</b>", vertex.getLabel()));
 
         if (addressInfo != null) {

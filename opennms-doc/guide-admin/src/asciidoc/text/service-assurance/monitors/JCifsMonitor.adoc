@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JCifsMonitor
 This monitor allows to test a file sharing service based on the CIFS/SMB protocol.
 
@@ -47,7 +50,6 @@ The _JCifsMonitor_ can *not* test:
 |===
 | Parameter           | Description                                                                                     | Required | Default value
 | `retry`             | Number of retries before the service is marked as _down_.                                       | optional | `0`
-| `timeout`           | Time in milliseconds to wait for the SMB service.                                               | optional | `3000`
 | `domain`            | Windows domain where the user is located. You don't have to use the domain parameter if you use
                         local user accounts.                                                                            | optional | empty String
 | `username`          | Username to access the resource over a network                                                  | optional | empty String
@@ -62,6 +64,8 @@ The _JCifsMonitor_ can *not* test:
 | `folderIgnoreFiles` | Ignore specific files in folder with regular expression. This parameter will just be applied on
                         `folder_empty` and `folder_not_empty`, otherwise it will be ignored.                            | optional | `-`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 TIP: It makes little sense to have retries higher than `1`.
      It is a waste of resources during the monitoring.

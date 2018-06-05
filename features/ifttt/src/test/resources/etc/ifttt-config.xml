@@ -1,0 +1,177 @@
+<ifttt-config enabled="true" key="test-key" pollInterval="2">
+
+    <trigger-package categoryFilter="Bar" onlyUnacknowledged="false">
+        <trigger-set name="ON">
+            <trigger eventName="test" delay="0">
+                <value1>ON</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="OFF">
+            <trigger eventName="test" delay="0">
+                <value1>OFF</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="NORMAL">
+            <trigger eventName="test" delay="0">
+                <value1>#33FF00</value1>
+                <value2>0.40</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="WARNING">
+            <trigger eventName="test" delay="0">
+                <value1>#FFCC00</value1>
+                <value2>0.50</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MINOR">
+            <trigger eventName="test" delay="0">
+                <value1>#FF9900</value1>
+                <value2>0.60</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MAJOR">
+            <trigger eventName="test" delay="0">
+                <value1>#CC3300</value1>
+                <value2>0.70</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="CRITICAL">
+            <trigger eventName="test" delay="0">
+                <value1>#FF0000</value1>
+                <value2>0.80</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+    </trigger-package>
+
+    <trigger-package categoryFilter="Foo" onlyUnacknowledged="true">
+        <trigger-set name="ON">
+            <trigger eventName="test" delay="0">
+                <value1>ON</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="OFF">
+            <trigger eventName="test" delay="0">
+                <value1>OFF</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="NORMAL">
+            <trigger eventName="test" delay="0">
+                <value1>#33FF00</value1>
+                <value2>0.40</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="WARNING">
+            <trigger eventName="test" delay="0">
+                <value1>#FFCC00</value1>
+                <value2>0.50</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MINOR">
+            <trigger eventName="test" delay="0">
+                <value1>#FF9900</value1>
+                <value2>0.60</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MAJOR">
+            <trigger eventName="test" delay="0">
+                <value1>#CC3300</value1>
+                <value2>0.70</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="CRITICAL">
+            <trigger eventName="test" delay="0">
+                <value1>#FF0000</value1>
+                <value2>0.80</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+    </trigger-package>
+
+    <trigger-package categoryFilter="Foo|Bar" onlyUnacknowledged="true">
+        <trigger-set name="ON">
+            <trigger eventName="test" delay="0">
+                <value1>ON</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="OFF">
+            <trigger eventName="test" delay="0">
+                <value1>OFF</value1>
+                <value2></value2>
+                <value3></value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="NORMAL">
+            <trigger eventName="test" delay="0">
+                <value1>#33FF00</value1>
+                <value2>0.40</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="WARNING">
+            <trigger eventName="test" delay="0">
+                <value1>#FFCC00</value1>
+                <value2>0.50</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MINOR">
+            <trigger eventName="test" delay="0">
+                <value1>#FF9900</value1>
+                <value2>0.60</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="MAJOR">
+            <trigger eventName="test" delay="0">
+                <value1>#CC3300</value1>
+                <value2>0.70</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+
+        <trigger-set name="CRITICAL">
+            <trigger eventName="test" delay="0">
+                <value1>#FF0000</value1>
+                <value2>0.80</value2>
+                <value3>%os%,%ns%,%oc%,%nc%</value3>
+            </trigger>
+        </trigger-set>
+    </trigger-package>
+
+</ifttt-config>

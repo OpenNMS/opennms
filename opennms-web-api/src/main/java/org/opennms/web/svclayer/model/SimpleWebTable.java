@@ -245,7 +245,7 @@ public class SimpleWebTable {
 	 */
         @Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
+		final StringBuilder buf = new StringBuilder();
 
 		buf.append("<h2>" + Util.htmlify(getTitle()) + "</h2>\n");
 

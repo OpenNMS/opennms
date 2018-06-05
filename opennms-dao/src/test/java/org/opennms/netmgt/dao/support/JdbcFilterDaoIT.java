@@ -327,7 +327,7 @@ public class JdbcFilterDaoIT implements InitializingBean {
 
     @Test
     public void testWalkNodes() throws Exception {
-        final List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        final List<OnmsNode> nodes = new ArrayList<>();
         EntityVisitor visitor = new AbstractEntityVisitor() {
             @Override
             public void visitNode(OnmsNode node) {

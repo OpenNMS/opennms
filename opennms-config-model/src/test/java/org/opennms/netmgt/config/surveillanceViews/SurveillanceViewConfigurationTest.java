@@ -79,6 +79,37 @@ public class SurveillanceViewConfigurationTest extends XmlTestNoCastor<Surveilla
                 "    </view>\n" + 
                 "  </views>\n" + 
                 "</surveillance-view-configuration>"
+            },
+            {
+                getConfig(),
+                "<surveillance-view-configuration xmlns=\"http://xmlns.opennms.org/xsd/config/surveillance-views\" default-view=\"default\">\n" + 
+                "   <views>\n" + 
+                "      <view name=\"default\" refresh-seconds=\"300\">\n" + 
+                "         <rows>\n" + 
+                "            <row-def label=\"Routers\">\n" + 
+                "               <category name=\"Routers\"/>\n" + 
+                "            </row-def>\n" + 
+                "            <row-def label=\"Switches\">\n" + 
+                "               <category name=\"Switches\"/>\n" + 
+                "            </row-def>\n" + 
+                "            <row-def label=\"Servers\">\n" + 
+                "               <category name=\"Servers\"/>\n" + 
+                "            </row-def>\n" + 
+                "         </rows>\n" + 
+                "         <columns>\n" + 
+                "            <column-def label=\"PROD\">\n" + 
+                "               <category name=\"Production\"/>\n" + 
+                "            </column-def>\n" + 
+                "            <column-def label=\"TEST\">\n" + 
+                "               <category name=\"Test\"/>\n" + 
+                "            </column-def>\n" + 
+                "            <column-def label=\"DEV\">\n" + 
+                "               <category name=\"Development\"/>\n" + 
+                "            </column-def>\n" + 
+                "         </columns>\n" + 
+                "      </view>\n" + 
+                "   </views>\n" + 
+                "</surveillance-view-configuration>"
             }
         });
     }

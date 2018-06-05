@@ -95,11 +95,11 @@ public class CriteriaBehavior<T> {
         return m_converter.apply(value);
     }
 
-    public void setSkipProperty(boolean skip) {
+    public void setSkipPropertyByDefault(boolean skip) {
         m_skipProperty = skip;
     }
 
-    public boolean shouldSkipProperty() {
+    public boolean shouldSkipProperty(ConditionType condition, boolean wildcard) {
         return m_skipProperty;
     }
 

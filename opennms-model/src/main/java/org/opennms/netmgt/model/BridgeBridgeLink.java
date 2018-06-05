@@ -193,27 +193,30 @@ public class BridgeBridgeLink implements Topology {
 
     @Override
     public String toString() {
-        Integer designatedNodeid = null;
-        if (m_designatedNode != null)
-            designatedNodeid = m_designatedNode.getId();
-        return new ToStringBuilder(this).append("Nodeid", m_node.getId()).append("bridgePort",
-                                                                                 m_bridgePort).append("bridgePortIfIndex",
-                                                                                                      m_bridgePortIfIndex).append("bridgePortIfName",
-                                                                                                                                  m_bridgePortIfName).append("vlan",
-                                                                                                                                                             m_vlan).append("Nodeid",
-                                                                                                                                                                            designatedNodeid).append("designatedPort",
-                                                                                                                                                                                                     m_designatedPort).append("designatedPortIfIndex",
-                                                                                                                                                                                                                              m_designatedPortIfIndex).append("designatedPortIfName",
-                                                                                                                                                                                                                                                              m_designatedPortIfName).append("designatedVlan",
-                                                                                                                                                                                                                                                                                             m_designatedVlan).append("m_bridgeBridgeLinkCreateTime",
-                                                                                                                                                                                                                                                                                                                      m_bridgeBridgeLinkCreateTime).append("m_bridgeBridgeLinkLastPollTime",
-                                                                                                                                                                                                                                                                                                                                                           m_bridgeBridgeLinkLastPollTime).toString();
+            Integer designatedNodeid = null;
+            if (m_designatedNode != null) {
+                    designatedNodeid = m_designatedNode.getId();
+            }
+            return new ToStringBuilder(this)
+                            .append("Nodeid", m_node.getId())
+                            .append("bridgePort", m_bridgePort)
+                            .append("bridgePortIfIndex", m_bridgePortIfIndex)
+                            .append("bridgePortIfName", m_bridgePortIfName)
+                            .append("vlan", m_vlan)
+            .append("Nodeid", designatedNodeid)
+                            .append("designatedPort", m_designatedPort)
+                            .append("designatedPortIfIndex", m_designatedPortIfIndex)
+                            .append("designatedPortIfName", m_designatedPortIfName)
+                            .append("designatedVlan", m_designatedVlan)
+                            .append("m_bridgeBridgeLinkCreateTime", m_bridgeBridgeLinkCreateTime)
+                            .append("m_bridgeBridgeLinkLastPollTime", m_bridgeBridgeLinkLastPollTime)
+                            .toString();
     }
 
     public void merge(BridgeBridgeLink element) {
         if (element == null)
-            return;
-
+                return;
+        
         setBridgePortIfIndex(element.getBridgePortIfIndex());
         setBridgePortIfName(element.getBridgePortIfName());
         setVlan(element.getVlan());
@@ -226,7 +229,7 @@ public class BridgeBridgeLink implements Topology {
         if (element.getBridgeBridgeLinkLastPollTime() == null)
             setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
         else
-            setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime());
+           setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
     }
 
     @Transient
@@ -253,24 +256,5 @@ public class BridgeBridgeLink implements Topology {
 
         return strbfr.toString();
     }
-
-    @Transient
-    public BridgeBridgeLink getReverseBridgeBridgeLink() {
-
-        BridgeBridgeLink link = new BridgeBridgeLink();
-        link.setNode(getDesignatedNode());
-        link.setBridgePort(getDesignatedPort());
-        link.setBridgePortIfIndex(getDesignatedPortIfIndex());
-        link.setBridgePortIfName(getDesignatedPortIfName());
-        link.setVlan(getDesignatedVlan());
-
-        link.setDesignatedNode(getNode());
-        link.setDesignatedPort(getBridgePort());
-        link.setDesignatedPortIfIndex(getBridgePortIfIndex());
-        link.setDesignatedPortIfName(getBridgePortIfName());
-        link.setDesignatedVlan(getVlan());
-
-        return link;
-    }
-
+	
 }

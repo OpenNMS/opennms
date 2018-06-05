@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +86,15 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         Name,
         Severity,
         Level;
+
+        public static Order of(String column) {
+            for (Order order : Order.values()) {
+                if (order.name().equalsIgnoreCase(column)) {
+                    return order;
+                }
+            }
+            throw new IllegalArgumentException("No column found with name '" + column + "'. Valid values are: " + Arrays.toString(Order.values()));
+        }
     }
 
     /**
@@ -93,6 +103,11 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     public enum Sequence {
         Ascending,
         Descending;
+
+        public static Sequence of(boolean asc) {
+            if (asc) return Ascending;
+            return Descending;
+        }
     }
 
     /**
@@ -197,6 +212,9 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
      * the results limit
      */
     private int m_limit = 0;
+
+    private int m_offset = 0;
+
     /**
      * ascending or descending?
      */
@@ -220,8 +238,14 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
             s = s.filter(p -> p.getAttributes().containsKey(pair.getA()) && p.getAttributes().get(pair.getA()).matches(pair.getB()));
         }
 
-        for (Pair<CompareOperator, Status> pair : m_severityFilters) {
-            s = s.filter(p -> pair.getA().check(businessServiceManager.getOperationalStatus(p).compareTo(pair.getB())));
+        if (!m_severityFilters.isEmpty()) {
+            s = s.filter(bs -> {
+                boolean accepted = false;
+                for (Pair<CompareOperator, Status> pair : m_severityFilters) {
+                    accepted |= pair.getA().check(businessServiceManager.getOperationalStatus(bs).compareTo(pair.getB()));
+                }
+                return accepted;
+            });
         }
 
         Comparator<BusinessService> comparator = new Comparator<BusinessService>() {
@@ -252,6 +276,10 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         }
 
         s = s.sorted(comparator);
+
+        if (m_offset > 0) {
+            s = s.skip(m_offset);
+        }
 
         if (m_limit > 0) {
             s = s.limit(m_limit);
@@ -305,13 +333,31 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
         return this;
     }
 
+    public BusinessServiceSearchCriteriaBuilder inSeverity(List<Status> severities) {
+        for (Status eachStatus : severities) {
+            filterSeverity(CompareOperator.Equal, eachStatus);
+        }
+        return this;
+    }
+
     public BusinessServiceSearchCriteriaBuilder limit(int limit) {
         this.m_limit = limit;
         return this;
     }
 
+    public BusinessServiceSearchCriteriaBuilder offset(int offset) {
+        this.m_offset = offset;
+        return this;
+    }
+
     public BusinessServiceSearchCriteriaBuilder order(Sequence sequence) {
         m_sequence = sequence;
+        return this;
+    }
+
+    public BusinessServiceSearchCriteriaBuilder order(String column, boolean asc) {
+        this.order(Order.of(column));
+        this.order(Sequence.of(asc));
         return this;
     }
 
@@ -323,6 +369,12 @@ public class BusinessServiceSearchCriteriaBuilder implements BusinessServiceSear
     public BusinessServiceSearchCriteriaBuilder desc() {
         m_sequence = Sequence.Descending;
         return this;
+    }
+
+    public void prepareForCounting() {
+        m_order = Order.Name;
+        m_limit = 0;
+        m_offset = 0;
     }
 
     public Order getOrder() {

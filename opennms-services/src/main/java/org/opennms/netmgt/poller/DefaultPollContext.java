@@ -92,7 +92,7 @@ public class DefaultPollContext implements PollContext, EventListener {
     private volatile String m_name;
     private volatile String m_localHostName;
     private volatile boolean m_listenerAdded = false;
-    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<PendingPollEvent>();
+    private final Queue<PendingPollEvent> m_pendingPollEvents = new ConcurrentLinkedQueue<>();
 
     /**
      * <p>getEventManager</p>

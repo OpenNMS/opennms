@@ -136,8 +136,8 @@ public class ScanManager {
 
             m_systemGroup = new SystemGroup(m_address);
 
-            final Set<SnmpInstId> ipAddrs = new TreeSet<SnmpInstId>();
-            final Set<InetAddress> ipAddresses = new HashSet<InetAddress>();
+            final Set<SnmpInstId> ipAddrs = new TreeSet<>();
+            final Set<InetAddress> ipAddresses = new HashSet<>();
 
             for(final OnmsIpInterface iface : node.getIpInterfaces()) {
             	final InetAddress addr = iface.getIpAddress();
@@ -164,7 +164,7 @@ public class ScanManager {
                 // pass
             }
 
-            final Set<SnmpInstId> ifIndices = new TreeSet<SnmpInstId>();
+            final Set<SnmpInstId> ifIndices = new TreeSet<>();
 
             for(final Integer ifIndex : m_ipAddrTable.getIfIndices()) {
                 ifIndices.add(new SnmpInstId(ifIndex));

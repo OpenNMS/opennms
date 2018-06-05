@@ -63,7 +63,7 @@ public class DefaultDistributedPollerServiceTest extends TestCase {
     
     @Override
     protected void setUp() {
-        m_mocks = new LinkedList<Object>();
+        m_mocks = new LinkedList<>();
         
         m_locationMonitorDao = createMock(LocationMonitorDao.class);
         m_mocks.add(m_locationMonitorDao);

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,17 +28,16 @@
 
 package org.opennms.features.topology.plugins.topo.graphml;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
-
-import javax.xml.bind.JAXB;
 
 import org.graphdrawing.graphml.GraphmlType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.core.test.xml.XmlTest;
+import org.opennms.core.xml.JaxbUtils;
 
 public class GraphmlRepositoryImplTest {
 
@@ -53,7 +52,8 @@ public class GraphmlRepositoryImplTest {
 
         // Create
         GraphmlRepositoryImpl graphmlRepository = new GraphmlRepositoryImpl();
-        GraphmlType graphmlType = JAXB.unmarshal(getClass().getResource("/test-graph.xml"), GraphmlType.class);
+        final InputStream graphmlStream = getClass().getResourceAsStream("/test-graph.xml");
+        final GraphmlType graphmlType = JaxbUtils.unmarshal(GraphmlType.class, graphmlStream);
         graphmlRepository.save(NAME, "Label *yay*", graphmlType);
 
         // Verify that xml was generated
@@ -69,19 +69,14 @@ public class GraphmlRepositoryImplTest {
         GraphmlType byName = graphmlRepository.findByName(NAME);
 
         // Verify Read
-        ByteArrayOutputStream graphmlTypeOutputStream = new ByteArrayOutputStream();
-        ByteArrayOutputStream byNameOutputStream = new ByteArrayOutputStream();
-        JAXB.marshal(graphmlType, graphmlTypeOutputStream);
-        JAXB.marshal(byName, byNameOutputStream);
+        final String graphmlTypeString = JaxbUtils.marshal(graphmlType);
+        final String byNameString = JaxbUtils.marshal(byName);
 
         // The GraphML java classes are generated and do not
         // overwrite equals() and hashCode() methods.
         // We have to check for equality like this
         XmlTest.initXmlUnit();
-        XmlTest.assertXmlEquals(
-                new String(graphmlTypeOutputStream.toByteArray()),
-                new String(byNameOutputStream.toByteArray())
-        );
+        XmlTest.assertXmlEquals(graphmlTypeString,  byNameString);
 
         // Delete
         graphmlRepository.delete(NAME);

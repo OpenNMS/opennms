@@ -288,7 +288,7 @@ public class IPAddressRange implements Comparable<IPAddressRange>, Iterable<IPAd
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         buf.append('[').append(m_begin).append(',').append(m_end).append(']');
         return buf.toString();
     }

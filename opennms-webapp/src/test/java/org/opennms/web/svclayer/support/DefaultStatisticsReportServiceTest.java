@@ -40,6 +40,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.StatisticsReportDao;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourceReference;
 import org.opennms.netmgt.model.StatisticsReport;
 import org.opennms.netmgt.model.StatisticsReportData;
@@ -115,7 +116,7 @@ public class DefaultStatisticsReportServiceTest {
         expect(m_statisticsReportDao.load(report.getId())).andReturn(report);
         m_statisticsReportDao.initialize(report);
         m_statisticsReportDao.initialize(report.getData());
-        expect(m_resourceDao.getResourceById(resourceRef.getResourceId())).andReturn(null);
+        expect(m_resourceDao.getResourceById(ResourceId.fromString(resourceRef.getResourceId()))).andReturn(null);
         
         m_mocks.replayAll();
         StatisticsReportModel model = m_service.getReport(command, errors);

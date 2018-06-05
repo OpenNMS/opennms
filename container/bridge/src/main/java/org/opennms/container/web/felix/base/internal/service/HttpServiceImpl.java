@@ -36,8 +36,8 @@ public final class HttpServiceImpl
 {
     private final Bundle bundle;
     private final HandlerRegistry handlerRegistry;
-    private final Set<Servlet> localServlets = new HashSet<Servlet>();
-    private final Set<Filter> localFilters = new HashSet<Filter>();
+    private final Set<Servlet> localServlets = new HashSet<>();
+    private final Set<Filter> localFilters = new HashSet<>();
     private final ServletContextManager contextManager;
 
     public HttpServiceImpl(Bundle bundle, ServletContext context, HandlerRegistry handlerRegistry,

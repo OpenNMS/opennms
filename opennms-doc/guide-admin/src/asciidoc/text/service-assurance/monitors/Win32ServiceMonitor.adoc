@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== Win32ServiceMonitor
 
 The Win32ServiceMonitor enables {opennms-product-name} to monitor the running state of any Windows service.
@@ -24,12 +27,12 @@ of a given service by the display name.
 [options="header, autowidth"]
 |===
 | Parameter       | Description                                                                                        | Required | Default value
-| `retry`         | Number of attempts to get the service state from SNMP agent                                        | required | From `snmp-config.xml`
-| `timeout`       | Time in milliseconds to wait for the SNMP result before next attempt.                              | required | From `snmp-config.xml`
 | `service-name`  | The name of the service, this should be the exact name of the Windows service to monitor as it
                     appears in the Services _MSC snap-in_. Short names such as you might use with net start will *not*
                     work here.                                                                                         | required | `Server`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 NOTE: Non-English Windows
 The `service-name` is sometime encoded in languages other than English.

@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -61,4 +62,6 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
     List<EdgeAlarmStatusSummary> getLldpEdgeAlarmSummaries(List<Integer> lldpLinkIds);
 
     List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns);
+
+    List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters);
 }

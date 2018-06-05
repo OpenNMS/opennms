@@ -137,7 +137,7 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
         }
 
         // Processing 3GPP File Type A (NE Mode)
-        StringBuffer sb = new StringBuffer("A");
+        final StringBuilder sb = new StringBuilder("A");
         sb.append(datef.format(new Date(timestamp)));
         sb.append(".");
         sb.append(timef.format(new Date(timestamp-step)));
@@ -198,8 +198,8 @@ public class Sftp3gppUrlConnection extends SftpUrlConnection {
      */
     @SuppressWarnings("unchecked")
     public List<String> getFileList() throws SftpException, IOException {
-        List<String> files = new ArrayList<String>();
-        Vector<LsEntry> entries = getChannel().ls(url.getPath());
+        List<String> files = new ArrayList<>();
+        List<LsEntry> entries = getChannel().ls(url.getPath());
         for (LsEntry entry : entries) {
             if (entry.getFilename().startsWith("."))
                 continue;

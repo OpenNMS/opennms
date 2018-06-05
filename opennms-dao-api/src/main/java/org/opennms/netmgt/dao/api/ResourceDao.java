@@ -36,6 +36,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 
 /**
  * <p>ResourceDao interface.</p>
@@ -62,7 +63,7 @@ public interface ResourceDao {
      * @param id a {@link java.lang.String} object.
      * @return a {@link org.opennms.netmgt.model.OnmsResource} object.
      */
-    public OnmsResource getResourceById(String id);
+    public OnmsResource getResourceById(ResourceId id);
 
     /**
      * <p>getResourceForNode</p>
@@ -88,5 +89,5 @@ public interface ResourceDao {
      *
      * @return {@code true} iff, the resource was found and deleted
      */
-    public boolean deleteResourceById(final String resourceId);
+    public boolean deleteResourceById(final ResourceId resourceId);
 }

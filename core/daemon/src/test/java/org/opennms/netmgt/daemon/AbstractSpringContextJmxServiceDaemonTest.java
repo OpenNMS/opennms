@@ -43,7 +43,7 @@ public class AbstractSpringContextJmxServiceDaemonTest {
      */
     @Test
     public void testStopWithNoInit() throws Exception {
-        MockDaemon<MockServiceDaemon> daemon = new MockDaemon<MockServiceDaemon>();
+        MockDaemon<MockServiceDaemon> daemon = new MockDaemon<>();
         daemon.stop();
     }
 

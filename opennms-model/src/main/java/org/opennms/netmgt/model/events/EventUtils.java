@@ -386,7 +386,7 @@ public abstract class EventUtils {
      * @return a {@link java.lang.String} object.
      */
     public static String toString(Event event) {
-        StringBuffer b = new StringBuffer("Event: ");
+        final StringBuilder b = new StringBuilder("Event: ");
         b.append("\n");
         if (event.getAutoacknowledge() != null) {
             b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
@@ -498,7 +498,7 @@ public abstract class EventUtils {
             return "{}\n";
         }
         
-        StringBuffer b = new StringBuffer();
+        final StringBuilder b = new StringBuilder();
         b.append("{\n");
         for (Parm p : parms) {
             b.append("  ");

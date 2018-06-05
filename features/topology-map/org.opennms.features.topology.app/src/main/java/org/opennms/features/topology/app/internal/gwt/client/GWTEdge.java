@@ -171,15 +171,15 @@ public final class GWTEdge extends JavaScriptObject {
             @Override
             public String call(GWTEdge edge, int index) {
                 final GWTVertex source = edge.getSource();
-				final GWTVertex target = edge.getTarget();
+                final GWTVertex target = edge.getTarget();
 
                 // Find the middle point of the line connecting the source and target vertices
-                double sx = (source.getX() + target.getX()) / 2;
-                double sy = (source.getY() + target.getY()) / 2;
+                double sx = (source.getX() + target.getX()) / 2d;
+                double sy = (source.getY() + target.getY()) / 2d;
 
                 // Find the length of the line connecting p1 and p2
-                double dy = target.getY() - source.getY();
-                double dx = target.getX() - source.getX();
+                double dy = (double)(target.getY() - source.getY());
+                double dx = (double)(target.getX() - source.getX());
                 double len = Math.sqrt(Math.pow(dx,2) + Math.pow(dy,2));
 
                 // Calculate the sign (i.e. direction) and distance we'll use to project to the control point

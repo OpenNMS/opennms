@@ -37,7 +37,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 
 public class TestVertex extends AbstractVertex {
 
-	List<TestEdge> m_edges = new ArrayList<TestEdge>();
+	List<TestEdge> m_edges = new ArrayList<>();
 
 	public TestVertex(String id) {
 		this(id, id);

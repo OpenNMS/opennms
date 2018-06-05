@@ -27,6 +27,7 @@
  *******************************************************************************/
 package org.opennms.netmgt.jmx;
 
+import org.opennms.netmgt.config.jmx.MBeanServer;
 import org.opennms.netmgt.jmx.connection.JmxServerConnectionException;
 
 /**
@@ -49,5 +50,5 @@ public interface JmxCollector {
      * @param sampleProcessor The callback to process each sample.
      * @throws JmxServerConnectionException If the connection to the jmx server could not be established (whatever the reason).
      */
-    void collect(JmxCollectorConfig config, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException;
+    void collect(JmxCollectorConfig config, MBeanServer mBeanServer, JmxSampleProcessor sampleProcessor) throws JmxServerConnectionException;
 }

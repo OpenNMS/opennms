@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== FtpMonitor
 
 The FtpMonitor is able to validate ftp connection dial-up processes.
@@ -23,7 +26,6 @@ For special cases the service is also marked as _up_ for 425 and 530.
 |===
 | Parameter              | Description                                                                                 | Required | Default value
 | `retry`                | Number of attempts to get a valid FTP response/response-text                                | optional | `0`
-| `timeout`              | Timeout in milliseconds for TCP connection establishment.                                   | optional | `3000`
 | `port`                 | A list of TCP ports to which connection shall be tried.                                     | optional | `20`,`21`
 | `password`             | This parameter is meant to be used together with the `user` parameter to perform basic
                            authentication. This parameter specify to password to be used. The `user` and `password`
@@ -33,6 +35,7 @@ For special cases the service is also marked as _up_ for 425 and 530.
                            `password` parameters are ignored when the `basic-authentication` parameter is defined.     | optional | `-`
 |===
 
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 

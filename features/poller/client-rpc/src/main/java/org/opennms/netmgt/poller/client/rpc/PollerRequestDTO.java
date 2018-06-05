@@ -54,6 +54,9 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
     @XmlAttribute(name = "location")
     private String location;
 
+    @XmlAttribute(name="system-id")
+    private String systemId;
+
     @XmlAttribute(name = "class-name")
     private String className;
 
@@ -78,12 +81,22 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
 
     private Long timeToLiveMs;
 
+    @Override
     public String getLocation() {
         return location;
     }
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
+    @Override
+    public String getSystemId() {
+        return systemId;
     }
 
     public String getClassName() {
@@ -192,15 +205,21 @@ public class PollerRequestDTO implements RpcRequest, PollerRequest{
             return false;
         }
         PollerRequestDTO castOther = (PollerRequestDTO) other;
-        return Objects.equals(location, castOther.location) && Objects.equals(className, castOther.className)
-                && Objects.equals(serviceName, castOther.serviceName) && Objects.equals(address, castOther.address)
-                && Objects.equals(nodeId, castOther.nodeId) && Objects.equals(nodeLabel, castOther.nodeLabel)
-                && Objects.equals(timeToLiveMs, castOther.timeToLiveMs) && Objects.equals(attributes, castOther.attributes);
+        return Objects.equals(location, castOther.location) 
+                && Objects.equals(systemId, castOther.systemId)
+                && Objects.equals(className, castOther.className)
+                && Objects.equals(serviceName, castOther.serviceName)
+                && Objects.equals(address, castOther.address)
+                && Objects.equals(nodeId, castOther.nodeId)
+                && Objects.equals(nodeLabel, castOther.nodeLabel)
+                && Objects.equals(timeToLiveMs, castOther.timeToLiveMs)
+                && Objects.equals(attributes, castOther.attributes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, className, serviceName, address, nodeId, nodeLabel, attributes, timeToLiveMs);
+        return Objects.hash(location, systemId, className, serviceName,
+                address, nodeId, nodeLabel, attributes, timeToLiveMs);
     }
 
 }

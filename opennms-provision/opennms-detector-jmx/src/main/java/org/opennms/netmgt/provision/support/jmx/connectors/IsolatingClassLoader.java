@@ -48,7 +48,7 @@ public class IsolatingClassLoader extends URLClassLoader {
     private String[] m_isolatedPrefixes;
     
     /** Set of class names that identifies classes to isolate. **/
-    private final Set<String> m_isolatedClassNames = new HashSet<String>();
+    private final Set<String> m_isolatedClassNames = new HashSet<>();
     
     /**
      * <p>Constructor for IsolatingClassLoader.</p>
@@ -93,7 +93,7 @@ public class IsolatingClassLoader extends URLClassLoader {
     
     private void init(String name, String[] isolated, boolean augmentClassPath) throws InvalidContextClassLoaderException {
         
-        final Set<String> prefixes = new HashSet<String>();
+        final Set<String> prefixes = new HashSet<>();
         
         for (String element : isolated) {
             final int index = element.indexOf('*');

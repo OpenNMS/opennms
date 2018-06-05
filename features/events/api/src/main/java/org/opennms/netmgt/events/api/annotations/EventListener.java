@@ -54,4 +54,6 @@ public @interface EventListener {
 
     String logPrefix() default "";
 
+    int threads() default 1;
+
 }

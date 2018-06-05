@@ -1,4 +1,7 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== JDBCMonitor
 
 The _JDBCMonitor_ checks that it is able to connect to a database and checks if it is able to get the database catalog from that database management system (DBMS).
@@ -22,11 +25,12 @@ It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html
 | `url`      | JDBC Url to connect to.                                            | required | `jdbc:sybase:Tds:OPENNMS_JDBC_HOSTNAME/tempdb`
 | `user`     | Database user                                                      | required | `sa`
 | `password` | Database password                                                  | required | `empty string`
-| `timeout`  | Timeout in ms for the database connection                          | optional | `3000`
 | `retries`  | How many retries should be performed before failing the test       | optional | `0`
 |===
 
 NOTE: The _OPENNMS_JDBC_HOSTNAME_ is replaced in the _url_ parameter with the IP or resolved hostname of the interface the monitored service is assigned to.
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Provide the database driver
 

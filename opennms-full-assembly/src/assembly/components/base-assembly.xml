@@ -54,4 +54,15 @@
       </includes>
     </dependencySet>
   </dependencySets>
+  <!-- Put the Karaf 4 boot classpath files into /lib so that they are available in the OpenNMS classpath -->
+  <fileSets>
+    <fileSet>
+      <directory>${project.build.directory}/lib/boot</directory>
+      <filtered>false</filtered>
+      <outputDirectory>lib</outputDirectory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </component>

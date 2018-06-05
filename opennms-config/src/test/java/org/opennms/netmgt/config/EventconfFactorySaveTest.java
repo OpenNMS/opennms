@@ -46,7 +46,7 @@ import junit.framework.TestCase;
  * @author <a href="mailto:cmiskell@opennms.org">Craig Miskell</a>
  */
 public class EventconfFactorySaveTest extends TestCase {
-    private static final String knownUEI1="uei.opennms.org/internal/capsd/snmpConflictsWithDb";
+    private static final String knownUEI1="uei.opennms.org/opennmsConfig/eventconf";
     private static final String knownSubfileUEI1="uei.opennms.org/IETF/Bridge/traps/newRoot";
     
     private static final String newUEI="uei.opennms.org/custom/addedUEI";

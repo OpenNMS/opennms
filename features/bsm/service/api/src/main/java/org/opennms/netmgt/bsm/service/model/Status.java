@@ -29,6 +29,7 @@
 package org.opennms.netmgt.bsm.service.model;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public enum Status implements Serializable {
     INDETERMINATE("Indeterminate"),
@@ -80,5 +81,14 @@ public enum Status implements Serializable {
     @Override
     public String toString() {
         return getLabel();
+    }
+
+    public static Status of(String input) {
+        for (Status eachStatus : values()) {
+            if (eachStatus.name().equalsIgnoreCase(input)) {
+                return eachStatus;
+            }
+        }
+        throw new IllegalArgumentException("Cannot create Status from unknown name '" + input + "'. Supported values are " + Arrays.toString(values()));
     }
 }

@@ -71,10 +71,10 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
         breadcrumbLayout.removeAllComponents();
 
         // Verify that breadcrumbs are enabled
-        if (graphContainer.getMetaTopologyProvider().getBreadcrumbStrategy() == BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT) {
+        if (graphContainer.getTopologyServiceClient().getBreadcrumbStrategy() == BreadcrumbStrategy.SHORTEST_PATH_TO_ROOT) {
             final Collection<Vertex> displayVertices = graphContainer.getGraph().getDisplayVertices();
             if (!displayVertices.isEmpty()) {
-                final PathTree pathTree = BreadcrumbPathCalculator.findPath(graphContainer.getMetaTopologyProvider(), displayVertices.stream().map(v -> (VertexRef) v).collect(Collectors.toSet()));
+                final PathTree pathTree = BreadcrumbPathCalculator.findPath(graphContainer.getTopologyServiceClient(), displayVertices.stream().map(v -> (VertexRef) v).collect(Collectors.toSet()));
                 final List<Breadcrumb> breadcrumbs = pathTree.toBreadcrumbs();
                 criteria.setBreadcrumbs(breadcrumbs);
             }
@@ -110,6 +110,6 @@ public class BreadcrumbComponent extends CustomComponent implements GraphContain
     private static String getLayerName(GraphContainer container, String namespace) {
         Objects.requireNonNull(container);
         Objects.requireNonNull(namespace);
-        return container.getMetaTopologyProvider().getGraphProviderBy(namespace).getTopologyProviderInfo().getName();
+        return container.getTopologyServiceClient().getGraphProviderBy(namespace).getTopologyProviderInfo().getName();
     }
 }

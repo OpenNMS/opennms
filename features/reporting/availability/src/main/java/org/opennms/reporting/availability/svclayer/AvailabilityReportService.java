@@ -184,7 +184,7 @@ public class AvailabilityReportService implements ReportService {
     @Override
     public List<ReportFormat> getFormats(String id) {
 
-        List<ReportFormat> formats = new ArrayList<ReportFormat>();
+        List<ReportFormat> formats = new ArrayList<>();
 
         if (m_configDao.getHtmlStylesheetLocation(id) != null)
             formats.add(ReportFormat.HTML);

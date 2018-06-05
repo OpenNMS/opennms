@@ -28,25 +28,26 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
-import com.vaadin.data.Item;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
-import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationManager;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationResult;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectableBeanItemContainer;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionValueChangedListener;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationManager;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation.ValidationResult;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+import org.opennms.netmgt.vaadin.core.ConfirmationDialog;
+
+import com.vaadin.data.Item;
 
 /**
  * Controls the "MbeansView".
@@ -113,21 +114,21 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 		attributesContainerCacheMap.put(Attrib.class, new AttributesContainerCache<>(Attrib.class, new AttributesContainerCache.AttributeCollector<Attrib, Mbean>() {
 			@Override
 			public List<Attrib> getAttributes(Mbean outer) {
-				return outer.getAttrib();
+				return outer.getAttribList();
 			}
 		}));
 		attributesContainerCacheMap.put(CompAttrib.class, new AttributesContainerCache<>(
 				CompAttrib.class, new AttributesContainerCache.AttributeCollector<CompAttrib, Mbean>() {
 			@Override
 			public List<CompAttrib> getAttributes(Mbean outer) {
-				return outer.getCompAttrib();
+				return outer.getCompAttribList();
 			}
 		}));
 		attributesContainerCacheMap.put(CompMember.class, new AttributesContainerCache<>(
 				CompMember.class, new AttributesContainerCache.AttributeCollector<CompMember, CompAttrib>() {
 			@Override
 			public List<CompMember> getAttributes(CompAttrib outer) {
-				return outer.getCompMember();
+				return outer.getCompMemberList();
 			}
 		}));
 
@@ -350,7 +351,7 @@ public class MBeansController implements SelectionManager, NameProvider, Selecti
 
 	public void updateDataSource(UiModel newModel) {
 		reset();
-		mbeansContainer.updateDataSource(newModel.getRawModel().getJmxCollection().get(0).getMbeans().getMbean());
+		mbeansContainer.updateDataSource(newModel.getRawModel().getJmxCollectionList().get(0).getMbeans());
 		mbeansTree.expandAllItems();
 		mbeansTree.select(mbeansContainer.firstItemId());
 		validate();

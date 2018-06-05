@@ -111,7 +111,7 @@ public abstract class EventMatchers  {
 			
 			@Override
 			public String toString() {
-				StringBuilder buf = new StringBuilder();
+				final StringBuilder buf = new StringBuilder();
 				boolean first = true;
 				for(EventMatcher matcher : matchers) {
 					if (first) {
@@ -142,7 +142,7 @@ public abstract class EventMatchers  {
 			
 			@Override
 			public String toString() {
-				StringBuilder buf = new StringBuilder();
+				final StringBuilder buf = new StringBuilder();
 				boolean first = true;
 				for(EventMatcher matcher : matchers) {
 					if (first) {

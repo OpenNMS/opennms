@@ -743,7 +743,7 @@ public class Event {
      */
     public List<Autoaction> getAutoaction() {
         if (autoaction == null) {
-            autoaction = new ArrayList<Autoaction>();
+            autoaction = new ArrayList<>();
         }
         return this.autoaction;
     }
@@ -773,7 +773,7 @@ public class Event {
      */
     public List<Operaction> getOperaction() {
         if (operaction == null) {
-            operaction = new ArrayList<Operaction>();
+            operaction = new ArrayList<>();
         }
         return this.operaction;
     }
@@ -827,7 +827,7 @@ public class Event {
      */
     public List<String> getLoggroup() {
         if (loggroup == null) {
-            loggroup = new ArrayList<String>();
+            loggroup = new ArrayList<>();
         }
         return this.loggroup;
     }
@@ -881,7 +881,7 @@ public class Event {
      */
     public List<Forward> getForward() {
         if (forward == null) {
-            forward = new ArrayList<Forward>();
+            forward = new ArrayList<>();
         }
         return this.forward;
     }
@@ -911,7 +911,7 @@ public class Event {
      */
     public List<Script> getScript() {
         if (script == null) {
-            script = new ArrayList<Script>();
+            script = new ArrayList<>();
         }
         return this.script;
     }

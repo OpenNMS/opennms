@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2013-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,17 +30,22 @@ package org.opennms.features.vaadin.dashboard.config.ui;
 
 import com.vaadin.data.util.BeanItemContainer;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.vaadin.dashboard.model.Wallboard;
 import org.opennms.features.vaadin.dashboard.model.Wallboards;
 
-import javax.xml.bind.JAXB;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * This class is used for loading, holding and saving of {@link Wallboard} definitions.
  */
 public class WallboardProvider {
+    private static Logger LOG = LoggerFactory.getLogger(WallboardProvider.class);
+
     /**
      * Instance variable for this singleton object
      */
@@ -87,7 +92,12 @@ public class WallboardProvider {
             load();
         }
 
-        JAXB.marshal(m_wallboards, m_cfgFile);
+        try {
+            JaxbUtils.marshal(m_wallboards, m_cfgFile);
+        } catch (final IOException e) {
+            LOG.error("Failed to save {}", m_cfgFile, e);
+            throw new IllegalStateException("Failed to save " + m_cfgFile, e);
+        }
     }
 
     /**
@@ -97,7 +107,7 @@ public class WallboardProvider {
         if (!m_cfgFile.exists()) {
             m_wallboards = new Wallboards();
         } else {
-            m_wallboards = JAXB.unmarshal(m_cfgFile, Wallboards.class);
+            m_wallboards = JaxbUtils.unmarshal(Wallboards.class, m_cfgFile);
         }
     }
 

@@ -28,7 +28,7 @@
 
 package org.opennms.netmgt.collection.api;
 
-import java.nio.file.Path;
+import org.opennms.netmgt.model.ResourcePath;
 
 /**
  * <p>ResourceIdentifier interface.</p>
@@ -49,7 +49,7 @@ public interface ResourceIdentifier {
      * Retrieves path for the resource, relative to the root of the
      * associated {@link org.opennms.netmgt.rrd.RrdRepository}.
      *
-     * @return {@link java.nio.file.Path} object.
+     * @return {@link ResourcePath} object.
      */
-    public Path getPath();
+    public ResourcePath getPath();
 }

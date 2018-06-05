@@ -47,7 +47,7 @@ include::text/r/debian.adoc[]
 ifndef::opennms-prime[]
 // Installation Guide for Minion
 include::text/minion/introduction.adoc[]
-include::text/minion/rhel.adoc[]
+include::text/minion/install.adoc[]
 include::text/minion/configure-opennms.adoc[]
 include::text/minion/configure-minion.adoc[]
 include::text/minion/advanced-configuration.adoc[]

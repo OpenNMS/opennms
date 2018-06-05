@@ -39,6 +39,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.opennms.netmgt.collection.api.Parameter;
+import org.opennms.netmgt.collection.api.StrategyDefinition;
 
 /**
  * Selects a StorageStrategy that decides where data is stored.
@@ -46,7 +48,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="storageStrategy", namespace="http://xmlns.opennms.org/xsd/config/datacollection")
 @XmlAccessorType(XmlAccessType.NONE)
-public class StorageStrategy implements Serializable {
+public class StorageStrategy implements StrategyDefinition, Serializable {
     private static final long serialVersionUID = 1260293428590611897L;
 
     /**
@@ -60,8 +62,8 @@ public class StorageStrategy implements Serializable {
      * list of parameters to pass to the strategy
      *  for strategy-specific configuration information
      */
-    @XmlElement(name="parameter")
-    private List<Parameter> m_parameters = new ArrayList<Parameter>();
+    @XmlElement(name="parameter", type=org.opennms.netmgt.config.datacollection.Parameter.class)
+    private List<Parameter> m_parameters = new ArrayList<>();
 
     public StorageStrategy() {
         super();

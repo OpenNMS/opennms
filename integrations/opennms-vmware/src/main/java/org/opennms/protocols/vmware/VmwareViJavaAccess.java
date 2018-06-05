@@ -52,6 +52,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeSet;
 
 import javax.net.ssl.HostnameVerifier;
@@ -188,6 +189,12 @@ public class VmwareViJavaAccess {
             logger.error("Error getting password for VMware management server '{}'.", m_hostname);
             this.m_password = "";
         }
+    }
+
+    public VmwareViJavaAccess(VmwareServer vmwareServer) {
+        m_hostname = Objects.requireNonNull(vmwareServer).getHostname();
+        m_username = vmwareServer.getUsername();
+        m_password = vmwareServer.getPassword();
     }
 
     /**
@@ -421,7 +428,7 @@ public class VmwareViJavaAccess {
      * @throws CIMException
      */
     public List<CIMObject> queryCimObjects(HostSystem hostSystem, String cimClass, String primaryIpAddress) throws ConnectException, RemoteException, CIMException {
-        List<CIMObject> cimObjects = new ArrayList<CIMObject>();
+        List<CIMObject> cimObjects = new ArrayList<>();
 
         if (!m_hostServiceTickets.containsKey(hostSystem)) {
             m_hostServiceTickets.put(hostSystem, hostSystem.acquireCimServicesTicket());

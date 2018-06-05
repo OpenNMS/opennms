@@ -125,7 +125,7 @@ public final class NodeDiscoveryLldp extends NodeDiscovery {
             }
         }
 
-        List<LldpLink> links = new ArrayList<LldpLink>();
+        List<LldpLink> links = new ArrayList<>();
         LldpRemTableTracker lldpRemTable = new LldpRemTableTracker() {
 
         	public void processLldpRemRow(final LldpRemRow row) {

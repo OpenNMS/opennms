@@ -45,6 +45,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -111,15 +112,16 @@ public class KarafExtender {
         filterFeatures(featuresBoot);
 
         // Build a comma separated list of our Maven repositories
-        StringBuilder mavenReposSb = new StringBuilder();
+        final StringBuilder mavenReposSb = new StringBuilder();
         for (Repository repository : repositories) {
             if (mavenReposSb.length() != 0) {
                 mavenReposSb.append(",");
             }
             mavenReposSb.append(repository.toMavenUri());
         }
+        final String mavenRepos = mavenReposSb.toString();
 
-        LOG.info("Updating Maven repositories to include: {}", mavenReposSb);
+        LOG.info("Updating Maven repositories to include: {}", mavenRepos);
         try {
             final Configuration config = m_configurationAdmin.getConfiguration(PAX_MVN_PID);
             if (config == null) {
@@ -127,11 +129,13 @@ public class KarafExtender {
                         ", but a configuration could not be located/generated.  This shouldn't happen.");
             }
             final Dictionary<String, Object> props = config.getProperties();
-            props.put(PAX_MVN_REPOSITORIES, mavenReposSb.toString());
-            config.update(props);
+            if (!mavenRepos.equals(props.get(PAX_MVN_REPOSITORIES))) {
+                props.put(PAX_MVN_REPOSITORIES, mavenRepos);
+                config.update(props);
+            }
         } catch (IOException e) {
             LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
-                    mavenReposSb, e);
+                    mavenRepos, e);
             return;
         }
 
@@ -150,7 +154,6 @@ public class KarafExtender {
                 try {
                     LOG.info("Adding feature repository: {}", featureUri);
                     m_featuresService.addRepository(featureUri);
-                    m_featuresService.refreshRepository(featureUri);
                 } catch (Exception e) {
                     LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
                 }
@@ -161,12 +164,25 @@ public class KarafExtender {
             .map(f -> f.getVersion() != null ? f.getName() + "/" + f.getVersion() : f.getName())
             .collect(Collectors.toCollection(LinkedHashSet::new));
 
-        try {
-            LOG.info("Installing features: {}", featuresToInstall);
-            m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
-        } catch (Exception e) {
-            LOG.error("Failed to install one or more features.", e);
-        }
+        // Because of the fix for the following issue, we need to call the
+        // feature installation in another thread since this method is invoked
+        // during a feature installation itself and feature installations are
+        // now single-threaded.
+        //
+        // https://issues.apache.org/jira/browse/KARAF-3798
+        // https://github.com/apache/karaf/pull/138
+        //
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    LOG.info("Installing features: {}", featuresToInstall);
+                    m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
+                } catch (Exception e) {
+                    LOG.error("Failed to install one or more features.", e);
+                }
+            }
+        });
     }
 
     private boolean canResolveAllFeatureUris(List<Repository> repositories) {

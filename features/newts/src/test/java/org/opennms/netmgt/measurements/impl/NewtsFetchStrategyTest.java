@@ -50,6 +50,7 @@ import org.opennms.netmgt.measurements.model.Source;
 import org.opennms.netmgt.model.OnmsAttribute;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.RrdGraphAttribute;
 import org.opennms.newts.api.Context;
@@ -72,7 +73,7 @@ public class NewtsFetchStrategyTest {
 
     private NewtsFetchStrategy m_newtsFetchStrategy;
 
-    private Map<String, OnmsResource> m_resources = Maps.newHashMap();
+    private Map<ResourceId, OnmsResource> m_resources = Maps.newHashMap();
 
     private Capture<ResultDescriptor> lastCapturedResultDescriptor = new Capture<>();
 
@@ -237,7 +238,7 @@ public class NewtsFetchStrategyTest {
 
         final int nodeId = node.hashCode();
         final String newtsResourceId = "response:" + node + ":" + attr;
-        final String resourceId = "nodeSource[NODES:" + nodeId + "].responseTime[" + node + "]";
+        final ResourceId resourceId = ResourceId.get("nodeSource", "NODES:" + nodeId).resolve("responseTime", node);
         OnmsResource resource = m_resources.get(resourceId);
         if (resource == null) {
             resource = new OnmsResource(attr, label, type, Sets.newHashSet(), ResourcePath.get("foo"));
@@ -246,7 +247,7 @@ public class NewtsFetchStrategyTest {
         Set<OnmsAttribute> attributes = resource.getAttributes();
         attributes.add(new RrdGraphAttribute(attr, "", newtsResourceId));
 
-        Results<Measurement> results = new Results<Measurement>();
+        Results<Measurement> results = new Results<>();
         Resource res = new Resource(newtsResourceId);
         Row<Measurement> row = new Row<Measurement>(Timestamp.fromEpochSeconds(0), res);
         Measurement measurement = new Measurement(Timestamp.fromEpochSeconds(0), res, label, 0.0d);
@@ -264,13 +265,13 @@ public class NewtsFetchStrategyTest {
         source.setAttribute(attr);
         source.setDataSource(ds);
         source.setLabel(label);
-        source.setResourceId(resourceId);
+        source.setResourceId(resourceId.toString());
         source.setTransient(false);
         return source;
     }
 
     private void replay() {
-        for (Entry<String, OnmsResource> entry : m_resources.entrySet()) {
+        for (Entry<ResourceId, OnmsResource> entry : m_resources.entrySet()) {
             EasyMock.expect(m_resourceDao.getResourceById(entry.getKey())).andReturn(entry.getValue());
         }
 

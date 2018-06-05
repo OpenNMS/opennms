@@ -163,7 +163,8 @@ public class DetectorsCommandIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
-            String shellOutput = sshClient.getStdout();
+            String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
+
             shellOutput = StringUtils.substringAfter(shellOutput, "provision:list-detectors");
             LOG.info("Detectors output: {}", shellOutput);
             Map<String, String> detectorMap = new HashMap<String, String>();

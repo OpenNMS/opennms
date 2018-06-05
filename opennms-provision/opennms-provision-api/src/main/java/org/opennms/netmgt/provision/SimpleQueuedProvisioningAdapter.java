@@ -503,7 +503,7 @@ public abstract class SimpleQueuedProvisioningAdapter implements ProvisioningAda
         
         @Override
         public String toString() {
-        	StringBuilder sb = new StringBuilder();
+        	final StringBuilder sb = new StringBuilder();
         	sb.append("AdapterOperationSchedule; Initial delay: ") ;sb.append(m_initialDelay);
         	sb.append(", Interval: "); sb.append(m_interval);
         	sb.append(", Attempts: "); sb.append(m_attemptsRemaining);

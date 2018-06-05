@@ -140,7 +140,7 @@ public class BridgePort implements Topology {
         
     public String printTopology() {
 
-        StringBuffer strbfr = new StringBuffer();
+        final StringBuffer strbfr = new StringBuffer();
         strbfr.append("nodeid:["); 
         strbfr.append(getNodeId());
         strbfr.append("], bridgeport:[");

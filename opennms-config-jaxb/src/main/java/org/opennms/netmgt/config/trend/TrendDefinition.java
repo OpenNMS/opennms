@@ -61,7 +61,7 @@ public class TrendDefinition implements Serializable {
 
     @XmlElementWrapper(name="trend-attributes")
     @XmlElement(name="trend-attribute")
-    private List<TrendAttribute> trendAttributes = new ArrayList<TrendAttribute>();
+    private List<TrendAttribute> trendAttributes = new ArrayList<>();
 
     @XmlElement(name="descriptionLink")
     private String descriptionLink;

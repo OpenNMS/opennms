@@ -39,12 +39,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.opennms.features.topology.api.CheckedOperation;
 import org.opennms.features.topology.api.Operation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class OperationManager {
-
-	private static final Logger LOG = LoggerFactory.getLogger(OperationManager.class);
 
 	/**
 	 * {@ink Operation} registered to the OSGI service registry (including the service properties).
@@ -54,28 +50,13 @@ public class OperationManager {
 	/**
 	 * Listeners listening to menu updates.
 	 */
-    private final List<MenuUpdateListener> m_menuUpdateListeners = new ArrayList<>();
     private final List<String> m_topLevelMenuOrder = new ArrayList<>();
     private final Map<String, List<String>> m_subMenuGroupOrder = new HashMap<>();
 
-	protected void updateCommandListeners() {
-		for (MenuUpdateListener listener : m_menuUpdateListeners) {
-			listener.updateMenu();
-		}
-	}
-
-	public void addMenuItemUpdateListener(MenuUpdateListener listener) {
-		m_menuUpdateListeners.add(listener);
-	}
-
-	public void removeMenuItemUpdateListener(MenuUpdateListener listener) {
-		m_menuUpdateListeners.remove(listener);
-	}
 
 	public void onBind(Operation operation, Map<String, String> props) {
 		OperationServiceWrapper operCommand = new OperationServiceWrapper(operation, props);
 		m_operations.add(operCommand);
-		updateCommandListeners();
 	}
 
 	public void onUnbind(Operation operation, Map<String, String> props) {
@@ -84,7 +65,6 @@ public class OperationManager {
 				m_operations.remove(command);
 			}
 		}
-		updateCommandListeners();
 	}
 
 	public void setTopLevelMenuOrder(List<String> menuOrderList) {
@@ -110,9 +90,6 @@ public class OperationManager {
 		addOrUpdateGroupOrder(
 				"Default",
 				Arrays.asList(props.get("submenu.Default.groups").toString().split(",")));
-
-		updateCommandListeners();
-
 	}
 
 	void addOrUpdateGroupOrder(String key, List<String> orderSet) {

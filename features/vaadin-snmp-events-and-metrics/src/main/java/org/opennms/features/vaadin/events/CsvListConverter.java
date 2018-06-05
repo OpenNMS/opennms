@@ -51,7 +51,7 @@ public class CsvListConverter implements Converter<String, ArrayList<String>> {
         if (fieldValue == null) {
             return null;
         }
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         if (fieldValue != null) {
             for (String s : fieldValue.split(",")) {
                 if (s == null || "".equals(s.trim())) {

@@ -96,7 +96,7 @@ public abstract class MultiArgFilter<T> extends BaseFilter<T> {
     /** {@inheritDoc} */
     @Override
     public final String getValueString() {
-        StringBuilder buf = new StringBuilder();
+        final StringBuilder buf = new StringBuilder();
         for(int i = 0; i < m_values.length; i++) {
             if (i != 0) {
                 buf.append(',');

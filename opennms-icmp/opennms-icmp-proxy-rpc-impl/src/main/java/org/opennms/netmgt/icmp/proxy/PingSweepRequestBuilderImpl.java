@@ -46,6 +46,7 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
     private int packetSize = PingConstants.DEFAULT_PACKET_SIZE;
     private double packetsPerSecond = PingConstants.DEFAULT_PACKETS_PER_SECOND;
     private String location;
+    private String systemId;
     private List<IPRangeDTO> ranges = new ArrayList<>();
 
     public PingSweepRequestBuilderImpl(RpcClient<PingSweepRequestDTO, PingSweepResponseDTO> client) {
@@ -71,6 +72,12 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
     }
 
     @Override
+    public PingSweepRequestBuilder withSystemId(String systemId) {
+        this.systemId = systemId;
+        return this;
+    }
+
+    @Override
     public PingSweepRequestBuilder withRange(InetAddress begin, InetAddress end) {
         return withRange(begin, end, PingConstants.DEFAULT_RETRIES, PingConstants.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS);
     }
@@ -86,6 +93,7 @@ public class PingSweepRequestBuilderImpl implements PingSweepRequestBuilder {
         final PingSweepRequestDTO requestDTO = new PingSweepRequestDTO();
         requestDTO.setIpRanges(ranges);
         requestDTO.setLocation(location);
+        requestDTO.setSystemId(systemId);
         requestDTO.setPacketSize(packetSize);
         requestDTO.setPacketsPerSecond(packetsPerSecond);
 

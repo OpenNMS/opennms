@@ -173,7 +173,7 @@ public class RancidProvisioningAdapter extends SimpleQueuedProvisioningAdapter i
                     m_rancid_categories = RWSClientApi.getRWSResourceDeviceTypesPatternList(m_cp).getResource();
                 } catch (RancidApiException e1) {
                     LOG.warn("getRancidCategories: not able to retrieve rancid categories from RWS server");
-                    m_rancid_categories = new ArrayList<String>();
+                    m_rancid_categories = new ArrayList<>();
                     m_rancid_categories.add("cisco");
                     LOG.warn("getRancidCategories: setting categories list to 'cisco'");
                 }

@@ -67,7 +67,7 @@ public class StatisticsReport implements Serializable {
     private Date m_jobStartedDate;
     private Date m_jobCompletedDate;
     private Date m_purgeDate;
-    private Set<StatisticsReportData> m_data = new HashSet<StatisticsReportData>();
+    private Set<StatisticsReportData> m_data = new HashSet<>();
 
     
     

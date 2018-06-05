@@ -51,16 +51,16 @@ public class DataCollectionGroupImpl implements IDataCollectionGroup {
     String m_name;
 
     @XmlElement(name="resourceType")
-    List<ResourceTypeImpl> m_resourceTypes = new ArrayList<ResourceTypeImpl>();
+    List<ResourceTypeImpl> m_resourceTypes = new ArrayList<>();
 
     @XmlElement(name="table")
-    List<TableImpl> m_tables = new ArrayList<TableImpl>();
+    List<TableImpl> m_tables = new ArrayList<>();
 
     @XmlElement(name="group")
-    List<GroupImpl> m_groups = new ArrayList<GroupImpl>();
+    List<GroupImpl> m_groups = new ArrayList<>();
 
     @XmlElement(name="systemDef")
-    List<SystemDefImpl> m_systemDefs = new ArrayList<SystemDefImpl>();
+    List<SystemDefImpl> m_systemDefs = new ArrayList<>();
 
     public DataCollectionGroupImpl() {
     }

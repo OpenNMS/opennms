@@ -46,7 +46,7 @@ public class TrendConfiguration implements Serializable {
     private static final long serialVersionUID = 3402898044699865749L;
 
     @XmlElement(name="trend-definition")
-    private List<TrendDefinition> trendDefinitions = new ArrayList<TrendDefinition>();
+    private List<TrendDefinition> trendDefinitions = new ArrayList<>();
 
     public List<TrendDefinition> getTrendDefinitions() {
         return trendDefinitions;

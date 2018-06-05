@@ -28,17 +28,8 @@
 
 package org.opennms.netmgt.dao.support;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
+import com.google.common.base.Throwables;
+import com.google.common.collect.Maps;
 import org.apache.commons.lang.CharEncoding;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.api.CollectdConfigFactory;
@@ -54,6 +45,7 @@ import org.opennms.netmgt.model.OnmsLocationMonitor;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.OnmsResourceType;
+import org.opennms.netmgt.model.ResourceId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -61,8 +53,16 @@ import org.springframework.orm.ObjectRetrievalFailureException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Throwables;
-import com.google.common.collect.Maps;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Retrieves and enumerates elements from the resource tree.
@@ -302,33 +302,19 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
      */
     @Override
     @Transactional(readOnly=true)
-    public OnmsResource getResourceById(String id) {
-        OnmsResource resource = null;
-
-        Matcher m = RESOURCE_ID_PATTERN.matcher(id);
-        StringBuffer sb = new StringBuffer();
-
-        while (m.find()) {
-            String resourceTypeName = DefaultResourceDao.decode(m.group(1));
-            String resourceName = DefaultResourceDao.decode(m.group(2));
-
-            try {
-                resource = getChildResource(resource, resourceTypeName, resourceName);
-            } catch (Throwable e) {
-                LOG.warn("Could not get resource for resource ID \"{}\"", id, e);
-                return null;
-            }
-
-            m.appendReplacement(sb, "");
+    public OnmsResource getResourceById(final ResourceId id) {
+        if (id == null) {
+            return null;
         }
 
-        m.appendTail(sb);
+        try {
+            return getChildResource(id.parent != null ? this.getResourceById(id.parent) : null,
+                                    id.type,
+                                    id.name);
 
-        if (sb.length() > 0) {
-            LOG.warn("Resource ID '{}' does not match pattern '{}' at '{}'", id, RESOURCE_ID_PATTERN, sb);
+        } catch (final Throwable e) {
+            LOG.warn("Could not get resource for resource ID \"{}\"", id, e);
             return null;
-        } else {
-            return resource;
         }
     }
 
@@ -358,7 +344,7 @@ public class DefaultResourceDao implements ResourceDao, InitializingBean {
     }
 
     @Override
-    public boolean deleteResourceById(final String resourceId) {
+    public boolean deleteResourceById(final ResourceId resourceId) {
         final OnmsResource resource = this.getResourceById(resourceId);
         if (resource == null) {
             return false;

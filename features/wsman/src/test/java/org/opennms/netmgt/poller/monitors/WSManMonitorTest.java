@@ -40,7 +40,7 @@ import java.util.Map;
 import org.junit.Test;
 import org.opennms.core.wsman.WSManClient;
 import org.opennms.core.wsman.WSManClientFactory;
-import org.opennms.netmgt.config.wsman.WsmanConfig;
+import org.opennms.netmgt.config.wsman.Definition;
 import org.opennms.netmgt.dao.WSManConfigDao;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
@@ -94,9 +94,9 @@ public class WSManMonitorTest {
         selectors.put("mock-selector-a", "a1");
         selectors.put("mock-selector-b", "b1");
 
-        WsmanConfig config = new WsmanConfig();
+        Definition agentConfig = new Definition();
         WSManConfigDao configDao = mock(WSManConfigDao.class);
-        when(configDao.getConfig(anyObject())).thenReturn(config);
+        when(configDao.getAgentConfig(anyObject())).thenReturn(agentConfig);
 
         WSManClient client = mock(WSManClient.class);
         when(client.get(resourceUri, selectors)).thenReturn(response);

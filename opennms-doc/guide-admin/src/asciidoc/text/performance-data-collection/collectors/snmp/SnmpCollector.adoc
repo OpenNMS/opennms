@@ -11,7 +11,9 @@ Access to the _SNMP Agent_ is configured through the _SNMP configuration_ in the
 
 [options="autowidth"]
 |===
-| Class Name     | `org.opennms.netmgt.collectd.SnmpCollector`
+| Class Name          | `org.opennms.netmgt.collectd.SnmpCollector`
+| Package             | core
+| Supported on Minion | `Yes` (via the SNMP proxy)
 |===
 
 ===== Collector Parameters

@@ -136,12 +136,12 @@ public class HierarchyLayoutAlgorithmTest {
     private void buildLayout() {
         // Mock ALL the things
         final GraphContainer mockGraphContainer = Mockito.mock(GraphContainer.class);
-        layout = new DefaultLayout(mockGraphContainer);
+        layout = new DefaultLayout();
         final TestGraph testGraph = new TestGraph(layout, vertices, edges);
         Mockito.when(mockGraphContainer.getGraph()).thenReturn(testGraph);
 
-        // Update the layout
-        new HierarchyLayoutAlgorithm().updateLayout(mockGraphContainer);
+        // Update layouts and ensure no exception is thrown
+        new HierarchyLayoutAlgorithm().updateLayout(testGraph);
     }
 
     private void expectVertexToBeAt(int idx, double x, double y) {

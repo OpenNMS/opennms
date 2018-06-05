@@ -28,27 +28,47 @@
 
 package org.opennms.features.topology.plugins.ncs;
 
-import org.apache.felix.gogo.commands.Command;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.console.OsgiCommandSupport;
 import org.opennms.netmgt.model.ncs.NCSComponent;
 import org.opennms.netmgt.model.ncs.NCSComponentRepository;
-import org.osgi.framework.ServiceReference;
 
+/**
+ * <p>This command implements the Apache Karaf 3 and Apache Karaf 4 shell APIs.
+ * Once the Karaf 4 commands work, the deprecated Karaf 3 annotations should 
+ * be removed:</p>
+ * <ul>
+ * <li>{@link org.apache.karaf.shell.commands.Command}</li>
+ * <li>{@link org.apache.karaf.shell.console.OsgiCommandSupport}</li>
+ * </ul>
+ */
 @Command(scope = "ncs", name = "listcomponents", description="Lists the available NCS components.")
-public class ComponentCommand extends OsgiCommandSupport {
+@org.apache.karaf.shell.commands.Command(scope = "ncs", name = "listcomponents", description="Lists the available NCS components.")
+@Service
+public class ComponentCommand extends OsgiCommandSupport implements Action {
+
+    @Reference(optional=true)
+    NCSComponentRepository repository;
 
     @Override
-    protected Object doExecute() throws Exception {
-        final ServiceReference<NCSComponentRepository> sr = this.bundleContext.getServiceReference(NCSComponentRepository.class);
-        if (sr == null) return null;
+    public Object execute() throws Exception {
+        if (repository == null) return null;
 
-        final NCSComponentRepository repository = this.bundleContext.getService(sr);
         for (final NCSComponent component : repository.findAll()) {
             System.out.println("    " + component.toString());
         }
         System.out.println();
 
         return null;
+    }
+
+    @Override
+    @Deprecated
+    protected Object doExecute() throws Exception {
+        return execute();
     }
 
 }

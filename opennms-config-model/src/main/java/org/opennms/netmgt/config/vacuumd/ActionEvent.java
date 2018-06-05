@@ -49,7 +49,6 @@ public class ActionEvent implements Serializable {
     private static final long serialVersionUID = 2L;
 
     private static final Boolean DEFAULT_FOR_EACH_RESULT_FLAG = Boolean.FALSE;
-    private static final Boolean DEFAULT_ADD_ALL_PARMS_FLAG = Boolean.FALSE;
 
     @XmlAttribute(name = "name", required = true)
     private String m_name;
@@ -57,20 +56,15 @@ public class ActionEvent implements Serializable {
     @XmlAttribute(name = "for-each-result")
     private Boolean m_forEachResult;
 
-    @XmlAttribute(name = "add-all-parms")
-    private Boolean m_addAllParms;
-
     @XmlElement(name = "assignment")
     private List<Assignment> m_assignments = new ArrayList<>();
 
     public ActionEvent() {
     }
 
-    public ActionEvent(final String name, final Boolean forEachResult,
-        final Boolean addAllParms, final List<Assignment> assignments) {
+    public ActionEvent(final String name, final Boolean forEachResult, final List<Assignment> assignments) {
         setName(name);
         setForEachResult(forEachResult);
-        setAddAllParms(addAllParms);
         setAssignments(assignments);
     }
 
@@ -88,14 +82,6 @@ public class ActionEvent implements Serializable {
 
     public void setForEachResult(final Boolean forEachResult) {
         m_forEachResult = forEachResult;
-    }
-
-    public boolean getAddAllParms() {
-        return m_addAllParms == null ? DEFAULT_ADD_ALL_PARMS_FLAG : m_addAllParms;
-    }
-
-    public void setAddAllParms(final Boolean addAllParms) {
-        m_addAllParms = addAllParms;
     }
 
     public List<Assignment> getAssignments() {
@@ -119,7 +105,7 @@ public class ActionEvent implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(m_name, m_forEachResult, m_addAllParms, m_assignments);
+        return Objects.hash(m_name, m_forEachResult, m_assignments);
     }
 
     @Override
@@ -131,7 +117,6 @@ public class ActionEvent implements Serializable {
             final ActionEvent that = (ActionEvent) obj;
             return Objects.equals(this.m_name, that.m_name) &&
                     Objects.equals(this.m_forEachResult, that.m_forEachResult) &&
-                    Objects.equals(this.m_addAllParms, that.m_addAllParms) &&
                     Objects.equals(this.m_assignments, that.m_assignments);
         }
         return false;

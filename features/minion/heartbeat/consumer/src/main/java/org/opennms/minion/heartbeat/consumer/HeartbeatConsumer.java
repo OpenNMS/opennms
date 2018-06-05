@@ -28,8 +28,10 @@
 
 package org.opennms.minion.heartbeat.consumer;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -68,6 +70,11 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
     private static final boolean PROVISIONING = Boolean.valueOf(System.getProperty("opennms.minion.provisioning", "true"));
     private static final String PROVISIONING_FOREIGN_SOURCE_PATTERN = System.getProperty("opennms.minion.provisioning.foreignSourcePattern", "Minions");
+
+    /**
+     * Services on the Minion nodes must be associated to *some* interface, so we use the following constant:
+     */
+    private static final String MINION_INTERFACE = "127.0.0.1";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -214,12 +221,9 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
 
         RequisitionNode requisitionNode = nextRequisition.getNode(minion.getId());
         if (requisitionNode == null) {
-            final RequisitionMonitoredService requisitionMonitoredService = new RequisitionMonitoredService();
-            requisitionMonitoredService.setServiceName("Minion-Heartbeat");
-
             final RequisitionInterface requisitionInterface = new RequisitionInterface();
-            requisitionInterface.setIpAddr("127.0.0.1");
-            requisitionInterface.putMonitoredService(requisitionMonitoredService);
+            requisitionInterface.setIpAddr(MINION_INTERFACE);
+            ensureServicesAreOnInterface(requisitionInterface);
 
             requisitionNode = new RequisitionNode();
             requisitionNode.setNodeLabel(minion.getId());
@@ -235,6 +239,24 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             deployedForeignSourceRepository.flush();
 
             alteredForeignSources.add(nextForeignSource);
+        } else {
+            // The node already exists in the requisition
+            RequisitionInterface requisitionInterface = requisitionNode.getInterface(MINION_INTERFACE);
+            if (requisitionInterface == null) {
+                // The interface was deleted, add it again
+                requisitionInterface = new RequisitionInterface();
+                requisitionInterface.setIpAddr(MINION_INTERFACE);
+                requisitionNode.putInterface(requisitionInterface);
+            }
+
+            if (ensureServicesAreOnInterface(requisitionInterface)) {
+                // We've altered the set of services on the interface
+                nextRequisition.setDate(new Date());
+                deployedForeignSourceRepository.save(nextRequisition);
+                deployedForeignSourceRepository.flush();
+
+                alteredForeignSources.add(nextForeignSource);
+            }
         }
 
         for (final String alteredForeignSource : alteredForeignSources) {
@@ -247,6 +269,33 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
                 throw new DataAccessResourceFailureException("Unable to send event to import group " + alteredForeignSource, e);
             }
         }
+    }
+
+    private static boolean ensureServicesAreOnInterface(RequisitionInterface requisitionInterface) {
+        final List<RequisitionMonitoredService> minionServices = new ArrayList<>();
+
+        final RequisitionMonitoredService heartbeatService = new RequisitionMonitoredService();
+        heartbeatService.setServiceName("Minion-Heartbeat");
+        minionServices.add(heartbeatService);
+
+        final RequisitionMonitoredService rpcService = new RequisitionMonitoredService();
+        rpcService.setServiceName("Minion-RPC");
+        minionServices.add(rpcService);
+
+        final RequisitionMonitoredService jmxService = new RequisitionMonitoredService();
+        jmxService.setServiceName("JMX-Minion");
+        minionServices.add(jmxService);
+
+        // Add missing services
+        boolean didAlterInterface = false;
+        for (RequisitionMonitoredService svc : minionServices) {
+            if (requisitionInterface.getMonitoredService(svc.getServiceName()) == null) {
+                requisitionInterface.putMonitoredService(svc);
+                didAlterInterface = true;
+            }
+        }
+
+        return didAlterInterface;
     }
 
     @Override

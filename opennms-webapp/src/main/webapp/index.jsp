@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -64,11 +64,11 @@
 	<!-- Middle Column -->
 	<div class="col-md-6" id="index-contentmiddle">
 		<%
-			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl", "/includes/categories-box.jsp,/geomap/map-box.jsp");
+			String centerUrl = System.getProperty("org.opennms.web.console.centerUrl",  "status/status-box.jsp,/includes/categories-box.jsp,/geomap/map-box.jsp");
 			String[] centerUrlArr = centerUrl.split(",");
 			for(String centerUrlItem : centerUrlArr) {
 		%>
-			<jsp:include page="<%=centerUrlItem%>" flush="false" />
+		<jsp:include page="<%=centerUrlItem%>" flush="false" />
 		<%
 			}
 		%>
@@ -84,7 +84,9 @@
 
 		<% String showGrafanaBox = System.getProperty("org.opennms.grafanaBox.show", "false");
 			if (Boolean.parseBoolean(showGrafanaBox)) { %>
-		<jsp:include page="/includes/grafana-box.jsp" flush="false" />
+		<jsp:include page="/includes/grafana-box.jsp" flush="false">
+                    <jsp:param name="useLimit" value="true" />
+                </jsp:include>
 		<% } %>
 
 		<!-- Quick Search box -->

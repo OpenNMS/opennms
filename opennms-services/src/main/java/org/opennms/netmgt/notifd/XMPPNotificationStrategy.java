@@ -105,7 +105,7 @@ public class XMPPNotificationStrategy implements NotificationStrategy {
 
 			String[] parsedArgs = this.parseArguments(arguments);
 			if (parsedArgs[XMPP_TO] == null || "".equals(parsedArgs[XMPP_TO])) {
-			    StringBuffer argumentString = new StringBuffer();
+			    final StringBuilder argumentString = new StringBuilder();
 			    boolean first = true;
 			    for (Argument argument : arguments) {
 			        if (!first) argumentString.append(", ");

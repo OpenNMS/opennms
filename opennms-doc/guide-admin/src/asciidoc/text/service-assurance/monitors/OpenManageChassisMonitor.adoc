@@ -1,11 +1,14 @@
 
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
 ==== OpenManageChassisMonitor
 
-The OpenManageChassis monitor tests the status of a Dell chassis by querying its SNMP agent.
-The monitor polls the value of the node's SNMP OID .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
+The _OpenManageChassis_ monitor tests the status of a _Dell_ chassis by querying its _SNMP_ agent.
+The monitor polls the value of the node's _SNMP OID_ .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).
 If the value is _OK_ (3), the service is considered available.
 
-As this monitor uses SNMP, the queried nodes must have proper SNMP configuration in _snmp-config.xml_.
+As this monitor uses _SNMP_, the queried nodes must have proper _SNMP_ configuration in _snmp-config.xml_.
 
 ===== Monitor facts
 
@@ -22,9 +25,9 @@ As this monitor uses SNMP, the queried nodes must have proper SNMP configuration
 |===
 | Parameter | Description                                                        | Required | Default value
 | `port`    | The port to which connection shall be tried.                       | optional | from `snmp-config.xml`
-| `retry`   | Number of polls to attempt.                                        | optional | from `snmp-config.xml`
-| `timeout` | Time (in milliseconds) to wait before receiving the SNMP response. | optional | from `snmp-config.xml`
 |===
+
+This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
 ===== Examples
 
@@ -41,6 +44,6 @@ As this monitor uses SNMP, the queried nodes must have proper SNMP configuration
 
 ===== Dell MIBs
 
-Dell MIBs can be found link:ftp://ftp.us.dell.com/sysman[here].
-Download the DCMIB<version>.zip or DCMIB<version>.exe file corresponding to the version of your OpenManage agents.
+_Dell MIBs_ can be found link:ftp://ftp.us.dell.com/sysman[here].
+Download the _DCMIB<version>.zip_ or _DCMIB<version>.exe_ file corresponding to the version of your _OpenManage_ agents.
 The latest one should be good enough for all previous version though.

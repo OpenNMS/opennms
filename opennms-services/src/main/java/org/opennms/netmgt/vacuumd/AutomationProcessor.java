@@ -274,7 +274,7 @@ public class AutomationProcessor implements ReadyRunnable {
             
             LOG.debug("getTokenizedColumns: processing string: {}", targetString);
             
-            List<String> tokens = new ArrayList<String>();
+            List<String> tokens = new ArrayList<>();
             int count = 0;
             while (matcher.find()) {
                 count++;
@@ -595,9 +595,6 @@ public class AutomationProcessor implements ReadyRunnable {
                 ResultSetSymbolTable symbols = new ResultSetSymbolTable(triggerResultSet);
                 
                 try {
-                    if (m_actionEvent.getAddAllParms() && resultHasColumn(triggerResultSet, "eventParms") ) {
-                        bldr.setParms(EventParameterUtils.decode(triggerResultSet.getString("eventParms")));
-                    }
                     buildEvent(bldr, symbols);
                 } catch (SQLExceptionHolder holder) {
                     holder.rethrow();

@@ -28,12 +28,15 @@
 
 package org.opennms.smoketest;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Callable;
@@ -71,6 +74,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(TopologyIT.class);
 
+    private static final int DEFAULT_MENU_RETRIES = 3;
+
     private TopologyUIPage topologyUiPage;
 
     /**
@@ -105,13 +110,13 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='icon-remove']")).click();
+                waitForTransition();
             } finally {
                 ui.testCase.setImplicitWait();
             }
-            waitForTransition();
         }
 
-        public void expand() throws org.openqa.selenium.NoSuchElementException {
+        public void expand() throws NoSuchElementException {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-plus']")).click();
@@ -121,7 +126,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
             }
         }
 
-        public void collapse() throws org.openqa.selenium.NoSuchElementException {
+        public void collapse() throws NoSuchElementException {
             try {
                 ui.testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 getElement().findElement(By.xpath("//a[@class='gwt-Anchor icon-minus']")).click();
@@ -368,22 +373,34 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
  
         public TopologyUIPage clickOnMenuItemsWithLabels(String... labels) {
+            return clickOnMenuItemsWithLabelsWithRetries(DEFAULT_MENU_RETRIES, labels);
+        }
+
+        private TopologyUIPage clickOnMenuItemsWithLabelsWithRetries(int retries, String... labels) {
             resetMenu();
             Actions actions = new Actions(testCase.m_driver);
             for (String label : labels) {
                 try {
+                    // we should wait, otherwise the menu has not yet updated
+                    waitForTransition();
                     WebElement menuElement = getMenubarElement(label);
                     actions.moveToElement(menuElement);
                     menuElement.click();
-                    // we should wait, otherwise the menu has not yet updated
-                    Thread.sleep(2000);
-                } catch (InterruptedException e) {
-                    throw Throwables.propagate(e);
+                } catch (NoSuchElementException e) {
+                    if (retries > 0) {
+                        LOG.info("Failed to click on menu bar element with label: {} in path: {}. Retrying.",
+                                label, Arrays.toString(labels));
+                        clickOnMenuItemsWithLabelsWithRetries(retries-1, label);
+                    } else {
+                        throw e;
+                    }
                 } catch (Throwable e) {
                     LOG.error("Unexpected exception while clicking on menu item {}", label, e);
                     throw e;
                 }
             }
+            // Wait to give the menu a chance to update
+            waitForTransition();
             return this;
         }
 
@@ -602,22 +619,37 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
 
         private boolean isMenuItemChecked(String itemName, String... path) {
-            clickOnMenuItemsWithLabels(path);
+            return isMenuItemCheckedWithRetries(DEFAULT_MENU_RETRIES, itemName, path);
+        }
 
-            final WebElement automaticRefresh = getMenubarElement(itemName);
-            final String cssClasses = automaticRefresh.getAttribute("class");
-            if (cssClasses != null) {
-                if (cssClasses.contains("-unchecked")) {
-                    return false;
-                } else if (cssClasses.contains("-checked")) {
-                    return true;
+        private boolean isMenuItemCheckedWithRetries(int retries, String itemName, String... path) {
+            try {
+                // Disable retries, since we're already in a retry loop
+                clickOnMenuItemsWithLabelsWithRetries(0, path);
+
+                final WebElement automaticRefresh = getMenubarElement(itemName);
+                final String cssClasses = automaticRefresh.getAttribute("class");
+                if (cssClasses != null) {
+                    if (cssClasses.contains("-unchecked")) {
+                        return false;
+                    } else if (cssClasses.contains("-checked")) {
+                        return true;
+                    } else {
+                        throw new RuntimeException("Unknown CSS classes '" + cssClasses + "'."
+                                    + " Unable to determine if the item is checked or unchecked.");
+                    }
                 } else {
-                    throw new RuntimeException("Unknown CSS classes '" + cssClasses + "'."
-                                + " Unable to determine if the item is checked or unchecked.");
+                    throw new RuntimeException("Element has no CSS classes!"
+                            + " Unable to determine if the item is checked or unchecked.");
                 }
-            } else {
-                throw new RuntimeException("Element has no CSS classes!"
-                        + " Unable to determine if the item is checked or unchecked.");
+            } catch (NoSuchElementException e) {
+                if (retries > 0) {
+                    LOG.info("Failed to find one or more elements in menu path: {} for item: {}. Retrying.",
+                            Arrays.toString(path), itemName);
+                    return isMenuItemCheckedWithRetries(retries-1, itemName, path);
+                } else {
+                    throw e;
+                }
             }
         }
 
@@ -641,7 +673,7 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
                 testCase.setImplicitWait(1, TimeUnit.SECONDS);
                 testCase.findElementByXpath("//*[@id='info-panel-component']//div[text() = 'Simulation Mode Enabled']");
                 return true;
-            } catch (org.openqa.selenium.NoSuchElementException e) {
+            } catch (NoSuchElementException e) {
                 return false;
             } finally {
                 testCase.setImplicitWait();
@@ -733,6 +765,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     public void setUp() {
         topologyUiPage = new TopologyUIPage(this, getBaseUrl());
         topologyUiPage.open();
+        topologyUiPage.setAutomaticRefresh(false);
+        topologyUiPage.defaultFocus();
     }
 
     @Test
@@ -775,22 +809,8 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
 
     // Verifies that the ping operation is available. See NMS-9019
     @Test
-    public void verifyPingOperation() {
-        // Create Dummy Node
-        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
-                "<scan-interval>1d</scan-interval>\n" +
-                "<detectors/>\n" +
-                "<policies/>\n" +
-                "</foreign-source>";
-        createForeignSource(REQUISITION_NAME, foreignSourceXML);
-        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
-                "   <node foreign-id=\"tests\" node-label=\"Dummy Node\">" +
-                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
-                "           <monitored-service service-name=\"ICMP\"/>" +
-                "       </interface>" +
-                "   </node>" +
-                "</model-import>";
-        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+    public void verifyPingOperation() throws InterruptedException, IOException {
+        createDummyNode();
 
         // Find Node and try select ping from context menu
         topologyUiPage.selectTopologyProvider(TopologyProvider.ENLINKD);
@@ -802,13 +822,15 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
     }
 
     @Test
-	public void verifyCollapsibleCriteriaPersistence() {
+    public void verifyCollapsibleCriteriaPersistence() throws IOException, InterruptedException {
+        createDummyNode();
+
         // Search for category and select
         topologyUiPage.search("Routers").selectItemThatContains("Routers");
         List<FocusedVertex> focusedVertices = topologyUiPage.getFocusedVertices();
         Assert.assertNotNull(focusedVertices);
         Assert.assertEquals(1, focusedVertices.size());
-        
+
         logout();
         login();
 
@@ -816,8 +838,81 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         focusedVertices = topologyUiPage.getFocusedVertices();
         Assert.assertNotNull(focusedVertices);
         Assert.assertEquals(1, focusedVertices.size());
+        Assert.assertEquals("Routers", focusedVertices.get(0).getLabel());
+
+        topologyUiPage.clearFocus();
     }
-    
+
+    /**
+     * Verifies that the ip-like search produces no duplicates
+     * (issue NMS-9265 - by typing a complete ip address in the search box IpLikeSearchProvider returned 2 identical items)
+     */
+    @Test
+    public void verifyIpLikeSearchNoDuplicates() throws IOException, InterruptedException {
+        createDummyNode();
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.1").countItemsThatContain("127.0.0.1"));
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.*").countItemsThatContain("127.0.0.*"));
+        Assert.assertEquals(1, topologyUiPage.search("127.0.0.*").countItemsThatContain("127.0.0.1"));
+    }
+
+    /**
+     * This method allows to test whether the PathOutageProvider correctly reacts to changes of the SemanticZoomLevel
+     */
+    @Test
+    public void verifyPathOutageSemanticZoomLevel() throws IOException, InterruptedException {
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+        final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"tests-1\" node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"8.8.8.8\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-2\" node-label=\"Node-2\" parent-node-label=\"Node-1\">" +
+                "       <interface ip-addr=\"250.25.86.11\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-3\" node-label=\"Node-3\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"77.15.8.98\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-4\" node-label=\"Node-4\" parent-node-label=\"Node-2\">" +
+                "       <interface ip-addr=\"11.100.32.32\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "   <node foreign-id=\"tests-5\" node-label=\"Node-5\" parent-node-label=\"Node-3\">" +
+                "       <interface ip-addr=\"94.37.11.135\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 5);
+        new TopologyReloadEvent(this).send();
+
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
+        topologyUiPage.clearFocus();
+        topologyUiPage.setSzl(1);
+        topologyUiPage.search("Node-3").selectItemThatContains("Node-3");
+        int numFocusVertices_szl1 = topologyUiPage.getVisibleVertices().size();
+        topologyUiPage.setSzl(2);
+        int numFocusVertices_szl2 = topologyUiPage.getVisibleVertices().size();
+        Assert.assertNotEquals(numFocusVertices_szl1, numFocusVertices_szl2);
+    }
+
+    @Test
+    public void verifyPathOutageTopologyInfo() {
+        topologyUiPage.selectTopologyProvider(TopologyProvider.PATH_OUTAGE);
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getTitle(), not(containsString("Undefined")));
+        Assert.assertThat(topologyUiPage.getTopologyInfo().getDescription(), not(containsString("No description available")));
+    }
+
     /**
      * This method tests that selecting an empty category does not cause a default "No focus defined" window to pop up.
      * <p>
@@ -854,22 +949,23 @@ public class TopologyIT extends OpenNMSSeleniumTestCase {
         }
     }
 
-    /**
-     * Verifies that the ip-like search produces no duplicates
-     * (issue NMS-9265 - by typing a complete ip address in the search box IpLikeSearchProvider returned 2 identical items)
-     */
-    @Test
-    public void verifyIpLikeSearch_noDuplicates() {
+    private void createDummyNode() throws InterruptedException, IOException {
+        // Create Dummy Node
+        final String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
         final String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumTestCase.REQUISITION_NAME + "\">" +
-                "   <node foreign-id=\"tests\" node-label=\"Yahoo\">" +
-                "       <interface ip-addr=\"46.228.47.114\" status=\"1\" snmp-primary=\"N\">" +
+                "   <node foreign-id=\"tests\" node-label=\"Dummy Node\">" +
+                "       <interface ip-addr=\"127.0.0.1\" status=\"1\" snmp-primary=\"N\">" +
                 "           <monitored-service service-name=\"ICMP\"/>" +
                 "       </interface>" +
+                "       <category name=\"Routers\" />" +
                 "   </node>" +
                 "</model-import>";
         createRequisition(REQUISITION_NAME, requisitionXML, 1);
-        Assert.assertEquals(1, topologyUiPage.search("46.228.47.114").countItemsThatContain("46.228.47.114"));
-        Assert.assertEquals(1, topologyUiPage.search("46.228.47.*").countItemsThatContain("46.228.47.*"));
-        Assert.assertEquals(1, topologyUiPage.search("46.228.47.*").countItemsThatContain("46.228.47.114"));
+        new TopologyReloadEvent(this).send();
     }
 }

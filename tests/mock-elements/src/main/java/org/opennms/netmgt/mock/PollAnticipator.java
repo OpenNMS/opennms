@@ -41,9 +41,9 @@ import java.util.List;
  */
 public class PollAnticipator {
 
-    List<MockService> m_anticipatedPolls = new ArrayList<MockService>();
+    List<MockService> m_anticipatedPolls = new ArrayList<>();
 
-    List<MockService> m_unanticipatedPolls = new ArrayList<MockService>();
+    List<MockService> m_unanticipatedPolls = new ArrayList<>();
 
     /**
      * <p>anticipateAllServices</p>

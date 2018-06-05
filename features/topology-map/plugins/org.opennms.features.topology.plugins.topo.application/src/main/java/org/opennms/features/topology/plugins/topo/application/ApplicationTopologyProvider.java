@@ -28,12 +28,9 @@
 
 package org.opennms.features.topology.plugins.topo.application;
 
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.JAXBException;
 
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
@@ -69,11 +66,6 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
         LOG.debug("Creating a new {} with namespace {}", getClass().getSimpleName(), TOPOLOGY_NAMESPACE);
     }
 
-    @Override
-    public void save() {
-       // we do not support save at the moment
-    }
-    
     private void load() {
         resetContainer();
         for (OnmsApplication application : applicationDao.findAll()) {
@@ -87,7 +79,7 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
 
                 // connect with application
                 String id = String.format("connection:%s:%s", applicationVertex.getId(), serviceVertex.getId());
-                Edge edge = new AbstractEdge(getEdgeNamespace(), id, applicationVertex, serviceVertex);
+                Edge edge = new AbstractEdge(getNamespace(), id, applicationVertex, serviceVertex);
                 addEdges(edge);
             }
         }
@@ -110,11 +102,6 @@ public class ApplicationTopologyProvider extends AbstractTopologyProvider implem
                     }
                     return null;
                 });
-    }
-
-    @Override
-    public void load(String filename) throws MalformedURLException, JAXBException {
-      load();
     }
 
     @Override

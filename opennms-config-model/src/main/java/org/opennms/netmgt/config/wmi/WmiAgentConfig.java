@@ -33,7 +33,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.InetAddressUtils;
+
+@XmlRootElement(name = "wmi-agent-config")
+@XmlAccessorType(XmlAccessType.NONE)
 
 public class WmiAgentConfig {
     public static final int DEFAULT_TIMEOUT = 3000;
@@ -41,23 +51,26 @@ public class WmiAgentConfig {
     public static final String DEFAULT_PASSWORD = "";
     public static final String DEFAULT_USERNAME="Administrator";
     public static final String DEFAULT_DOMAIN="WORKGROUP";
-    
+
+    @XmlAttribute(name = "address")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
     private InetAddress m_Address;
+
+    @XmlAttribute(name = "timeout")
     private int m_Timeout;
+
+    @XmlAttribute(name = "retries")
     private int m_Retries;
+
+    @XmlAttribute(name = "username")
     private String m_Username;
+
+    @XmlAttribute(name = "domain")
     private String m_Domain;
+
+    @XmlAttribute(name = "password")
     private String m_Password;
-    
-    
-	String user = "";
-	String pass = "";
-	String domain = "";
-	String matchType = "all";
-	String compVal = "";
-	String compOp = "NOOP";
-	String wmiClass = "";
-	String wmiObject = "";
+
     /**
      * <p>Constructor for WmiAgentConfig.</p>
      */
@@ -87,7 +100,7 @@ public class WmiAgentConfig {
      */
     @Override
     public String toString() {
-        StringBuffer buff = new StringBuffer("AgentConfig[");
+        final StringBuilder buff = new StringBuilder("AgentConfig[");
         buff.append("Address: "+m_Address);
         buff.append(", Password: "+String.valueOf(m_Password)); //use valueOf to handle null values of m_password
         buff.append(", Timeout: "+m_Timeout);

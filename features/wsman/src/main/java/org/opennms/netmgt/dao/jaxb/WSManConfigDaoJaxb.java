@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2010-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2010-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,24 +29,18 @@
 package org.opennms.netmgt.dao.jaxb;
 
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Objects;
 
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.wsman.WSManEndpoint;
-import org.opennms.core.wsman.WSManVersion;
 import org.opennms.core.xml.AbstractJaxbConfigDao;
 import org.opennms.netmgt.config.wsman.Definition;
 import org.opennms.netmgt.config.wsman.Range;
-import org.opennms.netmgt.config.wsman.WsmanAgentConfig;
 import org.opennms.netmgt.config.wsman.WsmanConfig;
 import org.opennms.netmgt.dao.WSManConfigDao;
 
 public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, WsmanConfig> implements WSManConfigDao {
-    private static final String DEFAULT_PROTOCOL = "http";
-    private static final String DEFAULT_PATH = "/wsman";
 
     public WSManConfigDaoJaxb() {
         super(WsmanConfig.class, "WS-Man Configuration");
@@ -58,7 +52,7 @@ public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, Wsman
     }
 
     @Override
-    public WsmanAgentConfig getConfig(InetAddress agentInetAddress) {
+    public Definition getAgentConfig(InetAddress agentInetAddress) {
         Objects.requireNonNull(agentInetAddress);
 
         for (Definition def : getConfig().getDefinition()) {
@@ -86,69 +80,12 @@ public class WSManConfigDaoJaxb extends AbstractJaxbConfigDao<WsmanConfig, Wsman
         }
 
         // No definition references the given agent address, use the defaults
-        return getConfig();
+        return new Definition(getConfig());
     }
 
     @Override
     public WSManEndpoint getEndpoint(InetAddress agentInetAddress) {
-        return getEndpoint(getConfig(agentInetAddress), agentInetAddress);
-    }
-
-    @Override
-    public WSManEndpoint getEndpoint(WsmanAgentConfig agentConfig, InetAddress agentInetAddress) {
-        Objects.requireNonNull(agentConfig, "agentConfig argument");
-        Objects.requireNonNull(agentInetAddress, "agentInetAddress argument");
-        URL url;
-        try {
-            String protocol = DEFAULT_PROTOCOL;
-            if (agentConfig.isSsl()!= null) {
-                protocol = agentConfig.isSsl() ? "https" : "http";
-            }
-
-            String port = "";
-            if (agentConfig.getPort() != null) {
-                port = String.format(":%d", agentConfig.getPort());
-            }
-
-            String path = DEFAULT_PATH;
-            if (agentConfig.getPath() != null) {
-                path = agentConfig.getPath();
-            }
-            // Prepend a forward slash if missing
-            if (!path.startsWith("/")) {
-                path = "/" + path;
-            }
-
-            String host = agentInetAddress.getHostAddress();
-            if (agentConfig.isGssAuth()!=null && agentConfig.isGssAuth()) {
-                // Always use the canonical host name when using GSS authentication
-                host = agentInetAddress.getCanonicalHostName();
-            }
-
-            url = new URL(String.format("%s://%s%s%s", protocol, host, port, path));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException("Invalid endpoint URL: " + e.getMessage());
-        }
-
-        final WSManEndpoint.Builder builder = new WSManEndpoint.Builder(url)
-                .withServerVersion(WSManVersion.WSMAN_1_0);
-        if (agentConfig.getUsername() != null && agentConfig.getPassword() != null) {
-            builder.withBasicAuth(agentConfig.getUsername(), agentConfig.getPassword());
-        }
-        if (agentConfig.isGssAuth() != null && agentConfig.isGssAuth()) {
-            builder.withGSSAuth();
-        }
-        if (agentConfig.getMaxElements() != null) {
-            builder.withMaxElements(agentConfig.getMaxElements());
-        }
-        if (agentConfig.isStrictSsl() != null) {
-            builder.withStrictSSL(false);
-        }
-        if (agentConfig.getTimeout() != null) {
-            builder.withConnectionTimeout(agentConfig.getTimeout())
-                   .withReceiveTimeout(agentConfig.getTimeout());
-        }
-        return builder.build();
+        return WSManConfigDao.getEndpoint(getAgentConfig(agentInetAddress), agentInetAddress);
     }
 
     @Override

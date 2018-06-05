@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.sink</artifactId>
-    <version>19.0.0-SNAPSHOT</version>
+    <version>21.1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.sink</groupId>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-      <version>0.10.1.1_1</version>
+      <version>${kafkaStreamsBundleVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
@@ -78,8 +78,8 @@
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.kafka_2.10</artifactId>
-      <version>0.10.1.1_1</version>
+      <artifactId>org.apache.servicemix.bundles.kafka_2.11</artifactId>
+      <version>${kafkaStreamsBundleVersion}</version>
       <exclusions>
         <exclusion>
           <artifactId>log4j</artifactId>
@@ -110,6 +110,14 @@
         <exclusion>
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-core</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-expression</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.springframework</groupId>

@@ -155,7 +155,7 @@ public class DNSAddressRequestTest extends TestCase {
     
     @Test
     public void testNxDomainPass() throws Exception {
-        List<Integer> fatalCodes = new ArrayList<Integer>();
+        List<Integer> fatalCodes = new ArrayList<>();
         fatalCodes.add(2);
         fatalCodes.add(3);
         m_request.m_reqID = 0x2f3e;

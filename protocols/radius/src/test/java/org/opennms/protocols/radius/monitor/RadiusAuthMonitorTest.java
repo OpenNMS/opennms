@@ -33,10 +33,12 @@ import static org.junit.Assert.assertEquals;
 import java.util.Map;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InetAddressUtils;
@@ -47,34 +49,100 @@ import org.opennms.netmgt.poller.mock.MonitorTestUtils;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.test.mock.MockUtil;
 import org.springframework.test.context.ContextConfiguration;
+import org.tinyradius.util.RadiusServer;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={"classpath:/META-INF/opennms/emptyContext.xml"})
 @JUnitConfigurationEnvironment
 public class RadiusAuthMonitorTest {
-
+	RadiusServer mockSrv = null;
 	@Before
 	public void setup() throws Exception {
 	    MockLogAppender.setupLogging();
+	    //Create the radius server, do not start it
+		mockSrv = new MockRadiusServer();
+		
 	}
-
+	@After
+	public void tearDown() {
+		if (mockSrv != null) mockSrv.stop();
+	}
+	
 	@Test
-	@Ignore("have to have a radius server set up")
-	public void testResponse() throws Exception {
+	public void testResponses() throws Exception {
+		mockSrv.start(true,false);
 		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
 
 		final ServiceMonitor monitor = new RadiusAuthMonitor();
-		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("192.168.211.11"), "RADIUS");
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
 
         m.put("user", "testing");
         m.put("password", "password");
         m.put("retry", "1");
         m.put("secret", "testing123");
         m.put("authtype", "chap");
-
         final PollStatus status = monitor.poll(svc, m);
         MockUtil.println("Reason: "+status.getReason());
         assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
+	}
+	@Test
+	public void testBadResponses() throws Exception {
+		mockSrv.start(true,false);
+		
+		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+		final ServiceMonitor monitor = new RadiusAuthMonitor();
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
+
+        m.put("user", "testing");
+        m.put("password", "12");
+        m.put("retry", "1");
+        m.put("secret", "testing123");
+        m.put("authtype", "chap");
+        final PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+		MockLogAppender.assertLogMatched(Level.DEBUG, "response returned, but request was not accepted");
+	}
+	@Test
+	public void testTimeOut() throws Exception {
+		// do not start raddius server
+		final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+		final ServiceMonitor monitor = new RadiusAuthMonitor();
+		final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
+
+        m.put("user", "testing");
+        m.put("password", "12");
+        m.put("retry", "1");
+        m.put("secret", "testing123");
+        m.put("authtype", "chap");
+        final PollStatus status = monitor.poll(svc, m);
+        MockUtil.println("Reason: "+status.getReason());
+        assertEquals(PollStatus.SERVICE_UNAVAILABLE, status.getStatusCode());
+		MockLogAppender.assertLogMatched(Level.DEBUG, "Error while attempting to connect to the RADIUS service on localhost");
+	}
+
+	@Test
+	@Ignore("have to have a EAP-TTLS radius server set up")
+	public void testTTLSResponse() throws Exception {
+	    mockSrv.start(true,false);
+
+	    final Map<String, Object> m = new ConcurrentSkipListMap<String, Object>();
+
+	    final ServiceMonitor monitor = new RadiusAuthMonitor();
+	    final MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddressUtils.addr("127.0.0.1"), "RADIUS");
+
+	    m.put("user", "testing");
+	    m.put("password", "12");
+	    m.put("retry", "1");
+	    m.put("secret", "testing123");
+	    m.put("authtype", "eap-ttls");
+	    m.put("inner-user", "anonymous");
+	    final PollStatus status = monitor.poll(svc, m);
+	    MockUtil.println("Reason: "+status.getReason());
+	    System.out.println("Reason"+status.getReason());
+	    assertEquals(PollStatus.SERVICE_AVAILABLE, status.getStatusCode());
 	}
 
 }

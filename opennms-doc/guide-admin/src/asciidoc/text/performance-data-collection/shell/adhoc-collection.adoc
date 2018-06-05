@@ -1,0 +1,73 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-performance-mgmt-adhoc-collection]]
+==== Ad-hoc collection
+
+The `collection:collect` _Karaf Shell_ command can be used to trigger and perform a collection on any of the available collectors.
+
+The results of the collection (also referred to as the "collection set") will be displayed in the console after a successful collection.
+The resulting collection set will not be persisted, nor will any thresholding be applied.
+
+List all of the available collectors:
+
+[source]
+----
+collection:list-collectors
+----
+
+Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1`.
+
+[source]
+----
+collection:collect -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+----
+
+Invoke the `SnmpCollector` against interface `127.0.0.1` on `NODES:n1` via the `MINION` location.
+
+[source]
+----
+collection:collect -l MINION -n NODES:n1 org.opennms.netmgt.collectd.SnmpCollector 127.0.0.1
+----
+
+TIP: Setting the location on the command line will override the node's location.
+
+NOTE: If you see errors caused by `RequestTimedOutException`s when invoking a collector at a remote location, consider increasing the time to live.
+      By default, `collectd` will use the service interval as the time to live.
+
+Invoke the `JdbcCollector` against `127.0.0.1` while specifying some of the collector parameters.
+
+[source]
+----
+collection:collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 collection=PostgreSQL driver=org.postgresql.Driver url=jdbc:postgresql://OPENNMS_JDBC_HOSTNAME/postgres user=postgres
+----
+
+TIP: Some collectors, such as the `JdbcCollector`, can be invoked without specifying a node.
+
+A complete list of options is available using:
+
+[source]
+----
+collection:collect --help
+----
+
+==== Interpreting the output
+
+After a successful collection, the collection set will be displayed in the following format:
+
+```
+resource a
+  group 1
+    attribute
+    attribute
+  group 2
+    attribute
+resource b
+  group 1
+    attribute
+...
+```
+
+The description of the resources, groups and attribute may differ between collectors.
+This output is independent of the persistence strategy that is being used.

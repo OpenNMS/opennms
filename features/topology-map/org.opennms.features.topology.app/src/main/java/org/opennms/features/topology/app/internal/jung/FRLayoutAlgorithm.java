@@ -32,11 +32,8 @@ import java.awt.Dimension;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 
-import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.graph.SparseGraph;
 import org.apache.commons.collections15.Transformer;
 import org.opennms.features.topology.api.Graph;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.Layout;
 import org.opennms.features.topology.api.Point;
 import org.opennms.features.topology.api.topo.Edge;
@@ -44,24 +41,25 @@ import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.graph.SparseGraph;
+
 public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 	@Override
-	public void updateLayout(final GraphContainer graphContainer) {
+	public void updateLayout(final Graph graph) {
 
-		Graph g = graphContainer.getGraph();
-
-		final Layout graphLayout = g.getLayout();
+		final Layout graphLayout = graph.getLayout();
 
 		SparseGraph<VertexRef, EdgeRef> jungGraph = new SparseGraph<VertexRef, EdgeRef>();
 
-		Collection<Vertex> vertices = g.getDisplayVertices();
+		Collection<Vertex> vertices = graph.getDisplayVertices();
 
 		for(Vertex v : vertices) {
 			jungGraph.addVertex(v);
 		}
 
-		Collection<Edge> edges = g.getDisplayEdges();
+		Collection<Edge> edges = graph.getDisplayEdges();
 
 		for(Edge e : edges) {
 			jungGraph.addEdge(e, e.getSource().getVertex(), e.getTarget().getVertex());
@@ -69,7 +67,7 @@ public class FRLayoutAlgorithm extends AbstractLayoutAlgorithm {
 
 		FRLayout<VertexRef, EdgeRef> layout = new FRLayout<VertexRef, EdgeRef>(jungGraph);
 		// Initialize the vertex positions to the last known positions from the layout
-        Dimension size = selectLayoutSize(graphContainer);
+        Dimension size = selectLayoutSize(graph);
         layout.setInitializer(initializer(graphLayout, (int)size.getWidth()/2, (int)size.getHeight()/2));
         // Resize the graph to accommodate the number of vertices
         layout.setSize(size);
