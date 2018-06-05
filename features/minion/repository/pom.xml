@@ -138,7 +138,7 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.minion</groupId>
+            <groupId>org.opennms.features.distributed</groupId>
             <artifactId>jms</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -243,8 +243,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.core.ipc.sink</groupId>
-            <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
+            <groupId>org.opennms.core.ipc.sink.camel</groupId>
+            <artifactId>org.opennms.core.ipc.sink.camel.client</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -1,0 +1,1 @@
+<local-server xmlns="http://xmlns.opennms.org/xsd/config/localServer" server-name="nms1" verify-server="false"/>

@@ -99,8 +99,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-dao-minion</artifactId>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-distributed</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
@@ -122,7 +122,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.minion</groupId>
+      <groupId>org.opennms.features.distributed</groupId>
       <artifactId>core-api</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>

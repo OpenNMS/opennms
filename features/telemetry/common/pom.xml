@@ -21,7 +21,8 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>org.opennms.netmgt.telemetry.listeners.udp,org.opennms.netmgt.telemetry.listeners.flow.netflow9,org.opennms.netmgt.telemetry.listeners.flow.ipfix,org.opennms.netmgt.telemetry.listeners.sflow,*</Import-Package>
+            <Import-Package>*</Import-Package>
+            <DynamicImport-Package>org.opennms.netmgt.telemetry.listeners.*</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>
