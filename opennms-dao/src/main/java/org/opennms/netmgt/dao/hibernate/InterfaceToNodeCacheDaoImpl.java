@@ -210,7 +210,11 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
             refreshTimer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    dataSourceSync();
+                    try {
+                        dataSourceSync();
+                    } catch (Exception ex) {
+                        LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+                    }
                 }
             }, refreshRate, refreshRate);
         }
