@@ -335,11 +335,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testOpennmsServer() {
-        testConfigFile("opennms-server.xml");
-    }
-
-    @Test
     public void testOpennms() {
         testConfigFile("opennms.properties");
     }
