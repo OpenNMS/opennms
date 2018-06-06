@@ -28,6 +28,10 @@ include::text/user-management/pre-authentication.adoc[]
 [[ga-admin-ui]]
 == Administrative Webinterface
 
+[[ga-surveillance-view]]
+=== Surveillance View
+include::text/surveillance-view.adoc[]
+
 [[ga-admin-ui-start-page]]
 === Grafana Dashboard Box
 include::text/webui/grafana-dashboard-box.adoc[]
