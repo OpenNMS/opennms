@@ -42,7 +42,11 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.persistence.criteria.CriteriaBuilder;
+
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.Alias;
@@ -516,5 +520,15 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return nextNodeId;
     }
 
+    @Override
+    public void markHavingFlows(final Collection<Integer> ids) {
+        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update node set hasFlows = true where nodeid in (:ids)")
+                .setParameterList("ids", ids)
+                .executeUpdate());
+    }
 
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return find("from OnmsNode as n where n.hasFlows = true");
+    }
 }

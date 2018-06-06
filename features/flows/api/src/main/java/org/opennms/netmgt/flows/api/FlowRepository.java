@@ -43,10 +43,6 @@ public interface FlowRepository {
 
     CompletableFuture<Long> getFlowCount(List<Filter> filters);
 
-    CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters);
-
-    CompletableFuture<Set<Integer>> getSnmpInterfaceIdsWithFlows(int limit, List<Filter> filters);
-
     CompletableFuture<List<TrafficSummary<String>>> getTopNApplications(int N, boolean includeOther, List<Filter> filters);
 
     CompletableFuture<Table<Directional<String>, Long, Double>> getTopNApplicationsSeries(int N, long step, boolean includeOther, List<Filter> filters);
