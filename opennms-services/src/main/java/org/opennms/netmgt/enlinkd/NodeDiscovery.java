@@ -65,7 +65,7 @@ public abstract class NodeDiscovery extends Discovery {
     }
 
 
-    protected abstract void runCollection(); 
+    protected abstract void runNodeDiscovery(); 
     /**
      * <p>
      * Performs the collection for the targeted IP address. The success or
@@ -77,14 +77,14 @@ public abstract class NodeDiscovery extends Discovery {
      * thread context synchronization must be added.
      * </p>
      */
-    public void doit() {
+    public void runDiscovery() {
         if (m_suspendCollection) {
             sendSuspendedEvent(getNodeId());
         } else {
             sendStartEvent(getNodeId());
             LOG.info( "run: node [{}], start {} collection.", 
                       getNodeId(), getName());
-            runCollection();
+            runNodeDiscovery();
             LOG.info( "run: node [{}], end {} collection.", 
                       getNodeId(),getName());
             sendCompletedEvent(getNodeId());

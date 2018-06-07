@@ -99,7 +99,7 @@ public class DiscoveryBridgeDomains extends Discovery {
     }
     
     @Override
-    public void doit() {
+    public void runDiscovery() {
         LOG.info("run: calculate topology on broadcast domains. Start");
         
         Map<Integer, Map<Integer, Set<BridgeForwardingTableEntry>>> nodeondomainbft 
@@ -167,7 +167,7 @@ public class DiscoveryBridgeDomains extends Discovery {
                                                      nodeondomainbft.get(nodeid).get(bridgeId));
                 }
                 Callable<String> task = () -> {
-                    nodebridgetopology.doit();
+                    nodebridgetopology.runDiscovery();
                     return "executed Task: " + nodebridgetopology.getInfo();
                 };
                 taskList.add(task);

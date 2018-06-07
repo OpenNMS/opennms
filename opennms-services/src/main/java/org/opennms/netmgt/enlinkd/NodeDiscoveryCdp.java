@@ -69,7 +69,7 @@ public final class NodeDiscoveryCdp extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
         final CdpGlobalGroupTracker cdpGlobalGroup = new CdpGlobalGroupTracker();

@@ -70,7 +70,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 

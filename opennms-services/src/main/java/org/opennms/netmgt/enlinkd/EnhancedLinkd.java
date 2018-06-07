@@ -127,11 +127,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
         LOG.debug("init: Loading Bridge Topology.....");
         m_queryMgr.loadBridgeTopology();
         LOG.debug("init: Bridge Topology loaded.");
-        for (BroadcastDomain domain: m_queryMgr.getAllBroadcastDomains()) {
-            if (LOG.isDebugEnabled()) {
-        	LOG.debug("init: Found BroadcastDomain with topology {}", domain.printTopology());
-            }
-        }
 
         scheduleCollection();
         if (m_nodes.size() > 0 && m_linkdConfig.useBridgeDiscovery()) {
@@ -319,14 +314,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon {
                 allready = false;
                 continue;
             }
-            snmpColl.doit();
+            snmpColl.runDiscovery();
         }
         return allready;
     }
 
     public void runTopologyDiscovery() {
         final DiscoveryBridgeDomains snmpColl = new DiscoveryBridgeDomains(this);
-        snmpColl.doit();
+        snmpColl.runDiscovery();
     }
     
     public void scheduleNodeBridgeTopologyDiscovery(BroadcastDomain domain, Map<Integer,Set<BridgeForwardingTableEntry>> updateBfpMap) {

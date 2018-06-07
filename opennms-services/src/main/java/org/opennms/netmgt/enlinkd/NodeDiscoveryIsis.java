@@ -62,7 +62,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 

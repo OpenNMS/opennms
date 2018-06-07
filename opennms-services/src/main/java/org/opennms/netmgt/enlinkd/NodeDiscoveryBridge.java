@@ -82,7 +82,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
         final Date now = new Date();
 
         SnmpAgentConfig peer = m_linkd.getSnmpAgentConfig(getPrimaryIpAddress(), getLocation());

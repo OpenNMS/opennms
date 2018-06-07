@@ -138,14 +138,14 @@ public class BridgeSimpleConnection implements Topology {
         return m_yxPort.getBridgePort();
     }
 
-    public BridgeSimpleConnection(BridgeForwardingTable xBridge, 
+    private BridgeSimpleConnection(BridgeForwardingTable xBridge, 
             BridgeForwardingTable yBridge) {
         super();
         m_xBridge = xBridge;
         m_yBridge = yBridge;
     }
     
-    public void doit() throws BridgeTopologyException {
+    private void findSimpleConnection() throws BridgeTopologyException {
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("\n first bridge -> \n{}\n second bridge -> \n{}",
@@ -194,7 +194,8 @@ public class BridgeSimpleConnection implements Topology {
         if (m_xyPort != null && m_yxPort != null) {
             return;
         }
-        	            
+        
+        
         Set<String> commonlearnedmacs = new HashSet<String>(m_xBridge.getMactoport().keySet()); 
         commonlearnedmacs.retainAll(new HashSet<String>(m_yBridge.getMactoport().keySet()));
         if (LOG.isDebugEnabled()) {
@@ -400,7 +401,15 @@ public class BridgeSimpleConnection implements Topology {
             }
         }
 
-        //FIXME This is a particolar condition in which I get the root port with more mac address
+        throw new BridgeTopologyException("condition2: bridge: no simple connection", 
+                                          bridge2Ft.getBridge());
+    }
+    
+    
+    //FIXME This is a particolar condition in which I get the port with max bft entries
+    private static BridgePort conditionA( 
+            BridgeForwardingTable bridge2Ft) throws BridgeTopologyException {
+        
         if (bridge2Ft.getBridge().isRootBridge()) {
             BridgePort port = null;
             int size = 0;
@@ -410,14 +419,25 @@ public class BridgeSimpleConnection implements Topology {
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("condition2: root bridge port: bridge:[{}] <- {}", 
-                          bridge1Ft.getNodeId(),
+                LOG.debug("conditionA: root bridge port: bridge:[] <- {}", 
                           port.printTopology());
             }
             return port;
+        } 
+        throw new BridgeTopologyException("conditionA: bridge: no root bridge port", 
+                                          bridge2Ft.getBridge());
+    }
+    
+    //FIXME This is a particolar condition in which I get the root port || the only port without intersection
+    private static BridgePort conditionB(Set<String> commonlearnedmacs,BridgePort bridge1port, 
+            BridgeForwardingTable bridge1Ft, 
+            BridgeForwardingTable bridge2Ft) throws BridgeTopologyException {
+        
+        Set<BridgePort> ports =  new HashSet<BridgePort>();
+        for (String mac: commonlearnedmacs) {
+            ports.add(bridge2Ft.getMactoport().get(mac));
         }
         
-        //FIXME This is a particolar condition in which I get the root port || the only port without intersection
         for (BridgePort parsed: ports) {
             for (BridgePortWithMacs bft: bridge2Ft.getPorttomac()) {
                 if (bft.getPort().equals(parsed)) {
@@ -425,15 +445,7 @@ public class BridgeSimpleConnection implements Topology {
                 }
                 if (bridge2Ft.getBridge().isNewTopology() && bridge2Ft.getPorttomac().size() == 2) {
                     if (LOG.isDebugEnabled()) {
-                        LOG.debug("condition2: new bridge and port: bridge:[{}] <- {}", 
-                          bridge1Ft.getNodeId(),
-                          bft.printTopology());
-                    }
-                    return bft.getPort();
-                }
-                if (!bridge2Ft.getBridge().isRootBridge() && bft.getPort().getBridgePort().intValue() == bridge2Ft.getRootBridgePort().intValue()) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("condition2: root port: bridge:[{}] <- {}", 
+                        LOG.debug("conditionB: new bridge and port: bridge:[{}] <- {}", 
                           bridge1Ft.getNodeId(),
                           bft.printTopology());
                     }
@@ -441,10 +453,38 @@ public class BridgeSimpleConnection implements Topology {
                 }
             }
         }
-        throw new BridgeTopologyException("condition2: bridge: no simple connection", 
+        throw new BridgeTopologyException("conditionB: bridge: no simple connection", 
                                           bridge2Ft.getBridge());
     }
-    
+ 
+    //FIXME This is a particolar condition in which I get port without intersection
+    private static BridgePort conditionC(Set<String> commonlearnedmacs,BridgePort bridge1port, 
+            BridgeForwardingTable bridge1Ft, 
+            BridgeForwardingTable bridge2Ft) throws BridgeTopologyException {
+        
+        Set<BridgePort> ports =  new HashSet<BridgePort>();
+        for (String mac: commonlearnedmacs) {
+            ports.add(bridge2Ft.getMactoport().get(mac));
+        }
+        for (BridgePort parsed: ports) {
+            for (BridgePortWithMacs bft: bridge2Ft.getPorttomac()) {
+                if (bft.getPort().equals(parsed)) {
+                    continue;
+                }
+                if (!bridge2Ft.getBridge().isRootBridge() && bft.getPort().getBridgePort().intValue() == bridge2Ft.getRootBridgePort().intValue()) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("conditionC: root port: bridge:[{}] <- {}", 
+                          bridge1Ft.getNodeId(),
+                          bft.printTopology());
+                    }
+                    return bft.getPort();
+                }
+            }
+        }
+        throw new BridgeTopologyException("condition2C: bridge: no simple connection", 
+                                          bridge2Ft.getBridge());
+    }
+ 
     private static BridgePort condition1(BridgeForwardingTable bridge1Ft, BridgeForwardingTable bridge2Ft) throws BridgeTopologyException {
         for (String mac: bridge1Ft.getIdentifiers()) {
             if (bridge2Ft.getMactoport().containsKey(mac)) {
@@ -457,7 +497,15 @@ public class BridgeSimpleConnection implements Topology {
         }
         throw new BridgeTopologyException("condition1: no bridge identifier found on fpt");
     }
-                
+ 
+    public static BridgeSimpleConnection createAndRun(BridgeForwardingTable xBridge, 
+    BridgeForwardingTable yBridge) throws BridgeTopologyException {
+        BridgeSimpleConnection sp = new BridgeSimpleConnection(xBridge, yBridge);
+        sp.findSimpleConnection();
+        return sp;
+        
+    }
+    
     public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
         strbfr.append("simple connection: [");

@@ -77,12 +77,12 @@ public abstract class Discovery implements ReadyRunnable {
    }
 
     public abstract String getName();
-    public abstract void doit();
+    public abstract void runDiscovery();
     
     // run is called by a Thread for the runnable
     // execute is where you got the stuff made
     public void run() {
-        doit();
+        runDiscovery();
         m_runned = true;
         reschedule();
     }
