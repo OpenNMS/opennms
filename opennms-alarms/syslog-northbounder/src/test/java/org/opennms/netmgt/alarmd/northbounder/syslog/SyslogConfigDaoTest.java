@@ -54,6 +54,7 @@ public class SyslogConfigDaoTest {
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
             "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <date-format>yyyy-MM-dd HH:mm:ss</date-format>" +
             ">\n" +
             "  <destination>" +
             "    <destination-name>test-host</destination-name>" +
@@ -81,6 +82,7 @@ public class SyslogConfigDaoTest {
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
             "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <date-format>yyyy-MM-dd HH:mm:ss.SSS</date-format>" +
             ">\n" +
             "  <destination>" +
             "    <destination-name>test-host</destination-name>" +
@@ -107,6 +109,7 @@ public class SyslogConfigDaoTest {
             "  <batch-size>10</batch-size>" +
             "  <queue-size>100</queue-size>" +
             "  <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}</message-format>" +
+            "  <date-format>yyyy-MM-dd HH:mm:ss.SSSZ</date-format>" +
             ">\n" +
             "  <destination>" +
             "    <destination-name>test-host</destination-name>" +
@@ -152,6 +155,7 @@ public class SyslogConfigDaoTest {
         assertEquals(new Integer(10), config.getBatchSize());
         assertEquals(new Integer(100), config.getQueueSize());
         assertEquals("ALARM ID:${alarmId} NODE:${nodeLabel}", config.getMessageFormat());
+        assertEquals("yyyy-MM-dd HH:mm:ss", config.getDateFormat());
 
         SyslogDestination syslogDestination = config.getDestinations().get(0);
         assertNotNull(syslogDestination);
@@ -186,6 +190,7 @@ public class SyslogConfigDaoTest {
         assertNotNull(config);
         assertEquals(null, config.getUeis());
         assertTrue(config.getDestinations().get(0).isFirstOccurrenceOnly());
+        assertEquals("yyyy-MM-dd HH:mm:ss.SSS", config.getDateFormat());
     }
 
     /**
@@ -211,7 +216,8 @@ public class SyslogConfigDaoTest {
         assertEquals(2, dst.getFilters().size());
         assertEquals(true, dst.getFilters().get(0).isEnabled());
         assertEquals(false,dst.getFilters().get(1).isEnabled());
-
+        assertEquals("yyyy-MM-dd HH:mm:ss.SSSZ", dao.getConfig().getDateFormat());
+        
         writer = new FileWriter(configFile);
         writer.write(xmlNoUeis);
         writer.close();

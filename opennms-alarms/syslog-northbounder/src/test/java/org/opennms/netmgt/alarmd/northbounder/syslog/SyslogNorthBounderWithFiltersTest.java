@@ -32,6 +32,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.StringReader;
 import java.net.InetAddress;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -120,6 +122,12 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
             this.setEventParameters(Lists.newArrayList(
                     new OnmsEventParameter(this, "owner", "agalue", "String")));
         }});
+        String pattern = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+        Date firstOccurence = simpleDateFormat.parse("2017-3-1 11:59:59");
+        Date lastOccurence = simpleDateFormat.parse("2018-3-1 11:59:59");
+        onmsAlarm.setFirstEventTime(firstOccurence);
+        onmsAlarm.setLastEventTime(lastOccurence);
         NorthboundAlarm nbAlarm = new NorthboundAlarm(onmsAlarm);
         List<NorthboundAlarm> alarms = new LinkedList<>();
         alarms.add(nbAlarm);
@@ -138,8 +146,9 @@ public class SyslogNorthBounderWithFiltersTest extends SyslogNorthBounderTest {
         Assert.assertTrue("Log messages sent: 2, Log messages received: " + messages.size(), 2 == messages.size());
         Assert.assertTrue(messages.get(0).contains("ALARM 10 FROM NODE agalue@TestGroup"));
         Assert.assertTrue(messages.get(1).contains("ALARM 10 FROM INTERFACE 10.0.1.1"));
+        Assert.assertTrue(messages.get(0).contains("FIRST:2017-03-01 11:59:59"));
+        Assert.assertTrue(messages.get(0).contains("LAST:2018-03-01 11:59:59"));
         reader.close();
-
         // Remove the temporary configuration file
         configFile.delete();
     }

@@ -31,6 +31,7 @@ package org.opennms.netmgt.dao.mock;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -478,4 +479,15 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
         }
         return nodes;
     }
+
+    @Override
+    public void markHavingFlows(Collection<Integer> nodeIds) {
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return Collections.emptyList();
+    }
+
+
 }
