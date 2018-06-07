@@ -5,7 +5,8 @@
 
 * *Java 8*: OpenNMS Horizon 22 requires Java 8 as the runtime environment.
   To run Horizon 22, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9.3 or higher*: Horizon 22 requires PostgreSQL 9.3 or higher.
+* *PostgreSQL 9 or higher*: Horizon 22 requires Any supported version PostgreSQL 9 or higher.
+  As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
 
 === Important Upgrade Notes
 
