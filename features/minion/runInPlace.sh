@@ -1,5 +1,5 @@
 #!/bin/bash -e
-test -d container || (echo "This command must be ran from the features/minion directory" && exit 1)
+test -d repository || (echo "This command must be ran from the features/minion directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
