@@ -98,7 +98,7 @@ public class CollectorConfigDaoImplIT extends TestCase {
 
         stream = getInputStreamForFile("/org/opennms/netmgt/config/collectd-testdata.xml");
         try {
-            new CollectdConfigFactory(stream, "localhost", false);
+            new CollectdConfigFactory(stream);
         } finally {
             stream.close();
         }

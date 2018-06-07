@@ -91,7 +91,7 @@ public class PollableServiceConfigIT {
         FilterDaoFactory.setInstance(fd);
 
         InputStream is = new FileInputStream(new File("src/test/resources/etc/psm-poller-configuration.xml"));
-        PollerConfigFactory factory = new PollerConfigFactory(0, is, "localhost", false);
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
 

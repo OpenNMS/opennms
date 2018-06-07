@@ -29,8 +29,6 @@
 
 	<bean id="collectdConfig" class="org.opennms.netmgt.config.CollectdConfigFactory">
 		<constructor-arg ref="collectdConfigStream"/>
-		<constructor-arg value="nms1"/>
-		<constructor-arg value="false"/>
 	</bean>
 
 	<!-- Initialize the PollOutagesConfigFactory -->

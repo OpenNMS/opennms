@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
@@ -83,11 +84,9 @@ public final class PollerConfigFactory extends PollerConfigManager {
      *
      * @param currentVersion a long.
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      */
-    public PollerConfigFactory(final long currentVersion, final InputStream stream, final String localServer, final boolean verifyServer) {
-        super(stream, localServer, verifyServer);
+    public PollerConfigFactory(final long currentVersion, final InputStream stream) {
+        super(stream);
         m_currentVersion = currentVersion;
     }
 
@@ -106,13 +105,6 @@ public final class PollerConfigFactory extends PollerConfigManager {
             return;
         }
 
-        try {
-            OpennmsServerConfigFactory.init();
-        } catch (final Exception e) {
-            LOG.warn("Error while initializing OpennmsServerConfigFactory.", e);
-        }
-        OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
-
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.POLLER_CONFIG_FILE_NAME);
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
@@ -121,7 +113,7 @@ public final class PollerConfigFactory extends PollerConfigManager {
         PollerConfigFactory config = null;
         try {
             stream = new FileInputStream(cfgFile);
-            config = new PollerConfigFactory(cfgFile.lastModified(), stream, onmsSvrConfig.getServerName(), onmsSvrConfig.verifyServer());
+            config = new PollerConfigFactory(cfgFile.lastModified(), stream);
         } finally {
             IOUtils.closeQuietly(stream);
         }

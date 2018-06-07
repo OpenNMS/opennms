@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+	">
+
+    <!--
+        This is required for the PathOutageManagerDaoImpl in order to get access to the underlying
+        PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules
+     -->
+    <bean id="pathOutageConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="poller-configuration.xml"/>
+        <property name="targetMethod" value="get"/>
+    </bean>
+</beans>

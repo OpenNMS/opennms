@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,14 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-@XmlSchema(
-           namespace="http://xmlns.opennms.org/xsd/config/localServer",
-           elementFormDefault=javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-           xmlns={
-                   @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/localServer")
-           }
-        )
-package org.opennms.netmgt.config.server;
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.config.api;
 
+import java.net.InetAddress;
+
+public interface PathOutageConfig {
+    /**
+     * Returns true if the path outage feature is enabled. If enabled, the code
+     * looks for a critical path specification when processing nodeDown events.
+     * If a critical path exists for the node, it will be tested. If the
+     * critical path fails to respond, the eventReason parameter on the
+     * nodeDown event is set to "pathOutage". This parameter will be used by
+     * notifd to suppress nodeDown notification.
+     *
+     * @return a boolean.
+     */
+    boolean isPathOutageEnabled();
+
+    int getDefaultCriticalPathTimeout();
+
+    int getDefaultCriticalPathRetries();
+
+    InetAddress getDefaultCriticalPathIp();
+}

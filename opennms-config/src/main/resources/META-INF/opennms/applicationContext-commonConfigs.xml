@@ -32,14 +32,6 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
 
-	<bean id="init-onmsServerConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-		<property name="staticMethod"><value>org.opennms.netmgt.config.OpennmsServerConfigFactory.init</value></property>
-	</bean>
-
-	<bean id="onmsServerConfig" class="org.opennms.netmgt.config.OpennmsServerConfigFactory" depends-on="init-onmsServerConfig-factory" factory-method="getInstance"/>
-
-	<onmsgi:service interface="org.opennms.netmgt.config.api.OpennmsServerConfig" ref="onmsServerConfig" />
-
     <bean id="init-pollOutagesConfig-factory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
             <property name="staticMethod"><value>org.opennms.netmgt.config.PollOutagesConfigFactory.init</value></property>
     </bean>
