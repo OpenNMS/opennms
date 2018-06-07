@@ -74,12 +74,10 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
      * <p>Constructor for ThreshdConfigFactory.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
      */
-    public ThreshdConfigFactory(InputStream stream, String localServer, boolean verifyServer) throws IOException {
-        super(stream, localServer, verifyServer);
+    public ThreshdConfigFactory(InputStream stream) throws IOException {
+        super(stream);
     }
 
     /**
@@ -97,10 +95,6 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
             return;
         }
         
-        OpennmsServerConfigFactory.init();
-        boolean verifyServer = OpennmsServerConfigFactory.getInstance().verifyServer();
-        String localServer = OpennmsServerConfigFactory.getInstance().getServerName();
-
 
         File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.THRESHD_CONFIG_FILE_NAME);
 
@@ -109,7 +103,7 @@ public final class ThreshdConfigFactory extends ThreshdConfigManager {
         InputStream stream = null;
         try {
             stream = new FileInputStream(cfgFile);
-            m_singleton = new ThreshdConfigFactory(stream, localServer, verifyServer);
+            m_singleton = new ThreshdConfigFactory(stream);
             m_loaded = true;
         } finally {
             if (stream != null) {

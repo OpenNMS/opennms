@@ -37,6 +37,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 import javax.script.ScriptException;
 
@@ -161,44 +162,32 @@ public abstract class AbstractPersistingAdapter implements Adapter {
      * @throws Exception
      *             if an error occured while generating the collection set
      */
-    public abstract Optional<CollectionSetWithAgent> handleMessage(TelemetryMessage message,
-            TelemetryMessageLog messageLog) throws Exception;
+    public abstract Stream<CollectionSetWithAgent> handleMessage(TelemetryMessage message, TelemetryMessageLog messageLog);
 
     @Override
     public void handleMessageLog(TelemetryMessageLog messageLog) {
         for (TelemetryMessage message : messageLog.getMessageList()) {
-            final Optional<CollectionSetWithAgent> result;
-            try {
-                result = handleMessage(message, messageLog);
-            } catch (Exception e) {
-                LOG.warn("Failed to build a collection set from message: {}. Dropping.", message, e);
-                return;
-            }
+            handleMessage(message, messageLog).forEach(result -> {
+                // Locate the matching package definition
+                final Package pkg = getPackageFor(protocol, result.getAgent());
+                if (pkg == null) {
+                    LOG.warn("No matching package found for message: {}. Dropping.", message);
+                    return;
+                }
 
-            if (!result.isPresent()) {
-                LOG.debug("No collection set was returned when processing message: {}. Dropping.", message);
-                return;
-            }
+                // Build the repository from the package definition
+                final RrdRepository repository = new RrdRepository();
+                repository.setStep(pkg.getRrd().getStep());
+                repository.setHeartBeat(repository.getStep() * 2);
+                repository.setRraList(pkg.getRrd().getRras());
+                repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
 
-            // Locate the matching package definition
-            final Package pkg = getPackageFor(protocol, result.get().getAgent());
-            if (pkg == null) {
-                LOG.warn("No matching package found for message: {}. Dropping.", message);
-                return;
-            }
-
-            // Build the repository from the package definition
-            final RrdRepository repository = new RrdRepository();
-            repository.setStep(pkg.getRrd().getStep());
-            repository.setHeartBeat(repository.getStep() * 2);
-            repository.setRraList(pkg.getRrd().getRras());
-            repository.setRrdBaseDir(new File(pkg.getRrd().getBaseDir()));
-
-            // Persist!
-            final CollectionSet collectionSet = result.get().getCollectionSet();
-            LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
-            final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
-            collectionSet.visit(persister);
+                // Persist!
+                final CollectionSet collectionSet = result.getCollectionSet();
+                LOG.trace("Persisting collection set: {} for message: {}", collectionSet, message);
+                final Persister persister = persisterFactory.createPersister(EMPTY_SERVICE_PARAMETERS, repository);
+                collectionSet.visit(persister);
+            });
         }
     }
 

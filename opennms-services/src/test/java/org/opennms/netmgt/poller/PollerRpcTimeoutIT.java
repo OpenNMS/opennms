@@ -201,7 +201,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         }
 
         InputStream is = new FileInputStream(new File("src/test/resources/etc/rpctimeout-poller-configuration.xml"));
-        PollerConfigFactory factory = new PollerConfigFactory(0, is, "localhost", false);
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);
         IOUtils.closeQuietly(is);
 

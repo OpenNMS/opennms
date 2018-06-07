@@ -63,6 +63,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getEngineId(), is(0));
             assertThat(flowPacket.getEngineType(), is(0));
             assertThat(flowPacket.getSamplingInterval(), is(0));
+            assertThat(flowPacket.getSamplingAlgorithm(), is(0));
 
             // Verify Flow Record 1
             assertThat(flowPacket.getRecord(0).getSrcAddr(), is("10.0.2.2"));
@@ -138,6 +139,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getEngineId(), is(0));
             assertThat(flowPacket.getEngineType(), is(0));
             assertThat(flowPacket.getSamplingInterval(), is(0));
+            assertThat(flowPacket.getSamplingAlgorithm(), is(0));
 
             // Verify Last Flow Record
             assertThat(flowPacket.getRecord(29).getSrcAddr(), is("10.0.8.1"));
@@ -178,6 +180,7 @@ public class NetflowPacketTest {
             assertThat(flowPacket.getEngineId(), is(0));
             assertThat(flowPacket.getEngineType(), is(0));
             assertThat(flowPacket.getSamplingInterval(), is(1000));
+            assertThat(flowPacket.getSamplingAlgorithm(), is(0));
 
             // Verify Last Flow Record
             assertThat(flowPacket.getRecord(28).getSrcAddr(), is("66.249.92.75"));
@@ -233,7 +236,8 @@ public class NetflowPacketTest {
         assertThat(netflowPacket.getFlowSequence(), is(1024L * 1024L * 1024L * 4 - 1)); // 2^32-1
         assertThat(netflowPacket.getEngineType(), is(255)); // 2^8-1
         assertThat(netflowPacket.getEngineId(), is(255)); // 2^8-1
-        assertThat(netflowPacket.getSamplingInterval(), is(65536 - 1)); // 2^16-1
+        assertThat(netflowPacket.getSamplingInterval(), is(16384 - 1)); // 2^14-1
+        assertThat(netflowPacket.getSamplingAlgorithm(), is(4 - 1)); // 2^2-1
 
         // Verify Body
         assertThat(netflowPacket.getRecord(0).getSrcAddr(), is("255.255.255.255")); // quadruple: (2^8-1, 2^8-1, 2^8-1, 2^8-1)
@@ -255,6 +259,15 @@ public class NetflowPacketTest {
         assertThat(netflowPacket.getRecord(0).getSrcMask(), is(255)); // 2^8-1
         assertThat(netflowPacket.getRecord(0).getDstMask(), is(255)); // 2^8-1
         assertThat(netflowPacket.getRecord(0).isEgress(), is(false));
+    }
+
+    @Test
+    public void canReadJuniperPackets() {
+        execute("/flows/jflow-packet.dat", packet -> {
+            assertThat(packet.getSamplingInterval(), is(20));
+            assertThat(packet.getSamplingAlgorithm(), is(0));
+            assertThat(packet.getCount(), is(29));
+        });
     }
 
     public void execute(String resource, Consumer<NetflowPacket> consumer) {

@@ -31,7 +31,8 @@
             "fields": [
               "netflow.first_switched",
               "netflow.last_switched",
-              "netflow.bytes"
+              "netflow.bytes",
+              "netflow.sampling_interval"
             ],
             "interval": "${step?long?c}ms",
             "start": ${start?long?c},

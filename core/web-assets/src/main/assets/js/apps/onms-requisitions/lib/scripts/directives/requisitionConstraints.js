@@ -1,6 +1,6 @@
-const ipAddress = require('ip-address');
-const Address4 = ipAddress.Address4;
-const Address6 = ipAddress.Address6;
+const ip = require('vendor/ipaddress-js');
+const Address4 = ip.Address4;
+const Address6 = ip.Address6;
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>

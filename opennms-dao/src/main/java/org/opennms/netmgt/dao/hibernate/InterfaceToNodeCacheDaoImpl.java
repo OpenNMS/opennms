@@ -33,9 +33,13 @@ import static org.opennms.core.utils.InetAddressUtils.str;
 import java.net.InetAddress;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.TreeSet;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import javax.annotation.PostConstruct;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.LocationUtils;
@@ -51,6 +55,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Iterables;
@@ -176,8 +182,43 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
+    @Autowired
+    private TransactionOperations transactionOperations;
+
     private final ReadWriteLock m_lock = new ReentrantReadWriteLock();
     private final SortedSetMultimap<Key, Value> m_managedAddresses = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+
+    private final Timer refreshTimer = new Timer(getClass().getSimpleName());
+
+    // in ms
+    private final long refreshRate;
+
+    public InterfaceToNodeCacheDaoImpl() {
+        this(-1); // By default refreshing the cache is disabled
+    }
+
+    public InterfaceToNodeCacheDaoImpl(long refreshRate) {
+        this.refreshRate = refreshRate;
+    }
+
+    @PostConstruct
+    public void init() {
+        // we call this, to ensure the bean-initialization is blocked, until it is initialized
+        dataSourceSync();
+
+        if (refreshRate > 0) {
+            refreshTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    try {
+                        dataSourceSync();
+                    } catch (Exception ex) {
+                        LOG.error("An error occurred while synchronizing the datasource: {}", ex.getMessage(), ex);
+                    }
+                }
+            }, refreshRate, refreshRate);
+        }
+    }
 
     public NodeDao getNodeDao() {
         return m_nodeDao;
@@ -207,31 +248,49 @@ public class InterfaceToNodeCacheDaoImpl extends AbstractInterfaceToNodeCache im
     @Override
     @Transactional
     public void dataSourceSync() {
-        /*
-         * Make a new list with which we'll replace the existing one, that way
-         * if something goes wrong with the DB we won't lose whatever was already
-         * in there
-         */
-        final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
-
-        // Fetch all non-deleted nodes
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
-        builder.ne("type", String.valueOf(NodeType.DELETED.value()));
-
-        for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
-            for (final OnmsIpInterface iface : node.getIpInterfaces()) {
-                // Skip deleted interfaces
-                // TODO: Refactor the 'D' value with an enumeration
-                if ("D".equals(iface.getIsManaged())) {
-                    continue;
-                }
-                LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
-                newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
-            }
+        // Determine if spring already created a transaction or if we have to manually do it
+        // (depending on where the call to dataSourceSync comes from)
+        if (TransactionSynchronizationManager.isActualTransactionActive()) {
+            dataSourceSyncWithinTransaction();
+        } else {
+            transactionOperations.execute((status) -> {
+                dataSourceSyncWithinTransaction();
+                return null;
+            });
         }
-        m_managedAddresses.clear();
-        m_managedAddresses.putAll(newAlreadyDiscovered);
-        LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
+    }
+
+    private void dataSourceSyncWithinTransaction() {
+        m_lock.writeLock().lock();
+        try {
+            /*
+             * Make a new list with which we'll replace the existing one, that way
+             * if something goes wrong with the DB we won't lose whatever was already
+             * in there
+             */
+            final SortedSetMultimap<Key, Value> newAlreadyDiscovered = Multimaps.newSortedSetMultimap(Maps.newHashMap(), TreeSet::new);
+
+            // Fetch all non-deleted nodes
+            final CriteriaBuilder builder = new CriteriaBuilder(OnmsNode.class);
+            builder.ne("type", String.valueOf(NodeType.DELETED.value()));
+
+            for (OnmsNode node : m_nodeDao.findMatching(builder.toCriteria())) {
+                for (final OnmsIpInterface iface : node.getIpInterfaces()) {
+                    // Skip deleted interfaces
+                    // TODO: Refactor the 'D' value with an enumeration
+                    if ("D".equals(iface.getIsManaged())) {
+                        continue;
+                    }
+                    LOG.debug("Adding entry: {}:{} -> {}", node.getLocation().getLocationName(), iface.getIpAddress(), node.getId());
+                    newAlreadyDiscovered.put(new Key(node.getLocation().getLocationName(), iface.getIpAddress()), new Value(node.getId(), iface.getIsSnmpPrimary()));
+                }
+            }
+            m_managedAddresses.clear();
+            m_managedAddresses.putAll(newAlreadyDiscovered);
+            LOG.info("dataSourceSync: initialized list of managed IP addresses with {} members", m_managedAddresses.size());
+        } finally {
+            m_lock.writeLock().unlock();
+        }
     }
 
     /**

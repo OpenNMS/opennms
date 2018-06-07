@@ -582,7 +582,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
 
         assertEquals("Router", m_poller.getNetwork().getNode(1).getNodeLabel());
 
-        // now delete the node and send a nodeDeleted event
         element.setLabel(newLabel);
         m_eventMgr.sendEventToListeners(event);
 

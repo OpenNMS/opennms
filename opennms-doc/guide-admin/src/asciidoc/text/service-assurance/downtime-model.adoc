@@ -11,7 +11,6 @@ On a detected service outage, the interval is reduced to 30 seconds for 5 minute
 If the service comes back within 5 minutes, a shorter outage is documented and the impact on service availability can be less than 5 minutes.
 This behavior is called _Downtime Model_ and is configurable.
 
-[[ga-service-assurance-downtime-model]]
 .Downtime model with resolved and ongoing outage
 image::service-assurance/01_downtime-model.png[]
 

@@ -43,6 +43,9 @@ import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.topology.Bridge;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
+
+import com.google.common.collect.Sets;
+
 public class BroadcastDomainTest extends EnLinkdTestHelper {
 
     EnhancedLinkd linkd;
@@ -154,6 +157,25 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         assertEquals(topology.nodeBId.intValue(), domain.getRootBridge().getId().intValue());
         topology.check(ndbt.getDomain(),true);
         
+    }
+
+    @Test
+    public void testPrintTopologyFromLevel() throws Exception {
+        TwoMergeBridgeTopology topology = new TwoMergeBridgeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        domain.addBridge(new Bridge(topology.nodeAId));
+        domain.addBridge(new Bridge(topology.nodeBId));
+        domain.setBridgeElements(topology.elemlist);
+
+        NodeDiscoveryBridgeTopology ndbt= new NodeDiscoveryBridgeTopology(linkd, new Node(topology.nodeAId, null, null, null,location));
+        ndbt.setDomain(domain);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeAId),topology.bftA);
+        ndbt.addUpdatedBFT(domain.getBridge(topology.nodeBId),topology.bftB);
+        ndbt.calculate();
+
+        // this resulted in a NPE because of the unknown Id 3333, see NMS-9852
+        domain.printTopologyFromLevel(Sets.newHashSet( topology.nodeAId, topology.nodeBId, 3333), 5);
     }
 
     @Test

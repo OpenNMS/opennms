@@ -37,8 +37,8 @@ import java.util.Set;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.OnmsNode;
 
 public class BroadcastDomain {
     
@@ -501,16 +501,19 @@ E:    	for (BridgeElement element: bridgeelements) {
         strbfr.append("bridges on level:");
         strbfr.append(bridgeIds);
         strbfr.append("\n");
-        for (Integer bridgeid : bridgeIds) {
-        	strbfr.append(getBridge(bridgeid).printTopology());
-        	for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridgeid)) {
-        		if (segment.getDesignatedBridge().intValue() == bridgeid.intValue()) {
-        			strbfr.append(segment.printTopology());
-        			bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
-        		}
-        	}
-        }
-        
+        bridgeIds.stream()
+                .map(id -> getBridge(id))
+                .filter(bridge -> bridge != null)
+                .forEach(bridge -> {
+                    strbfr.append(bridge.printTopology());
+                    for (SharedSegment segment: getSharedSegmentOnTopologyForBridge(bridge.getId())) {
+                        if (segment.getDesignatedBridge().intValue() == bridge.getId().intValue()) {
+                            strbfr.append(segment.printTopology());
+                            bridgesDownLevel.addAll(segment.getBridgeIdsOnSegment());
+                        }
+                    }
+                });
+
         strbfr.append("------level ");
     	strbfr.append(level);
         strbfr.append(" -----\n");

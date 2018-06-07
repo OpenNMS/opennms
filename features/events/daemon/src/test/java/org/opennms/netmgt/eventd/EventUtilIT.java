@@ -29,6 +29,10 @@
 package org.opennms.netmgt.eventd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+import java.math.BigInteger;
+import java.util.Date;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -328,5 +332,21 @@ public class EventUtilIT {
         }
         System.err.printf("Succesfully expanded %d events with %d parameters in %d ms\n",
                 M, N, System.currentTimeMillis() - start);
+    }
+    
+    @Test public void testSnmpV2DateAndTimeDecoding() {
+        // See https://tools.ietf.org/html/rfc2579#page-18
+        
+        // Decode an SNMPv2-TC DateAndTime value which includes a time zone 
+        Date dateWithTz = eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger("07e2050b0d2a3a052d0000", 16));
+        assertEquals("A valid DateAndTime with time zone should decode correctly", dateWithTz, new Date(1526046178500L));
+        
+        // Decode a DateAndTime which does not include a time zone
+        Date dateWithoutTz = eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger("07e2050b0d2a3a09", 16));
+        assertEquals("A valid DateAndTime without time zone should decode correctly", dateWithoutTz, new Date(1526046178900L));
+        
+        // Decode an invalid DateAndTime (wrong length) and verify null is returned
+        Date dateInvalid = eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger("deadbeef", 16));
+        assertNull("An invalid DateAndTime should return a null", dateInvalid);
     }
 }

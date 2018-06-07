@@ -1,3 +1,13 @@
+opennms (22.0.0-1) stable; urgency=low
+
+  * New major release.  It contains many bug fixes andenhancements, including
+    support for flow telemetry.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.0/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Mon, 21 May 2018 13:31:00 -0500
+
 opennms (21.1.0-1) stable; urgency=low
 
   * New stable release.  It contains bug fixes and a few enhancements, including

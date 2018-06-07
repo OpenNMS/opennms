@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,17 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.math.BigInteger;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
 
 import org.hibernate.Hibernate;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
+import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -47,12 +49,9 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
-import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.Striped;
 
 /**
@@ -69,6 +68,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmDao m_alarmDao;
     private EventDao m_eventDao;
     private EventForwarder m_eventForwarder;
+    private EventUtil m_eventUtil;
     private TransactionOperations m_transactionOperations;
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
@@ -174,15 +174,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
     }
 
-    private static void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
-        
+    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+
         //Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
         alarm.setCounter(alarm.getCounter() + 1);
-        
+
         if (!event.getAlarmData().hasUpdateFields()) {
-            
+
             //We always set these even if there are not update fields specified
             alarm.setLogMsg(e.getEventLogMsg());
         } else {
@@ -198,7 +198,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
-                    
+
                     if (fieldName.toLowerCase().startsWith("distpoller")) {
                         alarm.setDistPoller(e.getDistPoller());
                     } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
@@ -211,12 +211,45 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
                     } else if (fieldName.toLowerCase().contains("descr")) {
                         alarm.setDescription(e.getEventDescr());
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
-                    } else {
-                        LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
+                    } else if (fieldName.toLowerCase().startsWith("acktime")) {
+                        final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
+                        if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
+                            alarm.unacknowledge("admin");
+                        } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) { 
+                            alarm.setAlarmAckTime(Calendar.getInstance().getTime());
+                        } else if (expandedAckTime.matches("^\\d+$")) {
+                            final long ackTimeLong;
+                            try {
+                                ackTimeLong = Long.valueOf(expandedAckTime);
+                                // Heuristic: values < 2**31 * 1000 (10 Jan 2004) are probably whole seconds, otherwise milliseconds
+                                if (ackTimeLong < 1073741824000L) {
+                                    alarm.setAlarmAckTime(new java.util.Date(ackTimeLong * 1000));
+                                } else {
+                                    alarm.setAlarmAckTime(new java.util.Date(ackTimeLong));
+                                }
+                            } catch (NumberFormatException nfe) {
+                                LOG.warn("Could not parse update-field 'acktime' value '{}' as a Long. Using current time instead.", expandedAckTime);
+                                alarm.setAlarmAckTime(Calendar.getInstance().getTime());
+                            }
+                        } else if (expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{22}$") || expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{16}$")) {
+                            alarm.setAlarmAckTime(m_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
+                        } else {
+                            LOG.warn("Not sure what to do with update-field 'acktime' value '{}'. Using current time instead.", expandedAckTime);
+                            alarm.setAlarmAckTime(Calendar.getInstance().getTime());
+                        }
+                    } else if (fieldName.toLowerCase().startsWith("ackuser")) {
+                        final String expandedAckUser = m_eventUtil.expandParms(field.getValueExpression(), event);
+                        if ("null".equalsIgnoreCase(expandedAckUser) || "".equals(expandedAckUser)) {
+                            alarm.unacknowledge("admin");
+                        } else {
+                            alarm.setAlarmAckUser(expandedAckUser);
+                        }
                     }
+                } else {
+                    LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
+                }
 
-                    /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
+                /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
                     try {
                         final BeanWrapper ew = PropertyAccessorFactory.forBeanPropertyAccess(e);
                         final BeanWrapper aw = PropertyAccessorFactory.forBeanPropertyAccess(alarm);
@@ -225,11 +258,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
                         LOG.error("reduceEvent", be);
                         continue;
                     }
-                    */
-                    
-                }
+                 */
+
             }
-            
         }
 
         e.setAlarm(alarm);
@@ -337,6 +368,24 @@ public class AlarmPersisterImpl implements AlarmPersister {
      */
     public EventDao getEventDao() {
         return m_eventDao;
+    }
+    
+    /**
+     * <p>setEventUtil</p>
+     * 
+     * @param eventUtil
+     */
+    public void setEventUtil(EventUtil eventUtil) {
+        m_eventUtil = eventUtil;
+    }
+    
+    /**
+     * <p>getEventUtil</p>
+     *
+     * @return a {@link org.opennms.netmgt.eventd.EventUtil} object.
+     */
+    public EventUtil getEventUtil() {
+        return m_eventUtil;
     }
 
     public void setEventForwarder(EventForwarder eventForwarder) {

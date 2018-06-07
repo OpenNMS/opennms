@@ -68,12 +68,8 @@ public class CollectdConfigFactoryIT {
         
         FilterDaoFactory.getInstance();
 
-        InputStream in = ConfigurationTestUtils.getInputStreamForResource(this, "collectd-testdata.xml");
-        
-        try {
-            m_factory = new CollectdConfigFactory(in, "localhost", false);
-        } finally {
-            in.close();
+        try (InputStream in = ConfigurationTestUtils.getInputStreamForResource(this, "collectd-testdata.xml")) {
+            m_factory = new CollectdConfigFactory(in);
         }
     }
 

@@ -32,7 +32,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.840</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -40,7 +39,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.907</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -49,7 +47,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1239</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -58,7 +55,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.719</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -67,7 +63,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1008</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -76,7 +71,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1038</sysoid>
       <collect>
          <includeGroup>cisco-process</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -85,7 +79,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.1147</sysoid>
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -94,7 +87,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.932</sysoid>
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -103,7 +95,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.612</sysoid>
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>
@@ -112,7 +103,6 @@
       <sysoid>.1.3.6.1.4.1.9.12.3.1.3.777</sysoid>
       <collect>
          <includeGroup>cisco-nx-process-index</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>cisco-nx-environmental</includeGroup>
       </collect>
    </systemDef>

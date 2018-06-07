@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[ga-internal-plugins-alarm-change-notifier]]
 === Alarm Change Notifier Plugin
 
 The _Alarm Change Notifier Plugin_ generates new OpenNMS events corresponding to changes in alarms

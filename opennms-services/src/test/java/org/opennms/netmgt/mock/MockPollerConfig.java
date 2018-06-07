@@ -518,6 +518,21 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
     }
 
     @Override
+    public int getDefaultCriticalPathRetries() {
+        return 0;
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        return null;
+    }
+
+    @Override
+    public int getDefaultCriticalPathTimeout() {
+        return 1500;
+    }
+
+    @Override
     public List<InetAddress> getIpList(final Package pkg) {
         return Collections.emptyList();
     }

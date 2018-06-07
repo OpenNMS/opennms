@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -191,6 +191,12 @@
       <version>${project.version}</version>
       <classifier>daemon</classifier>
       <type>tar.gz</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.cli</artifactId>
+      <version>${project.version}</version>
+      <classifier>jar-with-dependencies</classifier>
     </dependency>
   </dependencies>
 </project>
