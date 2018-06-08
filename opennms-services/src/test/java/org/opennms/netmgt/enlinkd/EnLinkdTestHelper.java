@@ -191,6 +191,20 @@ public abstract class EnLinkdTestHelper {
         };
     }
     
+    /*
+     *       spiazzomepe01:24<->24:spiazzofasw01:1<->1:comunespiazzowl1:6 
+     *                                                                  |
+     *                              spiasvig.asw0:1<->1:rsaspiazzowl1Id:4 
+     *                                                  rsaspiazzowl1Id:5
+     *                                                                  |
+     * 1:vrendmunalv02:2<->11:vrendmunasw01:3<->3:comunevillarendenawl1:5           
+     * |                                                               
+     * 1:vigrenmualv02:2<->11:vigrenmuasw01:12<->2:vigrenmualv01:1
+     *                                                           |
+     *                           daremunasw0111<->2:daremunalv01:1 
+     *                           
+     *   villpizzasw01 this cannot be found should fail                                                                                                                                                
+     */
     class TwentyNodeTopology {
 
         final int spiazzomepe01Id=6740; // cisco ME 

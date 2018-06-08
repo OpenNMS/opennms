@@ -1757,6 +1757,192 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
     }
 
     @Test
+    public void testTwentySwitchTopologySpiazzo() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.spiazzofasw01Id);
+        Bridge.create(domain,topology.comunespiazzowl1Id);
+        Bridge.create(domain,topology.spiazzomepe01Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.spiazzofasw01Id),topology.bftspiazzofasw01);
+        ndbtB.addUpdatedBFT((topology.spiazzomepe01Id),topology.bftspiazzomepe01);
+        ndbtB.addUpdatedBFT((topology.comunespiazzowl1Id),topology.bftcomunespiazzowl1);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+
+    @Test
+    public void testTwentySwitchTopologySpiazzoSVig() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.spiasvigasw01Id);
+        Bridge.create(domain,topology.rsaspiazzowl1Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.spiasvigasw01Id),topology.bftspiasvigasw01);
+        ndbtB.addUpdatedBFT((topology.rsaspiazzowl1Id),topology.bftrsaspiazzowl1);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+
+    
+    @Test
+    public void testTwentySwitchTopologyVRendMun() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.vrendmunalv02Id);
+        Bridge.create(domain,topology.vrendmunasw01Id);
+        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.vrendmunalv02Id),topology.bftvrendmunalv02);
+        ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
+        ndbtB.addUpdatedBFT((topology.comunevillarendenawl1Id),topology.bftcomunevillarendenawl1);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+    
+    @Test
+    public void testTwentySwitchTopologyVigReMun() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.vigrenmualv01Id);
+        Bridge.create(domain,topology.vigrenmualv02Id);
+        Bridge.create(domain,topology.vigrenmuasw01Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.vigrenmualv01Id),topology.bftvigrenmualv01);
+        ndbtB.addUpdatedBFT((topology.vigrenmualv02Id),topology.bftvigrenmualv02);
+        ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
+        
+        ndbtB.calculate();
+
+    }
+
+    @Test
+    public void testTwentySwitchTopologyDareMun() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.daremunalv01Id);
+        Bridge.create(domain,topology.daremunasw01Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.daremunalv01Id),topology.bftdaremunalv01);
+        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+
+    @Test
+    public void testTwentySwitchTopologyAlvarion() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.vrendmunalv02Id);
+        Bridge.create(domain,topology.vrendmunasw01Id);
+        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        Bridge.create(domain,topology.vigrenmualv01Id);
+        Bridge.create(domain,topology.vigrenmualv02Id);
+        Bridge.create(domain,topology.vigrenmuasw01Id);
+        Bridge.create(domain,topology.daremunalv01Id);
+        Bridge.create(domain,topology.daremunasw01Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtB.addUpdatedBFT((topology.vrendmunalv02Id),topology.bftvrendmunalv02);
+        ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
+        ndbtB.addUpdatedBFT((topology.comunevillarendenawl1Id),topology.bftcomunevillarendenawl1);
+        ndbtB.addUpdatedBFT((topology.vigrenmualv01Id),topology.bftvigrenmualv01);
+        ndbtB.addUpdatedBFT((topology.vigrenmualv02Id),topology.bftvigrenmualv02);
+        ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
+        ndbtB.addUpdatedBFT((topology.daremunalv01Id),topology.bftdaremunalv01);
+        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+
+
+    @Test
+    public void testTwentySwitchTopologyTwoSteps() throws BridgeTopologyException {
+        TwentyNodeTopology topology = new TwentyNodeTopology();
+
+        BroadcastDomain domain = new BroadcastDomain();
+        Bridge.create(domain,topology.spiazzofasw01Id);
+        Bridge.create(domain,topology.spiasvigasw01Id);
+        Bridge.create(domain,topology.daremunalv01Id);
+        Bridge.create(domain,topology.villpizzasw01Id);
+        Bridge.create(domain,topology.rsaspiazzowl1Id);
+        Bridge.create(domain,topology.vigrenmualv01Id);
+        Bridge.create(domain,topology.vigrenmualv02Id);
+        Bridge.create(domain,topology.vigrenmuasw01Id);
+        Bridge.create(domain,topology.vrendmunalv02Id);
+        Bridge.create(domain,topology.daremunasw01Id);
+        Bridge.create(domain,topology.spiazzomepe01Id);
+        Bridge.create(domain,topology.comunespiazzowl1Id);
+        Bridge.create(domain,topology.vrendmunasw01Id);
+        Bridge.create(domain,topology.comunevillarendenawl1Id);
+        setBridgeElements(domain,topology.elemlist);
+        
+        DiscoveryBridgeTopology ndbtA= new DiscoveryBridgeTopology(linkd,domain);
+        DiscoveryBridgeTopology ndbtB= new DiscoveryBridgeTopology(linkd,domain);
+        
+        ndbtA.addUpdatedBFT((topology.spiazzofasw01Id),topology.bftspiazzofasw01);
+        ndbtA.addUpdatedBFT((topology.spiasvigasw01Id),topology.bftspiasvigasw01);
+        ndbtA.addUpdatedBFT((topology.daremunalv01Id),topology.bftdaremunalv01);
+        ndbtA.addUpdatedBFT((topology.villpizzasw01Id),topology.bftvillpizzasw01);
+        ndbtA.addUpdatedBFT((topology.rsaspiazzowl1Id),topology.bftrsaspiazzowl1);
+        ndbtA.addUpdatedBFT((topology.vigrenmualv01Id),topology.bftvigrenmualv01);
+        ndbtA.addUpdatedBFT((topology.vigrenmualv02Id),topology.bftvigrenmualv02);
+
+        ndbtA.calculate();
+        assertEquals(1, ndbtA.getFailed().size());
+
+        ndbtB.addUpdatedBFT((topology.vrendmunalv02Id),topology.bftvrendmunalv02);
+        ndbtB.addUpdatedBFT((topology.daremunasw01Id),topology.bftdaremunasw01);
+        ndbtB.addUpdatedBFT((topology.spiazzomepe01Id),topology.bftspiazzomepe01);
+        ndbtB.addUpdatedBFT((topology.comunespiazzowl1Id),topology.bftcomunespiazzowl1);
+        ndbtB.addUpdatedBFT((topology.vrendmunasw01Id),topology.bftvrendmunasw01);
+        ndbtB.addUpdatedBFT((topology.vigrenmuasw01Id),topology.bftvigrenmuasw01);
+        ndbtB.addUpdatedBFT((topology.comunevillarendenawl1Id),topology.bftcomunevillarendenawl1);
+        
+        ndbtB.calculate();
+        
+        assertEquals(0, ndbtB.getFailed().size());
+
+    }
+
+    @Test
     public void testTwentySwitchTopologyVillpizzasw01B() throws BridgeTopologyException {
         TwentyNodeTopology topology = new TwentyNodeTopology();
 
@@ -1772,7 +1958,7 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
 
         ndbtB.calculate();
         
-        assertEquals(0, ndbtB.getFailed().size());
+        assertEquals(1, ndbtB.getFailed().size());
     }
 
     @Test

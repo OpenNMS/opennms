@@ -158,8 +158,6 @@ public class BridgeSimpleConnection implements Topology {
             LOG.debug("only one port found: bridge:[{}] <- {} ", 
                       m_yBridge.getNodeId(),
                       m_xyPort.printTopology());
-            m_yxPort=conditionA(m_yBridge);
-            return;
         }
 
         if (m_yBridge.getPorttomac().size() == 1) {
@@ -167,8 +165,6 @@ public class BridgeSimpleConnection implements Topology {
             LOG.debug("only one port found: bridge:[{}] <- {} ", 
                       m_xBridge.getNodeId(),
                       m_yxPort.printTopology());
-            m_xyPort=conditionA(m_xBridge);
-            return;
         }
 
         // there is a mac of Y found on X BFT
@@ -220,11 +216,7 @@ public class BridgeSimpleConnection implements Topology {
                           m_xBridge.getNodeId(),
                           m_yBridge.getNodeId(),
                           e.getMessage());
-                if (m_xBridge.getBridge().isRootBridge()) {
-                    m_xyPort = conditionA(m_xBridge);
-                } else {
-                    m_xyPort = conditionB(commonlearnedmacs, m_xBridge);
-                }
+                m_xyPort = conditionB(commonlearnedmacs, m_xBridge);
             }
             return;
         } 
@@ -240,11 +232,7 @@ public class BridgeSimpleConnection implements Topology {
                           m_yBridge.getNodeId(),
                           m_xBridge.getNodeId(),
                           e.getMessage());
-                if (m_yBridge.getBridge().isRootBridge()) {
-                    m_yxPort = conditionA(m_yBridge);
-                } else {
-                    m_yxPort = conditionB(commonlearnedmacs, m_yBridge);
-                }
+                m_yxPort = conditionB(commonlearnedmacs, m_yBridge);
             }
             return;
         } 
@@ -416,11 +404,9 @@ public class BridgeSimpleConnection implements Topology {
             BridgeForwardingTable bridge1Ft, 
             BridgeForwardingTable bridge2Ft) throws BridgeTopologyException {
         
-        Set<BridgePort> ports =  new HashSet<BridgePort>();
         for (String mac: commonlearnedmacs) {
             BridgePort bridge1port1 = bridge1Ft.getMactoport().get(mac);
             BridgePort bridge2port1 = bridge2Ft.getMactoport().get(mac);
-            ports.add(bridge2port1);
             if (bridge1port.getBridgePort().intValue() != bridge1port1.getBridgePort().intValue()) {
                 LOG.debug("condition2: bridge:[{}] <- {}", 
                           bridge1Ft.getNodeId(),

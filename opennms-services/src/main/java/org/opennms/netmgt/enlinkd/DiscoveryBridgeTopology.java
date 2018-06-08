@@ -333,6 +333,7 @@ public class DiscoveryBridgeTopology extends Discovery {
             }
         }
         
+        Set<Integer> postprocessing = new HashSet<Integer>();
         for (Integer bridgeid: m_bridgeFtMapUpdate.keySet()) {
             if (m_parsed.contains(bridgeid) || m_failed.contains(bridgeid)) {
                 continue;
@@ -341,7 +342,7 @@ public class DiscoveryBridgeTopology extends Discovery {
             if (bridgeFT.getPorttomac().size() == 1) {
                 Integer bridgeFTrootPort = bridgeFT.getPorttomac().iterator().next().getPort().getBridgePort();
                 bridgeFT.setRootPort(bridgeFTrootPort);
-                m_failed.add(bridgeid);
+                postprocessing.add(bridgeid);
                 LOG.debug("calculate: bridge:[{}] only one port:[{}] set to root. Postprocessing",
                           bridgeid, bridgeFTrootPort);
                 continue;
@@ -374,47 +375,55 @@ public class DiscoveryBridgeTopology extends Discovery {
                 m_failed.add(bridgeid);
             }                
         }  
-        
-        Set<Integer> postprocessing = new HashSet<Integer>(m_failed);
-PROCESSING:        for (Integer postbridgeid: postprocessing ) {
-            BridgeForwardingTable postBridgeFT = m_bridgeFtMapUpdate.get(postbridgeid);
-            for (Integer parsedbridgeid: new HashSet<Integer>(m_parsed)) {
-                BridgeForwardingTable parsedBridgeFT = m_bridgeFtMapUpdate.get(parsedbridgeid);
-                BridgeSimpleConnection sp;
-                try {
-                   sp = BridgeSimpleConnection.createAndRun(parsedBridgeFT, postBridgeFT);
-                } catch (BridgeTopologyException e) {
-                    LOG.warn("calculate: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}", 
-                             postbridgeid, 
-                             parsedbridgeid, 
-                             e.getMessage(),e.printTopology());                    
-                    continue;
-                }
-                if (parsedBridgeFT.getBridge().isRootBridge() || 
-                        parsedBridgeFT.getRootPort().equals(sp.getFirstPort())) {
-                    if (postBridgeFT.getBridge().isNewTopology()) {
-                        postBridgeFT.setRootPort(sp.getSecondBridgePort());
-                    }
-                    try {
-                        down(parsedBridgeFT, postBridgeFT, sp, bridgeFtMapCalcul, 0);
-                    } catch (BridgeTopologyException e) {
-                        LOG.warn("calculate: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}", 
-                                 postbridgeid, 
-                                 parsedbridgeid, 
-                                 e.getMessage(),e.printTopology());                    
-                        continue;
-                    }
-                    m_parsed.add(postbridgeid);
-                    m_failed.remove(postbridgeid);
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("calculate: bridge:[{}] <--> bridge:[{}] topology found. \n{}", 
-                                 postbridgeid, 
-                                 parsedbridgeid);
-                    }
-                    continue PROCESSING;
-                }
+
+        for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
+            try {
+                postprocess(failedBridgeFT, rootBft,bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
+            } catch (BridgeTopologyException e) {
+                LOG.warn("calculate: bridge:[{}], first iteration on failed. no topology found. {}, \n{}", failedbridgeid, e.getMessage(),e.printTopology());
+                continue;
             }
-        }
+            m_parsed.add(failedbridgeid);
+            m_failed.remove(failedbridgeid);
+        }        
+
+        for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
+            try {
+                postprocess(failedBridgeFT,rootBft, bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
+            } catch (BridgeTopologyException e) {
+                LOG.warn("calculate: bridge:[{}], second iteration on failed. no topology found. {}, \n{}", failedbridgeid, e.getMessage(),e.printTopology());
+                continue;
+            }
+            m_parsed.add(failedbridgeid);
+            m_failed.remove(failedbridgeid);
+        }        
+
+        for (Integer postprocessbridgeid: new HashSet<Integer>(postprocessing)) {
+            BridgeForwardingTable postprocessBridgeFT = m_bridgeFtMapUpdate.get(postprocessbridgeid);
+            try {
+                down(rootBft, postprocessBridgeFT, BridgeSimpleConnection.createAndRun(rootBft, postprocessBridgeFT), bridgeFtMapCalcul,
+                     0);
+            } catch (BridgeTopologyException e) {
+                LOG.warn("calculate: bridge:[{}], no topology found for single port node. {}, \n{}", postprocessbridgeid, e.getMessage(),e.printTopology());
+                m_failed.add(postprocessbridgeid);
+                continue;
+            }
+            m_parsed.add(postprocessbridgeid);
+        }        
+
+        for (Integer failedbridgeid: new HashSet<Integer>(m_failed)) {
+            BridgeForwardingTable failedBridgeFT = m_bridgeFtMapUpdate.get(failedbridgeid);
+            try {
+                postprocess(failedBridgeFT,rootBft, bridgeFtMapCalcul, new HashSet<Integer>(m_parsed));
+            } catch (BridgeTopologyException e) {
+                LOG.warn("calculate: bridge:[{}], third iteration on failed. no topology found. {}, \n{}", failedbridgeid, e.getMessage(),e.printTopology());
+                continue;
+            }
+            m_parsed.add(failedbridgeid);
+            m_failed.remove(failedbridgeid);
+        }        
 
         m_bridgeFtMapUpdate.values().stream().
             filter(ft -> m_parsed.contains(ft.getNodeId())).
@@ -427,6 +436,61 @@ PROCESSING:        for (Integer postbridgeid: postprocessing ) {
             LOG.debug("calculate: domain\n{}", 
                       m_domain.printTopology());
         }
+    }
+    
+    private void postprocess(BridgeForwardingTable postBridgeFT, BridgeForwardingTable rootBridgeFT,Map<Integer,BridgeForwardingTable> bridgeFtMapCalcul, Set<Integer> parsed) throws BridgeTopologyException {
+        Integer postbridgeid = postBridgeFT.getBridge().getNodeId();
+        for (Integer parsedbridgeid : parsed) {
+            if (parsedbridgeid.intValue() == rootBridgeFT.getNodeId().intValue()) {
+                continue;
+            }
+            BridgeForwardingTable parsedBridgeFT = m_bridgeFtMapUpdate.get(parsedbridgeid);
+            if (parsedBridgeFT == null) {
+                parsedBridgeFT = bridgeFtMapCalcul.get(parsedbridgeid);
+            }
+            
+            BridgeSimpleConnection sp;
+            try {
+                sp = BridgeSimpleConnection.createAndRun(parsedBridgeFT,
+                                                         postBridgeFT);
+            } catch (BridgeTopologyException e) {
+                LOG.warn("postprocess: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}",
+                         postbridgeid, parsedbridgeid, e.getMessage(),
+                         e.printTopology());
+                continue;
+            }
+            
+            if (!parsedBridgeFT.getBridge().isRootBridge()
+                    && !parsedBridgeFT.getRootPort().equals(sp.getFirstPort())) {
+                if (postBridgeFT.getBridge().isNewTopology()) {
+                    postBridgeFT.setRootPort(sp.getSecondBridgePort());
+                }
+                try {
+                    down(parsedBridgeFT, postBridgeFT, sp, bridgeFtMapCalcul,
+                         0);
+                } catch (BridgeTopologyException e) {
+                    LOG.warn("postprocess: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}",
+                             postbridgeid, parsedbridgeid, e.getMessage(),
+                             e.printTopology());
+                    continue;
+                }
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("postprocess: bridge:[{}] <--> bridge:[{}] topology found. \n{}",
+                              postbridgeid, parsedbridgeid);
+                }
+                return;
+            }
+        }
+        try {
+            down(rootBridgeFT, postBridgeFT, BridgeSimpleConnection.createAndRun(rootBridgeFT, postBridgeFT), bridgeFtMapCalcul,
+                 0);
+            return;
+        } catch (BridgeTopologyException e) {
+            LOG.warn("postprocess: bridge:[{}] <--> bridge:[{}] no topology found. {}, \n{}",
+                     postbridgeid,rootBridgeFT.getNodeId(), e.getMessage(),
+                     e.printTopology());
+        }
+        throw new BridgeTopologyException("postprocess: no connection found", postBridgeFT);
     }
     
     private void down(BridgeForwardingTable bridgeUpFT,  
