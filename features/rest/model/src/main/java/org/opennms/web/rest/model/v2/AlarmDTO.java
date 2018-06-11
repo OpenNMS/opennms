@@ -168,6 +168,9 @@ public class AlarmDTO {
     @XmlElement(name="stickyMemo")
     private MemoDTO stickyMemo;
 
+    @XmlElement(name="relatedAlarms")
+    private List<AlarmSummaryDTO> relatedAlarms;
+    
     public Integer getId() {
         return id;
     }
@@ -488,6 +491,14 @@ public class AlarmDTO {
         this.stickyMemo = stickyMemo;
     }
 
+    public List<AlarmSummaryDTO> getRelatedAlarms() {
+        return relatedAlarms;
+    }
+
+    public void setRelatedAlarms(List<AlarmSummaryDTO> relatedAlarms) {
+        this.relatedAlarms = relatedAlarms;
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -532,11 +543,17 @@ public class AlarmDTO {
                 Objects.equals(lastAutomationTime, alarmDTO.lastAutomationTime) &&
                 Objects.equals(ifIndex, alarmDTO.ifIndex) &&
                 Objects.equals(reductionKeyMemo, alarmDTO.reductionKeyMemo) &&
-                Objects.equals(stickyMemo, alarmDTO.stickyMemo);
+                Objects.equals(stickyMemo, alarmDTO.stickyMemo) &&
+                Objects.equals(relatedAlarms, alarmDTO.relatedAlarms);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uei, location, nodeId, nodeLabel, ipAddress, serviceType, reductionKey, type, count, severity, firstEventTime, description, logMessage, operatorInstructions, troubleTicket, troubleTicketState, troubleTicketLink, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime, clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType, ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime, ifIndex, reductionKeyMemo, stickyMemo);
+        return Objects.hash(id, uei, location, nodeId, nodeLabel, ipAddress, serviceType, reductionKey, type, count, severity,
+                            firstEventTime, description, logMessage, operatorInstructions, troubleTicket, troubleTicketState,
+                            troubleTicketLink, mouseOverText, suppressedUntil, suppressedBy, suppressedTime, ackUser, ackTime,
+                            clearKey, lastEvent, parameters, lastEventTime, applicationDN, managedObjectInstance, managedObjectType,
+                            ossPrimaryKey, x733AlarmType, x733ProbableCause, qosAlarmState, firstAutomationTime, lastAutomationTime,
+                            ifIndex, reductionKeyMemo, stickyMemo, relatedAlarms);
     }
 }
