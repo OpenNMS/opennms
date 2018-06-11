@@ -44,6 +44,7 @@
                             <features>
                                 <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
+                                <feature>opennms-core-ipc-rpc-kafka</feature>
                                 <feature>opennms-core-ipc-sink-camel</feature>
                                 <feature>opennms-core-ipc-sink-kafka</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
@@ -239,6 +240,11 @@
         <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
             <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.rpc</groupId>
+            <artifactId>org.opennms.core.ipc.rpc.kafka</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
