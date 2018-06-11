@@ -406,6 +406,11 @@
                   <classifier>minion</classifier>
                 </artifact>
                 <artifact>
+                  <file>${project.build.outputDirectory}/karaf-extensions.xml</file>
+                  <type>xml</type>
+                  <classifier>karaf-extensions</classifier>
+                </artifact>
+                <artifact>
                   <file>${project.build.outputDirectory}/karaf/standard.xml</file>
                   <type>xml</type>
                   <classifier>standard</classifier>
@@ -832,6 +837,19 @@
       <groupId>org.opennms.features.kafka</groupId>
       <artifactId>org.opennms.features.kafka.producer</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>scv</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>

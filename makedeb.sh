@@ -219,6 +219,7 @@ function main()
 
         mkdir -p target
         pushd target >/dev/null 2>&1
+            # Build the Minion
             cp ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "opennms-minion_${VERSION}.orig.tar.gz"
             tar -xzf "opennms-minion_${VERSION}.orig.tar.gz" || die "could not unpack opennms-minion tarball"
             DIRNAME=$(ls ../opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz | sed -e 's,^.*org.opennms.assemblies.,,' -e 's,-minion.tar.gz,,')
@@ -227,6 +228,18 @@ function main()
                 dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update minion debian/changelog"
                 dpkg-buildpackage -p/bin/true -us -uc
             popd >/dev/null 2>&1
+
+            # Build the Sentinel
+            cp ../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "opennms-sentinel_${VERSION}.orig.tar.gz"
+            tar -xzf "opennms-sentinel_${VERSION}.orig.tar.gz" || die "could not unpack opennms-sentinel tarball"
+            DIRNAME=$(ls ../opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz | sed -e 's,^.*org.opennms.assemblies.,,' -e 's,-sentinel.tar.gz,,')
+            mv "${DIRNAME}" "opennms-sentinel-${VERSION}"
+            pushd "opennms-sentinel-${VERSION}" >/dev/null 2>&1
+                dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update sentinel debian/changelog"
+                dpkg-buildpackage -p/bin/true -us -uc
+            popd >/dev/null 2>&1
+
+            # move the build artifacts to the root
             mv *.deb *.orig.tar.gz *.changes *.dsc ../..
         popd >/dev/null 2>&1
     fi
