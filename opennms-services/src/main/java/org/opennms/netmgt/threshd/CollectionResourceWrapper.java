@@ -43,7 +43,6 @@ import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl;
-import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.ResourceTypeUtils;

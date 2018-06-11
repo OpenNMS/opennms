@@ -55,7 +55,7 @@ public class DemoPollerConfiguration implements PollerConfiguration {
         
         OnmsServiceType http = new OnmsServiceType("HTTP");
         
-        List<PolledService> polledServices = new ArrayList<PolledService>();
+        List<PolledService> polledServices = new ArrayList<>();
         
         NetworkBuilder m_builder = new NetworkBuilder();
         m_builder.addNode("Google").setId(1);

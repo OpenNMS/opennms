@@ -31,22 +31,26 @@ package org.opennms.features.topology.shell;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.topology.api.HistoryManager;
 import org.opennms.features.topology.api.support.SavedHistory;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Argument;
 
 @Command(scope="topo", name="show-history", description="Shows the history of a certain user")
-public class ShowHistoryCommand extends OsgiCommandSupport {
+@Service
+public class ShowHistoryCommand implements Action {
 
     @Argument(required=false, name="user", description="The user to show the history for.")
     String user = "admin";
 
-    private HistoryManager historyManager;
+    @Reference
+    public HistoryManager historyManager;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final SavedHistory savedHistory = historyManager.getHistoryByUserId(user);
         if (savedHistory == null) {
             System.out.println("No History for user '" + user + "' found.");
@@ -58,9 +62,5 @@ public class ShowHistoryCommand extends OsgiCommandSupport {
             jaxbMarshaller.marshal(savedHistory, System.out);
         }
         return null;
-    }
-
-    public void setHistoryManager(HistoryManager historyManager) {
-        this.historyManager = historyManager;
     }
 }

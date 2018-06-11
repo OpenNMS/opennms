@@ -67,10 +67,7 @@ public class CollectorListIT {
     private ImmutableSet<String> commonCollectors = ImmutableSet.<String> builder().add(
             "org.opennms.netmgt.collectd.HttpCollector",
             "org.opennms.netmgt.collectd.JdbcCollector",
-            "org.opennms.netmgt.collectd.JBossCollector",
             "org.opennms.netmgt.collectd.Jsr160Collector",
-            "org.opennms.netmgt.collectd.JMXSecureCollector",
-            "org.opennms.netmgt.collectd.MX4JCollector",
             "org.opennms.netmgt.collectd.VmwareCimCollector",
             "org.opennms.netmgt.collectd.VmwareCollector",
             "org.opennms.netmgt.collectd.WmiCollector",
@@ -132,10 +129,11 @@ public class CollectorListIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
-            String shellOutput = sshClient.getStdout();
+            String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
+
             shellOutput = StringUtils.substringAfter(shellOutput, "collection:list-collectors");
             LOG.info("Collectors output: {}", shellOutput);
-            Set<String> collectors = new HashSet<String>();
+            Set<String> collectors = new HashSet<>();
             for (String collector : shellOutput.split("\\r?\\n")) {
                 if (StringUtils.isNotBlank(collector)) {
                     collectors.add(collector);

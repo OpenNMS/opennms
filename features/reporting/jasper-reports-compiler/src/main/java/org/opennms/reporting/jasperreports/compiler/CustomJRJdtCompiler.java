@@ -585,7 +585,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         public void addMissingMethod(Method missingMethod) {
             if (resolvedMethods == null || !resolvedMethods.contains(missingMethod)) {
                 if (missingMethods == null) {
-                    missingMethods = new HashSet<Method>();
+                    missingMethods = new HashSet<>();
                 }
 
                 missingMethods.add(missingMethod);
@@ -603,7 +603,7 @@ public class CustomJRJdtCompiler extends JRAbstractJavaCompiler {
         public void resolveMissingMethods() {
             if (missingMethods != null && missingMethods.size() > 0) {
                 if (resolvedMethods == null) {
-                    resolvedMethods = new HashSet<Method>();
+                    resolvedMethods = new HashSet<>();
                 }
                 resolvedMethods.addAll(missingMethods);
             }

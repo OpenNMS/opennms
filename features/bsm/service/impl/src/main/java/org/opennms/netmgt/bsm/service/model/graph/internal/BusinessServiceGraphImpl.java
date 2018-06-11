@@ -67,7 +67,7 @@ public class BusinessServiceGraphImpl extends DirectedSparseMultigraph<GraphVert
     public BusinessServiceGraphImpl(final List<? extends BusinessService> businessServices) {
         // Build the graph
         Objects.requireNonNull(businessServices).stream()
-            .forEach(b -> addBusinessServiceVertex(b));
+            .forEach(this::addBusinessServiceVertex);
 
         // Calculate and index the hierarchical levels
         calculateAndIndexLevels();

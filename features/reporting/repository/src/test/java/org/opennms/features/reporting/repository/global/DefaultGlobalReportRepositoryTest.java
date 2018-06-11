@@ -93,7 +93,7 @@ public class DefaultGlobalReportRepositoryTest {
         m_mockRemoteRepositoryConfigDao = EasyMock.createNiceMock(RemoteRepositoryConfigDao.class);
 
         // Mockup for a list of reports
-        m_mockReportList = new ArrayList<BasicReportDefinition>();
+        m_mockReportList = new ArrayList<>();
 
         // Mockup for a online active report
         m_mockReportDefinition1 = EasyMock.createNiceMock(BasicReportDefinition.class);
@@ -166,10 +166,10 @@ public class DefaultGlobalReportRepositoryTest {
         m_mockNotActiveRemoteRepository.setRepositoryManagementURL("MockRepositoryManagementURLDeactivated");
         m_mockNotActiveRemoteRepository.setRepositoryName("MockRepositoryNameDeactivated");
 
-        m_mockActiveRepositoriesList = new ArrayList<RemoteRepositoryDefinition>();
+        m_mockActiveRepositoriesList = new ArrayList<>();
         m_mockActiveRepositoriesList.add(m_mockActiveRemoteRepository);
 
-        m_mockAllRepositoriesList = new ArrayList<RemoteRepositoryDefinition>();
+        m_mockAllRepositoriesList = new ArrayList<>();
         m_mockAllRepositoriesList.add(m_mockActiveRemoteRepository);
         m_mockAllRepositoriesList.add(m_mockNotActiveRemoteRepository);
 

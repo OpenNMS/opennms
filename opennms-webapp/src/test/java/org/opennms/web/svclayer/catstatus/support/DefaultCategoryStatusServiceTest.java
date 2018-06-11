@@ -104,7 +104,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		section.addCategory("Category One");
 		
 		OnmsOutage outage = new OnmsOutage();
-		Collection<OnmsOutage> outages = new ArrayList<OnmsOutage>();
+		Collection<OnmsOutage> outages = new ArrayList<>();
 		
 		outage.setId(300);
 		
@@ -126,7 +126,7 @@ public class DefaultCategoryStatusServiceTest extends TestCase {
 		outages.add(outage);
 
 		view.addSection(section);
-		List <String>services = new ArrayList<String>();
+		List <String>services = new ArrayList<>();
 		services.add("HTTP");
 //		ServiceSelector selector = new ServiceSelector("isHTTP",(List<String>) services);
 		

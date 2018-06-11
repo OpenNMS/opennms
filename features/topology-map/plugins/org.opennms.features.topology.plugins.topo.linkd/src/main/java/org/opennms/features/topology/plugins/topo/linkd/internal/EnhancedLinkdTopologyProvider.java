@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -56,8 +57,6 @@ import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
@@ -417,8 +416,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private CdpElementDao m_cdpElementDao;
     private OspfLinkDao m_ospfLinkDao;
     private IsIsLinkDao m_isisLinkDao;
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
@@ -968,7 +965,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     private void getBridgeLinks(Map<Integer, OnmsNode> nodemap, Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap,Map<String, List<OnmsIpInterface>> macToIpMap,Map<Integer, List<OnmsIpInterface>> ipmap, Map<Integer, OnmsIpInterface> ipprimarymap){
-        for (BroadcastDomain domain: m_bridgeTopologyDao.getAllPersisted(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao)) {
+        for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {
             LOG.info("loadtopology: parsing broadcast Domain: '{}', {}", domain);
             for (SharedSegment segment: domain.getTopology()) {
                 if (segment.noMacsOnSegment() && segment.getBridgeBridgeLinks().size() == 1) {
@@ -1165,13 +1162,21 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(linkDetail.getType());
-        if (sourceInterface != null && targetInterface != null
-                && sourceInterface.getNetMask() != null && !sourceInterface.getNetMask().isLoopbackAddress()
-                && targetInterface.getNetMask() != null && !targetInterface.getNetMask().isLoopbackAddress()) {
-            tooltipText.append(" Layer3/Layer2");
-        } else {
-            tooltipText.append(" Layer2");
+        String layerText = " Layer 2";
+        if (sourceInterface != null && targetInterface != null) {
+            final List<OnmsIpInterface> sourceNonLoopback = sourceInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+            final List<OnmsIpInterface> targetNonLoopback = targetInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+
+            if (!sourceNonLoopback.isEmpty() && !targetNonLoopback.isEmpty()) {
+                // if both the source and target have non-loopback IP interfaces, assume this is a layer3 edge
+                layerText = " Layer3/Layer2";
+            }
         }
+        tooltipText.append(layerText);
         tooltipText.append(HTML_TOOLTIP_TAG_END);
 
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
@@ -1249,22 +1254,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     public void setIsisLinkDao(IsIsLinkDao isisLinkDao) {
         m_isisLinkDao = isisLinkDao;
-    }
-
-    public BridgeMacLinkDao getBridgeMacLinkDao() {
-        return m_bridgeMacLinkDao;
-    }
-
-    public void setBridgeMacLinkDao(BridgeMacLinkDao bridgeMacLinkDao) {
-        m_bridgeMacLinkDao = bridgeMacLinkDao;
-    }
-
-    public BridgeBridgeLinkDao getBridgeBridgeLinkDao() {
-        return m_bridgeBridgeLinkDao;
-    }
-
-    public void setBridgeBridgeLinkDao(BridgeBridgeLinkDao bridgeBridgeLinkDao) {
-        m_bridgeBridgeLinkDao = bridgeBridgeLinkDao;
     }
 
     public BridgeTopologyDao getBridgeTopologyDao() {

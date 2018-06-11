@@ -128,9 +128,9 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
 
         private Class<?> m_class;
 
-        private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<org.hibernate.criterion.Order>();
+        private Set<org.hibernate.criterion.Order> m_orders = new LinkedHashSet<>();
 
-        private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<org.hibernate.criterion.Criterion>();
+        private Set<org.hibernate.criterion.Criterion> m_criterions = new LinkedHashSet<>();
 
         private boolean m_distinct = false;
 
@@ -336,7 +336,7 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
     public static final class HibernateRestrictionVisitor extends BaseRestrictionVisitor implements RestrictionVisitor {
         private static final StringType STRING_TYPE = new StringType();
 
-        private List<Criterion> m_criterions = new ArrayList<Criterion>();
+        private List<Criterion> m_criterions = new ArrayList<>();
 
         public List<Criterion> getCriterions() {
             return m_criterions;

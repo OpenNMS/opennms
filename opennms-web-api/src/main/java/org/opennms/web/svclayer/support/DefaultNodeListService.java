@@ -321,7 +321,7 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
     }
     
     private static Set<String> getCategoryNamesForRowDef(RowDef rowDef) {
-        Set<String> categories = new LinkedHashSet<String>();
+        Set<String> categories = new LinkedHashSet<>();
         
         List<Category> cats = rowDef.getCategories();
         for (Category cat : cats) {
@@ -332,10 +332,10 @@ public class DefaultNodeListService implements NodeListService, InitializingBean
 
     private static NodeListModel createModelForNodes(NodeListCommand command, Collection<OnmsNode> onmsNodes) {
         int interfaceCount = 0;
-        List<NodeModel> displayNodes = new LinkedList<NodeModel>();
+        List<NodeModel> displayNodes = new LinkedList<>();
         for (OnmsNode node : onmsNodes) {
-            List<OnmsIpInterface> displayInterfaces = new LinkedList<OnmsIpInterface>();
-            List<OnmsSnmpInterface> displaySnmpInterfaces = new LinkedList<OnmsSnmpInterface>();
+            List<OnmsIpInterface> displayInterfaces = new LinkedList<>();
+            List<OnmsSnmpInterface> displaySnmpInterfaces = new LinkedList<>();
             if (command.getListInterfaces()) {
                 if (command.hasSnmpParm() && command.getSnmpParmMatchType().equals("contains")) {
                     String parmValueMatchString = (".*" + command.getSnmpParmValue().toLowerCase().replaceAll("([\\W])", "\\\\$0").replaceAll("\\\\%", ".*").replaceAll("_", ".") + ".*");

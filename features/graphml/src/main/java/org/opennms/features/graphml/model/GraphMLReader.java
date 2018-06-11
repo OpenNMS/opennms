@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -39,8 +39,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.JAXB;
-
 import org.graphdrawing.graphml.DataType;
 import org.graphdrawing.graphml.EdgeType;
 import org.graphdrawing.graphml.GraphType;
@@ -51,6 +49,7 @@ import org.graphdrawing.graphml.KeyType;
 import org.graphdrawing.graphml.KeyTypeType;
 import org.graphdrawing.graphml.NodeType;
 import org.graphdrawing.graphml.PortType;
+import org.opennms.core.xml.JaxbUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +66,7 @@ public class GraphMLReader {
     private static final Logger LOG = LoggerFactory.getLogger(GraphMLReader.class);
 
     public static GraphML read(InputStream input) throws InvalidGraphException {
-        return convert(JAXB.unmarshal(input, GraphmlType.class));
+        return convert(JaxbUtils.unmarshal(GraphmlType.class, input));
     }
 
     public static GraphML convert(GraphmlType input) throws InvalidGraphException {
@@ -145,13 +144,13 @@ public class GraphMLReader {
 
         // Verify that all types are the same
         for (List<KeyType> eachList : keyTypeIdMap.values()) {
-            if (eachList.stream().map(e -> e.getAttrType()).collect(Collectors.toSet()).size() > 1) {
+            if (eachList.stream().map(KeyType::getAttrType).collect(Collectors.toSet()).size() > 1) {
                 throw new InvalidGraphException("Attribute Type of key with id " + eachList.get(0).getId() + " varies.");
             }
         }
 
         // Unify
-        Map<String, KeyType> keyIdToTypeMapping = keyTypeIdMap.values().stream().map(list -> list.get(0)).collect(Collectors.toMap(keyType -> keyType.getId(), Function.identity()));
+        Map<String, KeyType> keyIdToTypeMapping = keyTypeIdMap.values().stream().map(list -> list.get(0)).collect(Collectors.toMap(KeyType::getId, Function.identity()));
         if (keyIdToTypeMapping.keySet().stream().filter(keyId -> keyId.equals("id")).findFirst().isPresent()) {
             throw new InvalidGraphException("Property with id cannot be defined");
         }
@@ -159,7 +158,7 @@ public class GraphMLReader {
     }
 
     private static <T> List<T> filter(List<?> inputList, Class<T> type) {
-        return inputList.stream().filter(it -> type.isInstance(it)).map(it -> type.cast(it)).collect(Collectors.toList());
+        return inputList.stream().filter(type::isInstance).map(type::cast).collect(Collectors.toList());
     }
 
     private static void addProperties(GraphMLElement graphElement, String elementId, Map<String, KeyType> keyIdToTypeMapping, List<DataType> elementData) throws InvalidGraphException {
@@ -173,7 +172,7 @@ public class GraphMLReader {
                 throw new InvalidGraphException("Key with id='" + keyType.getId() + "' and " +
                         "attribute name '" + keyType.getAttrName() + "' is null. " +
                         "This is usually caused by an invalid attribute type value. " +
-                        "The following values are supported: " + Arrays.stream(KeyTypeType.values()).map(k -> k.value()).collect(Collectors.joining(", ")));
+                        "The following values are supported: " + Arrays.stream(KeyTypeType.values()).map(KeyTypeType::value).collect(Collectors.joining(", ")));
             }
             Object value = typeCastValue(eachDataElement.getContent(), keyType.getAttrType());
             graphElement.setProperty(keyType.getAttrName(), value);

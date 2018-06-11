@@ -310,7 +310,7 @@ img {
     display: none;
 }
 
-.antialiased, body {
+.antialiased {
     -webkit-font-smoothing: antialiased;
 }
 
@@ -651,6 +651,8 @@ table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoo
 }
 
 body {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
     tab-size: 4;
 }
 
@@ -683,6 +685,15 @@ h1 strong, h2 strong, h3 strong, #toctitle strong, .sidebarblock > .content > .t
     border-radius: 4px;
     line-height: 1.45;
     text-rendering: optimizeSpeed;
+    word-wrap: break-word;
+}
+
+*:not(pre) > code.nobreak {
+    word-wrap: normal;
+}
+
+*:not(pre) > code.nowrap {
+    white-space: nowrap;
 }
 
 pre, pre > code {
@@ -691,6 +702,14 @@ pre, pre > code {
     font-family: "Droid Sans Mono", "DejaVu Sans Mono", "Monospace", monospace;
     font-weight: normal;
     text-rendering: optimizeSpeed;
+}
+
+em em {
+    font-style: normal;
+}
+
+strong strong {
+    font-weight: normal;
 }
 
 .keyseq {
@@ -725,8 +744,27 @@ kbd {
     margin-right: 0;
 }
 
-.menuseq, .menu {
-    color: rgba(0, 0, 0, 0.8);
+.menuseq, .menuref {
+    color: #000;
+}
+
+.menuseq b:not(.caret), .menuref {
+    font-weight: inherit;
+}
+
+.menuseq {
+    word-spacing: -0.02em;
+}
+
+.menuseq b.caret {
+    font-size: 1.25em;
+    line-height: 0.8;
+}
+
+.menuseq i.caret {
+    font-weight: bold;
+    text-align: center;
+    width: 0.45em;
 }
 
 b.button:before, b.button:after {
@@ -1011,14 +1049,26 @@ p a > code:hover {
     line-height: 1.44;
 }
 
+#content {
+    margin-bottom: 0.625em;
+}
+
 .sect1 {
     padding-bottom: 0.625em;
 }
 
 @media only screen and (min-width: 768px) {
+    #content {
+        margin-bottom: 1.25em;
+    }
+
     .sect1 {
         padding-bottom: 1.25em;
     }
+}
+
+.sect1:last-child {
+    padding-bottom: 0;
 }
 
 .sect1 + .sect1 {
@@ -1409,32 +1459,32 @@ table.tableblock, th.tableblock, td.tableblock {
     border: 0 solid #dedede;
 }
 
-table.grid-all th.tableblock, table.grid-all td.tableblock {
+table.grid-all > thead > tr > .tableblock, table.grid-all > tbody > tr > .tableblock {
     border-width: 0 1px 1px 0;
 }
 
-table.grid-all tfoot > tr > th.tableblock, table.grid-all tfoot > tr > td.tableblock {
+table.grid-all > tfoot > tr > .tableblock {
     border-width: 1px 1px 0 0;
 }
 
-table.grid-cols th.tableblock, table.grid-cols td.tableblock {
+table.grid-cols > * > tr > .tableblock {
     border-width: 0 1px 0 0;
 }
 
-table.grid-all * > tr > .tableblock:last-child, table.grid-cols * > tr > .tableblock:last-child {
-    border-right-width: 0;
-}
-
-table.grid-rows th.tableblock, table.grid-rows td.tableblock {
+table.grid-rows > thead > tr > .tableblock, table.grid-rows > tbody > tr > .tableblock {
     border-width: 0 0 1px 0;
 }
 
-table.grid-all tbody > tr:last-child > th.tableblock, table.grid-all tbody > tr:last-child > td.tableblock, table.grid-all thead:last-child > tr > th.tableblock, table.grid-rows tbody > tr:last-child > th.tableblock, table.grid-rows tbody > tr:last-child > td.tableblock, table.grid-rows thead:last-child > tr > th.tableblock {
-    border-bottom-width: 0;
+table.grid-rows > tfoot > tr > .tableblock {
+    border-width: 1px 0 0 0;
 }
 
-table.grid-rows tfoot > tr > th.tableblock, table.grid-rows tfoot > tr > td.tableblock {
-    border-width: 1px 0 0 0;
+table.grid-all > * > tr > .tableblock:last-child, table.grid-cols > * > tr > .tableblock:last-child {
+    border-right-width: 0;
+}
+
+table.grid-all > tbody > tr:last-child > .tableblock, table.grid-all > thead:last-child > tr > .tableblock, table.grid-rows > tbody > tr:last-child > .tableblock, table.grid-rows > thead:last-child > tr > .tableblock {
+    border-bottom-width: 0;
 }
 
 table.frame-all {
@@ -1521,43 +1571,46 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .ulist, .ulist .olist,
     margin-bottom: 0.625em;
 }
 
-ul.unstyled, ol.unnumbered, ul.checklist, ul.none {
+ul.checklist, ul.none, ol.none, ul.no-bullet, ol.no-bullet, ol.unnumbered, ul.unstyled, ol.unstyled {
     list-style-type: none;
 }
 
-ul.unstyled, ol.unnumbered, ul.checklist {
+ul.no-bullet, ol.no-bullet, ol.unnumbered {
+    margin-left: 0.625em;
+}
+
+ul.unstyled, ol.unstyled {
+    margin-left: 0;
+}
+
+ul.checklist {
     margin-left: 0.625em;
 }
 
 ul.checklist li > p:first-child > .fa-square-o:first-child, ul.checklist li > p:first-child > .fa-check-square-o:first-child {
-    width: 1em;
-    font-size: 0.85em;
+    width: 1.25em;
+    font-size: 0.8em;
+    position: relative;
+    bottom: 0.125em;
 }
 
 ul.checklist li > p:first-child > input[type="checkbox"]:first-child {
-    width: 1em;
-    position: relative;
-    top: 1px;
+    margin-right: 0.25em;
 }
 
 ul.inline {
-    margin: 0 auto 0.625em auto;
-    margin-left: -1.375em;
-    margin-right: 0;
-    padding: 0;
+    display: -ms-flexbox;
+    display: -webkit-box;
+    display: flex;
+    -ms-flex-flow: row wrap;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
     list-style: none;
-    overflow: hidden;
+    margin: 0 0 0.625em -1.25em;
 }
 
 ul.inline > li {
-    list-style: none;
-    float: left;
-    margin-left: 1.375em;
-    display: block;
-}
-
-ul.inline > li > * {
-    display: block;
+    margin-left: 1.25em;
 }
 
 .unstyled dl dt {
@@ -1616,12 +1669,17 @@ td.hdlist1 {
     margin-top: -0.5em;
 }
 
-.colist > table tr > td:first-of-type {
-    padding: 0 0.75em;
+.colist td:not([class]):first-child {
+    padding: 0.4em 0.75em 0 0.75em;
     line-height: 1;
+    vertical-align: top;
 }
 
-.colist > table tr > td:last-of-type {
+.colist td:not([class]):first-child img {
+    max-width: none;
+}
+
+.colist td:not([class]):last-child {
     padding: 0.25em 0;
 }
 
@@ -1709,13 +1767,13 @@ sup.footnote a:active, sup.footnoteref a:active {
     line-height: 1.3334;
     font-size: 0.875em;
     margin-left: 1.2em;
-    text-indent: -1.05em;
     margin-bottom: 0.2em;
 }
 
 #footnotes .footnote a:first-of-type {
     font-weight: bold;
     text-decoration: none;
+    margin-left: -1.05em;
 }
 
 #footnotes .footnote:last-of-type {
@@ -1893,6 +1951,10 @@ div.unbreakable {
 
 span.icon > .fa {
     cursor: default;
+}
+
+a span.icon > .fa {
+    cursor: inherit;
 }
 
 .admonitionblock td.icon [class^="fa icon-"] {

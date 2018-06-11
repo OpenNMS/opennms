@@ -45,7 +45,7 @@ public class OnmsLocationAvailDataPoint {
     private Date m_time;
 
     @XmlElement(name="values")
-    private List<OnmsLocationAvailDefinition> m_definitions = new ArrayList<OnmsLocationAvailDefinition>();
+    private List<OnmsLocationAvailDefinition> m_definitions = new ArrayList<>();
 
     public void setTime(Date time) {
         m_time = time;

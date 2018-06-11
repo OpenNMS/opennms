@@ -108,7 +108,7 @@ public class PollableNetwork extends PollableContainer {
     }
 
     public List<Long> getNodeIds() {
-        List<Long> nodeIds = new ArrayList<Long>();
+        List<Long> nodeIds = new ArrayList<>();
         for (PollableElement e : getMembers()) {
             int nodeId = ((PollableNode)e).getNodeId();
             nodeIds.add(new Long(nodeId));

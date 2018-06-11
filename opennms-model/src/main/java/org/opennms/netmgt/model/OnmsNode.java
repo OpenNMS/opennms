@@ -87,6 +87,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.events.AddEventVisitor;
 import org.opennms.netmgt.model.events.DeleteEventVisitor;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -140,6 +141,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     /** nullable persistent field */
     private String m_label;
 
+    /** boolean flag for a flow exporting node */
+    private boolean m_hasFlows;
+
     @Transient
     @XmlTransient
     @JsonIgnore
@@ -188,10 +192,10 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private CdpElement m_cdpElement;
 
     /** persistent field */
-    private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
-    private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<OnmsSnmpInterface>();
+    private Set<OnmsSnmpInterface> m_snmpInterfaces = new LinkedHashSet<>();
 
     /** persistent field */
     private Set<LldpLink> m_lldpLinks = new LinkedHashSet<>();
@@ -450,6 +454,16 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setSysName(String nodesysname) {
         m_sysName = nodesysname;
+    }
+
+    @Column(name="hasFlows", nullable=false)
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        return m_hasFlows;
+    }
+
+    public void setHasFlows(boolean hasFlows) {
+        this.m_hasFlows = hasFlows;
     }
 
     /**
@@ -795,6 +809,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setAssetRecord(OnmsAssetRecord asset) {
         m_assetRecord = asset;
+        if (m_assetRecord != null) {
+            m_assetRecord.setNode(this);
+        }
     }
 
     /**
@@ -1091,6 +1108,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         retval.append("sysContact", m_sysContact);
         retval.append("type", m_type == null ? null : m_type.toString());
         retval.append("operatingSystem", m_operatingSystem);
+        retval.append("hasFlows", getHasFlows());
+
         return retval.toString();
     }
 
@@ -1212,7 +1231,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     @Transient
     @JsonIgnore
     public OnmsIpInterface getPrimaryInterface() {
-        List<OnmsIpInterface> primaryInterfaces = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> primaryInterfaces = new ArrayList<>();
         for(OnmsIpInterface iface : getIpInterfaces()) {
             if (PrimaryType.PRIMARY.equals(iface.getIsSnmpPrimary())) {
                 primaryInterfaces.add(iface);
@@ -1358,7 +1377,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         if (send) {
             LOG.debug("mergeNodeAttributes(): sending NODE_LABEL_CHANGED_EVENT_UEI");
             // Create a NODE_LABEL_CHANGED_EVENT_UEI event
-            final EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "OnmsNode.mergeNodeAttributes");
+            final EventBuilder bldr = new NodeLabelChangedEventBuilder("OnmsNode.mergeNodeAttributes");
 
             bldr.setNodeid(scannedNode.getId());
             bldr.setHost(InetAddressUtils.getLocalHostAddressAsString());
@@ -1426,7 +1445,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @param scannedNode a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    public void mergeAdditionalCategories(OnmsNode scannedNode) {
+    private void mergeAdditionalCategories(OnmsNode scannedNode) {
         getCategories().addAll(scannedNode.getCategories());
     }
 

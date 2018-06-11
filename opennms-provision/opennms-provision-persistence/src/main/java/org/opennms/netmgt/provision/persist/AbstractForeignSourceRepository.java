@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,12 +35,13 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
+import javax.xml.bind.ValidationException;
+
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -142,15 +143,10 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
 
     @Override
     public void validate(final Requisition requisition) throws ForeignSourceRepositoryException {
-        final String foreignSource = requisition.getForeignSource();
-        if (foreignSource.contains("/")) {
-            throw new ForeignSourceRepositoryException("Foreign Source (" + foreignSource + ") contains invalid characters. ('/' is forbidden.)");
-        }
-        for (final RequisitionNode node : requisition.getNodes()) {
-            final String foreignId = node.getForeignId();
-            if (foreignId.contains("/")) {
-                throw new ForeignSourceRepositoryException("Foreign ID (" + foreignId + ") for node " + node.getNodeLabel() + " in Foreign Source " + foreignSource + " contains invalid characters. '/' is forbidden.)");
-            }
+        try {
+            requisition.validate();
+        } catch (final ValidationException e) {
+            throw new ForeignSourceRepositoryException(e.getMessage(), e);
         }
     }
 

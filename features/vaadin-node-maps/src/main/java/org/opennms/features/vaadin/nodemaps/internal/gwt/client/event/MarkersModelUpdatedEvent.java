@@ -30,7 +30,7 @@ package org.opennms.features.vaadin.nodemaps.internal.gwt.client.event;
 
 
 public class MarkersModelUpdatedEvent extends OpenNMSEvent<MarkersModelUpdatedEventHandler> {
-    public static Type<MarkersModelUpdatedEventHandler> TYPE = new Type<MarkersModelUpdatedEventHandler>();
+    public static Type<MarkersModelUpdatedEventHandler> TYPE = new Type<>();
 
     @Override
     public com.google.gwt.event.shared.GwtEvent.Type<MarkersModelUpdatedEventHandler> getAssociatedType() {

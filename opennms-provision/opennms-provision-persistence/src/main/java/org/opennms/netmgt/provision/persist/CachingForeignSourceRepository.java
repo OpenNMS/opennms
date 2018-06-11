@@ -59,8 +59,8 @@ public class CachingForeignSourceRepository extends AbstractForeignSourceReposit
 
     private ForeignSourceRepository m_foreignSourceRepository;
 
-    private Set<String> m_dirtyForeignSources = new HashSet<String>();
-    private Set<String> m_dirtyRequisitions    = new HashSet<String>();
+    private Set<String> m_dirtyForeignSources = new HashSet<>();
+    private Set<String> m_dirtyRequisitions    = new HashSet<>();
 
     private Set<String> m_foreignSourceNames;
     private Map<String,ForeignSource> m_foreignSources;

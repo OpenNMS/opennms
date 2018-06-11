@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
   <artifactId>opennms-remote-poller-windows</artifactId>
-  <version>21.0.0-SNAPSHOT</version>
+  <version>23.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- 
     This "name" value is displayed in the installer and used to 
@@ -55,8 +55,8 @@
             <artifactId>nsis-maven-plugin</artifactId>
             <version>1.0-alpha-1</version>
             <configuration>
-              <!-- You may have to change this path if you install NSIS in a different directory -->
-              <makensisBin>C:\Progra~1\NSIS\makensis.exe</makensisBin>
+              <!-- Use makensis.exe available in the %PATH% -->
+              <makensisBin>makensis.exe</makensisBin>
               <scriptFile>remote-poller.nsi</scriptFile>
             </configuration>
             <executions>

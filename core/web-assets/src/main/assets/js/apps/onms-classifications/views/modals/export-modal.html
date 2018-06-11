@@ -1,0 +1,26 @@
+<div id="exportModal">
+<div class="modal-header">
+    <h4 class="modal-title">Export Classification Rules for Group: {{group.name}}</h4>
+</div>
+
+<div class="modal-body">
+    <form name="exportGroupForm">
+        <div class="form-group">
+            <div class="form-group"
+                 ng-class="{ 'has-error' : exportGroupForm.requestedFileName.$invalid }">
+                <label class="control-label" for="export.requestedFileName">File Name</label>
+                <input class="form-control" type="text" id="export.requestedFileName" name="requestedFileName"
+                       value="{{group.id}}_rules.csv" ng-model="export.requestedFileName"
+                       ng-pattern="/^[a-zA-Z1-9_ .-]{1,}$/"
+                       required/>
+                <p ng-show="exportGroupForm.requestedFileName.$invalid" class="help-block">
+                    A valid file name is required, allowed characters: [a-zA-Z1-9_ .-]</p>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" ng-click="exportGroup()" ng-disabled="exportGroupForm.$invalid">Export</button>
+    <button type="button" class="btn btn-default" ng-click="$dismiss('cancelled by user')">Cancel</button>
+</div>
+</div>

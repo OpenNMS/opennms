@@ -1,0 +1,95 @@
+<uib-tabset justified="true">
+  <uib-tab heading="IP Interfaces" id="tab-ip-interfaces">
+    <div class="jumbotron" ng-show="!ipIfLoaded">
+      <div class="container">
+        <p>IP Interfaces are loading</p>
+      </div>
+    </div>
+    <div class="jumbotron" ng-show="ipIfLoaded && ipInterfaces.length == 0">
+      <div class="container">
+        <p>There are no IP interfaces for this node</p>
+      </div>
+    </div>
+    <div class="table-responsive" ng-show="ipInterfaces.length > 0">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-search"></span>
+        </span>
+        <input class="form-control" type="text" placeholder="Search/Filter IP Interfaces" ng-model="filters.ipInterface"></input>
+      </div>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th sort order="'ipAddress'" by="ipOrder" reverse="ipReverse">IP Address</th>
+            <th sort order="'hostName'"  by="ipOrder" reverse="ipReverse">IP Host Name</th>
+            <th sort order="'ifIndex'"   by="ipOrder" reverse="ipReverse">SNMP ifIndex</th>
+            <th sort order="'isManaged'" by="ipOrder" reverse="ipReverse">Managed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-class="intf.backgroundClass" ng-dblclick="openIpPage(intf)" ng-repeat="intf in filteredIpInterfaces | orderBy:ipOrder:ipReverse | startFrom:(ipInterfacesCurrentPage-1)*ipInterfacesPageSize | limitTo:ipInterfacesPageSize">
+            <td>{{ intf.ipAddress }}</td>
+            <td>{{ intf.hostName || 'N/A' }}</td>
+            <td>{{ intf.ifIndex || 'N/A' }}</td>
+            <td>{{ intf.isManaged }}</td>
+          </tr>
+       </tbody>
+      </table>
+    </div>
+    <ul uib-pagination class="pagination-sm"
+      total-items="ipInterfacesTotalItems"
+      num-pages="ipInterfacesNumPages"
+      ng-model="ipInterfacesCurrentPage"
+      max-size="ipInterfacesMaxSize"
+      boundary-links="true"
+      ng-show="filteredIpInterfaces.length > ipInterfacesPageSize"></ul>
+  </uib-tab>
+  <uib-tab heading="SNMP Interfaces" id="tab-ip-interfaces">
+    <div class="jumbotron" ng-show="!snmpIfLoaded">
+      <div class="container">
+        <p>SNMP Interfaces are loading</p>
+      </div>
+    </div>
+    <div class="jumbotron" ng-show="snmpIfLoaded && snmpInterfaces.length == 0">
+      <div class="container">
+        <p>There are no SNMP interfaces for this node</p>
+      </div>
+    </div>
+    <div class="table-responsive" ng-show="snmpInterfaces.length > 0">
+      <div class="input-group">
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-search"></span>
+        </span>
+        <input class="form-control" type="text" placeholder="Search/Filter SNMP Interfaces" ng-model="filters.snmpInterface"></input>
+      </div>
+      <table class="table table-condensed">
+        <thead>
+          <tr>
+            <th sort order="'ifIndex'" by="snmpOrder" reverse="snmpReverse">SNMP ifIndex</th>
+            <th sort order="'ifDescr'" by="snmpOrder" reverse="snmpReverse">SNMP ifDescr</th>
+            <th sort order="'ifName'"  by="snmpOrder" reverse="snmpReverse">SNMP ifName</th>
+            <th sort order="'ifAlias'" by="snmpOrder" reverse="snmpReverse">SNMP ifAlias</th>
+            <th sort order="'ifSpeed'" by="snmpOrder" reverse="snmpReverse">SNMP ifSpeed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-class="intf.backgroundClass" ng-dblclick="openSnmpPage(intf)" ng-repeat="intf in filteredSnmpInterfaces | orderBy:snmpOrder:snmpReverse | startFrom:(snmpInterfacesCurrentPage-1)*snmpInterfacesPageSize | limitTo:snmpInterfacesPageSize">
+            <td>{{ intf.ifIndex }}</td>
+            <td>{{ intf.ifDescr || 'N/A' }}</td>
+            <td>{{ intf.ifName  || 'N/A' }}</td>
+            <td>{{ intf.ifAlias || 'N/A' }}</td>
+            <td>{{ intf.ifSpeed || 'N/A' }}</td>
+          </tr>
+       </tbody>
+      </table>
+    </div>
+    <ul uib-pagination class="pagination-sm"
+      total-items="snmpInterfacesTotalItems"
+      num-pages="snmpInterfacesNumPages"
+      ng-model="snmpInterfacesCurrentPage"
+      max-size="snmpInterfacesMaxSize"
+      boundary-links="true"
+      ng-show="filteredSnmpInterfaces.length > snmpInterfacesPageSize"></ul>
+
+  </uib-tab>
+</uib-tabset>

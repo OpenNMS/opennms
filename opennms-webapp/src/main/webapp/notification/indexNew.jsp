@@ -35,14 +35,29 @@
 	<jsp:param name="title" value="Notifications" />
 	<jsp:param name="headTitle" value="Notifications" />
 	<jsp:param name="breadcrumb" value="Notifications" />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
-
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
-	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-notification.js"></script>' />
 </jsp:include>
 
-<ng-include src="'notification/main.html'"></ng-include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="notification-elementList" />
+  <jsp:param name="asset-defer" value="true" />
+</jsp:include>
+
+<style>
+.dropdown-menu {
+	padding: 5px;
+}
+
+.dropdown-menu > li > a {
+	padding: 5px;
+}
+
+.dropdown-menu > .active > a
+{
+	color: white !important;
+	background-color: #4c9d29 !important;
+}
+</style>
+
+<onms-notification-list></onms-notification-list>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>

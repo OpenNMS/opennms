@@ -440,7 +440,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
         // Antecipate down event
         getAnticipator().reset();
         
-        Set<NCSComponent> impactedByNodeDown = new LinkedHashSet<NCSComponent>();
+        Set<NCSComponent> impactedByNodeDown = new LinkedHashSet<>();
         
         for(NCSComponent c : findSubcomponentsOnNode(m_svc, "space", "1111-PE1") ) {
             impactedByNodeDown.addAll( findPathToSubcomponent(m_svc, c.getForeignSource(), c.getForeignId()));
@@ -818,7 +818,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
     private List<NCSComponent> findPathToSubcomponent(NCSComponent svc, final String subForeignSource, final String subForeignId) {
         
         VisitorWithReturn<List<NCSComponent>> visitor = new VisitorWithReturn<List<NCSComponent>>() {
-            Stack<NCSComponent> m_stack = new Stack<NCSComponent>();
+            Stack<NCSComponent> m_stack = new Stack<>();
 
             @Override
             public void visitComponent(NCSComponent component) {
@@ -839,7 +839,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
     }
     
     private <A,B> Set<B> transform(Set<A> as, Transform<A, B> transformer) {
-        Set<B> bs = new LinkedHashSet<B>();
+        Set<B> bs = new LinkedHashSet<>();
         
         for(A a : as) {
             bs.add(transformer.transform(a));
@@ -849,7 +849,7 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
     }
     
     private <A,B> List<B> transform(List<A> as, Transform<A, B> transformer) {
-        List<B> bs = new LinkedList<B>();
+        List<B> bs = new LinkedList<>();
         
         for(A a : as) {
             bs.add(transformer.transform(a));
@@ -914,8 +914,8 @@ public class DependencyRulesIT extends CorrelationRulesITCase {
     }
 
     private static Set<NCSComponent> uniq(Set<NCSComponent> components) {
-        Set<NCSComponent> results = new LinkedHashSet<NCSComponent>();
-        Set<String> ids = new HashSet<String>();
+        Set<NCSComponent> results = new LinkedHashSet<>();
+        Set<String> ids = new HashSet<>();
 
         for(NCSComponent component : components) {
             String id = component.getForeignSource()+":"+component.getForeignId();

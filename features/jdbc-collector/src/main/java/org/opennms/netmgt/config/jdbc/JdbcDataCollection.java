@@ -58,7 +58,7 @@ public class JdbcDataCollection implements Serializable, Comparable<JdbcDataColl
     
     @XmlElementWrapper(name="queries")
     @XmlElement(name="query")
-    private List<JdbcQuery> m_jdbcQueries = new ArrayList<JdbcQuery>();
+    private List<JdbcQuery> m_jdbcQueries = new ArrayList<>();
     
     public JdbcDataCollection() {
         

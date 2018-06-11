@@ -42,8 +42,8 @@ public class OnmsGeolocationMergeTest {
         // The current geolocation simulates an updated geolocation by the GeolocationProvisioningAdapter
         OnmsGeolocation current = new OnmsGeolocation();
         current.setCity("Fulda");
-        current.setLatitude(1f);
-        current.setLongitude(2f);
+        current.setLatitude(1d);
+        current.setLongitude(2d);
 
         // update simulates an updated geolocation by the user (via requisition)
         OnmsGeolocation update = new OnmsGeolocation();
@@ -61,8 +61,8 @@ public class OnmsGeolocationMergeTest {
         Assert.assertTrue("Current and update Geolocation should be equal", isEqual(current, update));
 
         // update lat/long and verify it is also equal
-        update.setLatitude(21f);
-        update.setLongitude(22f);
+        update.setLatitude(21d);
+        update.setLongitude(22d);
         current.mergeGeolocation(update);
         Assert.assertTrue("Current and update Geolocation should be equal", isEqual(current, update));
     }

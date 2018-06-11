@@ -62,7 +62,7 @@ public class SiblingColumnStorageStrategy extends IndexStorageStrategy {
      */
     public SiblingColumnStorageStrategy() {
         super();
-        m_replaceOps = new ArrayList<StringReplaceOperation>();
+        m_replaceOps = new ArrayList<>();
     }
     
     /** {@inheritDoc} */

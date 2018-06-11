@@ -43,7 +43,7 @@ public class AlertMapping {
         }
         m_alertCode = alertCode;
         m_eventCode = null;
-        m_oidMappings = new ArrayList<OidMapping>();
+        m_oidMappings = new ArrayList<>();
     }
     
     public AlertMapping(String alertCode, String eventCode, List<OidMapping> oidMappings) {
@@ -55,7 +55,7 @@ public class AlertMapping {
         if (oidMappings != null) {
             m_oidMappings = oidMappings;
         } else {
-            m_oidMappings = new ArrayList<OidMapping>();
+            m_oidMappings = new ArrayList<>();
         }
     }
     
@@ -100,7 +100,7 @@ public class AlertMapping {
             throw new IllegalArgumentException("The OID mapping must not be null");
         }
         if (m_oidMappings == null) {
-            m_oidMappings = new ArrayList<OidMapping>();
+            m_oidMappings = new ArrayList<>();
         }
         if (! m_oidMappings.contains(oidMapping)) {
             m_oidMappings.add(oidMapping);

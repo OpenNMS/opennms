@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+      <groupId>org.opennms.features.flows.classification</groupId>
+      <artifactId>org.opennms.features.flows.classification.persistence</artifactId>
+      <version>23.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.features.flows.classification.persistence</groupId>
+  <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
+  <name>OpenNMS :: Features :: Flows :: Classification :: Persistence :: Impl.</name>
+  <packaging>jar</packaging>
+  <dependencies>
+      <dependency>
+          <groupId>org.opennms.features.flows.classification.persistence</groupId>
+          <artifactId>org.opennms.features.flows.classification.persistence.api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-dao</artifactId>
+      </dependency>
+      <!-- Test dependencies -->
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-config</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-rrd-jrobin</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.features.collection</groupId>
+          <artifactId>org.opennms.features.collection.persistence.rrd</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.core.test-api</groupId>
+          <artifactId>org.opennms.core.test-api.services</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms.core.test-api</groupId>
+          <artifactId>org.opennms.core.test-api.db</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.opennms</groupId>
+          <artifactId>opennms-dao-mock</artifactId>
+          <scope>test</scope>
+      </dependency>
+  </dependencies>
+</project>

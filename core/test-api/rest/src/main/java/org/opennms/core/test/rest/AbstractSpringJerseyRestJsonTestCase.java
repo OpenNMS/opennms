@@ -106,6 +106,7 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
         ipInterface.put("isManaged", "M");
         ipInterface.put("snmpPrimary", "P");
         ipInterface.put("ipAddress", "10.10.10.10");
+        ipInterface.put("netMask", "255.255.255.0");
         ipInterface.put("hostName", "TestMachine");
         ipInterface.put("ipStatus", "1");
         sendPost("/nodes/1/ipinterfaces", ipInterface.toString(), 303, "/nodes/1/ipinterfaces/10.10.10.10");
@@ -122,7 +123,6 @@ public abstract class AbstractSpringJerseyRestJsonTestCase extends AbstractSprin
         snmpInterface.put("ifOperStatus", "1");
         snmpInterface.put("ifSpeed", "10000000");
         snmpInterface.put("ifType", "6");
-        snmpInterface.put("netMask", "255.255.255.0");
         snmpInterface.put("physAddr", "001e5271136d");
         sendPost("/nodes/1/snmpinterfaces", snmpInterface.toString(), 303, "/nodes/1/snmpinterfaces/6");
     }

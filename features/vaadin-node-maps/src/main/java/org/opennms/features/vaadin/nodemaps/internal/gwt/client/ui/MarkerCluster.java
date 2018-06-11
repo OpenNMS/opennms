@@ -46,7 +46,7 @@ public class MarkerCluster extends JavaScriptObject {
     }-*/;
 
     public final List<JSNodeMarker> getAllChildMarkers() {
-        final List<JSNodeMarker> markers = new ArrayList<JSNodeMarker>();
+        final List<JSNodeMarker> markers = new ArrayList<>();
         final JsArray<JSObject> markerObjects = getMarkerObjects();
         if (markerObjects == null) return markers;
 

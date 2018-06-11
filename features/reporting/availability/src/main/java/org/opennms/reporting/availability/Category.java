@@ -72,7 +72,7 @@ public class Category implements java.io.Serializable {
     private Integer serviceCount;
 
     public Category() {
-        this.catSectionsList = new java.util.ArrayList<CatSections>();
+        this.catSectionsList = new java.util.ArrayList<>();
     }
 
     /**

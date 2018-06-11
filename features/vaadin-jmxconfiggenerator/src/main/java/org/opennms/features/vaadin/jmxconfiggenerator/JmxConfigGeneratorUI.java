@@ -28,14 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator;
 
-import com.vaadin.annotations.Theme;
-import com.vaadin.annotations.Title;
-import com.vaadin.navigator.Navigator;
-import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.server.VaadinRequest;
-import com.vaadin.ui.Panel;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import org.opennms.features.vaadin.jmxconfiggenerator.data.UiModel;
 import org.opennms.features.vaadin.jmxconfiggenerator.jobs.DetectMBeansJob;
 import org.opennms.features.vaadin.jmxconfiggenerator.jobs.GenerateConfigsJob;
@@ -46,7 +38,16 @@ import org.opennms.features.vaadin.jmxconfiggenerator.ui.ProgressWindow;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.ResultView;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.UiState;
 import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.MBeansView;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
+
+import com.vaadin.annotations.Theme;
+import com.vaadin.annotations.Title;
+import com.vaadin.navigator.Navigator;
+import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinRequest;
+import com.vaadin.ui.Panel;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 @Theme("jmxconfiggenerator")
 @Title("JMX Configuration Generator")

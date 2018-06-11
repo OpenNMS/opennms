@@ -43,7 +43,7 @@ public class Wallboards {
     /**
      * A {@link List} holding the {@link Wallboard} instances
      */
-    private List<Wallboard> m_wallboards = new ArrayList<Wallboard>();
+    private List<Wallboard> m_wallboards = new ArrayList<>();
 
     /**
      * Default constructor.

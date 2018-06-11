@@ -216,7 +216,7 @@ public class Terminal {
 		cx = 0;
 		cy = 0;
 		// Tab stops
-		tab_stops = new ArrayList<Integer>();
+		tab_stops = new ArrayList<>();
 		for (int i = 7; i < width; i += 8) {
 			tab_stops.add(i);
 		}
@@ -870,7 +870,7 @@ public class Terminal {
 			} else if ("2".equals(m)) {
 				tab_stops.remove(Integer.valueOf(cx));
 			} else if ("5".equals(m)) {
-				tab_stops = new ArrayList<Integer>();
+				tab_stops = new ArrayList<>();
 			}
 		}
 	}

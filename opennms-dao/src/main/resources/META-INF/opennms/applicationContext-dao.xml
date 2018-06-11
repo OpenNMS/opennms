@@ -73,6 +73,7 @@
         <value>org.opennms.netmgt.dao.hibernate</value>
         <value>org.opennms.netmgt.model</value>
         <value>org.opennms.netmgt.topology</value>
+        <value>org.opennms.netmgt.flows</value>
       </list>
     </property>
     <!--  property name="schemaUpdate" value="true">
@@ -183,6 +184,15 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
     
+
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
+    
   <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeStpLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -269,7 +279,9 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
-  <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl"/>
+  <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl">
+    <constructor-arg value="${org.opennms.interface-node-cache.refresh-timer:300000}"/>
+  </bean>
 
   <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod">
@@ -462,8 +474,10 @@
       </bean>
     </property>
   </bean>
-  
+ 
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
+  
+  <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/> 
 
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
@@ -478,11 +492,6 @@
 
   <bean id="topologyDao" class="org.opennms.netmgt.dao.hibernate.TopologyDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
-
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.BridgeTopologyDaoInMemory">
   </bean>
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />

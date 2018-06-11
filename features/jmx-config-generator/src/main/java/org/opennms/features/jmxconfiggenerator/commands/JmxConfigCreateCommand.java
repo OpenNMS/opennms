@@ -28,6 +28,17 @@
 
 package org.opennms.features.jmxconfiggenerator.commands;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import javax.management.JMException;
+import javax.management.MBeanServerConnection;
+
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -37,17 +48,7 @@ import org.opennms.features.jmxconfiggenerator.jmxconfig.JmxHelper;
 import org.opennms.features.jmxconfiggenerator.jmxconfig.query.MBeanServerQueryException;
 import org.opennms.features.jmxconfiggenerator.log.ConsoleLogAdapter;
 import org.opennms.features.jmxconfiggenerator.log.LogAdapter;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.JmxDatacollectionConfig;
-
-import javax.management.JMException;
-import javax.management.MBeanServerConnection;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import org.opennms.netmgt.config.collectd.jmx.JmxDatacollectionConfig;
 
 /**
  * Command to create the jmx-configgenerator.xml file.

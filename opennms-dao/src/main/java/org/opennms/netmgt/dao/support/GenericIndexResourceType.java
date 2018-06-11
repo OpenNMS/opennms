@@ -41,7 +41,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.LazySet;
+import org.opennms.core.collections.LazySet;
 import org.opennms.core.utils.PropertiesUtils;
 import org.opennms.core.utils.PropertiesUtils.SymbolTable;
 import org.opennms.netmgt.collection.api.StorageStrategy;
@@ -180,7 +180,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
      */
     private List<String> getQueryableIndexes(ResourcePath path) {
         return m_resourceStorageDao.children(path, 1).stream()
-                .map(rp -> rp.getName())
+                .map(ResourcePath::getName)
                 .collect(Collectors.toList());
     }
 
@@ -314,7 +314,7 @@ public final class GenericIndexResourceType implements OnmsResourceType {
                 }
 
                 private List<String> tokenizeIndex(final String index) {
-                    List<String> indexElements = new ArrayList<String>();
+                    List<String> indexElements = new ArrayList<>();
                     StringTokenizer t = new StringTokenizer(index, ".");
                     while (t.hasMoreTokens()) {
                         indexElements.add(t.nextToken());

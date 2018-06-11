@@ -70,7 +70,7 @@ public class ServiceOutagesController extends AbstractController implements Init
         Outage[] outages = new Outage[0];
 
         if (service.getNodeId() > 0 && service.getIpAddress() != null && service.getServiceId() > 0) {
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
 
             filters.add(new InterfaceFilter(service.getIpAddress()));
             filters.add(new NodeFilter(service.getNodeId(), getServletContext()));

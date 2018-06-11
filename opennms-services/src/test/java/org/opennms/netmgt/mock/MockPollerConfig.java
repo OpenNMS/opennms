@@ -75,7 +75,7 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     private boolean m_outageProcessingEnabled = false;
 
-    private Vector<Package> m_pkgs = new Vector<Package>();
+    private Vector<Package> m_pkgs = new Vector<>();
 
     private Map<String, ServiceMonitor> m_svcMonitors = new TreeMap<String, ServiceMonitor>();
 
@@ -515,6 +515,21 @@ public class MockPollerConfig extends PollOutagesConfigManager implements Poller
 
     public void setPathOutageEnabled(boolean pathOutageEnabled) {
         m_pathOutageEnabled = pathOutageEnabled;
+    }
+
+    @Override
+    public int getDefaultCriticalPathRetries() {
+        return 0;
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        return null;
+    }
+
+    @Override
+    public int getDefaultCriticalPathTimeout() {
+        return 1500;
     }
 
     @Override

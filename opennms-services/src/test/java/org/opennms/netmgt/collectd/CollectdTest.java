@@ -56,6 +56,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.support.DefaultServiceCollectorRegistry;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.PollOutagesConfigFactory;
 import org.opennms.netmgt.config.ThresholdingConfigFactory;
@@ -128,7 +129,7 @@ public class CollectdTest {
 
         // Mock the FilterDao without using EasyMockUtils so that it can be verified separately
         m_filterDao = EasyMock.createMock(FilterDao.class);
-        List<InetAddress> allIps = new ArrayList<InetAddress>();
+        List<InetAddress> allIps = new ArrayList<>();
         allIps.add(addr("192.168.1.1"));
         allIps.add(addr("192.168.1.2"));
         allIps.add(addr("192.168.1.3"));

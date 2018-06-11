@@ -28,20 +28,6 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.validation;
 
-import com.vaadin.ui.Field;
-import com.vaadin.ui.TextField;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.opennms.features.vaadin.jmxconfiggenerator.TestHelper;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.DefaultNameProvider;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
-import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.SelectionManager;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,6 +35,21 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.opennms.features.vaadin.jmxconfiggenerator.TestHelper;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.DefaultNameProvider;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.NameProvider;
+import org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans.SelectionManager;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+
+import com.vaadin.ui.Field;
+import com.vaadin.ui.TextField;
 
 /**
  * Created by mvrueden on 14/07/15.
@@ -60,8 +61,8 @@ public class UniqueAttributeNameValidatorTest {
     @Before
     public void before() {
         final Mbean mbean = TestHelper.createMbean("MBean1");
-        mbean.getAttrib().add(TestHelper.createAttrib("attribute1", "attrib1"));
-        mbean.getCompAttrib().add(
+        mbean.addAttrib(TestHelper.createAttrib("attribute1", "attrib1"));
+        mbean.addCompAttrib(
                 TestHelper.createCompAttrib("compAttribute1",
                         TestHelper.createCompMember("compMember1", "compMem1"),
                         TestHelper.createCompMember("compMember2", "compMem2")
@@ -71,17 +72,17 @@ public class UniqueAttributeNameValidatorTest {
         selectionManager = new SelectionManager() {
             @Override
             public Collection<Attrib> getSelectedAttributes(Mbean otherMbean) {
-                return mbean.getAttrib();
+                return mbean.getAttribList();
             }
 
             @Override
             public Collection<CompMember> getSelectedCompositeMembers(CompAttrib compAttrib) {
-                return mbean.getCompAttrib().get(0).getCompMember();
+                return mbean.getCompAttribList().get(0).getCompMemberList();
             }
 
             @Override
             public Collection<CompAttrib> getSelectedCompositeAttributes(Mbean otherMbean) {
-                return mbean.getCompAttrib();
+                return mbean.getCompAttribList();
             }
 
             @Override
@@ -115,7 +116,7 @@ public class UniqueAttributeNameValidatorTest {
         Collections.sort(names);
         Assert.assertTrue(Arrays.equals(new String[]{"attrib1", "compMem1", "compMem2"}, names.toArray(new String[names.size()])));
 
-        mbean.getAttrib().add(TestHelper.createAttrib("attribute2", "attrib1")); // alias clash
+        mbean.addAttrib(TestHelper.createAttrib("attribute2", "attrib1")); // alias clash
         names = new ArrayList<>(nameProvider.getNamesMap().values());
         Assert.assertEquals(4, names.size());
 

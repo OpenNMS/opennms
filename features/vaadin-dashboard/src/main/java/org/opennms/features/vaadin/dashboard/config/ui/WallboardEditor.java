@@ -116,7 +116,7 @@ public class WallboardEditor extends VerticalLayout {
         HorizontalLayout horizontalLayout = new HorizontalLayout();
 
         final Button addButton = new Button("Add dashlet");
-
+        addButton.setId("opsboard.action.addDashlet");
         addButton.setStyleName("small");
         addButton.setDescription("Add a new dashlet instance");
         addButton.addClickListener(new Button.ClickListener() {
@@ -152,6 +152,7 @@ public class WallboardEditor extends VerticalLayout {
         titleField.setCaption("Title");
 
         final Button previewButton = new Button("Preview");
+        previewButton.setId("opsboard.action.preview");
         previewButton.setDescription("Preview this Ops Board configuration");
         previewButton.setStyleName("small");
         previewButton.addClickListener(new PreviewClickListener(this, m_wallboard));

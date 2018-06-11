@@ -154,7 +154,7 @@ public class JRobinConverter {
         LogUtils.setLevel(Level.valueOf(cmd.getOptionValue("l", DEFAULT_LOG_LEVEL)));
         RrdBackendFactory.setDefaultFactory(cmd.getOptionValue("f", DEFAULT_JROBIN_FACTORY));
 
-        final Set<File> rrds = new ConcurrentSkipListSet<File>();
+        final Set<File> rrds = new ConcurrentSkipListSet<>();
 
         if (cmd.hasOption("h")) {
             new HelpFormatter().printHelp("jrobin-converter [options] [file-or-directory1] [...file-or-directoryN]", options);
@@ -218,7 +218,7 @@ public class JRobinConverter {
             return Collections.emptyList();
         }
 
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
         
         for (final File f : rrdGroupFile.getAbsoluteFile().getParentFile().listFiles()) {
             for (final String dsName : dsNames) {
@@ -243,7 +243,7 @@ public class JRobinConverter {
 
     public List<String> getRras(final File rrdFile) throws ConverterException {
         try {
-            final List<String> rras = new ArrayList<String>();
+            final List<String> rras = new ArrayList<>();
             final RrdDb db = new RrdDb(rrdFile.getAbsolutePath(), true);
             for (final ArcDef def : db.getRrdDef().getArcDefs()) {
                 rras.add(def.dump());
@@ -266,7 +266,7 @@ public class JRobinConverter {
 
     public void consolidateRrdFile(final File groupFile, final File outputFile) throws IOException, RrdException, ConverterException {
         /*
-        final List<RrdDatabase> rrds = new ArrayList<RrdDatabase>();
+        final List<RrdDatabase> rrds = new ArrayList<>();
         rrds.add(new RrdDatabase(new RrdDb(groupFile, true)));
         for (final File individualFile : getMatchingGroupRrds(groupFile)) {
             final RrdDb individualRrd = new RrdDb(individualFile, true);
@@ -293,7 +293,7 @@ public class JRobinConverter {
         for (AbstractDS ds : groupRrd.getDataSources()) {
             LogUtils.debugf(this, "consolidateRrdFile: multi-metric data source %d: %s", i++, ds.getName());
         }
-        final List<RRDv1> singleMetricFiles = new ArrayList<RRDv1>();
+        final List<RRDv1> singleMetricFiles = new ArrayList<>();
         for (final File individualFile : getMatchingGroupRrds(groupFile)) {
             final RRDv1 singleRrd = RrdConvertUtils.dumpJrb(individualFile);
             LogUtils.debugf(this, "consolidateRrdFile: adding single-metric RRD for data source %s", singleRrd.getDataSource(0).getName());
@@ -304,13 +304,13 @@ public class JRobinConverter {
     }
 
     public List<File> findRrds(final File topDirectory) {
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
         findRrds(topDirectory, files);
         return files;
     }
     
     public List<File> findGroupRrds(final File topDirectory) throws ConverterException {
-        final List<File> files = new ArrayList<File>();
+        final List<File> files = new ArrayList<>();
         findRrds(topDirectory, files);
         for (final Iterator<File> it = files.iterator(); it.hasNext(); ) {
             final File file = it.next();

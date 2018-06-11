@@ -81,6 +81,14 @@ public class CollectionSetBuilder {
         return this;
     }
 
+    public CollectionSetBuilder withGauge(Resource resource, String group, String name, Number value) {
+        return withAttribute(resource, new NumericAttribute(group, name, value, AttributeType.GAUGE, null));
+    }
+
+    public CollectionSetBuilder withCounter(Resource resource, String group, String name, Number value) {
+        return withAttribute(resource, new NumericAttribute(group, name, value, AttributeType.COUNTER, null));
+    }
+
     public CollectionSetBuilder withNumericAttribute(Resource resource, String group, String name, Number value, AttributeType type) {
         return withAttribute(resource, new NumericAttribute(group, name, value, type, null));
     }

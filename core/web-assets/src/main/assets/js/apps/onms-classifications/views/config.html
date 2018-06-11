@@ -1,0 +1,30 @@
+<div class="panel-body">
+    <div class="navbar-form navbar-right">
+        <button id="action.refresh" class="btn btn-sm btn-default" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+    </div>
+    <div ng-show="groups.length == 0">No groups defined.</div>
+    <pagination model="query" ng-show="groups.length > 0" position="bottom" on-change="refresh">
+        <table class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th class="col-md-1 text-nowrap">Priority</th>
+                <th class="col-md-3 text-nowrap">Name</th>
+                <th class="col-md-5 text-nowrap">Description</th>
+                <th class="col-md-1 text-nowrap">Editable</th>
+                <th class="col-md-2 text-nowrap">Enabled</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="group in groups" data-row="{{group.name}}">
+                <td class="text-nowrap">{{group['priority']}}</td>
+                <td class="text-nowrap">{{group['name']}}</td>
+                <td class="text-nowrap">{{group['description']}}</td>
+                <td class="text-nowrap">{{!group['readOnly']}}</td>
+                <td class="text-nowrap">
+                    <toggle id="action.{{group.name}}.toggle" size="btn-xs" ng-model="group['enabled']" ng-change="updateGroup(group)"></toggle>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </pagination>
+</div>

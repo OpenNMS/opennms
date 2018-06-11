@@ -117,7 +117,7 @@ public class SendEventController extends AbstractController {
 
     private List<String> getExcludeList() throws IOException,
             FileNotFoundException {
-        List<String> excludes = new ArrayList<String>();
+        List<String> excludes = new ArrayList<>();
 
         Properties excludeProperties = new Properties();
         excludeProperties.load(new FileInputStream(ConfigFileConstants

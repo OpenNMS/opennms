@@ -47,7 +47,7 @@ public class LoadTracker {
     
     public class ImageTracker{
 
-        private List<LoadTrackerHandler> m_handlerList = new ArrayList<LoadTrackerHandler>();
+        private List<LoadTrackerHandler> m_handlerList = new ArrayList<>();
         private Image m_image;
         private boolean m_loadComplete = false;
 

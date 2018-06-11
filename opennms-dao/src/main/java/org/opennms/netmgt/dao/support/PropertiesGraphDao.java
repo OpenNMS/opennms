@@ -499,7 +499,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             PrefabGraphTypeDao type, Properties properties) {
         Assert.notNull(properties, "properties argument cannot be null");
 
-        List<PrefabGraph> result = new ArrayList<PrefabGraph>();
+        List<PrefabGraph> result = new ArrayList<>();
 
         String listString = properties.getProperty(DEFAULT_GRAPH_LIST_KEY); // Optional
 
@@ -731,7 +731,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
      */
     @Override
     public List<PrefabGraph> getAllPrefabGraphs() {
-        final List<PrefabGraph> graphs = new ArrayList<PrefabGraph>();
+        final List<PrefabGraph> graphs = new ArrayList<>();
         for (final FileReloadContainer<PrefabGraphTypeDao> container : new ArrayList<>(m_types.values())) {
             final PrefabGraphTypeDao type = container.getObject();
             this.rescanIncludeDirectory(type);
@@ -823,7 +823,7 @@ public class PropertiesGraphDao implements GraphDao, InitializingBean {
             LOG.debug("found {} prefabricated graphs for resource {}: {}", nameList.size(), resource, StringUtils.collectionToDelimitedString(nameList, ", "));
         }
 
-        final Set<String> suppressReports = new HashSet<String>();
+        final Set<String> suppressReports = new HashSet<>();
         for (final Entry<String, PrefabGraph> entry : returnList.entrySet()) {
             suppressReports.addAll(Arrays.asList(entry.getValue().getSuppress()));
         }

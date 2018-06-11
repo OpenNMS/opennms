@@ -170,7 +170,7 @@ public class SnmpAssetAdapterConfigManager implements SnmpAssetAdapterConfig {
     			return new AssetField[0];
     		}
     
-    		final List<AssetField> retval = new ArrayList<AssetField>();
+    		final List<AssetField> retval = new ArrayList<>();
     		for (final org.opennms.netmgt.config.snmpAsset.adapter.Package pkg : m_config.getPackages()) {
     		    final String pkgSysoid = pkg.getSysoid();
     			final String pkgSysoidMask = pkg.getSysoidMask();

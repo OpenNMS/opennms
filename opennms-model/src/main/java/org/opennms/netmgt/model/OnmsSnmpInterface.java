@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -55,8 +54,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.hibernate.annotations.Type;
-import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.utils.AlphaNumeric;
 import org.opennms.core.utils.RrdLabelUtils;
 import org.slf4j.Logger;
@@ -71,13 +68,10 @@ import org.springframework.core.style.ToStringCreator;
 @Table(name = "snmpInterface")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
-    private static final long serialVersionUID = -963873273243372864L;
+    private static final long serialVersionUID = 4688655131862954563L;
     private static final Logger LOG = LoggerFactory.getLogger(OnmsSnmpInterface.class);
 
     private Integer m_id;
-
-    /** identifier field */
-    private InetAddress m_netMask;
 
     /** identifier field */
     private String m_physAddr;
@@ -116,7 +110,9 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private OnmsNode m_node;
 
-    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<OnmsIpInterface>();
+    private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<>();
+
+    private boolean m_hasFlows;
 
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
@@ -169,27 +165,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         m_id = id;
     }
 
-    /**
-     * <p>getNetMask</p>
-     * 
-     * @return a {@link java.lang.String} object.
-     */
-    @Column(name = "snmpIpAdEntNetMask")
-    @Type(type="org.opennms.netmgt.model.InetAddressUserType")
-    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
-    public InetAddress getNetMask() {
-        return m_netMask;
-    }
-
-    /**
-     * <p>setNetMask</p>
-     * 
-     * @param snmpipadentnetmask a {@link java.lang.String} object.
-     */
-    public void setNetMask(InetAddress snmpipadentnetmask) {
-        m_netMask = snmpipadentnetmask;
-    }
-    
     /**
      * <p>getPhysAddr</p>
      *
@@ -530,6 +505,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return null;
     }
 
+    @Column(name="hasFlows", nullable=false)
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        return m_hasFlows;
+    }
+
+    public void setHasFlows(boolean hasFlows) {
+        this.m_hasFlows = hasFlows;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -538,7 +523,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
     @Override
     public String toString() {
         return new ToStringCreator(this)
-            .append("snmpipadentnetmask", getNetMask())
             .append("snmpphysaddr", getPhysAddr())
             .append("snmpifindex", getIfIndex())
             .append("snmpifdescr", getIfDescr())
@@ -553,6 +537,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("nodeId", getNode() == null ? null : getNode().getId())
             .append("lastCapsdPoll", getLastCapsdPoll())
             .append("lastSnmpPoll", getLastSnmpPoll())
+            .append("hasFlows", getHasFlows())
             .toString();
     }
 
@@ -719,10 +704,6 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         
         if (hasNewValue(scannedSnmpIface.getIfType(), getIfType())) {
             setIfType(scannedSnmpIface.getIfType());
-        }
-        
-        if (hasNewValue(scannedSnmpIface.getNetMask(), getNetMask())) {
-            setNetMask(scannedSnmpIface.getNetMask());
         }
         
         if (hasNewValue(scannedSnmpIface.getPhysAddr(), getPhysAddr())) {

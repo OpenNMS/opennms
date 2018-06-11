@@ -1,0 +1,50 @@
+<blueprint
+    xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://www.osgi.org/xmlns/blueprint/v1.0.0 
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+
+    <!-- Retrieve the broker settings from the controller configuration service since
+         we can't reliably reference the same PID from multiple bundles -->
+    <reference id="controllerConfig" interface="org.opennms.minion.core.api.ControllerConfig" />
+    <bean id="brokerUrl" factory-ref="controllerConfig" factory-method="getBrokerUrl"/>
+    <bean id="brokerMaxConnections" factory-ref="controllerConfig" factory-method="getBrokerMaxConnections"/>
+    <bean id="brokerConcurrentConsumers" factory-ref="controllerConfig" factory-method="getBrokerConcurrentConsumers"/>
+    <bean id="brokerIdleTimeout" factory-ref="controllerConfig" factory-method="getBrokerIdleTimeout"/>
+
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+
+    <!-- Connection factory used by the Camel component and shell commands -->
+    <bean id="jmsConnectionFactory" class="org.opennms.minion.jms.impl.ScvEnabledActiveMQConnectionFactory">
+        <argument ref="brokerUrl"/>
+        <argument ref="secureCredentialsVault"/>
+        <argument value="opennms.broker"/>
+    </bean>
+    <service ref="jmsConnectionFactory" interface="javax.jms.ConnectionFactory">
+        <service-properties>
+            <entry key="alias" value="opennms.broker"/>
+        </service-properties>
+    </service>
+
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory" init-method="start" destroy-method="stop">
+       <property name="maxConnections" ref="brokerMaxConnections" />
+       <property name="idleTimeout" ref="brokerIdleTimeout" />
+       <property name="connectionFactory" ref="jmsConnectionFactory" />
+    </bean>
+    <bean id="jmsConfig"  class="org.apache.camel.component.jms.JmsConfiguration">
+       <property name="connectionFactory" ref="pooledConnectionFactory"/>
+       <property name="concurrentConsumers" ref="brokerConcurrentConsumers"/>
+    </bean>
+
+    <!-- A canonical ActiveMQ component pointing to the OpenNMS controller -->
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="configuration" ref="jmsConfig"/>
+    </bean>
+    <service id="queuingservice" ref="activemq" interface="org.apache.camel.Component">
+        <service-properties>
+            <entry key="alias" value="opennms.broker"/>
+        </service-properties>
+    </service>
+</blueprint>

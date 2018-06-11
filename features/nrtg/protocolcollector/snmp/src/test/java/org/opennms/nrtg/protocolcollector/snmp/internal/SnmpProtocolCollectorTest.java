@@ -91,7 +91,7 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
         snmpAgentConfig = SnmpPeerFactory.getInstance().getAgentConfig(localhost);
         collectionJob = new DefaultCollectionJob();
         collectionJob.setProtocolConfiguration(snmpAgentConfig.toProtocolConfigString());
-        destinations = new HashSet<String>();
+        destinations = new HashSet<>();
         destinations.add("test");
     }
 

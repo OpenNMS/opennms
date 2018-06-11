@@ -30,7 +30,6 @@ package org.opennms.netmgt.jasper.measurement;
 
 import java.util.Date;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -46,7 +45,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JRRewindableDataSource;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(

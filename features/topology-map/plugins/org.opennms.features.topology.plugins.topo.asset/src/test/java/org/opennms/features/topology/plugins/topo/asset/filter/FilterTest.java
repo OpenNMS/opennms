@@ -38,14 +38,14 @@ public class FilterTest {
 
 	@Test
 	public void verifyNot() {
-		Filter filter = new NotFilter(new EqFilter<>("Stuttgart"));
+		Filter<String> filter = new NotFilter<>(new EqFilter<>("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Fulda"));
 	}
 
 	@Test
 	public void verifyRegExp() {
-		Filter filter = new RegExFilter<>(".*gar(t|d)");
+		Filter<String> filter = new RegExFilter<>(".*gar(t|d)");
 		Assert.assertEquals(false, filter.apply("Fulda"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Isengard"));
@@ -53,7 +53,7 @@ public class FilterTest {
 	
 	@Test
 	public void verifyRegExpCsv() {
-		Filter filter = new RegExCsvFilter<>(".*gar(t|d)");
+		Filter<String> filter = new RegExCsvFilter<>(".*gar(t|d)");
 		Assert.assertEquals(false, filter.apply("Fulda"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Isengard"));
@@ -67,14 +67,14 @@ public class FilterTest {
 
 	@Test
 	public void verifyEq() {
-		Filter filter = new EqFilter<>("Stuttgart");
+		Filter<String> filter = new EqFilter<>("Stuttgart");
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Fulda"));
 	}
 	
 	@Test
 	public void verifyCsvEq() {
-		Filter filter = new EqCsvFilter<>("Stuttgart");
+		Filter<String> filter = new EqCsvFilter<>("Stuttgart");
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Fulda"));
 		
@@ -86,7 +86,7 @@ public class FilterTest {
 
 	@Test
 	public void verifyAnd() {
-		Filter filter = new AndFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
+		Filter<String> filter = new AndFilter<>(new EqFilter<>("Stuttgart"), new RegExFilter<>(".*gar(t|d)"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Isengard"));
 		Assert.assertEquals(false, filter.apply("Fulda"));
@@ -94,12 +94,12 @@ public class FilterTest {
 
 	@Test
 	public void verifyMultiAnd() {
-		List<Filter> filters=Arrays.asList(
-				new EqFilter("Stuttgart"),
-				new RegExFilter(".*gar(t|d)")
+		List<Filter<String>> filters=Arrays.asList(
+				new EqFilter<>("Stuttgart"),
+				new RegExFilter<>(".*gar(t|d)")
 				);
 
-		Filter filter = new AndFilter(filters);
+		Filter<String> filter = new AndFilter<String>(filters);
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(false, filter.apply("Isengard"));
 		Assert.assertEquals(false, filter.apply("Fulda"));
@@ -108,24 +108,24 @@ public class FilterTest {
 
 	@Test
 	public void verifyOr() {
-		Filter filter = new OrFilter(new EqFilter("Stuttgart"), new EqFilter("Fulda"));
+		Filter<String> filter = new OrFilter<>(new EqFilter<>("Stuttgart"), new EqFilter<>("Fulda"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Fulda"));
 		Assert.assertEquals(false, filter.apply("Isengard"));
 
-		filter = new OrFilter(new EqFilter("Stuttgart"), new RegExFilter(".*gar(t|d)"));
+		filter = new OrFilter<>(new EqFilter<>("Stuttgart"), new RegExFilter<>(".*gar(t|d)"));
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Isengard"));
 	}
 	
 	@Test
 	public void verifyMultiOr() {
-		List<Filter> filters=Arrays.asList(
-				new EqFilter("Stuttgart"),
-				new RegExFilter(".*gar(t|d)"),
-				new EqFilter("Southampton")
+		List<Filter<String>> filters=Arrays.asList(
+				new EqFilter<>("Stuttgart"),
+				new RegExFilter<>(".*gar(t|d)"),
+				new EqFilter<>("Southampton")
 				);
-		Filter filter = new OrFilter(filters);
+		Filter<String> filter = new OrFilter<String>(filters);
 		Assert.assertEquals(true, filter.apply("Stuttgart"));
 		Assert.assertEquals(true, filter.apply("Isengard"));
 		Assert.assertEquals(true, filter.apply("Southampton"));

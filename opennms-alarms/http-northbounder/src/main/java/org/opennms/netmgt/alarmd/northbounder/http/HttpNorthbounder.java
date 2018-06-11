@@ -49,7 +49,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.opennms.core.utils.EmptyKeyRelaxedTrustProvider;
-import org.opennms.core.utils.HttpResponseRange;
+import org.opennms.core.utils.http.HttpResponseRange;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -99,6 +99,10 @@ public class HttpNorthbounder extends AbstractNorthbounder {
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.alarmd.api.support.AbstractNorthbounder#forwardAlarms(java.util.List)
@@ -142,7 +146,7 @@ public class HttpNorthbounder extends AbstractNorthbounder {
             HttpPost postMethod = new HttpPost(uri);
 
             //TODO: need to configure these
-            List<NameValuePair> postParms = new ArrayList<NameValuePair>();
+            List<NameValuePair> postParms = new ArrayList<>();
 
             //FIXME:do this for now
             NameValuePair p = new BasicNameValuePair("foo", "bar");

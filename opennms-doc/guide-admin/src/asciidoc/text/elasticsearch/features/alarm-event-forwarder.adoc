@@ -1,0 +1,191 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+==== Alarm and Event Forwarder
+
+The _Alarm and Event Forwarder_ (formerly known as the _Elasticsearch ReST plugin_) forwards events and alarms to https://github.com/elastic/elasticsearch[Elasticsearch].
+In combination with the alarm _<<ga-internal-plugins-alarm-change-notifier, Alarm Change Notifier Plugin>>_ it also forwards alarm change events.
+
+The events and alarms in _Elasticsearch_ can then be used for indexing, long time archival, plotting with _Grafana_ and browsing with _Kibana_.
+
+NOTE: This feature uses the _Elasticsearch_ ReST interface and can interact with cloud-hosted _Elasticsearch_ instances.
+
+NOTE: If you use _Kibana_, make sure you are using the version that is compatible with your version of _Elasticsearch_.
+
+===== Configuration
+
+The configuration is held in `${OPENNMS_HOME}/etc/org.opennms.plugin.elasticsearch.rest.forwarder.cfg`.
+Please refer to section <<ga-elasticsearch-integration-configuration,Configuring Elasticsearch>> in order to configure _Elasticsearch_ connection settings.
+
+Besides the general _Elasticsearch_ connection settings, the following properties are supported to configure the _Alarm and Event Forwarder_:
+
+[options="header, autowidth"]
+|===
+| Parameter | Default Value | Required  | Description
+
+|`logEventDescription`
+| true
+| optional
+| Whether to forward the event description field to _Elasticsearch_. It can be disabled because it contains a long text field that can be redundant with the rest of the metadata included in the event.
+
+|`archiveRawEvents`
+| true
+| optional
+| Archive events.
+
+|`archiveAlarms`
+| true
+| optional
+| Archive alarms.
+
+|`archiveAlarmChangeEvents`
+| true
+| optional
+| Archive alarm change events.
+
+|`archiveOldAlarmValues`
+| true
+| optional
+| For alarm change events, we can choose to archive the detailed alarm values but this is expensive. Set false in production.
+
+|`archiveNewAlarmValues`
+| true
+| optional
+|
+
+|`archiveAssetData`
+| true
+| optional
+| If true The following attributes representing useful node asset fields from the node asset table are included in archived events and alarms. These are included only where the values are not null or empty strings in the table.
+
+(asset-latitude,asset-longitude,asset-region,asset-building,asset-floor,asset-room,asset-rack,asset-slot,asset-port,asset-category,asset-displaycategory,asset-notifycategory,asset-pollercategory,asset-thresholdcategory,asset-managedobjecttype,asset-managedobjectinstance,asset-manufacturer,asset-vendor,asset-modelnumber,parent-nodelabel,parent-nodeid,parent-foreignsource,parent-foreignid)
+
+|`groupOidParameters`
+| false
+| optional
+| If `true` all oid from the event parameters are stored in a single array `p_oids` instead of a flattened structue.
+
+|`logAllEvents`
+| false
+| optional
+| If changed to true, then archive all events even if they have not been persisted in the _{opennms-product-name}_ database.
+
+|`batchSize`
+| 200
+| optional
+| Increase this value to enable batch inserts into _Elasticsearch_. This is the maximum size of a batch of events that is sent to _Elasticsearch_ in a single connection.
+
+|`batchInterval`
+| 500
+| optional
+| The maximum time interval in milliseconds between batch events (recommended: 500ms) when a `batchSize` value greater than 1 is being used.
+
+|===
+
+Once you are sure everything is correctly configured, you can activate the _Event & Alarm Forwarder_ by logging into the _OSGi_ console and installing the feature: `opennms-es-rest`.
+
+._OSGi_ login and installation of the _Elasticsearch_ forwarder
+[source, shell]
+----
+ssh admin@localhost -p 8101
+feature:install opennms-es-rest
+----
+
+===== Loading Historical Events
+
+It is possible to load historical _{opennms-product-name}_ events into _Elasticsearch_ from the _{opennms-product-name}_ database using a _karaf_ console command.
+The command uses the _{opennms-product-name}_ Events ReST interface to retrieve a set number of historical events and forward them to _Elasticsearch_.
+Because we are using the ReST interface it is also possible to contact a remote _{opennms-product-name}_ and download its events into _Elasticsearch_ by using the correct remote URL and credentials.
+
+The following example sends historic events to _Elasticsearch_ using the _karaf_ console:
+
+----
+# open karaf command prompt using
+# ssh -p 8101 admin@localhost
+karaf> elasticsearch:send-historic-events --username admin --password admin --url http://localhost:8980 --limit 10 --offset 0
+----
+
+NOTE: For more details, consolidate the `--help` option of the command.
+
+===== Index Definitions
+
+Three indices are created; one for alarms, one for alarm change events and one for raw events.
+Alarms and alarm change events are only saved if the <<ga-internal-plugins-alarm-change-notifier, Alarm Change Notifier Plugin>> plugin is also
+installed to generate alarm change events from the _{opennms-product-name}_ alarms table.
+The index names are of the form (assuming an index strategy of monthly): `opennms-<name>-<index-strategy>/type/id`
+
+For example
+
+a) Alarms
+----
+opennms-alarms-2017-01/alarmdata/1823
+----
+
+b) Alarm Change Events
+----
+opennms-events-alarmchange-2017-01/eventdata/11549
+----
+
+c) Raw _{opennms-product-name}_ events (not including alarm change events)
+----
+opennms-events-raw-2017-01/eventdata/11549
+----
+
+===== Viewing events using Kibana Sense
+
+_Kibana Sense_ is a _Kibana_ app which allows you to run queries directly against _Elasticsearch_.
+(https://www.elastic.co/guide/en/sense/current/installing.html)
+
+If you install _Kibana Sense_ you can use the following commands to view the alarms and events sent to _Elasticsearch_
+You should review the _Elasticsearch_ ReST API documentation to understand how searches are specified.
+(See https://www.elastic.co/guide/en/elasticsearch/reference/current/search.html)
+
+Example searches to use in _Kibana Sense_ (you can copy the whole contents of this panel into _Kibana Sense_ as a set of examples)
+
+----
+# Search all the alarms indexes
+
+GET /opennms-alarms-*/_search
+
+# Get all of the alarms indexes
+
+GET /opennms-alarms-*/
+
+# Get a specific alarm id from the 2017.01 index
+
+GET opennms-alarms-2017-01/alarmdata/1823
+
+# Delete all alarm indexes
+
+DELETE /opennms-alarms-*/
+
+# Search all the events indexes
+
+GET /opennms-events-*/_search
+
+# Search all the raw events indexes
+
+GET /opennms-events-raw*/_search
+
+# Delete all the events indexes
+
+DELETE /opennms-events-*/
+
+# Get all the raw events indexes
+
+GET /opennms-events-raw*/
+
+# Get all the alarmchange event indexes
+
+GET /opennms-events-alarmchange-*/
+
+# Search all the alarm change event indexes
+
+GET opennms-events-alarmchange-*/_search
+
+# Get a specific alarm change event
+
+GET opennms-events-alarmchange-2016-08/eventdata/11549
+----
+

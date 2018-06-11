@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.SortedSet;
 
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.AttributeMatchingResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceAttributeFilteringResourceVisitor;
 import org.opennms.netmgt.dao.support.ResourceTypeFilteringResourceVisitor;

@@ -49,7 +49,7 @@ public class SampleData {
 
     /** The parameters. */
     @XmlElement(name="parameter")
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Parameter> parameters = new ArrayList<>();
 
     /**
      * Adds the parameter.

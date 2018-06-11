@@ -58,7 +58,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
     private Integer m_totalEntityCount;
 
-    private final List<OnmsNode> m_downNodes = new ArrayList<OnmsNode>();
+    private final List<OnmsNode> m_downNodes = new ArrayList<>();
 
     private String m_status;
 
@@ -167,7 +167,7 @@ public class AggregateStatus implements SurveillanceStatus {
 
     final static class AggregateStatusVisitor extends AbstractEntityVisitor {
 
-        Set<OnmsNode> m_downNodes = new LinkedHashSet<OnmsNode>();
+        Set<OnmsNode> m_downNodes = new LinkedHashSet<>();
 
         String m_status = AggregateStatus.ALL_NODES_UP;
 

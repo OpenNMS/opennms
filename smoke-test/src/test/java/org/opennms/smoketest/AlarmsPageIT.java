@@ -30,21 +30,14 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.charset.StandardCharsets;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.smoketest.utils.RestClient;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -54,19 +47,10 @@ public class AlarmsPageIT extends OpenNMSSeleniumTestCase {
     public void createAlarm() throws Exception {
         final EventBuilder builder = new EventBuilder(EventConstants.IMPORT_FAILED_UEI, "AlarmsPageTest");
         builder.setParam("importResource", "foo");
-        final CloseableHttpClient client = HttpClientBuilder.create().build();
-        final HttpPost request = new HttpPost(getBaseUrl() + "/opennms/rest/events");
         final Event ev = builder.getEvent();
-        final String xml = JaxbUtils.marshal(ev);
-        request.setHeader("Authorization", createBasicAuthHeader());
-        request.setHeader("Content-Type", "application/xml");
-        request.setHeader("Accept", "*/*");
-        request.setEntity(new ByteArrayEntity(xml.getBytes(StandardCharsets.UTF_8)));
-        final HttpResponse response = client.execute(request);
-        final int statusCode = response.getStatusLine().getStatusCode();
-        if (statusCode != 200 && statusCode != 204) {
-            throw new RuntimeException("bad response! " + response.getStatusLine().toString());
-        }
+
+        final RestClient restClient = new RestClient(getServerAddress(), getServerHttpPort());
+        restClient.sendEvent(ev);
     }
 
     @Before

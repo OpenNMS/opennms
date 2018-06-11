@@ -93,7 +93,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     @Override
     public Set<BusinessService> getChildServices() {
-        return getChildEdges().stream().map(edge -> edge.getChild()).collect(Collectors.toSet());
+        return getChildEdges().stream().map(ChildEdge::getChild).collect(Collectors.toSet());
     }
 
     @Override

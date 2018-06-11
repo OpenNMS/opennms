@@ -40,8 +40,6 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.opennms.core.web.HttpClientWrapper;
 import org.opennms.netmgt.config.NotificationManager;
 import org.opennms.netmgt.model.notifd.Argument;
@@ -124,7 +122,7 @@ public abstract class AbstractSlackCompatibleNotificationStrategy implements Not
 	        contents = EntityUtils.toString(response.getEntity());
 	        LOG.debug("send: Contents is: {}", contents);
 	    } catch (IOException e) {
-	        LOG.error("send: I/O problem with webhook post/response: {}", e);
+	        LOG.error("send: I/O problem with webhook post/response", e);
 	        throw new RuntimeException("Problem with webhook post: "+e.getMessage());
 	    } finally {
 	        IOUtils.closeQuietly(clientWrapper);

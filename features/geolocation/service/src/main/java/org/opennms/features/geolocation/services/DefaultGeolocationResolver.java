@@ -73,7 +73,7 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
                 .filter(n -> getGeoLocation(n) != null)
                 .filter(n -> getGeoLocation(n).getLatitude() == null && getGeoLocation(n).getLongitude() == null)
                 .filter(n -> !Strings.isNullOrEmpty(getGeoLocation(n).asAddressString()))
-                .collect(Collectors.toMap(n -> n.getId(), n -> n.getAssetRecord().getGeolocation().asAddressString()));
+                .collect(Collectors.toMap(OnmsNode::getId, n -> n.getAssetRecord().getGeolocation().asAddressString()));
         return resolve(nodeIdAddressMap);
     }
 
@@ -86,7 +86,7 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
         // 1st filter out invalid values
         nodeIdAddressMap = nodeIdAddressMap.entrySet().stream()
                 .filter(e -> !Strings.isNullOrEmpty(e.getValue()) && e.getKey() != null)
-                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
         // 2nd Resolve longitude/latitude coordinates from an address string
         final Map<Integer, Coordinates> resultMap = new HashMap<>();
@@ -108,10 +108,10 @@ public class DefaultGeolocationResolver implements GeolocationResolver {
             if (coordinates != null) {
                 return new Coordinates(coordinates.getLongitude(), coordinates.getLatitude());
             } else {
-                LOG.warn("Couldn't resolve address '%s'", addressString);
+                LOG.warn("Couldn't resolve address '{}'", addressString);
             }
         } catch (GeocoderException e) {
-            LOG.warn("Couldn't resolve address '%s'", addressString, e);
+            LOG.warn("Couldn't resolve address '{}'", addressString, e);
         }
         return null;
     }

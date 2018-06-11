@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 import org.opennms.plugins.dbnotifier.DatabaseChangeNotifier;
@@ -71,7 +70,7 @@ public class DbChangeNotifierTest {
 		try {
 			System.out.println("DbChangeNotifierTest creating connection - this is quite slow");
 			
-			List<String> paramList = new ArrayList<String>();
+			List<String> paramList = new ArrayList<>();
 			
 			paramList.add(DatabaseChangeNotifier.NOTIFY_EVENT_CHANGES);
 			paramList.add(DatabaseChangeNotifier.NOTIFY_ALARM_CHANGES);

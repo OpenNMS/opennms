@@ -284,10 +284,10 @@ public class DNSServer {
     final Map<Integer, Cache> m_caches = new HashMap<Integer, Cache>();
     final Map<Name, Zone> m_znames = new HashMap<Name, Zone>();
     final Map<Name, TSIG> m_TSIGs = new HashMap<Name, TSIG>();
-    final List<Integer> m_ports = new ArrayList<Integer>();
-    final List<InetAddress> m_addresses = new ArrayList<InetAddress>();
+    final List<Integer> m_ports = new ArrayList<>();
+    final List<InetAddress> m_addresses = new ArrayList<>();
 
-    final List<Stoppable> m_activeListeners = new ArrayList<Stoppable>();
+    final List<Stoppable> m_activeListeners = new ArrayList<>();
 
     private static String addrport(final InetAddress addr, final int port) {
         return InetAddressUtils.str(addr) + "#" + port;

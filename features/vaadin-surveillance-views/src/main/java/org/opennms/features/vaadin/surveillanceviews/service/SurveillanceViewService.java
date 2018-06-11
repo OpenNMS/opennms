@@ -27,9 +27,14 @@
  *******************************************************************************/
 package org.opennms.features.vaadin.surveillanceviews.service;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
-import org.opennms.features.vaadin.surveillanceviews.model.Category;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
+import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.opennms.netmgt.config.surveillanceViews.Category;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsNode;
@@ -39,11 +44,7 @@ import org.opennms.netmgt.model.OnmsResourceType;
 import org.opennms.netmgt.model.ResourceId;
 import org.opennms.netmgt.model.SurveillanceStatus;
 
-import java.text.DecimalFormat;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.common.util.concurrent.ListeningExecutorService;
 
 /**
  * Interface for the surveillance view service.

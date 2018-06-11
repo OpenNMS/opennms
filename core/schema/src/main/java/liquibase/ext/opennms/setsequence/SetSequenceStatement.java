@@ -39,7 +39,7 @@ import liquibase.statement.SqlStatement;
 
 public class SetSequenceStatement implements SqlStatement {
 	private final String m_sequenceName;
-	private final List<String> m_tables = new ArrayList<String>();
+	private final List<String> m_tables = new ArrayList<>();
 	private Map<String, String> m_columns = new LinkedHashMap<String, String>();
 	private Map<String, String> m_schemas = new LinkedHashMap<String, String>();
 	private Integer m_value;

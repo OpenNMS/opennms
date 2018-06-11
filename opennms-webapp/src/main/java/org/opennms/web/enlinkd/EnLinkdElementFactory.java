@@ -50,9 +50,7 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
-import org.opennms.netmgt.dao.api.BridgeMacLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
@@ -124,12 +122,6 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     @Autowired
     private BridgeElementDao m_bridgeElementDao;
-
-    @Autowired
-    private BridgeMacLinkDao m_bridgeMacLinkDao;
-
-    @Autowired
-    private BridgeBridgeLinkDao m_bridgeBridgeLinkDao;
 
     @Autowired
     private BridgeTopologyDao m_bridgetopologyDao;
@@ -540,9 +532,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
         List<NodeLinkBridge> nodelinks = new ArrayList<NodeLinkBridge>();
         for (String mac : mactoIpMap.keySet()) {
-            SharedSegment segment = m_bridgetopologyDao.getHostNodeSharedSegment(m_bridgeBridgeLinkDao,
-                                                                                 m_bridgeMacLinkDao,
-                                                                                 mac);
+            SharedSegment segment = m_bridgetopologyDao.getHostSharedSegment(mac);
             if (segment.isEmpty())
                 continue;
             if (!segment.containsMac(mac))
@@ -665,7 +655,7 @@ public class EnLinkdElementFactory implements InitializingBean,
     @Override
     public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
         List<BridgeLinkNode> bridgelinks = new ArrayList<BridgeLinkNode>();
-        for (SharedSegment segment: m_bridgetopologyDao.getBridgeNodeSharedSegments(m_bridgeBridgeLinkDao, m_bridgeMacLinkDao, nodeId)) {
+        for (SharedSegment segment: m_bridgetopologyDao.getBridgeSharedSegments(nodeId)) {
             bridgelinks.add(convertFromModel(nodeId, segment));
         }
         Collections.sort(bridgelinks);

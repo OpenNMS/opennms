@@ -40,12 +40,11 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.dao.hibernate.NodeLabelDaoImpl;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventProxy;
 import org.opennms.netmgt.events.api.EventProxyException;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
-import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 import org.opennms.web.api.Util;
 import org.opennms.web.element.NetworkElementFactory;
@@ -177,22 +176,21 @@ public class NodeLabelChangeServlet extends HttpServlet {
      */
     protected void sendLabelChangeEvent(int nodeId, NodeLabel oldNodeLabel, NodeLabel newNodeLabel) throws EventProxyException {
 
-        EventBuilder bldr = new EventBuilder(EventConstants.NODE_LABEL_CHANGED_EVENT_UEI, "NodeLabelChangeServlet");
-
+        NodeLabelChangedEventBuilder bldr = new NodeLabelChangedEventBuilder("NodeLabelChangeServlet");
         bldr.setNodeid(nodeId);
         bldr.setHost("host");
 
         if (oldNodeLabel != null) {
-            bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL, oldNodeLabel.getLabel());
+            bldr.setOldNodeLabel(oldNodeLabel.getLabel());
             if (oldNodeLabel.getSource() != null) {
-                bldr.addParam(EventConstants.PARM_OLD_NODE_LABEL_SOURCE, oldNodeLabel.getSource().toString());
+                bldr.setOldNodeLabelSource(oldNodeLabel.getSource().toString());
             }
         }
 
         if (newNodeLabel != null) {
-            bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL, newNodeLabel.getLabel());
+            bldr.setNewNodeLabel(newNodeLabel.getLabel());
             if (newNodeLabel.getSource() != null) {
-                bldr.addParam(EventConstants.PARM_NEW_NODE_LABEL_SOURCE, newNodeLabel.getSource().toString());
+                bldr.setNewNodeLabelSource(newNodeLabel.getSource().toString());
             }
         }
 

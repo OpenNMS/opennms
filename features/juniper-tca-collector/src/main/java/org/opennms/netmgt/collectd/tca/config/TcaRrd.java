@@ -55,7 +55,7 @@ public class TcaRrd implements Serializable, Comparable<TcaRrd> {
 
 	/** The XML RRAs list. */
 	@XmlElement(name="rra", required=true)
-	private List<String> m_rras = new ArrayList<String>();
+	private List<String> m_rras = new ArrayList<>();
 
 	/**
 	 * Instantiates a new TCA RRD.

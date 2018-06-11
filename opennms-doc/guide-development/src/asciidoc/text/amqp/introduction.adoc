@@ -15,8 +15,4 @@ The integration is written using Camel + OSGi and has the following components:
 Custom filtering (i.e. which events to forward) and transformations (i.e. how the events are represented in the messages) can be used in each of the components.
 Generic implementations
 
-The integration is written using Camel + OSGi and exposes interfaces through which events and alarms can be filtered and/or transformed.
-The features are described in detail bellow.
-
-
 NOTE: Each componenent can be configured and setup independently, i.e. you can choose to only forward alarms.

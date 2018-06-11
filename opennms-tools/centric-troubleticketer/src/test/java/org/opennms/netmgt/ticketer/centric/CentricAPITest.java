@@ -120,7 +120,7 @@ public class CentricAPITest extends TestCase {
         
         CRMConnection crm = createConnection();
         
-        ArrayList<String> sucky = new ArrayList<String>();
+        ArrayList<String> sucky = new ArrayList<>();
         sucky.add("id");
         crm.setTransactionMeta(sucky);
         
@@ -222,7 +222,7 @@ public class CentricAPITest extends TestCase {
         crm.setClientId(clientId);
         
         
-        ArrayList<String> returnFields = new ArrayList<String>();
+        ArrayList<String> returnFields = new ArrayList<>();
         returnFields.add("id");
         returnFields.add("modified");
         crm.setTransactionMeta(returnFields);

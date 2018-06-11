@@ -33,15 +33,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.provision.LocationAwareDnsLookupClient;
 
 @Command(scope = "dns", name = "reverse-lookup", description = "DNS reverse lookup for the specified ipaddress")
-public class DnsReverseLookup extends OsgiCommandSupport {
+@Service
+public class DnsReverseLookup implements Action {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String m_location;
@@ -52,10 +55,11 @@ public class DnsReverseLookup extends OsgiCommandSupport {
     @Argument(index = 0, name = "ipAddress", description = "ip-address", required = true, multiValued = false)
     String ipAddress;
 
-    private LocationAwareDnsLookupClient client;
+    @Reference
+    public LocationAwareDnsLookupClient client;
 
     @Override
-    protected Object doExecute() throws Exception {
+    public Object execute() throws Exception {
         final CompletableFuture<String> future = client.reverseLookup(InetAddressUtils.addr(ipAddress), m_location, m_systemId);
         while (true) {
             try {
@@ -76,9 +80,4 @@ public class DnsReverseLookup extends OsgiCommandSupport {
         }
         return null;
     }
-
-    public void setClient(LocationAwareDnsLookupClient client) {
-        this.client = client;
-    }
-
 }

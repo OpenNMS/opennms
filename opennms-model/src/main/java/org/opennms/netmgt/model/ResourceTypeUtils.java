@@ -29,7 +29,6 @@
 package org.opennms.netmgt.model;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -59,6 +58,8 @@ public abstract class ResourceTypeUtils {
      */
     public static final String FOREIGN_SOURCE_DIRECTORY = "fs";
 
+    private static final Pattern s_responseDirectoryPattern =  Pattern.compile("^" + RESPONSE_DIRECTORY + ".+$");
+
     /**
      * <p>isStoreByGroup</p>
      *
@@ -84,7 +85,7 @@ public abstract class ResourceTypeUtils {
      * @return a boolean.
      */
     public static boolean isResponseTime(String relativePath) {
-        return Pattern.matches("^" + RESPONSE_DIRECTORY + ".+$", relativePath);
+        return s_responseDirectoryPattern.matcher(relativePath).matches();
     }
 
     /**
@@ -100,7 +101,7 @@ public abstract class ResourceTypeUtils {
     public static String[] getFsAndFidFromNodeSource(String nodeSource) {
         final String[] ident = nodeSource.split(":", 2);
         if (!(ident.length == 2)) {
-            LOG.warn("'%s' is not in the format foreignSource:foreignId.", nodeSource);
+            LOG.warn("'{}' is not in the format foreignSource:foreignId.", nodeSource);
             throw new IllegalArgumentException("Node definition '" + nodeSource + "' is invalid, it should be in the format: 'foreignSource:foreignId'.");
         }
         return ident;

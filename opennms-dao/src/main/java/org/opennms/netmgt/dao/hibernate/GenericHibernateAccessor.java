@@ -97,7 +97,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
             if (parameterMap != null) {
                 parameterMap.entrySet().forEach(entry -> {
                     if (entry.getValue() instanceof Collection) {
-                        query.setParameterList(entry.getKey(), (Collection) entry.getValue());
+                        query.setParameterList(entry.getKey(), (Collection<?>) entry.getValue());
                     } else {
                         query.setParameter(entry.getKey(), entry.getValue());
                     }
@@ -144,7 +144,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
 
     private static void applyNamedParameterToQuery(Query queryObject, String paramName, Object value) throws HibernateException {
         if(value instanceof Collection) {
-            queryObject.setParameterList(paramName, (Collection)value);
+            queryObject.setParameterList(paramName, (Collection<?>)value);
         } else if(value instanceof Object[]) {
             queryObject.setParameterList(paramName, (Object[])((Object[])value));
         } else {

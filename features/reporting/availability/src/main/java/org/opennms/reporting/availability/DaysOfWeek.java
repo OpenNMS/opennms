@@ -48,7 +48,7 @@ public class DaysOfWeek implements java.io.Serializable {
     private java.util.List<String> dayNameList;
 
     public DaysOfWeek() {
-        this.dayNameList = new java.util.ArrayList<String>();
+        this.dayNameList = new java.util.ArrayList<>();
     }
 
     /**

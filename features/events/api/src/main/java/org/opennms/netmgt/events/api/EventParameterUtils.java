@@ -30,6 +30,9 @@ package org.opennms.netmgt.events.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -116,7 +119,7 @@ public abstract class EventParameterUtils {
      */
     public static List<Parm> decode(final String eventparms) {
         if (eventparms == null ) return null;
-        final List<Parm> parms = new ArrayList<Parm>();
+        final List<Parm> parms = new ArrayList<>();
   
         String[] paramslistString = eventparms.split(Character.toString(EventDatabaseConstants.MULTIPLE_VAL_DELIM));
         if (paramslistString != null) {
@@ -149,6 +152,9 @@ public abstract class EventParameterUtils {
                 }
         }
         return parms;
+    }
 
+    public static Map<String, Parm> normalize(final List<Parm> parmList) {
+        return parmList.stream().collect(Collectors.toMap(Parm::getParmName, Function.identity(), (p1, p2) -> p2));
     }
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,8 +29,8 @@
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
-import java.util.Date;
 import java.net.InetAddress;
+import java.util.Date;
 
 import org.opennms.core.logging.Logging;
 import org.opennms.core.utils.InetAddressUtils;
@@ -39,14 +39,19 @@ import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAttribute;
 import org.opennms.netmgt.collection.api.CollectionException;
+import org.opennms.netmgt.collection.api.CollectionFailed;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.CollectionTimedOut;
+import org.opennms.netmgt.collection.api.CollectionUnknown;
+import org.opennms.netmgt.collection.api.CollectionWarning;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.collection.api.TimeKeeper;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
 import org.opennms.netmgt.collection.support.AttributeGroupWrapper;
 import org.opennms.netmgt.collection.support.CollectionAttributeWrapper;
 import org.opennms.netmgt.collection.support.CollectionResourceWrapper;
@@ -63,6 +68,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.scheduler.ReadyRunnable;
 import org.opennms.netmgt.scheduler.Scheduler;
+import org.opennms.netmgt.threshd.ThresholdInitializationException;
 import org.opennms.netmgt.threshd.ThresholdingVisitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,7 +160,7 @@ class CollectableService implements ReadyRunnable {
             Scheduler scheduler, SchedulingCompletedFlag schedulingCompletedFlag, PlatformTransactionManager transMgr,
             PersisterFactory persisterFactory, ResourceStorageDao resourceStorageDao) throws CollectionInitializationException {
 
-        m_agent = DefaultCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
+        m_agent = DefaultSnmpCollectionAgent.create(iface.getId(), ifaceDao, transMgr);
         m_spec = spec;
         m_scheduler = scheduler;
         m_schedulingCompletedFlag = schedulingCompletedFlag;
@@ -175,7 +181,11 @@ class CollectableService implements ReadyRunnable {
         m_params = m_spec.getServiceParameters();
         m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
 
-        m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
+        try {
+            m_thresholdVisitor = ThresholdingVisitor.create(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_repository, m_params, m_resourceStorageDao);
+        } catch (final ThresholdInitializationException e) {
+            throw new CollectionInitializationException("Failed to initialize thresholding visitor.", e);
+        }
     }
     
     /**
@@ -190,7 +200,7 @@ class CollectableService implements ReadyRunnable {
     /**
      * <p>getSpecification</p>
      *
-     * @return a {@link org.opennms.netmgt.collectd.CollectionSpecification} object.
+     * @return a {@link org.opennms.netmgt.collection.core.CollectionSpecification} object.
      */
     public CollectionSpecification getSpecification() {
     	return m_spec;
@@ -232,17 +242,23 @@ class CollectableService implements ReadyRunnable {
         return m_updates;
     }
 
-	/**
-	 * Uses the existing package name to try and re-obtain the package from the collectd config factory.
-	 * Should be called when the collect config has been reloaded.
-	 *
-	 * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
-	 */
-	public void refreshPackage(CollectdConfigFactory collectorConfigDao) {
-		m_spec.refresh(collectorConfigDao);
-		if (m_thresholdVisitor != null)
-		    m_thresholdVisitor.reloadScheduledOutages();
-	}
+    /**
+     * Uses the existing package name to try and re-obtain the package from the collectd config factory.
+     * Should be called when the collect config has been reloaded.
+     *
+     * @param collectorConfigDao a {@link org.opennms.netmgt.config.CollectdConfigFactory} object.
+     * @throws CollectionInitializationException 
+     */
+    public void refreshPackage(CollectdConfigFactory collectorConfigDao) throws CollectionInitializationException {
+        m_spec.refresh(collectorConfigDao);
+        if (m_thresholdVisitor != null) {
+            try {
+                m_thresholdVisitor.reloadScheduledOutages();
+            } catch (final ThresholdInitializationException e) {
+                throw new CollectionInitializationException("Failed to reload scheduled outages after refreshing package.", e);
+            }
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -318,20 +334,14 @@ class CollectableService implements ReadyRunnable {
      */
     @Override
     public void run() {
-        Logging.withPrefix(Collectd.LOG4J_CATEGORY, new Runnable() {
-
-            @Override
-            public void run() {
-                Logging.putThreadContext("service", m_spec.getServiceName());
-                Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
-                Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
-                Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
-                Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
-                Logging.putThreadContext("foreignId", m_agent.getForeignId());
-                Logging.putThreadContext("sysObjectId", m_agent.getSysObjectId());
-                doRun();
-            }
-            
+        Logging.withPrefix(Collectd.LOG4J_CATEGORY, () -> {
+            Logging.putThreadContext("service", m_spec.getServiceName());
+            Logging.putThreadContext("ipAddress", m_agent.getAddress().getHostAddress());
+            Logging.putThreadContext("nodeId", Integer.toString(m_agent.getNodeId()));
+            Logging.putThreadContext("nodeLabel", m_agent.getNodeLabel());
+            Logging.putThreadContext("foreignSource", m_agent.getForeignSource());
+            Logging.putThreadContext("foreignId", m_agent.getForeignId());
+            doRun();
         });
     }
 
@@ -624,7 +634,7 @@ class CollectableService implements ReadyRunnable {
 
     private void reinitialize(OnmsIpInterface newIface) throws CollectionInitializationException {
         m_spec.release(m_agent);
-        m_agent = DefaultCollectionAgent.create(newIface.getId(), m_ifaceDao,
+        m_agent = DefaultSnmpCollectionAgent.create(newIface.getId(), m_ifaceDao,
                                                 m_transMgr);
         m_spec.initialize(m_agent);
     }

@@ -44,6 +44,7 @@ import org.opennms.netmgt.bsm.service.model.AlarmWrapper;
 import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.bsm.service.model.Status;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.daemon.SpringServiceDaemon;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -107,7 +108,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
 
     private boolean m_verifyReductionKeys = true;
 
-    final ScheduledExecutorService alarmPoller = Executors.newScheduledThreadPool(1);
+    private boolean m_hasBusinessServicesDefined = false;
+
+    private ScheduledExecutorService m_alarmPoller;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -125,12 +128,12 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
 
         handleConfigurationChanged();
-        startAlarmPolling();
     }
 
     private void startAlarmPolling() {
         final long pollInterval = getPollInterval();
-        alarmPoller.scheduleWithFixedDelay(new Runnable() {
+        m_alarmPoller = Executors.newScheduledThreadPool(1);
+        m_alarmPoller.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -139,7 +142,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                         @Override
                         protected void doInTransactionWithoutResult(TransactionStatus status) {
                             final List<AlarmWrapper> alarms = m_alarmDao.findAll().stream()
-                                .map(a -> new AlarmWrapperImpl(a))
+                                .map(AlarmWrapperImpl::new)
                                 .collect(Collectors.toList());
                             if (LOG.isDebugEnabled()) {
                                 LOG.debug("Handling {} alarms.", alarms.size());
@@ -155,7 +158,17 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
                 }
             }
         }, pollInterval, pollInterval, TimeUnit.SECONDS);
+    }
 
+    private void stopAlarmPolling() {
+        if (m_alarmPoller != null) {
+            m_alarmPoller.shutdown();
+            m_alarmPoller = null;
+        }
+    }
+
+    protected boolean isAlarmPolling() {
+        return m_alarmPoller != null;
     }
 
     protected long getPollInterval() {
@@ -192,10 +205,19 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 final List<BusinessService> businessServices = m_manager.getAllBusinessServices();
+                m_hasBusinessServicesDefined = businessServices.size() > 0;
                 LOG.debug("Adding {} business services to the state machine.", businessServices.size());
                 m_stateMachine.setBusinessServices(businessServices);
             }
         });
+
+        // Enable/disable polling for alarms based on whether or not
+        // we have any business services
+        if (m_hasBusinessServicesDefined && !isAlarmPolling()) {
+            startAlarmPolling();
+        } else if (!m_hasBusinessServicesDefined && isAlarmPolling()) {
+            stopAlarmPolling();
+        }
     }
 
     private void verifyReductionKey(String uei, String expectedReductionKey) {
@@ -227,7 +249,9 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         EventConstants.ALARM_DELETED_EVENT_UEI
     })
     public void handleAlarmLifecycleEvents(Event e) {
-        if (e == null) {
+        if (e == null || !m_hasBusinessServicesDefined) {
+            // Return quick if we weren't given an event, or if there are no business rules defined
+            // in which case we don't need to perform any further handling
             return;
         }
 
@@ -338,38 +362,13 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
     @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
     public void handleReloadEvent(Event e) {
         LOG.info("Received a reload configuration event: {}", e);
-
-        final Parm daemonNameParm = e.getParm(EventConstants.PARM_DAEMON_NAME);
-        if (daemonNameParm == null || daemonNameParm.getValue() == null) {
-            LOG.warn("The {} parameter has no value. Ignoring.", EventConstants.PARM_DAEMON_NAME);
-            return;
-        }
-
-        if (NAME.equalsIgnoreCase(daemonNameParm.getValue().getContent())) {
-            LOG.info("Reloading bsmd.");
-
-            EventBuilder ebldr = null;
-            try {
-                handleConfigurationChanged();
-
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_SUCCESSFUL_UEI, NAME);
-                ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-                LOG.info("Reload successful.");
-            } catch (Throwable t) {
-                ebldr = new EventBuilder(EventConstants.RELOAD_DAEMON_CONFIG_FAILED_UEI, NAME);
-                ebldr.addParam(EventConstants.PARM_REASON, t.getLocalizedMessage().substring(0, 128));
-                LOG.error("Reload failed.", t);
-            }
-
-            ebldr.addParam(EventConstants.PARM_DAEMON_NAME, NAME);
-            m_eventIpcManager.sendNow(ebldr.getEvent());
-        }
+        DaemonTools.handleReloadEvent(e, Bsmd.NAME, (event) -> handleConfigurationChanged());
     }
 
     @Override
     public void destroy() throws Exception {
         LOG.info("Stopping bsmd...");
-        alarmPoller.shutdown();
+        stopAlarmPolling();
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {

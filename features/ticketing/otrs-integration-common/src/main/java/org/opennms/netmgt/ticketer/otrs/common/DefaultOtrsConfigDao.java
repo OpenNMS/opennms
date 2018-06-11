@@ -180,7 +180,7 @@ public class DefaultOtrsConfigDao {
 	
 	private List<Integer> stringToInt(List<String> strings) {
 		
-		List<Integer> intList = new ArrayList<Integer>();
+		List<Integer> intList = new ArrayList<>();
 		
 		for (String string : strings) {
 			intList.add( Integer.parseInt(string));

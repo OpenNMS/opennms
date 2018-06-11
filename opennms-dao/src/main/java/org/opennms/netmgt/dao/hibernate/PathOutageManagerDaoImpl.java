@@ -42,7 +42,7 @@ import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.WebSecurityUtils;
-import org.opennms.netmgt.config.api.OpennmsServerConfig;
+import org.opennms.netmgt.config.api.PathOutageConfig;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationUtils;
@@ -80,7 +80,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
 	private OutageDao outageDao;
 
     @Autowired
-    private OpennmsServerConfig serverConfig;
+    private PathOutageConfig pathOutageConfig;
 
     public static PathOutageManager getInstance() {
         return BeanUtils.getBean("daoContext", "pathOutageManager", PathOutageManager.class);
@@ -123,7 +123,7 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
     public CriticalPath getCriticalPath(int nodeId) {
         //"SELECT criticalpathip, criticalpathservicename FROM pathoutage WHERE nodeid=?";
         String location = null;
-        InetAddress pathIp = serverConfig.getDefaultCriticalPathIp();
+        InetAddress pathIp = pathOutageConfig.getDefaultCriticalPathIp();
         String serviceName = "ICMP";
 
         final OnmsNode node = nodeDao.get(nodeId);
@@ -281,5 +281,10 @@ public class PathOutageManagerDaoImpl implements PathOutageManager {
     @Override
     public Set<Integer> getAllNodesDependentOnAnyServiceOnNode(int nodeId) {
         return new LinkedHashSet<Integer>(pathOutageDao.getAllNodesDependentOnAnyServiceOnNode(nodeId));
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        return pathOutageConfig.getDefaultCriticalPathIp();
     }
 }

@@ -93,7 +93,7 @@ public class Wpms {
      */
     public List<Wpm> getWpm() {
         if (wpm == null) {
-            wpm = new ArrayList<Wpm>();
+            wpm = new ArrayList<>();
         }
         return this.wpm;
     }

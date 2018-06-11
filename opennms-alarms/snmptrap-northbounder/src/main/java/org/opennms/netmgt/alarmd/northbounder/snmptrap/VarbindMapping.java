@@ -72,7 +72,7 @@ public class VarbindMapping {
 
     /** The max number of characters for the value when the type is DISPLAY_STRING. */
     @XmlElement(name = "max", required = false)
-    private int m_max;
+    private Integer m_max;
 
     /** The instance (could be a numeric value or a string). */
     @XmlElement(name = "instance", required = false)
@@ -128,7 +128,7 @@ public class VarbindMapping {
      *
      * @return the max
      */
-    public int getMax() {
+    public Integer getMax() {
         return m_max;
     }
 
@@ -182,7 +182,7 @@ public class VarbindMapping {
      *
      * @param max the new max
      */
-    public void setMax(int max) {
+    public void setMax(Integer max) {
         this.m_max = max;
     }
 

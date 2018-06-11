@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+  xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+  http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+">
+
+  <context:annotation-config />
+
+  <!-- If this is loaded via Spring, then it means the client is loaded in OpenNMS thus, the LocalMessageDispatcher should be used -->
+  <bean id="kafkaLocalMessageDispatcherFactory" class="org.opennms.core.ipc.sink.kafka.client.KafkaLocalMessageDispatcherFactory" />
+  <onmsgi:service ref="kafkaLocalMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
+
+</beans>

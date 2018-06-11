@@ -198,7 +198,7 @@ public class FtpResponse {
      */
     public static FtpResponse readResponse(BufferedReader in) throws IOException {
         int code;
-        List<String> response = new ArrayList<String>();
+        List<String> response = new ArrayList<>();
 
         String firstResponseLine = in.readLine();
         if (firstResponseLine == null) {

@@ -1,15 +1,17 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 export OPTS_MAVEN="-Daether.connector.basic.threads=1 -Daether.connector.resumeDownloads=false"
 export OPTS_SKIP_TESTS="-DskipITs=true -Dmaven.test.skip.exec=true"
 export OPTS_SKIP_TARBALL="-Dbuild.skip.tarball=true"
 export OPTS_ASSEMBLIES="-Passemblies"
 export OPTS_PROFILES="-Prun-expensive-tasks"
-export COMPILE_PROJECTS="org.opennms.features.minion.container:karaf,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository,org.opennms.features.minion:container-parent,org.opennms.features.minion:core-parent,org.opennms.features.minion:org.opennms.features.minion.heartbeat,org.opennms.features.minion:repository,org.opennms.features.minion:shell"
-export ASSEMBLY_PROJECTS=":org.opennms.assemblies.minion"
 
 OPTS_ENABLE_SNAPSHOTS=""
 OPTS_UPDATE_POLICY=""
+
+TOPDIR="$(pwd)"
+MYDIR="$(dirname "$0")"
+MYDIR="$(cd "$MYDIR"; pwd)"
 
 SKIP_COMPILE=0
 
@@ -21,7 +23,7 @@ printHelp() {
 	echo "	-c    skip compilation"
 }
 
-while getopts "hs" OPT
+while getopts "chs" OPT
 do
 	case "$OPT" in
 		h)
@@ -43,8 +45,24 @@ do
 done
 
 # always build the root POM, just to be sure inherited properties/plugin/dependencies are right
-echo "=== Building root POM ==="
-./compile.pl -N $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY install
+echo "=== Building checkstyle & root POM ==="
+"${TOPDIR}/compile.pl" $OPTS_SKIP_TESTS $OPTS_SKIP_TARBALL $OPTS_ENABLE_SNAPSHOTS $OPTS_UPDATE_POLICY --projects org.opennms:org.opennms.checkstyle,org.opennms:opennms install
+
+get_maven_artifact() {
+	xsltproc "${MYDIR}/get-id.xsl" "$1/pom.xml"
+}
+
+get_maven_artifacts() {
+	pushd "$1" >/dev/null 2>&1
+		find . -name pom.xml | while read -r POM; do
+			DIR="$(dirname "$POM")"
+			get_maven_artifact "$DIR"
+		done | tr '\n' ',' | sed -e 's/,$//'
+	popd >/dev/null 2>&1
+}
+
+COMPILE_PROJECTS="$(get_maven_artifacts features/minion)"
+ASSEMBLY_PROJECTS="org.opennms.assemblies:org.opennms.assemblies.minion"
 
 echo ""
 PROJECTS=""

@@ -57,6 +57,7 @@ drop table monitoringlocationscollectionpackages cascade;
 drop table monitoringlocationstags cascade;
 drop table monitoringsystems cascade;
 drop table events cascade;
+drop table event_parameters cascade;
 drop table pathOutage cascade;
 drop table demandPolls cascade;
 drop table pollResults cascade;
@@ -494,6 +495,7 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 	location        text not null,
+	hasFlows        boolean not null default false,
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
@@ -511,8 +513,6 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --# This table provides the following information:
 --#
 --#  nodeID             : Unique identifier for node to which this if belongs
---#  snmpIpAdEntNetMask : SNMP MIB-2 ipAddrTable.ipAddrEntry.ipAdEntNetMask
---#                       Value is interface's subnet mask
 --#  snmpPhysAddr       : SNMP MIB-2 ifTable.ifEntry.ifPhysAddress
 --#                       Value is interface's MAC Address
 --#  snmpIfIndex        : SNMP MIB-2 ifTable.ifEntry.ifIndex
@@ -545,15 +545,12 @@ create unique index node_foreign_unique_idx on node(foreignSource, foreignId);
 --#
 --# NOTE:  Although not marked as "not null" the snmpIfIndex field
 --#        should never be null.  This table is considered to be uniquely
---#        keyed by nodeId and snmpIfIndex.  Eventually ipAddr and
---#        snmpIpAdEntNetMask will be removed and netmask added to
---#        the ipInterface table.
+--#        keyed by nodeId and snmpIfIndex.
 --########################################################################
 
 create table snmpInterface (
     id				INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
-	snmpIpAdEntNetMask	varchar(45),
 	snmpPhysAddr		varchar(32),
 	snmpIfIndex		integer not null,
 	snmpIfDescr		varchar(256),
@@ -567,6 +564,7 @@ create table snmpInterface (
     snmpCollect     varchar(2) default 'N',
     snmpPoll     varchar(1) default 'N',
     snmpLastSnmpPoll timestamp with time zone,
+	hasFlows        boolean not null default false,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -584,6 +582,7 @@ create index snmpinterface_nodeid_idx on snmpinterface(nodeID);
 --#
 --#  nodeID          : Unique identifier of the node that "owns" this interface
 --#  ipAddr          : IP Address associated with this interface
+--#  netmask         : Netmask associated with this interface
 --#  ifIndex	     : SNMP index of interface, used to uniquely identify
 --# 		           unnumbered interfaces, or null if there is no mapping to
 --#                    snmpInterface table.  Can be -100 if old code added an
@@ -621,10 +620,11 @@ create table ipInterface (
     id              INTEGER DEFAULT nextval('opennmsNxtId') NOT NULL,
 	nodeID			integer not null,
 	ipAddr			text not null,
+	netmask			varchar(45),
 	ipHostname		varchar(256),
 	isManaged		char(1),
 	ipStatus		integer,
-    ipLastCapsdPoll timestamp with time zone,
+	ipLastCapsdPoll timestamp with time zone,
 	isSnmpPrimary   char(1),
 	snmpInterfaceId	integer,
 
@@ -822,7 +822,6 @@ create table events (
 	eventSnmphost		varchar(256),
 	serviceID		integer,
 	eventSnmp		varchar(256),
-	eventParms		text,
 	eventCreateTime		timestamp with time zone not null,
 	eventDescr		text,
 	eventLoggroup		varchar(32),
@@ -863,6 +862,16 @@ create index events_ackuser_idx on events(eventAckUser);
 create index events_acktime_idx on events(eventAckTime);
 create index events_alarmid_idx on events(alarmID);
 create index events_nodeid_display_ackuser on events(nodeid, eventdisplay, eventackuser);
+
+create table event_parameters (
+	eventID			integer not null,
+	name        varchar(256) not null,
+	value		    text not null,
+	type		    varchar(256) not null,
+
+	constraint pk_eventParameters primary key (eventID, name),
+	constraint fk_eventParametersEventID foreign key (eventID) references events (eventID) ON DELETE CASCADE
+);
 
 --########################################################################
 --#
@@ -1003,6 +1012,8 @@ create table memos (
   type character varying(64),
   CONSTRAINT memos_pkey PRIMARY KEY (id)
 );
+ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (reductionkey, type);
+
 --########################################################################
 --#
 --# This table contains the following fields:
@@ -1043,6 +1054,7 @@ create table memos (
 
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+    discriminator           TEXT NOT NULL,
     eventUei                VARCHAR(256) NOT NULL,
     systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
@@ -1077,7 +1089,6 @@ create table alarms (
     qosAlarmState           VARCHAR(31),
     ifIndex                 INTEGER,
     clearKey                VARCHAR(256),
-    eventParms              text,
     stickymemo              INTEGER, CONSTRAINT fk_stickyMemo FOREIGN KEY (stickymemo) REFERENCES memos (id) ON DELETE CASCADE
 );
 
@@ -1113,6 +1124,17 @@ CREATE TABLE alarm_attributes (
 
 CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
 CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
+
+CREATE TABLE alarm_situations (
+    situation_id    INTEGER NOT NULL,
+    alarms_alarmid  INTEGER NOT NULL,
+    
+    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (alarms_alarmid) REFERENCES alarms (alarmid),
+    CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid)
+);
+
+CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, alarms_alarmid);
+
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
@@ -2517,3 +2539,38 @@ CREATE VIEW node_outage_status AS
         WHERE outages.svcregainedeventid IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
+
+--##################################################################
+--# Classification tables
+--##################################################################
+CREATE TABLE classification_groups (
+  id integer not null,
+  name text not null,
+  readonly boolean,
+  enabled boolean,
+  priority integer not null,
+  description text,
+  CONSTRAINT classification_groups_pkey PRIMARY KEY (id)
+);
+ALTER TABLE classification_groups ADD CONSTRAINT classification_groups_name_key UNIQUE (name);
+
+CREATE TABLE classification_rules (
+  id integer NOT NULL,
+  name TEXT NOT NULL,
+  dst_address TEXT,
+  dst_port TEXT,
+  src_address TEXT,
+  src_port TEXT,
+  exporter_filter TEXT,
+  protocol TEXT,
+  position integer not null,
+  groupid integer NOT NULL,
+  CONSTRAINT classification_rules_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_classification_rules_groupid FOREIGN KEY (groupId) REFERENCES classification_groups (id) ON DELETE CASCADE
+);
+ALTER TABLE classification_rules ADD CONSTRAINT classification_rules_unique_definition_key UNIQUE (dst_address,dst_port,src_address,src_port,protocol,exporter_filter,groupid);
+
+--# Sequence for the id column in classification_rules table
+--#          sequence, column, table
+--# install: rulenxtid id classification_rules
+create sequence rulenxtid minvalue 1;

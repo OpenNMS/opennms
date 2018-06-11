@@ -1,0 +1,153 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+  xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+  xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+  <!-- Configuration properties -->
+  <cm:property-placeholder id="esEventForwarderProperties" persistent-id="org.opennms.plugin.elasticsearch.rest.forwarder" update-strategy="reload">
+    <cm:default-properties>
+      <!-- Elastic Connection Settings -->
+      <cm:property name="elasticUrl" value="http://localhost:9200" />
+      <cm:property name="globalElasticUser" value="" />
+      <cm:property name="globalElasticPassword" value="" />
+      <cm:property name="elasticIndexStrategy" value="monthly" />
+      <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
+      <cm:property name="maxTotalConnection" value="-1" />
+      <cm:property name="nodeDiscovery" value="false" />
+      <cm:property name="nodeDiscoveryFrequency" value="0" />
+      <cm:property name="proxy" value=""/>
+      <cm:property name="retryCooldown" value="500" />
+      <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
+      <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
+      <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+
+      <!-- Plugin Settings -->
+      <cm:property name="batchSize" value="200" /> <!-- Disable batching by default -->
+      <cm:property name="batchInterval" value="500" /> <!-- Disable batching by default -->
+      <cm:property name="threads" value="0" /> <!-- Use the default number of threads -->
+      <cm:property name="cache_max_ttl" value="0" /> <!-- Set to zero to disable TTL -->
+      <cm:property name="cache_max_size" value="10000" /> <!-- Set to zero to disable max size -->
+      <cm:property name="logEventDescription" value="true" />
+      <cm:property name="logAllEvents" value="false" />
+      <cm:property name="archiveRawEvents" value="true" />
+      <cm:property name="archiveAlarms" value="true" />
+      <cm:property name="archiveAlarmChangeEvents" value="true" />
+      <cm:property name="archiveOldAlarmValues" value="true" />
+      <cm:property name="archiveNewAlarmValues" value="true" />
+      <cm:property name="archiveAssetData" value="true" />
+      <cm:property name="groupOidParameters" value="false" />
+
+      <!-- Bulk Action Retry settings -->
+      <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
+
+      <!-- Index settings -->
+      <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+      <cm:property name="settings.index.number_of_shards" value="" />
+      <cm:property name="settings.index.number_of_replicas" value="" />
+      <cm:property name="settings.index.refresh_interval" value="" />
+      <cm:property name="settings.index.routing_partition_size" value="" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+  <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
+
+  <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
+  <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+    <argument value="elastic-credentials.xml" />
+  </bean>
+
+  <bean id="cacheConfig" class="org.opennms.plugins.elasticsearch.rest.CacheConfig">
+    <property name="maxTTL" value="${cache_max_ttl}" />
+    <property name="maximumSize" value="${cache_max_size}" />
+  </bean>
+
+  <bean id="eventIpcManager" class="org.opennms.netmgt.events.api.EventIpcManagerFactory" factory-method="getIpcManager" />
+
+  <bean id="eventListener" class="org.opennms.plugins.elasticsearch.rest.ForwardingEventListener" init-method="init" destroy-method="destroy">
+    <argument ref="eventForwarder" />
+    <argument ref="eventIpcManager" />
+  </bean>
+
+  <bean id="eventForwarder" class=" org.opennms.plugins.elasticsearch.rest.EventForwarderQueueImpl" destroy-method="close">
+    <argument ref="eventToIndex" />
+    <argument ref="elasticSearchInitializer" />
+    <argument value="${batchSize}" />
+    <argument value="${batchInterval}" />
+  </bean>
+
+  <bean id="nodeDataCache" class="org.opennms.plugins.elasticsearch.rest.NodeCacheImpl">
+    <argument ref="nodeDao" />
+    <argument ref="transactionOperations" />
+    <argument ref="cacheConfig" />
+    <argument value="${archiveAssetData}" />
+  </bean>
+
+  <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
+    <argument value="${retryCooldown}"/>
+  </bean>
+  <bean id="restClientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+    <argument value="${elasticUrl}" />
+    <argument value="${globalElasticUser}" />
+    <argument value="${globalElasticPassword}" />
+    <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
+    <property name="maxTotalConnection" value="${maxTotalConnection}"/>
+    <property name="discovery" value="${nodeDiscovery}" />
+    <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
+    <property name="proxy" value="${proxy}" />
+    <property name="credentials" ref="credentialsProvider" />
+    <property name="requestExecutorFactory" ref="requestExecutorFactory" />
+    <property name="connTimeout" value="${connTimeout}" />
+    <property name="readTimeout" value="${readTimeout}" />
+    <property name="retries" value="${retries}" />
+  </bean>
+  <bean id="restClient" factory-ref="restClientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
+
+  <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+    <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
+    <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
+    <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
+    <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
+  </bean>
+
+  <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+    <argument value="${elasticIndexStrategy}"/>
+  </bean>
+
+  <bean id="eventToIndex" class="org.opennms.plugins.elasticsearch.rest.EventToIndex" destroy-method="close">
+    <argument ref="restClient" />
+    <argument value="${bulkRetryCount}" />
+    <property name="nodeCache" ref="nodeDataCache" />
+    <property name="indexStrategy" ref="indexStrategy" />
+    <property name="logEventDescription" value="${logEventDescription}" />
+    <property name="logAllEvents" value="${logAllEvents}" />
+    <property name="threads" value="${threads}" />
+    <property name="archiveRawEvents" value="${archiveRawEvents}" />
+    <property name="archiveAlarms" value="${archiveAlarms}" />
+    <property name="archiveAlarmChangeEvents" value="${archiveAlarmChangeEvents}" />
+    <property name="archiveOldAlarmValues" value="${archiveOldAlarmValues}" />
+    <property name="archiveNewAlarmValues" value="${archiveNewAlarmValues}" />
+    <property name="groupOidParameters" value="${groupOidParameters}" />
+  </bean>
+
+  <bean id="elasticSearchInitializer" class="org.opennms.plugins.elasticsearch.rest.template.DefaultTemplateInitializer">
+    <argument ref="blueprintBundleContext" />
+    <argument ref="restClient" />
+    <argument value="/eventsIndexTemplate" />
+    <argument value="eventsindextemplate" />
+    <argument ref="indexSettings" />
+  </bean>
+
+  <bean id="onmsHistoryEventstoEs" class="org.opennms.plugins.elasticsearch.rest.archive.OnmsHistoricEventsToEs">
+    <property name="eventForwarder" ref="eventForwarder" />
+  </bean>
+
+</blueprint>

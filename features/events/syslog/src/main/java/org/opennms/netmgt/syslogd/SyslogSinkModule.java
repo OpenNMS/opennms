@@ -63,10 +63,10 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
     }
 
     @Override
-    public AggregationPolicy<SyslogConnection, SyslogMessageLogDTO> getAggregationPolicy() {
+    public AggregationPolicy<SyslogConnection, SyslogMessageLogDTO, SyslogMessageLogDTO> getAggregationPolicy() {
         final String systemId = distPollerDao.whoami().getId();
         final String systemLocation = distPollerDao.whoami().getLocation();
-        return new AggregationPolicy<SyslogConnection, SyslogMessageLogDTO>() {
+        return new AggregationPolicy<SyslogConnection, SyslogMessageLogDTO, SyslogMessageLogDTO>() {
             @Override
             public int getCompletionSize() {
                 return config.getBatchSize();
@@ -83,13 +83,18 @@ public class SyslogSinkModule extends AbstractXmlSinkModule<SyslogConnection, Sy
             }
 
             @Override
-            public SyslogMessageLogDTO aggregate(SyslogMessageLogDTO oldLog, SyslogConnection connection) {
-                if (oldLog == null) {
-                    oldLog = new SyslogMessageLogDTO(systemLocation, systemId, connection.getSource());
+            public SyslogMessageLogDTO aggregate(SyslogMessageLogDTO accumulator, SyslogConnection connection) {
+                if (accumulator == null) {
+                    accumulator = new SyslogMessageLogDTO(systemLocation, systemId, connection.getSource());
                 }
                 SyslogMessageDTO messageDTO = new SyslogMessageDTO(connection.getBuffer());
-                oldLog.getMessages().add(messageDTO);
-                return oldLog;
+                accumulator.getMessages().add(messageDTO);
+                return accumulator;
+            }
+
+            @Override
+            public SyslogMessageLogDTO build(SyslogMessageLogDTO accumulator) {
+                return accumulator;
             }
         };
     }

@@ -33,7 +33,7 @@ import java.util.List;
 
 public class FilterChain {
     
-    private List<Filter> m_filters = new LinkedList<Filter>();
+    private List<Filter> m_filters = new LinkedList<>();
     
     public void addFilter(Filter filter) {
         m_filters.add(filter);

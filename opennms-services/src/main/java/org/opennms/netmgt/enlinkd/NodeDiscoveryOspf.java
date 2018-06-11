@@ -117,7 +117,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
         m_linkd.getQueryManager().store(getNodeId(), ipAddrTableGetter.get(ospfGeneralGroup.getOspfElement()));
 
-        final List<OspfLink> links = new ArrayList<OspfLink>();
+        final List<OspfLink> links = new ArrayList<>();
         OspfNbrTableTracker ospfNbrTableTracker = new OspfNbrTableTracker() {
     
             public void processOspfNbrRow(final OspfNbrRow row) {
@@ -141,7 +141,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             return;
        }
 
-        List<OspfLink> localOspfPorts =  new ArrayList<OspfLink>();
+        List<OspfLink> localOspfPorts =  new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
             public void processOspfIfRow(final OspfIfRow row) {
                 localOspfPorts.add(row.getOspfLink());

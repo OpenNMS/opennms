@@ -184,10 +184,10 @@ public class NCSComponent {
     private Map<String, String> m_attributes = new LinkedHashMap<String, String>();
 
     @XmlElement(name="component")
-    private Set<NCSComponent> m_subcomponents = new LinkedHashSet<NCSComponent>();
+    private Set<NCSComponent> m_subcomponents = new LinkedHashSet<>();
 
     @XmlTransient
-	private Set<NCSComponent> m_parents = new LinkedHashSet<NCSComponent>();
+	private Set<NCSComponent> m_parents = new LinkedHashSet<>();
     
     /**
      * @param type

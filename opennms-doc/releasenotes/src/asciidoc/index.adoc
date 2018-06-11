@@ -8,8 +8,8 @@
 :numbered!:
 
 = OpenNMS Release Notes
-:author: Copyright (c) 2016-2017 The OpenNMS Group, Inc.
-:revnumber: OpenNMS v{opennms-version}
+:author: Copyright (c) 2016-2018 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} v{opennms-version}
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
@@ -21,33 +21,5 @@ include::common/legalnotice.adoc[]
 include::common/preface.adoc[]
 
 :numbered!:
-include::releasenotes/whatsnew-20.adoc[]
-include::releasenotes/changelog-20.adoc[]
-
-include::releasenotes/whatsnew-19.adoc[]
-include::releasenotes/changelog-19.adoc[]
-
-include::releasenotes/whatsnew-18.adoc[]
-include::releasenotes/changelog-18.adoc[]
-
-include::releasenotes/whatsnew-17.adoc[]
-include::releasenotes/changelog-17.adoc[]
-
-include::releasenotes/whatsnew-16.adoc[]
-include::releasenotes/changelog-16.adoc[]
-
-include::releasenotes/whatsnew-15.adoc[]
-include::releasenotes/changelog-15.adoc[]
-
-include::releasenotes/whatsnew-14.adoc[]
-include::releasenotes/changelog-14.adoc[]
-
-include::releasenotes/changelog-1.13.adoc[]
-
-include::releasenotes/changelog-1.12.adoc[]
-
-include::releasenotes/changelog-1.11.adoc[]
-
-include::releasenotes/changelog-1.10.adoc[]
-
-include::releasenotes/changelog-1.9.adoc[]
+include::releasenotes/whatsnew.adoc[]
+include::releasenotes/changelog.adoc[]

@@ -82,7 +82,7 @@ public class DeleteGetNodesServlet extends HttpServlet {
      */
     private List<ManagedNode> getAllNodes(HttpSession userSession) throws SQLException {
         Connection connection = null;
-        List<ManagedNode> allNodes = new ArrayList<ManagedNode>();
+        List<ManagedNode> allNodes = new ArrayList<>();
         int lineCount = 0;
 
         try {

@@ -33,7 +33,6 @@ import java.util.Objects;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.utils.RpcTargetHelper;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.ServiceMonitorRegistry;

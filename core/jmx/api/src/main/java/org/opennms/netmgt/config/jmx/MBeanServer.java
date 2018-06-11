@@ -48,7 +48,7 @@ import java.util.Map;
 public class MBeanServer {
     private String m_ipAddress;
     private int m_port;
-    private List<Parameter> m_parameters = new LinkedList<Parameter>();
+    private List<Parameter> m_parameters = new LinkedList<>();
 
     @XmlAttribute(name = "ipAddress", required = true)
     public String getIpAddress() {

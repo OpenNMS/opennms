@@ -17,7 +17,7 @@ The _XmpCollector_ collects peformance metrics via the X/Open Management Protoco
 
 ===== Collector Parameters
 
-.Collector specific parameters for the WmiCollector
+.Collector specific parameters for the XmpCollector
 [options="header, autowidth"]
 |===
 | Parameter     | Description                                          | Required | Default value

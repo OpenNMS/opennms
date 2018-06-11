@@ -71,7 +71,7 @@ public class WillItUnmarshalCoverageMetaIT {
      * 
      * See {@link #files()} for detailed information.
      */
-    private static SortedSet<String> FILES = new TreeSet<String>();
+    private static SortedSet<String> FILES = new TreeSet<>();
     
     /**
      * Adds all .xml files in the given directory to the list of files to test
@@ -165,7 +165,7 @@ public class WillItUnmarshalCoverageMetaIT {
     /**
      * The set of files covered by the {@link WillItUnmarshalIT}.
      */
-    final static Set<File> COVERED_FILES = new HashSet<File>();
+    final static Set<File> COVERED_FILES = new HashSet<>();
     
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -178,7 +178,13 @@ public class WillItUnmarshalCoverageMetaIT {
         for (final Object[] parameters : WillItUnmarshalIT.files()) {
             // Create instance of test
             final WillItUnmarshalIT test = constructor.newInstance(parameters);
-            
+
+            // If no file system resource, we must skip it (e.g. for classpath resources)
+            if (!test.isFileSystemResource()) {
+                LOG.info("Test verifies a non file system resource: {}. Skipping", test.createResource().getURI());
+                continue;
+            }
+
             // Get the file for the resource used by the test instance and add
             // it to the set of covered files
             COVERED_FILES.add(test.createResource().getFile());
@@ -201,7 +207,7 @@ public class WillItUnmarshalCoverageMetaIT {
      * {@link WillItUnmarshalIT#FILES} in the static constructor of
      * {@link WillItUnmarshalIT} or mark the file as ignored by calling
      * {@link #ignoreFile(java.io.File)} in the static constructor of
-     * {@link WillItUnmarshalMetaTest}.
+     * {@link WillItUnmarshalCoverageMetaIT}.
      */
     @Test
     public void testCoverage() {

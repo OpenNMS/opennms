@@ -107,7 +107,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
         	vlanmap.put(null, null);
         }
         
-        List<BridgeMacLink> bft = new ArrayList<BridgeMacLink>();
+        List<BridgeMacLink> bft = new ArrayList<>();
         Map<Integer, Integer> bridgeifindex = new HashMap<Integer, Integer>();
 
         for (Entry<Integer, SnmpAgentConfig> entry : vlanSnmpAgentConfigMap.entrySet()) {
@@ -157,7 +157,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
 
         if (bft.size() > 0) {
             LOG.debug("run: node [{}]: updating topology", getNodeId());
-        	m_linkd.getQueryManager().store(getNodeId(), bft);
+        	m_linkd.getQueryManager().updateBft(getNodeId(), bft);
         	m_linkd.scheduleBridgeTopologyDiscovery(getNodeId());
         }
         LOG.debug("run: node [{}]: deleting older the time {}", getNodeId(), now);
@@ -495,7 +495,7 @@ public final class NodeDiscoveryBridge extends NodeDiscovery {
     private List<BridgeStpLink> walkSpanningTree(SnmpAgentConfig peer,
             final String baseBridgeAddress) {
 
-        final List<BridgeStpLink> stplinks = new ArrayList<BridgeStpLink>();
+        final List<BridgeStpLink> stplinks = new ArrayList<>();
         Dot1dStpPortTableTracker stpPortTableTracker = new Dot1dStpPortTableTracker() {
 
             @Override

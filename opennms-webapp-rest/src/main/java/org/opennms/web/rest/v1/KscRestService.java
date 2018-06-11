@@ -260,7 +260,7 @@ public class KscRestService extends OnmsRestService {
         private Integer m_graphs_per_line;
 
         @XmlElement(name = "kscGraph")
-        private List<KscGraph> m_graphs = new ArrayList<KscGraph>();
+        private List<KscGraph> m_graphs = new ArrayList<>();
 
         public KscReport() {
         }

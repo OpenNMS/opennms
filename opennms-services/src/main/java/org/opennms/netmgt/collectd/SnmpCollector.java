@@ -39,6 +39,7 @@ import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpPeerFactory;
@@ -129,11 +130,11 @@ public class SnmpCollector extends AbstractServiceCollector {
      * XML file. "primary" = only primary SNMP interface should be collected and
      * stored "all" = all primary SNMP interfaces should be collected and stored
      */
-    public static String SNMP_STORAGE_PRIMARY = "primary";
+    public static final String SNMP_STORAGE_PRIMARY = "primary";
 
-    static String SNMP_STORAGE_ALL = "all";
+    static final String SNMP_STORAGE_ALL = "all";
 
-    static String SNMP_STORAGE_SELECT = "select";
+    static final String SNMP_STORAGE_SELECT = "select";
 
     /**
      * This defines the default maximum number of variables the collector is
@@ -144,7 +145,7 @@ public class SnmpCollector extends AbstractServiceCollector {
      * @deprecated If not configured in SNMP collector configuration, use agent's
      * setting for defaults are now determined there.
      */
-    static int DEFAULT_MAX_VARS_PER_PDU = 30;
+    static final int DEFAULT_MAX_VARS_PER_PDU = 30;
 
     /* -------------------------------------------------------------- */
     /* Attribute key names */
@@ -166,13 +167,13 @@ public class SnmpCollector extends AbstractServiceCollector {
      * Interface attribute key used to store the map of IfInfo objects which
      * hold data about each interface on a particular node.
      */
-    static String IF_MAP_KEY = "org.opennms.netmgt.collectd.SnmpCollector.ifMap";
+    static final String IF_MAP_KEY = "org.opennms.netmgt.collectd.SnmpCollector.ifMap";
 
     /**
      * Interface attribute key used to store a NodeInfo object which holds data
      * about the node being polled.
      */
-    static String NODE_INFO_KEY = "org.opennms.netmgt.collectd.SnmpCollector.nodeInfo";
+    static final String NODE_INFO_KEY = "org.opennms.netmgt.collectd.SnmpCollector.nodeInfo";
 
     /**
      * Interface attribute key used to store the data collection scheme to be
@@ -183,7 +184,7 @@ public class SnmpCollector extends AbstractServiceCollector {
      * <li>SNMP_STORAGE_SELECT = "select"</li>
      * </ul>
      */
-    static String SNMP_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.snmpStorage";
+    static final String SNMP_STORAGE_KEY = "org.opennms.netmgt.collectd.SnmpCollector.snmpStorage";
 
     private LocationAwareSnmpClient m_client;
 
@@ -228,6 +229,11 @@ public class SnmpCollector extends AbstractServiceCollector {
 
             if (m_client == null) {
                 m_client = BeanUtils.getBean("daoContext", "locationAwareSnmpClient", LocationAwareSnmpClient.class);
+            }
+
+            if (!(agent instanceof SnmpCollectionAgent)) {
+                throw new InvalidCollectionAgentException(String.format("Expected agent of type: %s, but got: %s",
+                        SnmpCollectionAgent.class.getCanonicalName(), agent.getClass().getCanonicalName()));
             }
             OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection((SnmpCollectionAgent)agent, params, m_client);
 

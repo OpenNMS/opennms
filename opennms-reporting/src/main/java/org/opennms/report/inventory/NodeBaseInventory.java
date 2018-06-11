@@ -57,7 +57,7 @@ public class NodeBaseInventory {
      * <p>Constructor for NodeBaseInventory.</p>
      */
     public NodeBaseInventory(){
-        ie = new ArrayList<InventoryElement2>();
+        ie = new ArrayList<>();
     }
 
     /**

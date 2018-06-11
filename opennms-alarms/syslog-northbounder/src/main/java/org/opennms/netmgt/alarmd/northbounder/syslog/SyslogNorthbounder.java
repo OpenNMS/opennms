@@ -128,6 +128,11 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
         return false;
     }
 
+    @Override
+    public boolean isReady() {
+        return initialized && getConfig().isEnabled();
+    }
+
     /**
      * Each implementation of the AbstractNorthbounder has a nice queue
      * (Nagle's algorithmic) and the worker thread that processes the queue
@@ -172,7 +177,8 @@ public class SyslogNorthbounder extends AbstractNorthbounder implements Initiali
                 if (msgFormat == null) {
                     msgFormat = getConfig().getMessageFormat();
                 }
-                syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm));
+                String dateFormat = getConfig().getDateFormat();
+                syslogMessage = PropertiesUtils.substitute(msgFormat, createMapping(alarm, dateFormat));
 
                 LOG.debug("Determining LOG_LEVEL for alarm: {}", alarm.getId());
                 level = SyslogUtils.determineLogLevel(alarm.getSeverity());

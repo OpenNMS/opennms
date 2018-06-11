@@ -47,7 +47,7 @@ public class MockPathOutage extends MockElement{
     Timestamp m_lostEventTime;
     Timestamp m_regainedEventTime;
 	private int m_pollCount;
-	private List<PollAnticipator> m_triggers = new ArrayList<PollAnticipator>();
+	private List<PollAnticipator> m_triggers = new ArrayList<>();
 	
 	
 	public MockPathOutage(MockNetwork parent, int nodeId, InetAddress ipAddr, String svcName) {

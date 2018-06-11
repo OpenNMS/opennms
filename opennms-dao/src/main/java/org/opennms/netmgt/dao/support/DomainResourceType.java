@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.opennms.core.utils.LazyList;
+import org.opennms.core.collections.LazyList;
 import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.OnmsAttribute;
@@ -94,7 +94,7 @@ public final class DomainResourceType extends AbstractTopLevelResourceType {
     @Override
     public List<OnmsResource> getTopLevelResources() {
         return findDomainNames().stream()
-                .map(domain -> createResourceForDomain(domain))
+                .map(this::createResourceForDomain)
                 .collect(Collectors.toList());
     }
 

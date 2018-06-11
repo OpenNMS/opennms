@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -238,7 +239,7 @@ public abstract class NotificationManager {
      */
     public Notification[] getNotifForEvent(final Event event) throws IOException {
         update();
-        List<Notification> notifList = new ArrayList<Notification>();
+        List<Notification> notifList = new ArrayList<>();
         boolean matchAll = getConfigManager().getNotificationMatch();
 
         // This if statement will check to see if notification should be suppressed for this event.
@@ -514,15 +515,13 @@ public abstract class NotificationManager {
      * @throws java.io.IOException if any.
      */
     public Collection<Integer> acknowledgeNotice(final Event event, final String uei, final String[] matchList) throws SQLException, IOException {
-        List<Integer> notifIDs = new LinkedList<Integer>();
+        List<Integer> notifIDs = new LinkedList<>();
         final DBUtils dbUtils = new DBUtils(getClass());
 
         try {
             // First get most recent event ID from notifications 
             // that match the matchList, then get all notifications
             // with this event ID
-            Connection connection = getConnection();
-            dbUtils.watch(connection);
 
             // Verify if parameter matching is required
             boolean matchParameters = false;
@@ -533,64 +532,58 @@ public abstract class NotificationManager {
                 }
             }
 
-            final StringBuilder sql = new StringBuilder(matchParameters ? "SELECT n.eventid FROM notifications n, events e WHERE n.eventid = e.eventid AND n.eventuei=? " : "SELECT n.eventid FROM notifications n WHERE n.eventuei=? ");
+            final Map<String, String> eventParametersToMatch = new LinkedHashMap<>();
+            final StringBuilder sql = new StringBuilder("SELECT n.eventid FROM notifications n ");
+            if (matchParameters) {
+                sql.append("INNER JOIN events as e on e.eventid = n.eventid ");
+                for (int i = 0; i < matchList.length; i++) {
+                    if (matchList[i].startsWith("parm[")) {
+                        if (appendParameterNameAndValue(matchList[i], event, eventParametersToMatch)) {
+                            sql.append(String.format("INNER JOIN event_parameters as ep%d on ep%d.eventid = n.eventid and ep%d.name=? and ep%d.value=? ",
+                                    i, i, i, i));
+                        } else {
+                            // The given event does contain the specified parameter, so no match can be made
+                            LOG.warn("No parameter matching {} was found on {}. No notices with UEI {} will be acknowledged.",
+                                    matchList[i], event, uei);
+                            // No DB connections have been acquired yet, so we can return immediately
+                            return Collections.emptyList();
+                        }
+                    }
+                }
+                LOG.debug("Matching notices with UEI {} against event parameters: {}", uei, eventParametersToMatch);
+            }
+            sql.append("WHERE n.eventuei=? ");
             for (int i = 0; i < matchList.length; i++) {
-                if (matchList[i].startsWith("parm[")) {
-                    sql.append("AND e.eventparms LIKE ? ");
-                } else {
+                if (!matchList[i].startsWith("parm[")) {
                     sql.append("AND n.").append(matchList[i]).append("=? ");
                 }
             }
             sql.append("ORDER BY eventid desc limit 1");
+
+            Connection connection = getConnection();
+            dbUtils.watch(connection);
             PreparedStatement statement = connection.prepareStatement(sql.toString());
             dbUtils.watch(statement);
-            statement.setString(1, uei);
+
+            int offset = 1;
+            for (Map.Entry<String, String> eventParameterToMatch : eventParametersToMatch.entrySet()) {
+                statement.setString(offset++, eventParameterToMatch.getKey());
+                statement.setString(offset++, eventParameterToMatch.getValue());
+            }
+
+            statement.setString(offset++, uei);
 
             for (int i = 0; i < matchList.length; i++) {
                 if (matchList[i].equals("nodeid")) {
-                    statement.setLong(i + 2, event.getNodeid());
-                }
-
-                if (matchList[i].equals("interfaceid")) {
-                    statement.setString(i + 2, event.getInterface());
-                }
-
-                if (matchList[i].equals("serviceid")) {
-                    statement.setInt(i + 2, getServiceId(event.getService()));
-                }
-
-                if (matchList[i].startsWith("parm[")) {
-                    String match = matchList[i];
-                    String key = null;
-                    String param = null;
-                    String value = null;
-                    try {
-                        key = match.substring(match.indexOf('[') + 1, match.indexOf(']'));
-                    } catch (Exception e) {}
-                    if (key != null) {
-                        int numkey = 0;
-                        if (key.startsWith("#")) {
-                            try {
-                                numkey = Integer.parseInt(key.substring(1));
-                            } catch (Exception e) {}
-                        }
-                        int idx = 1;
-                        for (Parm p : event.getParmCollection()) {
-                            if (numkey > 0) {
-                                if (numkey == idx) {
-                                    param = p.getParmName();
-                                    value = p.getValue().getContent();
-                                }
-                            } else {
-                                if (p.getParmName().equalsIgnoreCase(key)) {
-                                    param = p.getParmName();
-                                    value = p.getValue().getContent();
-                                }
-                            }
-                            idx++;
-                        }
-                    }
-                    statement.setString(i + 2, '%' + param + '=' + value + '%');
+                    statement.setLong(offset++, event.getNodeid());
+                } else if (matchList[i].equals("interfaceid")) {
+                    statement.setString(offset++, event.getInterface());
+                } else if (matchList[i].equals("serviceid")) {
+                    statement.setInt(offset++, getServiceId(event.getService()));
+                } else if (matchList[i].startsWith("parm[")) {
+                    // Ignore
+                } else {
+                    LOG.warn("Unknown match statement {} for UEI {}.", matchList[i], uei);
                 }
             }
 
@@ -609,6 +602,55 @@ public abstract class NotificationManager {
     }
 
     /**
+     * Parses the given match statement i.e. param[key] or parm[#99] and retrieves the corresponding
+     * parameter from the given event.
+     *
+     * If the parameter is found, it is added to the map and <code>true</code> is returned, otherwise <code>false</code>
+     * is returned.
+     *
+     * @param match notification match statement
+     * @param event event to match
+     * @param eventParametersToMatch ordered map of event parameters we need to match
+     * @return <code>true</code> if the map was modified, <code>false</code> otherwise
+     */
+    private static boolean appendParameterNameAndValue(String match, Event event, Map<String, String> eventParametersToMatch) {
+        String key = null;
+        String param = null;
+        String value = null;
+        try {
+            key = match.substring(match.indexOf('[') + 1, match.indexOf(']'));
+        } catch (Exception e) {}
+        if (key != null) {
+            int numkey = 0;
+            if (key.startsWith("#")) {
+                try {
+                    numkey = Integer.parseInt(key.substring(1));
+                } catch (Exception e) {}
+            }
+            int idx = 1;
+            for (Parm p : event.getParmCollection()) {
+                if (numkey > 0) {
+                    if (numkey == idx) {
+                        param = p.getParmName();
+                        value = p.getValue().getContent();
+                    }
+                } else {
+                    if (p.getParmName().equalsIgnoreCase(key)) {
+                        param = p.getParmName();
+                        value = p.getValue().getContent();
+                    }
+                }
+                idx++;
+            }
+        }
+        if (param == null || value == null) {
+            return false;
+        }
+        eventParametersToMatch.put(param, value);
+        return true;
+    }
+
+    /**
      * <p>acknowledgeNoticeBasedOnAlarms</p>
      *
      * @param event a {@link org.opennms.netmgt.xml.event.Event} object.
@@ -617,7 +659,7 @@ public abstract class NotificationManager {
      * @throws java.io.IOException if any.
      */
     public Collection<Integer> acknowledgeNoticeBasedOnAlarms(final Event event) throws SQLException, IOException {
-        Set<Integer> notifIDs = new TreeSet<Integer>();
+        Set<Integer> notifIDs = new TreeSet<>();
         if (event.getAlarmData() == null || event.getAlarmData().getAlarmType() != 2) {
             return notifIDs;
         }
@@ -652,7 +694,7 @@ public abstract class NotificationManager {
      */
     private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID) 
             throws SQLException, IOException {
-        List<Integer> notifIDs = new LinkedList<Integer>();
+        List<Integer> notifIDs = new LinkedList<>();
         LOG.debug("EventID for notice(s) to be acked: {}", eventID);
 
         PreparedStatement statement = connection.prepareStatement("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
@@ -703,7 +745,7 @@ public abstract class NotificationManager {
      * @throws java.sql.SQLException if any.
      */
     public List<Integer> getActiveNodes() throws SQLException {
-        final List<Integer> allNodes = new ArrayList<Integer>();
+        final List<Integer> allNodes = new ArrayList<>();
         Querier querier = new Querier(m_dataSource, "SELECT n.nodeid FROM node n WHERE n.nodetype != 'D' ORDER BY n.nodelabel", new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -901,7 +943,9 @@ public abstract class NotificationManager {
 
             final ResultSet results = statement.executeQuery();
             d.watch(results);
-            results.next();
+            if (!results.next()) {
+                throw new SQLException("No serviceID found for service with serviceName: " + service);
+            }
 
             serviceID = results.getInt(1);
 
@@ -935,7 +979,7 @@ public abstract class NotificationManager {
      * @return a {@link java.util.List} object.
      */
     public List<String> getServiceNames() throws SQLException {
-        final List<String> services = new ArrayList<String>();
+        final List<String> services = new ArrayList<>();
         Querier querier = new Querier(m_dataSource, "SELECT servicename FROM service", new RowProcessor() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
@@ -968,7 +1012,7 @@ public abstract class NotificationManager {
     public List<String> getNotificationNames() throws IOException {
         update();
 
-        List<String> notificationNames = new ArrayList<String>();
+        List<String> notificationNames = new ArrayList<>();
 
         for (Notification curNotif : m_notifications.getNotifications()) {
             notificationNames.add(curNotif.getName());

@@ -110,7 +110,7 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
     }
 
     /**
@@ -121,6 +121,11 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
     @Override
     public void start() throws NorthbounderException {
         // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
     }
 
     /**
@@ -158,14 +163,14 @@ public class SnmpTrapNorthbounderManager implements InitializingBean, Northbound
      * Reloads the configuration.
      */
     @Override
-    public void reloadConfig() {
+    public void reloadConfig() throws NorthbounderException {
         LOG.info("Reloading SNMP Traps northbound configuration.");
         try {
             m_configDao.reload();
             m_registrations.forEach((k,v) -> { if (k != getName()) v.unregister();});
             registerNorthnounders();
         } catch (Exception e) {
-            LOG.error("Can't reload the SNMP trap northbound configuration", e);
+            throw new NorthbounderException("Can't reload the SNMP trap northbound configuration", e);
         }
     }
 

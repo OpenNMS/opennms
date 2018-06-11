@@ -483,7 +483,7 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
 
         // parameters
         if (event.getParmCollection() != null && event.getParmCollection().size() > 0) {
-            event.getParmCollection().stream().map(p -> p.getValue()).filter(v -> v.isExpand()).forEach(v -> {
+            event.getParmCollection().stream().map(Parm::getValue).filter(Value::isExpand).forEach(v -> {
                 final String str = m_eventUtil.expandParms(v.getContent(), event, decode);
                 if (str != null) {
                     v.setContent(str);

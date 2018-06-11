@@ -174,8 +174,8 @@ public class SnmpAssetProvisioningAdapter extends SimplerQueuedProvisioningAdapt
 	private static String fetchSnmpAssetString(final LocationAwareSnmpClient locationAwareSnmpClient, final SnmpAgentConfig agentConfig,
 	        final String location, final List<MibObj> mibObjs, final String formatString) {
 
-	    final List<String> aliases = new ArrayList<String>();
-		final List<SnmpObjId> objs = new ArrayList<SnmpObjId>();
+	    final List<String> aliases = new ArrayList<>();
+		final List<SnmpObjId> objs = new ArrayList<>();
 		for (final MibObj mibobj : mibObjs) {
 			aliases.add(mibobj.getAlias());
 			objs.add(SnmpObjId.get(mibobj.getOid()));

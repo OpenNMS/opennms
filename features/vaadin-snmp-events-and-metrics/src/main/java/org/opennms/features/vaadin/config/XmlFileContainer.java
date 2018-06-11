@@ -46,7 +46,7 @@ import com.vaadin.data.util.FilesystemContainer;
 public class XmlFileContainer extends FilesystemContainer {
 
     /** The exclude list. */
-    protected List<String> excludeList = new ArrayList<String>();
+    protected List<String> excludeList = new ArrayList<>();
 
     /**
      * Instantiates a new XML file container.

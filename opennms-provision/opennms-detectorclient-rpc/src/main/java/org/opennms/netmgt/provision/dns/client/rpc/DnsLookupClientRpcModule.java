@@ -60,7 +60,7 @@ public class DnsLookupClientRpcModule extends AbstractXmlRpcModule<DnsLookupRequ
 
     @Override
     public CompletableFuture<DnsLookupResponseDTO> execute(DnsLookupRequestDTO request) {
-        final CompletableFuture<DnsLookupResponseDTO> future = new CompletableFuture<DnsLookupResponseDTO>();
+        final CompletableFuture<DnsLookupResponseDTO> future = new CompletableFuture<>();
         try {
             final InetAddress addr = InetAddressUtils.addr(request.getHostRequest());
             final DnsLookupResponseDTO dto = new DnsLookupResponseDTO();

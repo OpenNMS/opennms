@@ -28,17 +28,18 @@
 
 package org.opennms.features.vaadin.jmxconfiggenerator.ui.mbeans;
 
+import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaMBeanItem;
+import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
+import org.opennms.netmgt.config.collectd.jmx.Attrib;
+import org.opennms.netmgt.config.collectd.jmx.CompAttrib;
+import org.opennms.netmgt.config.collectd.jmx.CompMember;
+import org.opennms.netmgt.config.collectd.jmx.Mbean;
+
 import com.vaadin.data.Validator;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.MetaMBeanItem;
-import org.opennms.features.vaadin.jmxconfiggenerator.data.SelectionChangedListener;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Attrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompAttrib;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.CompMember;
-import org.opennms.xmlns.xsd.config.jmx_datacollection.Mbean;
 
 /**
  *

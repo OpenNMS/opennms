@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+  <changeSet author="smith" id="23.0.0-alarm-situations">
+    <addColumn tableName="alarms">
+      <!-- Differentiate between an OnmsAlarm type and a Situation type, both of which are stored in the same table -->
+      <column name="discriminator" type="TEXT" value="OnmsAlarm"/>
+    </addColumn>
+    <addNotNullConstraint tableName="alarms" columnName="discriminator"/>
+
+    <!-- table name chosen over 'situation_alarms' in order to group this table in close proximity of 'alarms' and 'alarm_attributes' -->
+    <createTable tableName="alarm_situations">
+        <column name="situation_id" type="integer">
+          <constraints nullable="false"/>
+        </column>
+        <column name="alarms_alarmid" type="integer">
+          <constraints nullable="false"/>
+        </column>
+    </createTable>
+  
+    <addUniqueConstraint tableName="alarm_situations" columnNames="situation_id, alarms_alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_situation_id"
+          baseTableName="alarm_situations" baseColumnNames="situation_id" 
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+    <addForeignKeyConstraint constraintName="fk_alarm_situations_alarm_id" 
+          baseTableName="alarm_situations" baseColumnNames="alarms_alarmid" 
+          referencedTableName="alarms" referencedColumnNames="alarmid"/>
+
+  </changeSet>
+  
+  <changeSet author="cpape" id="23.0.0-has-flows">
+    <addColumn tableName="node">
+      <column name="hasflows" type="boolean" defaultValue="false" />
+    </addColumn>
+    <addNotNullConstraint tableName="node" columnName="hasflows"/>
+
+    <addColumn tableName="snmpinterface">
+      <column name="hasflows" type="boolean" defaultValue="false"/>
+    </addColumn>
+    <addNotNullConstraint tableName="snmpinterface" columnName="hasflows"/>
+  </changeSet>
+
+</databaseChangeLog>

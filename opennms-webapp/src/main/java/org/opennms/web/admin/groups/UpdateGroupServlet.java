@@ -78,7 +78,7 @@ public class UpdateGroupServlet extends HttpServlet {
                 }
             }
 
-            Vector<Object> newSchedule = new Vector<Object>();
+            Vector<Object> newSchedule = new Vector<>();
             ChoiceFormat days = new ChoiceFormat("0#Mo|1#Tu|2#We|3#Th|4#Fr|5#Sa|6#Su");
 
             Collection<String> dutySchedules = getDutySchedulesForGroup(newGroup);

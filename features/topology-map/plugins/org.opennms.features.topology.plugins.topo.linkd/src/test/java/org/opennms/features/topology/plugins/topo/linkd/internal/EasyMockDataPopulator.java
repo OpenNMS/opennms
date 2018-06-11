@@ -238,7 +238,7 @@ public class EasyMockDataPopulator {
         OnmsNode node8 = builder.getCurrentNode();
         setNode8(node8);
 
-        List<OnmsNode> nodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> nodes = new ArrayList<>();
         nodes.add(node1);
         nodes.add(node2);
         nodes.add(node3);
@@ -251,7 +251,7 @@ public class EasyMockDataPopulator {
     }
     
     private List<OnmsIpInterface> getList(Set<OnmsIpInterface> ipset) {
-        List<OnmsIpInterface> ips = new ArrayList<OnmsIpInterface>();
+        List<OnmsIpInterface> ips = new ArrayList<>();
         for (OnmsIpInterface ip: ipset) {
             ips.add(ip);
         }

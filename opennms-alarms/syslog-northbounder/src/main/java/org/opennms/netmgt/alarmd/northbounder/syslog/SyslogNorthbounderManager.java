@@ -108,7 +108,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      */
     @Override
     public void destroy() throws Exception {
-        m_registrations.values().forEach(r -> r.unregister());
+        m_registrations.values().forEach(Registration::unregister);
         try {
             Syslog.shutdown(); // Shutdown all Syslog instances.
         } catch (Exception e) {
@@ -124,6 +124,11 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
     @Override
     public void start() throws NorthbounderException {
         // There is no need to do something here. Only the reload method will be implemented
+    }
+
+    @Override
+    public boolean isReady() {
+        return false;
     }
 
     /**
@@ -161,7 +166,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
      * Reloads the configuration.
      */
     @Override
-    public void reloadConfig() {
+    public void reloadConfig() throws NorthbounderException {
         LOG.info("Reloading Syslog northbound configuration.");
         try {
             m_configDao.reload();
@@ -169,7 +174,7 @@ public class SyslogNorthbounderManager implements InitializingBean, Northbounder
             Syslog.shutdown(); // Shutdown all Syslog instances.
             registerNorthnounders(); // Re-registering all Syslog destinations.
         } catch (Exception e) {
-            LOG.error("Can't reload the syslog northbound configuration", e);
+            throw new NorthbounderException("Can't reload the Syslog northbound configuration", e);
         }
     }
 }

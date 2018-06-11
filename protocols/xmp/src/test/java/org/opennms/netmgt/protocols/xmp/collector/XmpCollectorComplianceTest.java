@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Map;
 
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
 import org.opennms.netmgt.config.xmpDataCollection.Groups;

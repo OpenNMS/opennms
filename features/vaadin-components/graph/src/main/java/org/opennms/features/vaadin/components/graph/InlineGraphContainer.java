@@ -30,8 +30,6 @@ package org.opennms.features.vaadin.components.graph;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
-import java.util.Date;
-
 /**
  * Graph container that allows graphs to be rendered using different graphing
  * engines.
@@ -41,23 +39,15 @@ import java.util.Date;
  * @author jwhite
  * @author fooker
  */
-// Vaadin doensn't allow us to reference .js files outside of the application using relative paths
-// so we resort to copying the minimal dependencies into the target .jar and importing them here.
-// The resources are copied using the maven-resources-plugin definition in this module's pom.xml.
-// Only resources required to bootstrap graph.js should be included here - others should
-// be loaded dynamically.
 @JavaScript({
-    "require.js",
-    "global.js",
-    "jquery.js",
-    "graph.js",
-    "graphcontainer-connector.js"
+    "theme://../opennms/assets/inline-graphcontainer_connector.vaadin.js"
 })
 public class InlineGraphContainer extends AbstractJavaScriptComponent {
-    private static final long serialVersionUID = 4363043899957566308L;
+    private static final long serialVersionUID = 2L;
 
     public InlineGraphContainer() {
-        final GraphContainerState state = getState();
+        // make sure state gets initialized
+        getState();
     }
 
     public void setBaseHref(String baseHref) {

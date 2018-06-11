@@ -55,6 +55,10 @@ The following properties, found in `${OPENNMS_HOME}/etc/opennms.properties`, can
 | `org.opennms.newts.config.cache.strategy`       | See bellow           | Canonical name of the class used for resource level caching. See the table bellow for all of the available options.
 | `org.opennms.newts.config.cache.max_entries`    | `8192`               | Maximum number of records to keep in the cache when using an in-memory caching strategy.
 | `org.opennms.newts.nan_on_counter_wrap`         | `false`              | Disables the processing of counter wraps, replacing these with NaNs instead.
+| `org.opennms.newts.config.cache.priming.disable`  | `false`            | Disables the cache primer, which pre-emptively loads the cache with indexed resources on start-up.
+| `org.opennms.newts.config.cache.priming.block_ms` | `120000`           | Block startup for this many milliseconds while waiting for the cache to be primed.
+                                                                           Set this value to `-1` to disable blocking.
+                                                                           Set this value to `0` to block indefinitely waiting for all of the records to be read.
 |===
 
 Available caching strategies include:
@@ -88,3 +92,7 @@ If you are collecting data from a large number of resources, you should increase
 The samples gathered by the collectors are temporarily stored in a ring buffer before they are persisted to _Cassandra_ using _Newts_.
 The value of the `ring_buffer_size` should be increased if you expect large peaks of collectors returning at once or latency in persisting these to _Cassandra_.
 However, note that the memory used by the ring buffer is reserved, and larger values may require an increased heap size.
+
+Cache priming is used to help reduce the number of records that need to be indexed after restarting _{opennms-product-name}_.
+This works by rebuilding the cache using the index data that has already been persisted in Cassandra.
+If you continue to see large spikes of index related inserts after rebooting you may want to consider increasing the amount of time spent priming the cache.

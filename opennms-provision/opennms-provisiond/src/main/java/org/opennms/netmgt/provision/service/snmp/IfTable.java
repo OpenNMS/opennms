@@ -197,7 +197,7 @@ public final class IfTable extends SnmpTable<IfTableEntry> {
      * @return a {@link java.util.Set} object.
      */
     public Set<Integer> getIfIndices() {
-    	final Set<Integer> ifIndices = new LinkedHashSet<Integer>();
+    	final Set<Integer> ifIndices = new LinkedHashSet<>();
         for(final SnmpInstId inst : getInstances()) {
             ifIndices.add(inst.toInt());
         }

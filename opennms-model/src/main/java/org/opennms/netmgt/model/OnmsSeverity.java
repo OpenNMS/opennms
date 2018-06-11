@@ -179,7 +179,7 @@ public enum OnmsSeverity implements Serializable {
     }
 
     public static List<String> names() {
-        final List<String> names = new ArrayList<String>();
+        final List<String> names = new ArrayList<>();
         for (final OnmsSeverity value : values()) {
             names.add(value.toString());
         }

@@ -109,7 +109,7 @@ public class PersistRegexSelectorStrategyTest {
 
         LocationAwareSnmpClient locationAwareSnmpClient = new LocationAwareSnmpClientRpcImpl(new MockRpcClientFactory());
         PlatformTransactionManager ptm = new MockPlatformTransactionManager();
-        SnmpCollectionAgent agent = DefaultCollectionAgent.create(1, ipInterfaceDao, ptm);
+        SnmpCollectionAgent agent = DefaultSnmpCollectionAgent.create(1, ipInterfaceDao, ptm);
         OnmsSnmpCollection snmpCollection = new OnmsSnmpCollection(agent, serviceParams, new MockDataCollectionConfigDao(), locationAwareSnmpClient);
 
         org.opennms.netmgt.config.datacollection.ResourceType rt = new org.opennms.netmgt.config.datacollection.ResourceType();

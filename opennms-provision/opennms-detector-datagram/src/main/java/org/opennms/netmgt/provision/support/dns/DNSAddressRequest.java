@@ -260,7 +260,7 @@ public class DNSAddressRequest {
             globalID = m_reqID + 1; // prevents negative numbers.
         }
 
-        m_answers = new ArrayList<DNSAddressRR>();
+        m_answers = new ArrayList<>();
     }
 
     /**

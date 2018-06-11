@@ -1,0 +1,163 @@
+//
+// This defines the gpb message format used by the port sensor.
+//
+// The top level messages is GPort
+//
+// Version 1.0
+//
+// Copyrights (c)  2015, Juniper Networks, Inc.
+// All rights reserved.
+//
+
+//
+// Licensed to the Apache Software Foundation (ASF) under one
+// or more contributor license agreements.  See the NOTICE file
+// distributed with this work for additional information
+// regarding copyright ownership.  The ASF licenses this file
+// to you under the Apache License, Version 2.0 (the
+// "License"); you may not use this file except in compliance
+// with the License.  You may obtain a copy of the License at
+//
+//   http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing,
+// software distributed under the License is distributed on an
+// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+// KIND, either express or implied.  See the License for the
+// specific language governing permissions and limitations
+// under the License.
+//
+
+import "telemetry_top.proto";
+
+message GPort {
+    repeated InterfaceInfos interface_stats = 1;
+}
+
+message InterfaceInfos {
+    // e.g., xe-0/0/0
+    required string if_name                = 1 [(telemetry_options).is_key = true];
+
+    // time when if/stats last reset
+    required uint64 init_time              = 2;
+
+    // Global Index
+    optional uint32 snmp_if_index          = 3;
+
+    // name of parent for ae interface, if applicable
+    optional string parent_ae_name         = 4;
+
+    // egress queue information
+    repeated QueueStats egress_queue_info  = 5;
+
+    // ingress queue information
+    repeated QueueStats ingress_queue_info = 6;
+
+    // inbound traffic stats
+    optional InterfaceStats ingress_stats  = 7;
+
+    // outbound traffic stats
+    optional InterfaceStats egress_stats   = 8;
+
+    // inbound traffic errors
+    optional IngressInterfaceErrors ingress_errors = 9;
+}
+
+message InterfaceStats {
+    // Counter: the total number of packets sent/rcvd by this interface
+    required uint64 if_pkts        = 1 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of bytes sent/rcvd by this interface
+    required uint64 if_octets      = 2 [(telemetry_options).is_counter = true];
+
+    // Rate: the rate at which packets are sent/rcvd by this interface (in packets/sec)
+    required uint64 if_1sec_pkts   = 3 [(telemetry_options).is_gauge = true];
+
+    // Rate: the rate at which bytes are sent/rcvd by this interface
+    required uint64 if_1sec_octets = 4 [(telemetry_options).is_gauge = true];
+
+    // Counter: total no of unicast packets sent/rcvd by this interface
+    required uint64 if_uc_pkts = 5 [(telemetry_options).is_counter = true];
+
+    // Counter: total no of multicast packets sent/rcvd by this interface
+    required uint64 if_mc_pkts = 6 [(telemetry_options).is_counter = true];
+
+    // Counter: total no of broadcast packets sent/rcvd by this interface
+    required uint64 if_bc_pkts = 7 [(telemetry_options).is_counter = true];
+}
+
+message IngressInterfaceErrors {
+    // Counter: the number of packets that contained errors
+    optional uint64 if_in_errors               = 1 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of packets dropped by the input queue of the I/O Manager ASIC
+    optional uint64 if_in_qdrops               = 2 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of packets which were misaligned
+    optional uint64 if_in_frame_errors         = 3 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of non-errorpackets which were chosen to be discarded
+    optional uint64 if_in_discards             = 4 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of runt packets
+    optional uint64 if_in_runts                = 5 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of packets that fail Layer 3 sanity checks of the header
+    optional uint64 if_in_l3_incompletes       = 6 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of packets for which the software could not find a valid logical interface
+    optional uint64 if_in_l2chan_errors        = 7 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of malform or short packets
+    optional uint64 if_in_l2_mismatch_timeouts = 8 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of FIFO errors
+    optional uint64 if_in_fifo_errors          = 9 [(telemetry_options).is_counter = true];
+
+    // Counter: the number of resourceerrors
+    optional uint64 if_in_resource_errors      = 10 [(telemetry_options).is_counter = true];
+}
+
+message QueueStats {
+    optional uint32 queue_number          = 1 [(telemetry_options).is_key = true];
+
+    // Counter: the total number of packets that have been added to this queue
+    optional uint64 packets               = 2 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of bytes that have been added to this queue
+    optional uint64 bytes                 = 3 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of tail dropped packets
+    optional uint64 tail_drop_packets     = 4 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of rate-limitd packets
+    optional uint64 rl_drop_packets       = 5 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of rate-limited bytes
+    optional uint64 rl_drop_bytes         = 6 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of red-dropped packets
+    optional uint64 red_drop_packets      = 7 [(telemetry_options).is_counter = true];
+
+    // Counter: the total number of red-dropped bytes
+    optional uint64 red_drop_bytes        = 8 [(telemetry_options).is_counter = true];
+
+    // Average: avg queue depth,TAQL:time-average-queue-len, in packets, details TBD
+    optional uint64 avg_buffer_occupancy  = 9 [(telemetry_options).is_gauge = true];
+
+    // Gauge: current queue depth, in packets
+    optional uint64 cur_buffer_occupancy  = 10 [(telemetry_options).is_gauge = true];
+
+    // Peak: the max measured queue depth, in packets, across all measurements since bo ot.
+    optional uint64 peak_buffer_occupancy = 11 [(telemetry_options).is_gauge = true];
+
+    // allocated buffer size
+    optional uint64 allocated_buffer_size = 12 [(telemetry_options).is_gauge = true];
+}
+
+//
+// this occupies branch 3 from JuniperNetworksSensors
+//
+extend JuniperNetworksSensors {
+    optional GPort jnpr_interface_ext = 3;
+}

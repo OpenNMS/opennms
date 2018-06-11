@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -21,13 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>
-              org.postgresql;resolution:=optional,
-              org.eclipse.persistence.internal.jaxb;resolution:=optional,
-              org.eclipse.persistence.internal.jaxb.many;resolution:=optional,
-              org.opennms.netmgt.collection.adapters,
-              *
-            </Import-Package>
+            <DynamicImport-Package>*</DynamicImport-Package>
           </instructions>
         </configuration>
       </plugin>

@@ -54,7 +54,7 @@ public class SessionListenerRepository implements SessionInitListener, SessionDe
     }
 
     private List<SessionListener> getSessionListeners() {
-        final List<SessionListener> sessionListeners = new ArrayList<SessionListener>();
+        final List<SessionListener> sessionListeners = new ArrayList<>();
         try {
             final ServiceReference[] references = context.getAllServiceReferences(SessionListener.class.getName(), null);
             if (references != null) {

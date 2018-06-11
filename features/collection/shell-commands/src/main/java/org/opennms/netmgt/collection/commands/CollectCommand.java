@@ -38,10 +38,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.felix.gogo.commands.Argument;
-import org.apache.felix.gogo.commands.Command;
-import org.apache.felix.gogo.commands.Option;
-import org.apache.karaf.shell.console.OsgiCommandSupport;
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Argument;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
@@ -50,6 +53,7 @@ import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.CollectionStatus;
+import org.opennms.netmgt.collection.api.InvalidCollectionAgentException;
 import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
@@ -59,7 +63,8 @@ import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 
 @Command(scope = "collection", name = "collect", description="Invokes a collector against a host at a specified location.")
-public class CollectCommand extends OsgiCommandSupport {
+@Service
+public class CollectCommand implements Action {
 
     @Option(name = "-l", aliases = "--location", description = "Location", required = false, multiValued = false)
     String location;
@@ -74,6 +79,7 @@ public class CollectCommand extends OsgiCommandSupport {
     String nodeCriteria;
 
     @Argument(index = 0, name = "collectorClass", description = "Collector class", required = true, multiValued = false)
+    @Completion(CollectorClassNameCompleter.class)
     String className;
 
     @Argument(index = 1, name = "host", description = "Hostname or IP Address of the system to poll", required = true, multiValued = false)
@@ -82,14 +88,17 @@ public class CollectCommand extends OsgiCommandSupport {
     @Argument(index = 2, name = "attributes", description = "Collector specific attributes in key=value form", multiValued = true)
     List<String> attributes;
 
-    private ServiceCollectorRegistry serviceCollectorRegistry;
+    @Reference
+    public ServiceCollectorRegistry serviceCollectorRegistry;
 
-    private LocationAwareCollectorClient locationAwareCollectorClient;
+    @Reference
+    public LocationAwareCollectorClient locationAwareCollectorClient;
 
-    private CollectionAgentFactory collectionAgentFactory;
+    @Reference
+    public CollectionAgentFactory collectionAgentFactory;
 
     @Override
-    protected Void doExecute() {
+    public Void execute() {
         final ServiceCollector collector = serviceCollectorRegistry.getCollectorByClassName(className);
         if (collector == null) {
             System.out.printf("No collector found with class name '%s'. Aborting.\n", className);
@@ -126,6 +135,11 @@ public class CollectCommand extends OsgiCommandSupport {
                 } catch (InterruptedException e) {
                     System.out.println("\nInterrupted.");
                 } catch (ExecutionException e) {
+                    final Throwable cause = e.getCause();
+                    if (cause != null && cause instanceof InvalidCollectionAgentException) {
+                        System.out.printf("The collector requires a valid node and interface. Try specifying a valid node using the --node option.\n", e);
+                        break;
+                    }
                     System.out.printf("\nCollect failed with:", e);
                     e.printStackTrace();
                     System.out.println();
@@ -154,7 +168,7 @@ public class CollectCommand extends OsgiCommandSupport {
         }
     }
 
-    private void printCollectionSet(CollectionSet collectionSet) {
+    private static void printCollectionSet(CollectionSet collectionSet) {
         AtomicBoolean didPrintAttribute = new AtomicBoolean(false);
         collectionSet.visit(new AbstractCollectionSetVisitor() {
             @Override
@@ -179,19 +193,7 @@ public class CollectCommand extends OsgiCommandSupport {
         }
     }
 
-    public void setLocationAwareCollectorClient(LocationAwareCollectorClient locationAwareCollectorClient) {
-        this.locationAwareCollectorClient = locationAwareCollectorClient;
-    }
-
-    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
-        this.collectionAgentFactory = collectionAgentFactory;
-    }
-
-    public void setServiceCollectorRegistry(ServiceCollectorRegistry serviceCollectorRegistry) {
-        this.serviceCollectorRegistry = serviceCollectorRegistry;
-    }
-
-    private Map<String, Object> parse(List<String> attributeList) {
+    private static Map<String, Object> parse(List<String> attributeList) {
         final Map<String, Object> properties = new HashMap<>();
         if (attributeList != null) {
             for (String keyValue : attributeList) {

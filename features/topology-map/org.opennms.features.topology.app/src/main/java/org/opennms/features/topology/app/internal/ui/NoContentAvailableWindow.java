@@ -48,6 +48,7 @@ public class NoContentAvailableWindow extends Window {
     public NoContentAvailableWindow(final GraphContainer graphContainer) {
         super("No focus defined");
 
+        setId("no-focus-defined-window");
         setResizable(false);
         setClosable(false);
         setDraggable(true);
@@ -80,7 +81,7 @@ public class NoContentAvailableWindow extends Window {
             public void buttonClick(Button.ClickEvent event) {
                 List<Criteria> defaultCriteriaList = graphContainer.getTopologyServiceClient().getDefaults().getCriteria();
                 if (defaultCriteriaList != null) {
-                    defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+                    defaultCriteriaList.forEach(graphContainer::addCriteria);
                     graphContainer.redoLayout();
                     noDefaultsAvailable.setVisible(false);
                 } else {

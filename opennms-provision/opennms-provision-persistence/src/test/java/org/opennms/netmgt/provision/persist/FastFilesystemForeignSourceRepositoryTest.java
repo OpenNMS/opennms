@@ -180,7 +180,7 @@ public class FastFilesystemForeignSourceRepositoryTest extends ForeignSourceRepo
         assertEquals("name must match requested foreign source repository name", uuid, defaultForeignSource.getName());
         assertEquals("scan-interval must be 1 day", 86400000, defaultForeignSource.getScanInterval().getMillis());
         assertEquals("foreign source must have no default policies", 0, defaultForeignSource.getPolicies().size());
-        List<String> fsNames = new ArrayList<String>();
+        List<String> fsNames = new ArrayList<>();
         for (PluginConfig config : defaultForeignSource.getDetectors()) {
             fsNames.add(config.getName());
         }

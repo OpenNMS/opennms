@@ -28,13 +28,21 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.opennms.netmgt.dao.api.CountedObject;
 import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
-
-import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements EventDao, EventCountDao {
     private AtomicInteger m_id = new AtomicInteger(0);
@@ -85,4 +93,16 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements
         return countedObjects;
     }
 
+    @Override
+    public List<OnmsEvent> getEventsForEventParameters(Map<String, String> eventParameters) {
+        Stream<OnmsEvent> stream = findAll().stream();
+
+        for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {
+            stream = stream.filter(e -> e.getEventParameters().stream().anyMatch(p ->
+                        p.getName().matches(entry.getKey().replaceAll("%", ".*")) &&
+                        p.getValue().matches(entry.getValue().replace("%", ".*"))));
+        }
+
+        return stream.distinct().collect(Collectors.toList());
+    }
 }

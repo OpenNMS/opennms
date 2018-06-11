@@ -55,7 +55,7 @@ public abstract class Callbacks {
         return (graphContainer, graphProvider) -> {
             List<Criteria> defaultCriteriaList = graphProvider.getDefaults().getCriteria();
             if (defaultCriteriaList != null) {
-                defaultCriteriaList.forEach(eachCriteria -> graphContainer.addCriteria(eachCriteria));
+                defaultCriteriaList.forEach(graphContainer::addCriteria);
             }
         };
     }

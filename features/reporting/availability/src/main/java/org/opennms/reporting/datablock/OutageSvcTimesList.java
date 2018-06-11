@@ -160,7 +160,7 @@ public class OutageSvcTimesList extends ArrayList<Outage> {
         // 
         // calculate effective start time
         long startTime = curTime - rollingWindow;
-        List<OutageSince> retList = new ArrayList<OutageSince>();
+        List<OutageSince> retList = new ArrayList<>();
 
         for(Outage svcTime : this) {
 

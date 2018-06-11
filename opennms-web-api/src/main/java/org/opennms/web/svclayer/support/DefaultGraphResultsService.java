@@ -184,7 +184,7 @@ public class DefaultGraphResultsService implements GraphResultsService, Initiali
 
         List<Graph> graphs = new ArrayList<Graph>(reports.length);
 
-        List<String> filesToPromote = new LinkedList<String>();
+        List<String> filesToPromote = new LinkedList<>();
         for (String report : reports) {
             PrefabGraph prefabGraph = m_graphDao.getPrefabGraph(report);
             Graph graph = new Graph(prefabGraph, resource, graphResults.getStart(), graphResults.getEnd());

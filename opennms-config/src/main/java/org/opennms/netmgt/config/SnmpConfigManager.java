@@ -46,7 +46,7 @@ public class SnmpConfigManager {
 
     private static final String DEFAULT_LOCATION = "Default";
     private SnmpConfig m_config;
-	private List<MergeableDefinition> m_definitions = new ArrayList<MergeableDefinition>();
+	private List<MergeableDefinition> m_definitions = new ArrayList<>();
 
 	/**
 	 * <p>

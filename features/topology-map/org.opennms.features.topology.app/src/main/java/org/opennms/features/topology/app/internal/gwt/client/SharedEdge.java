@@ -32,8 +32,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.collect.Maps;
-
 public class SharedEdge implements Serializable {
 
     private String m_key;

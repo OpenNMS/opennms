@@ -53,7 +53,7 @@
 <%
 	String uei=request.getParameter("uei");
 	Map<String, Notification> allNotifications=NotificationFactory.getInstance().getNotifications();
-	List<Notification> notifsForUEI=new ArrayList<Notification>();
+	List<Notification> notifsForUEI=new ArrayList<>();
 	for(String key : allNotifications.keySet()) {
 	    Notification notif=allNotifications.get(key);
 		if(notif.getUei().equals(uei)) {

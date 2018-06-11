@@ -194,7 +194,7 @@ public class Upgrade {
      * @throws OnmsUpgradeException the OpenNMS upgrade exception
      */
     protected List<OnmsUpgrade> getUpgradeObjects() throws OnmsUpgradeException {
-        List<OnmsUpgrade> upgrades = new ArrayList<OnmsUpgrade>();
+        List<OnmsUpgrade> upgrades = new ArrayList<>();
         try {
             ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(true);
             provider.addIncludeFilter(new AssignableTypeFilter(OnmsUpgrade.class));

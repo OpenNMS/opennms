@@ -29,7 +29,10 @@
 package org.opennms.netmgt.dao.mock;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.HeatMapElement;
@@ -75,7 +78,12 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
 
     @Override
     public OnmsAlarm findByReductionKey(final String reductionKey) {
-        throw new UnsupportedOperationException("Not yet implemented!");
+        for (OnmsAlarm alarm : findAll()) {
+            if (alarm.getReductionKey().equals(reductionKey)) {
+                return alarm;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -96,5 +104,18 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     @Override
     public List<HeatMapElement> getHeatMapItemsForEntity(String entityNameColumn, String entityIdColumn, boolean processAcknowledgedAlarms, String restrictionColumn, String restrictionValue, String... groupByColumns) {
         throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public List<OnmsAlarm> getAlarmsForEventParameters(Map<String, String> eventParameters) {
+        Stream<OnmsAlarm> stream = findAll().stream();
+
+        for (final Map.Entry<String, String> entry : eventParameters.entrySet()) {
+            stream = stream.filter(e -> e.getEventParameters().stream().anyMatch(p ->
+                       p.getName().matches(entry.getKey().replaceAll("%", ".*")) &&
+                       p.getValue().matches(entry.getValue().replace("%", ".*"))));
+        }
+
+        return stream.distinct().collect(Collectors.toList());
     }
 }

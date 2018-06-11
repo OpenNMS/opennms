@@ -39,7 +39,6 @@ import java.util.Properties;
 
 import static org.opennms.netmgt.ticketer.tsrm.TsrmConstants.*;
 import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.xml.bind.JAXBElement;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;

@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.snmpinterfacepoller;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-import static org.opennms.core.utils.InetAddressUtils.str;
-
 import java.util.Date;
 import java.util.List;
 
@@ -38,6 +35,7 @@ import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
@@ -45,6 +43,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.snmp.proxy.LocationAwareSnmpClient;
 import org.opennms.netmgt.snmpinterfacepoller.pollable.PollContext;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
@@ -72,7 +71,13 @@ public class DefaultPollContext implements PollContext {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 
-    private String m_serviceName="SNMP";
+    @Autowired
+    private NodeDao m_nodeDao;
+
+    @Autowired
+    private LocationAwareSnmpClient locationAwareSnmpClient;
+
+    private String m_serviceName = "SNMP";
 
     /**
      * <p>getIpInterfaceDao</p>
@@ -183,14 +188,17 @@ public class DefaultPollContext implements PollContext {
      */
     /** {@inheritDoc} */
     @Override
-    public Event createEvent(String uei, int nodeId, String address, Date date, OnmsSnmpInterface snmpinterface) {
+    public Event createEvent(final String uei, final int nodeId, final String addr, final String netMask, final Date date, final OnmsSnmpInterface snmpinterface) {
         
-            log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
+        log().debug("createEvent: uei = " + uei + " nodeid = " + nodeId + " date = " + date);
         
         EventBuilder bldr = new EventBuilder(uei, this.getName(), date);
         bldr.setNodeid(nodeId);
-        if (address != null) {
-            bldr.setInterface(addr(address));
+        if (addr != null) {
+            bldr.setInterface(InetAddressUtils.addr(addr));
+        }
+        if (netMask != null) {
+            bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, InetAddressUtils.normalize(netMask));
         }
         bldr.setService(getServiceName());
 
@@ -202,7 +210,6 @@ public class DefaultPollContext implements PollContext {
         if (snmpinterface.getIfName() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_NAME, snmpinterface.getIfName());
         if (snmpinterface.getIfDescr() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_DESC, snmpinterface.getIfDescr());
         if (snmpinterface.getIfAlias() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_ALIAS, snmpinterface.getIfAlias());
-        if (snmpinterface.getNetMask() != null) bldr.addParam(EventConstants.PARM_SNMP_INTERFACE_MASK, str(snmpinterface.getNetMask()));        
         
         return bldr.getEvent();
     }
@@ -245,5 +252,18 @@ public class DefaultPollContext implements PollContext {
                 builder.eq("isSnmpPrimary", PrimaryType.PRIMARY).eq("isManaged", "M");
 		return getIpInterfaceDao().findMatching(builder.toCriteria());
 	}
+
+    @Override
+    public String getLocation(Integer nodeId) {
+        return m_nodeDao.getLocationForId(nodeId);
+    }
+
+    public LocationAwareSnmpClient getLocationAwareSnmpClient() {
+        return locationAwareSnmpClient;
+    }
+
+    public void setLocationAwareSnmpClient(LocationAwareSnmpClient locationAwareSnmpClient) {
+        this.locationAwareSnmpClient = locationAwareSnmpClient;
+    }
 
 }

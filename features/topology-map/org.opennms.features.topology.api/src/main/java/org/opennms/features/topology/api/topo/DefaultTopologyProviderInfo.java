@@ -37,13 +37,12 @@ public class DefaultTopologyProviderInfo implements TopologyProviderInfo {
     public DefaultTopologyProviderInfo() {
     }
 
-    public DefaultTopologyProviderInfo(String name, String description) {
-        this(name, description, false);
-    }
-
-    public DefaultTopologyProviderInfo(String name, String description, boolean supportsCategorySearch) {
+    public DefaultTopologyProviderInfo(String name, String description, Boolean isHierarchichal, boolean supportsCategorySearch) {
         this.name = name;
         this.description = description;
+        if (isHierarchichal != null) {
+            this.hierarchical = isHierarchichal;
+        }
         this.supportsCategorySearch = supportsCategorySearch;
     }
 

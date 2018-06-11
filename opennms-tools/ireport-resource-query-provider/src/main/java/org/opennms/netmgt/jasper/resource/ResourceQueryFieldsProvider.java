@@ -59,7 +59,7 @@ public class ResourceQueryFieldsProvider implements FieldsProvider{
             return new JRField[0];
         }
         
-        List<JRField> fields = new ArrayList<JRField>();
+        List<JRField> fields = new ArrayList<>();
         query = reportDataset.getQuery().getText();
         
         addPathColumn(fields);

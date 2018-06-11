@@ -31,7 +31,6 @@ package org.opennms.web.element;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,8 +48,6 @@ import org.hibernate.FetchMode;
 import org.hibernate.criterion.MatchMode;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.opennms.core.criteria.Alias;
-import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.EqRestriction;
 import org.opennms.core.spring.BeanUtils;
@@ -498,7 +495,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     private Interface[] onmsSnmpInterfaces2InterfaceArray(
             List<OnmsSnmpInterface> snmpIfaces) {
-        List<Interface> intfs = new LinkedList<Interface>();
+        List<Interface> intfs = new LinkedList<>();
         
         for(OnmsSnmpInterface snmpIface : snmpIfaces) {
             intfs.add(new Interface(snmpIface));
@@ -687,7 +684,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
 
     private static Service[] getServiceArray(List<OnmsMonitoredService> monSvcs) {
-        List<Service> svcs = new LinkedList<Service>();
+        List<Service> svcs = new LinkedList<>();
         for(OnmsMonitoredService monSvc : monSvcs) {
             Service service = new Service(monSvc);
             
@@ -856,7 +853,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
         nodeCrit.add(Restrictions.ne("type", "D"));
         nodeCrit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         
-        List<Integer> nodeIds = new ArrayList<Integer>();
+        List<Integer> nodeIds = new ArrayList<>();
         List<OnmsNode> nodes = m_nodeDao.findMatching(nodeCrit);
         for(OnmsNode node : nodes) {
             nodeIds.add(node.getId());
@@ -881,7 +878,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     
     private List<OnmsNode> getNodesInCategories(String[] categoryStrings){
-        List<OnmsCategory> categories = new ArrayList<OnmsCategory>();
+        List<OnmsCategory> categories = new ArrayList<>();
         for(String categoryString : categoryStrings) {
             OnmsCategory category = m_categoryDao.findByName(categoryString);
             if(category != null) {
@@ -916,7 +913,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
             n2id.add(n2.getId()); 
         }
 
-        List<OnmsNode> ourNodes = new ArrayList<OnmsNode>();
+        List<OnmsNode> ourNodes = new ArrayList<>();
         for (OnmsNode n1 : ourNodes1) {
             if (n2id.contains(n1.getId())) {
                 ourNodes.add(n1);
@@ -932,7 +929,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
         
     private Interface[] getInterfaceArray(List<OnmsIpInterface> ipIfaces) {
-        List<Interface> intfs = new LinkedList<Interface>();
+        List<Interface> intfs = new LinkedList<>();
         for(OnmsIpInterface iface : ipIfaces) {
             intfs.add(new Interface(iface));
         }
@@ -942,7 +939,7 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
     }
     
     private Interface[] getInterfaceArrayWithSnmpData(List<OnmsIpInterface> ipIfaces) {
-        List<Interface> intfs = new LinkedList<Interface>();
+        List<Interface> intfs = new LinkedList<>();
         for(OnmsIpInterface iface : ipIfaces) {
             Interface intf = new Interface(iface);
             if(iface.getSnmpInterface() != null) {

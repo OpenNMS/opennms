@@ -140,7 +140,7 @@ public abstract class OutageModel {
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
 
-            List<OutageSummary> list = new ArrayList<OutageSummary>();
+            List<OutageSummary> list = new ArrayList<>();
 
             while (rs.next()) {
                 int nodeId = rs.getInt("nodeID");
@@ -194,7 +194,7 @@ public abstract class OutageModel {
      */
     private static Outage[] rs2Outages(ResultSet rs, boolean includesRegainedTime, boolean includesNotifications) throws SQLException {
         Outage[] outages = null;
-        List<Outage> list = new ArrayList<Outage>();
+        List<Outage> list = new ArrayList<>();
 
         while (rs.next()) {
             Outage outage = new Outage();

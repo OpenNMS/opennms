@@ -97,7 +97,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
         snmpRequestDTO.setTimeToLive(timeToLiveInMilliseconds);
         return client.execute(snmpRequestDTO)
             // Different types of requests can process the responses differently
-            .thenApply(res -> processResponse(res));
+            .thenApply(this::processResponse);
     }
 
     protected abstract T processResponse(SnmpMultiResponseDTO response);

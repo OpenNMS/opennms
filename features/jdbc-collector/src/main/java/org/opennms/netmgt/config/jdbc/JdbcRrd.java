@@ -49,7 +49,7 @@ public class JdbcRrd implements Serializable, Comparable<JdbcRrd> {
     private Integer m_step;
     
     @XmlElement(name="rra")
-    private List<String> m_jdbcRras = new ArrayList<String>();
+    private List<String> m_jdbcRras = new ArrayList<>();
     
     public JdbcRrd() {
         

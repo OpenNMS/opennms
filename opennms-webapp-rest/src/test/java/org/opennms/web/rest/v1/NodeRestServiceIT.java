@@ -72,13 +72,17 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * TODO
@@ -181,7 +185,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setNodeid(1)
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -255,10 +259,11 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         req.addHeader("Accept", MediaType.APPLICATION_JSON);
         req.addParameter("limit", "0");
         String json = sendRequest(req, 200);
-
-        JSONObject restObject = new JSONObject(json);
-        JSONObject expectedObject = new JSONObject(IOUtils.toString(new FileInputStream("src/test/resources/v1/nodes.json")));
-        JSONAssert.assertEquals(expectedObject, restObject, true);
+        String expectedJson = IOUtils.toString(new FileInputStream("src/test/resources/v1/nodes.json"));
+        JSONAssert.assertEquals(expectedJson, json,
+            new CustomComparator(JSONCompareMode.STRICT,
+                // we need to exclude lastModifiedDate since it was just updated in the PUT method:
+                new Customization("node[0].assetRecord.lastModifiedDate", (o1, o2) -> true)));
     }
 
     @Test
@@ -293,10 +298,20 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setNodeid(1)
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testPutNodeAsset() throws Exception {
+        createNode();
+        sendPut("/nodes/1/assetRecord", "description=Right here, Right now", 204);
+        String xml = sendRequest(GET, "/nodes/1/assetRecord", 200);
+	    assertTrue(xml.contains("<description>Right here, Right now</description>"));
+	    assertTrue(xml.matches(".*<id>\\d+</id>.*"));
     }
 
     @Test
@@ -372,7 +387,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setInterface(InetAddressUtils.addr("10.10.10.10"))
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -417,7 +432,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setInterface(InetAddressUtils.addr("10.10.10.10"))
                                                                             .getEvent());
 
-        sendRequest(DELETE, url + "/10.10.10.10", 204);
+        sendRequest(DELETE, url + "/10.10.10.10", 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
@@ -499,13 +514,14 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
                                                                             .setService("ICMP")
                                                                             .getEvent());
 
-        sendRequest(DELETE, url, 204);
+        sendRequest(DELETE, url, 202);
 
         m_mockEventIpcManager.getEventAnticipator().waitForAnticipated(10000);
         m_mockEventIpcManager.getEventAnticipator().verifyAnticipated();
     }
 
     @Test
+    @Transactional
     @JUnitTemporaryDatabase
     public void testCategory() throws Exception {
         createNode();

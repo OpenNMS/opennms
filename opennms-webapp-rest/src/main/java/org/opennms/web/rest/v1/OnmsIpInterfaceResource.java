@@ -28,8 +28,6 @@
 
 package org.opennms.web.rest.v1;
 
-import static org.opennms.core.utils.InetAddressUtils.addr;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -250,7 +248,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.REST", node.getId(), ipAddress, -1, -1L);
             sendEvent(e);
 
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }

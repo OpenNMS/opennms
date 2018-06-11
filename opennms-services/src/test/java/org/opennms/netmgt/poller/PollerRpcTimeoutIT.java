@@ -90,7 +90,7 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-pinger.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-client-camel.xml",
+        "classpath:/META-INF/opennms/applicationContext-rpc-client-jms.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-icmp.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-poller.xml",
         "classpath:/META-INF/opennms/applicationContext-pollerd.xml"
@@ -201,7 +201,7 @@ public class PollerRpcTimeoutIT implements TemporaryDatabaseAware<MockDatabase> 
         }
 
         InputStream is = new FileInputStream(new File("src/test/resources/etc/rpctimeout-poller-configuration.xml"));
-        PollerConfigFactory factory = new PollerConfigFactory(0, is, "localhost", false);
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);
         IOUtils.closeQuietly(is);
 

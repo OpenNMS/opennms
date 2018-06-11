@@ -154,6 +154,10 @@
           <td><%=System.getProperty( "os.name" )%> <%=System.getProperty( "os.version" )%> (<%=System.getProperty( "os.arch" )%>)</td>
         </tr>
         <tr>
+          <th>OSGi&nbsp;Container:</th>
+          <td>Apache Karaf <%=System.getProperty( "karaf.version" )%></td>
+        </tr>
+        <tr>
           <th>Servlet&nbsp;Container:</th>
           <td><%=application.getServerInfo()%> (Servlet Spec <%=application.getMajorVersion()%>.<%=application.getMinorVersion()%>)</td>
         </tr>

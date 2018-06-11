@@ -36,6 +36,7 @@
 
 package org.opennms.xmlns.xsd.event;
 
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -69,8 +70,10 @@ import javax.xml.bind.annotation.XmlValue;
 public class Script {
 
     @XmlValue
+    @NotNull
     protected String value;
     @XmlAttribute(name = "language", required = true)
+    @NotNull
     protected String language;
 
     /**

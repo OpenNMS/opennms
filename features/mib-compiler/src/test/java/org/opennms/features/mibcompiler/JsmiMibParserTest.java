@@ -326,7 +326,7 @@ public class JsmiMibParserTest {
     public void testMibWithInvalidContent() throws Exception {
         SmiDefaultParser parser = new SmiDefaultParser();
         OnmsProblemEventHandler errorHandler = new OnmsProblemEventHandler(parser);
-        List<URL> inputUrls = new ArrayList<URL>();
+        List<URL> inputUrls = new ArrayList<>();
         try {
             inputUrls.add(new File(MIB_DIR, "SNMPv2-SMI.txt").toURI().toURL());
             inputUrls.add(new File(MIB_DIR, "NET-SNMP-MIB.txt").toURI().toURL());

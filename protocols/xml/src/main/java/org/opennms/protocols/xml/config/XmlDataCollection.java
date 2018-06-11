@@ -92,7 +92,7 @@ public class XmlDataCollection implements Serializable, Comparable<XmlDataCollec
 
     /** The XML Sources list. */
     @XmlElement(name="xml-source")
-    private List<XmlSource> m_xmlSources = new ArrayList<XmlSource>();
+    private List<XmlSource> m_xmlSources = new ArrayList<>();
 
     /**
      * Instantiates a new XML data collection.

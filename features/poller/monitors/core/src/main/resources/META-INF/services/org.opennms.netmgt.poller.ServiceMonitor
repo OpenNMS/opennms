@@ -17,11 +17,9 @@ org.opennms.netmgt.poller.monitors.HttpsMonitor
 org.opennms.netmgt.poller.monitors.IcmpMonitor
 org.opennms.netmgt.poller.monitors.ImapMonitor
 org.opennms.netmgt.poller.monitors.ImapsMonitor
-org.opennms.netmgt.poller.monitors.JBossMonitor
 org.opennms.netmgt.poller.monitors.JDBCMonitor
 org.opennms.netmgt.poller.monitors.JDBCQueryMonitor
 org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor
-org.opennms.netmgt.poller.monitors.JMXSecureMonitor
 org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor
 org.opennms.netmgt.poller.monitors.Jsr160Monitor
 org.opennms.netmgt.poller.monitors.LaTableMonitor
@@ -33,7 +31,6 @@ org.opennms.netmgt.poller.monitors.MailTransportMonitor
 org.opennms.netmgt.poller.monitors.MemcachedMonitor
 org.opennms.netmgt.poller.monitors.MinionHeartbeatMonitor
 org.opennms.netmgt.poller.monitors.MinionRpcMonitor
-org.opennms.netmgt.poller.monitors.MX4JMonitor
 org.opennms.netmgt.poller.monitors.NetScalerGroupHealthMonitor
 org.opennms.netmgt.poller.monitors.NrpeMonitor
 org.opennms.netmgt.poller.monitors.NtpMonitor

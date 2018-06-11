@@ -57,7 +57,7 @@ public class ModelImport implements java.io.Serializable {
     public ModelImport() {
         super();
         setForeignSource("imported:");
-        this._nodeList = new java.util.ArrayList<org.opennms.client.schema.Node>();
+        this._nodeList = new java.util.ArrayList<>();
     }
 
 

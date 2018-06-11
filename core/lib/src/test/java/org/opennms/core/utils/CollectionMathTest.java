@@ -41,7 +41,7 @@ import junit.framework.TestCase;
 public class CollectionMathTest extends TestCase {
 	
 	private List<BigDecimal> getTestCollection() {
-		List<BigDecimal> c = new ArrayList<BigDecimal>();
+		List<BigDecimal> c = new ArrayList<>();
 		c.add(null);
 		c.add(new BigDecimal(1));
 		c.add(new BigDecimal(100));
@@ -51,7 +51,7 @@ public class CollectionMathTest extends TestCase {
 	}
 
 	public void testEmpty() {
-		List<BigDecimal> c = new ArrayList<BigDecimal>();
+		List<BigDecimal> c = new ArrayList<>();
 		assertNull(CollectionMath.percentNotNull(c));
 		assertNull(CollectionMath.percentNull(c));
 	}

@@ -214,7 +214,7 @@ public class DataCollectionConfigConverter extends AbstractDatacollectionConfigV
             }
         }
         
-        final Set<String> parameters = new TreeSet<String>();
+        final Set<String> parameters = new TreeSet<>();
         parameters.addAll(getParameters(type.getResourceKindExpression()));
         parameters.addAll(getParameters(type.getResourceLabelExpression()));
         parameters.addAll(getParameters(type.getResourceNameExpression()));
@@ -249,7 +249,7 @@ public class DataCollectionConfigConverter extends AbstractDatacollectionConfigV
 
         final Pattern p = Pattern.compile("\\$\\{([^\\}]*)\\}");
         final Matcher m = p.matcher(template);
-        final Set<String> matches = new TreeSet<String>();
+        final Set<String> matches = new TreeSet<>();
         while (m.find()) {
             for (int i=0; i < m.groupCount(); i++) {
                 matches.add(m.group(i+1));

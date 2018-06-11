@@ -415,7 +415,7 @@ public class SpectrumTrapImporter {
             EventFormat fmt = m_eventFormats.get(mapping.getEventCode());
             return m_utils.translateAllEventTables(fmt, m_customEventsDir.getFile().getPath() + File.separator + "CsEvFormat" + File.separator + "EventTables");
         } else {
-            return new ArrayList<Varbindsdecode>();
+            return new ArrayList<>();
         }
     }
     

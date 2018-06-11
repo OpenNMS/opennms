@@ -1,0 +1,23 @@
+<drools-northbounder-config>
+   <enabled>false</enabled>
+   <nagles-delay>1000</nagles-delay>
+   <batch-size>100</batch-size>
+   <queue-size>300000</queue-size>
+   <!--
+
+   The filter expects a SPEL expression against NorthboundAlarm's fields
+   test-context.xml contains Spring managed references
+   It is recommended to use a relative path from $OPENNMS_HOME
+
+   <engine>
+      <name>Example</name>
+      <filter>ipAddr != '0.0.0.0'</filter>
+      <global name="var1" value="10" type="java.lang.Integer"/>
+      <global name="var2" value="awesomeness!" type="java.lang.String"/>
+      <global name="log" ref="slf4jLogger"/>
+      <appContext>etc/drools-nbi/test-context.xml</appContext>
+      <ruleFile>etc/drools-nbi/test-rules1.drl</ruleFile>
+      <ruleFile>etc/drools-nbi/test-rules2.drl</ruleFile>
+   </engine>
+   -->
+</drools-northbounder-config>

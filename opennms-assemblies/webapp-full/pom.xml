@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.assemblies</artifactId>
-    <version>21.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.assemblies</groupId>
@@ -142,6 +142,17 @@
     <dependency>
       <groupId>org.opennms.features.bsm</groupId>
       <artifactId>org.opennms.features.bsm.rest.api</artifactId>
+      <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.rest-provider</artifactId>
       <version>${project.version}</version>
       <exclusions>
         <exclusion>

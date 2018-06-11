@@ -5,15 +5,12 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-integrations</artifactId>
-        <version>21.0.0-SNAPSHOT</version>
+        <version>23.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>opennms-jasperstudio-extension</artifactId>
     <name>OpenNMS Integration for Jaspersoft Studio</name>
     <packaging>jar</packaging>
     <description>Add this jar to the Jaspersoft Studio build path in order to be able to execute/debug/create reports for OpenNMS</description>
-    <properties>
-        <springVersion>3.0.5.RELEASE</springVersion>
-    </properties>
     <build>
         <plugins>
             <plugin>
@@ -65,75 +62,54 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-expression</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-expression</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-asm</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-tx</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-aop</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-context</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-beans</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.spring-core</artifactId>
             <version>${springVersion}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.xml</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.spring</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.core</artifactId>
+            <version>${eclipselinkVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>org.eclipse.persistence.moxy</artifactId>
+            <version>${eclipselinkVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -45,7 +45,7 @@ public class Rrd implements java.io.Serializable {
     private int _step = 0;
 
     @XmlElement(name = "rra", required = true)
-    private java.util.List<String> _rraList = new java.util.ArrayList<String>();
+    private java.util.List<String> _rraList = new java.util.ArrayList<>();
 
     public void addRra(final String vRra)
             throws IndexOutOfBoundsException {

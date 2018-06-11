@@ -28,9 +28,12 @@
 
 package org.opennms.netmgt.dao.hibernate;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.net.InetAddress;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +42,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -49,8 +53,12 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
+
+import com.google.common.collect.Iterables;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -70,7 +78,11 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
     @Autowired
     DatabasePopulator m_databasePopulator;
 
-    int m_testNodeId;
+    @Autowired
+    ApplicationContext applicationContext;
+
+    @Autowired
+    TransactionOperations transactionOperations;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -80,50 +92,111 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
     @Before
     public void setUp() throws Exception {
         m_databasePopulator.populateDatabase();
+        m_cache.clear();
+    }
+
+    // Verify reloading works. See HZN-1311
+    @Test
+    public void testReloading() {
+        // We manually have to create a reloading dao, as by default it does not
+        m_cache = new InterfaceToNodeCacheDaoImpl(1000L);
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(m_cache);
+        applicationContext.getAutowireCapableBeanFactory().initializeBean(m_cache, "reloading-interface-to-node-cache");
+
+        // Verify it is initialized
+        Optional<Integer> nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, m_databasePopulator.getNode1().getPrimaryInterface().getIpAddress());
+        Assert.assertEquals(true, nodeId.isPresent());
+        Assert.assertEquals(m_databasePopulator.getNode1().getId(), nodeId.get());
+
+        // Verify bean is not there yet
+        nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddressUtils.addr("8.8.8.8"));
+        Assert.assertEquals(false, nodeId.isPresent());
+
+        // Execute adding of missing node in transaction scope
+        transactionOperations.execute((status) -> {
+            // Add missing node
+            final OnmsNode node = new OnmsNode();
+            node.setLocation(m_databasePopulator.getNode1().getLocation());
+            node.setLabel("Dummy-Node");
+            node.setType(OnmsNode.NodeType.ACTIVE);
+
+            // Add interface to node
+            new OnmsIpInterface(InetAddressUtils.addr("8.8.8.8"), node);
+            m_databasePopulator.getNodeDao().save(node);
+            m_databasePopulator.getNodeDao().flush();
+            return null;
+        });
+
+        // Try for number of seconds until it succeeds
+        await().atMost(10, TimeUnit.SECONDS)
+               .pollInterval(1000, TimeUnit.MILLISECONDS)
+               .until(() -> m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, InetAddressUtils.addr("8.8.8.8")).isPresent());
+    }
+
+    @Test
+    @Transactional
+    public void testGetId() throws Exception {
         m_cache.dataSourceSync();
 
-        OnmsNode n = new OnmsNode(m_databasePopulator.getMonitoringLocationDao().getDefaultLocation(), "my-new-node");
-        n.setForeignSource("junit");
-        n.setForeignId("10001");
-        OnmsIpInterface iface = new OnmsIpInterface(InetAddress.getByName("192.168.1.3"), n);
-        iface.setIsManaged("M");
-        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
-        OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(n, 1001);
-        iface.setSnmpInterface(snmpIf);
-        snmpIf.getIpInterfaces().add(iface);
-        n.addIpInterface(iface);
-        m_databasePopulator.getNodeDao().save(n);
-        m_testNodeId = n.getId();
+        final InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
+        final int expectedNodeId = m_databasePopulator.getNode2().getId();
+
+        final int nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr).get();
+        Assert.assertEquals(expectedNodeId, nodeId);
     }
 
     @Test
     @Transactional
     public void testSetId() throws Exception {
-        InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
-        long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
+        final int nodeId = m_databasePopulator.getNode1().getId();
 
-        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
-        Assert.assertEquals(expectedNodeId, nodeId);
+        Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), nodeId));
+        Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.2"), nodeId));
+        Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.1"), nodeId));
+        Assert.assertEquals(false, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), nodeId));
+    }
 
-        // Address already exists on database and it is not primary.
-        Assert.assertEquals(-1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), 1));
+    @Test
+    @Transactional
+    public void testSetIdWithDifferentNodes() throws Exception {
+        m_cache.dataSourceSync();
 
-        // Address already exists on database but the new node also contain the address and is their primary address.
-        Assert.assertEquals(1, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"), m_testNodeId)); // return old nodeId
-        Assert.assertEquals(m_testNodeId, m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, addr("192.168.1.3"))); // return the new nodeId
+        final OnmsNode node = new OnmsNode(m_databasePopulator.getMonitoringLocationDao().getDefaultLocation(), "my-new-node");
+        node.setForeignSource("junit");
+        node.setForeignId("10001");
+        final OnmsIpInterface iface = new OnmsIpInterface(InetAddress.getByName("192.168.1.2"), node);
+        iface.setIsManaged("M");
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        final OnmsSnmpInterface snmpIf = new OnmsSnmpInterface(node, 1001);
+        iface.setSnmpInterface(snmpIf);
+        snmpIf.getIpInterfaces().add(iface);
+        node.addIpInterface(iface);
+        m_databasePopulator.getNodeDao().save(node);
+
+        // Different node ID must return true again
+        Assert.assertEquals(true, m_cache.setNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress(), node.getId()));
+
+        // Cache must return both results
+        Assert.assertTrue(Iterables.contains(m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()), node.getId()));
+        Assert.assertTrue(Iterables.contains(m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()), m_databasePopulator.getNode1().getId()));
+
+        // Primary must be first
+        Assert.assertEquals(m_databasePopulator.getNode1().getId(), m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, iface.getIpAddress()).get());
     }
 
     @Test
     @Transactional
     public void testNullLocation() throws Exception {
+        m_cache.dataSourceSync();
+
         // Retrieve a known entry stored using the default location id
         InetAddress ipAddr = m_databasePopulator.getNode2().getPrimaryInterface().getIpAddress();
         long expectedNodeId = Long.parseLong(m_databasePopulator.getNode2().getNodeId());
-        long nodeId = m_cache.getNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr);
+        long nodeId = m_cache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
 
         // Now try retrieving that same node using null for the location
-        nodeId = m_cache.getNodeId(null, ipAddr);
+        nodeId = m_cache.getFirstNodeId(null, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
     }
 }

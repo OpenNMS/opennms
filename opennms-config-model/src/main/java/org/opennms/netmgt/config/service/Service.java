@@ -59,10 +59,10 @@ public class Service implements Serializable {
     private String m_className;
 
     @XmlElement(name = "attribute")
-    private List<Attribute> m_attributes = new ArrayList<Attribute>();
+    private List<Attribute> m_attributes = new ArrayList<>();
 
     @XmlElement(name = "invoke")
-    private List<Invoke> m_invokes = new ArrayList<Invoke>();
+    private List<Invoke> m_invokes = new ArrayList<>();
 
     public Service() {
     }

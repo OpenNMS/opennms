@@ -660,7 +660,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                     synchronized (domain) {
                         domain.clearTopologyForBridge(curNodeId);
                         domain.removeBridge(curNodeId);
-                        m_linkd.getQueryManager().store(domain,now);
+                        m_linkd.getQueryManager().store(domain);
+                        m_linkd.getQueryManager().reconcileBridgeTopology(domain, now);
                     }
                     clean=true;
                 }
@@ -712,7 +713,8 @@ public class NodeDiscoveryBridgeTopology extends NodeDiscovery {
                 calculate();
             }
             LOG.info("run: node: [{}], saving Topology.", getNodeId());
-            m_linkd.getQueryManager().store(m_domain, now);
+            m_linkd.getQueryManager().store(m_domain);
+            m_linkd.getQueryManager().reconcileBridgeTopology(m_domain, now);
             LOG.info("run: node: [{}], saved Topology.", getNodeId());
 
             for (Integer curNode : nodeswithupdatedbftonbroadcastdomain) {

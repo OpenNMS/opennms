@@ -1,0 +1,184 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[ga-events-event-configuration]]
+=== Event Configuration
+The back-end configuration surrounding events is broken into two areas: the configuration of `Eventd` itself, and the configuration of all types of events known to {opennms-product-name}.
+
+==== The eventd-configuration.xml file
+
+The overall behavior of `Eventd` is configured in the file `OPENNMS_HOME/etc/eventd-configuration.xml`.
+This file does not need to be changed in most installations.
+The configurable items include:
+
+TCPAddress::
+    The IP address to which the `Eventd` XML/TCP listener will bind. Defaults to `127.0.0.1`.
+TCPPort::
+    The TCP port number on `TCPAddress` to which the `Eventd` XML/TCP listener will bind. Defaults to `5817`.
+UDPAddress::
+    The IP address to which the `Eventd` XML/UDP listener will bind. Defaults to `127.0.0.1`.
+UDPPort::
+    The UDP port number on `TCPAddress` to which the `Eventd` XML/UDP listener will bind. Defaults to `5817`.
+receivers::
+    The number of threads allocated to service the event intake work done by `Eventd`.
+queueLength::
+    The maximum number of events that may be queued for processing. Additional events will be dropped. Defaults to unlimited.
+getNextEventID::
+    An SQL query statement used to retrieve the ID of the next new event. Changing this setting is not recommended.
+socketSoTimeoutRequired::
+    Whether to set a timeout value on the `Eventd` receiver socket.
+socketSoTimeoutPeriod::
+    The socket timeout, in milliseconds, to set if `socketSoTimeoutRequired` is set to `yes`.
+logEventSummaries::
+    Whether to log a simple (terse) summary of every event at level `INFO`. Useful when troubleshooting event processing on busy systems where `DEBUG` logging is not practical.
+
+
+==== The eventconf.xml file and its tributaries
+
+The set of known events is configured in `OPENNMS_HOME/etc/eventconf.xml`.
+This file opens with a `<global>` element, whose `<security>` child element defines which event fields may not be overridden in the body of an event submitted via any `Eventd` listener.
+This mechanism stops a mailicious actor from, for instance, sending an event whose `operator-action` field amounts to a phishing attack.
+
+After the `<global>` element, this file consists of a series of `<event-file>` elements.
+The content of each `<event-file>` element specifies the path of a *tributary file* whose contents will be read and incorporated into the event configuration.
+These paths are resolved relative to the `OPENNMS_HOME/etc` directory; absolute paths are not allowed.
+
+Each *tributary file* contains a top-level `<events>` element with one or more `<event>` child elements.
+Consider the following event definition:
+
+[source,xml]
+----
+   <event>
+      <uei>uei.opennms.org/nodes/nodeLostService</uei>
+      <event-label>OpenNMS-defined node event: nodeLostService</event-label>
+      <descr>&lt;p>A %service% outage was identified on interface
+            %interface% because of the following condition: %parm[eventReason]%.&lt;/p> &lt;p>
+            A new Outage record has been created and service level
+            availability calculations will be impacted until this outage is
+            resolved.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+            %service% outage identified on interface %interface%.
+        </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="1" auto-clean="false"/>
+   </event>
+----
+
+Every event definition has this same basic structure.
+See <<ga-events-anatomy-of-an-event,Anatomy of an Event>> for a discussion of the structural elements.
+
+.A word about severities
+When setting severities of events, it's important to consider each event in the context of your infrastructure as a whole.
+Events whose severity is critical at the zoomed-in level of a single device may not merit a `Critical` severity in the zoomed-out view of your entire enterprise.
+Since an event with `Critical` severity can never have its alarms escalated, this severity level should usually be reserved for events that unequivocally indicate a truly critical impact to the business.
+Rock legend Nigel Tufnel offered https://www.youtube.com/watch?v=4xgx4k83zzc[some wisdom] on the subject.
+
+.Replacement tokens
+Various tokens can be included in the description, log message, operator instruction and automatic actions for each event.
+These tokens will be replaced by values from the current event when the text for the event is constructed.
+Not all events will have values for all tokens, and some refer specifically to information available only in events derived from SNMP traps.
+
+`%eventid%`::
+    The event's numeric database ID
+`%uei%`::
+    The Universal Event Identifier for the event.
+`%source%`::
+    The source of the event (which {opennms-product-name} service daemon created it).
+`%time%`::
+    The time of the event.
+`%dpname%`::
+    The ID of the Minion (formerly distributed poller) that the event was received on.
+`%nodeid%`::
+    The numeric node ID of the device that caused the event, if any.
+`%nodelabel%`::
+    The node label for the node given in `%nodeid%` if available.
+`%host%`::
+`%interface%`::
+    The IP interface associated with the event, if any.
+`%interfaceresolv%`::
+    Does a reverse lookup on the `%interface%` and returns its name if available.
+`%service%`::
+    The service associated with the event, if any.
+`%severity%`::
+    The severity of the event.
+`%snmphost%`::
+    The host of the SNMP agent that generated the event.
+`%id%`::
+    The SNMP Enterprise OID for the event.
+`%idtext%`::
+    The decoded (human-readable) SNMP Enterprise OID for the event (?).
+`%ifalias%`::
+    The interface' SNMP ifAlias.
+`%generic%`::
+    The Generic trap-type number for the event.
+`%specific%`::
+    The Specific trap-type number for the event.
+`%community%`::
+    The community string for the trap.
+`%version%`::
+    The SNMP version of the trap.
+`%snmp%`::
+    The SNMP information associated with the event.
+`%operinstruct%`::
+    The operator instructions for the event.
+`%mouseovertext%`::
+    The mouse over text for the event.
+
+.Parameter tokens
+Many events carry additional information in *parameters* (see <<ga-events-anatomy-of-an-event,Anatomy of an Event>>).
+These parameters may start life as SNMP trap *variable bindings*, or *varbinds* for short.
+You can access event parameters using the `parm` replacement token, which takes several forms:
+
+`%parm[all]%`::
+    Space-separated list of all parameter values in the form `parmName1="parmValue1" parmName2="parmValue2"` and so on.
+`%parm[values-all]%`::
+    Space-separated list of all parameter values (without their names) associated with the event.
+`%parm[names-all]%`::
+    Space-separated list of all parameter names (without their values) associated with the event.
+`%parm[<name>]%`::
+    Will return the value of the parameter named `<name>` if it exists.
+`%parm[##]%`::
+    Will return the total number of parameters as an integer.
+`%parm[#<num>]%`::
+    Will return the value of parameter number `<num>` (one-indexed).
+`%parm[name-#<num>]%`::
+    Will return the name of parameter number `<num>` (one-indexed).
+
+.The structure of the `eventconf.xml` tributary files
+The ordering of event definitions is very important, as an incoming event is matched against them in order.
+It is possible and often useful to have several event definitions which could match variant forms of a given event, for example based on the values of SNMP trap variable bindings.
+
+The tributary files included via the `<event-file>` tag have been broken up by vendor. When {opennms-product-name} starts, each tributary file is loaded in order.
+The ordering of events inside each tributary file is also preserved.
+
+The tributary files listed at the very end of `eventconf.xml` contain catch-all event definitions.
+When slotting your own event definitions, take care not to place them below these catch-all files; otherwise your definitions will be effectively unreachable.
+
+.A few tips
+* To save memory and shorten startup times, you may wish to remove event definition files that you know you do not need.
+* If you need to customize some events in one of the default tributary files, you may wish to make a copy of the file containing only the customized events, and slot the copy above the original; this practice will make it easier to maintain your customizations in case the default file changes in a future release of {opennms-product-name}.
+
+==== Reloading the event configuration
+
+After making manual changes to `OPENNMS_HOME/etc/eventconf.xml` or any of its tributary files, you can trigger a reload of the event configuration by issuing the following command on the {opennms-product-name} server:
+
+[source,sh]
+----
+OPENNMS_HOME/bin/send-event.pl uei.opennms.org/internal/reloadDaemonConfig -p 'daemonName Eventd'
+----
+
+=== Debugging
+
+When debugging events, it may be helpful to lower the minimum severity at which `Eventd` will log from the default level of `WARN`.
+To change this setting, edit `OPENNMS_HOME/etc/log4j2.xml` and locate the following line:
+
+[source,xml]
+----
+        <KeyValuePair key="eventd"               value="WARN" />
+----
+
+Changes to `log42.xml` will be take effect within 60 seconds with no extra action needed.
+At level `DEBUG`, `Eventd` will log a verbose description of every event it handles to `OPENNMS_HOME/logs/eventd.log`.
+On busy systems, this setting may create so much noise as to be impractical.
+In these cases, you can get terse event summaries by setting `Eventd` to log at level `INFO` and setting `logEventSummaries="yes"` in `OPENNMS_HOME/etc/eventd-configuration.xml`.
+Note that changes to `eventd-configuration.xml` require a full restart of {opennms-product-name}.

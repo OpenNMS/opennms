@@ -71,7 +71,7 @@ public class NodeOutagesController extends AbstractController implements Initial
         Outage[] outages = new Outage[0];
 
         if (nodeId > 0) {
-            List<Filter> filters = new ArrayList<Filter>();
+            List<Filter> filters = new ArrayList<>();
 
             filters.add(new NodeFilter(nodeId, getServletContext()));
             filters.add(new RecentOutagesFilter());

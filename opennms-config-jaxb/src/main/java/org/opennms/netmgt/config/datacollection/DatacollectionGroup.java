@@ -64,19 +64,19 @@ public class DatacollectionGroup implements Serializable {
      * Custom resource types
      */
     @XmlElement(name="resourceType")
-    private List<ResourceType> m_resourceTypes = new ArrayList<ResourceType>();
+    private List<ResourceType> m_resourceTypes = new ArrayList<>();
 
     /**
      * a MIB object group
      */
     @XmlElement(name="group")
-    private List<Group> m_groups = new ArrayList<Group>();
+    private List<Group> m_groups = new ArrayList<>();
 
     /**
      * list of system definitions
      */
     @XmlElement(name="systemDef")
-    private List<SystemDef> m_systemDefs = new ArrayList<SystemDef>();
+    private List<SystemDef> m_systemDefs = new ArrayList<>();
 
 
     public DatacollectionGroup() {

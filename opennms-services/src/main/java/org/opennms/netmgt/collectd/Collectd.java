@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -53,6 +53,8 @@ import org.opennms.netmgt.collection.api.LocationAwareCollectorClient;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceCollector;
 import org.opennms.netmgt.collection.api.ServiceCollectorRegistry;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
+import org.opennms.netmgt.collection.core.DefaultCollectdInstrumentation;
 import org.opennms.netmgt.config.CollectdConfigFactory;
 import org.opennms.netmgt.config.DataCollectionConfigFactory;
 import org.opennms.netmgt.config.SnmpEventInfo;
@@ -222,12 +224,21 @@ public class Collectd extends AbstractServiceDaemon implements
         getScheduler().schedule(0, ifScheduler());
 
         installMessageSelectors();
+
+        // since thresholding is triggered from collectd now, make sure it is initialized properly now
+        // see: https://issues.opennms.org/browse/NMS-9064
+        try {
+            ThreshdConfigFactory.init();
+            ThresholdingConfigFactory.init();
+        } catch (final Exception e) {
+            throw new RuntimeException("Unable to initialize thresholding.", e);
+        }
     }
 
     private void installMessageSelectors() {
         // Add the EventListeners for the UEIs in which this service is
         // interested
-        List<String> ueiList = new ArrayList<String>();
+        List<String> ueiList = new ArrayList<>();
 
         // nodeGainedService
         ueiList.add(EventConstants.NODE_GAINED_SERVICE_EVENT_UEI);
@@ -301,16 +312,12 @@ public class Collectd extends AbstractServiceDaemon implements
 
             @Override
             public void run() {
-                Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            scheduleExistingInterfaces();
-                        } finally {
-                            setSchedulingCompleted(true);
-                        }
+                Logging.withPrefix(LOG4J_CATEGORY, () -> {
+                    try {
+                        scheduleExistingInterfaces();
+                    } finally {
+                        setSchedulingCompleted(true);
                     }
-                    
                 });
             }
         };
@@ -318,17 +325,14 @@ public class Collectd extends AbstractServiceDaemon implements
     }
 
     private void createScheduler() {
-        Logging.withPrefix(LOG4J_CATEGORY, new Runnable() {
-            @Override
-            public void run() {
-                // Create a scheduler
-                try {
-                    LOG.debug("init: Creating collectd scheduler");
-                    setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
-                } catch (final RuntimeException e) {
-                    LOG.error("init: Failed to create collectd scheduler", e);
-                    throw e;
-                }
+        Logging.withPrefix(LOG4J_CATEGORY, () -> {
+            // Create a scheduler
+            try {
+                LOG.debug("init: Creating collectd scheduler");
+                setScheduler(new LegacyScheduler("Collectd", m_collectdConfigFactory.getCollectdConfig().getThreads()));
+            } catch (final RuntimeException e) {
+                LOG.error("init: Failed to create collectd scheduler", e);
+                throw e;
             }
         });
     }
@@ -569,7 +573,7 @@ public class Collectd extends AbstractServiceDaemon implements
      * @return a {@link java.util.Collection} object.
      */
     public Collection<CollectionSpecification> getSpecificationsForInterface(OnmsIpInterface iface, String svcName) {
-        Collection<CollectionSpecification> matchingPkgs = new LinkedList<CollectionSpecification>();
+        Collection<CollectionSpecification> matchingPkgs = new LinkedList<>();
 
         CollectdConfiguration collectdConfig = m_collectdConfigFactory.getCollectdConfig();
 
@@ -669,7 +673,7 @@ public class Collectd extends AbstractServiceDaemon implements
         m_schedulingCompletedFlag.setSchedulingCompleted(schedulingCompleted);
     }
 
-    private void refreshServicePackages() {
+    private void refreshServicePackages() throws CollectionInitializationException {
     	for (CollectableService thisService : m_collectableServices) {
             thisService.refreshPackage(m_collectdConfigFactory);
         }
@@ -690,23 +694,14 @@ public class Collectd extends AbstractServiceDaemon implements
      */
     @Override
     public void onEvent(final Event event) {
-
-        Logging.withPrefix(getName(), new Runnable() {
-
-            @Override
-            public void run() {
-                m_transTemplate.execute(new TransactionCallbackWithoutResult() {
-
-                    @Override
-                    public void doInTransactionWithoutResult(TransactionStatus status) {
-                        onEventInTransaction(event);
-                    }
-
-                });
-            }
-
+        Logging.withPrefix(getName(), () -> {
+            m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(TransactionStatus status) {
+                    onEventInTransaction(event);
+                }
+            });
         });
-
     }
 
     private void onEventInTransaction(Event event) {
@@ -1006,7 +1001,7 @@ public class Collectd extends AbstractServiceDaemon implements
 
     private void rebuildScheduler() {
         // Register new collectors if necessary
-        Set<String> configuredCollectors = new HashSet<String>();
+        Set<String> configuredCollectors = new HashSet<>();
         for (Collector collector : m_collectdConfigFactory.getCollectdConfig().getCollectors()) {
             String svcName = collector.getService();
             configuredCollectors.add(svcName);
@@ -1023,7 +1018,7 @@ public class Collectd extends AbstractServiceDaemon implements
             }
         }
         // Removing unused collectors if necessary
-        List<String> blackList = new ArrayList<String>();
+        List<String> blackList = new ArrayList<>();
         for (String collectorName : getCollectorNames()) {
             if (!configuredCollectors.contains(collectorName)) {
                 blackList.add(collectorName);

@@ -51,7 +51,8 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.core.CollectionSpecification;
+import org.opennms.netmgt.collection.test.api.CollectorTestUtils;
 import org.opennms.netmgt.config.SnmpPeerFactory;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -116,7 +117,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
     private CollectionSpecification m_collectionSpecification;
 
-    private CollectionAgent m_collectionAgent;
+    private SnmpCollectionAgent m_collectionAgent;
 
 	private SnmpAgentConfig m_agentConfig;
 
@@ -178,7 +179,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
         collector.initialize();
 
         m_collectionSpecification = CollectorTestUtils.createCollectionSpec("SNMP", collector, "default");
-        m_collectionAgent = DefaultCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
+        m_collectionAgent = DefaultSnmpCollectionAgent.create(iface.getId(), m_ipInterfaceDao, m_transactionManager);
     }
 
     @After

@@ -34,6 +34,8 @@ package org.opennms.netmgt.xml.event;
 
 import java.io.Serializable;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -59,12 +61,15 @@ public class Log implements Serializable {
      * Field _header.
      */
     @XmlElement(name="header", required=false)
+    @Valid
     private org.opennms.netmgt.xml.event.Header _header;
 
     /**
      * Field _events.
      */
     @XmlElement(name="events", required=true)
+    @Size(min=1)
+    @Valid
     private org.opennms.netmgt.xml.event.Events _events;
 
 

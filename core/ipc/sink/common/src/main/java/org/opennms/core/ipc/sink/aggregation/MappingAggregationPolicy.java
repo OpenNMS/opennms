@@ -37,7 +37,7 @@ import org.opennms.core.ipc.sink.api.Message;
  *
  * @author jwhite
  */
-public abstract class MappingAggregationPolicy<S, T extends Message> implements AggregationPolicy<S, T> {
+public abstract class MappingAggregationPolicy<S, T extends Message> implements AggregationPolicy<S, T, T> {
 
     public abstract T map(S message);
 
@@ -59,6 +59,11 @@ public abstract class MappingAggregationPolicy<S, T extends Message> implements 
     @Override
     public T aggregate(T oldBucket, S newMessage) {
         return map(newMessage);
+    }
+
+    @Override
+    public T build(T accumulator) {
+        return accumulator;
     }
 
 }

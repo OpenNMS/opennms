@@ -37,7 +37,7 @@ public class Bridge {
     final Integer m_id;
     Integer m_rootPort;
     boolean m_isRootBridge=false;
-    List<BridgeElement> m_elements = new ArrayList<BridgeElement>();
+    List<BridgeElement> m_elements = new ArrayList<>();
 
     public Bridge(Integer id) {
         super();

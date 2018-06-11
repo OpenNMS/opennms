@@ -67,8 +67,9 @@ public class CollectorThresholdingSet extends ThresholdingSet {
      * @param serviceName a {@link java.lang.String} object.
      * @param repository a {@link org.opennms.netmgt.rrd.RrdRepository} object.
      * @param svcParams a {@link org.opennms.netmgt.collection.api.ServiceParameters} object.
+     * @throws ThresholdInitializationException 
      */
-    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) {
+    public CollectorThresholdingSet(int nodeId, String hostAddress, String serviceName, RrdRepository repository, ServiceParameters svcParams, ResourceStorageDao resourceStorageDao) throws ThresholdInitializationException {
         super(nodeId, hostAddress, serviceName, repository);
         m_resourceStorageDao = resourceStorageDao;
         String storeByIfAliasString = svcParams.getStoreByIfAlias();
@@ -106,7 +107,7 @@ public class CollectorThresholdingSet extends ThresholdingSet {
     public List<Event> applyThresholds(CollectionResource resource, Map<String, CollectionAttribute> attributesMap, Date collectionTimestamp) {
         if (!isCollectionEnabled(resource)) {
             LOG.debug("applyThresholds: Ignoring resource {} because data collection is disabled for this resource.", resource);
-            return new LinkedList<Event>();
+            return new LinkedList<>();
         }
 		CollectionResourceWrapper resourceWrapper = new CollectionResourceWrapper(
 				collectionTimestamp, m_nodeId, m_hostAddress, m_serviceName,

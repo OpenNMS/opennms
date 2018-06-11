@@ -247,7 +247,7 @@ public class PassiveStatusKeeperIT {
     }
 
     private Event createPassiveStatusEvent(String nodeLabel, String ipAddr, String serviceName, String status) {
-        final List<Parm> parms = new ArrayList<Parm>();
+        final List<Parm> parms = new ArrayList<>();
 
         if(nodeLabel != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_NODE_LABEL, nodeLabel));
         if(ipAddr != null) parms.add(buildParm(EventConstants.PARM_PASSIVE_IPADDR, ipAddr));

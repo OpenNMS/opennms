@@ -48,19 +48,19 @@ public class AmiConfigTest extends XmlTestNoCastor<AmiConfig> {
     public static Collection<Object[]> data() throws ParseException {
 
         Range range = new Range("10.0.0.0", "10.255.255.255");
-        List<Range> ranges = new ArrayList<Range>();
+        List<Range> ranges = new ArrayList<>();
         ranges.add(range);
 
-        List<String> specifics = new ArrayList<String>();
+        List<String> specifics = new ArrayList<>();
         specifics.add("192.168.1.1");
 
-        List<String> ipMatches = new ArrayList<String>();
+        List<String> ipMatches = new ArrayList<>();
         ipMatches.add("172.23.*.*");
 
         Definition definition = new Definition(9999, true, 1000, 3, "user",
                                                "pass", ranges, specifics,
                                                ipMatches);
-        List<Definition> definitions = new ArrayList<Definition>();
+        List<Definition> definitions = new ArrayList<>();
         definitions.add(definition);
 
         AmiConfig amiConfig = new AmiConfig(9998, false, 3000, 1, "admin",

@@ -124,7 +124,7 @@ public class MarqueeSelectHandler implements DragBehaviorHandler{
     public void onDragEnd(Element elem) {
         setMarqueeVisible(false);
 
-        final List<String> vertIds = new ArrayList<String>();
+        final List<String> vertIds = new ArrayList<>();
         m_svgTopologyMap.selectAllVertexElements().each(new Handler<GWTVertex>() {
 
             @Override

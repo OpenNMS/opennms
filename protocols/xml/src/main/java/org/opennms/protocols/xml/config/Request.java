@@ -52,11 +52,11 @@ public class Request implements Cloneable {
 
     /** The parameters. */
     @XmlElement(name="parameter")
-    private List<Parameter> parameters = new ArrayList<Parameter>();
+    private List<Parameter> parameters = new ArrayList<>();
 
     /** The headers. */
     @XmlElement(name="header")
-    private List<Header> headers = new ArrayList<Header>();
+    private List<Header> headers = new ArrayList<>();
 
     /** The content. */
     @XmlElement

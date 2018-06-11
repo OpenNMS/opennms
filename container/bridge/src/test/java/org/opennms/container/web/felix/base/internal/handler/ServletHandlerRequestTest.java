@@ -61,6 +61,13 @@ public class ServletHandlerRequestTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
             {
+                createRequest("/opennms/osgi", "/mib-compiler", null),
+                "/mib-compiler",
+                "/opennms/osgi",
+                "/mib-compiler",
+                null
+            },
+            {
                 createRequest("/opennms", "/mib-compiler", null),
                 "/mib-compiler",
                 "/opennms",
@@ -77,7 +84,7 @@ public class ServletHandlerRequestTest {
             {
                 createRequest("/opennms", "/osgi", "/mib-compiler/UIDL"),
                 "/mib-compiler",
-                "/opennms/osgi",
+                "/opennms",
                 "/mib-compiler",
                 "/UIDL"
             },

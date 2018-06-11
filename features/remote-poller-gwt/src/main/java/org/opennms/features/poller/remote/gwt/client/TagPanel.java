@@ -61,7 +61,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 public class TagPanel extends Composite implements Collection<String> {
 
-    private final List<String> m_delegate = new ArrayList<String>();
+    private final List<String> m_delegate = new ArrayList<>();
 
     interface Binder extends UiBinder<Widget, TagPanel> { }
     private static final Binder BINDER = GWT.create(Binder.class);
@@ -106,7 +106,7 @@ public class TagPanel extends Composite implements Collection<String> {
 
     public static class TagSelectedEvent extends GwtEvent<TagSelectedEventHandler>
     {
-        public static final Type<TagSelectedEventHandler> TYPE = new Type<TagSelectedEventHandler>();
+        public static final Type<TagSelectedEventHandler> TYPE = new Type<>();
 
         private final String m_tagName;
 
@@ -127,7 +127,7 @@ public class TagPanel extends Composite implements Collection<String> {
 
     public static class TagClearedEvent extends GwtEvent<TagClearedEventHandler>
     {
-        public static final Type<TagClearedEventHandler> TYPE = new Type<TagClearedEventHandler>();
+        public static final Type<TagClearedEventHandler> TYPE = new Type<>();
 
         public TagClearedEvent() {}
 
@@ -144,7 +144,7 @@ public class TagPanel extends Composite implements Collection<String> {
     
     public static class TagResizeEvent extends GwtEvent<TagResizeEventHandler>{
 
-        public static final Type<TagResizeEventHandler> TYPE = new Type<TagResizeEventHandler>();
+        public static final Type<TagResizeEventHandler> TYPE = new Type<>();
         @Override
         protected void dispatch(TagResizeEventHandler handler) {
             handler.onTagPanelResize();

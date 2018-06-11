@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -112,7 +112,6 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.poller.NetworkInterface;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.opennms.netmgt.snmp.InetAddrUtils;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -259,13 +258,13 @@ public class ThresholdingVisitorIT {
         PollOutagesConfigFactory.setInstance(new PollOutagesConfigFactory(new FileSystemResource(file)));
         PollOutagesConfigFactory.getInstance().afterPropertiesSet();
         initFactories("/threshd-configuration.xml","/test-thresholds.xml");
-        m_anticipatedEvents = new ArrayList<Event>();
+        m_anticipatedEvents = new ArrayList<>();
     };
     
     private void initFactories(String threshd, String thresholds) throws Exception {
         LOG.info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
+        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
     }
 
     @After
@@ -282,7 +281,7 @@ public class ThresholdingVisitorIT {
     }
 
     @Test
-    public void testCreateVisitor() {
+    public void testCreateVisitor() throws Exception {
         createVisitor();
     }
 
@@ -292,7 +291,7 @@ public class ThresholdingVisitorIT {
      * - test-thresholds.xml
      */
     @Test
-    public void testResourceGaugeData() {
+    public void testResourceGaugeData() throws Exception {
         addHighThresholdEvent(1, 10000, 5000, 15000, "node", "node", "freeMem", null, null);
         ThresholdingVisitor visitor = createVisitor();
         runGaugeDataTest(visitor, 15000);
@@ -596,7 +595,7 @@ public class ThresholdingVisitorIT {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         ServiceParameters svcParams = new ServiceParameters(params);
-        List<ThresholdingVisitor> visitors = new ArrayList<ThresholdingVisitor>();
+        List<ThresholdingVisitor> visitors = new ArrayList<>();
         for (int i=1; i<=5; i++) {
             String ipAddress = baseIpAddress + i;
             ThresholdingVisitor visitor = ThresholdingVisitor.create(i, ipAddress, "SNMP", getRepository(), svcParams, m_resourceStorageDao);
@@ -1073,7 +1072,7 @@ public class ThresholdingVisitorIT {
         runTestForBug3554();
         
         // Validate FavoriteFilterDao Calls
-        HashSet<String> filters = new HashSet<String>();
+        HashSet<String> filters = new HashSet<>();
         for (org.opennms.netmgt.config.threshd.Package pkg : ThreshdConfigFactory.getInstance().getConfiguration().getPackages()) {
             filters.add(pkg.getFilter().getContent().orElse(null));
         }
@@ -1140,7 +1139,7 @@ public class ThresholdingVisitorIT {
     }
 
     private void runTestForBug3554() throws Exception {
-        MockLogAppender.resetEvents();
+        MockLogAppender.resetState();
         System.err.println("----------------------------------------------------------------------------------- begin test");
 
         String baseIpAddress = "10.0.0.";
@@ -1655,13 +1654,13 @@ public class ThresholdingVisitorIT {
         verifyEvents(0);
     }
 
-    private ThresholdingVisitor createVisitor() {
+    private ThresholdingVisitor createVisitor() throws ThresholdInitializationException {
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("thresholding-enabled", "true");
         return createVisitor(params);
     }
 
-    private ThresholdingVisitor createVisitor(Map<String,Object> params) {
+    private ThresholdingVisitor createVisitor(Map<String,Object> params) throws ThresholdInitializationException {
         ServiceParameters svcParams = new ServiceParameters(params);
         ThresholdingVisitor visitor = ThresholdingVisitor.create(1, "127.0.0.1", "SNMP", getRepository(), svcParams, m_resourceStorageDao);
         assertNotNull(visitor);
@@ -1791,7 +1790,6 @@ public class ThresholdingVisitorIT {
         EasyMock.expect(agent.getHostAddress()).andReturn("127.0.0.1").anyTimes();
         EasyMock.expect(agent.getSnmpInterfaceInfo((IfResourceType)EasyMock.anyObject())).andReturn(new HashSet<IfInfo>()).anyTimes();
         EasyMock.expect(agent.getAttributeNames()).andReturn(Collections.emptySet()).anyTimes();
-        EasyMock.expect(agent.getType()).andReturn(NetworkInterface.TYPE_INET).anyTimes();
         EasyMock.expect(agent.getAddress()).andReturn(InetAddrUtils.getLocalHostAddress()).anyTimes();
         EasyMock.expect(agent.isStoreByForeignSource()).andReturn(false).anyTimes();
         EasyMock.expect(agent.getNodeLabel()).andReturn("test").anyTimes();

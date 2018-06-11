@@ -319,7 +319,7 @@ doStart(){
 	###########################################################################
 	if [ $TEST -gt 0 ]; then
 		echo "- enabling JPDA debugging on port 8001" >&2
-		JPDA="-Xdebug -Xnoagent -Djava.compiler=none -Xrunjdwp:transport=dt_socket,server=y,address=8001,suspend=n"
+		JPDA="-agentlib:jdwp=transport=dt_socket,server=y,address=8001,suspend=n"
 	fi
 
 	# See: http://www.khelekore.org/jmp/tijmp/

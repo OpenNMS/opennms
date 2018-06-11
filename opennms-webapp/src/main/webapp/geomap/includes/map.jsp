@@ -52,10 +52,12 @@
   final String mapId = getParameter(request, "mapId", "map");
 %>
 
-<link rel="stylesheet" href="<%= baseHref %>css/geomap.css" />
-<link rel="stylesheet" href="<%= baseHref %>lib/leaflet/dist/leaflet.css" />
-<link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.css"/>
-<link rel="stylesheet" href="<%= baseHref %>lib/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="leaflet-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+  <jsp:param name="asset" value="geomap-js" />
+</jsp:include>
 
 <div class="geomap" style="height: <%= getParameter(request, "height", "400px")%>">
   <div style="width: 100%; height:100%" id="<%= mapId %>"></div>
@@ -70,14 +72,14 @@
       Severity: <span class="severity {SEVERITY_LABEL}"><a href="<%= baseHref %>alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D{NODE_ID}" target="_blank">{SEVERITY_LABEL}</a></span> <br/>
       Description: {DESCRIPTION} <br/>
       Maint.&nbsp;Contract: {MAINT_CONTRACT} <br/>
-      IP Address:  <br/>
+      IP Address: {IP_ADDRESS} <br/>
       Categories: {CATEGORIES}
     </p>
   </div>
 
   <!-- Template to build the popup for each group cluster -->
   <div id="multi-popup" class="node-marker-multiple" style="display:none">
-    <h4># of nodes: {NUMBER_NODES} ({NUMBER_UNACKED} Unacknowledges Alarms)</h4>
+    <h4># of nodes: {NUMBER_NODES} ({NUMBER_UNACKED} Unacknowledged Alarms)</h4>
     <p>
       <a href="<%= baseHref %>topology?provider=Enhanced+Linkd&focus-vertices={NODE_IDS}" target="_blank">View in Topology Map</a>
     </p>
@@ -101,20 +103,18 @@
         </td>
       </tr>
     </table>
-
-    <script type="text/javascript">
-        require(['jquery', 'geomap'], function($, Geomap) {
-            $("<%= mapId%>").ready(function() {
-                Geomap.render({
-                    baseHref: "<%= baseHref %>",
-                    mapId: "<%= mapId %>",
-                    hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
-                    strategy: "<%= getParameter(request, "strategy") %>" ,
-                    severity: "<%= getParameter(request, "severity") %>"
-                })
-            });
-        });
-    </script>
   </div>
 </div>
+
+<script type="text/javascript">
+$('<%= mapId %>').ready(function() {
+    geomap.render({
+        baseHref: "<%= baseHref %>",
+        mapId: "<%= mapId %>",
+        hideControlsOnStartup: <%= getParameter(request, "hideControlsOnStartup") %> ,
+        strategy: "<%= getParameter(request, "strategy") %>" ,
+        severity: "<%= getParameter(request, "severity") %>"
+    })
+});
+</script>
 

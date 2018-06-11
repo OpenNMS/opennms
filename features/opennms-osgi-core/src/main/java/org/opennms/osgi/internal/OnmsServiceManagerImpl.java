@@ -89,7 +89,7 @@ public class OnmsServiceManagerImpl implements OnmsServiceManager {
         if (additionalProperties == null) {
             additionalProperties = new Hashtable<String,Object>();
         }
-        List<T> services = new ArrayList<T>();
+        List<T> services = new ArrayList<>();
         try {
             Collection<ServiceReference<T>> serviceReferences = bundleContext.getServiceReferences(clazz, getFilter(applicationContext, additionalProperties));
             if (serviceReferences != null) {

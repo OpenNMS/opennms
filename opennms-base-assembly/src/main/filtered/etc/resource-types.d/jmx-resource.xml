@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<resource-types>
+    <resourceType name="kafkaLag" label="Kafka Lag"
+                  resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="name" />
+      </storageStrategy>
+    </resourceType>
+
+    <resourceType name="kafkaIngestionRate" label="Kafka Ingestion Rate"
+                  resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
+		   <parameter key="sibling-column-name" value="topic" />
+      </storageStrategy>
+    </resourceType>
+
+</resource-types>

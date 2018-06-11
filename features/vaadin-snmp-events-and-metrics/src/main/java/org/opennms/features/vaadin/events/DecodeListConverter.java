@@ -53,7 +53,7 @@ public class DecodeListConverter implements Converter<String, ArrayList<Decode>>
         if (fieldValue == null) {
             return null;
         }
-        ArrayList<Decode> list = new ArrayList<Decode>();
+        ArrayList<Decode> list = new ArrayList<>();
         for (String s : fieldValue.split(",")) {
             String[] parts = s.split("=");
             if (parts.length == 2) {
@@ -74,7 +74,7 @@ public class DecodeListConverter implements Converter<String, ArrayList<Decode>>
         if (propertyValue == null) {
             return null;
         }
-        final List<String> values = new ArrayList<String>();
+        final List<String> values = new ArrayList<>();
         for (Decode d : propertyValue) {
             values.add(d.getVarbindvalue() + '=' + d.getVarbinddecodedstring());
         }

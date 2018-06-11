@@ -1,0 +1,94 @@
+
+==== Netflow v9 UDP Listener
+
+This UDP based listener can be used to open a UDP socket to deal with incoming Netflow v9 packets.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.flow.netflow9.UdpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the Netflow v9 UDP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the UDP socket                        | optional | `0.0.0.0`
+| `port`            | UDP port number on which to listen                                | optional | `4738`
+| `maxPacketSize`   | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+| `templateTimeout` | Number of milliseconds after which templates timeout              | optional | `1800000` (30 minutes)
+|===
+
+==== IPFIX UDP Listener
+
+This UDP based listener can be used to open a UDP socket to deal with incoming IPFIX packets.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.flow.ipfix.UdpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the IPFIX UDP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the UDP socket                        | optional | `0.0.0.0`
+| `port`            | UDP port number on which to listen                                | optional | `4738`
+| `maxPacketSize`   | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+| `templateTimeout` | Number of milliseconds after which templates timeout              | optional | `1800000` (30 minutes)
+|===
+
+==== IPFIX TCP Listener
+
+This TCP based listener can be used to open a TCP socket to deal with IPFIX sessions.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.flow.ipfix.TcpListener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the IPFIX TCP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the TCP socket                        | optional | `0.0.0.0`
+| `port`            | TCP port number on which to listen                                | optional | `4739`
+|===
+
+
+==== sFlow UDP Listener
+
+This UDP based listener can be used to open a UDP socket to deal with incoming sFlow packets.
+
+===== Facts
+
+[options="autowidth"]
+|===
+| Class Name          | `org.opennms.netmgt.telemetry.listeners.sflow.Listener`
+| Supported on Minion | `Yes`
+|===
+
+===== Parameters
+
+.Listener specific parameters for the sFlow UDP listener
+[options="header, autowidth"]
+|===
+| Parameter         | Description                                                       | Required | Default value
+| `host`            | IP address on which to bind the UDP socket                        | optional | `0.0.0.0`
+| `port`            | UDP port number on which to listen                                | optional | `6343`
+| `maxPacketSize`   | Maximum packet size in bytes (anything greater will be truncated) | optional | `8096`
+|===

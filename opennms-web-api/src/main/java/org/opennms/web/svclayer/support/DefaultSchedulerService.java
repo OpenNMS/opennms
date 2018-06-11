@@ -100,7 +100,7 @@ public class DefaultSchedulerService implements InitializingBean, SchedulerServi
     @Override
     public List<TriggerDescription> getTriggerDescriptions() {
 
-        List<TriggerDescription> triggerDescriptions = new ArrayList<TriggerDescription>();
+        List<TriggerDescription> triggerDescriptions = new ArrayList<>();
 
         try {
             Set<TriggerKey> triggerKeys = m_scheduler.getTriggerKeys(GroupMatcher.<TriggerKey>groupEquals(m_triggerGroup));

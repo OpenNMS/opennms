@@ -30,12 +30,14 @@ package org.opennms.web.rest.v1;
 
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -59,6 +61,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.base.Strings;
 
 @Component("assetRecordResource")
 @Path("assetRecord")
@@ -92,7 +96,6 @@ public class AssetRecordResource extends OnmsRestService {
         }
         return getAssetRecord(node);
     }
-    
     /**
      * <p>updateAssetRecord</p>
      *
@@ -102,7 +105,9 @@ public class AssetRecordResource extends OnmsRestService {
      */
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria, final MultivaluedMapImpl params) {
+    public Response updateAssetRecord(@PathParam("nodeCriteria") final String nodeCriteria
+            , @Context final HttpServletRequest request
+            , final MultivaluedMapImpl params) {
         OnmsNode node = m_nodeDao.get(nodeCriteria);
         if (node == null) {
             throw getException(Status.BAD_REQUEST, "updateAssetRecord: Can't find node " + nodeCriteria);
@@ -129,7 +134,10 @@ public class AssetRecordResource extends OnmsRestService {
         }
         if (modified) {
             LOG.debug("updateAssetRecord: assetRecord {} updated", assetRecord);
-            m_assetRecordDao.saveOrUpdate(assetRecord);
+            assetRecord.setLastModifiedBy(Strings.nullToEmpty(request.getRemoteUser()));
+            assetRecord.setLastModifiedDate(new Date());
+            node.setAssetRecord(assetRecord);
+            m_nodeDao.saveOrUpdate(node);
             try {
                 sendEvent(EventConstants.ASSET_INFO_CHANGED_EVENT_UEI, node.getId());
             } catch (EventProxyException e) {
@@ -144,7 +152,6 @@ public class AssetRecordResource extends OnmsRestService {
     private static OnmsAssetRecord getAssetRecord(OnmsNode node) {
         return node.getAssetRecord();
     }
-    
     
     private void sendEvent(String uei, int nodeId) throws EventProxyException {
         EventBuilder bldr = new EventBuilder(uei, "ReST");

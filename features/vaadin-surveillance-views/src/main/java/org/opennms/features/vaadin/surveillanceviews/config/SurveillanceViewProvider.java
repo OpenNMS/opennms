@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,11 +30,10 @@ package org.opennms.features.vaadin.surveillanceviews.config;
 import java.io.File;
 import java.io.IOException;
 
-import javax.xml.bind.JAXB;
-
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.features.vaadin.surveillanceviews.model.SurveillanceViewConfiguration;
-import org.opennms.features.vaadin.surveillanceviews.model.View;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration;
+import org.opennms.netmgt.config.surveillanceViews.View;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,7 +87,13 @@ public class SurveillanceViewProvider {
             load();
         }
 
-        JAXB.marshal(m_surveillanceViewConfiguration, m_cfgFile);
+        try {
+            JaxbUtils.marshal(m_surveillanceViewConfiguration, m_cfgFile);
+        } catch (final IOException e) {
+            final String filename = ConfigFileConstants.getFileName(ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME);
+            LOG.error("Unable to save {}", filename, e);
+            throw new IllegalStateException("Unable to save " + filename, e);
+        }
     }
 
     /**
@@ -100,7 +105,7 @@ public class SurveillanceViewProvider {
             try {
                 m_cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME);
             } catch (final IOException e) {
-                LOG.error("Unable to load {}", ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME);
+                LOG.error("Unable to load {}", ConfigFileConstants.getFileName(ConfigFileConstants.SURVEILLANCE_VIEWS_FILE_NAME));
                 m_cfgFile = new File(System.getProperty("opennms.home") + File.separator + "etc" + File.separator + "surveillance-views.xml");
             }
         }
@@ -109,7 +114,7 @@ public class SurveillanceViewProvider {
             LOG.warn("Surveillance view configuration {} does not exist!", m_cfgFile);
             m_surveillanceViewConfiguration = new SurveillanceViewConfiguration();
         } else {
-            m_surveillanceViewConfiguration = JAXB.unmarshal(m_cfgFile, SurveillanceViewConfiguration.class);
+            m_surveillanceViewConfiguration = JaxbUtils.unmarshal(SurveillanceViewConfiguration.class, m_cfgFile);
         }
         LOG.debug("Surveillance view configuration loaded: {}", m_surveillanceViewConfiguration);
     }

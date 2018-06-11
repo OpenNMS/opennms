@@ -91,7 +91,7 @@ public final class GWTGraph extends JavaScriptObject {
     }
 
     private Integer[] findEdgeIndices(GWTVertex vertex) {
-        List<Integer> indexArray = new ArrayList<Integer>();
+        List<Integer> indexArray = new ArrayList<>();
         
         for(int i = 0; i < getEdges().length(); i++) {
             GWTEdge edge = getEdges().get(i);

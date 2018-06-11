@@ -128,7 +128,7 @@ public class AnnotationBasedEventListenerAdapterTest {
         m_adapter.setAnnotatedListener(m_annotatedListener);
         m_adapter.setEventSubscriptionService(m_eventIpcMgr);
         
-        m_subscriptions = new HashSet<String>();
+        m_subscriptions = new HashSet<>();
         
         Collections.addAll(m_subscriptions, 
                 EventConstants.NODE_DOWN_EVENT_UEI, 

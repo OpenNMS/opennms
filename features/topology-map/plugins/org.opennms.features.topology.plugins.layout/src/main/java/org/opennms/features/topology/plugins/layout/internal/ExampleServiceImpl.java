@@ -45,7 +45,7 @@ public final class ExampleServiceImpl
     @Override
     public String scramble( String text )
     {
-        List<Character> charList = new ArrayList<Character>();
+        List<Character> charList = new ArrayList<>();
 
         char[] textChars = text.toCharArray();
         for( int i = 0; i < textChars.length; i++ )

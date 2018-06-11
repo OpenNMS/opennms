@@ -48,7 +48,7 @@ public class StatusSection {
 	 */
 	public StatusSection(){
 		
-		m_categorylist = new ArrayList<StatusCategory>();
+		m_categorylist = new ArrayList<>();
 		
 	}
 	

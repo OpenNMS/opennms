@@ -86,7 +86,7 @@ public class DataManager implements MapRemoteEventHandler {
     }
 
     public List<String> getAllTags() {
-        final List<String> retval = new ArrayList<String>();
+        final List<String> retval = new ArrayList<>();
         
         for (final LocationInfo location : getLocationsMap().values()) {
             retval.addAll(location.getTags());
@@ -124,7 +124,7 @@ public class DataManager implements MapRemoteEventHandler {
     }
 
     public List<ApplicationInfo> getApplications() {
-        List<ApplicationInfo> applicationList = new ArrayList<ApplicationInfo>();
+        List<ApplicationInfo> applicationList = new ArrayList<>();
         
         applicationList.addAll(getApplicationsMap().values());
         Collections.sort(applicationList);
@@ -137,7 +137,7 @@ public class DataManager implements MapRemoteEventHandler {
     }
 
     public List<LocationInfo> getMatchingLocations(LocationFilter filter) {
-        final ArrayList<LocationInfo> locations = new ArrayList<LocationInfo>();
+        final ArrayList<LocationInfo> locations = new ArrayList<>();
         
         for (final LocationInfo location : getLocations()) {
             

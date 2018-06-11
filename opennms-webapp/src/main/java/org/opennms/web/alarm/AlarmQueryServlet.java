@@ -113,7 +113,7 @@ public class AlarmQueryServlet extends HttpServlet {
      */
     @Override
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<Filter> filterArray = new ArrayList<Filter>();
+        List<Filter> filterArray = new ArrayList<>();
 
         // convenient syntax for LogMessageSubstringFilter
         String msgSubstring = WebSecurityUtils.sanitizeString(request.getParameter("msgsub"));

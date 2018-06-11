@@ -251,7 +251,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
 
     private static void removeUnneededServices(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsNode> selectedNodes) {
         if(selectedNodes != null) {
-            Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<OnmsLocationSpecificStatus>();
+            Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<>();
             
             for(OnmsLocationSpecificStatus status : statusesPeriod) {
                 
@@ -268,7 +268,7 @@ public class RemotePollerAvailabilityService extends OnmsRestService {
 
     private static void removeUnneededMonitors(Collection<OnmsLocationSpecificStatus> statusesPeriod, Collection<OnmsLocationMonitor> selectedMonitors) {
         if(selectedMonitors != null) {
-            Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<OnmsLocationSpecificStatus>();
+            Collection<OnmsLocationSpecificStatus> unneededStatuses = new ArrayList<>();
             
             for(OnmsLocationSpecificStatus status : statusesPeriod) {
                 

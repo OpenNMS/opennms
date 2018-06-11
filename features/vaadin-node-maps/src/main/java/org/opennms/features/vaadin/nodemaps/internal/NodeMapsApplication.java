@@ -107,21 +107,16 @@ import com.vaadin.ui.VerticalSplitPanel;
 @Title("OpenNMS Node Maps")
 @Theme("opennms")
 @JavaScript({
-    "//maps.google.com/maps/api/js?sensor=false",
-    "gwt/public/leaflet/leaflet-src.js",
-    "gwt/public/openlayers/OpenLayers.js",
-    "gwt/public/markercluster/leaflet.markercluster-src.js"
-
+    "theme://../opennms/assets/node-maps-init.vaadin.js",
+    "//maps.google.com/maps/api/js?sensor=false"
 })
 @StyleSheet({
-    "gwt/public/leaflet/leaflet.css",
-    "gwt/public/markercluster/MarkerCluster.css",
-    "gwt/public/markercluster/MarkerCluster.Default.css",
+    "theme://../opennms/assets/leaflet.css",
     "gwt/public/node-maps.css"
 })
 public class NodeMapsApplication extends UI {
     private static final Logger LOG = LoggerFactory.getLogger(NodeMapsApplication.class);
-    private static final int REFRESH_INTERVAL = 5 * 1000;
+    private static final int REFRESH_INTERVAL = Integer.getInteger("org.opennms.features.nodemaps.refresh", 30*1000);
     private VerticalLayout m_rootLayout;
     private VerticalLayout m_layout;
 
@@ -255,7 +250,7 @@ public class NodeMapsApplication extends UI {
                 LOG.debug("got event: {}", eventObject);
                 if (eventObject instanceof VerticesUpdateEvent) {
                     final VerticesUpdateEvent event = (VerticesUpdateEvent)eventObject;
-                    final List<Integer> nodeIds = new ArrayList<Integer>();
+                    final List<Integer> nodeIds = new ArrayList<>();
                     for (final VertexRef ref : event.getVertexRefs()) {
                         if ("nodes".equals(ref.getNamespace()) && ref.getId() != null) {
                             nodeIds.add(Integer.valueOf(ref.getId()));

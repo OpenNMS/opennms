@@ -272,7 +272,7 @@ public class DefaultApplicationView implements ApplicationView, ResizeHandler {
     @Override
     public Set<Status> getSelectedStatuses() {
         
-        Set<Status> statuses = new HashSet<Status>();
+        Set<Status> statuses = new HashSet<>();
         for (final Widget w : getStatusesPanel()) {
             if (w instanceof CheckBox) {
                 final CheckBox cb = (CheckBox)w;

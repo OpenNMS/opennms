@@ -527,7 +527,7 @@ public class QoSDimpl2 extends AbstractServiceDaemon implements EventListener, Q
 	 */
         @Override
 	public void registerListener() 	{
-		List<String> ueiList = new ArrayList<String>();
+		List<String> ueiList = new ArrayList<>();
 		String[] temp = config.getEventlist().getUei();
 		for(int i=0; i<temp.length; i++)
 			ueiList.add(temp[i]);

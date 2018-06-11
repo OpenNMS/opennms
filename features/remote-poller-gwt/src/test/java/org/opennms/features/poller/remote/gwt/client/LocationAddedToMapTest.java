@@ -79,7 +79,7 @@ public class LocationAddedToMapTest {
 
         @Override
         public Set<Status> getSelectedStatuses() {
-            Set<Status> hashSet = new HashSet<Status>();
+            Set<Status> hashSet = new HashSet<>();
             Collections.addAll(hashSet, Status.DOWN, Status.MARGINAL, Status.STOPPED, Status.DISCONNECTED, Status.UP);
             return hashSet;
         }
@@ -163,7 +163,7 @@ public class LocationAddedToMapTest {
     
     private class TestCommandExecutor implements CommandExecutor {
         
-        private List<Object> m_commands = new LinkedList<Object>();
+        private List<Object> m_commands = new LinkedList<>();
         @Override
         public void schedule(Scheduler.RepeatingCommand command) {
             m_commands.add(command);
@@ -227,7 +227,7 @@ public class LocationAddedToMapTest {
         int numLocations = 3000;
         int numApps = 12;
         
-        Set<LocationInfo> locations = new HashSet<LocationInfo>();
+        Set<LocationInfo> locations = new HashSet<>();
         GWTBounds bounds = createLocations(numLocations, locations);
         
         for( LocationInfo locationInfo : locations) {
@@ -265,7 +265,7 @@ public class LocationAddedToMapTest {
     @Test
     public void testStatusMessage() {
         int numLocations = 10;
-        Set<LocationInfo> locations = new HashSet<LocationInfo>();
+        Set<LocationInfo> locations = new HashSet<>();
         createLocations(numLocations , locations);
         
         m_testServer.sendDomainEvent(new LocationsUpdatedRemoteEvent(locations));
@@ -285,12 +285,12 @@ public class LocationAddedToMapTest {
     }
 
     private Set<ApplicationInfo> createApps(int numApps, Set<LocationInfo> locations) {
-        Set<String> locNames = new HashSet<String>();
+        Set<String> locNames = new HashSet<>();
         for(LocationInfo location : locations) {
             locNames.add(location.getName());
         }
         
-        Set<ApplicationInfo> apps = new HashSet<ApplicationInfo>();
+        Set<ApplicationInfo> apps = new HashSet<>();
         for(int i = 1; i <= numApps; i++) {
             
             apps.add(new ApplicationInfo(i, "app" + i, Collections.<GWTMonitoredService>emptySet(), locNames, new StatusDetails(Status.UP, "All things good here")));

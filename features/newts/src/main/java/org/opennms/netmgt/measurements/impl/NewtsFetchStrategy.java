@@ -92,11 +92,11 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
 
     private static final Logger LOG = LoggerFactory.getLogger(NewtsFetchStrategy.class);
 
-    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5*60*1000);
+    public static final long MIN_STEP_MS = Long.getLong("org.opennms.newts.query.minimum_step", 5L * 60L * 1000L);
 
     public static final int INTERVAL_DIVIDER = Integer.getInteger("org.opennms.newts.query.interval_divider", 2);
 
-    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450*1000);
+    public static final long DEFAULT_HEARTBEAT_MS = Long.getLong("org.opennms.newts.query.heartbeat", 450L * 1000L);
 
     public static final int PARALLELISM = Integer.getInteger("org.opennms.newts.query.parallelism", Runtime.getRuntime().availableProcessors());
 
@@ -281,7 +281,8 @@ public class NewtsFetchStrategy implements MeasurementFetchStrategy {
             public Collection<Row<Measurement>> call() throws Exception {
                 ResultDescriptor resultDescriptor = new ResultDescriptor(lag.getInterval());
                 for (Source source : listOfSources) {
-                    final String metricName = source.getAttribute();
+                    // Use the datasource as the metric name if set, otherwise use the name of the attribute
+                    final String metricName = source.getDataSource() != null ? source.getDataSource() : source.getAttribute();
                     final String name = source.getLabel();
                     final AggregationFunction fn = toAggregationFunction(source.getAggregation());
 

@@ -131,7 +131,7 @@
             return null;
         }
         
-        List<InetAddress> ips = new ArrayList<InetAddress>();
+        List<InetAddress> ips = new ArrayList<>();
         for (Service service : services) {
             ips.add(InetAddressUtils.addr(service.getIpAddress()));
         }
@@ -225,7 +225,7 @@
 	final WebApplicationContext webAppContext = WebApplicationContextUtils.getRequiredWebApplicationContext(getServletContext());
 	final ServiceRegistry registry = webAppContext.getBean(ServiceRegistry.class);
 
-	final List<String> renderedLinks = new ArrayList<String>();
+	final List<String> renderedLinks = new ArrayList<>();
 	final Collection<ConditionalPageNavEntry> navLinks = registry.findProviders(ConditionalPageNavEntry.class, "(Page=node)");
 	for (final ConditionalPageNavEntry link : navLinks) {
 	    final DisplayStatus displayStatus = link.evaluate(request, node_db);
@@ -239,7 +239,7 @@
 	
 	pageContext.setAttribute("navEntries", renderedLinks);
 
-    final List<String> schedOutages = new ArrayList<String>();
+    final List<String> schedOutages = new ArrayList<>();
     PollOutagesConfigFactory f = PollOutagesConfigFactory.getInstance();
     for (final Outage outage : f.getOutages()) {
         if (f.isCurTimeInOutage(outage)) {
@@ -265,19 +265,19 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="norequirejs" value="true" />
   <jsp:param name="title" value="Node" />
   <jsp:param name="headTitle" value="${model.label}" />
   <jsp:param name="headTitle" value="ID ${model.id}" />
   <jsp:param name="headTitle" value="Node" />
   <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
   <jsp:param name="breadcrumb" value="Node" />
-  <jsp:param name="enableExtJS" value="false"/>
+</jsp:include>
 
-  <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="js/onms-interfaces/styles.css" />' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
-  <jsp:param name="script" value='<script type="text/javascript" src="js/onms-interfaces/app.js"></script>' />
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="angular-js" />
+</jsp:include>
+<jsp:include page="/assets/load-assets.jsp" flush="false">
+    <jsp:param name="asset" value="onms-interfaces-app" />
 </jsp:include>
 
 <script type="text/javascript">

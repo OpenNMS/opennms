@@ -45,7 +45,7 @@ public class Wallboard {
     /**
      * A {@link List} holding the associated {@link DashletSpec} instances
      */
-    private List<DashletSpec> m_dashletSpecs = new LinkedList<DashletSpec>();
+    private List<DashletSpec> m_dashletSpecs = new LinkedList<>();
     /**
      * The title of this wallboard
      */

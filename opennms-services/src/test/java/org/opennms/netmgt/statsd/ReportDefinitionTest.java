@@ -42,7 +42,6 @@ import org.opennms.netmgt.config.statsd.model.PackageReport;
 import org.opennms.netmgt.config.statsd.model.StatsdPackage;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
-import org.opennms.netmgt.dao.api.RrdDao;
 import org.opennms.netmgt.dao.support.BottomNAttributeStatisticVisitor;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.measurements.api.FetchResults;
@@ -143,7 +142,7 @@ public class ReportDefinitionTest extends TestCase {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
 
-        Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>();
+        Set<OnmsAttribute> attributes = new HashSet<>();
         attributes.add(rrdAttribute);
         attributes.add(externalValueAttribute);
 
@@ -224,7 +223,7 @@ public class ReportDefinitionTest extends TestCase {
         OnmsAttribute rrdAttribute = new RrdGraphAttribute("IfInOctets", "something", "something else");
         ExternalValueAttribute externalValueAttribute = new ExternalValueAttribute("ifSpeed", "100000000");
 
-        Set<OnmsAttribute> attributes = new HashSet<OnmsAttribute>();
+        Set<OnmsAttribute> attributes = new HashSet<>();
         attributes.add(rrdAttribute);
         attributes.add(externalValueAttribute);
 

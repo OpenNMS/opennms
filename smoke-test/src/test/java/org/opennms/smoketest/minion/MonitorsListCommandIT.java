@@ -73,7 +73,6 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.MailTransportMonitor",
             "org.opennms.netmgt.poller.monitors.OpenManageChassisMonitor",
             "org.opennms.netmgt.poller.monitors.BgpSessionMonitor",
-            "org.opennms.netmgt.poller.monitors.JMXSecureMonitor", 
             "org.opennms.netmgt.poller.monitors.TcpMonitor",
             "org.opennms.netmgt.poller.monitors.MemcachedMonitor",
             "org.opennms.netmgt.poller.monitors.ImapMonitor",
@@ -88,9 +87,7 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.SystemExecuteMonitor",
             "org.opennms.netmgt.poller.monitors.CitrixMonitor", 
             "org.opennms.netmgt.poller.monitors.SmtpMonitor",
-            "org.opennms.netmgt.poller.monitors.MX4JMonitor", 
             "org.opennms.netmgt.poller.monitors.TrivialTimeMonitor",
-            "org.opennms.netmgt.poller.monitors.JBossMonitor",
             "org.opennms.netmgt.poller.monitors.JolokiaBeanMonitor",
             "org.opennms.netmgt.poller.monitors.LoopMonitor", 
             "org.opennms.netmgt.poller.monitors.FtpMonitor",
@@ -117,7 +114,8 @@ public class MonitorsListCommandIT {
             "org.opennms.netmgt.poller.monitors.WebMonitor", 
             "org.opennms.netmgt.poller.monitors.CiscoIpSlaMonitor",
             "org.opennms.netmgt.poller.monitors.VmwareMonitor",
-            "org.opennms.netmgt.poller.monitors.VmwareCimMonitor")
+            "org.opennms.netmgt.poller.monitors.VmwareCimMonitor",
+            "org.opennms.netmgt.poller.monitors.WsManMonitor")
             .build();
 
     @ClassRule
@@ -164,10 +162,11 @@ public class MonitorsListCommandIT {
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
 
             // Parse the output
-            String shellOutput = sshClient.getStdout();
+            String shellOutput = CommandTestUtils.stripAnsiCodes(sshClient.getStdout());
+
             shellOutput = StringUtils.substringAfter(shellOutput, "poller:list-monitors");
             LOG.info("Monitors output: {}", shellOutput);
-            Set<String> monitors = new HashSet<String>();
+            Set<String> monitors = new HashSet<>();
             for (String monitor : shellOutput.split("\\r?\\n")) {
                 if (StringUtils.isNotBlank(monitor)) {
                     monitors.add(monitor);

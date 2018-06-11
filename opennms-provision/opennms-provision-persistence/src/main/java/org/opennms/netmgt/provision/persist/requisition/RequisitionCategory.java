@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,6 +36,7 @@
 
 package org.opennms.netmgt.provision.persist.requisition;
 
+import javax.xml.bind.ValidationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -89,6 +90,12 @@ public class RequisitionCategory implements Comparable<RequisitionCategory> {
      */
     public void setName(String value) {
         m_name = value;
+    }
+
+    public void validate() throws ValidationException {
+        if (m_name == null || m_name.trim().isEmpty()) {
+            throw new ValidationException("Requisition category 'name' is a required attribute!");
+        }
     }
 
     @Override

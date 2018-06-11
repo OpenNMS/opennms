@@ -142,7 +142,7 @@ public class RrdOutputSocket {
     }
 
     private List<Double> parseRrdValues(String data) {
-        List<Double> retval = new ArrayList<Double>();
+        List<Double> retval = new ArrayList<>();
         String[] values = data.split(":");
         // Skip index zero, that's the timestamp
         for (int i = 1; i < values.length; i++) {

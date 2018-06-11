@@ -107,7 +107,7 @@ public class SnmpDetector extends AgentBasedSyncAbstractDetector<SnmpAgentConfig
         private static List<String> removeNullElements(List<String> input) {
             return input
                     .stream()
-                    .filter(v -> v != null)
+                    .filter(Objects::nonNull)
                     .collect(Collectors.toList());
         }
 

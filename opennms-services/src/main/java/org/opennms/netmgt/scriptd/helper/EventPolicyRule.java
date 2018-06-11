@@ -43,8 +43,8 @@ import org.opennms.netmgt.xml.event.Event;
  */
 public interface EventPolicyRule {
 
-	List<EventMatch> m_filter = new ArrayList<EventMatch>();
-	List<Boolean> m_forwardes = new ArrayList<Boolean>();
+	List<EventMatch> m_filter = new ArrayList<>();
+	List<Boolean> m_forwardes = new ArrayList<>();
 
 	/**
 	 * 

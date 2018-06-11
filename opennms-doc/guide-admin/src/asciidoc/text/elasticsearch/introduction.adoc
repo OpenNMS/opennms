@@ -1,0 +1,142 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+_{opennms-product-name}_ persists/forwards certain data to _Elasticsearch_.
+
+The following chapters describe the configuration possibilities as well as the available features.
+
+Internally all _Elasticsearch_ integrations use the https://github.com/searchbox-io/Jest[Jest library] to access the _Elasticsearch_ ReST interface.
+
+[[ga-elasticsearch-integration-configuration]]
+=== Configuration
+
+The configuration is feature dependant and therefore must take place in the feature configuration file in `${OPENNMS_HOME}/etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+The following properties can be set:
+
+[options="header, autowidth"]
+|===
+| Property | Description | Required | default
+
+| _elasticUrl_
+| URL(s) to Elasticsearch nodes. Can either point directly to ReST API or seed nodes. The format is: `<host>:<port>`. Comma separate multiple values.
+| required
+| `http://localhost:9200`
+
+| _elasticIndexStrategy_
+| Index strategy for data, allowed values _yearly_, _monthly_, _daily_, _hourly_
+| optional
+| `daily`
+
+| _globalElasticUser_
+| Username to use for all nodes, when link:https://www.elastic.co/guide/en/x-pack/current/setting-up-authentication.html[X-Pack Security] is configured.
+| optional
+| -
+
+| _globalElasticPassword_
+| Password to use for all nodes, when _X-Pack Security_ is configured.
+| optional
+| -
+
+| _defaultMaxTotalConnectionPerRoute_
+| Sets the default max connections per route. If a negative value is given, the value is ignored.
+| optional
+| `<available processors> * 2`
+
+| _maxTotalConnection_
+| Sets the default max total connections. If a negative value is given, the value is ignored.
+| optional
+| `<max connections per route> * 3`
+
+| _nodeDiscovery_
+| Enable/Disable node discovery. Valid values are `true\|false`.
+| optional
+| `false`
+
+| _nodeDiscoveryFrequency_
+| Defines the frequency in seconds in which the nodes are re-discovered. Must be set, if `discovery=true`
+| optional
+| -
+
+| _proxy_
+| Allows defining a HTTP proxy. Only accepts valid URLs.
+| optional
+| -
+
+| _retries_
+| Defines how many times an operation is retried before considered failed.
+| optional
+| 0
+
+| _retryCooldown_
+| Defines the cooldown in ms to wait before retrying. Value of `0` means no cooldown. Value must be >= `0`.
+| optional
+| `500`
+
+| _connTimeout_
+| Defines the connection timeout in ms.
+| optional
+| `5000`
+
+| _readTimeout_
+| Defines the read timeout in ms.
+| optional
+| `30000`
+
+| _bulkRetryCount_
+| Defines the number of retries performed before a bulk operation is considered as failed.
+When bulk operations fail, only the failed items are retried.
+| optional
+| `5`
+
+| _settings.index.number_of_shards_
+| The number of primary shards that an index should have. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.number_of_replicas_
+| The number of replicas each primary shard has. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.refresh_interval_
+| How often to perform a refresh operation, which makes recent changes to the index visible to search. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+
+| _settings.index.routing_partition_size_
+| The number of shards a custom routing valuce can go to. Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-setting[Elasticsearch Reference -> Index Modules] for more details.
+| optional
+| -
+|===
+
+
+TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration
+
+NOTE: If credentials are provided preemptive auth is used for all defined Elasticsearch nodes.
+
+.Configuration Example to access Elasticsearch
+[source]
+----
+elasticUrl=http://elastic:9200
+elasticIndexStrategy=daily
+elasticGlobalUser=elastic
+elasticGlobalPassword=changeme
+----
+
+=== Credentials
+
+It is possible to define credentials for each Elasticsearch node individually.
+Credentials for each node must be stored in `${OPENNMS_HOME}/etc/elastic-credentials.xml`.
+
+.Custom credentials
+```xml
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<elastic-credentials>
+    <credentials url="http://localhost:9200" username="ulf" password="ulf" />
+    <credentials url="https://10.10.0.1:9333" username="ulf" password="flu" />
+</elastic-credentials>
+```
+
+NOTE: Credentials are globally defined and will be used by each feature.
