@@ -1638,11 +1638,10 @@ public class InstallerDb {
         while (rs.next()) {
             objects.add(rs.getString("TABLE_NAME"));
         }
-        final PreparedStatement st = getAdminConnection().prepareStatement("ALTER TABLE ? OWNER TO ?");
+        final Statement st = getAdminConnection().createStatement();
         for (final String objName : objects) {
-            st.setString(1, objName);
-            st.setString(2, m_user);
-            st.execute();
+            System.err.println("ALTER TABLE IF EXISTS " + objName + " OWNER TO " + m_user);
+            st.execute("ALTER TABLE IF EXISTS " + objName + " OWNER TO " + m_user);
         }
         st.close();
     }
