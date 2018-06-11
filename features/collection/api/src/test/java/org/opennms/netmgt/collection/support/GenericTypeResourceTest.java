@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,15 +28,18 @@
 
 package org.opennms.netmgt.collection.support;
 
+import java.util.ArrayList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.Test;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.Parameter;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.support.builder.GenericTypeResource;
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource;
@@ -74,6 +77,9 @@ public class GenericTypeResourceTest {
         assertEquals("instance|", getInstanceInResourcePath("instance|"));
         assertEquals("instance<", getInstanceInResourcePath("instance<"));
         assertEquals("instance>", getInstanceInResourcePath("instance>"));
+
+        assertEquals("java.lang", getObjectNameInstanceInResourcePath("java.lang:type=MemoryPool,name=Survivor Space"));
+
     }
 
     private String getInstanceInResourcePath(String instance) {
@@ -82,6 +88,34 @@ public class GenericTypeResourceTest {
         when(rt.getName()).thenReturn("type");
         when(rt.getStorageStrategy().getClazz()).thenReturn(IndexStorageStrategy.class.getCanonicalName());
         when(rt.getStorageStrategy().getParameters()).thenReturn(Collections.emptyList());
+        when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(PersistAllSelectorStrategy.class.getCanonicalName());
+        when(rt.getPersistenceSelectorStrategy().getParameters()).thenReturn(Collections.emptyList());
+
+        // Create the GenericTypeResource
+        NodeLevelResource nlr = new NodeLevelResource(1);
+        GenericTypeResource gtr = new GenericTypeResource(nlr, rt, instance);
+
+        // Mock the CollectionResource
+        CollectionResource resource = mock(CollectionResource.class);
+        when(resource.getInstance()).thenReturn(gtr.getInstance());
+
+        // Build the resource path, and extract the instance (the last element of the path)
+        ResourcePath path = gtr.getPath(resource);
+        String[] elements = path.elements();
+        return elements[elements.length - 1];
+    }
+
+    private String getObjectNameInstanceInResourcePath(String instance) {
+        // Mock the ResourceType
+        List<Parameter> params = new ArrayList<>();
+        Parameter p = mock(Parameter.class, RETURNS_DEEP_STUBS);
+        when(p.getKey()).thenReturn("index-format");
+        when(p.getValue()).thenReturn("${domain}");
+        params.add(p);
+        ResourceType rt = mock(ResourceType.class, RETURNS_DEEP_STUBS);
+        when(rt.getName()).thenReturn("type");
+        when(rt.getStorageStrategy().getClazz()).thenReturn(ObjectNameStorageStrategy.class.getCanonicalName());
+        when(rt.getStorageStrategy().getParameters()).thenReturn(params);
         when(rt.getPersistenceSelectorStrategy().getClazz()).thenReturn(PersistAllSelectorStrategy.class.getCanonicalName());
         when(rt.getPersistenceSelectorStrategy().getParameters()).thenReturn(Collections.emptyList());
 
