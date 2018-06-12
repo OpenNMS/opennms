@@ -218,11 +218,19 @@ include::text/provisioning/detectors/wsman.adoc[]
 [[ga-bsm]]
 == Business Service Monitoring
 include::text/bsm/introduction.adoc[]
+include::text/bsm/business-service-hierarchy.adoc[]
+include::text/bsm/operational-status.adoc[]
+include::text/bsm/root-cause-impact-analysis.adoc[]
+include::text/bsm/simulation-mode.adoc[]
+include::text/bsm/share-bsm-view.adoc[]
+include::text/bsm/change-icons.adoc[]
 include::text/bsm/business-service-definition.adoc[]
 include::text/bsm/edges.adoc[]
 include::text/bsm/map-functions.adoc[]
 include::text/bsm/reduce-functions.adoc[]
 include::text/bsm/bsmd.adoc[]
+
+
 
 [[ga-topology]]
 == Topology Map
