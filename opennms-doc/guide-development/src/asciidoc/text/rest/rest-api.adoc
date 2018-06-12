@@ -16,7 +16,7 @@ By default you will not receive a challenge, so you must configure your ReST cli
 === Data format
 
 Jersey allows ReST calls to be made using either XML or JSON.
-By default a request to the API is returned in XML.
+By default a request to the API is returned in XML. XML is delivered without namespaces.
 To get JSON encoded responses one has to send the following header with the request: `Accept: application/json`.
 
 === Standard Parameters
