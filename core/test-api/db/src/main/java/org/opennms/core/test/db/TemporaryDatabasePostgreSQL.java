@@ -177,7 +177,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             m_adminXaDataSource.setUser(m_adminUser);
             m_adminXaDataSource.setPassword(m_adminPassword);
         } catch (final ClassNotFoundException e) {
-            throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver, e);
+            throw new TemporaryDatabaseException("Failed to initialize driver " + m_driver + ": " + e.getMessage(), e);
         }
 
         if (!m_useExisting) {
@@ -219,7 +219,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         try {
             adminConnection = getAdminDataSource().getConnection();
         } catch (final SQLException e) {
-            throw new TemporaryDatabaseException("Failed to get admin connection.", e);
+            throw new TemporaryDatabaseException("Failed to get admin connection: " + e.getMessage(), e);
         }
         Statement st = null;
         try {
@@ -321,7 +321,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         try {
             adminConnection = getAdminDataSource().getConnection();
         } catch (final SQLException e) {
-            throw new TemporaryDatabaseException("Failed to get admin database connection.", e);
+            throw new TemporaryDatabaseException("Failed to get admin database connection: " + e.getMessage(), e);
         }
 
         try {
@@ -367,7 +367,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                         try {
                             st.close();
                         } catch (final SQLException e) {
-                            throw new TemporaryDatabaseException("Error while closing down database statement.", e);
+                            throw new TemporaryDatabaseException("Error while closing down database statement: " + e.getMessage(), e);
                         }
                         st = null;
                     }
@@ -382,7 +382,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             try {
                 adminConnection.close();
             } catch (SQLException e) {
-                throw new TemporaryDatabaseException("Error closing administrative database connection after attempting to drop test database", e);
+                throw new TemporaryDatabaseException("Error closing administrative database connection after attempting to drop test database: " + e.getMessage(), e);
             }
 
             /*
@@ -392,7 +392,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             try {
                 Thread.sleep(100);
             } catch (final InterruptedException e) {
-                throw new TemporaryDatabaseException("Interrupted while waiting for disconnection to complete.", e);
+                throw new TemporaryDatabaseException("Interrupted while waiting for disconnection to complete: " + e.getMessage(), e);
             }
         }
 
