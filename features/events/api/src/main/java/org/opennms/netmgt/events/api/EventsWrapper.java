@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2016 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,18 +34,19 @@ package org.opennms.netmgt.events.api;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.Message;
+import org.opennms.netmgt.xml.event.Log;
 
 public class EventsWrapper implements Message {
 
-    private final Events events;
+    private final Log eventLog;
 
-    public EventsWrapper(Events events)
+    public EventsWrapper(Log eventLog)
             throws IllegalArgumentException {
-    	this.events = Objects.requireNonNull(events);
+    	this.eventLog = Objects.requireNonNull(eventLog);
     }
 
-    public Events getEvents() {
-        return events;
+    public Log getEvents() {
+        return eventLog;
     }
 
 }
