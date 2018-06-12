@@ -75,6 +75,10 @@ public class WSManMonitorTest {
         assertEquals(PollStatus.up(), poll(
                 "#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches 'C7BBBP1'",
                 EXAMPLE_NODE));
+        // Positive match using substitution
+        assertEquals(PollStatus.up(), poll(
+                "#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches '{nodeLabel}'",
+                EXAMPLE_NODE));
         // Negative match
         assertEquals(PollStatus.down(), poll(
                 "#IdentifyingDescriptions matches '.*ServiceTag' and #OtherIdentifyingInfo matches '!C7BBBP1'",
@@ -120,6 +124,15 @@ public class WSManMonitorTest {
         }
         MonitoredService svc = mock(MonitoredService.class);
         when(svc.getAddress()).thenReturn(localhost);
+        when(svc.getIpAddr()).thenReturn("127.0.0.1");
+        when(svc.getNodeLabel()).thenReturn("C7BBBP1");
+
+        Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
+        // this would normally happen in the poller request builder implementation
+        subbedParams.forEach((k, v) -> {
+            parameters.put(k, v);
+        });
+
 
         return monitor.poll(svc, parameters);
     }
