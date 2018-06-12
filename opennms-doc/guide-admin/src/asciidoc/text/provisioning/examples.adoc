@@ -293,10 +293,11 @@ image:../images/provisioning/00020.jpeg[]
 
 .Script Policy
 
-This policy allows to use _Groovy_ scripts to modify provisioned node data. These scripts have to placed in the
-{opennms-product-name} `etc/script-policies` directory. An example would be the change of the node's
-primary interface or location. The script will be invoked for each matching node. The following example show the source
-code for setting the 192.168.100.0/24 interface to `PRIMARY` while all remaining interfaces are set to `SECONDARY`.
+This policy allows to use _Groovy_ scripts to modify provisioned node data.
+These scripts have to be placed in the {opennms-product-name} `etc/script-policies` directory.
+An example would be the change of the node's primary interface or location.
+The script will be invoked for each matching node.
+The following example shows the source code for setting the `192.168.100.0/24` interface to `PRIMARY` while all remaining interfaces are set to `SECONDARY`.
 Furthermore the node's location is set to `Minneapolis`.
 
 [source, groovy]
