@@ -32,6 +32,10 @@ include::text/user-management/pre-authentication.adoc[]
 === Surveillance View
 include::text/surveillance-view.adoc[]
 
+[[ga-dashboard-view]]
+=== Dashboard
+include::text/dashboard.adoc[]
+
 [[ga-admin-ui-start-page]]
 === Grafana Dashboard Box
 include::text/webui/grafana-dashboard-box.adoc[]
