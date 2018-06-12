@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2004-2017 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -42,7 +42,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -831,4 +836,33 @@ public class Migrator {
         }
     }
 
+
+    // Ensures that the database time and the system time running the installer match
+    // If the difference is greater than 1s, it fails
+    public void checkTime(final Migration migration) throws Exception {
+        LOG.info("checking if time of database \"" + migration.getDatabaseName() + "\" is matching system time");
+
+        try (Statement st = m_adminDataSource.getConnection().createStatement()) {
+            final long beforeQueryTime = System.currentTimeMillis();
+            try (ResultSet rs = st.executeQuery("SELECT NOW()")) {
+                if (rs.next()) {
+                    final Timestamp currentDatabaseTime = rs.getTimestamp(1);
+                    final long currentSystemTime = System.currentTimeMillis();
+                    final long diff = currentDatabaseTime.getTime() - currentSystemTime;
+                    final long queryExecuteDelta = Math.abs(currentSystemTime - beforeQueryTime);
+                    if (Math.abs(diff) > 1000 + queryExecuteDelta) {
+                        LOG.info("NOT OK");
+                        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat();
+                        final String databaseDateString = simpleDateFormat.format(new Date(currentDatabaseTime.getTime()));
+                        final String systemTimeDateString = simpleDateFormat.format(new Date(currentSystemTime));
+                        throw new Exception("Database time and system time differ."
+                                + "System time: " + systemTimeDateString + ", database time: " + databaseDateString
+                                + ", diff: " + Math.abs(diff) + "ms. The maximum allowed difference is 1000ms."
+                                + " Please update either the database time or system time");
+                    }
+                    LOG.info("OK");
+                }
+            }
+        }
+    }
 }

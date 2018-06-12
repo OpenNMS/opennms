@@ -254,7 +254,7 @@ public class Installer {
 
         if (doDatabase) {
             m_migrator.checkUnicode(m_migration);
-            m_migrator.checkTime(m_migration); // XXX: thrown in during merge conflict resolution 
+            m_migrator.checkTime(m_migration);
         }
         
         handleConfigurationChanges();
