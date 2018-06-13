@@ -1016,6 +1016,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 final boolean changed = handleCategoryChanges(dbNode);
 
                 dbNode.mergeNodeAttributes(node, accumulator);
+                node.getAssetRecord().setId(dbNode.getAssetRecord().getId());
+                node.setId(dbNode.getId());
+                dbNode.mergeAssets(node);
+
                 updateNodeHostname(dbNode);
                 final OnmsNode ret = saveOrUpdate(dbNode);
 
