@@ -133,8 +133,8 @@ public class EventdConfiguration implements Serializable {
      * Number of threads used for consuming/dispatching messages.
      * Defaults to 2 x the number of available processors.
      */
-    @XmlAttribute(name = "threads", required=false)
-    private int m_threads;
+    @XmlAttribute(name = "sink-threads", required=false)
+    private int m_threads=0;
     
     /**
      * Maximum number of messages to keep in memory while waiting
@@ -193,12 +193,12 @@ public class EventdConfiguration implements Serializable {
         m_udpPort = ConfigUtils.assertNotNull(UDPPort, "UDPPort");
     }
     
-    public Optional<Integer> getNumThreads() {
-    	return Optional.ofNullable(m_threads);
+    public Integer getNumThreads() {
+    	return m_threads;
     }
 
     public void setNumThreads(final Integer numThreads) {
-        m_threads = ConfigUtils.assertNotNull(numThreads, "threads");
+        m_threads = numThreads;
     }
 
     public Integer getReceivers() {
