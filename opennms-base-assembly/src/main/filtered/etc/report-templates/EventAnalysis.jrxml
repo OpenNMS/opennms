@@ -882,33 +882,33 @@ ORDER BY
 						</datasetParameter>
 						<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
 					</datasetRun>
-					<jr:column width="305" uuid="df014bda-002b-43b3-946a-d750a4db1a66">
+					<jr:column width="312" uuid="df014bda-002b-43b3-946a-d750a4db1a66">
 						<jr:tableHeader height="20" rowSpan="1">
 							<staticText>
-								<reportElement style="Table-Header" x="0" y="0" width="305" height="20" uuid="706c12c8-2bcd-43ca-9002-9eba7d3c83eb"/>
+								<reportElement style="Table-Header" x="0" y="0" width="312" height="20" uuid="706c12c8-2bcd-43ca-9002-9eba7d3c83eb"/>
 								<text><![CDATA[ OpenNMS UEI]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box leftPadding="0" rightPadding="0"/>
 							<textField hyperlinkType="Reference" hyperlinkTarget="Blank">
-								<reportElement style="Eventdisplay Link Style" x="0" y="0" width="305" height="18" uuid="eb014d6d-4c59-4240-94ed-ec5dc750162f"/>
+								<reportElement style="Eventdisplay Link Style" x="0" y="0" width="312" height="18" uuid="eb014d6d-4c59-4240-94ed-ec5dc750162f"/>
 								<textFieldExpression><![CDATA[$F{eventuei}]]></textFieldExpression>
 								<hyperlinkReferenceExpression><![CDATA[$F{eventdisplay}.equals("Y") ? $P{OPENNMS_URL_BASE}+"/event/list?sortby=id&filter=exactUei="+$F{eventuei}.replaceAll("/", "%2F") : ""]]></hyperlinkReferenceExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
-					<jr:column width="192" uuid="ba8fbe5b-1ae6-4390-b413-da25b22c87b0">
+					<jr:column width="199" uuid="ba8fbe5b-1ae6-4390-b413-da25b22c87b0">
 						<jr:tableHeader height="20" rowSpan="1">
 							<staticText>
-								<reportElement style="Table-Header" x="0" y="0" width="192" height="20" uuid="ade7a29f-66fa-4cfc-b334-65005a403588"/>
+								<reportElement style="Table-Header" x="0" y="0" width="199" height="20" uuid="ade7a29f-66fa-4cfc-b334-65005a403588"/>
 								<text><![CDATA[Event Source]]></text>
 							</staticText>
 						</jr:tableHeader>
 						<jr:detailCell style="table_5line_grid" height="18" rowSpan="1">
 							<box topPadding="0" leftPadding="0" bottomPadding="0" rightPadding="0"/>
 							<textField>
-								<reportElement style="Table-Body" x="0" y="1" width="192" height="15" uuid="1f09e386-f984-4b9e-a564-8859498a25b1"/>
+								<reportElement style="Table-Body" x="0" y="1" width="197" height="15" uuid="1f09e386-f984-4b9e-a564-8859498a25b1"/>
 								<textFieldExpression><![CDATA[$F{eventsource}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
