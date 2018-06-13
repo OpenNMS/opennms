@@ -86,7 +86,11 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Log> {
 
 			@Override
 			public Log aggregate(Log accumulator, EventsWrapper eventsWrapper) {
-				accumulator = eventsWrapper.getEvents();
+				if (accumulator == null) {
+					accumulator = eventsWrapper.getEvents();
+				} else {
+					accumulator.addAllEvents(eventsWrapper.getEvents());
+				}
 				return accumulator;
 			}
 

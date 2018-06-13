@@ -40,8 +40,7 @@ public class EventsWrapper implements Message {
 
     private final Log eventLog;
 
-    public EventsWrapper(Log eventLog)
-            throws IllegalArgumentException {
+    public EventsWrapper(Log eventLog) {
     	this.eventLog = Objects.requireNonNull(eventLog);
     }
 

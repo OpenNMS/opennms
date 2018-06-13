@@ -85,7 +85,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.xml</artifactId>
+      <artifactId>org.opennms.core.ipc.sink.api</artifactId>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
