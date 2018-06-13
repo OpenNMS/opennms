@@ -80,7 +80,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
                 subPatterns.put(pd.getName(), Pattern.compile("(.*)[{]" + pd.getName() + "[}](.*)"));
             }
         } catch (IntrospectionException ie) {
-            ie.printStackTrace();
+            LOG.warn("Failed to introspect OnmsAssetRecord when initializing due to {}", ie.getLocalizedMessage());
         }
         patternBuilder.append("[}]).*");
         m_subPat = Pattern.compile(patternBuilder.toString());
