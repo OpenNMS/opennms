@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.collection.persistence.newts;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -61,6 +64,22 @@ public class NewtsPersisterFactory implements PersisterFactory {
         // the dontReorderAttributes flag since attribute order does not matter
         NewtsPersister persister =  new NewtsPersister(params, repository, m_newtsWriter, m_context);
         persister.setIgnorePersist(dontPersistCounters);
+        // load kafka persister if it is enabled 
+        Persister kafkaPersister = loadKafkaPersister(params, repository);
+        persister.setKafkaPersister(kafkaPersister);
+        return persister;
+    }
+    
+
+    private Persister loadKafkaPersister(ServiceParameters params, RrdRepository repository) {
+        Boolean enabled = new Boolean(System.getProperty("org.opennms.timeseries.kafka.persister", "false"));
+        Persister persister = null;
+        if (enabled) {
+            final ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE).blocking()
+                    .build();
+            PersisterFactory persisterFactory = serviceLookup.lookup(PersisterFactory.class, "(strategy=kafka)");
+            persister = persisterFactory.createPersister(params, repository);
+        }
         return persister;
     }
 }

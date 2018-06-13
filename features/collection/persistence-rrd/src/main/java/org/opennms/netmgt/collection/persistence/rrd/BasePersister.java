@@ -34,8 +34,10 @@ import java.util.Set;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.CollectionAttributeType;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.NumericCollectionAttributeType;
 import org.opennms.netmgt.collection.api.PersistException;
+import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.dao.api.ResourceStorageDao;
 import org.opennms.netmgt.model.ResourcePath;
@@ -57,6 +59,7 @@ public class BasePersister extends AbstractPersister {
     private final RrdStrategy<?, ?> m_rrdStrategy;
     protected final ResourceStorageDao m_resourceStorageDao;
     private boolean m_dontReorderAttributes = false;
+    private Persister kafkaPersister;
 
     /**
      * <p>Constructor for BasePersister.</p>
@@ -114,5 +117,17 @@ public class BasePersister extends AbstractPersister {
 
     public boolean getDontReorderAttributes() {
         return m_dontReorderAttributes;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public void visitCollectionSet(CollectionSet set) {
+        if (kafkaPersister != null) {
+            kafkaPersister.visitCollectionSet(set);
+        }
+    }
+
+    public void setKafkaPersister(Persister kafkaPersister) {
+        this.kafkaPersister = kafkaPersister;
     }
 }

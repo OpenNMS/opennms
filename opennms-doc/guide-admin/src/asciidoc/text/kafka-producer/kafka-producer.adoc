@@ -218,3 +218,24 @@ Result: true
 
 In this case, a new event will be created with the given _UEI_, and the filter will be evaluated against this new event object.
 At this time, existing events cannot be referenced by this tool, so this functionality only serves to help make sure the expressions are syntactically valid.
+
+==== Kafka Persister ====
+
+Kafka producer also allows performance data to be persisted in Kafka. It needs opennms-kafka-producer feature to be enabled. <<Enabling the Kafka Producer>>
+
+.There are two ways you can enable Kafka Persister.
+
+. As a separate time series strategy (as an alternative to `RRD` or `Newts`). For this add below system property in `opennms.properties`and restart _{opennms-product-name}_ instance.
++
+[source]
+----
+org.opennms.timeseries.strategy=osgi
+----
++
+. Allow performance data to be persisted in Kafka along with RRD or Newts. For this add below system property in `opennms.properties` and restart _{opennms-product-name}_ instance.
++
+[source]
+----
+org.opennms.timeseries.kafka.persister=true
+----
++

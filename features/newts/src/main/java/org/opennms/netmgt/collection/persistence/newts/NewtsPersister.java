@@ -31,7 +31,9 @@ package org.opennms.netmgt.collection.persistence.newts;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.collection.api.PersistException;
+import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.model.ResourcePath;
 import org.opennms.netmgt.newts.NewtsWriter;
@@ -51,6 +53,7 @@ public class NewtsPersister extends AbstractPersister {
     private final NewtsWriter m_newtsWriter;
     private final Context m_context;
     private NewtsPersistOperationBuilder m_builder;
+    private Persister kafkaPersister;
 
     protected NewtsPersister(ServiceParameters params, RrdRepository repository, NewtsWriter newtsWriter, Context context) {
         super(params, repository);
@@ -86,5 +89,17 @@ public class NewtsPersister extends AbstractPersister {
             commitBuilder();
         }
         popShouldPersist();
+    }
+    
+    /** {@inheritDoc} */
+    @Override
+    public void visitCollectionSet(CollectionSet set) {
+        if (kafkaPersister != null) {
+            kafkaPersister.visitCollectionSet(set);
+        }
+    }
+
+    public void setKafkaPersister(Persister kafkaPersister) {
+        this.kafkaPersister = kafkaPersister;
     }
 }
