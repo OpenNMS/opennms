@@ -832,6 +832,6 @@ public class HttpMonitorIT {
         parameters.put("response-text", "~.*OK.*");
         MockMonitoredService svc = MonitorTestUtils.getMonitoredService(Integer.parseInt(node.getNodeId()), "devjam2018nodelabel2", InetAddress.getByName("10.0.1.2"), "HTTP");
         Map<String, Object> subbedParams = monitor.getRuntimeAttributes(svc, parameters);
-        assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:%40dm1n"));
+        assertTrue(subbedParams.get("subbed-basic-authentication").toString().equals("nimda:@dm1n"));
     }
 }
