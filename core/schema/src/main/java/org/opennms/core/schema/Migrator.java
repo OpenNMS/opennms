@@ -43,17 +43,24 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import liquibase.Liquibase;
 import liquibase.database.DatabaseConnection;
@@ -63,11 +70,6 @@ import liquibase.logging.LogFactory;
 import liquibase.logging.LogLevel;
 import liquibase.resource.ResourceAccessor;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.core.io.DefaultResourceLoader;
-import org.springframework.core.io.ResourceLoader;
-
 /**
  * <p>Migrator class.</p>
  *
@@ -75,9 +77,11 @@ import org.springframework.core.io.ResourceLoader;
  * @version $Id: $
  */
 public class Migrator {
-	
-	private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
-	
+
+    public static final String LIQUIBASE_CHANGELOG_LOCATION_PATTERN = "classpath*:/" + Migration.LIQUIBASE_CHANGELOG_FILENAME;
+
+    private static final Logger LOG = LoggerFactory.getLogger(Migrator.class);
+
     private static final Pattern POSTGRESQL_VERSION_PATTERN = Pattern.compile("^(?:PostgreSQL|EnterpriseDB) (\\d+\\.\\d+)");
     private static final float POSTGRESQL_MIN_VERSION_INCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.minVersion", "9.1"));
     private static final float POSTGRESQL_MAX_VERSION_EXCLUSIVE = Float.parseFloat(System.getProperty("opennms.postgresql.maxVersion", "11.0"));
@@ -90,6 +94,8 @@ public class Migrator {
     private boolean m_validateDatabaseVersion = true;
     private boolean m_createUser = true;
     private boolean m_createDatabase = true;
+
+    private Predicate<Resource> m_liquibaseChangelogFilter = null;
 
     /**
      * <p>Constructor for Migrator.</p>
@@ -217,7 +223,7 @@ public class Migrator {
      */
     public void validateDatabaseVersion() throws MigrationException {
         if (!m_validateDatabaseVersion) {
-        	LOG.info("skipping database version validation");
+            LOG.info("skipping database version validation");
             return;
         }
         LOG.info("validating database version");
@@ -228,10 +234,10 @@ public class Migrator {
         }
 
         final String message = String.format(
-                                             "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
-                                                     + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
-                                                     + "to find and fix bugs found yourself.",
-                                                     dbv, POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
+                "Unsupported database version \"%f\" -- you need at least %f and less than %f.  "
+                        + "Use the \"-Q\" option to disable this check if you feel brave and are willing "
+                        + "to find and fix bugs found yourself.",
+                        dbv, POSTGRESQL_MIN_VERSION_INCLUSIVE, POSTGRESQL_MAX_VERSION_EXCLUSIVE
                 );
 
         if (dbv < POSTGRESQL_MIN_VERSION_INCLUSIVE || dbv >= POSTGRESQL_MAX_VERSION_EXCLUSIVE) {
@@ -263,7 +269,7 @@ public class Migrator {
      * @throws org.opennms.core.schema.MigrationException if any.
      */
     public void createLangPlPgsql() throws MigrationException {
-    	LOG.info("adding PL/PgSQL support to the database, if necessary");
+        LOG.info("adding PL/PgSQL support to the database, if necessary");
         Statement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -272,9 +278,9 @@ public class Migrator {
             st = c.createStatement();
             rs = st.executeQuery("SELECT oid FROM pg_proc WHERE " + "proname='plpgsql_call_handler' AND " + "proargtypes = ''");
             if (rs.next()) {
-            	LOG.info("PL/PgSQL call handler exists");
+                LOG.info("PL/PgSQL call handler exists");
             } else {
-            	LOG.info("adding PL/PgSQL call handler");
+                LOG.info("adding PL/PgSQL call handler");
                 st.execute("CREATE FUNCTION plpgsql_call_handler () " + "RETURNS OPAQUE AS '$libdir/plpgsql." + getExtension(false) + "' LANGUAGE 'c'");
             }
             rs.close();
@@ -286,9 +292,9 @@ public class Migrator {
                     + "pg_proc.oid = pg_language.lanplcallfoid AND "
                     + "pg_language.lanname = 'plpgsql'");
             if (rs.next()) {
-            	LOG.info("PL/PgSQL language exists");
+                LOG.info("PL/PgSQL language exists");
             } else {
-            	LOG.info("adding PL/PgSQL language");
+                LOG.info("adding PL/PgSQL language");
                 st.execute("CREATE TRUSTED PROCEDURAL LANGUAGE 'plpgsql' "
                         + "HANDLER plpgsql_call_handler LANCOMPILER 'PL/pgSQL'");
             }
@@ -385,7 +391,7 @@ public class Migrator {
             }
             return rs.next();
         } catch (final SQLException e) {
-            throw new MigrationException("an error occurred determining whether the OpenNMS user exists", e);
+            throw new MigrationException("an error occurred determining whether the OpenNMS database exists", e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
@@ -467,16 +473,16 @@ public class Migrator {
         Connection c = null;
 
         try {
-                c = m_adminDataSource.getConnection();
-                st = c.createStatement();
-                rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + migration.getDatabaseName().toLowerCase() + "'");
-                if (rs.next()) {
-                    if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
-                        return;
-                    }
+            c = m_adminDataSource.getConnection();
+            st = c.createStatement();
+            rs = st.executeQuery("SELECT encoding FROM pg_database WHERE LOWER(datname)='" + migration.getDatabaseName().toLowerCase() + "'");
+            if (rs.next()) {
+                if (rs.getInt(1) == 5 || rs.getInt(1) == 6) {
+                    return;
                 }
+            }
 
-                throw new MigrationException("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
+            throw new MigrationException("OpenNMS requires a Unicode database.  Please delete and recreate your\ndatabase and try again.");
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
@@ -487,7 +493,7 @@ public class Migrator {
      *
      * @throws java.sql.SQLException if any.
      */
-    public void databaseSetUser(final Migration m_migration) throws MigrationException {
+    public void databaseSetOwner(final Migration m_migration) throws MigrationException {
         PreparedStatement st = null;
         ResultSet rs = null;
         Connection c = null;
@@ -678,7 +684,7 @@ public class Migrator {
         try {
             sqlfile = getClass().getResourceAsStream(IPLIKE_SQL_RESOURCE);
             if (sqlfile == null) {
-                throw new MigrationException("unable to locate " + IPLIKE_SQL_RESOURCE);
+                throw new MigrationException("unable to locate " + IPLIKE_SQL_RESOURCE + " from class " + getClass());
             }
 
             final BufferedReader in = new BufferedReader(new InputStreamReader(sqlfile, StandardCharsets.UTF_8));
@@ -719,7 +725,7 @@ public class Migrator {
      * @throws java.sql.SQLException if any.
      */
     public void databaseRemoveDB(Migration migration) throws MigrationException {
-        LOG.info("removing database '" + migration.getDatabaseName());
+        LOG.info("removing database '" + migration.getDatabaseName() + "'");
 
         Connection c = null;
         Statement st = null;
@@ -766,7 +772,7 @@ public class Migrator {
             ResourceAccessor accessor = migration.getAccessor();
             if (accessor == null) accessor = new SpringResourceAccessor();
 
-            final Liquibase liquibase = new Liquibase( migration.getChangeLog(), accessor, dbConnection );
+            final Liquibase liquibase = new Liquibase( Migration.LIQUIBASE_CHANGELOG_FILENAME, accessor, dbConnection );
             liquibase.setChangeLogParameter("install.database.admin.user", migration.getAdminUser());
             liquibase.setChangeLogParameter("install.database.admin.password", migration.getAdminPassword());
             liquibase.setChangeLogParameter("install.database.user", migration.getDatabaseUser());
@@ -792,14 +798,14 @@ public class Migrator {
      * @return a {@link org.springframework.core.io.ResourceLoader} object.
      */
     protected ResourceLoader getMigrationResourceLoader(final Migration migration) {
-        final File changeLog = new File(migration.getChangeLog());
+        final File changeLog = new File(Migration.LIQUIBASE_CHANGELOG_FILENAME);
         final List<URL> urls = new ArrayList<>();
         try {
             if (changeLog.exists()) {
                 urls.add(changeLog.getParentFile().toURI().toURL());
             }
         } catch (final MalformedURLException e) {
-		LOG.info("unable to figure out URL for {}", migration.getChangeLog(), e);
+            LOG.info("unable to figure out URL for {}", Migration.LIQUIBASE_CHANGELOG_FILENAME, e);
         }
         final ClassLoader cl = new URLClassLoader(urls.toArray(new URL[0]), this.getClass().getClassLoader());
         return new DefaultResourceLoader(cl);
@@ -810,28 +816,28 @@ public class Migrator {
             try {
                 rs.close();
             } catch (final SQLException e) {
-            	LOG.warn("Failed to close result set.", e);
+                LOG.warn("Failed to close result set.", e);
             }
         }
         if (st != null) {
             try {
                 st.close();
             } catch (final SQLException e) {
-            	LOG.warn("Failed to close statement.", e);
+                LOG.warn("Failed to close statement.", e);
             }
         }
         if (dbc != null) {
             try {
                 dbc.close();
             } catch (final DatabaseException e) {
-            	LOG.warn("Failed to close database connection.", e);
+                LOG.warn("Failed to close database connection.", e);
             }
         }
         if (c != null) {
             try {
                 c.close();
             } catch (final SQLException e) {
-            	LOG.warn("Failed to close connection.", e);
+                LOG.warn("Failed to close connection.", e);
             }
         }
     }
@@ -864,5 +870,65 @@ public class Migrator {
                 }
             }
         }
+    }
+
+    public void setLiquibaseChangelogFilter(Predicate<Resource> tester) {
+        m_liquibaseChangelogFilter = tester;
+    }
+
+    public void setupDatabase(Migration migration, boolean updateDatabase, boolean vacuum, boolean fullVacuum, boolean iplike, ApplicationContext context) throws MigrationException, Exception, IOException {
+        validateDatabaseVersion();
+
+        if (updateDatabase) {
+            prepareDatabase(migration);
+        }
+
+        checkUnicode(migration);
+        checkTime(migration);
+
+        if (updateDatabase) {
+            databaseSetOwner(migration);
+
+            for (final Resource resource : context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
+                if (m_liquibaseChangelogFilter != null && !m_liquibaseChangelogFilter.test(resource)) {
+                    continue;
+                }
+                LOG.info("- Running migration for changelog: " + resource.getDescription());
+                migration.setAccessor(new ExistingResourceAccessor(resource));
+                migrate(migration);
+            }
+        }
+
+        if (vacuum) {
+            vacuumDatabase(fullVacuum);
+        }
+
+        if (iplike) {
+            updateIplike();
+        }
+    }
+
+    // XXX This should be in a test context only
+    public static GenericApplicationContext ensureLiquibaseFilesInClassPath(GenericApplicationContext context)
+            throws MalformedURLException, IOException, Exception {
+        String migratorClass = "/" + Migrator.class.getName().replace('.', '/') + ".class";
+        URL migratorUrl = Migrator.class.getResource(migratorClass);
+        assert migratorUrl != null : "Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass;
+        if ("file".equals(migratorUrl.getProtocol()) && migratorUrl.getPath().endsWith("core/schema/target/classes" + migratorClass)) {
+            URL[] urls = { new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", "core/schema/src/main/liquibase/")) };
+            context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
+        }
+
+        validateLiquibaseChangelog(context);
+
+        return context;
+    }
+
+    public static Resource[] validateLiquibaseChangelog(ApplicationContext context) throws IOException, Exception {
+        Resource[] resources = context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN);
+        if (resources.length == 0) {
+            throw new MigrationException("Could not find any changelog.xml files in our classpath.");
+        }
+        return resources;
     }
 }

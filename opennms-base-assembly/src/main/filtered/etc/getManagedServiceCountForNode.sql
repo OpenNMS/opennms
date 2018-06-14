@@ -32,7 +32,7 @@
 --
 -- @author Jacinta Remedios <jacinta@opennms.org>
 --
--- Dependencies: ipinterface and ifservices table from etc/create.sql
+-- Dependencies: ipinterface and ifservices table
 -- 
 -- $1	The node identifier
 -- $2	X time. This is the time that is closest to current

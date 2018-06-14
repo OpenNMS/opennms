@@ -34,7 +34,7 @@
 --
 -- @author Jacinta Remedios <jacinta@opennms.org>
 --
--- Dependencies: ipinterface and ifservices table from etc/create.sql
+-- Dependencies: ipinterface and ifservices table
 -- 		 getOutageTimeInWindow to compute the outage time for a tuple.
 -- 
 -- $1	The node identifier

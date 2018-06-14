@@ -40,6 +40,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
  * @version $Id: $
  */
 public class Migration {
+    public static final String LIQUIBASE_CHANGELOG_FILENAME = "changelog.xml";
+
     private String m_jdbcUrl;
     private String m_jdbcDriver = "org.postgresql.Driver";
     private String m_databaseHost;
@@ -49,7 +51,6 @@ public class Migration {
     private String m_databasePassword;
     private String m_adminUser;
     private String m_adminPassword;
-    private String m_changeLog;
     private ResourceAccessor m_accessor;
 
     /**
@@ -199,23 +200,6 @@ public class Migration {
         m_adminPassword = adminPassword;
     }
 
-    /**
-     * <p>getChangeLog</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getChangeLog() {
-        return m_changeLog;
-    }
-    /**
-     * <p>setChangeLog</p>
-     *
-     * @param changeLog a {@link java.lang.String} object.
-     */
-    public void setChangeLog(String changeLog) {
-        m_changeLog = changeLog;
-    }
-    
     public ResourceAccessor getAccessor() {
         return m_accessor;
     }
@@ -239,7 +223,6 @@ public class Migration {
             .append("url", m_jdbcUrl)
             .append("admin-user", m_adminUser)
             .append("user", m_databasePassword)
-            .append("changelog", m_changeLog)
             .append("accessor", m_accessor)
             .toString();
     }

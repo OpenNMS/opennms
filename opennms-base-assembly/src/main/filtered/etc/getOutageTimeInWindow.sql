@@ -35,7 +35,7 @@
 -- @author Brian Weave <weave@oculan.com>
 -- @author Sowmya Nataraj <sowmya@opennms.org>
 --
--- Dependencies: outages table from etc/create.sql
+-- Dependencies: outages table
 -- 
 -- $1	The node identifier
 -- $2	The ipAddress

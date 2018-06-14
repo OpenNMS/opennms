@@ -32,15 +32,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -60,9 +65,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfiguration;
+
+import com.google.common.base.Joiner;
 
 /**
  * Note that this test may have some issues inside Eclipse related to
@@ -90,6 +98,8 @@ public class MigratorIT {
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
+
+        Migrator.ensureLiquibaseFilesInClassPath((GenericApplicationContext) m_context);
     }
 
     @Test
@@ -118,7 +128,6 @@ public class MigratorIT {
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
         migration.setAccessor(new ExistingResourceAccessor(aResource));
 
         LOG.info("Running migration on database: {}", migration);
@@ -149,7 +158,6 @@ public class MigratorIT {
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
 
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -187,7 +195,6 @@ public class MigratorIT {
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
 
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -226,7 +233,6 @@ public class MigratorIT {
         migration.setAdminPassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
         migration.setDatabaseUser(System.getProperty(TemporaryDatabase.ADMIN_USER_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_USER));
         migration.setDatabasePassword(System.getProperty(TemporaryDatabase.ADMIN_PASSWORD_PROPERTY, TemporaryDatabase.DEFAULT_ADMIN_PASSWORD));
-        migration.setChangeLog("changelog.xml");
 
         final Migrator m = new Migrator();
         m.setDataSource(m_dataSource);
@@ -348,25 +354,49 @@ public class MigratorIT {
     }
 
     private List<Resource> getTestResources() throws IOException {
-        final List<Resource> resources = new ArrayList<>();
-        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
-            URI uri = resource.getURI();
-            if (uri.getScheme().equals("file") && !uri.toString().contains("test-api/schema")) continue;
-            if (uri.getScheme().equals("jar") && !uri.toString().contains("test-api.schema")) continue;
-            resources.add(resource);
-        }
-        return resources;
+        return getTestResources("test-api/schema");
+    }
+
+    private List<Resource> getTestResources(String match) throws IOException {
+        return getChangelogs(match);
     }
 
     private List<Resource> getRealChangelog() throws IOException {
+        return getChangelogs("opennms/core/schema");
+    }
+
+    private List<Resource> getChangelogs(String fileMatch) throws IOException {
+        String jarMatch = fileMatch.replace('/', '.');
         final List<Resource> resources = new ArrayList<>();
-        for (final Resource resource : m_context.getResources("classpath*:/changelog.xml")) {
+        for (final Resource resource : m_context.getResources(Migrator.LIQUIBASE_CHANGELOG_LOCATION_PATTERN)) {
             URI uri = resource.getURI();
-            System.err.println(uri.toString());
-            if (uri.getScheme().equals("file") && !uri.toString().contains("opennms/core/schema")) continue;
-            if (uri.getScheme().equals("jar") && !uri.toString().contains("opennms.core.schema")) continue;
+            if (uri.getScheme().equals("file") && !uri.toString().contains(fileMatch)) continue;
+            if (uri.getScheme().equals("jar") && !uri.toString().contains(jarMatch)) continue;
             resources.add(resource);
         }
+
+        if (resources.isEmpty() ) {
+            fail("Couldn't find changelog.xml in this ApplicationContext ClassLoader heirarchy:\n" +
+                    Joiner.on("\n").join(getClassLoaderUrls(m_context)));
+        }
+
         return resources;
     }
+
+    private static Collection<String> getClassLoaderUrls(ApplicationContext context) {
+        List<String> urls = new LinkedList<String>();
+        for (ApplicationContext c = context; c != null; c = c.getParent()) {
+            for (ClassLoader l = c.getClassLoader(); l != null; l = l.getParent()) {
+                if (l instanceof URLClassLoader) {
+                    for (URL u : ((URLClassLoader)l).getURLs()) {
+                        urls.add(u.toString());
+                    }
+                } else {
+                    System.err.println("*** Couldn't get classloader URLs for classloader " + l + ", not an instance of URLClassLoader");
+                }
+            }
+        }
+        return urls;
+    }
+
 }

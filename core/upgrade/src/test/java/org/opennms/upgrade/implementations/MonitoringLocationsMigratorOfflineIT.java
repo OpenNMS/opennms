@@ -93,7 +93,7 @@ public class MonitoringLocationsMigratorOfflineIT {
         // this first one has been a little persnickity for unknown reasons so we log some more information
         String first = jdbcTemplate.queryForObject("SELECT monitoringarea FROM monitoringlocations ORDER BY id LIMIT 1", String.class);
         String last = jdbcTemplate.queryForObject("SELECT monitoringarea FROM monitoringlocations ORDER BY id DESC LIMIT 1", String.class);
-        // 2864 from our file, plus 1 that comes in create.sql for localhost
+        // 2864 from our file, plus 1 that is always there for localhost
         assertEquals("count of monitoringlocations; first: " + first + "; last: " + last, 2864 + 1, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocations", Integer.class).intValue());
 
         assertEquals("count of monitoringlocations WHERE tag = 'divisbileBy3'", 954, jdbcTemplate.queryForObject("SELECT COUNT(*) FROM monitoringlocationstags WHERE tag = 'divisbileBy3'", Integer.class).intValue());
