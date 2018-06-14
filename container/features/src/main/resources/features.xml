@@ -931,6 +931,11 @@
         <bundle>mvn:org.opennms.features/opennms-integration-tsrm/${project.version}</bundle>
     </feature>
 
+    <feature name="servicenow-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: ServiceNow">
+      <feature>json-simple</feature>
+      <bundle>mvn:org.opennms.features/servicenow-troubleticketer/${project.version}</bundle>
+    </feature>
+
     <feature name="eif-adapter" version="${project.version}" description="OpenNMS :: Features :: EIF Adapter">
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>

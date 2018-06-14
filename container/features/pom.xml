@@ -122,7 +122,6 @@
 
             <!-- Ticketing Features-->
             <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
-            <repository>mvn:org.opennms.features/servicenow-troubleticketer/${project.version}/xml/features</repository>
             
             <!-- Data Choices -->
             <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
