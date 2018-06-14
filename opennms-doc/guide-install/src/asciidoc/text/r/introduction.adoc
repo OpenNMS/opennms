@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-r]]
-== R Statistics System
+=== R Statistics System
 
 link:https://www.r-project.org/[R] is a free software environment for statistical computing and graphics.
 _OpenNMS_ can leverage the power of _R_ for forecasting and advanced calculations on collected time series data.

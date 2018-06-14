@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 [[gi-install-oracle-java-windows]]
-=== Microsoft Windows
+==== Oracle Java SE Development Kit 8
 
 This section describes how to install _Oracle Java SE Development Kit 8_ on a system running the _Microsoft Windows Server 2012_ operating system.
 

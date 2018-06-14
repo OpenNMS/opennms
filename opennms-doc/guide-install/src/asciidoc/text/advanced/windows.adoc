@@ -1,0 +1,7 @@
+=== Advanced Installation Options for _Microsoft Windows_
+
+include::../java/windows.adoc[]
+
+==== Time-Series Database Engine
+include::../rrdtool/windows.adoc[]
+include::../newts/windows.adoc[]

@@ -2,30 +2,8 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[gi-install-opennms-windows]]
-=== Microsoft Windows
-
-IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
-
-_OpenNMS_ is mostly developed on Unix/Linux based systems, nevertheless it is possible to install the platform on _Microsoft Windows_ operating systems.
-To install the application a graphical installer is provided and can be used to install _OpenNMS_ on _Microsoft Windows_.
-This section describes how to install the _OpenNMS_ platform on _Microsoft Windows 2012 Server_.
-
-NOTE: The standalone installer for _Microsoft Windows_ is only available for the most recent stable version of _OpenNMS_.
-
-IMPORTANT: It is required to have link:http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8] installed.
-           The _JRE_ is *NOT* sufficient.
-
-TIP: To edit _OpenNMS_ configuration files on _Microsoft Windows_ the tool link:https://notepad-plus-plus.org/[Notepad++] can deal with the formatting of _.property_ and _.xml_ files.
-
-The setup process is described in the following steps:
-
-. Installation of _PostgreSQL_ database service
-. Download and install the graphical _OpenNMS_ installer
-. First start of the _OpenNMS_ application
-
 [[gi-install-opennms-deb-prepare-pg]]
-==== Install PostgreSQL
+=== Install PostgreSQL
 
 _PostgreSQL_ is available for _Microsoft Windows_ and latest version can be downloaded from link:http://www.enterprisedb.com/products-services-training/pgdownload#windows[Download PostgreSQL] page.
 Follow the on-screen instructions of the graphical installer.
@@ -46,8 +24,8 @@ NOTE: The database data directory is automatically initialized during the setup 
 
 NOTE: It is not necessary to change the authentication method in `pg_hba.conf`, it is by default set to `md5` for localhost connections.
 
-[[gi-install-opennms-deb-repo]]
-==== Install OpenNMS with GUI installer
+[[gi-install-opennms-gui-installer]]
+=== Install OpenNMS with GUI installer
 
 For _Microsoft Windows_ environments download the _standalone-opennms-installer-{ONMS-VERSION}.zip_ file from the link:http://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS SourceForge] repository.
 Extract the downloaded _ZIP_ file.

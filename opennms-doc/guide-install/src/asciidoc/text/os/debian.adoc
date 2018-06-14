@@ -1,0 +1,12 @@
+[[gi-install-debian]]
+== Installing _OpenNMS_ on _Debian_
+
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
+This section describes how to install the _OpenNMS_ platform on _Ubuntu 14.04 LTS_.
+The setup process is described in the following steps:
+
+. Add OpenNMS Apt package repository
+. Installation of the _opennms_ meta package which handles all dependencies
+. Initialize _PostgreSQL_ database and configure access
+. Initialize _OpenNMS_ and first start of the application
