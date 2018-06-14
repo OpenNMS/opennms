@@ -234,6 +234,8 @@ Requires(pre):	%{name}-plugin-ticketer-otrs
 Requires:	%{name}-plugin-ticketer-otrs
 Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
+Requires(pre):	%{name}-plugin-ticketer-servicenow
+Requires:	%{name}-plugin-ticketer-servicenow
 Requires(pre):	%{name}-plugin-protocol-cifs
 Requires:	%{name}-plugin-protocol-cifs
 Requires(pre):	%{name}-plugin-protocol-dhcp
@@ -394,6 +396,20 @@ Requires:	%{name}-core = %{version}-%{release}
 %description plugin-ticketer-rt
 The RT ticketer plugin provides the ability to automatically create RT
 tickets from %{_descr} alarms.
+
+%{extrainfo}
+%{extrainfo2}
+
+
+%package plugin-ticketer-servicenow
+Summary:	ServiceNow Ticketer Plugin
+Group:		Applications/System
+Requires(pre):	%{name}-core = %{version}-%{release}
+Requires:	%{name}-core = %{version}-%{release}
+
+%description plugin-ticketer-servicenow
+The ServiceNow ticketer plugin provides the ability to automatically create
+ServiceNow incidents from %{_descr} alarms.
 
 %{extrainfo}
 %{extrainfo2}
@@ -630,6 +646,7 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'drools-engine.d/ncs' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
+	grep -v 'servicenow.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
@@ -653,6 +670,7 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'drools-engine.d/ncs' | \
 	grep -v 'dhcpd-configuration.xml' | \
 	grep -v 'jira.properties' | \
+	grep -v 'servicenow.properties' | \
 	grep -v 'jms-northbounder-configuration.xml' | \
 	grep -v 'juniper-tca' | \
 	grep -v 'mapsadapter-configuration.xml' | \
@@ -709,6 +727,7 @@ find %{buildroot}%{instprefix}/lib ! -type d | \
 find %{buildroot}%{instprefix}/system ! -type d | \
     sed -e "s|^%{buildroot}|%attr(755,root,root) |" | \
 	grep -v 'jira-' | \
+	grep -v 'servicenow-' | \
     sort >> %{_tmppath}/files.main
 # Put the etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{instprefix}/system -type d | \
@@ -855,6 +874,13 @@ rm -rf %{buildroot}
 %{instprefix}/lib/opennms-integration-rt-*.jar
 %config(noreplace) %{instprefix}/etc/rt.properties
 %{sharedir}/etc-pristine/rt.properties
+
+%files plugin-ticketer-servicenow
+%defattr(664 root root 775)
+%{instprefix}/system/org/opennms/features/servicenow-troubleticketer/*/servicenow-*.jar
+%{instprefix}/system/org/opennms/features/servicenow-troubleticketer/*/servicenow-*.jar.sha1
+%config(noreplace) %{instprefix}/etc/servicenow.properties
+%{sharedir}/etc-pristine/servicenow.properties
 
 %files plugin-protocol-dhcp
 %defattr(664 root root 775)
