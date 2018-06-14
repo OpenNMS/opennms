@@ -963,6 +963,7 @@
       <feature version="${cxfVersion}">cxf-ws-addr</feature>
 
       <feature>opennms-collection-api</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-provisioning-api</feature>
       <feature>opennms-dao-api</feature>
 
