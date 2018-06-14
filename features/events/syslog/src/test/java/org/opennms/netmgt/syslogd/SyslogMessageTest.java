@@ -34,13 +34,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -384,4 +390,41 @@ public class SyslogMessageTest {
         assertEquals("1317", message.getProcessId());
         assertEquals("CFMD_CCM_DEFECT_RMEP", message.getMessageID());
     }
+
+    @Test
+    public void shouldHonorTimezoneWithConfiguredDefault() throws IOException {
+        checkDateParserWith(TimeZone.getTimeZone("CET"), "timezone=\"CET\" ");
+    }
+
+    @Test
+    public void shouldHonorTimezoneWithoutConfiguredDefault() throws IOException {
+        checkDateParserWith(TimeZone.getDefault(), "");
+    }
+
+    private void checkDateParserWith(TimeZone expectedTimeZone, String timezoneProperty) throws IOException {
+        String configuration = "<syslogd-configuration>" +
+                "<configuration " +
+                "syslog-port=\"10514\" " +
+                timezoneProperty +
+                "/></syslogd-configuration>";
+        final InputStream stream = new ByteArrayInputStream((configuration).getBytes());
+        final SyslogdConfigFactory config = new SyslogdConfigFactory(stream);
+
+        final SyslogParser parser = new SyslogParser(config, SyslogdTestUtils.toByteBuffer("something"));
+        assertTrue(parser.find());
+
+        // Date Format 1:
+        int currentYear = ZonedDateTime.now(expectedTimeZone.toZoneId()).getYear();
+        LocalDateTime expectedLocalDateTime = LocalDateTime.of(currentYear, 2, 3 , 12, 21, 20);
+        ZonedDateTime expectedDateTime = ZonedDateTime.of(expectedLocalDateTime, expectedTimeZone.toZoneId());
+        Date parsedDate = parser.parseDate("Feb 03 12:21:20");
+        assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+
+        // Date Format 2:
+        LocalDate expectedLocalDate = LocalDate.of(currentYear, 2, 3 );
+        expectedDateTime = expectedLocalDate.atStartOfDay(expectedTimeZone.toZoneId());
+        parsedDate = parser.parseDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(expectedDateTime));
+        assertEquals(expectedDateTime.toInstant(), parsedDate.toInstant());
+    }
+
 }
