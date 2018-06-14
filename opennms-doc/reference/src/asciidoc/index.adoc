@@ -1,0 +1,157 @@
+// Global settings
+:ascii-ids:
+:encoding: UTF-8
+:lang: en
+:icons: font
+:toc: left
+:toclevels: 2
+:numbered:
+:stem:
+
+[[reference]]
+= Reference
+:author: Copyright (c) 2015-2018 The OpenNMS Group, Inc.
+:revnumber: {opennms-product-name} {opennms-version}
+:revdate: {last-update-label} {docdatetime}
+:version-label!:
+
+[[ref-cli]]
+== Command Line
+include::text/cli/karaf-shell.adoc[]
+include::text/cli/adhoc-collection.adoc[]
+include::text/cli/resource-cli.adoc[]
+include::text/cli/newts-repository-converter.adoc[]
+include::text/cli/stress-testing.adoc[]
+
+[[ref-event-sources]]
+== Event Sources
+include::text/event-sources/snmp-traps.adoc[]
+include::text/event-sources/syslog.adoc[]
+include::text/event-sources/xml-tcp.adoc[]
+include::text/event-sources/eif-adapter.adoc[]
+include::text/event-sources/tl1.adoc[]
+
+// Included in alphabetical order
+[[ref-service-monitors]]
+== Service monitors
+include::text/service-monitors/AvailabilityMonitor.adoc[]
+include::text/service-monitors/BgpSessionMonitor.adoc[]
+include::text/service-monitors/BSFMonitor.adoc[]
+include::text/service-monitors/CiscoIpSlaMonitor.adoc[]
+include::text/service-monitors/CiscoPingMibMonitor.adoc[]
+include::text/service-monitors/CitrixMonitor.adoc[]
+include::text/service-monitors/DhcpMonitor.adoc[]
+include::text/service-monitors/DiskUsageMonitor.adoc[]
+include::text/service-monitors/DnsMonitor.adoc[]
+include::text/service-monitors/DNSResolutionMonitor.adoc[]
+include::text/service-monitors/FtpMonitor.adoc[]
+include::text/service-monitors/HostResourceSwRunMonitor.adoc[]
+include::text/service-monitors/HttpMonitor.adoc[]
+include::text/service-monitors/HttpPostMonitor.adoc[]
+include::text/service-monitors/HttpsMonitor.adoc[]
+include::text/service-monitors/IcmpMonitor.adoc[]
+include::text/service-monitors/ImapMonitor.adoc[]
+include::text/service-monitors/ImapsMonitor.adoc[]
+include::text/service-monitors/JCifsMonitor.adoc[]
+include::text/service-monitors/JDBCMonitor.adoc[]
+include::text/service-monitors/JDBCStoredProcedureMonitor.adoc[]
+include::text/service-monitors/JDBCQueryMonitor.adoc[]
+include::text/service-monitors/JmxMonitor.adoc[]
+include::text/service-monitors/JolokiaBeanMonitor.adoc[]
+include::text/service-monitors/LdapMonitor.adoc[]
+include::text/service-monitors/LdapsMonitor.adoc[]
+include::text/service-monitors/MemcachedMonitor.adoc[]
+include::text/service-monitors/NetScalerGroupHealthMonitor.adoc[]
+include::text/service-monitors/NrpeMonitor.adoc[]
+include::text/service-monitors/NtpMonitor.adoc[]
+include::text/service-monitors/OmsaStorageMonitor.adoc[]
+include::text/service-monitors/OpenManageChassisMonitor.adoc[]
+include::text/service-monitors/PageSequenceMonitor.adoc[]
+include::text/service-monitors/PercMonitor.adoc[]
+include::text/service-monitors/Pop3Monitor.adoc[]
+include::text/service-monitors/PrTableMonitor.adoc[]
+include::text/service-monitors/RadiusAuthMonitor.adoc[]
+include::text/service-monitors/SmbMonitor.adoc[]
+include::text/service-monitors/SnmpMonitor.adoc[]
+include::text/service-monitors/SshMonitor.adoc[]
+include::text/service-monitors/SSLCertMonitor.adoc[]
+include::text/service-monitors/StrafePingMonitor.adoc[]
+include::text/service-monitors/TcpMonitor.adoc[]
+include::text/service-monitors/SystemExecuteMonitor.adoc[]
+include::text/service-monitors/VmwareCimMonitor.adoc[]
+include::text/service-monitors/VmwareMonitor.adoc[]
+include::text/service-monitors/Win32ServiceMonitor.adoc[]
+include::text/service-monitors/WsManMonitor.adoc[]
+include::text/service-monitors/XmpMonitor.adoc[]
+
+[[ref-collectors]]
+== Data Collectors
+include::text/data-collectors/SnmpCollector.adoc[]
+include::text/data-collectors/WsManCollector.adoc[]
+include::text/data-collectors/Jsr160Collector.adoc[]
+include::text/data-collectors/VmwareCimCollector.adoc[]
+include::text/data-collectors/VmwareCollector.adoc[]
+include::text/data-collectors/WmiCollector.adoc[]
+include::text/data-collectors/XmlCollector.adoc[]
+include::text/data-collectors/HttpCollector.adoc[]
+include::text/data-collectors/JdbcCollector.adoc[]
+include::text/data-collectors/NSClientCollector.adoc[]
+include::text/data-collectors/TcaCollector.adoc[]
+include::text/data-collectors/XmpCollector.adoc[]
+
+[[ref-notification-strategies]]
+== Notification Strategies
+include::text/notification-strategies/MattermostNotificationStrategy.adoc[]
+include::text/notification-strategies/SlackNotificationStrategy.adoc[]
+
+[[ref-provisioning-detectors]]
+== Provisioning
+
+=== Service Detectors
+include::text/provisioning/detectors/SnmpDetector.adoc[]
+include::text/provisioning/detectors/WsManDetector.adoc[]
+
+=== Adapters
+include::text/provisioning/adapters/ddns-adapter.adoc[]
+
+== Topology Provider
+include::text/topology-provider/graphml-asset-topology-provider.adoc[]
+
+[[ref-daemon-config-files]]
+== Daemon Configuration Files
+include::text/daemon-config-files/eventd.adoc[]
+include::text/daemon-config-files/notifd.adoc[]
+include::text/daemon-config-files/pollerd.adoc[]
+
+[[ref-ticketing-adapters]]
+== Ticketing Adapaters
+include::text/ticketing-adapters/jira.adoc[]
+include::text/ticketing-adapters/remedy.adoc[]
+// TSRM Ticketer
+include::text/ticketing-adapters/tsrm.adoc[]
+
+[[ref-telemetryd]]
+== Telemetryd
+
+[[ref-telemetryd-listener]]
+=== Listener
+include::text/telemetryd/listener/udp-listener.adoc[]
+include::text/telemetryd/listener/netflow9-udp-listener.adoc[]
+include::text/telemetryd/listener/sflow-udp-listener.adoc[]
+include::text/telemetryd/listener/ipfix-udp-listener.adoc[]
+include::text/telemetryd/listener/ipfix-tcp-listener.adoc[]
+
+[[ref-telemetryd-protocols]]
+=== Protocols
+include::text/telemetryd/protocols/ipfix-adapter.adoc[]
+include::text/telemetryd/protocols/jti/junos-telemetry-interface.adoc[]
+include::text/telemetryd/protocols/jti/jti-adapter.adoc[]
+include::text/telemetryd/protocols/netflow5-adapter.adoc[]
+include::text/telemetryd/protocols/netflow9-adapter.adoc[]
+include::text/telemetryd/protocols/nxos/cisco-nxos-telemetry.adoc[]
+include::text/telemetryd/protocols/nxos/nxos-adapter.adoc[]
+include::text/telemetryd/protocols/sflow-adapter.adoc[]
+
+[[ref-plugins]]
+== Plugins
+include::text/plugins/alarm-change-notifier.adoc[]
