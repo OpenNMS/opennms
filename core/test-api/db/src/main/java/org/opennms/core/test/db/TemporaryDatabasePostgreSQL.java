@@ -334,7 +334,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 st.execute("CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'");
             }
         } catch (final Throwable e) {
-            throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase(), e);
+            throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase() + ": " + e, e);
         } finally {
             SQLException failed = null;
             if (st != null) {
@@ -350,7 +350,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 if (failed == null) failed = e;
             }
             if (failed != null) {
-                throw new TemporaryDatabaseException("Failed while cleaning up database resources.", failed);
+                throw new TemporaryDatabaseException("Failed while cleaning up database resources: " + failed, failed);
             }
         }
 

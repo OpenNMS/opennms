@@ -454,7 +454,7 @@ public class Migrator {
             st.execute("CREATE DATABASE \"" + migration.getDatabaseName() + "\" WITH ENCODING='UNICODE'");
             st.execute("GRANT ALL ON DATABASE \"" + migration.getDatabaseName() + "\" TO \"" + migration.getDatabaseUser() + "\"");
         } catch (final SQLException e) {
-            throw new MigrationException("an error occurred creating the OpenNMS database", e);
+            throw new MigrationException("an error occurred creating the OpenNMS database: " + e, e);
         } finally {
             cleanUpDatabase(c, null, st, rs);
         }
