@@ -1,0 +1,21 @@
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+== Advanced Options
+// Installation Guide for Java environment
+include::javaenv.adoc[]
+
+// Installation Guide for RRDtool
+include::rrdtool.adoc[]
+
+// Installation Guide for Time Series Database Newts
+include::newts/introduction.adoc[]
+include::newts/cassandra-rhel.adoc[]
+include::newts/cassandra-debian.adoc[]
+include::newts/cassandra-windows.adoc[]
+include::newts/configure-opennms.adoc[]
+
+// Installation Guide for R
+include::r/introduction.adoc[]
+include::r/rhel.adoc[]
+include::r/debian.adoc[]

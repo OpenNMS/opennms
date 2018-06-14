@@ -1,0 +1,11 @@
+
+[[gi-install-rhel]]
+== Installing _OpenNMS_ on _RHEL_
+
+This section describes how to install the _OpenNMS_ platform on _CentOS 7.1_.
+The setup process is described in the following steps:
+
+. Setup _OpenNMS_ YUM Package Repositories
+. Installation of the _opennms_ meta package which handles all dependencies
+. Initialize _PostgreSQL_ database and configure access
+. Initialize _OpenNMS_ and first start of the application

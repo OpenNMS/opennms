@@ -1,0 +1,40 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-rrdtool-time-series-database]]
+=== RRDtool
+
+In most _Open Source_ applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
+The basic installation of _OpenNMS_ comes with _JRobin_ but it is simple to switch the system to use _RRDtool_ to persist _Time Series Data_.
+This section describes how to install _RRDtool_, the _jrrd2_ _OpenNMS Java Interface_ and how to configure _OpenNMS_ to use it.
+_RRDtool_ can be installed from the official package repositories provided by _RHEL_ and _Debian_ based _Linux_ distributions.
+
+
+[[gi-rrdtool-install-source]]
+==== Source
+
+If you want the latest version of RRDtool, you may want to compile it from source. Instructions for doing so are at
+link:https://oss.oetiker.ch/rrdtool/doc/rrdbuild.en.html[rrdbuild].
+
+IMPORTANT: The latest version of RRDtool may not always be compatible with the version of _OpenNMS_ that you want to run.
+           Please ask about RRDtool support on the discussion lists or chat rooms if you have any problems running a
+           new version of RRDtool.
+
+NOTE: If you want to install the latest _RRDtool_ from source, make sure the `rrdtool` binary is in search path.
+      To make the setup easier, you can link the binary to `/usr/bin/rrdtool` which is the location where _OpenNMS_ will expect
+      to find the executable binary.
+
+==== Reference
+.References to the RRDtool binary
+[options="header, autowidth"]
+|===
+| Configuration file                | Property
+| `opennms.properties`              | `rrd.binary=/usr/bin/rrdtool`
+| `response-adhoc-graph.properties` | `command.prefix=/usr/bin/rrdtool`
+| `response-graph.properties`       | `command.prefix=/usr/bin/rrdtool` +
+                                      `info.command=/usr/bin/rrdtool`
+| `snmp-adhoc-graph.properties`     | `command.prefix=/usr/bin/rrdtool`
+| `snmp-graph.properties`           | `command.prefix=/usr/bin/rrdtool` +
+                                      `command=/usr/bin/rrdtool info`
+|===

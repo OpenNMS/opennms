@@ -1,0 +1,25 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-opennms-repo-releases]]
+=== Package Repositories
+
+Installation packages are available for different releases of _OpenNMS_.
+You will need to choose which release you would like to run and then configure your package repository to point to that release.
+Configuring a package repository will enable you to install and update the software by using standard Linux software update tools like _yum_ and _apt_.
+
+The following package repositories are available:
+
+._OpenNMS_ package repositories
+[options="header, autowidth"]
+|===
+| Release                   | Description
+| `stable`                  | Latest stable release. This version is recommended for all users.
+| `testing`                 | Release candidate for the next stable release.
+| `snapshot`                | Latest successful development build, the "nightly" build.
+| `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
+                              Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
+|===
+
+To install a different release the repository files have to be installed and manually modified.

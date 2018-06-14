@@ -1,0 +1,21 @@
+[[gi-windows-install]]
+== Installing _OpenNMS_ on _Microsoft Windows_
+
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
+_OpenNMS_ is primarily developed on Unix/Linux based systems. Nevertheless, it is possible to install the platform on _Microsoft Windows_ operating systems.
+To install the application a graphical installer is provided and can be used to install _OpenNMS_ on _Microsoft Windows_.
+This section describes how to install the _OpenNMS_ platform on _Microsoft Windows 2012 Server_.
+
+NOTE: The standalone installer for _Microsoft Windows_ is only available for the most recent stable version of _OpenNMS_.
+
+IMPORTANT: It is required to have link:http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8] installed.
+           The _JRE_ is *NOT* sufficient.
+
+TIP: To edit _OpenNMS_ configuration files on _Microsoft Windows_ the tool link:https://notepad-plus-plus.org/[Notepad++] can deal with the formatting of _.property_ and _.xml_ files.
+
+The installation process is described in the following steps:
+
+. Installation of _PostgreSQL_ database service
+. Download and install the graphical _OpenNMS_ installer
+. First start of the _OpenNMS_ application
