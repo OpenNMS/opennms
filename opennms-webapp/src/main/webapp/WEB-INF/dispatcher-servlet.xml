@@ -413,13 +413,18 @@
                         <list>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Events"/>
-                                <property name="url" value="event/index"/>
+                                <property name="url" value="event/list"/>
                                 <property name="locationMatch" value="event"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Alarms"/>
-                                <property name="url" value="alarm/index.htm"/>
+                                <property name="url" value="alarm/list"/>
                                 <property name="locationMatch" value="alarm"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="NCS Alarms"/>
+                                <property name="url" value="alarm/ncs-alarms.htm"/>
+                                <property name="locationMatch" value="alarms"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Notifications"/>
@@ -428,7 +433,7 @@
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Outages"/>
-                                <property name="url" value="outage/index.jsp"/>
+                                <property name="url" value="outage/list"/>
                                 <property name="locationMatch" value="outage"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
