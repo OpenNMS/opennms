@@ -122,6 +122,7 @@
 
             <!-- Ticketing Features-->
             <repository>mvn:org.opennms.features/jira-troubleticketer/${project.version}/xml/features</repository>
+            <repository>mvn:org.opennms.features/servicenow-troubleticketer/${project.version}/xml/features</repository>
             
             <!-- Data Choices -->
             <repository>mvn:org.opennms.features/datachoices/${project.version}/xml/features</repository>
@@ -330,6 +331,7 @@
             <feature>vaadin-snmp-events-and-metrics</feature>
             <feature>vaadin-surveillance-views</feature>
             <feature>jira-troubleticketer</feature>
+            <feature>servicenow-troubleticketer</feature>
             <feature>tsrm-troubleticketer</feature>
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
@@ -648,6 +650,13 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>jira-troubleticketer</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>servicenow-troubleticketer</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
