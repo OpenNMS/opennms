@@ -28,22 +28,25 @@
 
 package org.opennms.web.rest.mapper.v2;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Mappings;
+import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.model.v2.AlarmDTO;
+import org.opennms.web.rest.model.v2.AlarmSummaryDTO;
 import org.opennms.web.rest.model.v2.EventParameterDTO;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", uses = {EventMapper.class})
 public abstract class AlarmMapper {
@@ -54,6 +57,7 @@ public abstract class AlarmMapper {
             @Mapping(source = "distPoller.location", target = "location"),
             @Mapping(source = "ipAddr", target = "ipAddress"),
             @Mapping(source = "alarmType", target = "type"),
+            @Mapping(ignore = true, target = "relatedAlarms"),
             @Mapping(source = "counter", target = "count"),
             @Mapping(source = "severityLabel", target = "severity"),
             @Mapping(source = "logMsg", target = "logMessage"),
@@ -69,6 +73,10 @@ public abstract class AlarmMapper {
     @InheritInverseConfiguration
     public abstract OnmsAlarm alarmDTOToAlarm(AlarmDTO alarm);
 
+    public Integer ackTypeToInteger(AckType ack) {
+        return ack.getId();
+    }
+
     @AfterMapping
     protected void fillAlarm(OnmsAlarm alarm, @MappingTarget AlarmDTO alarmDTO) {
         final List<OnmsEventParameter> eventParms = alarm.getEventParameters();
@@ -79,6 +87,9 @@ public abstract class AlarmMapper {
         }
         if (alarm.getTTicketId() != null && !alarm.getTTicketId().isEmpty() && ticketUrlTemplate != null) {
             alarmDTO.setTroubleTicketLink(getTicketUrl(alarm.getTTicketId()));
+        }
+        if (alarm instanceof Situation) {
+            alarmDTO.setRelatedAlarms(((Situation)alarm).getAlarms().stream().map(a -> alarmToAlarmSummaryDTO(a)).collect(Collectors.toList()));
         }
     }
 
@@ -97,6 +108,8 @@ public abstract class AlarmMapper {
     }
 
     public abstract EventParameterDTO eventParameterToEventParameterDTO(OnmsEventParameter eventParameter);
+
+    public abstract AlarmSummaryDTO alarmToAlarmSummaryDTO(OnmsAlarm alarm);
 
     public void setTicketUrlTemplate(String ticketUrlTemplate) {
         this.ticketUrlTemplate = ticketUrlTemplate;
