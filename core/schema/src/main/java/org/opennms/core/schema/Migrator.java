@@ -927,8 +927,23 @@ public class Migrator {
     public static Resource[] validateLiquibaseChangelog(ApplicationContext context) throws IOException, Exception {
         Resource[] resources = context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN);
         if (resources.length == 0) {
-            throw new MigrationException("Could not find any changelog.xml files in our classpath.");
+            throw new MigrationException("Could not find any changelog.xml files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:\n" + getContextClassLoaderUrls(context));
         }
         return resources;
+    }
+
+    private static String getContextClassLoaderUrls(ApplicationContext context) {
+        StringBuffer urls = new StringBuffer();
+        for (ApplicationContext c = context; c != null; c = c.getParent()) {
+            for (ClassLoader cl = c.getClassLoader(); cl != null; cl = cl.getParent()) {
+                if (cl instanceof URLClassLoader) {
+                    for (URL url : ((URLClassLoader) cl).getURLs()) {
+                        urls.append("\t");
+                        urls.append(url);
+                    }
+                }
+            }
+        }
+        return urls.toString();
     }
 }
