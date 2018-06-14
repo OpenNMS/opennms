@@ -10,10 +10,6 @@
 	<name>OpenNMS :: Features :: Ticketing :: ServiceNow</name>
 	<packaging>bundle</packaging>
 
-	<properties>
-		<json-simpleVersion>1.1.1</json-simpleVersion>
-	</properties>
-
 	<build>
 		<plugins>
 			<plugin>

@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.ticketer.servicenow;
 
+import static org.opennms.netmgt.ticketer.servicenow.ServiceNowConstants.*;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -39,20 +41,16 @@ import java.security.GeneralSecurityException;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
 import org.opennms.core.web.HttpClientWrapper;
-
-import static org.opennms.netmgt.ticketer.servicenow.ServiceNowConstants.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,8 +92,8 @@ public class ServiceNowTicketerPlugin implements Plugin {
                     throw new PluginException("While creating an incident, expected a status code of 201 but got " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
                 }
                 JSONObject createdIncident = getResponseJson(response);
-                if (!StringUtils.isEmpty(createdIncident.getString(INCIDENT_NUMBER))) {
-                    ticket.setId(createdIncident.getString(INCIDENT_NUMBER));
+                if (!StringUtils.isEmpty(createdIncident.get(INCIDENT_NUMBER).toString())) {
+                    ticket.setId(createdIncident.get(INCIDENT_NUMBER).toString());
                 }
                 
             } catch (IOException ioe) {
@@ -128,12 +126,11 @@ public class ServiceNowTicketerPlugin implements Plugin {
     }
     
     private void updateIncidentWithTicket(JSONObject incident, Ticket ticket) throws IOException {
-        Properties props;
+        Properties props = new Properties();
         try {
             props = getProperties();
         } catch (IOException ioe) {
             LOG.error("Failed to load servicenow.properties. Falling back to all defaults.", ioe);
-            props = new Properties();
         }
         if (!StringUtils.isEmpty(ticket.getAttribute(CALLER_ID))) {
             incident.put(CALLER_ID, ticket.getAttribute(CALLER_ID));
