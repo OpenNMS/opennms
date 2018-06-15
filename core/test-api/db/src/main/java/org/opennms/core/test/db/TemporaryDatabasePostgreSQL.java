@@ -343,7 +343,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         try {
             st = adminConnection.createStatement();
             if (m_populateSchema) {
-                dbSource = getIntegrationTestDatabaseName() + "a";
+                dbSource = getIntegrationTestDatabaseName();
                 st.execute("CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms");
             } else {
                 dbSource = "template1";
