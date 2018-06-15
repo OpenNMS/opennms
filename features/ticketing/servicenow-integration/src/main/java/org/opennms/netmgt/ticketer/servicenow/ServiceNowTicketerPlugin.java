@@ -47,6 +47,7 @@ import org.apache.http.entity.StringEntity;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.jsoup.Jsoup;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
@@ -76,34 +77,47 @@ public class ServiceNowTicketerPlugin implements Plugin {
         String ticketId = ticket.getId();
         if (StringUtils.isEmpty(ticketId)) {
             // We are making a new ticket
+            LOG.debug("Creating a new ticket for alarmID {}", ticket.getAlarmId());
             JSONObject incident = new JSONObject();
             try {
                 Properties props = getProperties();
                 updateIncidentWithTicket(incident, ticket);
                 HttpClientWrapper clientWrapper = buildClientWrapper(props);
+                LOG.debug("Got an HttpClientWrapper: {}", clientWrapper);
                 
-                HttpPost postMethod = new HttpPost(props.getProperty(CFG_URL + "/api/now/table/incident"));
+                HttpPost postMethod = new HttpPost(props.getProperty(CFG_URL) + "/api/now/table/incident");
                 postMethod.addHeader("Accept", "application/json");
+                LOG.debug("Build POST method: {}", postMethod);
+                
                 StringEntity entity = new StringEntity(incident.toString(), StandardCharsets.UTF_8);
                 entity.setContentType("application/json");
+                LOG.debug("Executing POST with incident JSON entity: {}", incident);
+                
+                postMethod.setEntity(entity);
                 
                 final CloseableHttpResponse response = clientWrapper.execute(postMethod);
                 if (response.getStatusLine().getStatusCode() != 201) {
+                    LOG.error("Expected a 201 response from POST but got: {}", response.getStatusLine());
                     throw new PluginException("While creating an incident, expected a status code of 201 but got " + response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
                 }
+                LOG.debug("Received POST response with entity: {}", response.getEntity());
                 JSONObject createdIncident = getResponseJson(response);
+                LOG.debug("Created JSON object from POST response entity: {}", createdIncident);
                 if (!StringUtils.isEmpty(createdIncident.get(INCIDENT_NUMBER).toString())) {
                     ticket.setId(createdIncident.get(INCIDENT_NUMBER).toString());
                 }
+                LOG.debug("Created ServiceNow incident with number: {}", createdIncident.get(INCIDENT_NUMBER).toString());
                 
             } catch (IOException ioe) {
+                LOG.error("Caught IOException while creating ServiceNow incident", ioe);
                 throw new PluginException("Failed to create incident", ioe);
             } catch (ParseException pe) {
+                LOG.error("Caught ParseException while creating ServiceNow incident", pe);
                 throw new PluginException("Failed to parse JSON response to incident creation POST", pe);
             }
         } else {
             // We are updating an existing ticket
-            LOG.warn("Updates to existing tickets are not yet implemented for ServiceNow.");
+            LOG.warn("Updates to existing incidents are not yet implemented for the ServiceNow ticketer.");
         }
         
     }
@@ -125,24 +139,19 @@ public class ServiceNowTicketerPlugin implements Plugin {
         return props;
     }
     
+    @SuppressWarnings("unchecked")
     private void updateIncidentWithTicket(JSONObject incident, Ticket ticket) throws IOException {
-        Properties props = new Properties();
-        try {
-            props = getProperties();
-        } catch (IOException ioe) {
-            LOG.error("Failed to load servicenow.properties. Falling back to all defaults.", ioe);
-        }
         if (!StringUtils.isEmpty(ticket.getAttribute(CALLER_ID))) {
-            incident.put(CALLER_ID, ticket.getAttribute(CALLER_ID));
+            incident.put(CALLER_ID, JSONObject.escape(ticket.getAttribute(CALLER_ID)));
         }
         if (!StringUtils.isEmpty(ticket.getAttribute(CATEGORY))) {
-            incident.put(CATEGORY, ticket.getAttribute(CATEGORY));
+            incident.put(CATEGORY, JSONObject.escape(ticket.getAttribute(CATEGORY)));
         }
         if (!StringUtils.isEmpty(ticket.getSummary())) {
-            incident.put(SHORT_DESCRIPTION, ticket.getSummary());
+            incident.put(SHORT_DESCRIPTION, JSONObject.escape(Jsoup.parse(ticket.getSummary()).text()));
         }
         if (!StringUtils.isEmpty(ticket.getDetails())) {
-            incident.put(DESCRIPTION, ticket.getDetails());
+            incident.put(DESCRIPTION, JSONObject.escape(Jsoup.parse(ticket.getDetails()).text()));
         }        
     }
     
@@ -150,7 +159,8 @@ public class ServiceNowTicketerPlugin implements Plugin {
         HttpClientWrapper clientWrapper = HttpClientWrapper.create()
                 .addBasicCredentials(props.getProperty(CFG_USERNAME), props.getProperty(CFG_PASSWORD))
                 .setConnectionTimeout(Integer.valueOf(props.getProperty(CFG_CONNECTION_TIMEOUT, CFG_CONNECTION_TIMEOUT_DEFAULT)))
-                .setUserAgent("OpenNMS ticketer plugin for ServiceNow");
+                .setUserAgent("OpenNMS ticketer plugin for ServiceNow")
+                .usePreemptiveAuth();
         if (!Boolean.valueOf(props.getProperty(CFG_SSL_STRICT, CFG_SSL_STRICT_DEFAULT))) {
             try {
                 clientWrapper.useRelaxedSSL("https");
@@ -158,10 +168,13 @@ public class ServiceNowTicketerPlugin implements Plugin {
                 LOG.error("Failed to set relaxed SSL on HTTPS", gse);
             }
         }
+        LOG.debug("Built an HttpClientWrapper: {}", clientWrapper);
         return clientWrapper;
     }
     
     private JSONObject getResponseJson(CloseableHttpResponse response) throws UnsupportedOperationException, IOException, ParseException {
-        return (JSONObject) new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
+        JSONObject outerResponse = (JSONObject) new JSONParser().parse(new InputStreamReader(response.getEntity().getContent()));
+        LOG.debug("Received outer response from ServiceNow API: {}", outerResponse);
+        return (JSONObject) new JSONParser().parse(outerResponse.get("result").toString());
     }
 }
