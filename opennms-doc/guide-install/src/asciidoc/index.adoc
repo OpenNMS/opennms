@@ -14,26 +14,29 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-// Installation Guide for {opennms-product-name}
-include::text/opennms/introduction.adoc[]
-include::text/opennms/repository.adoc[]
+// Introduction to {opennms-product-name}
+include::text/intro/introduction.adoc[]
+include::text/intro/repository.adoc[]
 
 // Installing OpenNMS on RHEL
-include::text/os/rhel.adoc[]
-include::text/packages/rhel.adoc[]
-include::text/opennms/rhel.adoc[]
-include::text/advanced/rhel.adoc[]
+include::text/rhel/intro.adoc[]
+include::text/rhel/repository.adoc[]
+include::text/rhel/opennms.adoc[]
+include::text/rhel/advanced.adoc[]
+include::text/nextsteps.adoc[]
 
 // Installing OpenNMS on Debian
-include::text/os/debian.adoc[]
-include::text/packages/debian.adoc[]
-include::text/opennms/debian.adoc[]
-include::text/advanced/debian.adoc[]
+include::text/debian/intro.adoc[]
+include::text/debian/repository.adoc[]
+include::text/debian/opennms.adoc[]
+include::text/debian/advanced.adoc[]
+include::text/nextsteps.adoc[]
 
 // Installing OpenNMS on Windows
-include::text/os/windows.adoc[]
-include::text/opennms/windows.adoc[]
-include::text/advanced/windows.adoc[]
+include::text/windows/intro.adoc[]
+include::text/windows/opennms.adoc[]
+include::text/windows/advanced.adoc[]
+include::text/nextsteps.adoc[]
 
 // Advanced Options
 include::text/advanced/options.adoc[]
