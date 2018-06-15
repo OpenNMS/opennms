@@ -292,8 +292,9 @@ endif::opennms-prime[]
 include::text/plugin-manager/introduction.adoc[]
 include::text/plugin-manager/setting-karaf-instance-data.adoc[]
 include::text/plugin-manager/installing-available-plugins.adoc[]
-include::text/plugin-manager/installing-licences.adoc[]
 include::text/plugin-manager/internal-plugins-repository.adoc[]
+include::text/plugin-manager/installing-licences.adoc[]
+include::text/plugin-manager/licence-structure.adoc[]
 
 == Internal Plugins
 include::text/plugins/introduction.adoc[]
