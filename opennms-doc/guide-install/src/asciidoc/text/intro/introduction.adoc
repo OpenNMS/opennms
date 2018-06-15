@@ -5,25 +5,40 @@
 [[gi-intro-to-opennms]]
 == Introduction to OpenNMS
 
-The _OpenNMS_ platform is a bundle of many software components.
-This guide describes a basic installation of the platform suitable for a minimal workload on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_
-operating systems. The following abbreviations will be used to refer to the following operating systems:
+The _OpenNMS_ platform can be installed to multiple OS families.
+This guide provides instructions for the platform to _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based, and _Microsoft Windows_ operating systems.
+The following abbreviations will be used to refer to their respective entry through this documentation.
 
-* _RHEL_: Red Hat Enterprise Linux 6 or higher, CentOS 6 or higher, Fedora 20 or higher
-* _Debian_: Debian 7 or higher, Ubuntu 14.04 or higher
-* _Microsoft Windows_: Windows 8.1, Windows Server 2012, Windows 10
+[horizontal]
+.Operating Systems
+_RHEL_:: Red Hat Enterprise Linux 6 or higher, CentOS 6 or higher, Fedora 20 or higher
+_Debian_:: Debian 7 or higher, Ubuntu 14.04 or higher
+_Microsoft Windows_:: Windows 8.1, Windows Server 2012, Windows 10
 
-Software packages are provided through _RHEL YUM_ and _Debian APT_ repositories and from the
+Software packages are provided through _RHEL Yum_ and _Debian APT_ repositories and from the
 link:https://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS Sourceforge project page].
-Installing _OpenNMS_ requires the following prerequisites:
+Installing the _OpenNMS_ platform has the following software prerequisites:
 
-* A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
-* Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories
-* <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
-* PostgreSQL database version 9.3 through 9.6.
+. A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
+. Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories, or the Sourceforge download website.
+. An <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
++
+NOTE: While _OpenNMS_ will run under _OpenJDK 8_, for production environments the _Oracle Java SE Development Kit 8_ is recommended.
 
-Advanced features optionally require:
+. PostgreSQL database version 9.3 through 9.6.
 
+Since the _OpenNMS_ platform requires a JVM and PostgreSQL database, running these on the same system requires these minimum hardware specs.
+For a highly performant enterprise environment, increasing any or all of these may be necessary.
+
+Minimum Hardware Requirements::
+* 2 CPU
+* 2 GB RAM
+* 20 GB disk
+
+The _OpenNMS_ platform has advanced features not covered by this guide. Please refer to the Administrators or Reference Guide for further information.
+
+.Advanced Features
+::
 * Apache Cassandra: 1.2, 2.x, 3.0
 * AMQP: 1.0
 * Elasticsearch: 2.x, 5.x
@@ -33,21 +48,21 @@ Advanced features optionally require:
 * R Statistics System
 * RRDtool: 1.4 and later.
 
+--
 
 CAUTION: Please make sure your DNS settings for the OpenNMS server are correct.
-         In case there is an incorrect or missing _A Resource Record_ for the server, OpenNMS might not start correctly.
-         The reason is that the Java security manager cannot be initialized and an _RMI class loader disabled_ exception will be shown.
-
-NOTE: While _OpenJDK 8_ can be used, for production and critical environments the _Oracle Java SE Development Kit 8_ is recommended.
+         If there is an incorrect or missing _A Resource Record_ for the server hostname, OpenNMS might not start correctly.
+         The Java security manager might not initialize and an _RMI class loader disabled_ exception will be shown.
 
 [NOTE]
 ====
 `${OPENNMS_HOME}` will be used to refer to the path where _OpenNMS_ is installed. It is different
 depending on your platform:
 
-* _RHEL_: `/opt/opennms`
-* _Debian_: `/usr/share/opennms`
-* _Microsoft Windows_: `C:\Program Files\opennms`
+[horizontal]
+_RHEL_:: `/opt/opennms`
+_Debian_:: `/usr/share/opennms`
+_Microsoft Windows_:: `C:\Program Files\opennms`
 ====
 
 With the _opennms_ meta package all dependencies needed for the components mentioned above are maintained.
