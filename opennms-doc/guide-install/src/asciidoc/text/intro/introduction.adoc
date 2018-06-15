@@ -48,8 +48,6 @@ The _OpenNMS_ platform has advanced features not covered by this guide. Please r
 * R Statistics System
 * RRDtool: 1.4 and later.
 
---
-
 CAUTION: Please make sure your DNS settings for the OpenNMS server are correct.
          If there is an incorrect or missing _A Resource Record_ for the server hostname, OpenNMS might not start correctly.
          The Java security manager might not initialize and an _RMI class loader disabled_ exception will be shown.
