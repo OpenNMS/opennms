@@ -5,7 +5,7 @@
 [[gi-intro-to-opennms]]
 == Introduction to OpenNMS
 
-The _OpenNMS_ platform is a complex bundle of many software components.
+The _OpenNMS_ platform is a bundle of many software components.
 This guide describes a basic installation of the platform suitable for a minimal workload on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based and _Microsoft Windows_
 operating systems. The following abbreviations will be used to refer to the following operating systems:
 

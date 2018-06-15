@@ -14,7 +14,7 @@ _RRDtool_ can be installed from the official package repositories provided by _R
 [[gi-rrdtool-install-source]]
 ==== Source
 
-If you want the latest version of RRDtool, you may want to compile it from source. Instructions for doing so are at 
+If you want the latest version of RRDtool, you may want to compile it from source. Instructions for doing so are at
 link:https://oss.oetiker.ch/rrdtool/doc/rrdbuild.en.html[rrdbuild].
 
 IMPORTANT: The latest version of RRDtool may not always be compatible with the version of _OpenNMS_ that you want to run.

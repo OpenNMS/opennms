@@ -1,8 +1,0 @@
-
-=== Advanced Installation Options for _RHEL_
-
-include::../java/rhel.adoc[]
-
-==== Time-Series Database Engine
-include::../rrdtool/rhel.adoc[]
-include::../newts/rhel.adoc[]
