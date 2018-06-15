@@ -291,6 +291,36 @@ Add a policy parameter and choose the _sysObjectId_ key with a value `~^\.1\.3\.
 .Example: Node Category setting policy
 image:../images/provisioning/00020.jpeg[]
 
+.Script Policy
+
+This policy allows to use _Groovy_ scripts to modify provisioned node data.
+These scripts have to be placed in the {opennms-product-name} `etc/script-policies` directory.
+An example would be the change of the node's primary interface or location.
+The script will be invoked for each matching node.
+The following example shows the source code for setting the `192.168.100.0/24` interface to `PRIMARY` while all remaining interfaces are set to `SECONDARY`.
+Furthermore the node's location is set to `Minneapolis`.
+
+[source, groovy]
+----
+import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.PrimaryType;
+
+for(OnmsIpInterface iface : node.getIpInterfaces()) {
+    if (iface.getIpAddressAsString().matches("^192\\.168\\.100\\..*")) {
+        LOG.warn(iface.getIpAddressAsString() + " set to PRIMARY")
+        iface.setIsSnmpPrimary(PrimaryType.PRIMARY)
+    } else {
+        LOG.warn(iface.getIpAddressAsString() + " set to SECONDARY")
+        iface.setIsSnmpPrimary(PrimaryType.SECONDARY)
+    }
+}
+
+node.setLocation(new OnmsMonitoringLocation("Minneapolis", ""));
+
+return node;
+----
+
 ===== New Import Capabilities
 
 Several new XML entities have been added to the import requisition since the introduction of the OpenNMS Importer service in version 1.6.
