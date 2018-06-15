@@ -20,15 +20,19 @@ Installing _OpenNMS_ requires the following prerequisites:
 * A configured <<gi-install-opennms-repo-releases, Yum or APT Package Repository>> for your platform (Linux only)
 * Internet access to download and verify _OpenNMS_ packages from the Yum or APT package repositories
 * <<gi-install-oracle-java, Oracle Java SE Development Kit 8>> environment
-* PostgreSQL database version 9.1 or higher, it has only been tested with PostgreSQL 9.1 through 9.6
+* PostgreSQL database version 9.3 through 9.6.
 
 Advanced features optionally require:
-* Apache Cassandra
-* RRDtool
+
+* Apache Cassandra: 1.2, 2.x, 3.0
+* AMQP: 1.0
+* Elasticsearch: 2.x, 5.x
+* Grafana: 3.x, 4.x
+* Kafka: 0.10.0
+* Newts: 1.4.3
 * R Statistics System
-* Grafana
-* Elasticsearch
-* Kafka
+* RRDtool: 1.4 and later.
+
 
 CAUTION: Please make sure your DNS settings for the OpenNMS server are correct.
          In case there is an incorrect or missing _A Resource Record_ for the server, OpenNMS might not start correctly.

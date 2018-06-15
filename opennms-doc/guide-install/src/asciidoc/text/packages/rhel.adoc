@@ -1,3 +1,4 @@
+
 === YUM Package Repositories
 
 .Install the configuration for a package repository
@@ -12,9 +13,9 @@ rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 [[gi-install-opennms-rhel-disable-yum-repo]]
 ==== Disable Automatic Updates (Optional)
 
-We recommend you disable the {opennms-product-name} Yum repository after install to prevent upgrades occuring while it is running.
+We recommend disabling the {opennms-product-name} Yum repository after installation to prevent upgrades while it is running.
 
-{opennms-product-name} requires some manual steps upon upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
+{opennms-product-name} require manual steps during an upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
 For this reason, it is recommended to exclude the {opennms-product-name} packages from yum except when you are planning on performing an upgrade.
 
 To do so, edit the `/etc/yum.repos.d/opennms-*.repo` file and change `enabled=1` to `enabled=0` in each section.
