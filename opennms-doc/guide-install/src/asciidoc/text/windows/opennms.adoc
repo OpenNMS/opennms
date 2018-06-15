@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-[[gi-install-opennms-deb-prepare-pg]]
+[[gi-install-opennms-windows-pg]]
 === Install PostgreSQL
 
 _PostgreSQL_ is available for _Microsoft Windows_ and latest version can be downloaded from link:http://www.enterprisedb.com/products-services-training/pgdownload#windows[Download PostgreSQL] page.
