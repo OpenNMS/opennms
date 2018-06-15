@@ -99,7 +99,7 @@ public class MigratorIT {
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
 
-        Migrator.ensureLiquibaseFilesInClassPath((GenericApplicationContext) m_context);
+        TemporaryDatabasePostgreSQL.ensureLiquibaseFilesInClassPath((GenericApplicationContext) m_context);
     }
 
     @Test

@@ -55,7 +55,7 @@ public class TemporaryDatabasePostgreSQLIT {
     public void testRealChangelog() throws Throwable {
         String dbName = TemporaryDatabasePostgreSQL.TEMPLATE_DATABASE_NAME_PREFIX + System.currentTimeMillis();
 
-        GenericApplicationContext context = Migrator.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
+        GenericApplicationContext context = TemporaryDatabasePostgreSQL.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
 
         final Migration migration = TemporaryDatabasePostgreSQL.createMigration(dbName);
 
@@ -76,7 +76,7 @@ public class TemporaryDatabasePostgreSQLIT {
 
     @Test
     public void testHashesMatch() throws IOException, Exception {
-        GenericApplicationContext context = Migrator.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
+        GenericApplicationContext context = TemporaryDatabasePostgreSQL.ensureLiquibaseFilesInClassPath(new StaticApplicationContext());
         assertEquals("liquibase configuration hash", TemporaryDatabasePostgreSQL.generateLiquibaseHash(context), TemporaryDatabasePostgreSQL.generateLiquibaseHash(context));
     }
 }

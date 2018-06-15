@@ -57,7 +57,6 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -908,40 +907,45 @@ public class Migrator {
         }
     }
 
-    // XXX This should be in a test context only
-    public static GenericApplicationContext ensureLiquibaseFilesInClassPath(GenericApplicationContext context)
-            throws MalformedURLException, IOException, Exception {
-        String migratorClass = "/" + Migrator.class.getName().replace('.', '/') + ".class";
-        URL migratorUrl = Migrator.class.getResource(migratorClass);
-        assert migratorUrl != null : "Could not find resource for Migrator.class anywhere in the classpath with " + migratorClass;
-        if ("file".equals(migratorUrl.getProtocol()) && migratorUrl.getPath().endsWith("core/schema/target/classes" + migratorClass)) {
-            URL[] urls = { new URL(migratorUrl.getProtocol(), migratorUrl.getHost(), migratorUrl.getFile().replaceFirst("core/schema/target/classes/.*$", "core/schema/src/main/liquibase/")) };
-            context.setClassLoader(new URLClassLoader(urls, context.getClassLoader()));
-        }
-
-        validateLiquibaseChangelog(context);
-
-        return context;
-    }
-
     public static Resource[] validateLiquibaseChangelog(ApplicationContext context) throws IOException, Exception {
         Resource[] resources = context.getResources(LIQUIBASE_CHANGELOG_LOCATION_PATTERN);
         if (resources.length == 0) {
-            throw new MigrationException("Could not find any changelog.xml files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:\n" + getContextClassLoaderUrls(context));
+            throw new MigrationException("Could not find any changelog.xml files in our classpath using '" + LIQUIBASE_CHANGELOG_LOCATION_PATTERN + "'. Combined ClassPath:" + getContextClassLoaderUrls(context) + "\nAnd system class loader for fun:" + getSystemClassLoaderUrls());
         }
         return resources;
     }
 
-    private static String getContextClassLoaderUrls(ApplicationContext context) {
+    public static String getContextClassLoaderUrls(ApplicationContext context) {
         StringBuffer urls = new StringBuffer();
         for (ApplicationContext c = context; c != null; c = c.getParent()) {
             for (ClassLoader cl = c.getClassLoader(); cl != null; cl = cl.getParent()) {
                 if (cl instanceof URLClassLoader) {
                     for (URL url : ((URLClassLoader) cl).getURLs()) {
-                        urls.append("\t");
+                        urls.append("\n\t");
                         urls.append(url);
                     }
+                } else {
+                    urls.append("** Could not get URLs from this ClassLoader: " + cl);
                 }
+            }
+        }
+        return urls.toString();
+    }
+
+    public static String getSystemClassLoaderUrls() {
+        return getClassLoaderUrls(ClassLoader.getSystemClassLoader());
+    }
+
+    public static String getClassLoaderUrls(ClassLoader classLoader) {
+        StringBuffer urls = new StringBuffer();
+        for (ClassLoader cl = classLoader; cl != null; cl = cl.getParent()) {
+            if (cl instanceof URLClassLoader) {
+                for (URL url : ((URLClassLoader) cl).getURLs()) {
+                    urls.append("\n\t");
+                    urls.append(url);
+                }
+            } else {
+                urls.append("** Could not get URLs from this ClassLoader: " + cl);
             }
         }
         return urls.toString();
