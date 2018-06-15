@@ -75,6 +75,13 @@
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
                 </tr>
                 <tr>
+                    <td style="border-top: none;"><a
+                            href="https://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/reference/reference.html"
+                            target="_blank" class="btn btn-default" role="button"
+                            style="width: 100%">Reference</a></td>
+                    <td style="border-top: none;">Reference document which collects implemented integrations and tools.</td>
+                </tr>
+                <tr>
                     <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
                                                      class="btn btn-default" role="button" style="width: 100%">OpenNMS Wiki</a></td>
                     <td style="border-top: none;">With the large variety of devices and applications you can monitor with OpenNMS, the Wiki provides space to share experience with How Tos and Tutorials to address specific use cases.</td>
@@ -103,6 +110,11 @@
                     <td style="border-top: none;"><a href="docs/guide-development/index.html" target="_blank"
                                                      class="btn btn-default" role="button" style="width: 100%">Developers Guide</a></td>
                     <td style="border-top: none;">Developers can extend and improve the OpenNMS platform. The Developers Guide is a good starting point for extending OpenNMS and using the ReST APIs for integration.</td>
+                </tr>
+                <tr>
+                    <td style="border-top: none;"><a href="docs/reference/index.html" target="_blank"
+                                                     class="btn btn-default" role="button" style="width: 100%">Reference</a></td>
+                    <td style="border-top: none;">Reference document which collects implemented integrations and tools.</td>
                 </tr>
                 <tr>
                     <td style="border-top: none;"><a href="https://wiki.opennms.org" target="_blank"
