@@ -282,7 +282,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
         try {
             setDataSource(new SimpleDataSource(m_driver, m_url + getTestDatabase(), m_adminUser, m_adminPassword));
-            setAdminDataSource(new SimpleDataSource(m_driver, m_url + "template1", m_adminUser, m_adminPassword));
+            setAdminDataSource(new SimpleDataSource(m_driver, m_url + "postgres", m_adminUser, m_adminPassword));
             m_xaDataSource = new PGXADataSource();
             m_xaDataSource.setServerName("localhost");
             m_xaDataSource.setDatabaseName(getTestDatabase());
@@ -290,7 +290,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             m_xaDataSource.setPassword(m_adminPassword);
             m_adminXaDataSource = new PGXADataSource();
             m_adminXaDataSource.setServerName("localhost");
-            m_adminXaDataSource.setDatabaseName("template1");
+            m_adminXaDataSource.setDatabaseName("postgres");
             m_adminXaDataSource.setUser(m_adminUser);
             m_adminXaDataSource.setPassword(m_adminPassword);
         } catch (final ClassNotFoundException e) {
@@ -342,24 +342,30 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         String dbSource = null;
         try {
             st = adminConnection.createStatement();
+            String create;
             if (m_populateSchema) {
+                dbSource = "template1";
                 dbSource = getIntegrationTestDatabaseName();
-                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms");
+                create = "CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms";
             } else {
                 dbSource = "template1";
-                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'");
+                create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
             }
+            st.execute(create);
         } catch (final Throwable e) {
             try {
                 st = adminConnection.createStatement();
-                ResultSet rs = st.executeQuery("SELECT pid,usename,query FROM pg_stat_activity where datname = '" + dbSource + "'");
+                String query = "SELECT pid,usename,query,usename FROM pg_stat_activity where datname = '" + dbSource + "'";
+                ResultSet rs = st.executeQuery(query);
                 System.err.println("*** database activity immediately after exception '" + e + "' ***");
+                System.err.println("*** query: '" + query + "' ***");
                 while (rs.next()) {
-                    System.err.println("pg_stat_activity: " + rs.getInt(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
+                    System.err.println("pg_stat_activity: " + rs.getInt(1) + ", " + rs.getString(2) + ", " + rs.getString(3) + ", " + rs.getString(4));
                 }
                 System.err.println("*** end database activity ***");
             } catch (SQLException sqlE) {
-                System.err.println("Got an exception while trying to run pg_stat_activity query after a previous exception: " + e);
+                System.err.println("Got an exception while trying to run pg_stat_activity query after a previous exception: " + sqlE);
+                sqlE.printStackTrace();
             }
             throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase() + ": " + e, e);
         } finally {
