@@ -95,15 +95,15 @@ On evaulation, this expression should return either true, persist index to stora
 .Storage Strategies
 [options="header, autowidth"]
 |===
-| Class                                                            | Storage Path Value
-| org.opennms.netmgt.collection.support.IndexStorageStrategy       | Index
-| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy   | Value after JexlExpression evaluation
-| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy  | Value after JexlExpression evaluation
-| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy         | interface label + '.' + dlci
-| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy     | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy      | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
-| org.opennms.protocols.xml.collector.XmlStorageStrategy           | Index, but cleaned up for unix filesystems.
-| org.opennms.netmgt.dao.support.DisplayStringIndexStorageStrategy | Decodes the index from an OID encoded octet string
+| Class                                                           | Storage Path Value
+| org.opennms.netmgt.collection.support.IndexStorageStrategy      | Index
+| org.opennms.netmgt.collection.support.JexlIndexStorageStrategy  | Value after JexlExpression evaluation
+| org.opennms.netmgt.collection.support.ObjectNameStorageStrategy | Value after JexlExpression evaluation
+| org.opennms.netmgt.dao.support.FrameRelayStorageStrategy        | interface label + '.' + dlci
+| org.opennms.netmgt.dao.support.HostFileSystemStorageStrategy    | Uses the value from the hrStorageDescr column in the hrStorageTable, cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy     | Uses the value from an SNMP lookup of OID in sibling-column-name parameter, cleaned up for unix filesystems.
+| org.opennms.protocols.xml.collector.XmlStorageStrategy          | Index, but cleaned up for unix filesystems.
+| org.opennms.netmgt.dao.support.
 |===
 
 ====== IndexStorageStrategy
@@ -189,13 +189,6 @@ This class is marked as deprecated, and can be replaced with:
 |===
 
 Values for `replace-first`, and `replace-all` must match the pattern _s/regex/replacement/_ or an error will be thrown.
-
-====== DisplayStringIndexStorageStrategy
-
-The DisplayStringIndexStorageStrategy takes no parameters. This storage strategy will decode the original index value from an OID encoded octet string, and return the result.
-
-Example:
-Given an index string of `47.67.111.109.109.111.110.47.118.115.45.119.119.119.46.101.120.97.109.112.108.101.46.99.111.109`, will return a value of `Common-vs-www.example.com`.
 
 ====== XmlStorageStrategy
 
