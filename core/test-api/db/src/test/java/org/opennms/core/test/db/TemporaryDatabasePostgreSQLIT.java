@@ -52,6 +52,21 @@ public class TemporaryDatabasePostgreSQLIT {
     }
 
     @Test
+    public void testOnce() throws Throwable {
+        TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
+        db.setupDatabase();
+        db.destroyTestDatabase();
+    }
+
+    @Test
+    public void testOncePopulate() throws Throwable {
+        TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
+        db.setPopulateSchema(true);
+        db.setupDatabase();
+        db.destroyTestDatabase();
+    }
+
+    @Test
     public void testRealChangelog() throws Throwable {
         String dbName = TemporaryDatabasePostgreSQL.TEMPLATE_DATABASE_NAME_PREFIX + System.currentTimeMillis();
 
@@ -72,6 +87,29 @@ public class TemporaryDatabasePostgreSQLIT {
     @Test
     public void testGetIntegrationTestDatabaseName() throws Throwable {
         TemporaryDatabasePostgreSQL.getIntegrationTestDatabaseName();
+    }
+
+    @Test
+    public void testMultipleThreads() throws Throwable {
+        Runnable r = () -> {
+            for (int i = 0; i <= 10; i++) {
+                try {
+                    TemporaryDatabasePostgreSQL db = new TemporaryDatabasePostgreSQL();
+                    System.out.println(Thread.currentThread() + " " + i + " " + db);
+                    db.setupDatabase();
+                    db.destroyTestDatabase();
+                } catch (Throwable e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+        };
+        Thread t1 = new Thread(r); t1.start();
+        Thread t2 = new Thread(r); t2.start();
+        Thread t3 = new Thread(r); t3.start();
+        t1.join();
+        t2.join();
+        t3.join();
     }
 
     @Test

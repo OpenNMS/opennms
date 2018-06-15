@@ -71,6 +71,7 @@ import org.opennms.core.schema.MigrationException;
 import org.opennms.core.schema.Migrator;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.postgresql.xa.PGXADataSource;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -150,6 +151,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
     protected static final int MAX_DATABASE_DROP_ATTEMPTS = 10;
 
     private static final Object TEMPLATE1_MUTEX = new Object();
+
+    private static final org.slf4j.Logger LOG = LoggerFactory.getLogger(TemporaryDatabasePostgreSQL.class);
 
     private final String m_testDatabase;
 
@@ -233,7 +236,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             final Migration migration = createMigration(dbName);
 
             DataSource dataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/" + migration.getDatabaseName(), migration.getDatabaseUser(), migration.getDatabasePassword());
-            DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/template1", migration.getDatabaseUser(), migration.getDatabasePassword());
+            DataSource adminDataSource = new SimpleDataSource("org.postgresql.Driver", "jdbc:postgresql://localhost:5432/postgres", migration.getDatabaseUser(), migration.getDatabasePassword());
 
             final Migrator migrator = createMigrator(dataSource, adminDataSource);
 
@@ -336,14 +339,28 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             throw new TemporaryDatabaseException("Failed to get admin connection: " + e.getMessage(), e);
         }
         Statement st = null;
+        String dbSource = null;
         try {
             st = adminConnection.createStatement();
             if (m_populateSchema) {
-                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + getIntegrationTestDatabaseName() + " OWNER opennms");
+                dbSource = getIntegrationTestDatabaseName() + "a";
+                st.execute("CREATE DATABASE " + getTestDatabase() + " WITH TEMPLATE " + dbSource + " OWNER opennms");
             } else {
+                dbSource = "template1";
                 st.execute("CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'");
             }
         } catch (final Throwable e) {
+            try {
+                st = adminConnection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT pid,usename,query FROM pg_stat_activity where datname = '" + dbSource + "'");
+                System.err.println("*** database activity immediately after exception '" + e + "' ***");
+                while (rs.next()) {
+                    System.err.println("pg_stat_activity: " + rs.getInt(1) + ", " + rs.getString(2) + ", " + rs.getString(3));
+                }
+                System.err.println("*** end database activity ***");
+            } catch (SQLException sqlE) {
+                System.err.println("Got an exception while trying to run pg_stat_activity query after a previous exception: " + e);
+            }
             throw new TemporaryDatabaseException("Failed to create Unicode test database " + getTestDatabase() + ": " + e, e);
         } finally {
             SQLException failed = null;
@@ -409,7 +426,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         }
     }
 
-    private void destroyTestDatabase() throws TemporaryDatabaseException {
+    void destroyTestDatabase() throws TemporaryDatabaseException {
         if (m_useExisting) {
             return;
         }
@@ -797,7 +814,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         } catch (Throwable t) {
             if (migrator.databaseExists(migration)) {
                 try {
-                    //LOG.warn("Got an exception while setting up database, so removing");
+                    LOG.warn("Got an exception while setting up database, so removing");
                     migrator.databaseRemoveDB(migration);
                 } catch (MigrationException e) {
                     System.err.println("Got an exception while setting up database and then got another exception while removing database: " + e.getMessage());
