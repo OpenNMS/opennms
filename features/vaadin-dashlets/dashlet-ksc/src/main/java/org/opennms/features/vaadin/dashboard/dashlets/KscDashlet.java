@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
 import org.springframework.transaction.TransactionStatus;
@@ -405,29 +407,35 @@ public class KscDashlet extends AbstractDashlet {
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<String, String>();
 
-                if (nodeId == null) {
-                    String[] arr0 = resourceId.split("\\.");
-                    String[] arr1 = arr0[0].split("[\\[\\]]");
-                    data.put("nodeId", arr1[1]);
-                } else {
-                    data.put("nodeId", nodeId);
-                }
+                String nodeIdentifier = Optional.ofNullable(nodeId).orElse(determineNodeIdByResourceId(resourceId));
+                data.put("nodeId", nodeIdentifier);
+                data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(nodeIdentifier)));
 
-                data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(data.get("nodeId"))));
-
-                List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", data.get("nodeId"))).getChildResources();
+                List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", nodeIdentifier)).getChildResources();
 
                 for (OnmsResource onmsResource : resourceList) {
                     if (resourceId.equals(onmsResource.getId())) {
                         data.put("resourceLabel", onmsResource.getLabel());
                         data.put("resourceTypeLabel", onmsResource.getResourceType().getLabel());
-
                         break;
                     }
                 }
                 return data;
             }
         });
+    }
+
+    String determineNodeIdByResourceId(String resourceId){
+
+        // old implementation:
+        String[] arr0 = resourceId.split("\\.");
+        String[] arr1 = arr0[0].split("[\\[\\]]");
+        // data.put("nodeId", arr1[1]); // results in: Test:1525957453778 which is not a valid node id
+
+        // possible new solution but with ugly casting:
+        int onmsNodeId = ((OnmsNode)m_resourceDao.getResourceById(ResourceId.fromString(resourceId))
+                .getParent().getEntity()).getId();
+        return Integer.toString(onmsNodeId);
     }
 
     private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {
