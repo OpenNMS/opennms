@@ -49,7 +49,9 @@ public class NetflowPacket {
     private final long flowSequence;
     private final short engineType;
     private final short engineId;
+    private final int samplingAlgorithm;
     private final int samplingInterval;
+
     private final List<NetflowRecord> records = new ArrayList<>();
 
     public NetflowPacket(byte[] bytes) {
@@ -71,7 +73,8 @@ public class NetflowPacket {
         this.flowSequence = Utils.getLong(16, 19, data, 0);
         this.engineType =  Utils.getShort(20, 20, data, 0); 
         this.engineId =  Utils.getShort(21, 21, data, 0);
-        this.samplingInterval = Utils.getInt(22, 23, data, 0);
+        this.samplingAlgorithm = (Utils.getInt(22, 23, data, 0) & 0b11000000_00000000) >> 14;
+        this.samplingInterval = Utils.getInt(22, 23, data, 0) & 0b00111111_11111111;
 
         // Parse body
         // determine how many records are there, as this.count could be wrong
@@ -137,6 +140,10 @@ public class NetflowPacket {
 
     public int getEngineId() {
         return engineId;
+    }
+
+    public int getSamplingAlgorithm() {
+        return samplingAlgorithm;
     }
 
     public int getSamplingInterval() {

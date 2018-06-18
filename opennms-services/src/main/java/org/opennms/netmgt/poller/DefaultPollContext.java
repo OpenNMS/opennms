@@ -39,7 +39,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RequestRejectedException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.netmgt.config.OpennmsServerConfigFactory;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.dao.api.CriticalPath;
 import org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl;
@@ -451,8 +450,8 @@ public class DefaultPollContext implements PollContext, EventListener {
         }
 
         final InetAddress ipAddress = criticalPath.getIpAddress();
-        final int retries = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathRetries();
-        final int timeout = OpennmsServerConfigFactory.getInstance().getDefaultCriticalPathTimeout();
+        final int retries = getPollerConfig().getDefaultCriticalPathRetries();
+        final int timeout = getPollerConfig().getDefaultCriticalPathTimeout();
 
         boolean available = false;
         try {

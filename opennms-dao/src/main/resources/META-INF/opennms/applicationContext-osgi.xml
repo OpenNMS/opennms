@@ -20,6 +20,5 @@
     <osgi:reference id="serviceRegistry" interface="org.opennms.core.soa.ServiceRegistry" />
     <osgi:reference id="dataSource" interface="javax.sql.DataSource" />
     <osgi:reference id="databaseSchemaConfigFactory" interface="org.opennms.netmgt.config.api.DatabaseSchemaConfig" />
-    <osgi:reference id="opennmsServerConfig" interface="org.opennms.netmgt.config.api.OpennmsServerConfig" />
 
 </beans>

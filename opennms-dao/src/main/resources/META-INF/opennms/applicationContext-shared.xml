@@ -220,7 +220,13 @@
     <bean id="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 
-    <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl"/>
+    <bean id="interfaceToNodeCacheRefreshInterval" class="java.lang.Long" factory-method="getLong">
+        <constructor-arg value="org.opennms.interface-node-cache.refresh-timer"></constructor-arg>
+        <constructor-arg value="300000"></constructor-arg>
+    </bean>
+    <bean id="interfaceToNodeCache" class="org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl">
+        <constructor-arg ref="interfaceToNodeCacheRefreshInterval" />
+    </bean>
     <bean id="interfaceToNodeCache-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod">
             <value>org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache.setInstance</value>
@@ -286,9 +292,6 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageDao" ref="pathOutageDao" />
-
-    <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
 
     <bean id="serviceTypeDao" class="org.opennms.netmgt.dao.hibernate.ServiceTypeDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />

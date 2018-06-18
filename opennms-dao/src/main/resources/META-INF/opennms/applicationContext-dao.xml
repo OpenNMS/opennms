@@ -130,4 +130,17 @@
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
+  <!-- PathOutageManagerDaoImpl requires poller-configuration.xml which is not available in distributed containers -->
+  <bean name="pathOutageManager" class="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl"/>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.PathOutageManager" ref="pathOutageManager" />
+
+  <!--
+       This is required for the PathOutageManagerDaoImpl in order to get access to the underlying
+       PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules
+    -->
+  <bean id="pathOutageConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="targetObject" ref="poller-configuration.xml"/>
+    <property name="targetMethod" value="get"/>
+  </bean>
+
 </beans>

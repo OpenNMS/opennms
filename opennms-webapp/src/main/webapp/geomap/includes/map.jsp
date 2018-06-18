@@ -72,7 +72,7 @@
       Severity: <span class="severity {SEVERITY_LABEL}"><a href="<%= baseHref %>alarm/list.htm?sortby=id&acktype=unack&limit=20&filter=node%3D{NODE_ID}" target="_blank">{SEVERITY_LABEL}</a></span> <br/>
       Description: {DESCRIPTION} <br/>
       Maint.&nbsp;Contract: {MAINT_CONTRACT} <br/>
-      IP Address:  <br/>
+      IP Address: {IP_ADDRESS} <br/>
       Categories: {CATEGORIES}
     </p>
   </div>

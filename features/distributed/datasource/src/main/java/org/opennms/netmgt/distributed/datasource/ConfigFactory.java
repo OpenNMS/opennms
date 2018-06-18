@@ -29,31 +29,20 @@
 package org.opennms.netmgt.distributed.datasource;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
 
 import javax.sql.DataSource;
 
 import org.opennms.core.db.ClosableDataSource;
+import org.opennms.netmgt.config.DatabaseSchemaConfigFactory;
 import org.opennms.netmgt.config.api.DatabaseSchemaConfig;
-import org.opennms.netmgt.config.api.OpennmsServerConfig;
 import org.opennms.netmgt.config.opennmsDataSources.ConnectionPool;
 import org.opennms.netmgt.config.opennmsDataSources.JdbcDataSource;
 
 public class ConfigFactory {
 
-    public DatabaseSchemaConfig createDataSchemaConfig() throws IOException {
-        final InputStream inputStream = ConfigFactory.class.getResourceAsStream("/database-schema.xml");
-        final DatabaseSchemaConfig config = new org.opennms.netmgt.config.DatabaseSchemaConfigFactory(inputStream);
-        return config;
-    }
-
-    public OpennmsServerConfig createOpennmsServerConfig() {
-        final InputStream inputStream = ConfigFactory.class.getResourceAsStream("/opennms-server.xml");
-        final OpennmsServerConfig config = new org.opennms.netmgt.config.OpennmsServerConfigFactory(inputStream);
-        return config;
-    }
+    private static DatabaseSchemaConfigFactory factory;
 
     public DataSource createDataSource(ConnectionPool connectionPool, JdbcDataSource jdbcDataSource) throws Exception {
         Objects.requireNonNull(connectionPool);
@@ -69,6 +58,14 @@ public class ConfigFactory {
         dataSource.setMaxPool(connectionPool.getMaxPool());
         dataSource.setMaxSize(connectionPool.getMaxSize());
         return dataSource;
+    }
+
+    public DatabaseSchemaConfig createDatabaseSchemaConfig() throws IOException {
+        if (factory == null) {
+            factory = new DatabaseSchemaConfigFactory();
+            factory.init();
+        }
+        return factory.getInstance();
     }
 
 }

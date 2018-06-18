@@ -1,0 +1,46 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../../images
+
+[[ga-elasticsearch-integration-flow-support]]
+==== Flow Support
+
+NOTE: _Flow Support_ is described in detail <<ga-flow-support, here>>.
+
+When persisting flows into Elasticsearch, every flow is represented by a single document.
+
+The following table describes a subset of the fields in the flow document:
+
+[options="header, autowidth"]
+|===
+| Field | Description
+
+|`@timestamp`
+| Timestamp in milliseconds at which the flow was sent by the exporter.
+
+|`location`
+| Monitoring location at which the flow was received.
+  This will be `Default` unless you are using Minion.
+
+|`netflow.bytes`
+| Number of bytes transferred in the flow.
+
+|`netflow.last_switched`
+| Timestamp in milliseconds at which the last packet of the flow was transferred.
+
+|`netflow.direction`
+| `ingress` or `egress`
+
+|`netflow.first_switched`
+| Timestamp in milliseconds at which the first packet of the flow was transferred.
+
+|`netflow.last_switched`
+| Timestamp in milliseconds at which the last packet of the flow was transferred.
+
+|`netflow.input_snmp`
+| SNMP interface index on which packets related to this flow were received.
+
+|`netflow.output_snmp`
+| SNMP interface index on which packets related to this flow were forwarded.
+
+|===

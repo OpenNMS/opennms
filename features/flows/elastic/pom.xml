@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.flows</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.flows</groupId>
@@ -168,7 +168,7 @@
     <dependency>
       <groupId>org.opennms.elasticsearch</groupId>
       <artifactId>elasticsearch-drift-plugin</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <version>1.0.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -179,6 +179,18 @@
     <dependency>
       <groupId>com.jayway.awaitility</groupId>
       <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.powermock</groupId>
+        <artifactId>powermock-api-mockito</artifactId>
+        <version>${powermockVersion}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.powermock</groupId>
+      <artifactId>powermock-module-junit4</artifactId>
+      <version>${powermockVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

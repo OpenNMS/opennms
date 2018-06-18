@@ -30,14 +30,26 @@ package org.opennms.netmgt.snmp;
 
 public class ClassBasedStrategyResolver implements StrategyResolver {
 
-    @Override
-    public SnmpStrategy getStrategy() {
+    private static SnmpStrategy snmpStrategy;
+
+    public SnmpStrategy getStrategyInstance() {
         final String strategyClass = SnmpUtils.getStrategyClassName();
         try {
-            return (SnmpStrategy)Class.forName(strategyClass).newInstance();
+            return snmpStrategy = (SnmpStrategy) Class.forName(strategyClass).newInstance();
         } catch (Exception e) {
-            throw new RuntimeException("Unable to instantiate class "+strategyClass, e);
+            throw new RuntimeException("Unable to instantiate class " + strategyClass, e);
         }
     }
 
+    @Override
+    public SnmpStrategy getStrategy() {
+        if (snmpStrategy == null) {
+            return getStrategyInstance();
+        }
+        if (SnmpUtils.getStrategyClassName().equals(snmpStrategy.getClass().getName())) {
+            return snmpStrategy;
+        } else {
+            return getStrategyInstance();
+        }
+    }
 }

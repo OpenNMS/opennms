@@ -248,7 +248,7 @@ public class OnmsIpInterfaceResource extends OnmsRestService {
             Event e = EventUtils.createDeleteInterfaceEvent("OpenNMS.REST", node.getId(), ipAddress, -1, -1L);
             sendEvent(e);
 
-            return Response.noContent().build();
+            return Response.accepted().build();
         } finally {
             writeUnlock();
         }

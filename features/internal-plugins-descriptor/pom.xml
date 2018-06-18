@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -256,6 +256,13 @@
     <dependency>
       <groupId>org.opennms.plugins</groupId>
       <artifactId>alarm-change-notifier</artifactId>
+      <version>${project.version}</version>
+      <type>xml</type>
+      <classifier>features</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.jest</groupId>
+      <artifactId>opennms-jest</artifactId>
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>features</classifier>

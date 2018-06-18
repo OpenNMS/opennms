@@ -101,7 +101,6 @@ import org.opennms.netmgt.config.reporting.OpennmsReports;
 import org.opennms.netmgt.config.rtc.RTCConfiguration;
 import org.opennms.netmgt.config.rws.RwsConfiguration;
 import org.opennms.netmgt.config.scriptd.ScriptdConfiguration;
-import org.opennms.netmgt.config.server.LocalServer;
 import org.opennms.netmgt.config.service.ServiceConfiguration;
 import org.opennms.netmgt.config.siteStatusViews.SiteStatusViewConfiguration;
 import org.opennms.netmgt.config.snmp.SnmpConfig;
@@ -130,6 +129,7 @@ import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfiguration;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.plugins.elasticsearch.rest.credentials.ElasticCredentials;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -143,14 +143,14 @@ import junit.framework.AssertionFailedError;
  * During test run, all tests methods are executed for each test.
  * 
  * To ensure, that all provided files are covered, a meta test is used
- * ({@link WillItUnmarshalMetaTest}).
+ * ({@link WillItUnmarshalCoverageMetaIT}).
  * 
  * The name of this class is a tribute to
  * <a href="http://www.willitblend.com/">www.willitblend.com</a>.
  * 
  * @author Dustin Frisch<fooker@lab.sh>
  * 
- * @see WillItUnmarshalMetaTest
+ * @see WillItUnmarshalCoverageMetaIT
  */
 @RunWith(value = Parameterized.class)
 public class WillItUnmarshalIT {
@@ -165,6 +165,7 @@ public class WillItUnmarshalIT {
         EXAMPLE,
         SPRING,
         ABSOLUTE,
+        CLASSPATH
     }
 
     /**
@@ -210,7 +211,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "chart-configuration.xml", ChartConfiguration.class, true, null);
         addFile(Source.CONFIG, "collectd-configuration.xml", CollectdConfiguration.class, true, null);
         addFile(Source.CONFIG, "database-reports.xml", LegacyLocalReportsDefinition.class, false, null);
-        addFile(Source.CONFIG, "database-schema.xml", DatabaseSchema.class, true, null);
+        addFile(Source.CLASSPATH, "/database-schema.xml", DatabaseSchema.class, true, null);
         addFile(Source.CONFIG, "datacollection-config.xml", DatacollectionConfig.class, true, null);
         addFile(Source.CONFIG, "destinationPaths.xml", DestinationPaths.class, true, null);
         addFile(Source.CONFIG, "discovery-configuration.xml", DiscoveryConfiguration.class, false, null);
@@ -235,7 +236,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "notificationCommands.xml", NotificationCommands.class, true, null);
         addFile(Source.CONFIG, "notifications.xml", Notifications.class, true, null);
         addFile(Source.CONFIG, "opennms-datasources.xml", DataSourceConfiguration.class, false, null);
-        addFile(Source.CONFIG, "opennms-server.xml", LocalServer.class, true, null);
         addFile(Source.CONFIG, "poll-outages.xml", Outages.class, true, null);
         addFile(Source.CONFIG, "poller-configuration.xml", PollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "provisiond-configuration.xml", ProvisiondConfiguration.class, false, null);
@@ -299,7 +299,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "notificationCommands.xml", NotificationCommands.class, false, null);
         addFile(Source.EXAMPLE, "notifications.xml", Notifications.class, false, null);
         addFile(Source.EXAMPLE, "old-datacollection-config.xml", DatacollectionConfig.class, false, null);
-        addFile(Source.EXAMPLE, "opennms-server.xml", LocalServer.class, false, null);
         addFile(Source.EXAMPLE, "poll-outages.xml", Outages.class, false, null);
         addFile(Source.EXAMPLE, "poller-configuration.xml", PollerConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "rancid-configuration.xml", RancidConfiguration.class, false, null);
@@ -390,6 +389,10 @@ public class WillItUnmarshalIT {
         this.exception = exception;
     }
 
+    public boolean isFileSystemResource() {
+        return source != Source.CLASSPATH;
+    }
+
     @Test
     public void testUnmarshalling() {
         final Resource resource = this.createResource();
@@ -475,6 +478,9 @@ public class WillItUnmarshalIT {
 
         case ABSOLUTE:
             return new FileSystemResource(this.file);
+
+        case CLASSPATH:
+            return new ClassPathResource(file, clazz);
 
         default:
             throw new RuntimeException("Source unknown: " + this.source);

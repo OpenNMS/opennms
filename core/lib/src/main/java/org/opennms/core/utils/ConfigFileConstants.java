@@ -266,11 +266,6 @@ public abstract class ConfigFileConstants {
     public static final int EVENT_CONF_FILE_NAME;
 
     /**
-     * the database schema file
-     */
-    public static final int DB_SCHEMA_FILE_NAME;
-
-    /**
      * the SNMP data collection conf file
      */
     public static final int DATA_COLLECTION_CONF_FILE_NAME;
@@ -294,11 +289,6 @@ public abstract class ConfigFileConstants {
      * This is the name of the path of the webui colors dtd
      */
     public static final int KSC_REPORT_FILE_NAME;
-
-    /**
-     * The opennms server config file
-     */
-    public static final int OPENNMS_SERVER_CONFIG_FILE_NAME;
 
     /**
      * The opennms surveillance views config file
@@ -490,7 +480,6 @@ public abstract class ConfigFileConstants {
 
         SNMP_CONF_FILE_NAME = 26;
         EVENT_CONF_FILE_NAME = 27;
-        DB_SCHEMA_FILE_NAME = 28;
         DATA_COLLECTION_CONF_FILE_NAME = 29;
         REPORT_PDF_XSL = 30;
 
@@ -516,8 +505,6 @@ public abstract class ConfigFileConstants {
 
         KSC_REPORT_FILE_NAME = 46;
         SCRIPTD_CONFIG_FILE_NAME = 47;
-
-        OPENNMS_SERVER_CONFIG_FILE_NAME = 48;
 
         DHCPD_CONFIG_FILE_NAME = 50;
 
@@ -610,7 +597,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SNMP_CONF_FILE_NAME] = "snmp-config.xml";
         FILE_ID_TO_NAME[EVENT_CONF_FILE_NAME] = "eventconf.xml";
-        FILE_ID_TO_NAME[DB_SCHEMA_FILE_NAME] = "database-schema.xml";
         FILE_ID_TO_NAME[DATA_COLLECTION_CONF_FILE_NAME] = "datacollection-config.xml";
         FILE_ID_TO_NAME[REPORT_PDF_XSL] = "PDFAvailReport.xsl";
 
@@ -640,7 +626,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
-        FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME] = "opennms-server.xml";
         FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";

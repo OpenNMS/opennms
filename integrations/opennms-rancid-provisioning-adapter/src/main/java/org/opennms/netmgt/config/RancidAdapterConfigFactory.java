@@ -73,12 +73,10 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
      *                Thrown if the specified config file cannot be read
      * @param currentVersion a long.
      * @param reader a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      * @throws java.io.IOException if any.
      */
-    public RancidAdapterConfigFactory(long currentVersion, InputStream reader, String localServer, boolean verifyServer) throws IOException {
-        super(reader, localServer, verifyServer);
+    public RancidAdapterConfigFactory(long currentVersion, InputStream reader) throws IOException {
+        super(reader);
         m_currentVersion = currentVersion;
     }
 
@@ -98,15 +96,12 @@ public class RancidAdapterConfigFactory extends RancidAdapterConfigManager {
             return;
         }
 
-        OpennmsServerConfigFactory.init();
-        final OpennmsServerConfigFactory onmsSvrConfig = OpennmsServerConfigFactory.getInstance();
-
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.RANCID_CONFIG_FILE_NAME);
 
         LOG.debug("init: config file path: {}", cfgFile.getPath());
 
         final InputStream reader = new FileInputStream(cfgFile);
-        RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(cfgFile.lastModified(), reader,onmsSvrConfig.getServerName(),onmsSvrConfig.verifyServer());
+        RancidAdapterConfigFactory config = new RancidAdapterConfigFactory(cfgFile.lastModified(), reader);
         reader.close();
         setInstance(config);
 

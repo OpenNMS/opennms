@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.snmp</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.snmp</groupId>
@@ -33,6 +33,7 @@
             </Import-Package>
             <Embed-Dependency>snmp4j*</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
+            <Bundle-Activator>org.opennms.netmgt.snmp.snmp4j.Snmp4JActivator</Bundle-Activator>
           </instructions>
         </configuration>
       </plugin>
@@ -46,6 +47,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.logging</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-lang</groupId>

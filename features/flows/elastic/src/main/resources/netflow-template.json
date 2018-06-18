@@ -578,7 +578,8 @@
                     "sampling_algorithm": {
                         "path_match": "netflow.sampling_algorithm",
                         "mapping": {
-                            "type": "integer"
+                            "type": "keyword",
+                            "norms": false
                         }
                     }
                 },
@@ -813,7 +814,7 @@
                             "norms": false
                         },
                         "sampling_interval": {
-                            "type": "integer"
+                            "type": "double"
                         },
                         "src_addr": {
                             "type": "ip"

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
@@ -114,7 +114,7 @@
             <groupId>org.elasticsearch</groupId>
             <artifactId>elasticsearch</artifactId>
             <!-- REPLACE THE FOLLOWING WITH THE ES VERSION USED IN TESTS -->
-            <version>6.2.2</version>
+            <version>6.2.4</version>
           </dependency>
         </dependencies>
       </plugin>

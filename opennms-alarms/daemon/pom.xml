@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-alarms</artifactId>
-    <version>22.0.0-SNAPSHOT</version>
+    <version>23.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarmd</artifactId>
@@ -55,12 +55,11 @@
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
-    <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.daemon</artifactId>
-      <scope>test</scope>
     </dependency>
+    <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-services</artifactId>

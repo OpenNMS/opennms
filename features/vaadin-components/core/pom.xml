@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>vaadin-components</artifactId>
-        <version>22.0.0-SNAPSHOT</version>
+        <version>23.0.0-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features.vaadin-components</groupId>
     <artifactId>core</artifactId>

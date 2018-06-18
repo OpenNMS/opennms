@@ -152,14 +152,10 @@
          <includeGroup>mib2-host-resources-system</includeGroup>
          <includeGroup>mib2-host-resources-memory</includeGroup>
          <includeGroup>mib2-host-resources-storage</includeGroup>
-         <includeGroup>mib2-X-interfaces</includeGroup>
          <includeGroup>mib2-X-interfaces-pkts</includeGroup>
          <includeGroup>net-snmp-disk</includeGroup>
          <includeGroup>net-snmp-disk-more</includeGroup>
          <includeGroup>net-snmp-disk-highlow</includeGroup>
-         <includeGroup>openmanage-coolingdevices</includeGroup>
-         <includeGroup>openmanage-temperatureprobe</includeGroup>
-         <includeGroup>openmanage-powerusage</includeGroup>
          <includeGroup>ucd-loadavg</includeGroup>
          <includeGroup>ucd-memory</includeGroup>
          <includeGroup>ucd-sysstat</includeGroup>
@@ -178,7 +174,6 @@
       <collect>
          <includeGroup>mib2-interfaces</includeGroup>
          <includeGroup>mib2-tcp</includeGroup>
-         <includeGroup>mib2-powerethernet</includeGroup>
          <includeGroup>mib2-host-resources-system</includeGroup>
          <includeGroup>mib2-host-resources-memory</includeGroup>
          <includeGroup>mib2-X-interfaces</includeGroup>
@@ -186,9 +181,6 @@
          <includeGroup>net-snmp-disk</includeGroup>
          <includeGroup>net-snmp-disk-more</includeGroup>
          <includeGroup>net-snmp-disk-highlow</includeGroup>
-         <includeGroup>openmanage-coolingdevices</includeGroup>
-         <includeGroup>openmanage-temperatureprobe</includeGroup>
-         <includeGroup>openmanage-powerusage</includeGroup>
          <includeGroup>ucd-loadavg</includeGroup>
          <includeGroup>ucd-memory</includeGroup>
          <includeGroup>ucd-sysstat</includeGroup>
@@ -215,9 +207,6 @@
          <includeGroup>net-snmp-disk</includeGroup>
          <includeGroup>net-snmp-disk-more</includeGroup>
          <includeGroup>net-snmp-disk-highlow</includeGroup>
-         <includeGroup>openmanage-coolingdevices</includeGroup>
-         <includeGroup>openmanage-temperatureprobe</includeGroup>
-         <includeGroup>openmanage-powerusage</includeGroup>
          <includeGroup>ucd-loadavg</includeGroup>
          <includeGroup>ucd-memory</includeGroup>
          <includeGroup>ucd-sysstat</includeGroup>

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,7 @@ package org.opennms.core.utils;
 public abstract class TimeSeries {
     public static final String TIMESERIES_GRAPHS_ENGINE_PROPERTY = "org.opennms.web.graphs.engine";
     public static final String TIMESERIES_STRATEGY_PROPERTY = "org.opennms.timeseries.strategy";
-    public static final String DEFAULT_GRAPHS_ENGINE_TYPE = "auto";
+    public static final String DEFAULT_GRAPHS_ENGINE_TYPE = "backshift";
 
     public static final String RRD_STRATEGY_CLASS_PROPERTY = "org.opennms.rrd.strategyClass";
     public static final String RRD_TIME_SERIES_STRATEGY_NAME = "rrd";
@@ -84,13 +84,8 @@ public abstract class TimeSeries {
 
     public static String getGraphEngine() {
         final String graphEngine = System.getProperty(TIMESERIES_GRAPHS_ENGINE_PROPERTY, DEFAULT_GRAPHS_ENGINE_TYPE);
-        if (DEFAULT_GRAPHS_ENGINE_TYPE.equals(graphEngine)) {
-            switch(TimeSeries.getTimeseriesStrategy()) {
-            case RRD:
-                return "png";
-            default:
-                return "backshift";
-            }
+        if ("auto".equals(graphEngine)) {
+            return DEFAULT_GRAPHS_ENGINE_TYPE;
         } else {
             return graphEngine;
         }

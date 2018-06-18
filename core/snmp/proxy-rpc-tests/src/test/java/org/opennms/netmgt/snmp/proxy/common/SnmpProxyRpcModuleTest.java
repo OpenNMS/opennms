@@ -30,19 +30,14 @@ package org.opennms.netmgt.snmp.proxy.common;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
 import org.junit.Test;
-import org.opennms.netmgt.snmp.SnmpStrategy;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
-import org.opennms.netmgt.snmp.StrategyResolver;
 
 public class SnmpProxyRpcModuleTest {
 
@@ -51,14 +46,14 @@ public class SnmpProxyRpcModuleTest {
         SnmpUtils.setStrategyResolver(null);
     }
 
+    public static CompletableFuture<SnmpValue[]> completedFuture = CompletableFuture
+            .completedFuture(new SnmpValue[] {});
+    public static CompletableFuture<SnmpValue[]> failedFuture = new CompletableFuture<>();
+  
     @Test
     public void testBehaviorWhenOneGetFails() throws InterruptedException, ExecutionException {
-        // Mock the strategy behind SnmpUtils
-        SnmpStrategy strategy = mock(SnmpStrategy.class);
-        StrategyResolver strategyResolver = mock(StrategyResolver.class);
-        when(strategyResolver.getStrategy()).thenReturn(strategy);
-        SnmpUtils.setStrategyResolver(strategyResolver);
-
+        // Mock the strategy class
+        System.setProperty("org.opennms.snmp.strategyClass", MockSnmpStrategy.class.getName());
         // Create a basic request with two gets
         // (the agent and the OIDs don't matter here since we're mocking)
         SnmpRequestDTO request = new SnmpRequestDTO();
@@ -67,16 +62,9 @@ public class SnmpProxyRpcModuleTest {
         request.getGetRequests().add(get1);
         request.getGetRequests().add(get2);
 
-        CompletableFuture<SnmpValue[]> completedFuture = CompletableFuture
-                .completedFuture(new SnmpValue[]{});
-        CompletableFuture<SnmpValue[]> failedFuture = new CompletableFuture<>();
-        failedFuture.completeExceptionally(new IllegalStateException("Oups"));
-
-        // Mock the get, return the completed future the first time
+        // MockSnmpStrategy returns the completed future the first time
         // and the failed future subsequently
-        when(strategy.getAsync(any(), any()))
-            .thenReturn(completedFuture)
-            .thenReturn(failedFuture);
+        failedFuture.completeExceptionally(new IllegalStateException("Oups"));
 
         // Now "execute" the request and verify that the resulting
         // future fails with an ExecutionException

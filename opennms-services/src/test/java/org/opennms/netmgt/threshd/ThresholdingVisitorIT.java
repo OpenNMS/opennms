@@ -264,7 +264,7 @@ public class ThresholdingVisitorIT {
     private void initFactories(String threshd, String thresholds) throws Exception {
         LOG.info("Initialize Threshold Factories");
         ThresholdingConfigFactory.setInstance(new ThresholdingConfigFactory(getClass().getResourceAsStream(thresholds)));
-        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd),"127.0.0.1", false));
+        ThreshdConfigFactory.setInstance(new ThreshdConfigFactory(getClass().getResourceAsStream(threshd)));
     }
 
     @After

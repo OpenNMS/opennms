@@ -570,14 +570,17 @@
     </feature>
 
     <feature name='opennms-kafka' description="OpenNMS :: Features :: Kafka" version="${project.version}">
-      <bundle dependency="true">mvn:org.scala-lang/scala-library/2.10.6</bundle>
+      <bundle dependency="true">mvn:org.scala-lang/scala-library/2.11.11</bundle>
       <!-- NMS-8929: Upgrade Zookeeper to fix bug https://issues.apache.org/jira/browse/ZOOKEEPER-2056 -->
       <!-- <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.6</bundle> -->
-      <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.9</bundle>
+      <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.10</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.1</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.1</bundle>
       <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-core/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
       <bundle dependency="true">wrap:mvn:com.yammer.metrics/metrics-annotation/2.2.0$Bundle-Version=2.2.0&amp;Export-Package=*;-noimport:=true;version="2.2.0"</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.10/0.10.1.1_2</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/0.10.1.1_1</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_2.11/${kafkaStreamsBundleVersion}</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaStreamsBundleVersion}</bundle>
     </feature>
 
     <feature name='opennms-aws-sqs' description="OpenNMS :: Features :: AWS SQS" version="${project.version}">
@@ -628,7 +631,8 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-kafka</feature>
       <feature>opennms-core-camel</feature>
-      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.kafka-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.client/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-sink-aws-sqs" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl." version="${project.version}">
@@ -636,7 +640,8 @@
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-aws-sqs</feature>
       <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.aws-sqs/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.aws-sqs-impl/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.common/${project.version}</bundle>
+      <bundle>mvn:org.opennms.core.ipc.sink.aws.sqs/org.opennms.core.ipc.sink.aws.sqs.client/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-rpc-api" description="OpenNMS :: Core :: IPC :: RPC :: API" version="${project.version}">
@@ -1127,9 +1132,10 @@
       <bundle dependency="true">wrap:mvn:org.apache.kafka/connect-api/${kafkaStreamsVersion}</bundle>
       <bundle dependency="true">mvn:org.lz4/lz4-java/1.4</bundle>
       <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/1.1.4</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.6.6</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.6.6</bundle>
-      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.6.6</bundle>
+       <!-- These are only needed for  servicemix implementation of kafka streams -->
+<!--       <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.1</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-annotations/2.9.0</bundle>
+      <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.1</bundle> -->
       <bundle dependency="true">wrap:mvn:org.rocksdb/rocksdbjni/5.7.3</bundle>
     </feature>
 
@@ -1149,7 +1155,6 @@
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.collection/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.factory/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-telemetry-flow" description="OpenNMS :: Telemetry :: Flow" version="${project.version}">

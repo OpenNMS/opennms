@@ -129,6 +129,7 @@
         <argument ref="jestClient"/>
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
+        <argument ref="classificationEngine"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
     </bean>

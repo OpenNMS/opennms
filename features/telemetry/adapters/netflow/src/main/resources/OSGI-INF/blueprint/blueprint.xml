@@ -10,6 +10,10 @@
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
 
+	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
+	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5AdapterFactory">
 		<property name="metricRegistry" ref="flowAdapterMetricRegistry"/>
@@ -55,6 +59,19 @@
 		<service-properties>
 			<entry key="registration.export" value="true" />
 			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowAdapter" />
+		</service-properties>
+	</service>
+
+	<bean id="sflowTelemetryFactory" class="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapterFactory">
+		<argument ref="blueprintBundleContext" />
+		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="nodeDao" ref="nodeDao" />
+		<property name="filterDao" ref="filterDao" />
+	</bean>
+	<service ref="sflowTelemetryFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
+		<service-properties>
+			<entry key="registration.export" value="true" />
+			<entry key="type" value="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapter" />
 		</service-properties>
 	</service>
 
