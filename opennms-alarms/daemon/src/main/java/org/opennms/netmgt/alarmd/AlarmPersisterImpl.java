@@ -269,6 +269,17 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
+        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection(), m_alarmDao);
+        if (containedAlarms != null && !containedAlarms.isEmpty()) {
+            if (alarm instanceof Situation) {
+                for(OnmsAlarm related : containedAlarms) {
+                    ((Situation)alarm).addAlarm(related);
+                }
+            } else {
+                LOG.warn("reduceEvent: Event {} attempts to add alarms to alarm that is not a Situation: {}.", event.getUei(), alarm);
+            }
+        }
+
         e.setAlarm(alarm);
     }
 
@@ -317,7 +328,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
         return param.getParmName() != null
-                && param.getParmName().equals("related-reductionKey")
+                && param.getParmName().startsWith("related-reductionKey")
                 && param.getValue() != null
                 && param.getValue().getContent() != null;
     }
