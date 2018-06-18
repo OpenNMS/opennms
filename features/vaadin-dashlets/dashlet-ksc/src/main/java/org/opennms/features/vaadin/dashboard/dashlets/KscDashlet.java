@@ -49,6 +49,7 @@ import org.opennms.netmgt.dao.api.ResourceDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
 import org.opennms.netmgt.model.ResourceId;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
@@ -397,22 +398,19 @@ public class KscDashlet extends AbstractDashlet {
     /**
      * Returns a map with graph metadata for a given nodeId.
      *
-     * @param nodeId     the nodeId
-     * @param resourceId the resourceId
      * @return a map with meta data, like resourceLabel, resourceTypeLabel
      */
-    public Map<String, String> getDataForResourceId(final String nodeId, final String resourceId) {
+    public Map<String, String> getDataForResourceId(final String nodeId, final String resourceIdString) {
         return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
-                Map<String, String> data = new HashMap<String, String>();
-
+                Map<String, String> data = new HashMap<>();
+                ResourceId resourceId = ResourceId.fromString(resourceIdString);
                 String nodeIdentifier = Optional.ofNullable(nodeId).orElse(determineNodeIdByResourceId(resourceId));
                 data.put("nodeId", nodeIdentifier);
                 data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(nodeIdentifier)));
 
                 List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", nodeIdentifier)).getChildResources();
-
                 for (OnmsResource onmsResource : resourceList) {
                     if (resourceId.equals(onmsResource.getId())) {
                         data.put("resourceLabel", onmsResource.getLabel());
@@ -425,16 +423,10 @@ public class KscDashlet extends AbstractDashlet {
         });
     }
 
-    String determineNodeIdByResourceId(String resourceId){
-
-        // old implementation:
-        String[] arr0 = resourceId.split("\\.");
-        String[] arr1 = arr0[0].split("[\\[\\]]");
-        // data.put("nodeId", arr1[1]); // results in: Test:1525957453778 which is not a valid node id
-
-        // possible new solution but with ugly casting:
-        int onmsNodeId = ((OnmsNode)m_resourceDao.getResourceById(ResourceId.fromString(resourceId))
-                .getParent().getEntity()).getId();
+    String determineNodeIdByResourceId(ResourceId resourceId){
+        OnmsResource parentResource = m_resourceDao.getResourceById(resourceId).getParent();
+        OnmsNode node = ResourceTypeUtils.getNodeFromResource(parentResource);
+        int onmsNodeId = node.getId();
         return Integer.toString(onmsNodeId);
     }
 
