@@ -140,14 +140,14 @@ public class EventdConfiguration implements Serializable {
      * Maximum number of messages to keep in memory while waiting
      to be dispatched.
      */
-	@XmlAttribute(name="queue-size", required=false)
+	@XmlAttribute(name="sink-queue-size", required=false)
     private int m_queueSize = 10000;
 
     /**
      * Messages are aggregated in batches before being dispatched.
      * When the batch reaches this size, it will be dispatched.
      */
-	@XmlAttribute(name="batch-size", required=false)
+	@XmlAttribute(name="sink-batch-size", required=false)
     private int m_batchSize = 1000;
 
     /**
@@ -155,7 +155,7 @@ public class EventdConfiguration implements Serializable {
      * When the batch has been created for longer than this interval (ms)
      * it will be dispatched, regardless of the current size.
      */
-	@XmlAttribute(name="batch-interval", required=false)
+	@XmlAttribute(name="sink-batch-interval", required=false)
     private int m_batchInterval = 500;
 
     public EventdConfiguration() {

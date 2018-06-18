@@ -34,18 +34,18 @@ package org.opennms.netmgt.events.api;
 import java.util.Objects;
 
 import org.opennms.core.ipc.sink.api.Message;
-import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Event;
 
 public class EventsWrapper implements Message {
 
-    private final Log eventLog;
+    private final Event event;
 
-    public EventsWrapper(Log eventLog) {
-    	this.eventLog = Objects.requireNonNull(eventLog);
+    public EventsWrapper(Event event) {
+    	this.event = Objects.requireNonNull(event);
     }
 
-    public Log getEvents() {
-        return eventLog;
+    public Event getEvents() {
+        return event;
     }
 
 }

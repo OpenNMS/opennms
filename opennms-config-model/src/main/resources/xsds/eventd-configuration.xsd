@@ -142,7 +142,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="queue-size" use="optional" default="10000">
+      <attribute name="sink-queue-size" use="optional" default="10000">
         <annotation>
           <documentation>Maximum number of messages to keep in memory while waiting
             to be dispatched.
@@ -155,7 +155,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="batch-size" use="optional" default="1000">
+      <attribute name="sink-batch-size" use="optional" default="1000">
         <annotation>
           <documentation>Messages are aggregated in batches before being dispatched.
             When the batch reaches this size, it will be dispatched.
@@ -168,7 +168,7 @@
           </restriction>
         </simpleType>
       </attribute>
-      <attribute name="batch-interval" use="optional" default="500">
+      <attribute name="sink-batch-interval" use="optional" default="500">
         <annotation>
           <documentation>Messages are aggregated in batches before being dispatched.
             When the batch has been created for longer than this interval (ms)

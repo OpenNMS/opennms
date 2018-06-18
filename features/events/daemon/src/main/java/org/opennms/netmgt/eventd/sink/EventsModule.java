@@ -38,11 +38,11 @@ import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.events.api.EventsWrapper;
-import org.opennms.netmgt.xml.event.Log;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Log> {
+public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Event> {
 
 	public static final String MODULE_ID = "Events";
 
@@ -51,7 +51,7 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Log> {
 	private final EventdConfig m_config;
 
 	public EventsModule(EventdConfig config) {
-		super(Log.class);
+		super(Event.class);
 		this.m_config = config;
 	}
 
@@ -66,8 +66,8 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Log> {
 	}
 
 	@Override
-	public AggregationPolicy<EventsWrapper, Log, Log> getAggregationPolicy() {
-		return new AggregationPolicy<EventsWrapper, Log, Log>() {
+	public AggregationPolicy<EventsWrapper, Event, Event> getAggregationPolicy() {
+		return new AggregationPolicy<EventsWrapper, Event, Event>() {
 
 			@Override
 			public int getCompletionSize() {
@@ -85,17 +85,13 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Log> {
 			}
 
 			@Override
-			public Log aggregate(Log accumulator, EventsWrapper eventsWrapper) {
-				if (accumulator == null) {
-					accumulator = eventsWrapper.getEvents();
-				} else {
-					accumulator.addAllEvents(eventsWrapper.getEvents());
-				}
+			public Event aggregate(Event accumulator, EventsWrapper eventsWrapper) {
+				accumulator=eventsWrapper.getEvents();
 				return accumulator;
 			}
 
 			@Override
-			public Log build(Log accumulator) {
+			public Event build(Event accumulator) {
 				return accumulator;
 			}
 		};
