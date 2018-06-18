@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+  <!-- NMS-9559 store forwarders -->
+  <changeSet author="rssntn67" id="foundation2018-store-forwarders">
+    <sql>DELETE FROM bridgebridgelink;</sql>
+    <sql>DELETE FROM bridgemaclink;</sql>
+    
+    <addColumn tableName="bridgemaclink">
+      <column name="linktype" type="integer">
+       <constraints nullable="false" />
+      </column>
+    </addColumn>
+    
+       <rollback>
+            <dropColumn tableName="bridgemaclink" columnName="linktype" />
+        </rollback>
+  </changeSet>
+    
+</databaseChangeLog>

@@ -51,28 +51,28 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
         super(OspfLink.class);
     }
 
-	/** {@inheritDoc} */
-	@Override
-	public OspfLink get(OnmsNode node, InetAddress ospfRemRouterId,
-			InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex) {
-		return findUnique(
-				"from OspfLink as ospfLink where ospfLink.node = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
-				node, ospfRemRouterId, ospfRemIpAddr, ospfRemAddressLessIndex);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public OspfLink get(OnmsNode node, InetAddress ospfRemRouterId,
+            InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex) {
+        return findUnique("from OspfLink as ospfLink where ospfLink.node = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
+                          node, ospfRemRouterId, ospfRemIpAddr,
+                          ospfRemAddressLessIndex);
+    }
 
-	/** {@inheritDoc} */
-	@Override
-	public OspfLink get(Integer nodeId, InetAddress ospfRemRouterId,
-			InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex) {
-		Assert.notNull(nodeId, "nodeId cannot be null");
-		Assert.notNull(ospfRemRouterId, "ospfRemRouterId cannot be null");
-		Assert.notNull(ospfRemIpAddr, "ospfRemIpAddr cannot be null");
-		Assert.notNull(ospfRemAddressLessIndex,
-				"ospfRemAddressLessIndex cannot be null");
-		return findUnique(
-				"from OspfLink as ospfLink where ospfLink.node.id = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
-				nodeId, ospfRemRouterId, ospfRemIpAddr, ospfRemAddressLessIndex);
-	}
+    /** {@inheritDoc} */
+    @Override
+    public OspfLink get(Integer nodeId, InetAddress ospfRemRouterId,
+            InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex) {
+        Assert.notNull(nodeId, "nodeId cannot be null");
+        Assert.notNull(ospfRemRouterId, "ospfRemRouterId cannot be null");
+        Assert.notNull(ospfRemIpAddr, "ospfRemIpAddr cannot be null");
+        Assert.notNull(ospfRemAddressLessIndex,
+                       "ospfRemAddressLessIndex cannot be null");
+        return findUnique("from OspfLink as ospfLink where ospfLink.node.id = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
+                          nodeId, ospfRemRouterId, ospfRemIpAddr,
+                          ospfRemAddressLessIndex);
+    }
     
     /** {@inheritDoc} */
     @Override
@@ -83,17 +83,13 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        for (OspfLink link : find("from OspfLink ospfLink where ospfLink.node.id = ? and ospfLinkLastPollTime < ?",
-                                  nodeId, now)) {
-            delete(link);
-        }
+        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ? and ospfLinkLastPollTime < ?",
+                                 new Object[] {nodeId, now});
     }    
     
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        for (OspfLink link : find("from OspfLink ospfLink where ospfLink.node.id = ? ",
-                                  nodeId)) {
-            delete(link);
-        }
+        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ? ",
+                                 new Object[] {nodeId});
     }
 }

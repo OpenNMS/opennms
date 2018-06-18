@@ -44,14 +44,16 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="isisLink")
-public class IsIsLink implements Serializable {
+public class IsIsLink implements Serializable,Topology {
 
 	/**
 	 * 
@@ -340,6 +342,27 @@ public class IsIsLink implements Serializable {
 			.toString();
 	}
 
+        @Transient
+        public String printTopology() {
+            StringBuffer strb = new StringBuffer();
+                strb.append("isislink: nodeid:["); 
+                strb.append(getNode().getId());
+                strb.append("]. circIndex:[ ");
+                strb.append(getIsisCircIndex());
+                strb.append("], ifindex:[");
+                strb.append(getIsisCircIfIndex());
+                strb.append("], AdminState:[");
+                strb.append(IsisAdminState.getTypeString(getIsisCircAdminState().getValue()));
+                strb.append("], ISAdjNeighSysID:[");
+                strb.append(getIsisISAdjNeighSysID());
+                strb.append("], ISAdjNeighSNPAAddress:[");
+                strb.append(getIsisISAdjNeighSNPAAddress());
+                strb.append("], ISAdjState:[");
+                strb.append(IsisISAdjState.getTypeString(getIsisISAdjState().getValue()));
+                strb.append("]");
+
+            return strb.toString();
+        }
 
 
 }

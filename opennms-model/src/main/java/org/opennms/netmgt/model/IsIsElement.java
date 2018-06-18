@@ -44,13 +44,15 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="isisElement")
-public final class IsIsElement implements Serializable {
+public final class IsIsElement implements Serializable,Topology {
 
 	/**
 	 * 
@@ -213,6 +215,20 @@ public final class IsIsElement implements Serializable {
 			.toString();
 	}
 	
+        @Transient
+        public String printTopology() {
+            StringBuffer strb = new StringBuffer();
+                strb.append("isiselement: nodeid:["); 
+                strb.append(getNode().getId());
+                strb.append("], AdminState:[");
+                strb.append(IsisAdminState.getTypeString(getIsisSysAdminState().getValue()));
+                strb.append("], SysID:[");
+                strb.append(getIsisSysID());
+                strb.append("]");
+
+            return strb.toString();
+        }
+
 	public void merge(IsIsElement element) {
 		if (element == null)
 			return;

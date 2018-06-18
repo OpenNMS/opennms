@@ -236,7 +236,6 @@ public class Nms7563EnIT extends EnLinkdBuilderITCase {
         }
 
         assertEquals(3, m_cdpLinkDao.countAll());
-        assertEquals(0, m_cdpLinkDao.findLinksForTopology().size());
         for (CdpLink link: m_cdpLinkDao.findAll()) {
             printCdpLink(link);
             if (link.getCdpCacheIfIndex().intValue() == 7 && link.getCdpCacheDeviceIndex().intValue() == 1 ) {
