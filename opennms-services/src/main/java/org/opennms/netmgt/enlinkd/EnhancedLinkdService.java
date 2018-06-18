@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -45,6 +44,8 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 
 /**
@@ -57,7 +58,6 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
  */
 public interface EnhancedLinkdService {
 
-    void delete(BroadcastDomain domain);
     /**
      * <p>
      * getSnmpNodeList
@@ -91,7 +91,9 @@ public interface EnhancedLinkdService {
      *            Remove any reference in topology for nodeid
      *            </p>
      */
-    void delete(int nodeid);
+    void delete(int nodeid) throws BridgeTopologyException;
+
+    BroadcastDomain reconcileTopologyForDeleteNode(BroadcastDomain domain,int nodeid) throws BridgeTopologyException;
 
     void reconcileLldp(int nodeId, Date now);
 
@@ -104,8 +106,6 @@ public interface EnhancedLinkdService {
     void reconcileIpNetToMedia(int nodeId, Date now);
 
     void reconcileBridge(int nodeId, Date now);
-
-    void reconcileBridgeTopology(BroadcastDomain domain, Date now);
 
     void store(int nodeId, LldpLink link);
 
@@ -129,29 +129,20 @@ public interface EnhancedLinkdService {
 
     void store(int nodeId, BridgeStpLink link);
 
-    void store(BroadcastDomain domain);
-
-
-    void updateBft(int nodeId, List<BridgeMacLink> link);
-        
+    void store(int nodeId, List<BridgeForwardingTableEntry> bft);
+    
+    void store(BroadcastDomain domain, Date now) throws BridgeTopologyException;
+    
     void save(BroadcastDomain domain);
-
-    void cleanBroadcastDomains();
 
     Set<BroadcastDomain> getAllBroadcastDomains();
     
-    Map<Integer, List<BridgeMacLink>> getUpdateBftMap();
+    Map<Integer, Set<BridgeForwardingTableEntry>> getUpdateBftMap();
     
     BroadcastDomain getBroadcastDomain(int nodeId);
 
-    List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid);
-
-    List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid);
-
-    boolean hasUpdatedBft(int nodeid);
+    Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid);
         
-    List<BridgeElement> getBridgeElements(Set<Integer> nodeids);
-    
-    void persistForwarders();
-
+    void updateBridgeOnDomain(BroadcastDomain domain,Integer nodeid);
+            
 }

@@ -45,15 +45,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
 @Entity
 @Table(name="ospfElement")
-public final class OspfElement implements Serializable {
+public final class OspfElement implements Serializable,Topology {
 
 	public enum TruthValue {
         /**
@@ -305,6 +307,29 @@ public final class OspfElement implements Serializable {
 			.append("lastPollTime", m_ospfNodeLastPollTime)
 			.toString();
 	}
+	
+	    @Transient
+	    public String printTopology() {
+	        StringBuffer strb = new StringBuffer();
+	        strb.append("ospfelement: nodeid:[");
+	        strb.append(getNode().getId());
+                strb.append("]: version:[");
+                strb.append(getOspfVersionNumber());
+                strb.append("]: status:[");
+                strb.append(Status.getTypeString(getOspfAdminStat().getValue()));
+                strb.append("]: id/mask/ifindex:[");
+                strb.append(str(getOspfRouterId()));
+                strb.append("/");
+                strb.append(str(getOspfRouterIdNetmask()));
+                strb.append("/");
+                strb.append(getOspfRouterIdIfindex());
+                strb.append("]: Border Router Status:[");
+                strb.append(TruthValue.getTypeString(getOspfBdrRtrStatus().getValue()));
+                strb.append("]: AS Border Router Status:[");
+                strb.append(TruthValue.getTypeString(getOspfASBdrRtrStatus().getValue()));
+	        strb.append("]");
+	        return strb.toString();
+	    }
 
 	public void merge(OspfElement element) {
 		if (element == null)

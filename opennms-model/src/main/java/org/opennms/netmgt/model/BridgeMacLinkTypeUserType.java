@@ -36,9 +36,9 @@ import java.util.Properties;
 import org.hibernate.HibernateException;
 import org.hibernate.type.EnumType;
 import org.hibernate.type.IntegerType;
-import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortState;
+import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 
-public class BridgeDot1dStpPortStateUserType extends EnumType {
+public class BridgeMacLinkTypeUserType extends EnumType {
 
     private static final long serialVersionUID = 2935892942529340988L;
 
@@ -47,7 +47,7 @@ public class BridgeDot1dStpPortStateUserType extends EnumType {
 	/**
      * A public default constructor is required by Hibernate.
      */
-    public BridgeDot1dStpPortStateUserType() {}
+    public BridgeMacLinkTypeUserType() {}
 
     @Override
     public int hashCode(final Object x) throws HibernateException {
@@ -60,26 +60,26 @@ public class BridgeDot1dStpPortStateUserType extends EnumType {
         if (c == null) {
             return null;
         }
-        for (BridgeDot1dStpPortState type : BridgeDot1dStpPortState.values()) {
+        for (BridgeMacLinkType type : BridgeMacLinkType.values()) {
             if (type.getValue().intValue() == c.intValue()) {
                 return type;
             }
         }
-        throw new HibernateException("Invalid value for BridgeDot1dStpPortState: " + c);
+        throw new HibernateException("Invalid value for BridgeMacLinkType: " + c);
     }
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
         if (value == null) {
             IntegerType.INSTANCE.nullSafeSet(st, null, index);
-        } else if (value instanceof BridgeDot1dStpPortState){
-            IntegerType.INSTANCE.nullSafeSet(st, ((BridgeDot1dStpPortState)value).getValue(), index);
+        } else if (value instanceof BridgeMacLinkType){
+            IntegerType.INSTANCE.nullSafeSet(st, ((BridgeMacLinkType)value).getValue(), index);
         }
     }
 
     @Override
-    public Class<BridgeDot1dStpPortState> returnedClass() {
-        return BridgeDot1dStpPortState.class;
+    public Class<BridgeMacLinkType> returnedClass() {
+        return BridgeMacLinkType.class;
     }
 
     @Override

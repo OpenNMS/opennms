@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,54 +26,40 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.enlinkd.scheduler;
+package org.opennms.netmgt.model.topology;
 
-/**
- * This interface extends the {@link java.lang.Runnable runnable}interface and
- * provides a method to determine if the runnable is ready to start.
- *
- * @author <a href="mailto:antonio@opennms.org">Antonio Russo</a>
- */
-public interface ReadyRunnable extends Runnable {
-    /**
-     * Returns true if the runnable is ready to start.
-     *
-     * @return a boolean.
-     */
-    public boolean isReady();
+public class BridgeTopologyException extends Exception implements Topology {
 
     /**
-     * <p>suspend</p>
+     * 
      */
-    public void suspend();
+    private static final long serialVersionUID = -6913989384724814658L;
+
+    Topology m_topology;
+
+    public BridgeTopologyException(String message) {
+        super(message);
+    }
+
+    public BridgeTopologyException(String message,Throwable throwable) {
+        super(message, throwable);
+    }
+
+    public BridgeTopologyException(String message, Topology topology) {
+        super(message);
+        m_topology=topology;
+    }
+
+    public BridgeTopologyException(String message,Topology topology, Throwable throwable) {
+        super(message, throwable);
+        m_topology=topology;
+    }
     
-    /**
-     * <p>isSuspended</p>
-     *
-     * @return a boolean.
-     */
-    public boolean isSuspended();
-    
-    /**
-     * <p>wakeUp</p>
-     */
-    public void wakeUp();
-    
-    /**
-     * <p>unschedule</p>
-     */
-    public void unschedule();
-    
-    /**
-     * <p>schedule</p>
-     */
-    public void schedule();
-    
-    /**
-     * <p>getInfo</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public String getInfo();
+    public String printTopology() {
+        if (m_topology == null) {
+            return "no topology associated to this";
+        }
+        return m_topology.printTopology();
+    }
 
 }

@@ -60,20 +60,32 @@ public class EnlinkdConfiguration implements java.io.Serializable {
      * The initial sleep time in mill seconds before starting
      *  node Link Discovery.
      */
-    @XmlAttribute(name = "initial_sleep_time", required = true)
+    @XmlAttribute(name = "initial_sleep_time")
     private Long m_initialSleepTime;
 
     /**
      * Node Link Discovery Rescan Time interval in millseconds.
      */
-    @XmlAttribute(name = "rescan_interval", required = true)
+    @XmlAttribute(name = "rescan_interval")
     private Long m_rescanInterval;
+
+    /**
+     * Bridge Topology Discovery Time interval in mill seconds.
+     */
+    @XmlAttribute(name = "bridge_topology_interval")
+    private Long m_bridgeTopologyInterval;
 
     /**
      * Max bridge forwarding table to hold in memory.
      */
     @XmlAttribute(name = "max_bft")
     private Integer m_maxBft;
+
+    /**
+     * The number of threads used for calculate bridge topology 
+     */
+    @XmlAttribute(name = "discovery-bridge-threads")
+    private Integer m_discoveryBridgeThreads;
 
     /**
      * Whether links discovery process should use
@@ -122,7 +134,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Long getInitialSleepTime() {
-        return m_initialSleepTime == null? 1800000l : m_initialSleepTime;
+        return m_initialSleepTime == null? 60000l : m_initialSleepTime;
     }
 
     public void setInitialSleepTime(final Long initialSleepTime) {
@@ -137,12 +149,28 @@ public class EnlinkdConfiguration implements java.io.Serializable {
         m_rescanInterval = rescanInterval;
     }
 
+    public Long getBridgeTopologyInterval() {
+        return m_bridgeTopologyInterval == null? 300000l : m_bridgeTopologyInterval;
+    }
+
+    public void setBridgeTopologyInterval(Long bridgeTopologyInterval) {
+        m_bridgeTopologyInterval = bridgeTopologyInterval;
+    }
+
     public Integer getMaxBft() {
-        return m_maxBft != null ? m_maxBft : 1;
+        return m_maxBft != null ? m_maxBft : 10;
     }
 
     public void setMaxBft(final Integer maxBft) {
         m_maxBft = maxBft;
+    }
+
+    public Integer getDiscoveryBridgeThreads() {
+        return m_discoveryBridgeThreads != null ? m_discoveryBridgeThreads : 1;
+    }
+
+    public void setDiscoveryBridgeThreads(Integer discoveryBridgeThreads) {
+        m_discoveryBridgeThreads = discoveryBridgeThreads;
     }
 
     public Boolean getUseCdpDiscovery() {
@@ -191,7 +219,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             m_threads, 
             m_initialSleepTime, 
             m_rescanInterval, 
+            m_bridgeTopologyInterval,
             m_maxBft, 
+            m_discoveryBridgeThreads,
             m_useCdpDiscovery, 
             m_useBridgeDiscovery, 
             m_useLldpDiscovery, 
@@ -211,7 +241,9 @@ public class EnlinkdConfiguration implements java.io.Serializable {
             return Objects.equals(this.m_threads, that.m_threads)
                 && Objects.equals(this.m_initialSleepTime, that.m_initialSleepTime)
                 && Objects.equals(this.m_rescanInterval, that.m_rescanInterval)
+                && Objects.equals(this.m_bridgeTopologyInterval, that.m_bridgeTopologyInterval)
                 && Objects.equals(this.m_maxBft, that.m_maxBft)
+                && Objects.equals(this.m_discoveryBridgeThreads, that.m_discoveryBridgeThreads)
                 && Objects.equals(this.m_useCdpDiscovery, that.m_useCdpDiscovery)
                 && Objects.equals(this.m_useBridgeDiscovery, that.m_useBridgeDiscovery)
                 && Objects.equals(this.m_useLldpDiscovery, that.m_useLldpDiscovery)
