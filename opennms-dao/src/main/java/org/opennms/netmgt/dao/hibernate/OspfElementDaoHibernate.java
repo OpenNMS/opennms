@@ -58,10 +58,11 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
         return findUnique("from OspfElement rec where rec.node.id = ?", id);
     }
 
-	@Override
-	public OspfElement findByRouterId(InetAddress routerId) {
-        return findUnique("from OspfElement rec where rec.ospfRouterId = ?", routerId);
-	}
+    @Override
+    public OspfElement findByRouterId(InetAddress routerId) {
+        return findUnique("from OspfElement rec where rec.ospfRouterId = ?",
+                          routerId);
+    }
 
     @Override
     public List<OspfElement> findAllByRouterId(InetAddress routerId) {
@@ -70,10 +71,8 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        for (OspfElement element : find("from OspfElement rec where rec.node.id = ? ",
-                                  nodeId)) {
-            delete(element);
-        }
+        getHibernateTemplate().bulkUpdate("delete from OspfElement rec where rec.node.id = ? ",
+                                 new Object[] {nodeId});
     }
 
 }
