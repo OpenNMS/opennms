@@ -62,7 +62,7 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 
@@ -73,11 +73,11 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
             m_linkd.getLocationAwareSnmpClient().walk(peer,
                                                       isisSysObject).withDescription("isisSysObjectCollection").withLocation(getLocation()).execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: isisSysObjectCollection: {}", 
+            LOG.info("run: node [{}]: ExecutionException: Is-Is mib not supported: {}", 
                      getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: isisSysObjectCollection: {}", 
+            LOG.info("run: node [{}]: InterruptedException: Is-Is mib not supported: {}", 
                      getNodeId(), e.getMessage());
             return;
         }
@@ -108,11 +108,11 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
                       .execute()
                       .get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: isisISAdjTable: {}", 
+            LOG.debug("run: node [{}]: ExecutionException: {}", 
                      getNodeId(), e.getMessage());
             return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: isisISAdjTable: {}", 
+           LOG.debug("run: node [{}]: InterruptedException: {}", 
                     getNodeId(), e.getMessage());
             return;
         }
@@ -137,24 +137,24 @@ private final static Logger LOG = LoggerFactory.getLogger(NodeDiscoveryIsis.clas
                               .withLocation(getLocation())
                               .execute().get();
         } catch (ExecutionException e) {
-            LOG.info("run: node [{}]: ExecutionException: isisCircTable: {}", 
+            LOG.debug("run: node [{}]: ExecutionException: isisCircTable: {}", 
                      getNodeId(), e.getMessage());
             return;
         } catch (final InterruptedException e) {
-            LOG.info("run: node [{}]: InterruptedException: isisCircTable: {}", 
+            LOG.debug("run: node [{}]: InterruptedException: isisCircTable: {}", 
                      getNodeId(), e.getMessage());
             return;
         }
         
-        for (IsIsLink link:links) 
-        	m_linkd.getQueryManager().store(getNodeId(), link);
-
+        for (IsIsLink link:links) {
+            m_linkd.getQueryManager().store(getNodeId(), link);
+        }
         m_linkd.getQueryManager().reconcileIsis(getNodeId(), now);
     }
 
 	@Override
 	public String getName() {
-		return "IsisLinkDiscovery";
+		return "NodeDiscoveryIsis";
 	}
 
 }

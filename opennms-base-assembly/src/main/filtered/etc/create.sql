@@ -2043,6 +2043,7 @@ create table bridgeMacLink (
     bridgePortIfName    text,
     vlan                integer,
     macAddress          varchar(12) not null,
+    linkType            integer not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),
