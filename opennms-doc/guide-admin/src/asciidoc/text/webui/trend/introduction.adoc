@@ -96,14 +96,3 @@ The following table describes the available variable substitutions.
 | `${intLastValueChange}`                    | _Integer_ | last integer value change
 | `${doubleLastValueChange}`                 | _Double_  | last value change
 |===
-
-You can also display a single graph in your JSP files by including the file `/trend/single-trend-box.jsp` and specifying the `name` parameter.
-
-.Sample JSP snippet to include a single _Trend_ chart with name 'example'
-[source,XML]
-----
-<jsp:include page="/trend/single-trend-box.jsp" flush="false">
-    <jsp:param name="name" value="example"/>
-</jsp:include>
-----
-
