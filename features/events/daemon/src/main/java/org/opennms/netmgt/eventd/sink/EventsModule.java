@@ -37,12 +37,12 @@ import org.opennms.core.ipc.sink.api.AggregationPolicy;
 import org.opennms.core.ipc.sink.api.AsyncPolicy;
 import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
-import org.opennms.netmgt.events.api.EventsWrapper;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Event> {
+public class EventsModule extends AbstractXmlSinkModule<Event, Log> {
 
 	public static final String MODULE_ID = "Events";
 
@@ -51,7 +51,7 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Event> {
 	private final EventdConfig m_config;
 
 	public EventsModule(EventdConfig config) {
-		super(Event.class);
+		super(Log.class);
 		this.m_config = config;
 	}
 
@@ -66,8 +66,8 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Event> {
 	}
 
 	@Override
-	public AggregationPolicy<EventsWrapper, Event, Event> getAggregationPolicy() {
-		return new AggregationPolicy<EventsWrapper, Event, Event>() {
+	public AggregationPolicy<Event, Log, Log> getAggregationPolicy() {
+		return new AggregationPolicy<Event, Log, Log>() {
 
 			@Override
 			public int getCompletionSize() {
@@ -80,18 +80,22 @@ public class EventsModule extends AbstractXmlSinkModule<EventsWrapper, Event> {
 			}
 
 			@Override
-			public Object key(EventsWrapper message) {
-				return message.getEvents();
+			public Object key(Event eventMessage) {
+				return eventMessage;
 			}
 
 			@Override
-			public Event aggregate(Event accumulator, EventsWrapper eventsWrapper) {
-				accumulator=eventsWrapper.getEvents();
-				return accumulator;
+			public Log aggregate(Log eventLog, Event event) {
+				if (eventLog == null) {
+					eventLog = new Log();
+					eventLog.addEvent(event);
+				}
+				eventLog.addEvent(event);
+				return eventLog;
 			}
 
 			@Override
-			public Event build(Event accumulator) {
+			public Log build(Log accumulator) {
 				return accumulator;
 			}
 		};
