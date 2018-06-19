@@ -41,14 +41,18 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
+import org.opennms.netmgt.model.IsIsElement;
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.IsisTopologyLink;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 
 public class Nms0001EnIT extends EnLinkdBuilderITCase {
@@ -94,17 +98,50 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertTrue(m_linkd.runSingleSnmpCollection(siegfrie.getId()));
         assertEquals(6, m_isisLinkDao.countAll());
 
-        List<IsisTopologyLink> links = m_isisLinkDao.getLinksForTopology();
-        assertEquals(3, links.size());
-
+        Map<Integer,IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
         for (OnmsNode node: m_nodeDao.findAll()) {
         	assertNotNull(node.getIsisElement());
-        	System.err.println(node.getIsisElement());
+        	System.err.println(node.getIsisElement().printTopology());
+        	elementmap.put(node.getId(), node.getIsisElement());
         }
-        
-        for (IsIsLink link: m_isisLinkDao.findAll())
-        	System.err.println(link);
-        
+
+        List<IsIsLink> isislinks = m_isisLinkDao.findAll();
+        Set<Integer> parsed = new HashSet<Integer>();
+        int count = 0;
+        for (IsIsLink sourceLink : isislinks) {
+            if (parsed.contains(sourceLink.getId())) { 
+                continue;
+            }
+            IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
+            IsIsLink targetLink = null;
+            for (IsIsLink link : isislinks) {
+                if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId()))
+                    continue;
+                IsIsElement targetElement = elementmap.get(link.getNode().getId());
+                //Compare the remote data to the targetNode element data
+                if (!sourceLink.getIsisISAdjNeighSysID().equals(targetElement.getIsisSysID())  
+                        || !link.getIsisISAdjNeighSysID().equals(sourceElement.getIsisSysID())) { 
+                    continue;
+                }
+
+                if (sourceLink.getIsisISAdjIndex().intValue() == 
+                        link.getIsisISAdjIndex().intValue()  ) {
+                    targetLink=link;
+                    System.err.println(sourceLink.printTopology() + "<-\n->" + targetLink.printTopology());
+                    count++;
+                    break;
+                }
+            }
+            
+            if (targetLink == null) {
+                continue;
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+        }
+
+        assertEquals(3,count);
         /*
          * 
          * These are the links among the following nodes discovered using 

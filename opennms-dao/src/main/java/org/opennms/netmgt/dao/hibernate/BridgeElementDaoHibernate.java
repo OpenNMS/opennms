@@ -59,37 +59,37 @@ public class BridgeElementDaoHibernate extends AbstractDaoHibernate<BridgeElemen
         return find("from BridgeElement rec where rec.node.id = ?", id);
     }
     
-	@Override
-	public BridgeElement getByNodeIdVlan(Integer id, Integer vlanId) {
-		if (vlanId == null)
-	        return findUnique("from BridgeElement rec where rec.node.id = ? and rec.vlan is null", id);
-        return findUnique("from BridgeElement rec where rec.node.id = ? and rec.vlan = ?", id, vlanId);
-	}
+    @Override
+    public BridgeElement getByNodeIdVlan(Integer id, Integer vlanId) {
+        if (vlanId == null)
+            return findUnique("from BridgeElement rec where rec.node.id = ? and rec.vlan is null",
+                              id);
+        return findUnique("from BridgeElement rec where rec.node.id = ? and rec.vlan = ?",
+                          id, vlanId);
+    }
 
-	@Override
-	public List<BridgeElement> findByBridgeId(String id) {
-        return find("from BridgeElement rec where rec.baseBridgeAddress = ?", id);
-	}
+    @Override
+    public List<BridgeElement> findByBridgeId(String id) {
+        return find("from BridgeElement rec where rec.baseBridgeAddress = ?",
+                    id);
+    }
 
-	@Override
-	public BridgeElement getByBridgeIdVlan(String id, Integer vlanId) {
-        return findUnique("from BridgeElement rec where rec.baseBridgeAddress = ? and vlan = ?", id,vlanId);
-	}
+    @Override
+    public BridgeElement getByBridgeIdVlan(String id, Integer vlanId) {
+        return findUnique("from BridgeElement rec where rec.baseBridgeAddress = ? and vlan = ?",
+                          id, vlanId);
+    }
 
-	@Override
-	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (BridgeElement elem: find("from BridgeElement rec where rec.node.id = ? and rec.bridgeNodeLastPollTime < ?",nodeId,now)) {
-			delete(elem);
-		}
-	}
+    @Override
+    public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
+        getHibernateTemplate().bulkUpdate("delete from BridgeElement rec where rec.node.id = ? and rec.bridgeNodeLastPollTime < ?",
+                                          new Object[] { nodeId, now });
+    }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        for (BridgeElement rec : find("from BridgeElement rec where rec.node.id = ? ",
-                                    nodeId)) {
-            delete(rec);
-        }
-
+        getHibernateTemplate().bulkUpdate("delete from BridgeElement rec where rec.node.id = ? ",
+                                    new Object[] {nodeId});
     }
 	
 

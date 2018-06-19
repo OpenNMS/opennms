@@ -28,8 +28,8 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
@@ -158,8 +158,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 			return null;
 		}
 
-		public BridgeMacLink getLink() {
-			BridgeMacLink link = new BridgeMacLink();
+		public BridgeForwardingTableEntry getLink() {
+			BridgeForwardingTableEntry link = new BridgeForwardingTableEntry();
 			link.setBridgePort(getDot1dTpFdbPort());
 			link.setMacAddress(getDot1dTpFdbAddress());
 			if (getDot1dTpFdbStatus() != null)

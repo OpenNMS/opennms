@@ -46,104 +46,66 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.hibernate.annotations.Type;
+import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeMacLink")
-public class BridgeMacLink {
+public class BridgeMacLink implements Topology {
 
-	/**
-     * dot1qTpFdbStatus OBJECT-TYPE
-     * SYNTAX      INTEGER {
-     *           other(1),
-     *           invalid(2),
-     *           learned(3),
-     *           self(4),
-     *           mgmt(5)
-     *       }
-     *       MAX-ACCESS  read-only
-     *       STATUS      current
-     *       DESCRIPTION
-     *       "The status of this entry.  The meanings of the values
-     *       are:
-     *   other(1) - none of the following.  This may include
-     *       the case where some other MIB object (not the
-     *       corresponding instance of dot1qTpFdbPort, nor an
-     *       entry in the dot1qStaticUnicastTable) is being
-     *       used to determine if and how frames addressed to
-     *       the value of the corresponding instance of
-     *       dot1qTpFdbAddress are being forwarded.
-     *   invalid(2) - this entry is no longer valid (e.g., it
-     *       was learned but has since aged out), but has not
-     *       yet been flushed from the table.
-     *   learned(3) - the value of the corresponding instance
-     *       of dot1qTpFdbPort was learned and is being used.
-     *   self(4) - the value of the corresponding instance of
-     *       dot1qTpFdbAddress represents one of the device's
-     *       addresses.  The corresponding instance of
-     *       dot1qTpFdbPort indicates which of the device's
-     *       ports has this address.
-     *   mgmt(5) - the value of the corresponding instance of
-     *       dot1qTpFdbAddress is also the value of an
-     *       existing instance of dot1qStaticAddress."
-     */
-	public enum BridgeDot1qTpFdbStatus {
-		DOT1D_TP_FDB_STATUS_OTHER(1),
-		DOT1D_TP_FDB_STATUS_INVALID(2),
-		DOT1D_TP_FDB_STATUS_LEARNED(3),
-		DOT1D_TP_FDB_STATUS_SELF(4),
-		DOT1D_TP_FDB_STATUS_MGMT(5);
+    
+    public enum BridgeMacLinkType {
+        BRIDGE_LINK(1), BRIDGE_FORWARDER(2);
 
-		private int m_type;
+        private int m_type;
 
-		BridgeDot1qTpFdbStatus(int type) {
-			m_type = type;
-		}
-		
-	    protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
+        BridgeMacLinkType(int type) {
+            m_type = type;
+        }
+
+        protected static final Map<Integer, String> s_typeMap = new HashMap<Integer, String>();
 
         static {
-        	s_typeMap.put(1, "other" );
-        	s_typeMap.put(2, "invalid" );
-        	s_typeMap.put(3, "learned" );
-        	s_typeMap.put(4, "self" );
-        	s_typeMap.put(5, "mgmt" );
+            s_typeMap.put(1, "bridge-link");
+            s_typeMap.put(2, "bridge-forwarder");
         }
-        
+
         public static String getTypeString(Integer code) {
             if (s_typeMap.containsKey(code))
-                    return s_typeMap.get( code);
-            return "other-vendor-specific";
+                return s_typeMap.get(code);
+            return null;
         }
 
         public Integer getValue() {
-        	return m_type;
+            return m_type;
         }
 
-        public static BridgeDot1qTpFdbStatus get(Integer code) {
-            if (code == null )
-                throw new IllegalArgumentException("Cannot create BridgeDot1qTpFdbStatus from null code");
-            if (code.intValue() <= 0 ) 
-                throw new IllegalArgumentException("Cannot create BridgeDot1qTpFdbStatus from" + code +" code");
+        public static BridgeMacLinkType get(Integer code) {
+            if (code == null)
+                throw new IllegalArgumentException(
+                                                   "Cannot create BridgeMacLinkType from null code");
             switch (code) {
-            case 1: 	return DOT1D_TP_FDB_STATUS_OTHER;
-            case 2: 	return DOT1D_TP_FDB_STATUS_INVALID;
-            case 3: 	return DOT1D_TP_FDB_STATUS_LEARNED;
-            case 4: 	return DOT1D_TP_FDB_STATUS_SELF;
-            case 5: 	return DOT1D_TP_FDB_STATUS_MGMT;
+            case 1:
+                return BRIDGE_LINK;
+            case 2:
+                return BRIDGE_FORWARDER;
             default:
-            	throw new IllegalArgumentException("Cannot create BridgeDot1qTpFdbStatus from code "+code);
+                throw new IllegalArgumentException(
+                                                   "Cannot create BridgeMacLinkType from code "
+                                                           + code);
             }
         }
 
-	}
-	private Integer m_id;
-	private OnmsNode m_node;
-	private Integer m_bridgePort;
-	private Integer m_bridgePortIfIndex;
-	private String  m_bridgePortIfName;
-	private String m_macAddress;
-	private Integer m_vlan;
-	private BridgeDot1qTpFdbStatus m_status;
+    }
+
+    private Integer m_id;
+    private OnmsNode m_node;
+    private Integer m_bridgePort;
+    private Integer m_bridgePortIfIndex;
+    private String  m_bridgePortIfName;
+    private String m_macAddress;
+    private Integer m_vlan;
+    private BridgeMacLinkType m_linkType;
     private Date m_bridgeMacLinkCreateTime = new Date();
     private Date m_bridgeMacLinkLastPollTime;
 	
@@ -225,6 +187,16 @@ public class BridgeMacLink {
 		m_macAddress = macAddress;
 	}
 
+    @Column(name = "linkType", nullable = false)
+    @Type(type = "org.opennms.netmgt.model.BridgeMacLinkTypeUserType")
+    public BridgeMacLinkType getLinkType() {
+        return m_linkType;
+    }
+
+    public void setLinkType(BridgeMacLinkType linkType) {
+        m_linkType = linkType;
+    }
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name="bridgeMacLinkCreateTime", nullable=false)
 	public Date getBridgeMacLinkCreateTime() {
@@ -256,54 +228,51 @@ public class BridgeMacLink {
 				.append("bridgePortIfIndex", m_bridgePortIfIndex)
 				.append("bridgePortIfName", m_bridgePortIfName)
 				.append("vlan", m_vlan)
-                .append("macAddress", m_macAddress)
+                                .append("macAddress", m_macAddress)
+                                .append("linktype", BridgeMacLinkType.
+                                        getTypeString(
+                                                      getLinkType().
+                                                      getValue()))
 				.append("m_bridgeMacLinkCreateTime", m_bridgeMacLinkCreateTime)
 				.append("m_bridgeMacLinkLastPollTime", m_bridgeMacLinkLastPollTime)
 				.toString();
 	}
 	
+	@Transient
+        public String printTopology() {
+        StringBuffer strbfr = new StringBuffer();
+
+        strbfr.append("maclink: nodeid:["); 
+        strbfr.append(getNode().getId());
+        strbfr.append("], bridgeport:[");
+        strbfr.append(getBridgePort());
+        strbfr.append("], ifindex:[");
+        strbfr.append(getBridgePortIfIndex());
+        strbfr.append("], vlan:[");
+        strbfr.append(getVlan());
+        strbfr.append("],");
+        strbfr.append(getMacAddress());
+        strbfr.append(",");
+        strbfr.append(BridgeMacLinkType.
+                      getTypeString(
+                                    getLinkType().
+                                    getValue()));
+        strbfr.append("]");
+
+	        return strbfr.toString();
+	        }
+
 	public void merge(BridgeMacLink element) {
 		if (element == null)
 			return;
 		setBridgePortIfIndex(element.getBridgePortIfIndex());
 		setBridgePortIfName(element.getBridgePortIfName());
 		setVlan(element.getVlan());
+		setLinkType(element.getLinkType());
 		if (element.getBridgeMacLinkLastPollTime() == null)
 		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkCreateTime());
 		else 
 		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkLastPollTime());
-	}
-
-
-    @Transient
-    public BridgeDot1qTpFdbStatus getBridgeDot1qTpFdbStatus() {
-		return m_status;
-	}
-
-
-	public void setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus status) {
-		m_status = status;
-	}
-
-
-    @Transient
-    public String printTopology() {
-        final StringBuilder strbfr = new StringBuilder();
-
-        strbfr.append("mac link:[");
-        strbfr.append(getMacAddress());
-        strbfr.append(", bridge:[");
-        strbfr.append(getNode().getId());
-        strbfr.append("], bridgeport:");
-        strbfr.append(getBridgePort());
-        if (getBridgeDot1qTpFdbStatus() != null) {
-        	strbfr.append(", status:");
-        	strbfr.append(BridgeDot1qTpFdbStatus.getTypeString(getBridgeDot1qTpFdbStatus().getValue()));
-        }
-        strbfr.append(", ifindex:");
-        strbfr.append(getBridgePortIfIndex());
-        strbfr.append("]\n");	        
-        return strbfr.toString();
 	}
 	
 }

@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +56,6 @@ import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.support.UpsertTemplate;
 import org.opennms.netmgt.model.BridgeElement;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
@@ -69,13 +69,20 @@ import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OspfElement;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.topology.BridgeMacLinkHash;
+import org.opennms.netmgt.model.topology.Bridge;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
+
+    private final static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdServiceImpl.class);
 
     @Autowired
     private PlatformTransactionManager m_transactionManager;
@@ -106,20 +113,8 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
 
     private BridgeTopologyDao m_bridgeTopologyDao;
 
+    volatile Map<Integer, Set<BridgeForwardingTableEntry>> m_nodetoBroadcastDomainMap= new HashMap<Integer, Set<BridgeForwardingTableEntry>>();
     volatile Set<BroadcastDomain> m_domains;
-
-    volatile Map<Integer, List<BridgeMacLink>> m_nodetoBroadcastDomainMap= new HashMap<Integer, List<BridgeMacLink>>();
-
-    public synchronized Set<BroadcastDomain> getAll() {
-        return m_domains;
-    }
-
-    @Override
-    public void delete(BroadcastDomain domain) {
-        synchronized (m_domains) {
-            m_domains.remove(domain);
-        }
-    }
     
     @Override
     public List<Node> getSnmpNodeList() {
@@ -165,7 +160,7 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void delete(int nodeId) {
+    public void delete(int nodeId) throws BridgeTopologyException {
 
         m_lldpElementDao.deleteByNodeId(nodeId);
         m_lldpLinkDao.deleteByNodeId(nodeId);
@@ -193,21 +188,49 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         m_bridgeElementDao.deleteByNodeId(nodeId);
         m_bridgeElementDao.flush();
 
-        m_bridgeTopologyDao.delete(nodeId);
-
         m_bridgeStpLinkDao.deleteByNodeId(nodeId);
         m_bridgeStpLinkDao.flush();
         
-        synchronized (m_domains) {
-            for (BroadcastDomain domain : m_domains) {
-                synchronized(domain) {
-                    if (domain.containBridgeId(nodeId)) {
-                        domain.removeBridge(nodeId);
-                        break;
-                    }
-                }
-            }
+        reconcileTopologyForDeleteNode(getBroadcastDomain(nodeId), nodeId);
+    
+    }
+    
+    @Override
+    public BroadcastDomain reconcileTopologyForDeleteNode(BroadcastDomain domain,int nodeId) throws BridgeTopologyException {
+        
+        Date now = new Date();
+        if (domain == null || domain.isEmpty()) {
+            LOG.warn("reconcileTopologyForDeleteNode: node: {}, start: null domain or empty",nodeId);
+            return domain;
         }
+        if (domain.getBridge(nodeId) == null) {
+            LOG.info("reconcileTopologyForDeleteNode: node: {}, not on domain",nodeId);
+            return domain;
+        }
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("reconcileTopologyForDeleteNode: node:[{}], domain:\n{}", nodeId, domain.printTopology());
+        }
+        
+        LOG.info("reconcileTopologyForDeleteNode: node:[{}], start: save topology for domain",nodeId);
+        BroadcastDomain.removeBridge(domain,nodeId);
+        store(domain,now);
+        LOG.info("reconcileTopologyForDeleteNode: node:[{}], end: save topology for domain",nodeId);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("reconcileTopologyForDeleteNode: node:[{}], resulting domain: {}", nodeId, domain.printTopology());
+        }
+        
+        if (domain.isEmpty()) {
+            cleanBroadcastDomains();
+            m_bridgeTopologyDao.delete(nodeId);
+            LOG.info("reconcileTopologyForDeleteNode: node:[{}], empty domain",nodeId);
+            return domain;
+        }
+        if (domain.getRootBridge() == null) {
+            throw new BridgeTopologyException("reconcileTopologyForDeleteNode: Domain without root", domain);
+        }
+        return domain;
     }
 
     @Override
@@ -609,20 +632,18 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
-    public void updateBft(int nodeId, List<BridgeMacLink> bft) {
-        Map<BridgeMacLinkHash,BridgeMacLink> effectiveBFT=new HashMap<BridgeMacLinkHash,BridgeMacLink>();        
-        for (BridgeMacLink link : bft) {
-            OnmsNode node = new OnmsNode();
-            node.setId(nodeId);
-            link.setNode(node);
-            effectiveBFT.put(new BridgeMacLinkHash(link), link);
+    public void store(int nodeId, List<BridgeForwardingTableEntry> bft) {
+        Set<BridgeForwardingTableEntry> effectiveBFT=new HashSet<BridgeForwardingTableEntry>(); 
+        for (BridgeForwardingTableEntry link : bft) {
+            link.setNodeId(nodeId);
+            effectiveBFT.add(link);
         }
         synchronized (m_nodetoBroadcastDomainMap) {
-            m_nodetoBroadcastDomainMap.put(nodeId, new ArrayList<BridgeMacLink>(effectiveBFT.values()));
+            m_nodetoBroadcastDomainMap.put(nodeId, effectiveBFT);
         }
     }
 
-    public synchronized Map<Integer,List<BridgeMacLink>> getUpdateBftMap() {
+    public synchronized Map<Integer,Set<BridgeForwardingTableEntry>> getUpdateBftMap() {
         return m_nodetoBroadcastDomainMap;
     }
     
@@ -647,7 +668,6 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
         }
     }
 
-    @Override
     public void cleanBroadcastDomains() {
         synchronized (m_domains) {
             m_domains.removeIf(BroadcastDomain::isEmpty);
@@ -657,48 +677,31 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     @Override
     public BroadcastDomain getBroadcastDomain(int nodeId) {
         synchronized (m_domains) {
-            for (BroadcastDomain domain: m_domains) {
-                if (domain.containBridgeId(nodeId))
-                    return domain;
+            for (BroadcastDomain domain : m_domains) {
+                synchronized (domain) {
+                    Bridge bridge = domain.getBridge(nodeId);
+                    if (bridge != null) {
+                        return domain;
+                    }
+                }
             }
         }
         return null;
     }
-
-    @Override
-    public boolean hasUpdatedBft(int nodeid) {
-        synchronized (m_nodetoBroadcastDomainMap) {
-            return m_nodetoBroadcastDomainMap.containsKey(nodeid);            
-        }
-
-    }
     
     @Override
-    public List<BridgeMacLink> useBridgeTopologyUpdateBFT(int nodeid) {
+    public Set<BridgeForwardingTableEntry> useBridgeTopologyUpdateBFT(int nodeid) {
         synchronized (m_nodetoBroadcastDomainMap) {
             return m_nodetoBroadcastDomainMap.remove(nodeid);
         }
     }
 
-    @Override
-    public synchronized List<BridgeMacLink> getBridgeTopologyUpdateBFT(int nodeid) {
-        return m_nodetoBroadcastDomainMap.get(nodeid);
-    }
 
     @Override
-    public void store(BroadcastDomain domain) {
-        m_bridgeTopologyDao.save(domain);
-        
+    public void store(BroadcastDomain domain, Date now) throws BridgeTopologyException {
+        m_bridgeTopologyDao.save(domain, now);
     }
     
-    @Override
-    public void reconcileBridgeTopology(BroadcastDomain domain, Date now) {
-        for (Integer nodeid: domain.getBridgeNodesOnDomain()) {
-            m_bridgeTopologyDao.deleteOlder(nodeid, now);
-        }
-    }
-
-
     @Override
     public void store(int nodeId, IpNetToMedia ipnettomedia) {
         if (ipnettomedia == null)
@@ -856,19 +859,28 @@ public class EnhancedLinkdServiceImpl implements EnhancedLinkdService {
     }
 
     @Override
+    public void updateBridgeOnDomain(BroadcastDomain domain, Integer nodeId) {
+        if (domain == null) {
+            return;
+        }
+        synchronized (domain) {
+            for (Bridge bridge: domain.getBridges()) {
+                if (bridge.getNodeId().intValue() == nodeId.intValue()) {
+                    bridge.clear();
+                    List<BridgeElement> elems = m_bridgeElementDao.findByNodeId(nodeId);
+                    bridge.getIdentifiers().addAll(Bridge.getIdentifier(elems));
+                    bridge.setDesignated(Bridge.getDesignated(elems));
+                    break;
+                }
+            }
+        }
+    }
+
     public List<BridgeElement> getBridgeElements(Set<Integer> nodes) {
         List<BridgeElement> elems = new ArrayList<BridgeElement>();
         for (Integer nodeid: nodes)
             elems.addAll(m_bridgeElementDao.findByNodeId(nodeid));
         return elems;
     }
-    
-    @Override
-    public void persistForwarders() {
-        synchronized (m_domains) {
-            for (BroadcastDomain domain: m_domains) {
-                m_bridgeTopologyDao.saveForwarders(domain);
-            }
-        }
-    }
+
 }

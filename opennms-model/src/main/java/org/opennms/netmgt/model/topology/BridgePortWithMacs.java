@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,28 +28,46 @@
 
 package org.opennms.netmgt.model.topology;
 
-import org.opennms.netmgt.model.BridgeMacLink;
+import java.util.Set;
 
-public class BridgeMacLinkHash {
-    final Integer nodeid;
-    final Integer bridgeport;
-    final String mac;
-    public BridgeMacLinkHash(BridgeMacLink maclink) {
-        super();
-        nodeid = maclink.getNode().getId();
-        bridgeport = maclink.getBridgePort();
-        mac = maclink.getMacAddress();
+public class BridgePortWithMacs implements Topology {
+
+    public static BridgePortWithMacs create(BridgePort port, Set<String> macs) throws BridgeTopologyException {
+        if (port == null) {
+            throw new BridgeTopologyException("cannot create BridgePortWithMacs bridge port is null");
+        }
+        if (macs == null) {
+            throw new BridgeTopologyException("cannot create BridgePortWithMacs macs is null");
+        }
+        return new BridgePortWithMacs(port,macs);
+        
     }
+
+    private final BridgePort m_port;
+    private final Set<String> m_macs;
+    
+ 
+    private BridgePortWithMacs(BridgePort port, Set<String> macs) {
+        m_port=port;
+        m_macs=macs;
+    }
+
+    public BridgePort getPort() {
+        return m_port;
+    }
+
+    public Set<String> getMacs() {
+        return m_macs;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result
-                + ((bridgeport == null) ? 0 : bridgeport.hashCode());
-        result = prime * result + ((mac == null) ? 0 : mac.hashCode());
-        result = prime * result + ((nodeid == null) ? 0 : nodeid.hashCode());
+        result = prime * result + ((m_port == null) ? 0 : m_port.hashCode());
         return result;
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -58,24 +76,25 @@ public class BridgeMacLinkHash {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        BridgeMacLinkHash other = (BridgeMacLinkHash) obj;
-        if (bridgeport == null) {
-            if (other.bridgeport != null)
+        BridgePortWithMacs other = (BridgePortWithMacs) obj;
+        if (m_port == null) {
+            if (other.m_port != null)
                 return false;
-        } else if (!bridgeport.equals(other.bridgeport))
-            return false;
-        if (mac == null) {
-            if (other.mac != null)
-                return false;
-        } else if (!mac.equals(other.mac))
-            return false;
-        if (nodeid == null) {
-            if (other.nodeid != null)
-                return false;
-        } else if (!nodeid.equals(other.nodeid))
+        } else if (!m_port.equals(other.m_port))
             return false;
         return true;
     }
-    
 
+    @Override
+    public String printTopology() {
+        StringBuffer strbfr = new StringBuffer();
+        strbfr.append(m_port.printTopology());
+        strbfr.append(" macs:");
+        strbfr.append(m_macs);
+        
+        return strbfr.toString();
+    }
+
+
+    
 }
