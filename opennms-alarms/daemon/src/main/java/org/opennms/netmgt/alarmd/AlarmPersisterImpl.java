@@ -273,6 +273,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         if (containedAlarms != null && !containedAlarms.isEmpty()) {
             if (alarm instanceof Situation) {
                 for(OnmsAlarm related : containedAlarms) {
+                    // Related Alarms are additive for Situations reduced from Events.
                     ((Situation)alarm).addAlarm(related);
                 }
             } else {
@@ -286,6 +287,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event, AlarmDao alarmDao) {
         OnmsAlarm alarm;
         Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection(), alarmDao);
+        // Situations are denoted by the existance of related-reductionKeys
         if (containedAlarms == null || containedAlarms.isEmpty()) {
             alarm = new OnmsAlarm();
         } else {
@@ -323,11 +325,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
             return Collections.emptySet();
         }
         Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
+        // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
         return reductionKeys.stream().map(reductionKey -> alarmDao.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
         return param.getParmName() != null
+                // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
                 && param.getParmName().startsWith("related-reductionKey")
                 && param.getValue() != null
                 && param.getValue().getContent() != null;
