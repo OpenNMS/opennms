@@ -28,10 +28,12 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.vaadin.server.Page;
-import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
@@ -43,16 +45,23 @@ import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsResource;
+import org.opennms.netmgt.model.ResourceTypeUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.Accordion;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This dashlet class is used to display the reports of a Ksc report.
@@ -400,29 +409,45 @@ public class KscDashlet extends AbstractDashlet {
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<String, String>();
 
-                if (nodeId == null) {
-                    String[] arr0 = resourceId.split("\\.");
-                    String[] arr1 = arr0[0].split("[\\[\\]]");
-                    data.put("nodeId", arr1[1]);
+                OnmsNode node;
+                OnmsResource resource;
+                if(nodeId == null){
+                    resource = determineResourceByResourceId(resourceId);
+                    node = ResourceTypeUtils.getNodeFromResource(resource);
                 } else {
-                    data.put("nodeId", nodeId);
+                    node = m_nodeDao.get(nodeId);
+                    resource = m_resourceDao.getResourceForNode(node);
                 }
+                data.put("nodeId", node.getNodeId());
+                data.put("nodeLabel", node.getLabel());
 
-                data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(data.get("nodeId"))));
-
-                List<OnmsResource> resourceList = m_resourceDao.getResourceById("node[" + data.get("nodeId") + "]").getChildResources();
-
-                for (OnmsResource onmsResource : resourceList) {
-                    if (resourceId.equals(onmsResource.getId())) {
+                for (OnmsResource onmsResource : resource.getChildResources()) {
+                    if (resourceId.equals(decodeResourceId(onmsResource.getId()))) {
                         data.put("resourceLabel", onmsResource.getLabel());
                         data.put("resourceTypeLabel", onmsResource.getResourceType().getLabel());
-
                         break;
                     }
                 }
                 return data;
             }
         });
+    }
+
+    String decodeResourceId(String resourceId){
+        // This is a quite ugly hack but it will be removed as of foundation-2018 when the class ResourceId will be
+        // introduced. We need this because OnmsResource Urlencodes it's id
+        try {
+            return URLDecoder.decode(resourceId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // should not happen for UTF-8 but if let's throw an unchecked Exception
+            throw new IllegalArgumentException(e);
+        }
+    }
+
+    OnmsResource determineResourceByResourceId(String resourceId){
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        resource =(resource.getParent()== null) ? resource : resource.getParent();
+        return resource;
     }
 
     private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {
