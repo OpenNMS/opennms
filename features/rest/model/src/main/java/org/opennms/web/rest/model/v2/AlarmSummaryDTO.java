@@ -43,18 +43,18 @@ public class AlarmSummaryDTO {
     @XmlAttribute(name="id")
     private Integer id;
 
-    @XmlElement(name="reductionKey")
-    private String reductionKey;
-
     @XmlAttribute(name="type")
     private Integer type;
 
     @XmlAttribute(name="severity")
     private String severity;
 
+    @XmlElement(name="reductionKey")
+    private String reductionKey;
+
     @XmlElement(name="description")
     private String description;
-    
+
     public Integer getId() {
         return id;
     }
