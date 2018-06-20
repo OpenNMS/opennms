@@ -54,6 +54,14 @@
 	    <scope>provided</scope>
       </dependency>
       <dependency>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.logging</artifactId>
+      </dependency>
+      <dependency>
+      <groupId> com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+    </dependency>
+      <dependency>
         <!-- This is required for the JmsQueueNameFactory -->
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.camel</artifactId>
@@ -66,6 +74,11 @@
         <groupId>org.osgi</groupId>
         <artifactId>org.osgi.compendium</artifactId>
        <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
     </dependency>
     </dependencies>
     

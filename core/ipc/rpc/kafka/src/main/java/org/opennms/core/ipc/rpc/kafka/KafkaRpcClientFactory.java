@@ -28,17 +28,19 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 import java.util.Map.Entry;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -46,13 +48,14 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.rpc.api.RpcClient;
 import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
@@ -63,16 +66,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaRpcClientFactory implements RpcClientFactory {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcClientFactory.class);
+    private static final long TIMEOUT_FOR_KAFKA_RPC = 30000;
     static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
     static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
     private String location;
     private KafkaProducer<String, byte[]> producer;
     private final Properties kafkaConfig = new Properties();
-    private final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("kafka-consumer-%d").build();
+    private final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("kafka-consumer-rpc-client-%d").build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
+    private final Map<String, CompletableFuture<String>> rpcResponseMap = new ConcurrentHashMap<>();
+    private final Map<String, KafkaConsumerRunner> consumerMap = new ConcurrentHashMap<>();
 
     @Override
     public <S extends RpcRequest, T extends RpcResponse> RpcClient<S, T> getClient(RpcModule<S, T> module) {
@@ -86,34 +94,54 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 }
                 final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-request", module.getId(),
                         request.getLocation());
-                String topic = topicNameFactory.getName();
-                String requestAsString = module.marshalRequest(request);
-                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic,
-                        requestAsString.getBytes(StandardCharsets.UTF_8));
-                try {
-                    final Future<RecordMetadata> future = producer.send(record);
-                    future.get();
-                } catch (InterruptedException e) {
-                    LOG.warn("Interrupted while sending message to topic {}.", topic, e);
-                } catch (ExecutionException e) {
-                    LOG.error("Error occured while sending message to topic {}.", topic, e);
-                }
+                String requestTopic = topicNameFactory.getName();
+                String marshalledRequest = module.marshalRequest(request);
+                // Generate RPC Id for every request to track request/response.
+                String rpcId = UUID.randomUUID().toString();
+                // Wrap an empty future for response and add it to response map.
+                final CompletableFuture<String> responseFuture = new CompletableFuture<>();
+                rpcResponseMap.put(rpcId, responseFuture);
+                RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
+                                                            .setRpcId(rpcId)
+                                                            .setRpcContent(ByteString.copyFromUtf8(marshalledRequest))
+                                                            .build();
+
+                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
+                        rpcMessage.toByteArray());
+                producer.send(record);
+                LOG.debug("RPC Request {} sent to minion at location {}", request.toString(), request.getLocation());
                 final JmsQueueNameFactory topicNames = new JmsQueueNameFactory("rpc-response", module.getId());
                 String responseTopicName = topicNames.getName();
-                KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-                KafkaConsumerRunner KafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopicName);
-                String responseFromFuture = null;
-                try {
-                    responseFromFuture = executor.submit(KafkaConsumerRunner).get();
-                } catch (InterruptedException | ExecutionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (consumerMap.get(responseTopicName) == null) {
+                    KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+                    KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopicName);
+                    consumerMap.put(responseTopicName, kafkaConsumerRunner);
+                    executor.execute(kafkaConsumerRunner);
                 }
-                KafkaConsumerRunner.stop();
-                final CompletableFuture<T> future = new CompletableFuture<>();
-                final T response = module.unmarshalResponse(responseFromFuture);
-                future.complete(response);
-                return future;
+                String response = null;
+                long timeout = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs().longValue()
+                        : TIMEOUT_FOR_KAFKA_RPC;
+                final CompletableFuture<T> rpcResponseFuture = new CompletableFuture<>();
+                try {
+                    response = responseFuture.get(timeout, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    LOG.error(" RPC Request {} interrupted", request.toString(), e);
+                    rpcResponseFuture.completeExceptionally(e);
+                } catch (ExecutionException e1) {
+                    LOG.error(" RPC Request {} exception while executing ", request.toString(), e1);
+                    rpcResponseFuture.completeExceptionally(e1);
+                } catch (TimeoutException e2) {
+                    LOG.error(" RPC Request {} timed out, no response from minion", request.toString(), e2);
+                    rpcResponseFuture.completeExceptionally(e2);
+                }
+                T rpcResponse = null;
+                if (response != null) {
+                    rpcResponse = module.unmarshalResponse(response);
+                    rpcResponseFuture.complete(rpcResponse);
+                    LOG.debug("RPC Request {} received response {} ", request.toString(), rpcResponse.toString());
+                }
+                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+                return rpcResponseFuture;
             }
         };
 
@@ -152,7 +180,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         producer = new KafkaProducer<>(kafkaConfig);
     }
 
-    private class KafkaConsumerRunner implements Callable<String> {
+    private class KafkaConsumerRunner implements Runnable {
         private final KafkaConsumer<String, byte[]> consumer;
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private final String topic;
@@ -163,13 +191,19 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         }
 
         @Override
-        public String call() throws Exception {
+        public void run() {
             try {
                 consumer.subscribe(Arrays.asList(topic));
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
-                        return new String(record.value(), StandardCharsets.UTF_8);
+                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
+                        // Get future from rpc Id and complete future.
+                        CompletableFuture<String> future = rpcResponseMap.get(rpcMessage.getRpcId());
+                        future.complete(rpcMessage.getRpcContent().toStringUtf8());
+                        // completing response is enough.
+                        // Need to remove from map here as there is chance that waiting thread may have closed in a delayed response.
+                        rpcResponseMap.remove(rpcMessage.getRpcId());
                     }
                 }
             } catch (WakeupException e) {
@@ -177,10 +211,14 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 if (!closed.get()) {
                     throw e;
                 }
+            } catch (InvalidProtocolBufferException e) {
+                // No way to correlate this with request, will end up as Timeout exception
+                LOG.error(" Error while parsing response", e);
+     
             } finally {
                 consumer.close();
             }
-            return null;
+            
         }
 
         public void stop() {
@@ -191,7 +229,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     }
 
     public void stop() {
-
+       consumerMap.forEach((topic, consumer) -> {
+           consumer.stop();
+       });
     }
 
 }

@@ -29,7 +29,6 @@
 package org.opennms.core.ipc.rpc.kafka;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -37,7 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -54,6 +52,7 @@ import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
+import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
@@ -63,6 +62,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 
 public class KafkaRpcServerManager {
 
@@ -74,7 +75,7 @@ public class KafkaRpcServerManager {
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("kafka-consumer-%d")
+            .setNameFormat("kafka-consumer-rpc-server-%d")
             .build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
@@ -85,7 +86,8 @@ public class KafkaRpcServerManager {
     }
 
     public void init() throws IOException {
-        kafkaConfig.put("group.id", minionIdentity.getId());
+        // group.id is mapped to minion location, so one of the minion executes the request.
+        kafkaConfig.put("group.id", minionIdentity.getLocation());
         kafkaConfig.put("enable.auto.commit", "true");
         kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
         kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
@@ -189,24 +191,40 @@ public class KafkaRpcServerManager {
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
-                        RpcRequest request = module.unmarshalRequest(new String(record.value(), StandardCharsets.UTF_8));
+                        
+                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
+                        String rpcId = rpcMessage.getRpcId();
+                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
                         CompletableFuture<RpcResponse> future = module.execute(request);
-                        RpcResponse response;
-                        String responseAsString = null;
-                        try {
-                            response = future.get();
-                            responseAsString = module.marshalResponse(response);
-                        } catch (InterruptedException | ExecutionException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                            return;
-                        }
-                        LOG.debug("KafkaRpcServerManager: request executed, sending response {}", responseAsString);
-                        final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-response", module.getId());
-                        final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(topicNameFactory.getName(),
-                                responseAsString.getBytes(StandardCharsets.UTF_8));
-
-                        producer.send(producerRecord);
+                        future.whenComplete((res, ex) -> {
+                            try {
+                                final RpcResponse response;
+                                if (ex != null) {
+                                    // An exception occurred, store the exception in a new response
+                                    LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
+                                    response = module.createResponseWithException(ex);
+                                } else {
+                                    // No exception occurred, use the given response
+                                    response = res;
+                                }
+                                String responseAsString = null;
+                                try {
+                                    responseAsString = module.marshalResponse(response);
+                                    final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-response", module.getId());
+                                    RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
+                                            .setRpcId(rpcId)
+                                            .setRpcContent(ByteString.copyFromUtf8(responseAsString))
+                                            .build();
+                                    final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(topicNameFactory.getName(),
+                                            rpcResponse.toByteArray());
+                                    producer.send(producerRecord);
+                                    LOG.debug("KafkaRpcServerManager: request executed, sending response {}", responseAsString);
+                                }  catch (Throwable t) {
+                                    LOG.error("Marshalling a response in RPC module {} failed.", module, t);
+                                }
+                            } finally {
+                            }
+                        });                       
                     }
                 }
             } catch (WakeupException e) {
@@ -214,6 +232,8 @@ public class KafkaRpcServerManager {
                 if (!closed.get()) {
                     throw e;
                 }
+            } catch (InvalidProtocolBufferException e) {
+                LOG.error(" Error while parsing request for module {}", module.getId(), e);
             } finally {
                 consumer.close();
             }
@@ -222,3 +242,4 @@ public class KafkaRpcServerManager {
 
     }
 }
+;
