@@ -28,6 +28,8 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -420,7 +422,7 @@ public class KscDashlet extends AbstractDashlet {
                 data.put("nodeLabel", node.getLabel());
 
                 for (OnmsResource onmsResource : resource.getChildResources()) {
-                    if (resourceId.equals(onmsResource.getId())) {
+                    if (resourceId.equals(decodeResourceId(onmsResource.getId()))) {
                         data.put("resourceLabel", onmsResource.getLabel());
                         data.put("resourceTypeLabel", onmsResource.getResourceType().getLabel());
                         break;
@@ -429,6 +431,17 @@ public class KscDashlet extends AbstractDashlet {
                 return data;
             }
         });
+    }
+
+    String decodeResourceId(String resourceId){
+        // This is a quite ugly hack but it will be removed as of foundation-2018 when the class ResourceId will be
+        // introduced. We need this because OnmsResource Urlencodes it's id
+        try {
+            return URLDecoder.decode(resourceId, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // should not happen for UTF-8 but if let's throw an unchecked Exception
+            throw new IllegalArgumentException(e);
+        }
     }
 
     OnmsResource determineResourceByResourceId(String resourceId){

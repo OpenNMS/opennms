@@ -60,4 +60,19 @@ public class KscDashletTest {
                 null);
         assertEquals(parentResource, dashlet.determineResourceByResourceId(resourceIdString));
     }
+
+    @Test
+    public void shouldEncodeResourceIdForStringComparison() {
+        String resourceIdStringUnencoded = "node[localhost:1529450097586].interfaceSnmp[opennms-jvm]";
+        String resourceIdStringEncoded = "node[localhost%3A1529450097586].interfaceSnmp[opennms-jvm]";
+
+
+        KscDashlet dashlet = new KscDashlet(
+                this.getClass().getSimpleName(),
+                null,
+                null,
+                null,
+                null);
+        assertEquals(resourceIdStringUnencoded, dashlet.decodeResourceId(resourceIdStringEncoded));
+    }
 }
