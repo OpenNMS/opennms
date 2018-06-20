@@ -73,12 +73,12 @@ public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
-    private static int NETFLOW5_LISTENER_UDP_PORT = 50000;
+    public static int NETFLOW5_LISTENER_UDP_PORT = 50000;
     private static int NETFLOW9_LISTENER_UDP_PORT = 50001;
     private static int IPFIX_LISTENER_UDP_PORT = 50002;
     private static int SFLOW_LISTENER_UDP_PORT = 50003;
 
-    private static final String TEMPLATE_NAME = "netflow";
+    public static final String TEMPLATE_NAME = "netflow";
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
@@ -143,14 +143,14 @@ public class FlowStackIT {
             sendNetflowPacket(opennmsSflowAdapterAddress, "/flows/sflow.dat");
 
             // Ensure that the template has been created
-            verify(client, (jestClient) -> {
-                JestResult result = jestClient.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
+            verify(() -> {
+                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
                 return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
             });
 
             // Verify directly at elastic that the flows have been created
-            verify(client, jestClient -> {
-                SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+            verify(() -> {
+                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
                 LOG.info("Response: {} {} ", response.isSucceeded() ? "Success" : "Failure", response.getTotal());
                 return response.isSucceeded() && response.getTotal() == 16;
             });
@@ -161,14 +161,14 @@ public class FlowStackIT {
         }
     }
 
-    private byte[] getNetflowPacketContent(final String filename) throws IOException {
-        try (final InputStream is = getClass().getResourceAsStream(filename)) {
+    private static byte[] getNetflowPacketContent(final String filename) throws IOException {
+        try (final InputStream is = FlowStackIT.class.getResourceAsStream(filename)) {
             return ByteStreams.toByteArray(is);
         }
     }
 
     // Sends a netflow Packet to the given destination address
-    private void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
+    public static void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
         final byte[] bytes = getNetflowPacketContent(filename);
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
@@ -176,9 +176,8 @@ public class FlowStackIT {
         }
     }
 
-    // Configures the elastic bundle and also installs the flows feature to expose a NetflowRepository.
-    // This is required, otherwise persisting does not work, as no FlowRepository implementation exists.
-    private void setupOnmsContainer(InetSocketAddress opennmsSshAddress) throws Exception {
+    // Sets up the OpenNMS Container (e.g. configure the elastic flow repository bundle)
+    private static void setupOnmsContainer(InetSocketAddress opennmsSshAddress) throws Exception {
         try (final SshClient sshClient = new SshClient(opennmsSshAddress, "admin", "admin")) {
             PrintStream pipe = sshClient.openShell();
 
@@ -199,21 +198,19 @@ public class FlowStackIT {
         }
     }
 
-    private interface Block {
-
-        boolean test(JestClient client) throws Exception;
+    public interface Block {
+        boolean test() throws Exception;
     }
 
     // Helper method to execute the defined block n-times or fail if not successful
-    private static void verify(JestClient jestClient, Block verifyCallback) {
-        Objects.requireNonNull(jestClient);
+    public static void verify(Block verifyCallback) {
         Objects.requireNonNull(verifyCallback);
 
         // Verify
         with().pollInterval(15, SECONDS).await().atMost(1, MINUTES).until(() -> {
             try {
                 LOG.info("Querying elastic search");
-                return verifyCallback.test(jestClient);
+                return verifyCallback.test();
             } catch (Exception e) {
                 LOG.error("Error while querying to elastic search", e);
             }
