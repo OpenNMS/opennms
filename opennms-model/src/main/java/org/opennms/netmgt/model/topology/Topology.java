@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,24 +26,9 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.topology;
 
-import java.util.Date;
-import java.util.List;
+public interface Topology {
 
-import org.opennms.netmgt.model.IsIsLink;
-import org.opennms.netmgt.model.OnmsNode;
-
-public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
-
-    IsIsLink get(OnmsNode node, Integer isisCircIndex, Integer isisISAdjIndex);
-
-    IsIsLink get(Integer nodeId, Integer isisCircIndex, Integer isisISAdjIndex);
-    
-    List<IsIsLink> findByNodeId(Integer nodeId);
-
-    void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-    
-    public void deleteByNodeId(Integer nodeId);
-
+    String printTopology();
 }
