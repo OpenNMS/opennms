@@ -42,13 +42,12 @@
                                 <feature>opennms-core-ipc-rpc-jms</feature>
                                 <feature>opennms-core-ipc-rpc-aws-sqs</feature>
                                 <feature>opennms-core-ipc-sink-camel-server</feature>
-                                <feature>opennms-core-ipc-sink-kafka</feature>
+                                <feature>opennms-core-ipc-sink-kafka-server</feature>
                                 <feature>opennms-core-ipc-sink-aws-sqs</feature>
                                 <feature>opennms-syslogd-listener-javanet</feature>
                                 <feature>opennms-syslogd-listener-camel-netty</feature>
                                 <feature>opennms-persistence</feature>
                                 <feature>opennms-spring-extender</feature>
-                                <feature>opennms-core-ipc-sink-camel-server</feature>
 
                                 <!-- Sentinel specific features -->
                                 <feature>sentinel-core</feature>

@@ -606,6 +606,7 @@
       <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
     </feature>
 
+    <!-- CAMEL -->
     <feature name="opennms-core-ipc-sink-camel-common" description="OpenNMS :: Core :: IPC :: Sink :: Camel :: Common" version="${project.version}">
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-camel</feature>
@@ -627,14 +628,26 @@
         <bundle>mvn:org.opennms.core.ipc.sink.camel/org.opennms.core.ipc.sink.camel.server/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-core-ipc-sink-kafka" description="OpenNMS :: Core :: IPC :: Sink :: Kafka Impl." version="${project.version}">
-      <feature>opennms-core-ipc-sink-api</feature>
-      <feature>opennms-kafka</feature>
-      <feature>opennms-core-camel</feature>
-      <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.common/${project.version}</bundle>
+    <!-- KAFKA -->
+    <feature name="opennms-core-ipc-sink-kafka-common" description="OpenNMS :: Core :: IPC :: Sink :: Kafka :: Common" version="${project.version}">
+        <feature>opennms-core-ipc-sink-api</feature>
+        <feature>opennms-kafka</feature>
+        <feature>opennms-core-camel</feature>
+        <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.common/${project.version}</bundle>
+    </feature>
+
+    <!-- For backwards compatibility we keep this name -->
+    <feature name="opennms-core-ipc-sink-kafka" description="OpenNMS :: Core :: IPC :: Sink :: Kafka :: Client" version="${project.version}">
+      <feature>opennms-core-ipc-sink-kafka-common</feature>
       <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.client/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-sink-kafka-server" description="OpenNMS :: Core :: IPC :: Sink :: Kafka :: Server" version="${project.version}">
+        <feature>opennms-core-ipc-sink-kafka-common</feature>
+        <bundle>mvn:org.opennms.core.ipc.sink.kafka/org.opennms.core.ipc.sink.kafka.server/${project.version}</bundle>
+    </feature>
+
+    <!-- AWS SQS -->
     <feature name="opennms-core-ipc-sink-aws-sqs" description="OpenNMS :: Core :: IPC :: Sink :: AWS SQS Impl." version="${project.version}">
       <feature>guava</feature>
       <feature>opennms-core-ipc-sink-api</feature>
