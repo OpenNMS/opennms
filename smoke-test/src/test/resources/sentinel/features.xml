@@ -19,10 +19,16 @@
 
     <!-- Install bootstrap feature to start all flow related features automatically -->
     <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
         <config name="org.opennms.features.telemetry.adapters-netflow5">
             name = Netflow-5
             class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
         </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
         <config name="org.opennms.features.flows.persistence.elastic">
             elasticUrl = http://elasticsearch:9200
         </config>
