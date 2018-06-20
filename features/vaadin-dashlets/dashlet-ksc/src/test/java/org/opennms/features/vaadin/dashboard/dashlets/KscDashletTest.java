@@ -60,6 +60,6 @@ public class KscDashletTest {
                 null,
                 resourceDao,
                 null);
-        assertEquals(Integer.toString(3), dashlet.determineNodeIdByResourceId(resourceIdString));
+        assertEquals(parentResource, dashlet.determineResourceByResourceId(resourceId));
     }
 }

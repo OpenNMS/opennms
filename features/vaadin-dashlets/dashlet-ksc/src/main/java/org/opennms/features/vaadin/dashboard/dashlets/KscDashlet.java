@@ -31,9 +31,7 @@ package org.opennms.features.vaadin.dashboard.dashlets;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.opennms.core.utils.StringUtils;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
@@ -406,12 +404,20 @@ public class KscDashlet extends AbstractDashlet {
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<>();
                 ResourceId resourceId = ResourceId.fromString(resourceIdString);
-                String nodeIdentifier = Optional.ofNullable(nodeId).orElse(determineNodeIdByResourceId(resourceId));
-                data.put("nodeId", nodeIdentifier);
-                data.put("nodeLabel", m_nodeDao.getLabelForId(Integer.valueOf(nodeIdentifier)));
 
-                List<OnmsResource> resourceList = m_resourceDao.getResourceById(ResourceId.get("node", nodeIdentifier)).getChildResources();
-                for (OnmsResource onmsResource : resourceList) {
+                OnmsNode node;
+                OnmsResource resource;
+                if(nodeId == null){
+                    resource = determineResourceByResourceId(resourceId);
+                    node = ResourceTypeUtils.getNodeFromResource(resource);
+                } else {
+                    node = m_nodeDao.get(nodeId);
+                    resource = m_resourceDao.getResourceForNode(node);
+                }
+                data.put("nodeId", node.getNodeId());
+                data.put("nodeLabel", node.getLabel());
+
+                for (OnmsResource onmsResource : resource.getChildResources()) {
                     if (resourceId.equals(onmsResource.getId())) {
                         data.put("resourceLabel", onmsResource.getLabel());
                         data.put("resourceTypeLabel", onmsResource.getResourceType().getLabel());
@@ -423,11 +429,10 @@ public class KscDashlet extends AbstractDashlet {
         });
     }
 
-    String determineNodeIdByResourceId(ResourceId resourceId){
-        OnmsResource parentResource = m_resourceDao.getResourceById(resourceId).getParent();
-        OnmsNode node = ResourceTypeUtils.getNodeFromResource(parentResource);
-        int onmsNodeId = node.getId();
-        return Integer.toString(onmsNodeId);
+    OnmsResource determineResourceByResourceId(ResourceId resourceId){
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        resource =(resource.getParent()== null) ? resource : resource.getParent();
+        return resource;
     }
 
     private static GraphContainer getGraphContainer(Graph graph, Date start, Date end) {
