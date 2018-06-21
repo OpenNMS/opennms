@@ -136,11 +136,22 @@
 
   <!--
        This is required for the PathOutageManagerDaoImpl in order to get access to the underlying
-       PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules
+       PollerConfiguration/PathOutageConfig and without adding additional dependencies to opennms-config or other modules.
+       Ideally it would live in component-dao.xml, but that is already used by other modules such as bsm, which we require
+       to expose the bsm daos in an OSGI Container, therefore without having to re-define all existing integration tests,
+       it is placed here
     -->
   <bean id="pathOutageConfiguration" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="targetObject" ref="poller-configuration.xml"/>
     <property name="targetMethod" value="get"/>
+  </bean>
+  <!--
+    HACK:  This is a duplicate, as the original one is located in opennms-config/META-INF/opennms/component-dao.xml.
+    However, when executing tests, that application context may not be available, therefore we define it here as well.
+  -->
+  <bean name="poller-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
+    <constructor-arg value="org.opennms.netmgt.config.poller.PollerConfiguration" />
+    <constructor-arg value="file:${opennms.home}/etc/poller-configuration.xml" />
   </bean>
 
 </beans>
