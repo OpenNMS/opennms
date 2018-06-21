@@ -479,6 +479,8 @@
   
   <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/> 
 
+  <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/>
+
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
