@@ -141,7 +141,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
-            alarm = createNewAlarm(e, event, m_alarmDao);
+            alarm = createNewAlarm(e, event);
 
             //FIXME: this should be a cascaded save
             m_alarmDao.save(alarm);
@@ -269,7 +269,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection(), m_alarmDao);
+        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
         if (containedAlarms != null && !containedAlarms.isEmpty()) {
             if (alarm instanceof Situation) {
                 for(OnmsAlarm related : containedAlarms) {
@@ -284,9 +284,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         e.setAlarm(alarm);
     }
 
-    private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event, AlarmDao alarmDao) {
+    private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
         OnmsAlarm alarm;
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection(), alarmDao);
+        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
         // Situations are denoted by the existance of related-reductionKeys
         if (containedAlarms == null || containedAlarms.isEmpty()) {
             alarm = new OnmsAlarm();
@@ -320,13 +320,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
     
-    private static Set<OnmsAlarm> getAlarms(List<Parm> list, AlarmDao alarmDao) {
+    private Set<OnmsAlarm> getAlarms(List<Parm> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptySet();
         }
         Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
         // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
-        return reductionKeys.stream().map(reductionKey -> alarmDao.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
+        return reductionKeys.stream().map(reductionKey -> m_alarmDao.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     private static boolean isRelatedReductionKeyWithContent(Parm param) {
