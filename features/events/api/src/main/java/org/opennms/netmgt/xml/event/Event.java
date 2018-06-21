@@ -65,7 +65,7 @@ import org.opennms.netmgt.events.api.DateTimeAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
 public class Event implements Message,Serializable {
-        private static final long serialVersionUID = 6997816158234653400L;
+        private static final long serialVersionUID = 6997817689084653400L;
 
 	@XmlAttribute(name = "uuid")
 	private String _uuid;

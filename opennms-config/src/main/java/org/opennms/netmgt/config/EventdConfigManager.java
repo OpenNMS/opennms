@@ -244,46 +244,46 @@ public class EventdConfigManager implements EventdConfig {
     }
     
     @Override
-	public int getNumThreads() {
-		getReadLock().lock();
-		try {
-			if (m_config.getNumThreads() <= 0) {
-				return m_config.getNumThreads();
-			} else {
-				return Runtime.getRuntime().availableProcessors() * 2;
-			}
-		} finally {
-			getReadLock().unlock();
-		}
-	}
+    public int getNumThreads() {
+        getReadLock().lock();
+        try {
+            if (m_config.getNumThreads() <= 0) {
+                return m_config.getNumThreads();
+            } else {
+                return Runtime.getRuntime().availableProcessors() * 2;
+            }
+        } finally {
+            getReadLock().unlock();
+        }
+    }
 
-	@Override
-	public int getQueueSize() {
-		getReadLock().lock();
-		try {
-			return m_config.getQueueSize();
-		} finally {
-			getReadLock().unlock();
-		}
-	}
+    @Override
+    public int getQueueSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getQueueSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
 
-	@Override
-	public int getBatchSize() {
-		getReadLock().lock();
-		try {
-			return m_config.getBatchSize();
-		} finally {
-			getReadLock().unlock();
-		}
-	}
+    @Override
+    public int getBatchSize() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchSize();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
 
-	@Override
-	public int getBatchIntervalMs() {
-		getReadLock().lock();
-		try {
-			return m_config.getBatchInterval();
-		} finally {
-			getReadLock().unlock();
-		}
-	}
+    @Override
+    public int getBatchIntervalMs() {
+        getReadLock().lock();
+        try {
+            return m_config.getBatchInterval();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
 }

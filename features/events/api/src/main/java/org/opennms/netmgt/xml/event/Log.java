@@ -53,7 +53,7 @@ import org.opennms.core.ipc.sink.api.Message;
 @XmlAccessorType(XmlAccessType.FIELD)
 //@ValidateUsing("event.xsd")
 public class Log implements Message,Serializable {
-    private static final long serialVersionUID = 8526177705077223094L;
+    private static final long serialVersionUID = 7684449895077223094L;
 
     //--------------------------/
     //- Class/Member Variables -/
