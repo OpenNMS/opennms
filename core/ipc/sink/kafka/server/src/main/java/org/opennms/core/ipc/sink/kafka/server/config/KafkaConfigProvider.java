@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,15 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.sink.kafka.common;
+package org.opennms.core.ipc.sink.kafka.server.config;
 
-public interface KafkaSinkConstants {
-    String KAFKA_TOPIC_PREFIX = "Sink";
+import java.util.Properties;
 
-    String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
-
-    String KAFKA_CONFIG_CONSUMER_PID = KAFKA_CONFIG_PID + ".consumer";
-
-    String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
-
+public interface KafkaConfigProvider {
+    Properties getProperties();
 }
