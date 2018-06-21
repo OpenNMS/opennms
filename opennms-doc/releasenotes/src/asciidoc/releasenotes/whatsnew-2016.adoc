@@ -141,6 +141,23 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.14]
+
+==== Release Meridian-2016.1.14
+
+Release 2016.1.14 is an update to 2016.1.13 that makes a few small documentation changes, and a fix to the Top 25 event report.
+
+The codename for 2016.1.14 is _Boggs eumorphic_.
+
+===== Bug
+
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* Event-Analysis Report shows incorrect numbers for big values in Top25 Events (Issue http://issues.opennms.org/browse/NMS-9202[NMS-9202])
+
+===== Enhancement
+
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+
 [releasenotes-changelog-Meridian-2016.1.13]
 
 ==== Release Meridian-2016.1.13
