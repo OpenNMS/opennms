@@ -39,6 +39,8 @@ import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
@@ -94,6 +96,11 @@ public class FlowIT {
         } catch (final Throwable t) {
             throw new RuntimeException(t);
         }
+    }
+
+    @Before
+    public void checkForDocker() {
+        Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
     }
 
     @Test
