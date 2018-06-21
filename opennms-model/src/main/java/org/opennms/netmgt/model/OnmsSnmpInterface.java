@@ -112,6 +112,8 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
 
     private Set<OnmsIpInterface> m_ipInterfaces = new HashSet<>();
 
+    private boolean m_hasFlows;
+
     /**
      * <p>Constructor for OnmsSnmpInterface.</p>
      * @param node a {@link org.opennms.netmgt.model.OnmsNode} object.
@@ -503,6 +505,16 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
         return null;
     }
 
+    @Column(name="hasFlows", nullable=false)
+    @XmlAttribute(name="hasFlows")
+    public boolean getHasFlows() {
+        return m_hasFlows;
+    }
+
+    public void setHasFlows(boolean hasFlows) {
+        this.m_hasFlows = hasFlows;
+    }
+
     /**
      * <p>toString</p>
      *
@@ -525,6 +537,7 @@ public class OnmsSnmpInterface extends OnmsEntity implements Serializable {
             .append("nodeId", getNode() == null ? null : getNode().getId())
             .append("lastCapsdPoll", getLastCapsdPoll())
             .append("lastSnmpPoll", getLastSnmpPoll())
+            .append("hasFlows", getHasFlows())
             .toString();
     }
 

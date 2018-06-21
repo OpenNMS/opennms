@@ -70,41 +70,37 @@ public class BridgeBridgeLinkDaoHibernate extends AbstractDaoHibernate<BridgeBri
 	}
 
 	@Override
-	public BridgeBridgeLink getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePort = ?", id,port);
+	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePort(Integer id, Integer port) {
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedPort = ?", id,port);
 	}
 
 	@Override
-	public BridgeBridgeLink getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
-		return findUnique("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedBridgePortIfIndex = ?", id,ifindex);
+	public List<BridgeBridgeLink> getByDesignatedNodeIdBridgePortIfIndex(Integer id, Integer ifindex) {
+		return find("from BridgeBridgeLink rec where rec.designatedNode.id = ?  and rec.designatedPortIfIndex = ?", id,ifindex);
 	}
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-		for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.node.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",nodeId,now)) {
-			delete(elem);
-		}
+	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",
+	                                      new Object[] {nodeId,now});
 	}
 
 	@Override
 	public void deleteByDesignatedNodeIdOlderThen(Integer nodeId, Date now) {
-		for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.designatedNode.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",nodeId,now)) {
-			delete(elem);
-		}
+	    getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ? and rec.bridgeBridgeLinkLastPollTime < ?",
+	                                      new Object[] {nodeId,now}); 
 	}
 
         @Override
         public void deleteByNodeId(Integer nodeId) {
-                for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.node.id = ? ",nodeId)) {
-                        delete(elem);
-                }
+            getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.node.id = ? ",
+                                              new Object[] {nodeId});
         }
 
         @Override
         public void deleteByDesignatedNodeId(Integer nodeId) {
-                for (BridgeBridgeLink elem: find("from BridgeBridgeLink rec where rec.designatedNode.id = ? ",nodeId)) {
-                        delete(elem);
-                }
+            getHibernateTemplate().bulkUpdate("delete from BridgeBridgeLink rec where rec.designatedNode.id = ? ",
+                                              new Object[] {nodeId});
         }
 
 

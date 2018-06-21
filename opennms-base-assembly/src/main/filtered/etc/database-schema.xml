@@ -18,6 +18,7 @@
       <column name="operatingSystem"/>
       <column name="foreignSource"/>
       <column name="foreignID"/>
+      <column name="hasFlows"/>
    </table>
    <table name="categories">
       <join type="left" column="categoryID" table="category_node" table-column="categoryID"/>
@@ -56,6 +57,7 @@
       <column name="snmpIfOperStatus"/>
       <column name="snmpCollect"/>
       <column name="snmpPoll"/>
+      <column name="hasFlows"/>
    </table>
    <table name="service">
       <join column="serviceID" table="ifServices" table-column="serviceID"/>

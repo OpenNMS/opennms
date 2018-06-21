@@ -211,7 +211,7 @@ public class EmailNorthbounder extends AbstractNorthbounder implements Initializ
         }
         LOG.debug("getSendmailConfig: from = {}", message.getFrom());
         LOG.debug("getSendmailConfig: to = {}", message.getTo());
-        Map<String, Object> mapping = createMapping(alarm);
+        Map<String, Object> mapping = createMapping(alarm, null);
         final String subject = PropertiesUtils.substitute(message.getSubject(), mapping);
         LOG.debug("getSendmailConfig: subject = {}", subject);
         message.setSubject(subject);

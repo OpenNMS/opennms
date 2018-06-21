@@ -28,7 +28,14 @@
 
 package org.opennms.netmgt.config.tester;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -38,12 +45,19 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.cli.PosixParser;
 import org.opennms.core.db.DataSourceFactory;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.tester.checks.ConfigCheckValidationException;
+import org.opennms.netmgt.config.tester.checks.PropertiesFileChecker;
+import org.opennms.netmgt.config.tester.checks.XMLFileChecker;
 import org.opennms.netmgt.filter.FilterDaoFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 public class ConfigTester implements ApplicationContextAware {
+
+	private Logger log = Logger.getLogger(ConfigTester.class.getName());
+
 	private ApplicationContext m_context;
 	private Map<String, String> m_configs;
 
@@ -59,15 +73,52 @@ public class ConfigTester implements ApplicationContextAware {
 		return m_context;
 	}
 
-        @Override
+	@Override
 	public void setApplicationContext(ApplicationContext context) throws BeansException {
 		m_context = context;
 	}
 
 	public void testConfig(String name, boolean ignoreUnknown) {
 		checkConfigNameValid(name, ignoreUnknown);
-		
-		m_context.getBean(m_configs.get(name));
+		String beanName = m_configs.get(name);
+		if("directory".equalsIgnoreCase(beanName)){
+			checkDirectoryForUnKnownFiles(name);
+		} else if ("unknown".equalsIgnoreCase(beanName)){
+			checkFileForSyntax(name);
+		} else {
+			m_context.getBean(beanName);
+		}
+	}
+
+	private void checkDirectoryForUnKnownFiles(String name) {
+		Path directory = Paths.get(ConfigFileConstants.getFilePathString(), name);
+		try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory, "*.{properties,xml}")) {
+			for (Path entry : stream) {
+				checkFileForSyntax(entry);
+			}
+		} catch (IOException e) {
+			throw new ConfigCheckValidationException(e);
+		}
+	}
+
+	private void checkFileForSyntax(String fileName) {
+		File file;
+		try {
+			file = ConfigFileConstants.getConfigFileByName(fileName);
+			checkFileForSyntax(file.toPath());
+		} catch (IOException e) {
+			throw new ConfigCheckValidationException(e);
+		}
+	}
+
+	private void checkFileForSyntax(Path file) {
+		if(file.toString().endsWith("properties")){
+            PropertiesFileChecker.checkFile(file).forSyntax();
+		} else if(file.toString().endsWith("xml")){
+			XMLFileChecker.checkFile(file).forSyntax();
+		} else {
+			log.warning("No FileChecker for file found: " + file.toAbsolutePath().toString());
+		}
 	}
 
 	private void checkConfigNameValid(String name, boolean ignoreUnknown) {
@@ -124,7 +175,7 @@ public class ConfigTester implements ApplicationContextAware {
 		boolean verbose = line.hasOption('v');
 
 		DataSourceFactory.setInstance(new ConfigTesterDataSource());
-		
+
 		if (line.hasOption('l')) {
 			System.out.println("Supported configuration files: ");
 			for (String configFile : tester.getConfigs().keySet()) {
