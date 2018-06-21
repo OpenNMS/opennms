@@ -127,6 +127,36 @@ public class EventdConfiguration implements Serializable {
 
     @XmlValue
     private String m_contents;
+    
+    
+    /**
+     * Number of threads used for consuming/dispatching messages.
+     * Defaults to 2 x the number of available processors.
+     */
+    @XmlAttribute(name = "sink-threads", required=false)
+    private int m_threads=0;
+    
+    /**
+     * Maximum number of messages to keep in memory while waiting
+     to be dispatched.
+     */
+	@XmlAttribute(name="sink-queue-size", required=false)
+    private int m_queueSize = 10000;
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     * When the batch reaches this size, it will be dispatched.
+     */
+	@XmlAttribute(name="sink-batch-size", required=false)
+    private int m_batchSize = 1000;
+
+    /**
+     * Messages are aggregated in batches before being dispatched.
+     * When the batch has been created for longer than this interval (ms)
+     * it will be dispatched, regardless of the current size.
+     */
+	@XmlAttribute(name="sink-batch-interval", required=false)
+    private int m_batchInterval = 500;
 
     public EventdConfiguration() {
     }
@@ -161,6 +191,14 @@ public class EventdConfiguration implements Serializable {
 
     public void setUDPPort(final Integer UDPPort) {
         m_udpPort = ConfigUtils.assertNotNull(UDPPort, "UDPPort");
+    }
+    
+    public Integer getNumThreads() {
+    	return m_threads;
+    }
+
+    public void setNumThreads(final Integer numThreads) {
+        m_threads = numThreads;
     }
 
     public Integer getReceivers() {
@@ -210,6 +248,30 @@ public class EventdConfiguration implements Serializable {
     public void setLogEventSummaries(final Boolean logEventSummaries) {
         m_logEventSummaries = logEventSummaries;
     }
+    
+    public int getQueueSize() {
+        return m_queueSize;
+    }
+
+    public void setQueueSize(int _queueSize) {
+        this.m_queueSize = _queueSize;
+    }
+
+    public int getBatchSize() {
+        return m_batchSize;
+    }
+
+    public void setBatchSize(int _batchSize) {
+        this.m_batchSize = _batchSize;
+    }
+
+    public int getBatchInterval() {
+        return m_batchInterval;
+    }
+
+    public void setBatchInterval(int _batchInterval) {
+        this.m_batchInterval = _batchInterval;
+    }
 
     @Override
     public int hashCode() {
@@ -223,7 +285,11 @@ public class EventdConfiguration implements Serializable {
                             m_getNextEventID, 
                             m_socketSoTimeoutRequired, 
                             m_socketSoTimeoutPeriod, 
-                            m_logEventSummaries);
+                            m_logEventSummaries,
+                            m_threads,
+                            m_queueSize,
+                            m_batchSize,
+                            m_batchInterval);
     }
 
     @Override
@@ -243,7 +309,11 @@ public class EventdConfiguration implements Serializable {
                     && Objects.equals(this.m_getNextEventID, that.m_getNextEventID)
                     && Objects.equals(this.m_socketSoTimeoutRequired, that.m_socketSoTimeoutRequired)
                     && Objects.equals(this.m_socketSoTimeoutPeriod, that.m_socketSoTimeoutPeriod)
-                    && Objects.equals(this.m_logEventSummaries, that.m_logEventSummaries);
+                    && Objects.equals(this.m_logEventSummaries, that.m_logEventSummaries)
+                    && Objects.equals(this.m_threads, that.m_threads)
+                    && Objects.equals(this.m_queueSize, that.m_queueSize)
+            		&& Objects.equals(this.m_batchSize, that.m_batchSize)
+            		&& Objects.equals(this.m_batchInterval, that.m_batchInterval);
         }
         return false;
     }

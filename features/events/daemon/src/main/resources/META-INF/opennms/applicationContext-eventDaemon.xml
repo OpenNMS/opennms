@@ -36,6 +36,11 @@
     <property name="eventConfDao" ref="eventConfDao"/>
     <property name="eventUtil" ref="eventUtil"/>
   </bean>
+  
+  <!-- Consume messages provided by the Sink API -->
+  <bean id="eventSinkConsumer"
+	class="org.opennms.netmgt.eventd.sink.EventsSinkConsumer">
+  </bean>
 
   <bean id="eventParmRegexFilter" class="org.opennms.netmgt.eventd.processor.EventParmRegexFilterProcessor">
     <property name="eventConfDao" ref="eventConfDao"/>
