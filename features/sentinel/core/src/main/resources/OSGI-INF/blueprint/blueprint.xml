@@ -37,8 +37,8 @@
 
     <!-- A canonical source for this Sentinel's identity -->
     <bean id="sentinelIdentity" class="org.opennms.distributed.core.impl.IdentityImpl">
-        <argument value="[[location]]"/>
         <argument value="[[id]]"/>
+        <argument value="[[location]]"/>
         <argument value="Sentinel"/>
     </bean>
     <service ref="sentinelIdentity" interface="org.opennms.distributed.core.api.Identity">
