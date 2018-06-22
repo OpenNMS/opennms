@@ -24,9 +24,9 @@ The codename for 22.0.1 is _link:http://marvelcinematicuniverse.wikia.com/wiki/R
 * The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
 * Asset record is not being updated with user name that performed the update (Issue http://issues.opennms.org/browse/NMS-10087[NMS-10087])
 * wrong statement in event description for serviceDeleted (Issue http://issues.opennms.org/browse/NMS-10148[NMS-10148])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
 * Incorrect Release Notes Link (Issue http://issues.opennms.org/browse/NMS-10204[NMS-10204])
 * AlarmChangeNotificationClient - Unable to parse time value (Issue http://issues.opennms.org/browse/HZN-1282[HZN-1282])
-* Heatmap stopped working in centerUrl after upgrading to 22.0.0 (Issue http://issues.opennms.org/browse/HZN-1316[HZN-1316])
 
 ===== Enhancement
 
