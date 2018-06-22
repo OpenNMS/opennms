@@ -223,6 +223,7 @@ The codename for 2016.1.14 is _Boggs eumorphic_.
 
 * The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
 * Event-Analysis Report shows incorrect numbers for big values in Top25 Events (Issue http://issues.opennms.org/browse/NMS-9202[NMS-9202])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
 
 ===== Enhancement
 
