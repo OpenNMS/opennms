@@ -24,7 +24,7 @@ Each plugin has metadata associated with it which is used to identify and descri
 | Feature Repository URL | The URL identifying the feature repository (Same as _Karaf_ Feature Repository URL)
 | Product Description    | A textual description of the functionality provided by the plugin.
 | Product URL            | A URL to point to the plugin's documentation / web site
-| Licence Type           | A description of the licence applied to the plugin (May be GPL if the plugin is not subject to an ELUA)
+| Licence Type           | A description of the licence applied to the plugin (May be GPL if the plugin is not subject to an EULA)
 | Organisation           | The organisation issuing the plugin and/or licence.
 |===
 
