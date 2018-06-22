@@ -192,6 +192,7 @@ The codename for 2017.1.9 is _Antwerp meridian_.
 * The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
 * MBean "TasksCompleted" for Collectd and Pollerd returns wrong counters (Issue http://issues.opennms.org/browse/NMS-9741[NMS-9741])
 * The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
 
 ===== Enhancement
 
