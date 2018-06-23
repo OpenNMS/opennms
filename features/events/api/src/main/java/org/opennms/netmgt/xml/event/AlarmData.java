@@ -103,13 +103,6 @@ public class AlarmData implements Serializable {
     @XmlElement(name="update-field", required=false)
     @Valid
     private List<UpdateField> m_updateFieldList = new ArrayList<>();
-    
-    /**
-    * Field m_relatedReductuctionKeys
-    */
-    @XmlElement(name = "relatedReductuctionKeys", required = false)
-    @Valid
-    private List<String> m_relatedReductuctionKeys = new ArrayList<>();
 
     public AlarmData() {
         super();
@@ -307,10 +300,6 @@ public class AlarmData implements Serializable {
     public int getUpdateFieldListCount() {
         return m_updateFieldList.size();
     }
-    
-    public List<String> getRelatedReductionKeys() {
-        return m_relatedReductuctionKeys;
-    }
 
     public Boolean hasUpdateFields() {
         Boolean hasFields = true;
@@ -337,10 +326,6 @@ public class AlarmData implements Serializable {
         if (m_updateFieldList == fields) return;
         m_updateFieldList.clear();
         m_updateFieldList.addAll(fields);
-    }
-
-    public void setRelatedReductionKeys(List<String> reductionKeys) {
-        m_relatedReductuctionKeys = reductionKeys;
     }
 
     @Override
