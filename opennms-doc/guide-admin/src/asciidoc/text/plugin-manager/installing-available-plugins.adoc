@@ -3,7 +3,7 @@
 :imagesdir: ../../images
 
 === Installed Plugins
-
+ 
 Under plugin settings, the Installed Plugins tab lists which plugins are currently installed in the _Karaf_ instance selected in the _Karaf_ instance data panel.
 Installed plugins can be uninstalled by selecting the plugin on the list and selecting 'uninstall' or reinstalled by selecting the reinstall button.
 However Plugins designated as System Plugins (i.e. the System Plugin checkbox is ticked and grayed out) cannot be uninstalled through the UI.
