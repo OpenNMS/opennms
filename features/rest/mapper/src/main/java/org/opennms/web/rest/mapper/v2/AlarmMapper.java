@@ -29,6 +29,7 @@
 package org.opennms.web.rest.mapper.v2;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -89,7 +90,10 @@ public abstract class AlarmMapper {
             alarmDTO.setTroubleTicketLink(getTicketUrl(alarm.getTTicketId()));
         }
         if (alarm instanceof Situation) {
-            alarmDTO.setRelatedAlarms(((Situation)alarm).getAlarms().stream().map(a -> alarmToAlarmSummaryDTO(a)).collect(Collectors.toList()));
+            alarmDTO.setRelatedAlarms(((Situation)alarm).getAlarms().stream()
+                                      .map(a -> alarmToAlarmSummaryDTO(a))
+                                      .sorted(Comparator.comparing(AlarmSummaryDTO::getId))
+                                      .collect(Collectors.toList()));
         }
     }
 
