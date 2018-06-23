@@ -51,6 +51,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 <%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 
 <%!
@@ -143,7 +144,7 @@
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th class="col-md-1">Last&nbsp;Event</th>
-        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><fmt:formatDate value="<%=alarm.getLastEventTime()%>" type="BOTH" /></a></span></td>
+        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
         <th class="col-md-1">Interface</th>
         <td class="col-md-3">
             <% if (alarm.getIpAddr() != null) {%>
