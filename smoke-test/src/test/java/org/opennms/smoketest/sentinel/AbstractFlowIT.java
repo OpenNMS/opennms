@@ -62,38 +62,28 @@ import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.template.GetTemplate;
 
-// Verifies that flows can be processed by a sentinel and are persisted to Elastic
-public class FlowKafkaIT {
-
-    private static final Logger LOG = LoggerFactory.getLogger(FlowKafkaIT.class);
-
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
+public abstract class AbstractFlowIT {
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
-    private final TestEnvironment getTestEnvironment() {
+    @Rule
+    public TestEnvironment testEnvironment = getTestEnvironment();
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
+    protected abstract String getSentinelReadyString();
+
+    protected abstract void customizeTestEnvironment(TestEnvironmentBuilder builder);
+
+    protected TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
             return new NullTestEnvironment();
         }
         try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms()
-                    .minion()
-                    .kafka()
-                    .es6()
-                    .sentinel();
+            final TestEnvironmentBuilder builder = TestEnvironment.builder();
+            customizeTestEnvironment(builder);
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
-
-            // Enable Netflow 5 Adapter
-            builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-kafka.xml"), "deploy/features.xml");
-
-            // Enable Netflow 5 Listener
-            builder.withMinionEnvironment()
-                    .addFile(getClass().getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot")
-                    .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
             return builder.build();
         } catch (final Throwable t) {
             throw new RuntimeException(t);
@@ -113,7 +103,7 @@ public class FlowKafkaIT {
         final InetSocketAddress minionNetflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW5_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
-        waitForKafkaInitialization(sentinelSshAddress);
+        waitForSentinelStartup(sentinelSshAddress);
 
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
@@ -143,8 +133,7 @@ public class FlowKafkaIT {
         }
     }
 
-    // Waits up to n minutes for the Kafka Consumer to come up
-    private void waitForKafkaInitialization(InetSocketAddress sentinelSshAddress) throws Exception {
+    private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
         try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
             final PrintStream pipe = sshClient.openShell();
 
@@ -152,19 +141,19 @@ public class FlowKafkaIT {
             await().atMost(5, MINUTES)
                     .pollInterval(5, SECONDS)
                     .until(() -> {
-                            pipe.println("log:display");
-                            final String shellOutput = sshClient.getStdout();
-                            final boolean routeStarted = shellOutput.contains("Connected to Kafka consumer offset topic") ||
-                                    shellOutput.contains("OpenNMS.Sink.Telemetry-Netflow-5");
+                        pipe.println("log:display");
+                        final String shellOutput = sshClient.getStdout();
+                        final String sentinelReadyString = getSentinelReadyString();
+                        final boolean routeStarted = shellOutput.contains(sentinelReadyString);
 
-                            LOG.info("log:display");
-                            LOG.info("{}", shellOutput);
-                            return routeStarted;
-                        }
-                    );
-            LOG.info("logout");
+                        logger.info("log:display");
+                        logger.info("{}", shellOutput);
+                        return routeStarted;
+                    });
+            logger.info("logout");
             pipe.println("logout");
             await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
         }
     }
+
 }
