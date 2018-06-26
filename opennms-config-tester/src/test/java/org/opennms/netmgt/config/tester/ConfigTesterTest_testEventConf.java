@@ -42,19 +42,21 @@ public class ConfigTesterTest_testEventConf {
 
     @Test
     public void testEventConfWithValidVbNumber() throws IOException {
-        assertNotNull(testEventConf("<vbnumber>1</vbnumber>"));
+        assertNotNull(testEventConf("<vbnumber>1</vbnumber><vbvalue>0</vbvalue>"));
     }
 
     @Test(expected = MarshallingResourceFailureException.class)
-    public void testEventConfWithMissingVbNumber() throws IOException {
-        // Tests NMS-9821
-        // create xml file with missing vbnumber element:
-        testEventConf("<!-- vbnumber missing -->");
+    public void testEventConfWithMissingVbNumberButExistingVbValue() throws IOException {
+        testEventConf("<!-- vbnumber missing --><vbvalue>0</vbvalue>");
     }
 
-    private Events testEventConf(String vbNumber) throws IOException {
+    @Test
+    public void testEventConfWithMissingVbNumberAndExistingVbValue() throws IOException {
+        testEventConf("<!-- vbnumber and vbvalue missing -->");
+    }
+
+    private Events testEventConf(String varbindContent) throws IOException {
         // Tests NMS-9821
-        // create xml file with missing vbnumber element:
         String xml = String.format("<events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\">%n" +
                 "   <event>%n" +
                 "      <mask>%n" +
@@ -64,7 +66,6 @@ public class ConfigTesterTest_testEventConf {
                 "         </maskelement>%n" +
                 "         <varbind>%n" +
                 "            %s%n" +
-                "            <vbvalue>0</vbvalue>%n" +
                 "         </varbind>%n" +
                 "      </mask>%n" +
                 "      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority0</uei>%n" +
@@ -73,7 +74,7 @@ public class ConfigTesterTest_testEventConf {
                 "      <logmsg dest=\"logndisplay\">Juniper CLI Security Alert.</logmsg>%n" +
                 "      <severity>Major</severity>%n" +
                 "   </event>%n" +
-                "</events>", vbNumber);
+                "</events>", varbindContent);
         return JaxbUtils.unmarshal(Events.class, new StringReader(xml));
     }
 }
