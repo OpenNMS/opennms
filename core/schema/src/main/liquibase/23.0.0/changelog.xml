@@ -31,16 +31,4 @@
 
   </changeSet>
   
-  <changeSet author="cpape" id="23.0.0-has-flows">
-    <addColumn tableName="node">
-      <column name="hasflows" type="boolean" defaultValue="false" />
-    </addColumn>
-    <addNotNullConstraint tableName="node" columnName="hasflows"/>
-
-    <addColumn tableName="snmpinterface">
-      <column name="hasflows" type="boolean" defaultValue="false"/>
-    </addColumn>
-    <addNotNullConstraint tableName="snmpinterface" columnName="hasflows"/>
-  </changeSet>
-
 </databaseChangeLog>

@@ -76,8 +76,8 @@ import org.opennms.netmgt.enlinkd.snmp.Dot1dBasePortTableTracker.Dot1dBasePortRo
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
-import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.BridgeStpLink;
 import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortEnable;
 import org.opennms.netmgt.model.BridgeStpLink.BridgeDot1dStpPortState;
@@ -1025,7 +1025,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     public void testDot1dTpFdbTableWalk() throws Exception {
 
     	String trackerName = "dot1dTpFdbTable";
-    	final List<BridgeMacLink> links = new ArrayList<>();
+    	final List<BridgeForwardingTableEntry> links = new ArrayList<BridgeForwardingTableEntry>();
     	SnmpAgentConfig  config = SnmpPeerFactory.getInstance().getAgentConfig(InetAddress.getByName(DLINK1_IP));
         Dot1dTpFdbTableTracker tracker = new Dot1dTpFdbTableTracker() {
             @Override
@@ -1047,7 +1047,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
 
         assertEquals(17, links.size());
-        for (BridgeMacLink link: links) {
+        for (BridgeForwardingTableEntry link: links) {
         	assertEquals(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED, link.getBridgeDot1qTpFdbStatus());
         	System.out.println(link.getMacAddress());
         	if (link.getMacAddress().equals("000c29dcc076")) {

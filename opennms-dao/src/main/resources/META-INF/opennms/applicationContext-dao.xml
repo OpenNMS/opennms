@@ -184,15 +184,6 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
     
-
-  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
-    <property name="nodeDao" ref="nodeDao" />
-    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
-    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
-    
   <bean id="bridgeStpLinkDao" class="org.opennms.netmgt.dao.hibernate.BridgeStpLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -205,6 +196,15 @@
   
   <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeElementDao" ref="bridgeElementDao" />
 
+  <bean id="bridgeTopologyDao" class="org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate">
+    <property name="nodeDao" ref="nodeDao" />
+    <property name="bridgeElementDao" ref="bridgeElementDao" />
+    <property name="bridgeBridgeLinkDao" ref="bridgeBridgeLinkDao" />
+    <property name="bridgeMacLinkDao" ref="bridgeMacLinkDao" />
+  </bean>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" ref="bridgeTopologyDao" />
+    
   <bean id="cdpLinkDao" class="org.opennms.netmgt.dao.hibernate.CdpLinkDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -478,6 +478,8 @@
   <bean id="filterDao" class="org.opennms.netmgt.filter.FilterDaoFactory" depends-on="filterDaoFactory-init" factory-method="getInstance" />
   
   <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/> 
+
+  <onmsgi:service interface="org.opennms.netmgt.filter.api.FilterDao" ref="filterDao"/>
 
   <bean id="filterFavoriteDao" class="org.opennms.netmgt.dao.hibernate.FilterFavoriteDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />

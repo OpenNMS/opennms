@@ -44,15 +44,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
+import org.opennms.netmgt.model.topology.Topology;
 
 
 @Entity
 @Table(name="cdpElement")
-public final class CdpElement implements Serializable {
+public final class CdpElement implements Serializable,Topology {
 
 	/**
 	 * 
@@ -241,7 +243,20 @@ public final class CdpElement implements Serializable {
 			.append("cdpNodeLastPollTime", m_cdpNodeLastPollTime)
 			.toString();
 	}
-	
+
+    @Transient
+    public String printTopology() {
+        StringBuffer strb = new StringBuffer();
+        strb.append("cdpelement: nodeid:[");
+        strb.append(getNode().getId());
+        strb.append("], Global Device Id:[");
+        strb.append(getCdpGlobalDeviceId());
+        strb.append("], Global Run:[");
+        strb.append(TruthValue.getTypeString(getCdpGlobalRun().getValue()));
+        strb.append("]");
+        return strb.toString();
+    }
+
 	public void merge(CdpElement element) {
 		if (element == null)
 			return;
