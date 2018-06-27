@@ -30,7 +30,6 @@ package org.opennms.web.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -87,6 +86,7 @@ import org.opennms.netmgt.model.OspfElement.Status;
 import org.opennms.netmgt.model.OspfElement.TruthValue;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.web.api.Util;
 import org.springframework.beans.factory.InitializingBean;
@@ -165,7 +165,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_ospfElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
-    @SuppressWarnings("deprecation")
     private OspfElementNode convertFromModel(OspfElement ospf) {
         if (ospf == null)
             return null;
@@ -184,61 +183,121 @@ public class EnLinkdElementFactory implements InitializingBean,
     public List<OspfLinkNode> getOspfLinks(int nodeId) {
         List<OspfLinkNode> nodelinks = new ArrayList<OspfLinkNode>();
         for (OspfLink link : m_ospfLinkDao.findByNodeId(Integer.valueOf(nodeId))) {
-            nodelinks.addAll(convertFromModel(nodeId, link));
+            nodelinks.add(convertFromModel(nodeId, link));
         }
         return nodelinks;
     }
 
-    @Transactional
-    @SuppressWarnings("deprecation")
-    private List<OspfLinkNode> convertFromModel(int nodeid, OspfLink link) {
-        List<OspfLinkNode> linkNodes = new ArrayList<OspfLinkNode>();
+    public OspfLinkNode create(int nodeid, OspfLink link) {
+        OspfLinkNode linknode = new OspfLinkNode();
+        OnmsSnmpInterface snmpiface = null;
+        String ipaddr = str(link.getOspfIpAddr());
 
-        List<OspfElement> ospfElements = m_ospfElementDao.findAllByRouterId(link.getOspfRemRouterId());
-
-        if (ospfElements.size() > 0) {
-            for (OspfElement ospfElement : ospfElements) {
-                OspfLinkNode linknode = new OspfLinkNode();
-                linknode.setOspfIpAddr(str(link.getOspfIpAddr()));
-                linknode.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
-                linknode.setOspfIfIndex(link.getOspfIfIndex());
-
-                linknode.setOspfRemRouterId(getRemRouterIdString(str(link.getOspfRemRouterId()),
-                                                                 ospfElement.getNode().getLabel()));
-                linknode.setOspfRemRouterUrl(getNodeUrl(ospfElement.getNode().getId()));
-
-                linknode.setOspfRemIpAddr(str(link.getOspfRemIpAddr()));
-                linknode.setOspfRemAddressLessIndex(link.getOspfRemAddressLessIndex());
-
-                if (ospfElement != null
-                        && linknode.getOspfRemIpAddr() != null)
-                    linknode.setOspfRemPortUrl(getIpInterfaceUrl(ospfElement.getNode().getId(),
-                                                                 linknode.getOspfRemIpAddr()));
-
-                linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
-                linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
-
-                linkNodes.add(linknode);
-            }
-
-        } else {
-            OspfLinkNode linknode = new OspfLinkNode();
-            linknode.setOspfIpAddr(str(link.getOspfIpAddr()));
-            linknode.setOspfAddressLessIndex(link.getOspfAddressLessIndex());
-            linknode.setOspfIfIndex(link.getOspfIfIndex());
-
-            linknode.setOspfRemRouterId(str(link.getOspfRemRouterId()));
-
-            linknode.setOspfRemIpAddr(str(link.getOspfRemIpAddr()));
-            linknode.setOspfRemAddressLessIndex(link.getOspfRemAddressLessIndex());
-
-            linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
-            linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
-
-            linkNodes.add(linknode);
+        // set local info
+        if (link.getOspfIfIndex() != null) {
+            snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,
+                                                                  link.getOspfIfIndex());
+        } else if (link.getOspfAddressLessIndex() > 0) {
+            snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid,
+                                                                  link.getOspfAddressLessIndex());
         }
-        Collections.sort(linkNodes);
-        return linkNodes;
+
+        if (snmpiface != null) {
+            if (link.getOspfAddressLessIndex() > 0) {
+                linknode.setOspfLocalPort(getPortString(snmpiface,
+                                                        "address less", ""));
+            } else {
+                linknode.setOspfLocalPort(getPortString(snmpiface, "ip",
+                                                        ipaddr));
+            }
+            linknode.setOspfLocalPortUrl(getSnmpInterfaceUrl(nodeid,
+                                                             snmpiface.getIfIndex()));
+        } else if (link.getOspfAddressLessIndex() > 0) {
+            linknode.setOspfLocalPort(getPortString(null,link.getOspfAddressLessIndex(),
+                                                    "address less", ""));
+        } else if (link.getOspfIfIndex() != null && ipaddr != null) {
+            linknode.setOspfLocalPort(getPortString(null,link.getOspfIfIndex(),
+                                                    "ip", ipaddr));
+            linknode.setOspfLocalPortUrl(getIpInterfaceUrl(nodeid, ipaddr));
+        } else if (ipaddr != null) {
+            linknode.setOspfLocalPort(getPortString(null,null,"ip", ipaddr));
+            linknode.setOspfLocalPortUrl(getIpInterfaceUrl(nodeid, ipaddr));
+        }
+
+        if (link.getOspfIpMask() != null) {
+            linknode.setOspfLinkInfo("mask:" + str(link.getOspfIpMask()));
+        } else {
+            linknode.setOspfLinkInfo("No mask");
+        }
+
+        linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
+        linknode.setOspfLinkLastPollTime(Util.formatDateToUIString(link.getOspfLinkLastPollTime()));
+
+        return linknode;
+
+    }
+
+    @Transactional
+    public OspfLinkNode convertFromModel(int nodeid, OspfLink link) {
+        OspfLinkNode linknode = create(nodeid, link);
+
+        Integer remNodeid = null;
+        String remNodeLabel = null;
+
+        // set rem info
+
+        List<OspfElement> remOspfElements = m_ospfElementDao.findAllByRouterId(link.getOspfRemRouterId());
+        if (remOspfElements.size() == 1) {
+            OspfElement remOspfElement = remOspfElements.iterator().next();
+            remNodeid = remOspfElement.getNode().getId();
+            remNodeLabel = remOspfElement.getNode().getLabel();
+        }
+        // set rem Router id
+        if (remNodeid != null) {
+            linknode.setOspfRemRouterId(getHostString(remNodeLabel,
+                                                      "router id",
+                                                      str(link.getOspfRemRouterId())));
+            linknode.setOspfRemRouterUrl(getNodeUrl(remNodeid));
+        } else {
+            linknode.setOspfRemRouterId(str(link.getOspfRemRouterId()));
+        }
+
+        String remipaddr = str(link.getOspfRemIpAddr());
+        OnmsSnmpInterface remsnmpiface = null;
+
+        if (remNodeid != null) {
+            if (link.getOspfRemAddressLessIndex() > 0) {
+                remsnmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(remNodeid,
+                                                                         link.getOspfAddressLessIndex());
+            } else {
+                OnmsIpInterface remipiface = m_ipInterfaceDao.findByNodeIdAndIpAddress(remNodeid,
+                                                                                       remipaddr);
+                if (remipiface != null) {
+                    remsnmpiface = remipiface.getSnmpInterface();
+                }
+            }
+        }
+
+        if (remsnmpiface != null) {
+            if (link.getOspfRemAddressLessIndex() > 0) {
+                linknode.setOspfRemPort(getPortString(remsnmpiface,
+                                                      "address less", ""));
+            } else {
+                linknode.setOspfRemPort(getPortString(remsnmpiface, "ip",
+                                                      remipaddr));
+            }
+            linknode.setOspfRemPortUrl(getSnmpInterfaceUrl(remNodeid,
+                                                           remsnmpiface.getIfIndex()));
+        } else if (link.getOspfAddressLessIndex() > 0) {
+            linknode.setOspfRemPort(getPortString(null,link.getOspfRemAddressLessIndex(),
+                                                  "Address less", ""));
+        } else if (remipaddr != null) {
+            linknode.setOspfRemPort(getPortString(null,null,"ip",remipaddr));
+            if (remNodeid != null) {
+                linknode.setOspfRemPortUrl(getIpInterfaceUrl(remNodeid, remipaddr));
+            }
+        }
+        return linknode;
     }
 
     @Override
@@ -246,7 +305,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_cdpElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
-    @SuppressWarnings("deprecation")
     private CdpElementNode convertFromModel(CdpElement cdp) {
         if (cdp == null)
             return null;
@@ -254,10 +312,13 @@ public class EnLinkdElementFactory implements InitializingBean,
         CdpElementNode cdpNode = new CdpElementNode();
         cdpNode.setCdpGlobalRun(TruthValue.getTypeString(cdp.getCdpGlobalRun().getValue()));
         cdpNode.setCdpGlobalDeviceId(cdp.getCdpGlobalDeviceId());
-        if (cdp.getCdpGlobalDeviceIdFormat() != null)
+
+        if (cdp.getCdpGlobalDeviceIdFormat() != null) {
             cdpNode.setCdpGlobalDeviceIdFormat(CdpGlobalDeviceIdFormat.getTypeString(cdp.getCdpGlobalDeviceIdFormat().getValue()));
-        else
+        } else {
             cdpNode.setCdpGlobalDeviceIdFormat("&nbsp");
+        }
+        
         cdpNode.setCdpCreateTime(Util.formatDateToUIString(cdp.getCdpNodeCreateTime()));
         cdpNode.setCdpLastPollTime(Util.formatDateToUIString(cdp.getCdpNodeLastPollTime()));
 
@@ -274,39 +335,51 @@ public class EnLinkdElementFactory implements InitializingBean,
         return nodelinks;
     }
 
-    @Transactional
-    @SuppressWarnings("deprecation")
-    private CdpLinkNode convertFromModel(int nodeid, CdpLink link) {
+    public CdpLinkNode create(int nodeid, CdpLink link) {
         CdpLinkNode linknode = new CdpLinkNode();
-        linknode.setCdpLocalPort(getPortString(link.getCdpCacheIfIndex(),
-                                               link.getCdpInterfaceName(), null));
-        if (link.getCdpCacheIfIndex() != null)
+        linknode.setCdpLocalPort(getPortString(link.getCdpInterfaceName(),
+                                               link.getCdpCacheIfIndex(),
+                                               null,
+                                               null));
+        
+        OnmsSnmpInterface snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, link.getCdpCacheIfIndex());
+        if (snmpiface != null) {
+            linknode.setCdpLocalPort(getPortString(snmpiface,null,null));
             linknode.setCdpLocalPortUrl(getSnmpInterfaceUrl(nodeid,
                                                             link.getCdpCacheIfIndex()));
-
-        linknode.setCdpCacheAddressType(CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()));
-        linknode.setCdpCacheAddress(link.getCdpCacheAddress());
-
-        linknode.setCdpCacheDeviceId(link.getCdpCacheDeviceId());
-        linknode.setCdpCacheDevicePlatform(link.getCdpCacheDevicePlatform());
-        linknode.setCdpCacheVersion(link.getCdpCacheVersion());
-        linknode.setCdpCacheDevicePort(link.getCdpCacheDevicePort());
+        }
+ 
+        linknode.setCdpCreateTime(Util.formatDateToUIString(link.getCdpLinkCreateTime()));
+        linknode.setCdpLastPollTime(Util.formatDateToUIString(link.getCdpLinkLastPollTime()));
+        linknode.setCdpCachePlatform(link.getCdpCacheDevicePlatform()+ " -> " + link.getCdpCacheVersion());
+        
+        return linknode;
+    }        
+        
+    @Transactional
+    public CdpLinkNode convertFromModel(int nodeid, CdpLink link) {
+        CdpLinkNode linknode = create(nodeid, link);
+        linknode.setCdpCacheDevice(link.getCdpCacheDeviceId());
+        linknode.setCdpCacheDevicePort(getPortString(link.getCdpCacheDevicePort(), null,
+                                                     CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()),
+                                 link.getCdpCacheAddress()));
 
         CdpElement cdpCacheElement = m_cdpElementDao.findByGlobalDeviceId(link.getCdpCacheDeviceId());
         if (cdpCacheElement != null) {
+            linknode.setCdpCacheDevice(getHostString(cdpCacheElement.getNode().getLabel(), "Cisco Device Id", 
+                                                     link.getCdpCacheDeviceId()));
             linknode.setCdpCacheDeviceUrl(getNodeUrl(cdpCacheElement.getNode().getId()));
             OnmsSnmpInterface cdpcachesnmp = getFromCdpCacheDevicePort(cdpCacheElement.getNode().getId(),
                                                                        link.getCdpCacheDevicePort());
             if (cdpcachesnmp != null) {
-                linknode.setCdpCacheDevicePort(getPortString(cdpcachesnmp.getIfIndex(),
-                                                             link.getCdpCacheDevicePort(),cdpcachesnmp.getIfAlias()));
+                linknode.setCdpCacheDevicePort(getPortString(cdpcachesnmp,         
+                                                     CiscoNetworkProtocolType.getTypeString(link.getCdpCacheAddressType().getValue()),
+                                                     link.getCdpCacheAddress()));
                 linknode.setCdpCacheDevicePortUrl(getSnmpInterfaceUrl(cdpCacheElement.getNode().getId(),
                                                                       cdpcachesnmp.getIfIndex()));
             }
         }
 
-        linknode.setCdpCreateTime(Util.formatDateToUIString(link.getCdpLinkCreateTime()));
-        linknode.setCdpLastPollTime(Util.formatDateToUIString(link.getCdpLinkLastPollTime()));
         return linknode;
     }
 
@@ -315,14 +388,13 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_lldpElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
-    @SuppressWarnings("deprecation")
     private LldpElementNode convertFromModel(LldpElement lldp) {
-        if (lldp == null)
-            return null;
-
+ 
         LldpElementNode lldpNode = new LldpElementNode();
-        lldpNode.setLldpChassisIdString(getChassisIdString(lldp.getLldpChassisId(),
-                                                           lldp.getLldpChassisIdSubType()));
+        lldpNode.setLldpChassisId(getIdString(
+                   LldpChassisIdSubType.getTypeString(lldp.getLldpChassisIdSubType().getValue()),               
+                   lldp.getLldpChassisId()
+               ));
         lldpNode.setLldpSysName(lldp.getLldpSysname());
         lldpNode.setLldpCreateTime(Util.formatDateToUIString(lldp.getLldpNodeCreateTime()));
         lldpNode.setLldpLastPollTime(Util.formatDateToUIString(lldp.getLldpNodeLastPollTime()));
@@ -340,24 +412,36 @@ public class EnLinkdElementFactory implements InitializingBean,
         return nodelinks;
     }
 
-    @Transactional
-    @SuppressWarnings("deprecation")
-    private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
-
+    private LldpLinkNode create(int nodeid, LldpLink link) {
         LldpLinkNode linknode = new LldpLinkNode();
-        linknode.setLldpPortString(getPortString(link.getLldpPortId(),
-                                                 link.getLldpPortIdSubType()));
-        linknode.setLldpPortDescr(link.getLldpPortDescr());
-        linknode.setLldpPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid),
+        linknode.setLldpLocalPort(getPortString(link.getLldpPortDescr(), 
+                                                 link.getLldpPortIfindex(),
+                                                 LldpPortIdSubType.getTypeString(link.getLldpPortIdSubType().getValue()),
+                                                 link.getLldpPortId()
+                                                 ));
+        linknode.setLldpLocalPortUrl(getSnmpInterfaceUrl(Integer.valueOf(nodeid),
                                                     link.getLldpPortIfindex()));
-
-        linknode.setLldpRemSysName(link.getLldpRemSysname());
-        linknode.setLldpRemPortString(getPortString(link.getLldpRemPortId(),
-                                                    link.getLldpRemPortIdSubType()));
-        linknode.setLldpRemPortDescr(link.getLldpRemPortDescr());
-
+        linknode.setLldpRemInfo(link.getLldpRemSysname());
         linknode.setLldpCreateTime(Util.formatDateToUIString(link.getLldpLinkCreateTime()));
         linknode.setLldpLastPollTime(Util.formatDateToUIString(link.getLldpLinkLastPollTime()));
+        return linknode;
+    }
+    
+    @Transactional
+    private LldpLinkNode convertFromModel(int nodeid, LldpLink link) {
+        LldpLinkNode linknode = create(nodeid, link);
+
+        linknode.setLldpRemChassisId(getIdString(
+                                              LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue()),               
+                                              link.getLldpRemChassisId()
+                                          ));
+
+        linknode.setLldpRemPort(getPortString(link.getLldpRemPortDescr(), 
+                                              null,
+                                              LldpPortIdSubType.getTypeString(link.getLldpRemPortIdSubType().getValue()),
+                                              link.getLldpRemPortId()
+                                              ));
+
 
         OnmsNode remNode = null;
 
@@ -366,13 +450,6 @@ public class EnLinkdElementFactory implements InitializingBean,
 
         if (lldpremelements.size() == 1) {
             remNode = lldpremelements.get(0).getNode();
-        } else if (lldpremelements.size() > 1) {
-            linknode.setLldpRemChassisIdString(getChassisIdString("Found "
-                                                                          + lldpremelements.size()
-                                                                          + " nodes for",
-                                                                  link.getLldpRemChassisId(),
-                                                                  link.getLldpRemChassisIdSubType()));
-            return linknode;
         } else {
             final Criteria criteria = new Criteria(OnmsNode.class).addRestriction(new EqRestriction(
                                                                                                     "sysName",
@@ -383,9 +460,10 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
 
         if (remNode != null) {
-            linknode.setLldpRemChassisIdString(getChassisIdString(remNode.getLabel(),
-                                                                  link.getLldpRemChassisId(),
-                                                                  link.getLldpRemChassisIdSubType()));
+            linknode.setLldpRemChassisId(getHostString(remNode.getLabel(),
+                                                       LldpChassisIdSubType.getTypeString(link.getLldpRemChassisIdSubType().getValue()),
+                                                       link.getLldpRemChassisId()
+                                                                  ));
             linknode.setLldpRemChassisIdUrl(getNodeUrl(remNode.getId()));
             if (link.getLldpRemPortIdSubType() == LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
                 try {
@@ -395,9 +473,6 @@ public class EnLinkdElementFactory implements InitializingBean,
                 } catch (Exception e) {
                 }
             }
-        } else {
-            linknode.setLldpRemChassisIdString(getChassisIdString(link.getLldpRemChassisId(),
-                                                                  link.getLldpRemChassisIdSubType()));
         }
         return linknode;
     }
@@ -406,7 +481,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return convertFromModel(m_isisElementDao.findByNodeId(Integer.valueOf(nodeId)));
     }
 
-    @SuppressWarnings("deprecation")
     private IsisElementNode convertFromModel(IsIsElement isis) {
         if (isis == null)
             return null;
@@ -431,7 +505,6 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
-    @SuppressWarnings("deprecation")
     private IsisLinkNode convertFromModel(int nodeid, IsIsLink link) {
         IsisLinkNode linknode = new IsisLinkNode();
         linknode.setIsisCircIfIndex(link.getIsisCircIfIndex());
@@ -466,8 +539,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
 
         if (remiface != null) {
-            linknode.setIsisISAdjNeighPort(getPortString(remiface.getIfIndex(),
-                                                         remiface.getIfName(), remiface.getIfAlias()));
+            linknode.setIsisISAdjNeighPort(getPortString(remiface,null,null));
             linknode.setIsisISAdjUrl(getSnmpInterfaceUrl(remiface.getNode().getId(),
                                                          remiface.getIfIndex()));
         } else {
@@ -490,7 +562,6 @@ public class EnLinkdElementFactory implements InitializingBean,
         return nodes;
     }
 
-    @SuppressWarnings("deprecation")
     private BridgeElementNode convertFromModel(BridgeElement bridge) {
         if (bridge == null)
             return null;
@@ -516,127 +587,153 @@ public class EnLinkdElementFactory implements InitializingBean,
 
         return bridgeNode;
     }
-
-    @Override
-    public Collection<NodeLinkBridge> getNodeLinks(int nodeId) {
-        Map<String, Set<InetAddress>> mactoIpMap = new HashMap<String, Set<InetAddress>>();
-        for (OnmsIpInterface ip : m_ipInterfaceDao.findByNodeId(nodeId)) {
-            for (IpNetToMedia ipnetomedia : m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
-                if (!mactoIpMap.containsKey(ipnetomedia.getPhysAddress()))
-                    mactoIpMap.put(ipnetomedia.getPhysAddress(),
-                                   new HashSet<InetAddress>());
-                mactoIpMap.get(ipnetomedia.getPhysAddress()).add(ip.getIpAddress());
-            }
+    
+    private BridgeLinkNode create(BridgePort bridgePort) {
+        BridgeLinkNode linknode = new BridgeLinkNode();
+        final OnmsSnmpInterface iface = bridgePort.getBridgePortIfIndex() == null
+                ? null
+                : m_snmpInterfaceDao.findByNodeIdAndIfIndex(bridgePort.getNodeId(),
+                                                            bridgePort.getBridgePortIfIndex());
+        if (iface != null) {
+            linknode.setBridgeLocalPort(getPortString(iface,"bridge port", bridgePort.getBridgePort().toString()));
+            linknode.setBridgeLocalPortUrl(getSnmpInterfaceUrl(bridgePort.getNodeId(),
+          bridgePort.getBridgePortIfIndex()));
+        } else {
+            linknode.setBridgeLocalPort(getPortString("port",bridgePort.getBridgePortIfIndex(),"bridge port", bridgePort.getBridgePort().toString()));
         }
-        List<NodeLinkBridge> nodelinks = new ArrayList<NodeLinkBridge>();
-        for (String mac : mactoIpMap.keySet()) {
-            SharedSegment segment = m_bridgetopologyDao.getHostSharedSegment(mac);
-            if (segment.isEmpty())
-                continue;
-            if (!segment.containsMac(mac))
-                continue;
-            nodelinks.add(convertFromModel(mac,segment,
-                                           getNodePortString(mactoIpMap.get(mac),
-                                                             mac)));
+        BridgeElement bridgeElement = m_bridgeElementDao.getByNodeIdVlan(bridgePort.getNodeId(), bridgePort.getVlan());
+        if (bridgeElement != null) {
+            linknode.setBridgeInfo(bridgeElement.getVlanname());
         }
-        Collections.sort(nodelinks);
-        return nodelinks;
+        return linknode;
     }
 
     @Transactional
-    private NodeLinkBridge convertFromModel(String mac,
-            SharedSegment segment, String port) {
-        final NodeLinkBridge linknode = new NodeLinkBridge();
-        linknode.setNodeLocalPort(port);
+    private BridgeLinkNode create(String mac, List<OnmsIpInterface> ipaddrs) {
+        BridgeLinkNode linknode = new BridgeLinkNode();
+        if (ipaddrs.size() == 0) {
+            linknode.setBridgeLocalPort(getIdString("mac", mac));
+            return linknode;
+        }
         
-        for (BridgePort link : segment.getBridgePortsOnSegment()) {
-            final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-            final Integer rempnodeId = link.getNodeId();
-            final Integer rembridgePortIfIndex = link.getBridgePortIfIndex();
-            remlinknode.setBridgeRemoteNode(m_nodeDao.get(rempnodeId).getLabel());
-            remlinknode.setBridgeRemoteUrl(getNodeUrl(rempnodeId));
-
-            final OnmsSnmpInterface remiface = rembridgePortIfIndex == null
-                                                                        ? null
-                                                                        : m_snmpInterfaceDao.findByNodeIdAndIfIndex(rempnodeId,
-                                                                                                                    rembridgePortIfIndex);
-            if (remiface != null) {
-                remlinknode.setBridgeRemotePort(getPortString(rembridgePortIfIndex,
-                                                              remiface.getIfName(),
-                                                              remiface.getIfAlias()));
-            } else {
-                remlinknode.setBridgeRemotePort(getPortString(rembridgePortIfIndex,
-                                                              null, null));
+        if (ipaddrs.size() == 1 ) {
+            OnmsIpInterface ipiface =ipaddrs.iterator().next();
+            if (ipiface != null) {
+                OnmsSnmpInterface snmpiface = ipiface.getSnmpInterface();
+                if (snmpiface !=  null) {
+                    linknode.setBridgeLocalPort(getPortString(snmpiface,"mac",mac));
+                    linknode.setBridgeLocalPortUrl(getSnmpInterfaceUrl(snmpiface.getNodeId(), snmpiface.getIfIndex()));
+                } else {
+                    linknode.setBridgeLocalPort(getPortString(str(ipiface.getIpAddress()),ipiface.getIfIndex(),"mac",mac));
+                    linknode.setBridgeLocalPortUrl(getIpInterfaceUrl(ipiface.getNodeId(),str(ipiface.getIpAddress())));
+                }
             }
-            remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(rempnodeId,
-                                                                   rembridgePortIfIndex));
-            remlinknode.setBridgeRemoteVlan(link.getVlan());
+            return linknode;
+        }
+        
+        linknode.setBridgeLocalPort(getPortString(getIpListAsString(ipaddrs), null, "mac", mac));
+        return linknode;
+    }
+
+    @Transactional
+    private BridgeLinkNode convertFromModel(Integer nodeid, String mac, List<OnmsIpInterface> ipaddrs,
+            SharedSegment segment) throws BridgeTopologyException {
+
+        final BridgeLinkNode linknode; 
+        if (mac == null) {
+            linknode = create(segment.getBridgePort(nodeid));
+        } else {
+            linknode = create(mac,ipaddrs);
+        }
+
+        linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
+        linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getLastPollTime()));
+
+        for (BridgePort remport : segment.getBridgePortsOnSegment()) {
+            if (nodeid.intValue() == remport.getNodeId().intValue()) {
+                continue;
+            }
+            final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+            final BridgeElement remBridgeElement = m_bridgeElementDao.get(remport.getNodeId());
+            remlinknode.setBridgeRemote(getHostString(remBridgeElement.getNode().getLabel(), "bridge", remBridgeElement.getBaseBridgeAddress()));
+            remlinknode.setBridgeRemoteUrl(getNodeUrl(remport.getNodeId()));
+
+            final OnmsSnmpInterface remiface = remport.getBridgePortIfIndex() == null
+                                                                                     ? null
+                                                                                     : m_snmpInterfaceDao.findByNodeIdAndIfIndex(remport.getNodeId(),
+                                                                                                                                 remport.getBridgePortIfIndex());
+            if (remiface != null) {
+                remlinknode.setBridgeRemotePort(getPortString(remiface,"bridge port",remport.getBridgePort().toString()));
+                remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(remport.getNodeId(),
+                                                                       remport.getBridgePortIfIndex()));
+            } else {
+                remlinknode.setBridgeRemotePort(getPortString(null,remport.getBridgePortIfIndex(),
+                                                              "bridge port", remport.getBridgePort().toString()));
+            }
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }
                 
-        Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
-        for (String shredmac: segment.getMacsOnSegment()) {
-            if (shredmac.equals(mac))
+        Map<String, List<IpNetToMedia>> macsToIpNetTOMediaMap = new HashMap<String, List<IpNetToMedia>>();
+        for (String sharedmac: segment.getMacsOnSegment()) {
+            if (sharedmac.equals(mac)) {
                 continue;
-            sharedmacs.put(shredmac, new ArrayList<IpNetToMedia>());
-            sharedmacs.get(shredmac).addAll(m_ipNetToMediaDao.findByPhysAddress(shredmac));
+            }
+            macsToIpNetTOMediaMap.put(sharedmac, new ArrayList<IpNetToMedia>(m_ipNetToMediaDao.findByPhysAddress(sharedmac)));
         }
        
-        Map<String, List<OnmsIpInterface>> sharedhosts = new HashMap<String, List<OnmsIpInterface>>();
-        for (String shredmac: sharedmacs.keySet()) {
-            if (sharedmacs.get(shredmac).isEmpty()) {
-                BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-                OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
+        for (String sharedmac: macsToIpNetTOMediaMap.keySet()) {
+            final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
+            if (macsToIpNetTOMediaMap.get(sharedmac).isEmpty()) {
+                OnmsSnmpInterface snmp = getFromPhysAddress(sharedmac);
                 if (snmp == null) {
-                    remlinknode.setSharedHost(shredmac
-                            + " No ip address found");
+                    remlinknode.setBridgeRemote(getIdString("mac", sharedmac));
                 } else {
-                    remlinknode.setSharedHost(snmp.getNode().getLabel());
-                    remlinknode.setSharedHostUrl(getNodeUrl(snmp.getNode().getId()));
+                    remlinknode.setBridgeRemote(snmp.getNode().getLabel());
+                    remlinknode.setBridgeRemoteUrl(getNodeUrl(snmp.getNode().getId()));
 
-                    remlinknode.setSharedHostPort(getPortString(snmp.getIfIndex(),snmp.getIfName(),snmp.getIfAlias()));
-                    remlinknode.setSharedHostPortUrl(getSnmpInterfaceUrl(snmp.getNode().getId(),
+                    remlinknode.setBridgeRemotePort(getPortString(snmp,"mac",sharedmac));
+                    remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(snmp.getNode().getId(),
                                                                            snmp.getIfIndex()));
                 }
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
+                linknode.getBridgeLinkRemoteNodes().add(remlinknode);
                 continue;
             }
-            sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
-            for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
-                sharedhosts.get(shredmac).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
-        }
+            List<OnmsIpInterface> remipaddrs = new ArrayList<OnmsIpInterface>();
+            for (IpNetToMedia ipnettomedia : macsToIpNetTOMediaMap.get(sharedmac)) {
+                remipaddrs.addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
+            }
+            
+            if (remipaddrs.size() == 0) { 
+                remlinknode.setBridgeRemote(getIdString("mac", sharedmac));
+                linknode.getBridgeLinkRemoteNodes().add(remlinknode);
+                continue;
+            }
 
-        for (String shredmac: sharedhosts.keySet()) {
-            BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-            Set<InetAddress> ips = new HashSet<InetAddress>();
-            if (sharedhosts.get(shredmac).isEmpty()) {
-                for (IpNetToMedia ipnettomedia: sharedmacs.get(shredmac)) {
-                    ips.add(ipnettomedia.getNetAddress());
+            if (remipaddrs.size() == 1) {
+                OnmsIpInterface remiface = remipaddrs.iterator().next();
+                remlinknode.setBridgeRemote(getHostString(remiface.getNode().getLabel(), "mac", sharedmac));
+                remlinknode.setBridgeRemoteUrl(getNodeUrl(remiface.getNodeId()));
+                OnmsSnmpInterface remsnmpiface = remiface.getSnmpInterface();
+                if (remsnmpiface != null) {
+                    remlinknode.setBridgeRemotePort(getPortString(remsnmpiface, "ip", str(remiface.getIpAddress())));
+                    remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(remiface.getNodeId(), remsnmpiface.getIfIndex()));
+                } else {
+                    remlinknode.setBridgeRemotePort(getPortString(str(remiface.getIpAddress()), remiface.getIfIndex(), null, null));
+                    remlinknode.setBridgeRemotePortUrl(getIpInterfaceUrl(remiface.getNodeId(), str(remiface.getIpAddress())));
                 }
-                remlinknode.setSharedHost(getNodePortString(ips, shredmac)+ " No node found");
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
+                linknode.getBridgeLinkRemoteNodes().add(remlinknode);
                 continue;
             }
-            OnmsIpInterface first = null;
-            boolean multiplenodeids = false;
-            for (OnmsIpInterface ip: sharedhosts.get(shredmac)) {
-                if (first == null )
-                    first = ip;
-                if (first.getNode().getId().intValue() != ip.getNode().getId().intValue() )
-                    multiplenodeids = true;
-                ips.add(ip.getIpAddress());
+            Set<String> labels = new HashSet<String>();
+            for (OnmsIpInterface remiface: remipaddrs) {
+                labels.add(remiface.getNode().getLabel());
             }
-            if (multiplenodeids) {
-                remlinknode.setSharedHost(getNodePortString(ips, shredmac)  + " duplicated ip multiple node associated in db");
-            } else {
-                remlinknode.setSharedHost(first.getNode().getLabel());
-                remlinknode.setSharedHostUrl(getNodeUrl(first.getNode().getId()));
+            if (labels.size() == 1) {
+                remlinknode.setBridgeRemote(labels.iterator().next());
+                remlinknode.setBridgeRemoteUrl(getNodeUrl(remipaddrs.iterator().next().getNodeId()));
             }
-            remlinknode.setSharedHostPort(getNodePortString(ips, shredmac));
-            if (ips.size() == 1) {
-                remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(first));
-            } 
-            linknode.getBridgeLinkSharedHost().add(remlinknode);
+            remlinknode.setBridgeRemotePort(getIpListAsString(ipaddrs));
+            linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }        
         return linknode;
     }
@@ -645,140 +742,51 @@ public class EnLinkdElementFactory implements InitializingBean,
     public Collection<BridgeLinkNode> getBridgeLinks(int nodeId) {
         List<BridgeLinkNode> bridgelinks = new ArrayList<BridgeLinkNode>();
         for (SharedSegment segment: m_bridgetopologyDao.getBridgeSharedSegments(nodeId)) {
-            bridgelinks.add(convertFromModel(nodeId, segment));
+            try {
+                bridgelinks.add(convertFromModel(nodeId, null,null, segment));
+            } catch (BridgeTopologyException e) {
+                e.printStackTrace();
+            }
+        }
+        if (bridgelinks.size() > 0 ) {
+            Collections.sort(bridgelinks);
+            return bridgelinks;
+        }
+        
+        Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
+        for (OnmsIpInterface ip : m_ipInterfaceDao.findByNodeId(nodeId)) {
+            for (IpNetToMedia ipnetomedia : m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
+                if (!mactoIpNodeMap.containsKey(ipnetomedia.getPhysAddress()))
+                    mactoIpNodeMap.put(ipnetomedia.getPhysAddress(),
+                                   new ArrayList<OnmsIpInterface>());
+                mactoIpNodeMap.get(ipnetomedia.getPhysAddress()).add(ip);
+            }
+        }
+        List<BridgeLinkNode> nodelinks = new ArrayList<BridgeLinkNode>();
+        for (String mac : mactoIpNodeMap.keySet()) {
+            SharedSegment segment = m_bridgetopologyDao.getHostSharedSegment(mac);
+            if (segment.isEmpty()) {
+                continue;
+            }
+            if (!segment.containsMac(mac)) {
+                continue;
+            }
+            try {
+                nodelinks.add(convertFromModel(nodeId,
+                                               mac,
+                                               mactoIpNodeMap.get(mac),
+                                                                 segment));
+            } catch (BridgeTopologyException e) {
+                e.printStackTrace();
+            }
         }
         Collections.sort(bridgelinks);
         return bridgelinks;
-    }
-
-    @Transactional
-    private BridgeLinkNode convertFromModel(int nodeid, SharedSegment segment) {
-        final BridgeLinkNode linknode = new BridgeLinkNode();
-        for (BridgePort link : segment.getBridgePortsOnSegment()) {
-            final Integer rempnodeId = link.getNodeId();
-            final Integer rembridgePortIfIndex = link.getBridgePortIfIndex();
-            final OnmsSnmpInterface remiface = rembridgePortIfIndex == null
-                    ? null
-                    : m_snmpInterfaceDao.findByNodeIdAndIfIndex(rempnodeId,
-                                                                rembridgePortIfIndex);
-            if (link.getNodeId().intValue() == nodeid) {
-                if (remiface != null) {
-                    linknode.setNodeLocalPort(getPortString(rembridgePortIfIndex,
-                                                            remiface.getIfName(),
-                                                            remiface.getIfAlias()));
-                } else {
-                    linknode.setNodeLocalPort(getPortString(rembridgePortIfIndex,
-                                                                  null, null));
-                }
-                linknode.setBridgeLocalVlan(link.getVlan());
-                continue;
-            }
-            final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-            remlinknode.setBridgeRemoteNode(m_nodeDao.get(rempnodeId).getLabel());
-            remlinknode.setBridgeRemoteUrl(getNodeUrl(rempnodeId));
-
-            if (remiface != null) {
-                remlinknode.setBridgeRemotePort(getPortString(rembridgePortIfIndex,
-                                                              remiface.getIfName(),
-                                                              remiface.getIfAlias()));
-            } else {
-                remlinknode.setBridgeRemotePort(getPortString(rembridgePortIfIndex,
-                                                              null, null));
-            }
-            remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(rempnodeId,
-                                                                   rembridgePortIfIndex));
-            remlinknode.setBridgeRemoteVlan(link.getVlan());
-            linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-        }
-
-        Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
-        for (String shredmac: segment.getMacsOnSegment()) {
-            sharedmacs.put(shredmac, new ArrayList<IpNetToMedia>());
-            sharedmacs.get(shredmac).addAll(m_ipNetToMediaDao.findByPhysAddress(shredmac));
-        }
-       
-        Map<String, List<OnmsIpInterface>> sharedhosts = new HashMap<String, List<OnmsIpInterface>>();
-        for (String shredmac: sharedmacs.keySet()) {
-            if (sharedmacs.get(shredmac).isEmpty()) {
-                BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-                OnmsSnmpInterface snmp = getFromPhysAddress(shredmac);
-                if (snmp == null) {
-                    remlinknode.setSharedHost(shredmac
-                            + " No ip address found");
-                } else {
-                    remlinknode.setSharedHost(snmp.getNode().getLabel());
-                    remlinknode.setSharedHostUrl(getNodeUrl(snmp.getNode().getId()));
-
-                    remlinknode.setSharedHostPort(getPortString(snmp.getIfIndex(),snmp.getIfName(),snmp.getIfAlias()));
-                    remlinknode.setSharedHostPortUrl(getSnmpInterfaceUrl(snmp.getNode().getId(),
-                                                                           snmp.getIfIndex()));
-                }
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
-                continue;
-            }
-            sharedhosts.put(shredmac, new ArrayList<OnmsIpInterface>());
-            for (IpNetToMedia ipnettomedia : sharedmacs.get(shredmac))
-                sharedhosts.get(shredmac).addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
-        }
-
-        for (String shredmac: sharedhosts.keySet()) {
-            BridgeLinkSharedHost remlinknode = new BridgeLinkSharedHost();
-            Set<InetAddress> ips = new HashSet<InetAddress>();
-            if (sharedhosts.get(shredmac).isEmpty()) {
-                for (IpNetToMedia ipnettomedia: sharedmacs.get(shredmac)) {
-                    ips.add(ipnettomedia.getNetAddress());
-                }
-                remlinknode.setSharedHost(getNodePortString(ips, shredmac)+ " No node found");
-                linknode.getBridgeLinkSharedHost().add(remlinknode);
-                continue;
-            }
-            OnmsIpInterface first = null;
-            boolean multiplenodeids = false;
-            for (OnmsIpInterface ip: sharedhosts.get(shredmac)) {
-                if (first == null )
-                    first = ip;
-                if (first.getNode().getId().intValue() != ip.getNode().getId().intValue() )
-                    multiplenodeids = true;
-                ips.add(ip.getIpAddress());
-            }
-            if (multiplenodeids) {
-                remlinknode.setSharedHost(getNodePortString(ips, shredmac)  + " duplicated ip multiple node associated in db");
-            } else {
-                remlinknode.setSharedHost(first.getNode().getLabel());
-                remlinknode.setSharedHostUrl(getNodeUrl(first.getNode().getId()));
-            }
-            remlinknode.setSharedHostPort(getNodePortString(ips, shredmac));
-            if (ips.size() == 1) {
-                remlinknode.setSharedHostPortUrl(getIpInterfaceUrl(first));
-            } 
-            linknode.getBridgeLinkSharedHost().add(remlinknode);
-        }        
-
-        return linknode;
 
     }
-
 
     private String getAdjSysIDString(String adjsysid, String label) {
         return adjsysid + "(" + label + ")";
-    }
-
-    private String getChassisIdString(String sysname, String chassisId,
-            LldpChassisIdSubType chassisType) {
-        return sysname + ": "
-                + LldpChassisIdSubType.getTypeString(chassisType.getValue())
-                + ": " + chassisId;
-    }
-
-    private String getChassisIdString(String chassisId,
-            LldpChassisIdSubType chassisType) {
-        return LldpChassisIdSubType.getTypeString(chassisType.getValue())
-                + ": " + chassisId;
-    }
-
-    private String getPortString(String portId, LldpPortIdSubType type) {
-        return LldpPortIdSubType.getTypeString(type.getValue()) + ": "
-                + portId;
     }
 
     private OnmsSnmpInterface getFromCdpCacheDevicePort(Integer nodeid,
@@ -810,35 +818,63 @@ public class EnLinkdElementFactory implements InitializingBean,
         return null;
     }
 
-    private String getNodePortString(Set<InetAddress> ips, String physaddr) {
-        String port = "";
-        if (ips.size() > 1)
-            port += "multiple ip addresses";
-        if (ips.size() == 1)
-            port += str(ips.iterator().next());
-        if (physaddr != null)
-            port += "(" + physaddr + ")";
-        return port;
-    }
-
-    private String getPortString(Integer ifindex, String ifName, String ifAlias) {
-        if (ifindex == null && ifName == null && ifAlias == null)
-            return null;
-        String port = "";
-        if (ifName != null) 
-            port += ifName;
-        if (ifindex != null )
-            port += "(ifindex:" + ifindex + ")";
-        if (ifAlias != null) {
-            port += "(ifalias: " + ifAlias + ")";
+    private String getPortString(OnmsSnmpInterface snmpiface, String addrtype, String addr) {
+        StringBuffer sb = new StringBuffer("");
+        if (snmpiface != null) {
+            sb.append(snmpiface.getIfName());
+            sb.append("(");
+            sb.append(snmpiface.getIfAlias());
+            sb.append(")");
+            sb.append("(ifindex:");
+            sb.append(snmpiface.getIfIndex());
+            sb.append(")");
         }
-        return port;
+        if (addrtype != null) {
+            sb.append(addrtype);
+            sb.append(":");
+            sb.append(addr);
+        }
+       return sb.toString();
     }
 
-    private String getRemRouterIdString(String ip, String label) {
-        return ip + "(" + label + ")";
+    private String getPortString(String ifname, Integer ifindex, String addrtype,String addr) {
+        StringBuffer sb = new StringBuffer("");
+        if (ifname != null) {
+            sb.append(ifname);
+        }
+        if (ifindex != null) {
+            sb.append("(ifindex:");
+            sb.append(ifindex);
+            sb.append(")");
+        }
+        if (addrtype != null) {
+            sb.append(addrtype);
+            sb.append(":");
+            sb.append(addr);
+        }
+       return sb.toString();
     }
 
+    private String getHostString(String label, String addrtype, String addr) {
+        StringBuffer sb = new StringBuffer(label);
+        if (addrtype != null && !label.equals(addr)) {
+            sb.append(addrtype);
+            sb.append(":");
+            sb.append(addr);
+        }
+        return sb.toString();
+    }
+
+    private String getIdString(String addrtype, String addr) {
+        StringBuffer sb = new StringBuffer();
+        if (addrtype != null ) {
+            sb.append(addrtype);
+            sb.append(":");
+            sb.append(addr);
+        }
+        return sb.toString();
+    }
+    
     private String getNodeUrl(Integer nodeid) {
         return "element/node.jsp?node=" + nodeid;
     }
@@ -853,10 +889,15 @@ public class EnLinkdElementFactory implements InitializingBean,
     private String getIpInterfaceUrl(Integer nodeid, String ipaddress) {
         return "element/interface.jsp?node=" + nodeid + "&intf=" + ipaddress;
     }
+    
+    private String getIpListAsString(List<OnmsIpInterface> ipinterfaces) {
+        StringBuffer ips = new StringBuffer();
+        for (OnmsIpInterface ipiface: ipinterfaces) {
+            ips.append(str(ipiface.getIpAddress()));
+            ips.append(":");
+        }
+        return ips.toString();
 
-    private String getIpInterfaceUrl(OnmsIpInterface ip) {
-        return "element/interface.jsp?node=" + ip.getNode().getId()
-                + "&intf=" + str(ip.getIpAddress());
     }
 
 }
