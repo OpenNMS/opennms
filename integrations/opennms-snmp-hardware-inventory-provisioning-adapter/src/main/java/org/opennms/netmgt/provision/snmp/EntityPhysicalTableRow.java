@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -45,6 +45,9 @@ import org.springframework.beans.PropertyAccessorFactory;
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
 public class EntityPhysicalTableRow extends SnmpRowResult {
+
+    /** The Constant entAliasMappingTable. */
+    public final static SnmpObjId entAliasMappingTable = SnmpObjId.get(".1.3.6.1.2.1.47.1.3.2.1.2");
 
     /** The Constant entPhysicalDescr. */
     public final static SnmpObjId entPhysicalDescr = SnmpObjId.get(".1.3.6.1.2.1.47.1.1.1.1.2");
@@ -99,6 +102,7 @@ public class EntityPhysicalTableRow extends SnmpRowResult {
 
     /** The Constant ELEMENTS. */
     public static final SnmpObjId[] ELEMENTS = new SnmpObjId[] {
+        entAliasMappingTable,
         entPhysicalDescr,
         entPhysicalVendorType,
         entPhysicalContainedIn,

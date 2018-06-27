@@ -30,5 +30,38 @@
           referencedTableName="alarms" referencedColumnNames="alarmid"/>
 
   </changeSet>
-  
+
+<changeSet author="smith" id="23.0.0-ent_alias_inventory">
+	<createTable tableName="hwentityalias">
+		<column name="id" type="integer">
+			<constraints primaryKey="true" nullable="false" />
+		</column>
+		<column name="hwentityid" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="index" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="oid" type="varchar(256)">
+			<constraints nullable="false" />
+		</column>
+	</createTable>
+
+	<ext:addAutoIncrement tableName="hwentityalias"
+		columnName="id" sequenceName="opennmsnxtid" />
+	<addForeignKeyConstraint
+		constraintName="fk_hwentity_hwentityalias" onDelete="CASCADE"
+		baseTableName="hwentityalias" baseColumnNames="hwentityid"
+		referencedTableName="hwentity" referencedColumnNames="id" />
+	<createIndex tableName="hwentityalias"
+		indexName="hwentityalias_unique_idx" unique="true">
+		<column name="hwentityid" />
+		<column name="index" />
+	</createIndex>
+
+	<rollback>
+		<dropTable tableName="hwentityalias" />
+	</rollback>
+</changeSet>
+
 </databaseChangeLog>

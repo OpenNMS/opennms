@@ -2344,6 +2344,16 @@ create table hwEntityAttribute (
 );
 create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 
+create table hwEntityAlias (
+    id          integer default nextval('opennmsNxtId') not null,
+    hwEntityId  integer ,
+    index       integer not null,
+    oid         varchar(256) not null,
+    constraint pk_hwentityalias PRIMARY KEY (id),
+    constraint fk_hwentity_hwentityalias foreign key (hwentityid) references hwEntity (id) on delete cascade
+);
+
+create unique index hwentityalias_unique_idx on hwentityalias(hwentityid, index);
 
 --##################################################################
 --# NCS component tables
