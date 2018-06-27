@@ -133,8 +133,8 @@ public class ServiceNowTicketerPlugin implements Plugin {
             throw new IOException("Error loading properties", e);
         }
 
-        LOG.debug("Loaded SNOW URL {}", props.get(CFG_URL));
-        LOG.debug("Loaded SNOW username {}", props.get(CFG_USERNAME));
+        LOG.debug("Loaded ServiceNow URL {}", props.get(CFG_URL));
+        LOG.debug("Loaded ServiceNow username {}", props.get(CFG_USERNAME));
         
         return props;
     }
