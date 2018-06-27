@@ -12,15 +12,39 @@ In addition to managing the installation of _OSGi_ features, the _Plugin Manager
 Although the _{opennms-product-name}_ platform remains open source, this provides a mechanism for third parties developing features on top of the _{opennms-product-name}_ platform to manage access to their software.
 
 The _Plugin Manager_ also provides a mechanism for a separate 'app-store' or Available Plugins Server to be used to deliver these new features and / or licences into a particular _{opennms-product-name}_ instance.
-It is also possible to deliver software without access to the internet using the traditional _Karaf_ Kar/RPM deployment model. (Kar files are a
-form of zip file containing bundles and features definitions which can be deployed in the _Karaf_ /deploy directory). These can be placed in the /deploy directory directly or installed there using an RPM). In this case a number of features can be delivered together in a single software package but each only enabled at run time using the Plugin Manager.
+It is also possible to deliver software without access to the internet using the traditional _Karaf_ Kar/RPM deployment model. 
+(Kar files are a form of zip file containing bundles and features definitions which can be deployed in the _Karaf_ /deploy directory). 
+These can be placed in the /deploy directory directly or installed there using an RPM). 
+In this case a number of features can be delivered together in a single software package but each only enabled at run time using the Plugin Manager.
 
 _{opennms-product-name}_ plugins are standard _Karaf_ features with additional metadata which describes the feature and the licence (if any) required.
 A plugin requiring a licence will not start if a valid licence string is not also installed.
 
+In addition to options described in the licence metadata which is publicly accessible, licences can also contain encrypted secret properties which can only be decrypted when the licence in authenticated. 
+After licence authentication, these properties are then available to a plugin as properties of it's licenceAuthenticator object. 
+
 Note that _Karaf_'s features mechanism has not been modified in any way.
 The Plugin Manager simply provides a user front end and additional metadata for features.
-Plugin features can be installed from the internal features repository, remote maven repositories or _Kar_ files placed in the deploy directory depending on how the _Karaf_ configuration is set up. The standard _{opennms-product-name}_ configuration has no remote maven access enabled for _Karaf_ and external features must be locally provisioned as a _Kar_ or an _RPM_ before being enabled with the _Plugin Manager_.
+Plugin features can be installed from the internal features repository, remote maven repositories or from _Kar_ files placed in the deploy directory depending on how the _Karaf_ configuration is set up. 
+The standard _{opennms-product-name}_ configuration has no remote maven access enabled for _Karaf_ and external features must be locally provisioned as a _Kar_ or an _RPM_ before being enabled with the _Plugin Manager_.
 
 This guide describes how to deploy and manage plugins using the _Plugin Manager_.
-A separate plugin developer's guide is provided for those wishing to write their own plugins.
+A separate plugin developer's guide is provided for those wishing to write their own plugins or generate licences.
+
+=== Plugin Manager UI
+The Plugin Manager page is split into four quadrants. 
+
+The top left quadrant is a panel for setting access properties for each of the managed karaf instances including the local _{opennms-product-name}_ instance.
+In order to access any information through the Plugin Manager, users must enter the url, admin or ReST username and password of the remote karaf being managed by editing its entry in the karaf instance list. 
+This is done by selecting the required karaf entry and selecting edit karaf instance button.
+The local  _{opennms-product-name}_ system is designated by the localhost entry which cannot be removed.
+_NOTE_ that the localhost entry in the karaf instance list also needs to have an entry matching the admin or ReST users of the localhost system for anything to work.
+
+The top right quadrant is a panel for displaying response messages to any action performed. 
+When any operation is performed in the plugin manager, the result is displayed. 
+The full error message associated with any failures can also be viewed.
+
+The bottom right quadrant allows a remote plugin repository and shopping cart to be set up.
+
+The bottom left quadrant contains panels for showing the installed plugins, for setting up a plugin manifest, selecting locally or remotely hosted plugins to be installed and for controlling the installed licences.
+

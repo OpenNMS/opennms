@@ -1387,9 +1387,9 @@
     <skipSignJar>true</skipSignJar>
 
     <!-- change to match which version of opennms-pluginmanger you want to run -->
-    <pluginmanagerVersion>1.0.7</pluginmanagerVersion>
-    <licencemanagerVersion>1.0.7</licencemanagerVersion>
-    <featuremanagerVersion>1.0.7</featuremanagerVersion>
+    <pluginmanagerVersion>1.1.0</pluginmanagerVersion>
+    <licencemanagerVersion>1.1.0</licencemanagerVersion>
+    <featuremanagerVersion>1.1.0</featuremanagerVersion>
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.6</frontendPluginVersion>
