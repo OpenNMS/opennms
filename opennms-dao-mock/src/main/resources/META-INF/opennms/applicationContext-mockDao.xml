@@ -233,4 +233,12 @@
 
     <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
 
+    <bean id="alarmEntityNotifier" class="org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl"/>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" ref="alarmEntityNotifier" />
+
+    <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
+        <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
+    </onmsgi:list>
+
 </beans>

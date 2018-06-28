@@ -30,15 +30,9 @@ package org.opennms.netmgt.bsm.daemon;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.opennms.core.profiler.ProfilerAspect.humanReadable;
 
 import java.util.ArrayList;
@@ -51,7 +45,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mockito;
 import org.opennms.core.profiler.Timer;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -181,11 +174,7 @@ public class BsmdIT {
         // Create the alarm
         OnmsAlarm alarm = createAlarm();
         m_alarmDao.save(alarm);
-
-        // Send alarm created event
-        ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+        m_bsmd.handleNewOrUpdatedAlarm(alarm);
 
         // Verify expectations
         Collection<Event> stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
@@ -202,11 +191,7 @@ public class BsmdIT {
 
         // Clear the alarm
         alarm.setSeverity(OnmsSeverity.CLEARED);
-
-        // Send an alarm cleared event
-        ebldr = new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
+        m_bsmd.handleNewOrUpdatedAlarm(alarm);
 
         // Verify expectations
         stillWaitingFor = m_eventMgr.getEventAnticipator().waitForAnticipated(5000);
@@ -241,17 +226,14 @@ public class BsmdIT {
     }
 
     /**
-     * Verifies that the daemon polls the alarm table on a regular basis. This is done to ensure that all alarms are
-     * considered, because the appropriate alarm created/changed/deleted/updated event may not have been sent.
-     *
+     * Verifies that the state is properly updated when handling alarm snapshots from the lifecycle API.
      */
     @Test
-    public void verifyAlarmPollingIsEnabled() throws Exception {
-        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "10");
+    public void verifyAlarmSnapshotHandling() throws Exception {
         BusinessServiceEntity simpleBs = createSimpleBusinessService();
         m_bsmd.start();
 
-        // Create an alarm, but do NOT send any lifecyle events
+        // Create an alarm
         final AtomicReference<OnmsAlarm> alarmRef = new AtomicReference<>();
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -265,15 +247,31 @@ public class BsmdIT {
             }
         });
 
+        // Issue a snapshot callback
+        template.execute(new TransactionCallbackWithoutResult() {
+             @Override
+             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                 m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll());
+             }
+         });
+
         // Wait for the business service status to be updated
         await().atMost(20, SECONDS).until(() -> m_bsmd.getBusinessServiceStateMachine().getOperationalStatus(wrap(simpleBs)), equalTo(Status.CRITICAL));
 
-        // Now delete alarm, and again, do NOT send any lifecyle events
+        // Now delete alarm
         template.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                 m_alarmDao.delete(alarmRef.get());
                 m_alarmDao.flush();
+            }
+        });
+
+        // Issue a snapshot callback
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                m_bsmd.handleAlarmSnapshot(m_alarmDao.findAll());
             }
         });
 
@@ -356,52 +354,6 @@ public class BsmdIT {
         m_bsmd.setEventConfDao(eventConfDao);
         m_bsmd.setVerifyReductionKeys(true);
         m_bsmd.start();
-    }
-
-    @Test
-    public void verifyNoDaoLookupsWhenNoRulesAreDefined() throws Exception {
-        // Mock the DAO
-        AlarmDao alarmDao = mock(AlarmDao.class);
-        m_bsmd.setAlarmDao(alarmDao);
-
-        // Start up without any business services
-        m_bsmd.start();
-        assertThat("Alarm polling should be disabled where there are no services.",
-                m_bsmd.isAlarmPolling(), equalTo(false));
-
-        // Create the alarm
-        OnmsAlarm alarm = createAlarm();
-        m_alarmDao.save(alarm);
-
-        // Send alarm created event
-        EventBuilder ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
-
-        // The AlarmDAO should not have any lookups
-        verify(alarmDao, never()).get(anyObject());
-
-        // Now let's add a rule
-        createBusinessService("svc");
-
-        // Reload the daemon
-        reloadBsmd();
-        assertThat("Alarm polling should be enabled when there are 1+ services.",
-                m_bsmd.isAlarmPolling(), equalTo(true));
-
-        // Send alarm updated event
-        ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "test");
-        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-        m_bsmd.handleAlarmLifecycleEvents(ebldr.getEvent());
-
-        // The AlarmDAO should have a single lookup
-        verify(alarmDao, times(1)).get(anyObject());
-
-        // Clear all of the BSs and reload
-        deleteAllBusinessServices();
-        reloadBsmd();
-        assertThat("Alarm polling should be disabled where there are no services.",
-                m_bsmd.isAlarmPolling(), equalTo(false));
     }
 
     private OnmsAlarm createAlarm() {

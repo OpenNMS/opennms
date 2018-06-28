@@ -26,25 +26,34 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.alarmd.driver;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runners.model.InitializationError;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
-import org.opennms.netmgt.model.OnmsAlarm;
+public class JUnitScenarioDriver {
 
-public interface AlarmDataStore {
+    public ScenarioResults run(Scenario scenario) {
+        // Run the test
+        final JUnitCore jUnitCore = new JUnitCore();
+        final JUnitScenarioRunner runner;
+        try {
+            runner = new JUnitScenarioRunner(AlarmdDriver.class, scenario);
+        } catch (InitializationError initializationError) {
+            throw new IllegalStateException(initializationError);
+        }
 
-    boolean isEnabled();
+        final Result junitResult = jUnitCore.run(runner);
+        if(!junitResult.wasSuccessful()) {
+            throw new RuntimeException("Playback failed:" + junitResult.getFailures());
+        }
 
-    boolean isReady();
+        final ScenarioResults results = runner.getResults();
+        if (results == null) {
+            throw new IllegalStateException("Results not set");
+        }
 
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
-
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
-
-    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
-
+        return results;
+    }
 }

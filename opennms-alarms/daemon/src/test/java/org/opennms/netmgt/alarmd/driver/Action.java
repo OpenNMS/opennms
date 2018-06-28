@@ -26,25 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.alarmd.driver;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Date;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
-import org.opennms.netmgt.model.OnmsAlarm;
+public interface Action {
+    Date getTime();
 
-public interface AlarmDataStore {
-
-    boolean isEnabled();
-
-    boolean isReady();
-
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
-
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
-
-    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
-
+    void visit(ActionVisitor visitor);
 }

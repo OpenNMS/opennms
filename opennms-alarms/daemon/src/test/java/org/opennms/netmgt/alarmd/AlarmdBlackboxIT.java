@@ -1,0 +1,279 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+
+package org.opennms.netmgt.alarmd;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.core.IsNot.not;
+import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.acknowledged;
+import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+import org.opennms.netmgt.alarmd.driver.JUnitScenarioDriver;
+import org.opennms.netmgt.alarmd.driver.Scenario;
+import org.opennms.netmgt.alarmd.driver.ScenarioResults;
+import org.opennms.netmgt.alarmd.driver.State;
+import org.opennms.netmgt.model.OnmsSeverity;
+
+/**
+ * This test suite allows us to:
+ *  A) Define and play out scenarios using timestamped events and actions.
+ *  B) Playback the scenarios
+ *  C) Analyze the state of alarms at various points in time.
+ *  D) Analyze the state changes of a particular alarm over time.
+ *
+ * Using these tools we can validate the behavior of the alarms in various scenarios
+ * without worrying about the underlying mechanics.
+ *
+ * @author jwhite
+ */
+public class AlarmdBlackboxIT {
+
+    /**
+     * Verifies the basic life-cycle of a trigger, followed by a clear.
+     *
+     * Indirectly verifies the cosmicClear and cleanUp automations.
+     */
+    @Test
+    public void canTriggerAndClearAlarm() {
+        Scenario scenario = Scenario.builder()
+                .withNodeDownEvent(1, 1)
+                .withNodeUpEvent(2, 1)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
+        // t=2, a (cleared) problem and a resolution
+        assertThat(results.getAlarms(2), hasSize(2));
+        assertThat(results.getProblemAlarm(2), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getResolutionAlarm(2), hasSeverity(OnmsSeverity.NORMAL));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
+
+        // Now verify the state changes for the particular alarms
+
+        // the problem
+        List<State> problemStates = results.getStateChangesForAlarmWithId(results.getProblemAlarm(1).getId());
+        assertThat(problemStates, hasSize(3)); // warning, cleared, deleted
+        // state 0 at t=1
+        assertThat(problemStates.get(0).getTime(), equalTo(1L));
+        assertThat(problemStates.get(0).getAlarm(), hasSeverity(OnmsSeverity.MAJOR));
+        // state 1 at t=2
+        assertThat(problemStates.get(1).getTime(), equalTo(2L));
+        assertThat(problemStates.get(1).getAlarm(), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(problemStates.get(1).getAlarm().getCounter(), equalTo(1));
+        // state 2 at t in [5m2ms, 10m]
+        assertThat(problemStates.get(2).getTime(), greaterThanOrEqualTo(2L + TimeUnit.MINUTES.toMillis(5)));
+        assertThat(problemStates.get(2).getTime(), lessThan(TimeUnit.MINUTES.toMillis(10)));
+        assertThat(problemStates.get(2).getAlarm(), nullValue()); // DELETED
+
+        // the resolution
+        List<State> resolutionStates = results.getStateChangesForAlarmWithId(results.getResolutionAlarm(2).getId());
+        assertThat(resolutionStates, hasSize(2)); // cleared, deleted
+        // state 0 at t=2
+        assertThat(resolutionStates.get(0).getTime(), equalTo(2L));
+        assertThat(resolutionStates.get(0).getAlarm(), hasSeverity(OnmsSeverity.NORMAL));
+        // state 1 at t in [5m2ms, 10m]
+        assertThat(resolutionStates.get(1).getTime(), greaterThanOrEqualTo(2L + TimeUnit.MINUTES.toMillis(5)));
+        assertThat(resolutionStates.get(1).getTime(), lessThan(TimeUnit.MINUTES.toMillis(10)));
+        assertThat(resolutionStates.get(1).getAlarm(), nullValue()); // DELETED
+    }
+
+
+    /**
+     * Indirectly verifies the cosmicClear, unclear and GC automations.
+     */
+    @Test
+    public void canFlapAlarm() {
+        Scenario scenario = Scenario.builder()
+                .withNodeDownEvent(1, 1)
+                .withNodeUpEvent(2, 1)
+                .withNodeDownEvent(3, 1)
+                .withNodeUpEvent(4, 1)
+                .withNodeDownEvent(5, 1)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm
+        assertThat(results.getAlarms(1), hasSize(1));
+        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(1).getCounter(), equalTo(1));
+        // t=2, a (cleared) problem and a resolution
+        assertThat(results.getAlarms(2), hasSize(2));
+        assertThat(results.getProblemAlarm(2), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getProblemAlarm(2).getCounter(), equalTo(1));
+        assertThat(results.getResolutionAlarm(2), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(2).getCounter(), equalTo(1));
+        // t=3, a (re-armed) problem and a resolution
+        assertThat(results.getAlarms(3), hasSize(2));
+        assertThat(results.getProblemAlarm(3), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(3).getCounter(), equalTo(2));
+        assertThat(results.getResolutionAlarm(3), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(3).getCounter(), equalTo(1));
+        // t=4, a (cleared) problem and a resolution
+        assertThat(results.getAlarms(4), hasSize(2));
+        assertThat(results.getProblemAlarm(4), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getProblemAlarm(4).getCounter(), equalTo(2));
+        assertThat(results.getResolutionAlarm(4), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(4).getCounter(), equalTo(2));
+        // t=5, a (re-armed) problem and a resolution
+        assertThat(results.getAlarms(5), hasSize(2));
+        assertThat(results.getProblemAlarm(5), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(5).getCounter(), equalTo(3));
+        assertThat(results.getResolutionAlarm(5), hasSeverity(OnmsSeverity.NORMAL));
+        assertThat(results.getResolutionAlarm(5).getCounter(), equalTo(2));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
+    }
+
+    /**
+     * Verifies the basic life-cycle of a trigger, followed by a clear.
+     *
+     * Indirectly verifies the cosmicClear and fullCleanUp automations.
+     */
+    @Test
+    public void canTriggerAcknowledgeAndClearAlarm() {
+        Scenario scenario = Scenario.builder()
+                .withNodeDownEvent(1, 1)
+                .withAcknowledgmentForNodeDownAlarm(2, 1)
+                .withNodeUpEvent(3, 1)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm that is not yet acknowledged
+        assertThat(results.getAlarms(1), hasSize(1));
+        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(1), not(acknowledged()));
+        // t=2, a single problem alarm that is acknowledged
+        assertThat(results.getAlarms(2), hasSize(1));
+        assertThat(results.getProblemAlarm(2), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(2), acknowledged());
+        // t=3, a (acknowledged & cleared) problem and a resolution
+        assertThat(results.getAlarms(3), hasSize(2));
+        assertThat(results.getProblemAlarm(3), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(results.getProblemAlarm(3), acknowledged());
+        assertThat(results.getResolutionAlarm(3), hasSeverity(OnmsSeverity.NORMAL));
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
+
+        // Now verify the state changes for the particular alarms
+
+        // the problem
+        List<State> problemStates = results.getStateChangesForAlarmWithId(results.getProblemAlarm(1).getId());
+        assertThat(problemStates, hasSize(4)); // major, major+acked, cleared+acked, deleted
+        // state 0 at t=1
+        assertThat(problemStates.get(0).getTime(), equalTo(1L));
+        assertThat(problemStates.get(0).getAlarm(), hasSeverity(OnmsSeverity.MAJOR));
+        // state 1 at t=2
+        assertThat(problemStates.get(1).getTime(), equalTo(2L));
+        assertThat(problemStates.get(1).getAlarm(), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(problemStates.get(1).getAlarm(), acknowledged());
+        // state 2 at t=3
+        assertThat(problemStates.get(2).getTime(), equalTo(3L));
+        assertThat(problemStates.get(2).getAlarm(), hasSeverity(OnmsSeverity.CLEARED));
+        assertThat(problemStates.get(2).getAlarm(), acknowledged());
+        // state 3 at t in [23h,25h]
+        assertThat(problemStates.get(3).getTime(), greaterThanOrEqualTo(TimeUnit.HOURS.toMillis(23)));
+        assertThat(problemStates.get(3).getTime(), lessThan(TimeUnit.HOURS.toMillis(25)));
+        assertThat(problemStates.get(3).getAlarm(), nullValue()); // DELETED
+    }
+
+    /**
+     * Verifies the basic life-cycle of a trigger, followed by a clear.
+     *
+     * Indirectly verifies the fullGC automation.
+     */
+    @Test
+    public void canTriggerAndAcknowledgeAlarm() {
+        Scenario scenario = Scenario.builder()
+                .withNodeDownEvent(1, 1)
+                .withAcknowledgmentForNodeDownAlarm(2, 1)
+                .build();
+        ScenarioResults results = play(scenario);
+
+        // Verify the set of alarms at various points in time
+
+        // t=0, no alarms
+        assertThat(results.getAlarms(0), hasSize(0));
+        // t=1, a single problem alarm that is not yet acknowledged
+        assertThat(results.getAlarms(1), hasSize(1));
+        assertThat(results.getProblemAlarm(1), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(1), not(acknowledged()));
+        // t=2, a single problem alarm that is acknowledged
+        assertThat(results.getAlarms(2), hasSize(1));
+        assertThat(results.getProblemAlarm(2), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(results.getProblemAlarm(2), acknowledged());
+        // t=∞
+        assertThat(results.getAlarmsAtLastKnownTime(), hasSize(0));
+
+        // Now verify the state changes for the particular alarms
+
+        // the problem
+        List<State> problemStates = results.getStateChangesForAlarmWithId(results.getProblemAlarm(1).getId());
+        assertThat(problemStates, hasSize(3)); // major, major+acked, deleted
+        // state 0 at t=1
+        assertThat(problemStates.get(0).getTime(), equalTo(1L));
+        assertThat(problemStates.get(0).getAlarm(), hasSeverity(OnmsSeverity.MAJOR));
+        // state 1 at t=2
+        assertThat(problemStates.get(1).getTime(), equalTo(2L));
+        assertThat(problemStates.get(1).getAlarm(), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(problemStates.get(1).getAlarm(), acknowledged());
+        // state 2 at t in [7d,9d]
+        assertThat(problemStates.get(2).getTime(), greaterThanOrEqualTo(TimeUnit.DAYS.toMillis(2)));
+        assertThat(problemStates.get(2).getTime(), lessThan(TimeUnit.DAYS.toMillis(9)));
+        assertThat(problemStates.get(2).getAlarm(), nullValue()); // DELETED
+    }
+
+    private ScenarioResults play(Scenario scenario) {
+        JUnitScenarioDriver driver = new JUnitScenarioDriver();
+        return driver.run(scenario);
+    }
+
+}

@@ -29,23 +29,36 @@
 package org.opennms.netmgt.alarmd;
 
 import static com.jayway.awaitility.Awaitility.await;
-import static java.util.concurrent.TimeUnit.MINUTES;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
+import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasCounter;
+import static org.opennms.netmgt.alarmd.driver.AlarmMatchers.hasSeverity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.restrictions.EqRestriction;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -53,8 +66,8 @@ import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.vacuumd.Vacuumd;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,9 +93,12 @@ import org.springframework.transaction.support.TransactionTemplate;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml"
 })
-@JUnitConfigurationEnvironment
+@JUnitConfigurationEnvironment(systemProperties={
+        // Reduce the default snapshot interval so that the tests can finish in a reasonable time
+        AlarmLifecycleListenerManager.ALARM_SNAPSHOT_INTERVAL_MS_SYS_PROP+"=5000"
+})
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)
-public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDatabase> {
+public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<MockDatabase>, AlarmLifecycleListener {
 
     @Autowired
     private Alarmd m_alarmd;
@@ -102,15 +118,25 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
     @Autowired
     private TransactionTemplate transactionTemplate;
 
+    @Autowired
+    private AlarmLifecycleListenerManager m_alarmLifecycleListenerManager;
+
     private MockDatabase m_database;
 
-    @Override
-    public void setTemporaryDatabase(final MockDatabase database) {
-        m_database = database;
+    private List<List<OnmsAlarm>> m_snapshots = new ArrayList<>();
+    private List<OnmsAlarm> m_newOrUpdatedAlarms = new ArrayList<>();
+    private List<String> m_deletedAlarms = new ArrayList<>();
+    private Map<String, OnmsAlarm> m_alarmsByReductionKey = new HashMap<>();
+
+    @BeforeClass
+    public static void setUpClass() {
+        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
+        // Async.
+        m_eventMgr.setSynchronous(false);
 
         // Events need database IDs to make alarmd happy
         m_eventMgr.setEventWriter(m_database);
@@ -120,100 +146,53 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         node.setId(1);
         m_nodeDao.save(node);
 
-        Vacuumd.destroySingleton();
-        Vacuumd vacuumd = Vacuumd.getSingleton();
-        vacuumd.setEventManager(m_eventMgr);
-        vacuumd.init();
-        vacuumd.start();
+        // Register!
+        m_alarmLifecycleListenerManager.onListenerRegistered(this, Collections.emptyMap());
+
+        // Fire it up
+        m_alarmd.start();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         m_alarmd.destroy();
     }
 
     @Test
-    public void canGenerateAlarmLifecycleEvents() {
-        // Expect an alarmCreated event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
+    public void canIssueCreateAndUpdateCallbacks() throws Exception {
         // Send a nodeDown
         sendNodeDownEvent(1);
-
-        // Wait until we've received the alarmCreated event
-        await().until(allAnticipatedEventsWereReceived());
-
-        // Expect an alarmUpdatedWithReducedEvent event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
+        await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(getNodeDownAlarmFor(1).call(), hasCounter(1));
 
         // Send another nodeDown
         sendNodeDownEvent(1);
-        
-        // Wait until we've received the alarmUpdatedWithReducedEvent event
-        await().until(allAnticipatedEventsWereReceived());
-
-        // Expect an alarmCreated and a alarmCleared event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
+        await().until(getNodeDownAlarmFor(1), hasCounter(2));
+        assertThat(getNodeDownAlarmFor(1).call(), hasSeverity(OnmsSeverity.MAJOR));
 
         // Send a nodeUp
         sendNodeUpEvent(1);
-
-        // Wait until we've received the alarmCreated and alarmCleared events
-        // We need to wait for the cosmicClear automation, which currently runs every 30 seconds
-        await().atMost(1, MINUTES).until(allAnticipatedEventsWereReceived());
-
-        // Expect an alarmUncleared event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UNCLEARED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
+        await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.CLEARED));
+        await().until(getNodeUpAlarmFor(1), hasSeverity(OnmsSeverity.NORMAL));
 
         // Send another nodeDown
         sendNodeDownEvent(1);
-
-        // Wait until we've received the alarmUncleared event
-        // We need to wait for the unclear automation, which currently runs every 30 seconds
-        await().atMost(1, MINUTES).until(allAnticipatedEventsWereReceived());
+        await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.MAJOR));
+        assertThat(getNodeDownAlarmFor(1).call(), hasCounter(3));
     }
 
     @Test
-    public void canGenerateAlarmDeletedLifecycleEvents() {
-        // Expect an alarmCreated event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
+    public void canIssueDeleteCallbacks() {
         // Send a nodeDown
         sendNodeDownEvent(1);
-
-        // Wait until we've received the alarmCreated event
-        await().until(allAnticipatedEventsWereReceived());
-
-        // Expect an alarmCreated and a alarmCleared event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CLEARED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
+        await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.MAJOR));
 
         // Send a nodeUp
         sendNodeUpEvent(1);
+        await().until(getNodeDownAlarmFor(1), hasSeverity(OnmsSeverity.CLEARED));
 
-        // Wait until we've received the alarmCreated and alarmCleared events
-        // We need to wait for the cosmicClear automation, which currently runs every 30 seconds
-        await().atMost(1, MINUTES).until(allAnticipatedEventsWereReceived());
-
-        // Expect an alarmDeleted event
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_DELETED_EVENT_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
-        // We need to wait for the cleanUp automation, which currently runs every 60 seconds
-        // but it will only trigger then 'lastautomationtime' and 'lasteventtime' < "5 minutes ago"
+        // We need to wait for the cleanUp automation which triggers when:
+        //  'lastautomationtime' and 'lasteventtime' < "5 minutes ago"
         // so we cheat a little and update the timestamps ourselves instead of waiting
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
@@ -232,17 +211,13 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
             }
         });
 
-        // Wait until we've received the alarmDeleted event
-        await().atMost(2, MINUTES).until(allAnticipatedEventsWereReceived());
+        await().until(getNodeDownAlarmFor(1), nullValue());
     }
 
-    public Callable<Boolean> allAnticipatedEventsWereReceived() {
-        return new Callable<Boolean>() {
-            @Override
-            public Boolean call() throws Exception {
-                return m_eventMgr.getEventAnticipator().getAnticipatedEvents().isEmpty();
-            }
-        };
+    @Test
+    public void canIssueAlarmSnapshots() {
+        // Wait for a snapshot
+        await().until(() -> m_snapshots, hasSize(greaterThanOrEqualTo(1)));
     }
 
     private void sendNodeUpEvent(long nodeId) {
@@ -250,12 +225,12 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         Date currentTime = new Date();
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
-        builder.setSeverity("Normal");
+        builder.setSeverity(OnmsSeverity.NORMAL.getLabel());
 
         AlarmData data = new AlarmData();
         data.setAlarmType(2);
-        data.setReductionKey(String.format("%s:%d", EventConstants.NODE_UP_EVENT_UEI, nodeId));
-        data.setClearKey(String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId));
+        data.setReductionKey(reductionKeyForNodeUp(nodeId));
+        data.setClearKey(reductionKeyForNodeDown(nodeId));
         builder.setAlarmData(data);
 
         builder.setLogDest("logndisplay");
@@ -269,16 +244,61 @@ public class AlarmLifecycleEventsIT implements TemporaryDatabaseAware<MockDataba
         Date currentTime = new Date();
         builder.setTime(currentTime);
         builder.setNodeid(nodeId);
-        builder.setSeverity("Major");
+        builder.setSeverity(OnmsSeverity.MAJOR.getLabel());
 
         AlarmData data = new AlarmData();
         data.setAlarmType(1);
-        data.setReductionKey(String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId));
+        data.setReductionKey(reductionKeyForNodeDown(nodeId));
         builder.setAlarmData(data);
 
         builder.setLogDest("logndisplay");
         builder.setLogMessage("testing");
 
         m_eventMgr.sendNow(builder.getEvent());
+    }
+
+    private String reductionKeyForNodeDown(long nodeId) {
+        return String.format("%s:%d", EventConstants.NODE_DOWN_EVENT_UEI, nodeId);
+    }
+
+    private String reductionKeyForNodeUp(long nodeId) {
+        return String.format("%s:%d", EventConstants.NODE_UP_EVENT_UEI, nodeId);
+    }
+
+    private Callable<OnmsAlarm> getNodeDownAlarmFor(long nodeId) {
+        return () -> m_alarmsByReductionKey.get(reductionKeyForNodeDown(nodeId));
+    }
+
+    private Callable<OnmsAlarm> getNodeUpAlarmFor(long nodeId) {
+        return () -> m_alarmsByReductionKey.get(reductionKeyForNodeUp(nodeId));
+    }
+    @Override
+    public synchronized void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
+        m_snapshots.add(alarms);
+        /* Don't actually update the map since we want to make sure that the
+           values are updated through the other callbacks.
+        alarms.forEach(a -> m_alarmsByReductionKey.put(a.getReductionKey(), a));
+        // Remove entries for alarms that are in the map, but not in the given list
+        Sets.newHashSet(Sets.difference(m_alarmsByReductionKey.keySet(),
+                alarms.stream().map(OnmsAlarm::getReductionKey).collect(Collectors.toSet())))
+                .forEach(r -> m_alarmsByReductionKey.remove(r));
+       */
+    }
+
+    @Override
+    public synchronized void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
+        m_newOrUpdatedAlarms.add(alarm);
+        m_alarmsByReductionKey.put(alarm.getReductionKey(), alarm);
+    }
+
+    @Override
+    public synchronized void handleDeletedAlarm(int alarmId, String reductionKey) {
+        m_deletedAlarms.add(reductionKey);
+        m_alarmsByReductionKey.remove(reductionKey);
+    }
+
+    @Override
+    public void setTemporaryDatabase(final MockDatabase database) {
+        m_database = database;
     }
 }
