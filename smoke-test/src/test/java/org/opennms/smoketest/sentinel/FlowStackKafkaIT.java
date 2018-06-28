@@ -28,9 +28,11 @@
 
 package org.opennms.smoketest.sentinel;
 
+import org.junit.Ignore;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via kafka
+@Ignore
 public class FlowStackKafkaIT extends AbstractFlowIT {
 
     @Override

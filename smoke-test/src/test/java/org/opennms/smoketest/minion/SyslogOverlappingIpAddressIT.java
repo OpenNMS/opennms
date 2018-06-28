@@ -35,6 +35,7 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import java.util.Date;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
@@ -58,6 +59,7 @@ import com.google.common.collect.ImmutableList;
  *
  * @author fooker
  */
+@Ignore
 public class SyslogOverlappingIpAddressIT extends AbstractSyslogTestCase {
     /**
      * Override this method to customize the test environment.
