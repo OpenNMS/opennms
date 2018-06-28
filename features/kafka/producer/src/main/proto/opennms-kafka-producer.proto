@@ -95,6 +95,23 @@ message SnmpInterface {
   string if_alias = 10;
 }
 
+message HwAlias {
+  uint32 index = 1;
+  string oid = 2;
+}
+
+message HwEntity {
+  uint32 entPhysicalIndex = 1;
+  uint32 entityId = 2;
+  string entPhysicalClass = 3;
+  string entPhysicalDescr = 4;
+  bool entPhysicalIsFRU = 5;
+  string entPhysicalName = 6;
+  string entPhysicalVendorType = 7;
+  repeated HwAlias entHwAlias = 8;
+  repeated HwEntity children = 9;
+}
+
 message Node {
   uint64 id = 1;
   string foreign_source = 2;
@@ -108,4 +125,5 @@ message Node {
   string sys_object_id = 10;
   repeated IpInterface ip_interface = 11;
   repeated SnmpInterface snmp_interface = 12;
+  HwEntity inventory = 13;
 }

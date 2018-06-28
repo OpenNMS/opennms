@@ -53,7 +53,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @Table(name="hwEntityAlias")
 @XmlAccessorType(XmlAccessType.NONE)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class OnmsEntityAlias implements Serializable, Comparable<OnmsEntityAlias> {
+public class OnmsHwEntityAlias implements Serializable, Comparable<OnmsHwEntityAlias> {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -2863137645849222221L;
@@ -73,7 +73,7 @@ public class OnmsEntityAlias implements Serializable, Comparable<OnmsEntityAlias
     /**
      * The Constructor.
      */
-    public OnmsEntityAlias() {
+    public OnmsHwEntityAlias() {
     }
 
     /**
@@ -82,7 +82,7 @@ public class OnmsEntityAlias implements Serializable, Comparable<OnmsEntityAlias
      * @param index the alias index
      * @param oid the alias oid 
      */
-    public OnmsEntityAlias(Integer index, String oid) {
+    public OnmsHwEntityAlias(Integer index, String oid) {
         super();
         this.m_index = index;
         this.m_oid = oid;
@@ -160,7 +160,7 @@ public class OnmsEntityAlias implements Serializable, Comparable<OnmsEntityAlias
 
     @Override
     public String toString() {
-        ToStringBuilder b = new ToStringBuilder(OnmsEntityAlias.class.getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE);
+        ToStringBuilder b = new ToStringBuilder(OnmsHwEntityAlias.class.getSimpleName(), ToStringStyle.SHORT_PREFIX_STYLE);
         if (m_hwEntity != null) {
             b.append("entity", m_hwEntity.getEntPhysicalIndex());
         }
@@ -181,14 +181,14 @@ public class OnmsEntityAlias implements Serializable, Comparable<OnmsEntityAlias
     @Override
     public boolean equals(Object obj) {
         if (obj == null) return false;
-        if (obj instanceof OnmsEntityAlias) {
+        if (obj instanceof OnmsHwEntityAlias) {
             return toString().equals(obj.toString());
         }
         return false;
     }
 
     @Override
-    public int compareTo(OnmsEntityAlias o) {
+    public int compareTo(OnmsHwEntityAlias o) {
         if (o == null) return -1;
         return toString().compareTo(o.toString());
     }

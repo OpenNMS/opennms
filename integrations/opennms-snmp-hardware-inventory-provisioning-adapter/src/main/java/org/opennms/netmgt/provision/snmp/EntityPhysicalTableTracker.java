@@ -36,7 +36,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.opennms.netmgt.model.HwEntityAttributeType;
-import org.opennms.netmgt.model.OnmsEntityAlias;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.snmp.RowCallback;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -61,7 +61,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
     private List<OnmsHwEntity> entities = new ArrayList<>();
 
     /** The entity aliases. */
-    private Map<Integer, SortedSet<OnmsEntityAlias>> aliases = new HashMap<>();
+    private Map<Integer, SortedSet<OnmsHwEntityAlias>> aliases = new HashMap<>();
 
     /** The vendor attributes. */
     private Map<SnmpObjId, HwEntityAttributeType> vendorAttributes;
@@ -137,7 +137,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
         int[] instance = row.getInstance().getIds();
         int entAliasEntry = instance[0];
         int entAliasIndex = instance[1];
-        SortedSet<OnmsEntityAlias> aliasSet = aliases.get(entAliasEntry);
+        SortedSet<OnmsHwEntityAlias> aliasSet = aliases.get(entAliasEntry);
         if (aliasSet == null) {
             aliasSet = new TreeSet<>();
             aliases.put(entAliasEntry, aliasSet);
@@ -146,7 +146,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
             if (!EntityPhysicalTableRow.entAliasMappingTable.equals(result.getBase())) {
                 throw new IllegalStateException("Result is not an entAlias result: " + result);
             }
-            aliasSet.add(new OnmsEntityAlias(entAliasIndex, result.getValue().toString()));
+            aliasSet.add(new OnmsHwEntityAlias(entAliasIndex, result.getValue().toString()));
             LOG.debug("rowCompleted from entAliasMappingTable: found entry {} index: {} oid: {}", entAliasEntry,  entAliasIndex, result.getValue());
         }
     }
