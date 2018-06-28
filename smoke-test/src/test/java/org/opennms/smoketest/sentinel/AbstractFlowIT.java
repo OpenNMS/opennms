@@ -134,14 +134,19 @@ public abstract class AbstractFlowIT {
     }
 
     private void waitForSentinelStartup(InetSocketAddress sentinelSshAddress) throws Exception {
-        try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
-            final PrintStream pipe = sshClient.openShell();
-
-            // Ensure we are actually started the sink and are ready to listen for messages
-            await().atMost(5, MINUTES)
-                    .pollInterval(5, SECONDS)
-                    .until(() -> {
+        // Ensure we are actually started the sink and are ready to listen for messages
+        await().atMost(5, MINUTES)
+                .pollInterval(5, SECONDS)
+                .until(() -> {
+                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
+                        final PrintStream pipe = sshClient.openShell();
                         pipe.println("log:display");
+                        pipe.println("logout");
+
+                        // Wait for karaf to process the commands
+                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+
+                        // Read stdout and verify
                         final String shellOutput = sshClient.getStdout();
                         final String sentinelReadyString = getSentinelReadyString();
                         final boolean routeStarted = shellOutput.contains(sentinelReadyString);
@@ -149,11 +154,10 @@ public abstract class AbstractFlowIT {
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
                         return routeStarted;
-                    });
-            logger.info("logout");
-            pipe.println("logout");
-            await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-        }
+                    } catch (Exception ex) {
+                        logger.error("Error while trying to verify sentinel startup: {}", ex.getMessage());
+                        return false;
+                    }
+                });
     }
-
 }
