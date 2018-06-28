@@ -29,6 +29,7 @@
 package org.opennms.core.ipc.rpc.kafka;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
@@ -48,6 +49,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.PartitionInfo;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
@@ -61,6 +63,7 @@ import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
+import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,23 +104,27 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 // Wrap an empty future for response and add it to response map.
                 final CompletableFuture<String> responseFuture = new CompletableFuture<>();
                 rpcResponseMap.put(rpcId, responseFuture);
+                // Create consumers for response before sending any request
+                createKafkaConsumerForModule(module.getId());
                 RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.newBuilder()
                                                             .setRpcId(rpcId)
                                                             .setRpcContent(ByteString.copyFromUtf8(marshalledRequest))
                                                             .build();
-
-                final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
-                        rpcMessage.toByteArray());
-                producer.send(record);
-                LOG.debug("RPC Request {} sent to minion at location {}", request.toString(), request.getLocation());
-                final JmsQueueNameFactory topicNames = new JmsQueueNameFactory("rpc-response", module.getId());
-                String responseTopicName = topicNames.getName();
-                if (consumerMap.get(responseTopicName) == null) {
-                    KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-                    KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopicName);
-                    consumerMap.put(responseTopicName, kafkaConsumerRunner);
-                    executor.execute(kafkaConsumerRunner);
+                if (module.getId().equals(EchoRpcModule.RPC_MODULE_ID)) {
+                    List<PartitionInfo> partitionInfo = producer.partitionsFor(requestTopic);
+                    partitionInfo.stream().forEach(partition -> {
+                        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
+                                partition.partition(), request.getSystemId(), rpcMessage.toByteArray());
+                        producer.send(record);
+                        LOG.debug("EchoRequest sent to partition {} at location {}", partition.partition(), request.getLocation());
+                    });
+                } else {
+                    final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
+                            rpcMessage.toByteArray());
+                    producer.send(record);
+                    LOG.debug("RPC Request {} sent to minion at location {}", request.toString(), request.getLocation());
                 }
+
                 String response = null;
                 long timeout = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs().longValue()
                         : TIMEOUT_FOR_KAFKA_RPC;
@@ -133,18 +140,31 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 } catch (TimeoutException e2) {
                     LOG.error(" RPC Request {} timed out, no response from minion", request.toString(), e2);
                     rpcResponseFuture.completeExceptionally(e2);
+                } finally {
+                    rpcResponseMap.remove(rpcMessage.getRpcId());
                 }
                 T rpcResponse = null;
                 if (response != null) {
                     rpcResponse = module.unmarshalResponse(response);
                     rpcResponseFuture.complete(rpcResponse);
-                    LOG.debug("RPC Request {} received response {} ", request.toString(), rpcResponse.toString());
                 }
                 Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 return rpcResponseFuture;
             }
         };
 
+    }
+
+    private synchronized void createKafkaConsumerForModule(String moduleId) {
+        final JmsQueueNameFactory topicNames = new JmsQueueNameFactory("rpc-response", moduleId);
+        String responseTopicName = topicNames.getName();
+        if (consumerMap.get(responseTopicName) == null) {
+            KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+            KafkaConsumerRunner kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer, responseTopicName);
+            consumerMap.put(responseTopicName, kafkaConsumerRunner);
+            executor.execute(kafkaConsumerRunner);
+            LOG.info("started consumer for {}", responseTopicName);
+        }
     }
 
     public void setLocation(String location) {
@@ -182,8 +202,8 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
     private class KafkaConsumerRunner implements Runnable {
         private final KafkaConsumer<String, byte[]> consumer;
-        private final AtomicBoolean closed = new AtomicBoolean(false);
         private final String topic;
+        private final AtomicBoolean closed = new AtomicBoolean(false);
 
         public KafkaConsumerRunner(KafkaConsumer<String, byte[]> consumer, String topic) {
             this.consumer = consumer;
@@ -194,34 +214,37 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public void run() {
             try {
                 consumer.subscribe(Arrays.asList(topic));
+                LOG.info("subscribed to topic {}", topic);
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
                         RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
                         // Get future from rpc Id and complete future.
                         CompletableFuture<String> future = rpcResponseMap.get(rpcMessage.getRpcId());
-                        future.complete(rpcMessage.getRpcContent().toStringUtf8());
-                        // completing response is enough.
-                        // Need to remove from map here as there is chance that waiting thread may have closed in a delayed response.
-                        rpcResponseMap.remove(rpcMessage.getRpcId());
+                        if (future != null) {
+                            future.complete(rpcMessage.getRpcContent().toStringUtf8());
+                            LOG.debug("Received response {}", rpcMessage.getRpcContent().toStringUtf8());
+                        }
                     }
                 }
             } catch (WakeupException e) {
+                LOG.error("wakeup exception", e);
                 // Ignore exception if closing
                 if (!closed.get()) {
                     throw e;
                 }
             } catch (InvalidProtocolBufferException e) {
                 // No way to correlate this with request, will end up as Timeout exception
-                LOG.error(" Error while parsing response", e);
-     
+                LOG.error("Error while parsing response", e);
             } finally {
+                LOG.info("closing consumer for topic {}", topic);
                 consumer.close();
             }
             
         }
 
         public void stop() {
+            LOG.info("stopping consumer for topic {} ", topic);
             closed.set(true);
             consumer.wakeup();
         }
