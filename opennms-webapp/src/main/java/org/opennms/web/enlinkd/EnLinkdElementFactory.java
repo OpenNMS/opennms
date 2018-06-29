@@ -261,7 +261,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                       str(link.getOspfRemRouterId())));
             linknode.setOspfRemRouterUrl(getNodeUrl(remNodeid));
         } else {
-            linknode.setOspfRemRouterId(str(link.getOspfRemRouterId()));
+            linknode.setOspfRemRouterId(getIdString("router id",str(link.getOspfRemRouterId())));
         }
 
         String remipaddr = str(link.getOspfRemIpAddr());
@@ -345,8 +345,13 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                null));
         
         OnmsSnmpInterface snmpiface = m_snmpInterfaceDao.findByNodeIdAndIfIndex(nodeid, link.getCdpCacheIfIndex());
+        Set<OnmsIpInterface> ipifaces = snmpiface.getIpInterfaces();
         if (snmpiface != null) {
-            linknode.setCdpLocalPort(getPortString(snmpiface,null,null));
+            if (ipifaces.isEmpty() || ipifaces.size() > 1) {
+                linknode.setCdpLocalPort(getPortString(snmpiface,null,null));
+            } else {
+                linknode.setCdpLocalPort(getPortString(snmpiface,"ip",str(ipifaces.iterator().next().getIpAddress())));
+            }
             linknode.setCdpLocalPortUrl(getSnmpInterfaceUrl(nodeid,
                                                             link.getCdpCacheIfIndex()));
         }
@@ -873,8 +878,9 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     
     private String getIdString(String addrtype, String addr) {
-        StringBuffer sb = new StringBuffer("(");
+        StringBuffer sb = new StringBuffer("");
         if (addrtype != null ) {
+            sb.append("(");
             if ("ip".equals(addrtype)) {
                 sb.append(addr);
             } else if (addr == null) {
@@ -884,8 +890,8 @@ public class EnLinkdElementFactory implements InitializingBean,
                 sb.append(":");
                 sb.append(addr);
             }
+            sb.append(")");
         }
-        sb.append(")");
         return sb.toString();
     }
     

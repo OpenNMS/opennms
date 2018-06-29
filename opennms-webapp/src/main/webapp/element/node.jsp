@@ -638,73 +638,31 @@ function confirmAssetEdit() {
     </div>
   </c:if>
 
-</div>
-
   <!-- Bridge box if available -->
-  <c:if test="${! empty model.bridges}">
-    <c:forEach items="${model.bridges}" var="bridge">
+<c:if test="${! empty model.bridges}">
     <div class="panel panel-default">
     <div class="panel-heading">
-      <h3 class="panel-title">Bridge ${bridge.baseBridgeAddress} 
-  		<c:if test="${! empty bridge.vlanname}">
-  		  Vlan ${bridge.vlanname}
-  		</c:if>
-  		<c:if test="${! empty bridge.vlan}">
-  		 (vlanid ${bridge.vlan})
-  		</c:if>
-	  		(${bridge.baseNumPorts} port assigned)
-    </h3>
+      <h3 class="panel-title">Bridge Information</h3>
     </div>
-<c:if test="${bridge.baseNumPorts > 0}">
-    <table class="table table-condensed">
-      <tr>
-        <th>Base Type</th>
-        <td>${bridge.baseType}</td>
-      </tr>
- 	<c:if test="${! empty bridge.stpProtocolSpecification}">
-      <tr>
-        <th>STP Protocol Specification</th>
-        <td>${bridge.stpProtocolSpecification}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpPriority}">
-      <tr>
-        <th>STP Priority</th>
-        <td>${bridge.stpPriority}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpDesignatedRoot}">
-      <tr>
-        <th>STP Designated Root</th>
-        <td>${bridge.stpDesignatedRoot}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpRootCost}">
-      <tr>
-        <th>STP Root Cost</th>
-        <td>${bridge.stpRootCost}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpRootPort}">
-      <tr>
-        <th>STP Root Port</th>
-        <td>${bridge.stpRootPort}</td>
-      </tr>
-  	</c:if>
-      <tr>
-        <th>Create Time</th>
-        <td>${bridge.bridgeNodeCreateTime}</td>
-      </tr>
-      <tr>
-        <th>Last Poll Time</th>
-        <td>${bridge.bridgeNodeLastPollTime}</td>
-      </tr>
-    </table>
+<table class="table table-condensed">
+<c:forEach items="${model.bridges}" var="bridge">
+    <tr>
+    <th><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
+ 		 <c:if test="${! empty bridge.vlan}">(vlanid ${bridge.vlan})</c:if>
+   		 -> (${bridge.baseNumPorts} port assigned)
+   </th>
+   <td> baseAddress:${bridge.baseBridgeAddress} type:${bridge.baseType} 
+	 <c:if test="${! empty bridge.stpProtocolSpecification}">stpProtocolSpec:${bridge.stpProtocolSpecification}</c:if>
+ 	 <c:if test="${! empty bridge.stpPriority && bridge.stpPriority > 0}">Priority:${bridge.stpPriority}</c:if>
+ 	 <c:if test="${! empty bridge.stpDesignatedRoot}">DesignatedRoot:${bridge.stpDesignatedRoot}</c:if>
+ 	 <c:if test="${! empty bridge.stpRootPort && bridge.stpRootPort > 0}">RootPort:${bridge.stpRootPort}</c:if>
+ 	 <c:if test="${! empty bridge.stpRootCost && bridge.stpRootCost > 0}">RootCost:${bridge.stpRootCost}</c:if>
+   </tr>
+</c:forEach>
+</table>
+   </div>
 </c:if>
-    
-    </div>
-    </c:forEach>
-  </c:if>
+</div>
 
 <div class="col-md-6">
   

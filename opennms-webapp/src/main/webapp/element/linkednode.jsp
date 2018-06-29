@@ -126,7 +126,7 @@
 		<tr>
 		<th>Local Port</th> 
 		<th>Remote Port</th>
-		<th>Info</th>
+		<th>Vlan</th>
 		<th>Created</th>
 		<th>Last Poll</th>
 		
@@ -154,12 +154,15 @@
 	            <% } else { %> 
 		            <%=remote.getBridgeRemote()%>
     			<% } %> 
-    			&nbsp;
+    				</td>
+            		 <td>
          		<% if (remote.getBridgeRemotePortUrl() != null) { %>
             		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
-	            <% } else { %> 
+	            <% } else if (remote.getBridgeRemotePort() != null){ %> 
 		            <%=remote.getBridgeRemotePort()%>
-    			<% } %> 
+    			<% } else { %> 
+    				&nbsp;
+            	<% }%>
             	</td>
             	<tr>
             	<% }%>
@@ -271,7 +274,7 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
         <% } else { %> 
           <%=cdplink.getCdpCacheDevice()%>
    		<% } %> 
-   		%nbsp;
+   		&nbsp;
     <% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
           <a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
       <% } else { %> 
@@ -320,8 +323,8 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
      	<td>
     	<% if (ospflink.getOspfRemRouterUrl() != null) { %>
      		<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=ospflink.getOspfRemRouterId()%></a>
-    	<% } else { %> 
-`	    	<%=ospflink.getOspfRemRouterId()%>
+    	<% } else { %>
+	    	<%=ospflink.getOspfRemRouterId()%>
 		<% } %> 
 		&nbsp;
  		<% if (ospflink.getOspfRemPortUrl() != null) { %>
