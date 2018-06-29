@@ -192,6 +192,7 @@ public class KafkaRpcServerManager {
         public void run() {
             try {
                 consumer.subscribe(Arrays.asList(topic));
+                LOG.info("subscribed to topic {}", topic);
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(100);
                     for (ConsumerRecord<String, byte[]> record : records) {
