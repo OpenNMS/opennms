@@ -30,6 +30,7 @@ package org.opennms.web.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -63,6 +64,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
@@ -205,7 +207,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         if (snmpiface != null) {
             if (link.getOspfAddressLessIndex() > 0) {
                 linknode.setOspfLocalPort(getPortString(snmpiface,
-                                                        "address less", ""));
+                                                        "address less", null));
             } else {
                 linknode.setOspfLocalPort(getPortString(snmpiface, "ip",
                                                         ipaddr));
@@ -213,21 +215,21 @@ public class EnLinkdElementFactory implements InitializingBean,
             linknode.setOspfLocalPortUrl(getSnmpInterfaceUrl(nodeid,
                                                              snmpiface.getIfIndex()));
         } else if (link.getOspfAddressLessIndex() > 0) {
-            linknode.setOspfLocalPort(getPortString(null,link.getOspfAddressLessIndex(),
-                                                    "address less", ""));
+            linknode.setOspfLocalPort(getPortString(link.getOspfAddressLessIndex(),
+                                                    "address less", null));
         } else if (link.getOspfIfIndex() != null && ipaddr != null) {
-            linknode.setOspfLocalPort(getPortString(null,link.getOspfIfIndex(),
+            linknode.setOspfLocalPort(getPortString(link.getOspfIfIndex(),
                                                     "ip", ipaddr));
             linknode.setOspfLocalPortUrl(getIpInterfaceUrl(nodeid, ipaddr));
         } else if (ipaddr != null) {
-            linknode.setOspfLocalPort(getPortString(null,null,"ip", ipaddr));
+            linknode.setOspfLocalPort(getIdString("ip", ipaddr));
             linknode.setOspfLocalPortUrl(getIpInterfaceUrl(nodeid, ipaddr));
         }
 
         if (link.getOspfIpMask() != null) {
-            linknode.setOspfLinkInfo("mask:" + str(link.getOspfIpMask()));
+            linknode.setOspfLinkInfo(getIdString("mask", str(link.getOspfIpMask())));
         } else {
-            linknode.setOspfLinkInfo("No mask");
+            linknode.setOspfLinkInfo(getIdString("No mask",null));
         }
 
         linknode.setOspfLinkCreateTime(Util.formatDateToUIString(link.getOspfLinkCreateTime()));
@@ -281,7 +283,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         if (remsnmpiface != null) {
             if (link.getOspfRemAddressLessIndex() > 0) {
                 linknode.setOspfRemPort(getPortString(remsnmpiface,
-                                                      "address less", ""));
+                                                      "address less", null));
             } else {
                 linknode.setOspfRemPort(getPortString(remsnmpiface, "ip",
                                                       remipaddr));
@@ -289,10 +291,10 @@ public class EnLinkdElementFactory implements InitializingBean,
             linknode.setOspfRemPortUrl(getSnmpInterfaceUrl(remNodeid,
                                                            remsnmpiface.getIfIndex()));
         } else if (link.getOspfAddressLessIndex() > 0) {
-            linknode.setOspfRemPort(getPortString(null,link.getOspfRemAddressLessIndex(),
-                                                  "Address less", ""));
+            linknode.setOspfRemPort(getPortString(link.getOspfRemAddressLessIndex(),
+                                                  "address less", null));
         } else if (remipaddr != null) {
-            linknode.setOspfRemPort(getPortString(null,null,"ip",remipaddr));
+            linknode.setOspfRemPort(getIdString("ip",remipaddr));
             if (remNodeid != null) {
                 linknode.setOspfRemPortUrl(getIpInterfaceUrl(remNodeid, remipaddr));
             }
@@ -595,11 +597,11 @@ public class EnLinkdElementFactory implements InitializingBean,
                 : m_snmpInterfaceDao.findByNodeIdAndIfIndex(bridgePort.getNodeId(),
                                                             bridgePort.getBridgePortIfIndex());
         if (iface != null) {
-            linknode.setBridgeLocalPort(getPortString(iface,"bridge port", bridgePort.getBridgePort().toString()));
+            linknode.setBridgeLocalPort(getPortString(iface,"bridgeport", bridgePort.getBridgePort().toString()));
             linknode.setBridgeLocalPortUrl(getSnmpInterfaceUrl(bridgePort.getNodeId(),
           bridgePort.getBridgePortIfIndex()));
         } else {
-            linknode.setBridgeLocalPort(getPortString("port",bridgePort.getBridgePortIfIndex(),"bridge port", bridgePort.getBridgePort().toString()));
+            linknode.setBridgeLocalPort(getPortString("port",bridgePort.getBridgePortIfIndex(),"bridgeport", bridgePort.getBridgePort().toString()));
         }
         BridgeElement bridgeElement = m_bridgeElementDao.getByNodeIdVlan(bridgePort.getNodeId(), bridgePort.getVlan());
         if (bridgeElement != null) {
@@ -631,7 +633,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             return linknode;
         }
         
-        linknode.setBridgeLocalPort(getPortString(getIpListAsString(ipaddrs), null, "mac", mac));
+        linknode.setBridgeLocalPort(getPortString(getIpListAsStringFromIpInterface(ipaddrs), null, "mac", mac));
         return linknode;
     }
 
@@ -655,7 +657,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
             final BridgeElement remBridgeElement = m_bridgeElementDao.get(remport.getNodeId());
-            remlinknode.setBridgeRemote(getHostString(remBridgeElement.getNode().getLabel(), "bridge", remBridgeElement.getBaseBridgeAddress()));
+            remlinknode.setBridgeRemote(getHostString(remBridgeElement.getNode().getLabel(), "bridge base address", remBridgeElement.getBaseBridgeAddress()));
             remlinknode.setBridgeRemoteUrl(getNodeUrl(remport.getNodeId()));
 
             final OnmsSnmpInterface remiface = remport.getBridgePortIfIndex() == null
@@ -663,12 +665,12 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                                      : m_snmpInterfaceDao.findByNodeIdAndIfIndex(remport.getNodeId(),
                                                                                                                                  remport.getBridgePortIfIndex());
             if (remiface != null) {
-                remlinknode.setBridgeRemotePort(getPortString(remiface,"bridge port",remport.getBridgePort().toString()));
+                remlinknode.setBridgeRemotePort(getPortString(remiface,"bridgeport",remport.getBridgePort().toString()));
                 remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(remport.getNodeId(),
                                                                        remport.getBridgePortIfIndex()));
             } else {
                 remlinknode.setBridgeRemotePort(getPortString(null,remport.getBridgePortIfIndex(),
-                                                              "bridge port", remport.getBridgePort().toString()));
+                                                              "bridgeport", remport.getBridgePort().toString()));
             }
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }
@@ -698,6 +700,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 linknode.getBridgeLinkRemoteNodes().add(remlinknode);
                 continue;
             }
+
             List<OnmsIpInterface> remipaddrs = new ArrayList<OnmsIpInterface>();
             for (IpNetToMedia ipnettomedia : macsToIpNetTOMediaMap.get(sharedmac)) {
                 remipaddrs.addAll(m_ipInterfaceDao.findByIpAddress(ipnettomedia.getNetAddress().getHostAddress()));
@@ -705,6 +708,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             
             if (remipaddrs.size() == 0) { 
                 remlinknode.setBridgeRemote(getIdString("mac", sharedmac));
+                remlinknode.setBridgeRemotePort(getIpListAsStringFromIpNetToMedia(macsToIpNetTOMediaMap.get(sharedmac)));
                 linknode.getBridgeLinkRemoteNodes().add(remlinknode);
                 continue;
             }
@@ -732,7 +736,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 remlinknode.setBridgeRemote(labels.iterator().next());
                 remlinknode.setBridgeRemoteUrl(getNodeUrl(remipaddrs.iterator().next().getNodeId()));
             }
-            remlinknode.setBridgeRemotePort(getIpListAsString(ipaddrs));
+            remlinknode.setBridgeRemotePort(getIpListAsStringFromIpNetToMedia(macsToIpNetTOMediaMap.get(sharedmac)));
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }        
         return linknode;
@@ -818,6 +822,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         return null;
     }
 
+    
     private String getPortString(OnmsSnmpInterface snmpiface, String addrtype, String addr) {
         StringBuffer sb = new StringBuffer("");
         if (snmpiface != null) {
@@ -829,13 +834,9 @@ public class EnLinkdElementFactory implements InitializingBean,
             sb.append(snmpiface.getIfIndex());
             sb.append(")");
         }
-        if (addrtype != null) {
-            sb.append(addrtype);
-            sb.append(":");
-            sb.append(addr);
-        }
+       sb.append(getIdString(addrtype, addr));
        return sb.toString();
-    }
+    } 
 
     private String getPortString(String ifname, Integer ifindex, String addrtype,String addr) {
         StringBuffer sb = new StringBuffer("");
@@ -847,36 +848,49 @@ public class EnLinkdElementFactory implements InitializingBean,
             sb.append(ifindex);
             sb.append(")");
         }
-        if (addrtype != null) {
-            sb.append(addrtype);
-            sb.append(":");
-            sb.append(addr);
+        sb.append(getIdString(addrtype, addr));
+        return sb.toString();
+    }
+
+    private String getPortString(Integer ifindex, String addrtype,String addr) {
+        StringBuffer sb = new StringBuffer("");
+        if (ifindex != null) {
+            sb.append("(ifindex:");
+            sb.append(ifindex);
+            sb.append(")");
         }
-       return sb.toString();
+        sb.append(getIdString(addrtype, addr));
+        return sb.toString();
     }
 
     private String getHostString(String label, String addrtype, String addr) {
         StringBuffer sb = new StringBuffer(label);
         if (addrtype != null && !label.equals(addr)) {
-            sb.append(addrtype);
-            sb.append(":");
-            sb.append(addr);
+            sb.append(getIdString(addrtype, addr));
         }
         return sb.toString();
     }
 
+    
     private String getIdString(String addrtype, String addr) {
-        StringBuffer sb = new StringBuffer();
+        StringBuffer sb = new StringBuffer("(");
         if (addrtype != null ) {
-            sb.append(addrtype);
-            sb.append(":");
-            sb.append(addr);
+            if ("ip".equals(addrtype)) {
+                sb.append(addr);
+            } else if (addr == null) {
+                sb.append(addrtype);
+            } else {
+                sb.append(addrtype);
+                sb.append(":");
+                sb.append(addr);
+            }
         }
+        sb.append(")");
         return sb.toString();
     }
     
     private String getNodeUrl(Integer nodeid) {
-        return "element/node.jsp?node=" + nodeid;
+        return "element/linkednode.jsp?node=" + nodeid;
     }
 
     private String getSnmpInterfaceUrl(Integer nodeid, Integer ifindex) {
@@ -889,15 +903,38 @@ public class EnLinkdElementFactory implements InitializingBean,
     private String getIpInterfaceUrl(Integer nodeid, String ipaddress) {
         return "element/interface.jsp?node=" + nodeid + "&intf=" + ipaddress;
     }
-    
-    private String getIpListAsString(List<OnmsIpInterface> ipinterfaces) {
-        StringBuffer ips = new StringBuffer();
+        
+    private String getIpListAsStringFromIpInterface(List<OnmsIpInterface> ipinterfaces) {
+        StringBuffer sb = new StringBuffer("(");
+        boolean start = true;
         for (OnmsIpInterface ipiface: ipinterfaces) {
-            ips.append(str(ipiface.getIpAddress()));
-            ips.append(":");
+            if (start) {
+                start=false;
+            } else {
+                sb.append(":");
+            }
+            sb.append(str(ipiface.getIpAddress()));
         }
-        return ips.toString();
+        sb.append(")");
+        return sb.toString();
 
     }
+    
+    private String getIpListAsStringFromIpNetToMedia(List<IpNetToMedia> ipnettomedias) {
+        StringBuffer sb = new StringBuffer("(");
+        boolean start = true;
+        for (IpNetToMedia ipnettomedia: ipnettomedias) {
+            if (start) {
+                start=false;
+            } else {
+                sb.append(":");
+            }
+            sb.append(ipnettomedia.getNetAddress().getHostAddress());
+        }
+        sb.append(")");
+        return sb.toString();
+
+    }
+
 
 }

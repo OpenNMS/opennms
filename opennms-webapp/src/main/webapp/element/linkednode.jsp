@@ -29,6 +29,10 @@
 
 --%>
 
+<%@page import="org.opennms.web.enlinkd.IsisElementNode"%>
+<%@page import="org.opennms.web.enlinkd.OspfElementNode"%>
+<%@page import="org.opennms.web.enlinkd.CdpElementNode"%>
+<%@page import="org.opennms.web.enlinkd.LldpElementNode"%>
 <%@page import="java.util.Collection"%>
 <%@page import="org.opennms.core.utils.WebSecurityUtils"%>
 <%@page import="org.opennms.netmgt.model.OnmsNode"%>
@@ -73,6 +77,10 @@
 	Collection<CdpLinkNode> cdpLinks = enlinkdfactory.getCdpLinks(nodeId);
 	Collection<OspfLinkNode> ospfLinks = enlinkdfactory.getOspfLinks(nodeId);
 	Collection<IsisLinkNode> isisLinks = enlinkdfactory.getIsisLinks(nodeId);
+	LldpElementNode lldpelem = enlinkdfactory.getLldpElement(nodeId);
+	CdpElementNode cdpelem = enlinkdfactory.getCdpElement(nodeId);
+	OspfElementNode ospfelem = enlinkdfactory.getOspfElement(nodeId);
+	IsisElementNode isiselem = enlinkdfactory.getIsisElement(nodeId);
 %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
@@ -117,8 +125,7 @@
 	<thead>
 		<tr>
 		<th>Local Port</th> 
-		<th>Remote Hosts</th> 
-		<th>Remote Ports</th>
+		<th>Remote Port</th>
 		<th>Info</th>
 		<th>Created</th>
 		<th>Last Poll</th>
@@ -147,14 +154,13 @@
 	            <% } else { %> 
 		            <%=remote.getBridgeRemote()%>
     			<% } %> 
-            		</td>
-            		<td>
+    			&nbsp;
          		<% if (remote.getBridgeRemotePortUrl() != null) { %>
             		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
 	            <% } else { %> 
 		            <%=remote.getBridgeRemotePort()%>
     			<% } %> 
-            		</td>
+            	</td>
             	<tr>
             	<% }%>
             	</table>
@@ -183,7 +189,7 @@
 <%  if (lldpLinks.isEmpty()) { %>
 No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} LLDP Remote Table Links found by Enhanced Linkd
+${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
 		<!-- Link box -->
@@ -192,9 +198,8 @@ ${nodeLabel} LLDP Remote Table Links found by Enhanced Linkd
 	<thead>
 		<tr>
 		<th>Local Port</th> 
-		<th>Remote Chassis</th>
 		<th>Remote Port</th> 
-        <th>Remote Info</th>
+        <th>Info</th>
 		<th>Created</th>
 		<th>Last Poll</th>
 		</tr>
@@ -215,9 +220,8 @@ ${nodeLabel} LLDP Remote Table Links found by Enhanced Linkd
            <% } else { %> 
                    <%=lldplink.getLldpRemChassisId()%>
    			<% } %> 
-           </td>
-	    <td>
-	 	<% if (lldplink.getLldpRemPortUrl() != null) { %>
+   			&nbsp;
+    	<% if (lldplink.getLldpRemPortUrl() != null) { %>
            	<a href="<%=lldplink.getLldpRemPortUrl()%>"><%=lldplink.getLldpRemPort()%></a>
            <% } else { %> 
                    <%=lldplink.getLldpRemPort()%>
@@ -239,16 +243,15 @@ ${nodeLabel} LLDP Remote Table Links found by Enhanced Linkd
 <% if (cdpLinks.isEmpty()) { %>
 No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} CDP Cache Table Links found by Enhanced Linkd
+${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
 <table class="table table-condensed">		
 	<thead>
 	<tr>
 		<th>Local Port</th> 
-		<th>Remote Device</th>
-		<th>Remote Device Port</th> 
-        <th>Remote Platform Info</th>
+		<th>Remote Port</th>
+        <th>Info</th>
 		<th>Created</th>
 		<th>Last Poll</th>
 	</tr>
@@ -268,9 +271,8 @@ ${nodeLabel} CDP Cache Table Links found by Enhanced Linkd
         <% } else { %> 
           <%=cdplink.getCdpCacheDevice()%>
    		<% } %> 
-        </td>
-	    <td>
- 	  <% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
+   		%nbsp;
+    <% if (cdplink.getCdpCacheDevicePortUrl() != null) { %>
           <a href="<%=cdplink.getCdpCacheDevicePortUrl()%>"><%=cdplink.getCdpCacheDevicePort()%></a>
       <% } else { %> 
           <%=cdplink.getCdpCacheDevicePort()%>
@@ -291,7 +293,7 @@ ${nodeLabel} CDP Cache Table Links found by Enhanced Linkd
 <%   if (ospfLinks.isEmpty()) { %>
 No OSPF Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} OSPF Nbr Table Links found by Enhanced Linkd
+${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
 <table class="table table-condensed">
@@ -299,8 +301,7 @@ ${nodeLabel} OSPF Nbr Table Links found by Enhanced Linkd
 	<thead>
 	<tr>
 	<th>Local Port</th> 
-	<th>Remote Router </th>
-	<th>Remote Router Port</th>
+	<th>Remote Port</th>
 	<th>Info</th> 
 	<th>Created</th>
 	<th>Last Poll</th>
@@ -322,8 +323,7 @@ ${nodeLabel} OSPF Nbr Table Links found by Enhanced Linkd
     	<% } else { %> 
 `	    	<%=ospflink.getOspfRemRouterId()%>
 		<% } %> 
-       	</td>
-	    <td>
+		&nbsp;
  		<% if (ospflink.getOspfRemPortUrl() != null) { %>
      		<a href="<%=ospflink.getOspfRemPortUrl()%>"><%=ospflink.getOspfRemPort()%></a>
     	<% } else { %> 
@@ -348,7 +348,7 @@ ${nodeLabel} OSPF Nbr Table Links found by Enhanced Linkd
 <%   if (isisLinks.isEmpty()) { %>
 No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
-${nodeLabel} IS-IS Adj Table Links found by Enhanced Linkd
+${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
 		<!-- Link box -->
