@@ -548,6 +548,7 @@ function confirmAssetEdit() {
    	<tr>
    	<th width="50%"><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
    	    <c:if test="${! empty bridge.vlan}">(vlanid ${bridge.vlan})</c:if>
+   	    <c:if test="${empty bridge.vlan}">Default</c:if>
    	    (${bridge.baseNumPorts} port assigned)
    	</th>
     <td width="50%"> baseAddress:${bridge.baseBridgeAddress} type:${bridge.baseType} 

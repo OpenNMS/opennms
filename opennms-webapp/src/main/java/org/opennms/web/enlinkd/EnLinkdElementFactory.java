@@ -661,8 +661,12 @@ public class EnLinkdElementFactory implements InitializingBean,
                 continue;
             }
             final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-            final BridgeElement remBridgeElement = m_bridgeElementDao.get(remport.getNodeId());
-            remlinknode.setBridgeRemote(getHostString(remBridgeElement.getNode().getLabel(), "bridge base address", remBridgeElement.getBaseBridgeAddress()));
+            final BridgeElement remBridgeElement = m_bridgeElementDao.getByNodeIdVlan(remport.getNodeId(),remport.getVlan());
+            if (remBridgeElement != null) {
+                remlinknode.setBridgeRemote(getHostString(remBridgeElement.getNode().getLabel(), "bridge base address", remBridgeElement.getBaseBridgeAddress()));
+            } else {
+                remlinknode.setBridgeRemote(getIdString("nodeid", remport.getNodeId().toString()));
+            }
             remlinknode.setBridgeRemoteUrl(getNodeUrl(remport.getNodeId()));
 
             final OnmsSnmpInterface remiface = remport.getBridgePortIfIndex() == null
