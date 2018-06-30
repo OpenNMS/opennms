@@ -43,33 +43,38 @@ import javax.servlet.jsp.JspWriter;
 
 import org.junit.Test;
 import org.mockito.Mockito;
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.springframework.mock.web.MockJspWriter;
 
 public class DateTimeTagTest {
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx");
+        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+    }
+
+    @Test
+    public void shouldBeResilientAgainstNull() throws IOException {
+        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
     }
 
     @Test
     public void shouldHonorSystemSettings() throws IOException {
         String format = "yyy-MM-dd";
-        System.setProperty(DateTimeTag.SYSTEM_PROPERTY_DATE_FORMAT, format);
-        test(format);
-        System.clearProperty(DateTimeTag.SYSTEM_PROPERTY_DATE_FORMAT);
+        System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
+        test(format, null);
+        System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
     }
 
-    public void test(String expectedPattern) throws IOException {
-        Instant now = Instant.now();
+    public void test(String expectedPattern, Instant time) throws IOException {
         String output = DateTimeTagInvoker
                 .create()
-                .setInstant(now)
+                .setInstant(time)
                 .invokeAndGet();
         DateTimeFormatter formatter = DateTimeFormatter
                 .ofPattern(expectedPattern)
                 .withZone(ZoneId.systemDefault());
-        assertEquals(formatter.format(now), output);
+        assertEquals(formatter.format(time), output);
     }
 
     // Helper class to be able to test easier

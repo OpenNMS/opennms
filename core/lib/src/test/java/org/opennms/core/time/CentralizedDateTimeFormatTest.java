@@ -26,45 +26,43 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.tags;
+package org.opennms.core.time;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import javax.servlet.jsp.tagext.SimpleTagSupport;
+import org.junit.Test;
 
-import org.opennms.core.time.CentralizedDateTimeFormat;
+public class CentralizedDateTimeFormatTest {
 
-/**
- * This class replaces the &lt;fmt:formatDate /&gt; tag.
- * Why do we need a new tag?
- * => fmt can't be configured via a System Property (without side effects)
- * => we want to support the new java.time classes
- *
- * It will output datetimes as ISO_8601 type style unless otherwise defined in opnnms.properties.
- * See also:
- *   https://en.wikipedia.org/wiki/ISO_8601 and
- *   https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
- */
-public class DateTimeTag extends SimpleTagSupport {
-
-    private Instant instant;
-
-    @Override
-    public void doTag() throws IOException {
-        String output = new CentralizedDateTimeFormat().format(instant);
-        getJspContext().getOut().write(output);
+    @Test
+    public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
+        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
     }
 
-    public void setInstant(Instant instant) {
-        this.instant = instant;
+    @Test
+    public void shouldBeResilientAgainstNull() throws IOException {
+        assertNull(new CentralizedDateTimeFormat().format((Instant)null));
+        assertNull(new CentralizedDateTimeFormat().format((Date)null));
     }
 
-    @Deprecated // please try to use the new Java Date API when possible: setInstant(Instant instant)
-    public void setDate(Date date) {
-        if (date != null) {
-            this.instant = date.toInstant();
-        }
+    @Test
+    public void shouldHonorSystemSettings() throws IOException {
+        String format = "yyy-MM-dd";
+        System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
+        test(format, Instant.now());
+        System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
+    }
+
+    public void test(String expectedPattern, Instant time) {
+
+        String output = new CentralizedDateTimeFormat().format(time);
+        assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
     }
 }
