@@ -398,10 +398,15 @@ public class EnLinkdElementFactory implements InitializingBean,
     private LldpElementNode convertFromModel(LldpElement lldp) {
  
         LldpElementNode lldpNode = new LldpElementNode();
-        lldpNode.setLldpChassisId(getIdString(
+        if (lldp.getLldpChassisIdSubType() != null) {
+            lldpNode.setLldpChassisId(getIdString(
                    LldpChassisIdSubType.getTypeString(lldp.getLldpChassisIdSubType().getValue()),               
                    lldp.getLldpChassisId()
                ));
+        } else {
+            lldpNode.setLldpChassisId(getIdString("chassis id",               
+                                                  lldp.getLldpChassisId()));
+        }
         lldpNode.setLldpSysName(lldp.getLldpSysname());
         lldpNode.setLldpCreateTime(Util.formatDateToUIString(lldp.getLldpNodeCreateTime()));
         lldpNode.setLldpLastPollTime(Util.formatDateToUIString(lldp.getLldpNodeLastPollTime()));
