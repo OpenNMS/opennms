@@ -124,60 +124,53 @@
 	
 	<thead>
 		<tr>
-		<th>Local Port</th> 
-		<th>Remote Port</th>
-		<th>Vlan</th>
-		<th>Created</th>
-		<th>Last Poll</th>
+		<th width="30%">Local Port</th> 
+		<th width="30%">Remote Port</th>
+		<th width="30%">Info</th>
+		<th width="10%">Last Poll</th>
 		
 		</tr>
 	</thead>				
 <% for( BridgeLinkNode bridgelink: bridgelinks) { %>
 	<tr>
-		<td>
+		<td width="30%">
 <% if (bridgelink.getBridgeLocalPortUrl() == null) {%>
 			<%=bridgelink.getBridgeLocalPort()%>
 <% } else { %>
  			<a href="<%=bridgelink.getBridgeLocalPortUrl()%>"><%=bridgelink.getBridgeLocalPort()%></a>
 <% } %>
 	    </td>
-       	<td>
+       	<td width="30%">
 <% if (bridgelink.getBridgeLinkRemoteNodes().isEmpty()) {%>
             	            	&nbsp;
 <% } else { %>
-            	<table>
-            	<% for (BridgeLinkRemoteNode remote: bridgelink.getBridgeLinkRemoteNodes()) {%>
-            	<tr>
-            		<td>
+         	<table>
+           	<% for (BridgeLinkRemoteNode remote: bridgelink.getBridgeLinkRemoteNodes()) {%>
+            	<tr><td>
          		<% if (remote.getBridgeRemoteUrl() != null) { %>
             		<a href="<%=remote.getBridgeRemoteUrl()%>"><%=remote.getBridgeRemote()%></a>
 	            <% } else { %> 
 		            <%=remote.getBridgeRemote()%>
     			<% } %> 
-    				</td>
-            		 <td>
+    				&nbsp;
          		<% if (remote.getBridgeRemotePortUrl() != null) { %>
             		<a href="<%=remote.getBridgeRemotePortUrl()%>"><%=remote.getBridgeRemotePort()%></a>
 	            <% } else if (remote.getBridgeRemotePort() != null){ %> 
 		            <%=remote.getBridgeRemotePort()%>
-    			<% } else { %> 
-    				&nbsp;
             	<% }%>
-            	</td>
-            	<tr>
-            	<% }%>
-            	</table>
+            	</td><tr>
+           	<% }%>
+           	</table>
 <% }%>
        	</td>
-       	<td>
+       	<td width="30%">
 <% if (bridgelink.getBridgeInfo() == null) {%>
             	            	&nbsp;
 <% } else { %>
           <%=bridgelink.getBridgeInfo()%>
 <% } %>
 		</td>
-		<td><%=bridgelink.getBridgeLinkCreateTime() %></td>
-		<td><%=bridgelink.getBridgeLinkLastPollTime() %></td>
+		<td width="10%"><%=bridgelink.getBridgeLinkLastPollTime() %></td>
        </tr>
 <% } %>
    </table>
@@ -200,24 +193,23 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 		
 	<thead>
 		<tr>
-		<th>Local Port</th> 
-		<th>Remote Port</th> 
-        <th>Info</th>
-		<th>Created</th>
-		<th>Last Poll</th>
+		<th width="30%">Local Port</th> 
+		<th width="30%">Remote Port</th> 
+        <th width="30%">Info</th>
+		<th width="10%">Last Poll</th>
 		</tr>
 	</thead>
 				
 <% for( LldpLinkNode lldplink: lldpLinks) { %>
     <tr>
-	    <td>
+	    <td width="30%">
 	 	<% if (lldplink.getLldpLocalPortUrl() != null) { %>
            	<a href="<%=lldplink.getLldpLocalPortUrl()%>"><%=lldplink.getLldpLocalPort()%></a>
            <% } else { %> 
                    <%=lldplink.getLldpLocalPort()%>
    		<% } %> 
            </td>
-           <td>
+           <td width="30%">
            <% if (lldplink.getLldpRemChassisIdUrl() != null) { %>
            	<a href="<%=lldplink.getLldpRemChassisIdUrl()%>"><%=lldplink.getLldpRemChassisId()%></a>
            <% } else { %> 
@@ -230,9 +222,8 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
                    <%=lldplink.getLldpRemPort()%>
    		<% } %> 
            </td>
-	    <td><%=lldplink.getLldpRemInfo()%></td>
-	    <td><%=lldplink.getLldpCreateTime()%></td>
-	    <td><%=lldplink.getLldpLastPollTime()%></td>
+	    <td width="30%"><%=lldplink.getLldpRemInfo()%></td>
+	    <td width="10%"><%=lldplink.getLldpLastPollTime()%></td>
     </tr>
 <% } %>
 		    
@@ -252,23 +243,22 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
 <table class="table table-condensed">		
 	<thead>
 	<tr>
-		<th>Local Port</th> 
-		<th>Remote Port</th>
-        <th>Info</th>
-		<th>Created</th>
-		<th>Last Poll</th>
+		<th width="30%">Local Port</th> 
+		<th width="30%">Remote Port</th>
+        <th width="30%">Info</th>
+		<th width="10%">Last Poll</th>
 	</tr>
 	</thead>
 <% for( CdpLinkNode cdplink: cdpLinks) { %>
     <tr>
-	    <td>
+	    <td width="30%">
  	  <% if (cdplink.getCdpLocalPortUrl() != null) { %>
         <a href="<%=cdplink.getCdpLocalPortUrl()%>"><%=cdplink.getCdpLocalPort()%></a>
       <% } else { %> 
         <%=cdplink.getCdpLocalPort()%>
       <% } %> 
         </td>
-        <td>
+        <td width="30%">
         <% if (cdplink.getCdpCacheDeviceUrl() != null) { %>
           <a href="<%=cdplink.getCdpCacheDeviceUrl()%>"><%=cdplink.getCdpCacheDevice()%></a>
         <% } else { %> 
@@ -281,9 +271,8 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
           <%=cdplink.getCdpCacheDevicePort()%>
 	  <% } %> 
         </td>
-	    <td><%=cdplink.getCdpCachePlatform()%></td>
-	    <td><%=cdplink.getCdpCreateTime()%></td>
-	    <td><%=cdplink.getCdpLastPollTime()%></td>
+	    <td width="30%"><%=cdplink.getCdpCachePlatform()%></td>
+	    <td width="10%"><%=cdplink.getCdpLastPollTime()%></td>
     </tr>
 <% } %>
   </table>
@@ -303,24 +292,23 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
 		
 	<thead>
 	<tr>
-	<th>Local Port</th> 
-	<th>Remote Port</th>
-	<th>Info</th> 
-	<th>Created</th>
-	<th>Last Poll</th>
+	<th width="30%">Local Port</th> 
+	<th width="30%">Remote Port</th>
+	<th width="30%">Info</th> 
+	<th width="10%">Last Poll</th>
 			</tr>
 		</thead>
 				
 <% for ( OspfLinkNode ospflink: ospfLinks) { %>
     <tr>
-	    <td>
+	    <td width="30%">
  		<% if (ospflink.getOspfLocalPortUrl() != null ) { %>
           	<a href="<%=ospflink.getOspfLocalPortUrl()%>"><%=ospflink.getOspfLocalPort()%></a>
     	<% } else { %> 
              <%=ospflink.getOspfLocalPort()%>
 		<% } %> 
     	</td>
-     	<td>
+     	<td width="30%">
     	<% if (ospflink.getOspfRemRouterUrl() != null) { %>
      		<a href="<%=ospflink.getOspfRemRouterUrl()%>"><%=ospflink.getOspfRemRouterId()%></a>
     	<% } else { %>
@@ -333,9 +321,8 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
             <%=ospflink.getOspfRemPort()%>
 		<% } %> 
         </td>
-	    <td><%=ospflink.getOspfLinkInfo()%></td>
-	    <td><%=ospflink.getOspfLinkCreateTime()%></td>
-	    <td><%=ospflink.getOspfLinkLastPollTime()%></td>
+	    <td width="30%"><%=ospflink.getOspfLinkInfo()%></td>
+	    <td width="10%"><%=ospflink.getOspfLinkLastPollTime()%></td>
    </tr>
 <% } %>
 		    
@@ -359,43 +346,34 @@ ${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by E
 
 <thead>
 	<tr>
-	<th>Circuit IfIndex</th> 
-	<th>Circuit Admin State</th>
-	<th>Adj Neigh Sys ID</th>
-	<th>Adj Neigh Sys Type</th> 
-	<th>Adj Neigh Port</th> 
-	<th>Adj Neigh State</th> 
-	<th>Adj Neigh SNPA Address</th> 
-	<th>Adj Neigh Extended Circ ID</th> 
-	<th>Created</th>
-	<th>Last Poll</th>
+	<th width="30%">Local Port</th> 
+	<th width="30%">Remote Port</th>
+	<th width="30%">Info</th> 
+	<th width="10%">Last Poll</th>
 	</tr>
 </thead>
 		
 <% for( IsisLinkNode isislink : isisLinks) { %>
    <tr>
-    <td><%=isislink.getIsisCircIfIndex()%></td>
-    <td><%=isislink.getIsisCircAdminState()%></td>
-          <td>
+    <td width="30%">circuit:<%=isislink.getIsisCircIfIndex()%> status:<%=isislink.getIsisCircAdminState()%></td>
+    <td width="30%">
           <% if (isislink.getIsisISAdjNeighSysUrl() != null) { %>
           	<a href="<%=isislink.getIsisISAdjNeighSysUrl()%>"><%=isislink.getIsisISAdjNeighSysID() %></a>
           <% } else { %> 
                  <%=isislink.getIsisISAdjNeighSysID()%>
   			<% } %> 
-          </td>
-    <td><%=isislink.getIsisISAdjNeighSysType()%></td>
-    <td>
+    	 type:<%=isislink.getIsisISAdjNeighSysType()%>
  	<% if (isislink.getIsisISAdjUrl() != null) { %>
           	<a href="<%=isislink.getIsisISAdjUrl()%>"><%=isislink.getIsisISAdjNeighPort()%></a>
           <% } else { %> 
 		<%=isislink.getIsisISAdjNeighPort()%>
   		<% } %> 
-          </td>
-    <td><%=isislink.getIsisISAdjState()%></td>
-    <td><%=isislink.getIsisISAdjNeighSNPAAddress()%></td>
-    <td><%=isislink.getIsisISAdjNbrExtendedCircID()%></td>
-    <td><%=isislink.getIsisLinkCreateTime()%></td>
-    <td><%=isislink.getIsisLinkLastPollTime()%></td>
+     </td>
+    <td width="30%">adjstate:<%=isislink.getIsisISAdjState()%> 
+        adjSNPAaddr:<%=isislink.getIsisISAdjNeighSNPAAddress()%>
+        adjNbrExtCircId:<%=isislink.getIsisISAdjNbrExtendedCircID()%>
+    </td>
+    <td width="10%"><%=isislink.getIsisLinkLastPollTime()%></td>
    </tr>
 <% } %>
 		    
