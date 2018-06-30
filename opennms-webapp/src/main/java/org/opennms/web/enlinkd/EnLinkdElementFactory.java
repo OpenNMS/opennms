@@ -168,8 +168,9 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     private OspfElementNode convertFromModel(OspfElement ospf) {
-        if (ospf == null)
+        if (ospf == null) {
             return null;
+        }
 
         OspfElementNode ospfNode = new OspfElementNode();
         ospfNode.setOspfRouterId(str(ospf.getOspfRouterId()));
@@ -308,8 +309,9 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     private CdpElementNode convertFromModel(CdpElement cdp) {
-        if (cdp == null)
+        if (cdp == null) {
             return null;
+        }
 
         CdpElementNode cdpNode = new CdpElementNode();
         cdpNode.setCdpGlobalRun(TruthValue.getTypeString(cdp.getCdpGlobalRun().getValue()));
@@ -397,16 +399,15 @@ public class EnLinkdElementFactory implements InitializingBean,
 
     private LldpElementNode convertFromModel(LldpElement lldp) {
  
-        LldpElementNode lldpNode = new LldpElementNode();
-        if (lldp.getLldpChassisIdSubType() != null) {
-            lldpNode.setLldpChassisId(getIdString(
-                   LldpChassisIdSubType.getTypeString(lldp.getLldpChassisIdSubType().getValue()),               
-                   lldp.getLldpChassisId()
-               ));
-        } else {
-            lldpNode.setLldpChassisId(getIdString("chassis id",               
-                                                  lldp.getLldpChassisId()));
+        if (lldp == null) {
+            return null;
         }
+
+        LldpElementNode lldpNode = new LldpElementNode();
+        lldpNode.setLldpChassisId(getIdString(
+                   LldpChassisIdSubType.getTypeString(lldp.getLldpChassisIdSubType().getValue()),               
+                   lldp.getLldpChassisId()));
+
         lldpNode.setLldpSysName(lldp.getLldpSysname());
         lldpNode.setLldpCreateTime(Util.formatDateToUIString(lldp.getLldpNodeCreateTime()));
         lldpNode.setLldpLastPollTime(Util.formatDateToUIString(lldp.getLldpNodeLastPollTime()));
@@ -494,9 +495,9 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     private IsisElementNode convertFromModel(IsIsElement isis) {
-        if (isis == null)
+        if (isis == null) {
             return null;
-
+        }
         IsisElementNode isisNode = new IsisElementNode();
         isisNode.setIsisSysID(isis.getIsisSysID());
         isisNode.setIsisSysAdminState(IsIsElement.IsisAdminState.getTypeString(isis.getIsisSysAdminState().getValue()));
@@ -704,10 +705,10 @@ public class EnLinkdElementFactory implements InitializingBean,
                 if (snmp == null) {
                     remlinknode.setBridgeRemote(getIdString("mac", sharedmac));
                 } else {
-                    remlinknode.setBridgeRemote(snmp.getNode().getLabel());
+                    remlinknode.setBridgeRemote(getHostString(snmp.getNode().getLabel(),"mac",sharedmac));
                     remlinknode.setBridgeRemoteUrl(getNodeUrl(snmp.getNode().getId()));
 
-                    remlinknode.setBridgeRemotePort(getPortString(snmp,"mac",sharedmac));
+                    remlinknode.setBridgeRemotePort(getPortString(snmp,null,null));
                     remlinknode.setBridgeRemotePortUrl(getSnmpInterfaceUrl(snmp.getNode().getId(),
                                                                            snmp.getIfIndex()));
                 }
@@ -747,7 +748,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 labels.add(remiface.getNode().getLabel());
             }
             if (labels.size() == 1) {
-                remlinknode.setBridgeRemote(labels.iterator().next());
+                remlinknode.setBridgeRemote(getHostString(labels.iterator().next(),"mac",sharedmac));
                 remlinknode.setBridgeRemoteUrl(getNodeUrl(remipaddrs.iterator().next().getNodeId()));
             }
             remlinknode.setBridgeRemotePort(getIpListAsStringFromIpNetToMedia(macsToIpNetTOMediaMap.get(sharedmac)));
