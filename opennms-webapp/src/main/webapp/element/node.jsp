@@ -442,227 +442,129 @@ function confirmAssetEdit() {
   
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Asset Information</h3>
-    </div>
-    <table class="table table-condensed">
-      <tr>
-        <th>Description</th>
-        <td>${model.asset.description}</td>
-      </tr>
-      
-      <tr>
-        <th>Comments</th>
-        <td>${model.asset.comments}</td>
-      </tr>
-    </table>
-    </div>
+  <div class="panel panel-default">
+      <div class="panel-heading"><h3 class="panel-title">Asset Information</h3></div>
+      <table class="table table-condensed">
+      <tr><th>Description</th><td>${model.asset.description}</td></tr>
+      <tr><th>Comments</th><td>${model.asset.comments}</td></tr>
+      </table>
+  </div>
   </c:if>
+  <!--End Asset box, if info available --> 
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">SNMP Attributes</h3>
-    </div>
-    
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">SNMP Attributes</h3></div>
     <table class="table table-condensed">
-      <tr>
-        <th>Name</th>
-        <td>${model.sysName}</td>
-      </tr>
-      <tr>
-        <th>sysObjectID</th>
-        <td>${model.node.sysObjectId}</td>
-      </tr>
-      <tr>
-        <th>Location</th>
-        <td>${model.sysLocation}</td>
-      </tr>
-      <tr>
-        <th>Contact</th>
-        <td>${model.sysContact}</td>
-      </tr>
-      <tr>
-        <th valign="top">Description</th>
-        <td valign="top">${model.sysDescription}</td>
-      </tr>
+    <tr><th>Name</th><td>${model.sysName}</td></tr>
+    <tr><th>sysObjectID</th><td>${model.node.sysObjectId}</td></tr>
+	<tr><th>Location</th><td>${model.sysLocation}</td></tr>
+    <tr><th>Contact</th><td>${model.sysContact}</td></tr>
+    <tr><th valign="top">Description</th><td valign="top">${model.sysDescription}</td></tr>
     </table>
-    </div>
+  </div>
   </c:if>
+  <!--END SNMP box, if info available -->
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Path Outage - Critical Path</h3>
-    </div>
-    <div class="panel-body">
-      <ul class="list-unstyled">
-        <li>
-          ${model.criticalPath}
-        </li>
-      </ul> 
-    </div>          
-    </div>    
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">Path Outage - Critical Path</h3></div>
+    <div class="panel-body"><ul class="list-unstyled"><li>${model.criticalPath}</li></ul> </div>          
+  </div>    
   </c:if>
+  <!--END Critical Path info, if info available -->
 	
   <!-- Availability box -->
   <c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
-      <jsp:param name="node" value="${model.id}" />
-    </jsp:include>
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" ><jsp:param name="node" value="${model.id}" /></jsp:include>
   </c:if>
+  <!--END Availability box -->
 
   <div id="onms-interfaces" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Node Interfaces</h3>
-    </div>
+    <div class="panel-heading"><h3 class="panel-title">Node Interfaces</h3></div>
     <onms-interfaces node="${model.id}"/>
   </div>
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">LLDP Information</h3>
-    </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">LLDP Information</h3></div>
     <table class="table table-condensed">
-      <tr>
-        <th>chassis id</th>
-        <td>${model.lldp.lldpChassisId}</td>
-      </tr>
-      <tr>
-        <th>sysname</th>
-        <td>${model.lldp.lldpSysName}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.lldp.lldpCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.lldp.lldpLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
+      <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.lldp.lldpLastPollTime}</td></tr>
     </table>
     </div>
-  </c:if>
+    </c:if>
+  <!--End LLDP box, if info available --> 
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">CDP Information</h3>
-    </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">CDP Information</h3></div>
     <table class="table table-condensed">
-      <tr>
-        <th>global device id</th>
-        <td>${model.cdp.cdpGlobalDeviceId}</td>
-      </tr>
-      <tr>
-        <th>global device id format</th>
-        <td>${model.cdp.cdpGlobalDeviceIdFormat}</td>
-      </tr>
-      <tr>
-        <th>global run</th>
-        <td>${model.cdp.cdpGlobalRun}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.cdp.cdpCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.cdp.cdpLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
+      <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.cdp.cdpLastPollTime}</td></tr>
     </table>
-    </div>
+  </div>
   </c:if>
+  <!--End CDP box, if info available --> 
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">OSPF Information</h3>
-    </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">OSPF Information</h3></div>
     <table class="table table-condensed">
-      <tr>
-        <th>Router Id</th>
-        <td>${model.ospf.ospfRouterId}</td>
-      </tr>
-      <tr>
-        <th>Version Number</th>
-        <td>${model.ospf.ospfVersionNumber}</td>
-      </tr>
-      <tr>
-        <th>Admin Status</th>
-        <td>${model.ospf.ospfAdminStat}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.ospf.ospfCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.ospf.ospfLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
+      <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
+      <tr><th>last poll time</th><td>${model.ospf.ospfLastPollTime}</td></tr>
     </table>
-    </div>
+  </div>
   </c:if>
+  <!--End OSPF box, if info available -->
 
   <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">IS-IS Information</h3>
-    </div>
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">IS-IS Information</h3></div>
     <table class="table table-condensed">
-      <tr>
-        <th>Sys ID</th>
-        <td>${model.isis.isisSysID}</td>
-      </tr>
-      <tr>
-        <th>Admin State</th>
-        <td>${model.isis.isisSysAdminState}</td>
-      </tr>
-      <tr>
-        <th>Create Time</th>
-        <td>${model.isis.isisCreateTime}</td>
-      </tr>
-      <tr>
-        <th>Last Poll Time</th>
-        <td>${model.isis.isisLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
+      <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.isis.isisLastPollTime}</td></tr>
     </table>
     </div>
   </c:if>
+  <!--End IS-IS box, if info available -->
 
   <!-- Bridge box if available -->
-<c:if test="${! empty model.bridges}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Bridge Information</h3>
-    </div>
-<table class="table table-condensed">
-<c:forEach items="${model.bridges}" var="bridge">
-    <tr>
-    <th><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
- 		 <c:if test="${! empty bridge.vlan}">(vlanid ${bridge.vlan})</c:if>
-   		 -> (${bridge.baseNumPorts} port assigned)
-   </th>
-   <td> baseAddress:${bridge.baseBridgeAddress} type:${bridge.baseType} 
-	 <c:if test="${! empty bridge.stpProtocolSpecification}">stpProtocolSpec:${bridge.stpProtocolSpecification}</c:if>
- 	 <c:if test="${! empty bridge.stpPriority && bridge.stpPriority > 0}">Priority:${bridge.stpPriority}</c:if>
- 	 <c:if test="${! empty bridge.stpDesignatedRoot}">DesignatedRoot:${bridge.stpDesignatedRoot}</c:if>
- 	 <c:if test="${! empty bridge.stpRootPort && bridge.stpRootPort > 0}">RootPort:${bridge.stpRootPort}</c:if>
- 	 <c:if test="${! empty bridge.stpRootCost && bridge.stpRootCost > 0}">RootCost:${bridge.stpRootCost}</c:if>
-   </tr>
-</c:forEach>
-</table>
-   </div>
-</c:if>
-</div>
+  <c:if test="${! empty model.bridges}">
+  <div class="panel panel-default">
+   	<div class="panel-heading"><h3 class="panel-title">Bridge Information</h3></div>
+	<table class="table table-condensed">
+	<c:forEach items="${model.bridges}" var="bridge">
+   	<tr>
+   	<th width="50%"><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
+   	    <c:if test="${! empty bridge.vlan}">(vlanid ${bridge.vlan})</c:if>
+   	    (${bridge.baseNumPorts} port assigned)
+   	</th>
+    <td width="50%"> baseAddress:${bridge.baseBridgeAddress} type:${bridge.baseType} 
+    	<c:if test="${! empty bridge.stpProtocolSpecification}">stpProtocolSpec:${bridge.stpProtocolSpecification}</c:if>
+ 	    <c:if test="${! empty bridge.stpPriority && bridge.stpPriority > 0}">Priority:${bridge.stpPriority}</c:if>
+ 	    <c:if test="${! empty bridge.stpDesignatedRoot}">DesignatedRoot:${bridge.stpDesignatedRoot}</c:if>
+ 	    <c:if test="${! empty bridge.stpRootPort && bridge.stpRootPort > 0}">RootPort:${bridge.stpRootPort}</c:if>
+ 	    <c:if test="${! empty bridge.stpRootCost && bridge.stpRootCost > 0}">RootCost:${bridge.stpRootCost}</c:if>
+	</tr>
+	</c:forEach>
+    </table>
+  </div>
+  </c:if>
+  <!--End Bridge box if available -->
+
+
+</div> <!-- end of tag col-md-6 -->
 
 <div class="col-md-6">
   
@@ -681,25 +583,6 @@ function confirmAssetEdit() {
           <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
         </li>
       </c:if>
-
-      <c:if test="${model.showIpRoute}">
-        <c:url var="ipRouteLink" value="element/routeipnode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${ipRouteLink}"/>">View Node IP Route Info</a>
-        </li>
-      </c:if>
-     
-      <c:if test="${model.showBridge}">
-        <c:url var="bridgeLink" value="element/bridgenode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${bridgeLink}"/>">View Node Bridge/STP Info</a>
-        </li>
-      </c:if>
-
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
@@ -735,6 +618,7 @@ function confirmAssetEdit() {
   <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
+
 </div>
 
 </div>
