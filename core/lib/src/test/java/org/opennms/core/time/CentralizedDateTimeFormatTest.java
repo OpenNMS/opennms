@@ -26,27 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.web.tags;
+package org.opennms.core.time;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import javax.servlet.jsp.JspContext;
-import javax.servlet.jsp.JspWriter;
-
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.opennms.core.time.CentralizedDateTimeFormat;
-import org.springframework.mock.web.MockJspWriter;
 
-public class DateTimeTagTest {
+public class CentralizedDateTimeFormatTest {
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
@@ -55,61 +48,21 @@ public class DateTimeTagTest {
 
     @Test
     public void shouldBeResilientAgainstNull() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+        assertNull(new CentralizedDateTimeFormat().format((Instant)null));
+        assertNull(new CentralizedDateTimeFormat().format((Date)null));
     }
 
     @Test
     public void shouldHonorSystemSettings() throws IOException {
         String format = "yyy-MM-dd";
         System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
-        test(format, null);
+        test(format, Instant.now());
         System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
     }
 
-    public void test(String expectedPattern, Instant time) throws IOException {
-        String output = DateTimeTagInvoker
-                .create()
-                .setInstant(time)
-                .invokeAndGet();
-        DateTimeFormatter formatter = DateTimeFormatter
-                .ofPattern(expectedPattern)
-                .withZone(ZoneId.systemDefault());
-        assertEquals(formatter.format(time), output);
-    }
+    public void test(String expectedPattern, Instant time) {
 
-    // Helper class to be able to test easier
-    private static class DateTimeTagInvoker {
-
-        private DateTimeTag tag;
-        private StringWriter writer;
-
-        private DateTimeTagInvoker(){
-            writer = new StringWriter();
-            JspWriter jspWriter = new MockJspWriter(writer);
-            JspContext jspContext = Mockito.mock(JspContext.class);
-            when(jspContext.getOut()).thenReturn(jspWriter);
-            tag = new DateTimeTag(){
-                @Override
-                protected JspContext getJspContext() {
-                    return jspContext;
-                }
-            };
-        }
-
-        public DateTimeTagInvoker setDate(Date date){
-            this.tag.setDate(date);
-            return this;
-        }
-
-        public DateTimeTagInvoker setInstant(Instant instant){
-            this.tag.setInstant(instant);
-            return this;
-        }
-
-        public String invokeAndGet() throws IOException {
-            this.tag.doTag();
-            this.writer.close();
-            return this.writer.getBuffer().toString();
-        }
+        String output = new CentralizedDateTimeFormat().format(time);
+        assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
     }
 }
