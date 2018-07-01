@@ -101,7 +101,7 @@
   <table class="table table-condensed severity">
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
-    <td class="col-md-2"><fmt:formatDate value="<%=notice.getTimeSent()%>" /></td>
+    <td class="col-md-2"><onms:datetime date="<%=notice.getTimeSent()%>" /></td>
     <th class="col-md-1">Time&nbsp;Replied</th>
     <td class="col-md-2">
       <c:choose>
