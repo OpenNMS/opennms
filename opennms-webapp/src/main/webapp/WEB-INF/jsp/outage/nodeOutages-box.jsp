@@ -92,7 +92,7 @@
         <c:param name="service" value="<%=String.valueOf(outages[i].getServiceId())%>"/>
       </c:url>
       <td class="divider"><a href="<c:out value="${serviceLink}"/>"><c:out value="<%=outages[i].getServiceName()%>"/></a></td>
-      <td class="divider"><onms:datetime date="${outage.lostServiceTime}" />&nbsp;<fmt:formatDate value="${outage.lostServiceTime}" type="time" pattern="HH:mm:ss"/></td>
+      <td class="divider"><onms:datetime date="${outage.lostServiceTime}" /></td>
       
       <% if( outages[i].getRegainedServiceTime() == null ) { %>
         <td class="divider bright"><b>DOWN</b></td>
