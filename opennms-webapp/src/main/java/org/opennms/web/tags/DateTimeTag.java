@@ -31,6 +31,7 @@ package org.opennms.web.tags;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
@@ -53,7 +54,8 @@ public class DateTimeTag extends SimpleTagSupport {
 
     @Override
     public void doTag() throws IOException {
-        String output = new CentralizedDateTimeFormat().format(instant);
+        // Output an empty string for null values. I believe fmt:formatDate does the same
+        String output = Optional.ofNullable(new CentralizedDateTimeFormat().format(instant)).orElse("");
         getJspContext().getOut().write(output);
     }
 
