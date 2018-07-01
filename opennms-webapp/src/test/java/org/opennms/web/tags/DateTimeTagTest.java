@@ -55,14 +55,15 @@ public class DateTimeTagTest {
 
     @Test
     public void shouldBeResilientAgainstNull() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+        // we expect an empty String, same as fmt:formatDate outputs
+        assertEquals("", DateTimeTagInvoker.create().setInstant(null).invokeAndGet());
     }
 
     @Test
     public void shouldHonorSystemSettings() throws IOException {
         String format = "yyy-MM-dd";
         System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
-        test(format, null);
+        test(format, Instant.now());
         System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
     }
 
@@ -109,7 +110,7 @@ public class DateTimeTagTest {
         public String invokeAndGet() throws IOException {
             this.tag.doTag();
             this.writer.close();
-            return this.writer.getBuffer().toString();
+            return this.writer.getBuffer() == null ? null : this.writer.getBuffer().toString();
         }
     }
 }
