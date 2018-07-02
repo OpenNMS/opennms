@@ -46,7 +46,7 @@ import org.opennms.core.ipc.sink.mock.MockMessageConsumerManager;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.RestClient;
+import org.opennms.distributed.core.api.RestClient;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.test.JUnitConfigurationEnvironment;

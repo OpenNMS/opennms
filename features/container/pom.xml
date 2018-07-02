@@ -10,12 +10,10 @@
     <artifactId>container-parent</artifactId>
     <packaging>pom</packaging>
     <name>OpenNMS :: Features :: Container</name>
-
     <modules>
         <module>minion</module>
         <module>sentinel</module>
     </modules>
-
     <build>
         <pluginManagement>
             <plugins>

@@ -33,6 +33,8 @@ public interface KafkaSinkConstants {
 
     String KAFKA_CONFIG_PID = "org.opennms.core.ipc.sink.kafka";
 
+    String KAFKA_CONFIG_CONSUMER_PID = KAFKA_CONFIG_PID + ".consumer";
+
     String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
 
 }

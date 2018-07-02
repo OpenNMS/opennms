@@ -43,6 +43,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
+import org.opennms.core.ipc.sink.kafka.server.config.OnmsKafkaConfigProvider;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffset;
 import org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -70,7 +71,7 @@ public class KafkaOffsetIT {
         System.setProperty(String.format("%sauto.offset.reset", KafkaSinkConstants.KAFKA_CONFIG_SYS_PROP_PREFIX),
                 "earliest");
         // offsetProvider needs system properties
-        offsetProvider = new KafkaOffsetProvider();
+        offsetProvider = new KafkaOffsetProvider(new OnmsKafkaConfigProvider());
         offsetProvider.start();
     }
 

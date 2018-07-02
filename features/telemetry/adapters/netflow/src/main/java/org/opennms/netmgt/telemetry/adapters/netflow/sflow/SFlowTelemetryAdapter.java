@@ -42,10 +42,10 @@ import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.collection.api.CollectionAgent;
-import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractScriptPersistingAdapter;
@@ -53,21 +53,17 @@ import org.opennms.netmgt.telemetry.adapters.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.adapters.collection.ScriptedCollectionSetBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.support.TransactionOperations;
 
 public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
     private static final Logger LOG = LoggerFactory.getLogger(SFlowTelemetryAdapter.class);
 
-    private CollectionAgentFactory collectionAgentFactory;
-
     private InterfaceToNodeCache interfaceToNodeCache;
 
     private NodeDao nodeDao;
 
-    private TransactionOperations transactionTemplate;
-
     public SFlowTelemetryAdapter() {
+
     }
 
     @Override
@@ -98,7 +94,7 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
         final CollectionAgent agent;
         if (nodeId.isPresent()) {
-            agent = collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), inetAddress);
+            agent = createCollectionAgent(nodeId.get(), inetAddress, messageLog.getLocation());
 
         } else {
             LOG.warn("Unable to find node and interface for agent address: {}", address);
@@ -130,8 +126,10 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
                 });
     }
 
-    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
-        this.collectionAgentFactory = collectionAgentFactory;
+    private CollectionAgent createCollectionAgent(Integer nodeId, InetAddress inetAddress, String location) {
+        final OnmsNode onmsNode = nodeDao.get(nodeId);
+        final CollectionAgent collectionAgent = new DummyCollectionAgent(inetAddress, nodeId, onmsNode.getLabel(), onmsNode.getForeignSource(), onmsNode.getForeignId(), location);
+        return collectionAgent;
     }
 
     public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
@@ -140,9 +138,5 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
     public void setNodeDao(NodeDao nodeDao) {
         this.nodeDao = nodeDao;
-    }
-
-    public void setTransactionTemplate(TransactionOperations transactionTemplate) {
-        this.transactionTemplate = transactionTemplate;
     }
 }

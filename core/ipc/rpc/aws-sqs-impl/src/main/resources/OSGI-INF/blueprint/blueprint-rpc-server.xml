@@ -21,7 +21,7 @@
     </cm:property-placeholder>
 
     <!-- Provided by minion-core -->
-    <reference id="minionIdentity" interface="org.opennms.minion.core.api.MinionIdentity" />
+    <reference id="minionIdentity" interface="org.opennms.distributed.core.api.MinionIdentity" />
 
     <reference id="sqsConfig" interface="org.opennms.core.ipc.common.aws.sqs.AmazonSQSConfig" />
 

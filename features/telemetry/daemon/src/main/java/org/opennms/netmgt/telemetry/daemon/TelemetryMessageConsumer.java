@@ -34,6 +34,7 @@ import java.util.Objects;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.sink.api.MessageConsumer;
 import org.opennms.core.ipc.sink.api.SinkModule;
@@ -55,20 +56,33 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
     @Autowired
     private TelemetryAdapterRegistry adapterRegistry;
 
-    private final Protocol protocolDef;
+    private final org.opennms.netmgt.telemetry.config.api.Protocol protocolDef;
     private final TelemetrySinkModule sinkModule;
+    private final List<org.opennms.netmgt.telemetry.config.api.Adapter> adapterDefs = new ArrayList<>();
+
+    // Actual adapters implementing the logic
     private final List<Adapter> adapters;
 
     public TelemetryMessageConsumer(Protocol protocol, TelemetrySinkModule sinkModule) throws Exception {
-        this.protocolDef = Objects.requireNonNull(protocol);
+        this(protocol,
+                protocol.getAdapters().stream().map(adapter -> (org.opennms.netmgt.telemetry.config.api.Adapter) adapter).collect(Collectors.toList()),
+                sinkModule);
+    }
+
+    public TelemetryMessageConsumer(org.opennms.netmgt.telemetry.config.api.Protocol protocolDef,
+                                        List<org.opennms.netmgt.telemetry.config.api.Adapter> adapterDef,
+                                        TelemetrySinkModule sinkModule) {
+        this.protocolDef = Objects.requireNonNull(protocolDef);
         this.sinkModule = Objects.requireNonNull(sinkModule);
-        adapters = new ArrayList<>(protocol.getAdapters().size());
+        this.adapters = new ArrayList<>(adapterDef.size());
+        this.adapterDefs.addAll(adapterDef);
+
     }
 
     @PostConstruct
     public void init() throws Exception {
         // Pre-emptively instantiate the adapters
-        for (org.opennms.netmgt.telemetry.config.model.Adapter adapterDef : protocolDef.getAdapters()) {
+        for (org.opennms.netmgt.telemetry.config.api.Adapter adapterDef : adapterDefs) {
             final Adapter adapter;
             try {
                 adapter = adapterRegistry.getAdapter(adapterDef.getClassName(), protocolDef, adapterDef.getParameterMap());
@@ -109,7 +123,11 @@ public class TelemetryMessageConsumer implements MessageConsumer<TelemetryMessag
         return sinkModule;
     }
 
-    public Protocol getProtocol() {
+    public org.opennms.netmgt.telemetry.config.api.Protocol getProtocol() {
         return protocolDef;
+    }
+
+    public void setAdapterRegistry(TelemetryAdapterRegistry adapterRegistry) {
+        this.adapterRegistry = adapterRegistry;
     }
 }
