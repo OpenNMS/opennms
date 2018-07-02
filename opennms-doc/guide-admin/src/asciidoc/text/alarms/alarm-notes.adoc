@@ -1,7 +1,7 @@
 
 :imagesdir: ../../images
 
-[[gu-alarm-notes]]
+[[ga-alarm-notes]]
 === Alarm Notes
 
 _{opennms-product-name}_ creates an _Alarm_ for issues in the network.
@@ -10,7 +10,7 @@ _Alarm Notes_ can be used to assign comments to a specific _Alarm_ or a whole cl
 .
 The figure <<gu-alarm-notes-ui, Alarm Detail View>> shows the component to add these information in _Memos_ to the _Alarm_.
 
-[[gu-alarm-notes-ui]]
+[[ga-alarm-notes-ui]]
 .Alarm Detail View
 image:alarms/01_alarm-notes.png[]
 
