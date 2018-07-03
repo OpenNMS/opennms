@@ -5,7 +5,8 @@
 
 * *Java 8*: OpenNMS Horizon 22 requires Java 8 as the runtime environment.
   To run Horizon 22, we recommend the most recent version of Oracle JDK 8 for your platform.
-* *PostgreSQL 9.3 or higher*: Horizon 22 requires PostgreSQL 9.3 or higher.
+* *PostgreSQL 9 or higher*: Horizon 22 requires Any supported version PostgreSQL 9 or higher.
+  As of this writing, PostgreSQL 9.3 is the earliest version under active support, but OpenNMS is known to work with at least PostgreSQL 9.1 and up.
 
 === Important Upgrade Notes
 
@@ -155,11 +156,11 @@ To aid in debugging problematic SNMP hosts, an SNMP session tracker/logger has b
 
 By default it will print a summary of the top 10 oldest threads every 60 seconds to the SNMP debug log.
 
-It can be enabled by adding `-Dorg.opennms.core.snmp.trackSessions=true` in `opennms.properties` (or a file in `opennms.properties.d`).
+It can be enabled by adding `org.opennms.core.snmp.trackSessions=true` in `opennms.properties` (or a file in `opennms.properties.d`).
 
-To change how often the summary is printed, set `-Dorg.opennms.core.snmp.trackSummaryDelay=number-of-seconds`.
+To change how often the summary is printed, set `org.opennms.core.snmp.trackSummaryDelay=number-of-seconds`.
 
-To change how many sessions are posted to the debug log, set `-Dorg.opennms.core.snmp.trackSummaryLimit=number-of-sessions`.
+To change how many sessions are posted to the debug log, set `org.opennms.core.snmp.trackSummaryLimit=number-of-sessions`.
 
 === New/Updated Device Support (Data Collection and/or Traps)
 

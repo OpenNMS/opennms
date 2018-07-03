@@ -98,6 +98,7 @@
     <!-- Enrichment -->
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.elastic.DocumentEnricher">
@@ -130,6 +131,9 @@
         <argument ref="indexStrategy"/>
         <argument ref="documentEnricher"/>
         <argument ref="classificationEngine"/>
+        <argument ref="transactionOperations"/>
+        <argument ref="nodeDao"/>
+        <argument ref="snmpInterfaceDao"/>
         <argument value="${bulkRetryCount}" />
         <argument value="${maxFlowDurationMs}" />
     </bean>

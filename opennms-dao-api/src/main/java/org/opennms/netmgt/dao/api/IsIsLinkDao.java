@@ -33,8 +33,6 @@ import java.util.List;
 
 import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.topology.IsisTopologyLink;
-
 
 public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
 
@@ -45,8 +43,6 @@ public interface IsIsLinkDao extends OnmsDao<IsIsLink, Integer> {
     List<IsIsLink> findByNodeId(Integer nodeId);
 
     void deleteByNodeIdOlderThen(Integer nodeiId, Date now);
-
-    List<IsisTopologyLink> getLinksForTopology();
     
     public void deleteByNodeId(Integer nodeId);
 

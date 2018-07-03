@@ -70,38 +70,25 @@ public interface FlowRestService {
      *
      * Supports filtering.
      *
-     * @param limit maximum number of exporters to return (those with the most flows will be returned
-     *              in case the results are truncated)
-     * @param uriInfo JAX-RS context
      * @return node summaries
      */
     @GET
     @Path("exporters")
     @Produces(MediaType.APPLICATION_JSON)
-    List<FlowNodeSummary> getFlowExporters(
-            @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final int limit,
-            @Context final UriInfo uriInfo
-    );
+    List<FlowNodeSummary> getFlowExporters();
 
     /**
      * Retrieved detailed information about a specific node.
      *
      * Supports filtering.
      *
-     * @param nodeCriteria node id or fs:fid
-     * @param limit maximum number of interfaces to return (those with the most flows will be returned
-     *              in case the results are truncated)
-     * @param uriInfo JAX-RS context
+     * @param nodeId node id
      * @return node details
      */
     @GET
-    @Path("exporters/{nodeCriteria}")
+    @Path("exporters/{nodeId}")
     @Produces(MediaType.APPLICATION_JSON)
-    FlowNodeDetails getFlowExporter(
-            @PathParam("nodeCriteria") final String nodeCriteria,
-            @DefaultValue(DEFAULT_LIMIT) @QueryParam("limit") final int limit,
-            @Context final UriInfo uriInfo
-    );
+    FlowNodeDetails getFlowExporter(@PathParam("nodeId") final Integer nodeId);
 
     @GET
     @Path("applications")

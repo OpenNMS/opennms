@@ -33,7 +33,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.opennms.netmgt.dao.api.AlarmDao;
@@ -44,8 +48,10 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
+import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.UpdateField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -263,11 +269,31 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
+        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
+        if (containedAlarms != null && !containedAlarms.isEmpty()) {
+            if (alarm instanceof Situation) {
+                for(OnmsAlarm related : containedAlarms) {
+                    // Related Alarms are additive for Situations reduced from Events.
+                    ((Situation)alarm).addAlarm(related);
+                }
+            } else {
+                LOG.warn("reduceEvent: Event {} attempts to add alarms to alarm that is not a Situation: {}.", event.getUei(), alarm);
+            }
+        }
+
         e.setAlarm(alarm);
     }
 
-    private static OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
-        OnmsAlarm alarm = new OnmsAlarm();
+    private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
+        OnmsAlarm alarm;
+        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
+        // Situations are denoted by the existance of related-reductionKeys
+        if (containedAlarms == null || containedAlarms.isEmpty()) {
+            alarm = new OnmsAlarm();
+        } else {
+            alarm = new Situation();
+            ((Situation)alarm).setAlarms(containedAlarms);
+        }
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
@@ -280,7 +306,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setLastEvent(e);
         alarm.setLogMsg(e.getEventLogMsg());
         alarm.setMouseOverText(e.getEventMouseOverText());
-        alarm.setNode(e.getNode());
+        alarm.setNode(e.getNode()); 
         alarm.setOperInstruct(e.getEventOperInstruct());
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setServiceType(e.getServiceType());
@@ -294,6 +320,23 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
     
+    private Set<OnmsAlarm> getAlarms(List<Parm> list) {
+        if (list == null || list.isEmpty()) {
+            return Collections.emptySet();
+        }
+        Set<String> reductionKeys = list.stream().filter(AlarmPersisterImpl::isRelatedReductionKeyWithContent).map(p -> p.getValue().getContent()).collect(Collectors.toSet());
+        // Only existing alarms are returned. Reduction Keys for non-existing alarms are dropped.
+        return reductionKeys.stream().map(reductionKey -> m_alarmDao.findByReductionKey(reductionKey)).filter(Objects::nonNull).collect(Collectors.toSet());
+    }
+
+    private static boolean isRelatedReductionKeyWithContent(Parm param) {
+        return param.getParmName() != null
+                // TOOD revisit using equals() when event_parameters table supports multiple params with the same name (see NMS-10214)
+                && param.getParmName().startsWith("related-reductionKey")
+                && param.getValue() != null
+                && param.getValue().getContent() != null;
+    }
+
     private static boolean checkEventSanityAndDoWeProcess(final Event event) {
         // 2009-01-07 pbrane: TODO: Understand why we use Assert
         Assert.notNull(event, "Incoming event was null, aborting"); 

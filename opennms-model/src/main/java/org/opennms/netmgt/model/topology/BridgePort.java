@@ -28,70 +28,54 @@
 
 package org.opennms.netmgt.model.topology;
 
-import java.util.Date;
-
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeMacLink;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.BridgeMacLink.BridgeDot1qTpFdbStatus;
 
-public class BridgePort {
+public class BridgePort implements Topology {
 
-    private OnmsNode m_node;
+    private Integer m_node;
     private Integer m_bridgePort;
     private Integer m_bridgePortIfIndex;
-    private String  m_bridgePortIfName;
+    //FIXME a BridgePort is identified by nodeid and port
+    //      the vlan is an attribute of the shared segment 
+    //      and of the domain must be moved there
     private Integer m_vlan;
-    private Date m_createTime;
-    private Date m_pollTime;
 
-    public static BridgeMacLink getBridgeMacLink(BridgePort bp, String mac) {
-        BridgeMacLink maclink = new BridgeMacLink();
-        maclink.setNode(bp.getNode());
-        maclink.setBridgePort(bp.getBridgePort());
-        maclink.setBridgePortIfIndex(bp.getBridgePortIfIndex());
-        maclink.setBridgePortIfName(bp.getBridgePortIfName());
-        maclink.setMacAddress(mac);
-        maclink.setBridgeDot1qTpFdbStatus(BridgeDot1qTpFdbStatus.DOT1D_TP_FDB_STATUS_LEARNED);
-        maclink.setVlan(bp.getVlan());
-        maclink.setBridgeMacLinkCreateTime(bp.getCreateTime());
-        maclink.setBridgeMacLinkLastPollTime(bp.getPollTime());
-        return maclink;
-    }
 
-    public static BridgePort getBridgeFromBridgeMacLink(BridgeMacLink link) {
+    public static BridgePort getFromBridgeForwardingTableEntry(BridgeForwardingTableEntry link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getNode());
+        bp.setNodeId(link.getNodeId());
         bp.setBridgePort(link.getBridgePort());
         bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setBridgePortIfName(link.getBridgePortIfName());
         bp.setVlan(link.getVlan());
-        bp.setCreateTime(link.getBridgeMacLinkCreateTime());
-        bp.setPollTime(link.getBridgeMacLinkLastPollTime());
+        return bp;
+    }
+
+    public static BridgePort getFromBridgeMacLink(
+            BridgeMacLink link) {
+        BridgePort bp = new BridgePort();
+        bp.setNodeId(link.getNode().getId());
+        bp.setBridgePort(link.getBridgePort());
+        bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
+        bp.setVlan(link.getVlan());
         return bp;
     }
 
     public static BridgePort getFromBridgeBridgeLink(BridgeBridgeLink link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getNode());
+        bp.setNodeId(link.getNode().getId());
         bp.setBridgePort(link.getBridgePort());
         bp.setBridgePortIfIndex(link.getBridgePortIfIndex());
-        bp.setBridgePortIfName(link.getBridgePortIfName());
         bp.setVlan(link.getVlan());
-        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
-        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
         return bp;
     }
 
     public static BridgePort getFromDesignatedBridgeBridgeLink(BridgeBridgeLink link) {
         BridgePort bp = new BridgePort();
-        bp.setNode(link.getDesignatedNode());
+        bp.setNodeId(link.getDesignatedNode().getId());
         bp.setBridgePort(link.getDesignatedPort());
         bp.setBridgePortIfIndex(link.getDesignatedPortIfIndex());
-        bp.setBridgePortIfName(link.getDesignatedPortIfName());
         bp.setVlan(link.getDesignatedVlan());
-        bp.setCreateTime(link.getBridgeBridgeLinkCreateTime());
-        bp.setPollTime(link.getBridgeBridgeLinkLastPollTime());
         return bp;
     }
 
@@ -101,7 +85,7 @@ public class BridgePort {
         int result = 1;
         result = prime * result
                 + ((m_bridgePort == null) ? 0 : m_bridgePort.hashCode());
-        result = prime * result + ((m_node == null) ? 0 : m_node.getId().hashCode());
+        result = prime * result + ((m_node == null) ? 0 : m_node.hashCode());
         return result;
     }
 
@@ -122,15 +106,16 @@ public class BridgePort {
         if (m_node == null) {
             if (other.m_node != null)
                 return false;
-        } else if (!m_node.getId().equals(other.m_node.getId()))
+        } else if (!m_node.equals(other.m_node))
             return false;
         return true;
     }
 
-    public OnmsNode getNode() {
+    public Integer getNodeId() {
         return m_node;
     }
-    public void setNode(OnmsNode node) {
+
+    public void setNodeId(Integer node) {
         m_node = node;
     }
     public Integer getBridgePort() {
@@ -145,42 +130,28 @@ public class BridgePort {
     public void setBridgePortIfIndex(Integer bridgePortIfIndex) {
         m_bridgePortIfIndex = bridgePortIfIndex;
     }
-    public String getBridgePortIfName() {
-        return m_bridgePortIfName;
-    }
-    public void setBridgePortIfName(String bridgePortIfName) {
-        m_bridgePortIfName = bridgePortIfName;
-    }
+
     public Integer getVlan() {
         return m_vlan;
     }
     public void setVlan(Integer vlan) {
         m_vlan = vlan;
     }
-    
-    public Date getCreateTime() {
-        return m_createTime;
-    }
-    public void setCreateTime(Date time) {
-        m_createTime = time;
-    }
-    public Date getPollTime() {
-        return m_pollTime;
-    }
-    public void setPollTime(Date time) {
-        m_pollTime = time;
-    }
-    
+        
     public String printTopology() {
-        final StringBuilder strbfr = new StringBuilder();
 
-        strbfr.append("bridge port:[nodeid:["); 
-        strbfr.append(getNode().getId());
-        strbfr.append("], bridgeport:");
+        final StringBuffer strbfr = new StringBuffer();
+        strbfr.append("nodeid:["); 
+        strbfr.append(getNodeId());
+        strbfr.append("], bridgeport:[");
         strbfr.append(getBridgePort());
-        strbfr.append("]\n");
+        strbfr.append("], ifindex:[");
+        strbfr.append(getBridgePortIfIndex());
+        strbfr.append("], vlan:[");
+        strbfr.append(getVlan());
+        strbfr.append("]");
 
         return strbfr.toString();
-        }
+    }
 
 }

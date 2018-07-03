@@ -28,6 +28,9 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
@@ -105,5 +108,14 @@ public class MockSnmpInterfaceDao extends AbstractMockDao<OnmsSnmpInterface, Int
     @Override
     public OnmsSnmpInterface findByNodeIdAndDescription(Integer nodeId, String description) {
         throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public void markHavingFlows(final Integer nodeId, final Collection<Integer> snmpIfIndexes) {
+    }
+
+    @Override
+    public List<OnmsSnmpInterface> findAllHavingFlows(Integer nodeId) {
+        return Collections.emptyList();
     }
 }

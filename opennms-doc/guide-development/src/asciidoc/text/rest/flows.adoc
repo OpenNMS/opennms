@@ -39,14 +39,7 @@ There is no support for using `OR` logic, or combinations thereof.
                                    Support either node id (integer) i.e. 1, or foreign source and foreign id lookups i.e. FS:FID.
 |===
 
-The `exporters` endpoints also support:
-
-|===
-| name               | default   | comment
-| limit              | 10        | Limits the number of exporters (for summary queries) or the number of interfaces (for detailed queries) returned.
-
-                                   In a case where the elements are truncated, those with the most flows will be returned.
-|===
+The `exporters` endpoints do not support any parameters.
 
 The `applications` endpoints also support:
 
