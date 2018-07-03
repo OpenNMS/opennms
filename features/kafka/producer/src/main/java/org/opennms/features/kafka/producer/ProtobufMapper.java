@@ -97,7 +97,7 @@ public class ProtobufMapper {
                 .forEach(builder::addCategory);
 
         setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
-        
+
         OnmsHwEntity rootEntity = hwEntityDao.findRootByNodeId(node.getId());
         if (rootEntity != null) {
             builder.setInventory(toHwEntity(rootEntity));
@@ -105,12 +105,12 @@ public class ProtobufMapper {
 
         return builder;
     }
-    
+
     public OpennmsModelProtos.HwEntity.Builder toHwEntity(OnmsHwEntity entity) {
         if (entity == null) {
             return null;
         }
-        
+
         final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder()
                 .setEntityId(entity.getId())
                 .setEntPhysicalIndex(entity.getEntPhysicalIndex());
@@ -149,7 +149,7 @@ public class ProtobufMapper {
                 .setOid(alias.getOid());
         return builder;
     }
-    
+
     public OpennmsModelProtos.Event.Builder toEvent(Event event) {
         if (event == null) {
             return null;
