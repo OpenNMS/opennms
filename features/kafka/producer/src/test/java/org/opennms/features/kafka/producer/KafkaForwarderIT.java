@@ -182,7 +182,20 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             public void onPopulate(DatabasePopulator populator, HwEntityDao dao) {
                 OnmsNode node = new OnmsNode();
                 node.setId(1);
-                dao.save(populateHwEntity(node));
+                OnmsHwEntity port = getHwEntityPort(node);
+                dao.save(port);
+                OnmsHwEntity container = getHwEntityContainer(node);
+                container.addChildEntity(port);
+                dao.save(container);
+                OnmsHwEntity module = getHwEntityModule(node);
+                module.addChildEntity(container);
+                dao.save(module);
+                OnmsHwEntity powerSupply = getHwEntityPowerSupply(node);
+                dao.save(powerSupply);
+                OnmsHwEntity chassis = getHwEntityChassis(node);
+                chassis.addChildEntity(module);
+                chassis.addChildEntity(powerSupply);
+                dao.save(chassis);
             }
 
             @Override
@@ -395,7 +408,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         }
     }
 
-    private OnmsHwEntity populateHwEntity(OnmsNode node) {
+    private OnmsHwEntity getHwEntityChassis(OnmsNode node) {
         final OnmsHwEntity chassis = new OnmsHwEntity();
         chassis.setNode(node);
         chassis.setEntPhysicalClass("chassis");
@@ -408,7 +421,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         chassis.setEntPhysicalSerialNum("FOC1701V24Y");
         chassis.setEntPhysicalSoftwareRev("12.2(60)EZ1");
         chassis.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.3.760");
-
+        return chassis;
+    }
+    private OnmsHwEntity getHwEntityPowerSupply(OnmsNode node) {
         final OnmsHwEntity powerSupply = new OnmsHwEntity();
         powerSupply.setNode(node);
         powerSupply.setEntPhysicalClass("powerSupply");
@@ -416,8 +431,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         powerSupply.setEntPhysicalIsFRU(false);
         powerSupply.setEntPhysicalModelName("ME-3400EG-2CS-A - Fan 0");
         powerSupply.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.7.81");
-        chassis.addChildEntity(powerSupply);
-
+        return powerSupply;
+    }
+    private OnmsHwEntity getHwEntityModule(OnmsNode node) {
         final OnmsHwEntity module = new OnmsHwEntity();
         module.setNode(node);
         module.setEntPhysicalClass("module");
@@ -426,8 +442,19 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         module.setEntPhysicalModelName("ME-3400EG-2CS-A - Power Supply 0");
         module.setEntPhysicalSerialNum("LIT16490HHP");
         module.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.6.223");
-        chassis.addChildEntity(module);
-
+        return module;
+    }
+    private OnmsHwEntity getHwEntityContainer(OnmsNode node) {
+        OnmsHwEntity container = new OnmsHwEntity();
+        container.setNode(node);
+        container.setEntPhysicalClass("container");
+        container.setEntPhysicalDescr("GigabitEthernet Container");
+        container.setEntPhysicalIsFRU(false);
+        container.setEntPhysicalName("GigabitEthernet0/4 Container");
+        container.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.5.115");
+        return container;
+    }
+    private OnmsHwEntity getHwEntityPort(OnmsNode node) {
         final OnmsHwEntity port = new OnmsHwEntity();
         port.setNode(node);
         port.setEntPhysicalAlias("10104");
@@ -440,20 +467,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         port.setEntPhysicalSerialNum("L03C2AC0179");
         port.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.10.253");
         port.setEntAliases(new TreeSet<>(Arrays.asList(new OnmsHwEntityAlias(0, ".1.3.6.1.2.1.2.2.1.1.10104"))));
-
-        OnmsHwEntity container = new OnmsHwEntity();
-        container.setNode(node);
-        container.setEntPhysicalClass("container");
-        container.setEntPhysicalDescr("GigabitEthernet Container");
-        container.setEntPhysicalIsFRU(false);
-        container.setEntPhysicalName("GigabitEthernet0/4 Container");
-        container.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.5.115");
-        container.addChildEntity(port);
-        module.addChildEntity(container);
-
-        return chassis;
+        return port;
     }
-    
+
     @After
     public void tearDown() {
         if (kafkaConsumer != null) {

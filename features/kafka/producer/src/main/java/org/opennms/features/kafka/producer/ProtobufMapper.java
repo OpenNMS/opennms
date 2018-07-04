@@ -31,7 +31,6 @@ package org.opennms.features.kafka.producer;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -137,11 +136,12 @@ public class ProtobufMapper {
         // Add aliases, sorting them by index
         entity.getEntAliases()
                 .stream()
-                .forEach(alias -> toHwAlias(alias));
+                .forEach(alias -> builder.addEntHwAlias(toHwAlias(alias)));
         // Add children
         entity.getChildren()
                 .stream()
-                .forEach(hwEntity -> toHwEntity(hwEntity));
+                .forEach(child -> builder.addChildren(toHwEntity(child)));
+
         return builder;
     }
 
