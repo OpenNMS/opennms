@@ -50,7 +50,7 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
  * => fmt can't be configured via a System Property (without side effects)
  * => we want to support the new java.time classes
  *
- * It will output datetimes as ISO_8601 type style unless otherwise defined in opnnms.properties.
+ * It will output datetimes as ISO_8601 type style unless otherwise defined in opennms.properties.
  * See also:
  *   https://en.wikipedia.org/wiki/ISO_8601 and
  *   https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
@@ -58,9 +58,20 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 public class DateTimeTag extends SimpleTagSupport {
 
     final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
-    private final static Logger log = Logger.getLogger(DateTimeTag.class.getName());
+    private final static Logger LOG = Logger.getLogger(DateTimeTag.class.getName());
 
-    private final static DateTimeFormatter DEFAULT_FORMATTER = getDefaultFormatter();
+    private final static DateTimeFormatter DEFAULT_FORMATTER = new DateTimeFormatterBuilder()
+            .parseCaseInsensitive()
+            .append(ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .appendValue(HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(MINUTE_OF_HOUR, 2)
+            .optionalStart()
+            .appendLiteral(':')
+            .appendValue(SECOND_OF_MINUTE, 2)
+            .appendOffsetId().toFormatter()
+            .withZone(ZoneId.systemDefault());
 
 
     private Instant instant;
@@ -75,7 +86,7 @@ public class DateTimeTag extends SimpleTagSupport {
             try {
                 this.formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
             } catch (IllegalArgumentException e) {
-                log.log(Level.WARNING,
+                LOG.log(Level.WARNING,
                         String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
                                 " Please see also java.time.format.DateTimeFormatter for the correct syntax",
                                 SYSTEM_PROPERTY_DATE_FORMAT,
@@ -84,22 +95,6 @@ public class DateTimeTag extends SimpleTagSupport {
                 this.formatter = DEFAULT_FORMATTER;
             }
         }
-    }
-
-    private static DateTimeFormatter getDefaultFormatter() {
-
-        return new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendLiteral('T')
-                .appendValue(HOUR_OF_DAY, 2)
-                .appendLiteral(':')
-                .appendValue(MINUTE_OF_HOUR, 2)
-                .optionalStart()
-                .appendLiteral(':')
-                .appendValue(SECOND_OF_MINUTE, 2)
-                .appendOffsetId().toFormatter()
-                .withZone(ZoneId.systemDefault());
     }
 
     @Override
