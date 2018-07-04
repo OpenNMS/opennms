@@ -111,9 +111,14 @@ public class ProtobufMapper {
             return null;
         }
 
-        final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder()
-                .setEntityId(entity.getId())
-                .setEntPhysicalIndex(entity.getEntPhysicalIndex());
+        final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder();
+
+        if (entity.getId() != null) {
+                builder.setEntityId(entity.getId());
+        }
+        if (entity.getEntPhysicalIndex() != null) {
+                builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
+        }
         if (entity.getEntPhysicalClass() != null) {
             builder.setEntPhysicalClass(entity.getEntPhysicalClass());
         }

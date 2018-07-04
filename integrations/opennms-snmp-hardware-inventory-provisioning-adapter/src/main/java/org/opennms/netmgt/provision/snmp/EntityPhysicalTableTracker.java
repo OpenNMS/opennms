@@ -107,7 +107,7 @@ public class EntityPhysicalTableTracker extends TableTracker {
                 parent.addChildEntity(entity);
             }
         }
-        entities.add(entity);        
+        entities.add(entity);
     }
 
     /**
