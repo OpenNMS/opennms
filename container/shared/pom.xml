@@ -36,12 +36,12 @@
                         <!-\- OPENNMS: Add the OpenNMS Karaf extensions feature repository -\->
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                     </bootRepositories> -->
-		    <descriptors>
+		            <descriptors>
                         <!-- OPENNMS: Add the OpenNMS Karaf extensions feature repository -->
                         <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</descriptor>
                         <!-- OPENNMS: Additional tools -->
                         <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
-		    </descriptors>
+		            </descriptors>
                     <installedFeatures>
                         <feature>wrapper</feature>
 

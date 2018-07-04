@@ -5,12 +5,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
-    <!-- Make all features available in sentinel known to the system -->
-    <repository>mvn:org.apache.karaf.features/spring/4.1.5/xml/features</repository>
-    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
-    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
-    <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</repository>
-
     <!-- Install bootstrap feature to start all required features automatically -->
     <feature name="autostart-bootstrap-modules" version="${project.version}" start-level="100" install="auto">
         <feature>scv</feature>
