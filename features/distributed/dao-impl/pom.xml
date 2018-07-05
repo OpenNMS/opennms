@@ -99,7 +99,6 @@
                             org.opennms.netmgt.config.tl1d,
 
                             org.opennms.netmgt.dao.api,
-                            org.opennms.netmgt.dao.stats,
                             org.opennms.netmgt.dao.support,
                             org.opennms.netmgt.dao.util,
                             org.opennms.netmgt.events.api,

@@ -372,6 +372,6 @@
     <onmsgi:service interface="org.opennms.netmgt.dao.api.TopologyDao" ref="topologyDao" />
 
     <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmStatisticsService" ref="alarmStatisticsService" />
 
 </beans>

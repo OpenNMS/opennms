@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.stats;
+package org.opennms.netmgt.dao.api;
 
 import org.opennms.core.criteria.Criteria;
 import org.springframework.transaction.annotation.Transactional;
