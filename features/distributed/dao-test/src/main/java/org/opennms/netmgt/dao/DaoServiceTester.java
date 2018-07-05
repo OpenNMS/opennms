@@ -40,8 +40,6 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceDao;
-import org.opennms.netmgt.bsm.persistence.api.BusinessServiceEdgeDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.DemandPollDao;
@@ -52,8 +50,8 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.NodeLabel;
 import org.opennms.netmgt.dao.api.OnmsDao;
 import org.opennms.netmgt.dao.api.SessionFactoryWrapper;
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.dao.api.StatisticsService;
+import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
@@ -86,11 +84,7 @@ public class DaoServiceTester {
                     SessionFactoryWrapper.class,
                     TransactionOperations.class,
                     DemandPollDao.class,
-                    NodeLabel.class, // parts are already verified by NodeDao
-                    // TODO MVR service cannot be loaded at the moment, why that is, needs to be figured out...
-                    BusinessServiceDao.class,
-                    // TODO MVR service cannot be loaded at the moment, why that is, needs to be figured out...
-                    BusinessServiceEdgeDao.class
+                    NodeLabel.class // parts are already verified by NodeDao
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
             // TODO MVR move to opennms only
