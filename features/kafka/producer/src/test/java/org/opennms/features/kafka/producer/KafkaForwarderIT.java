@@ -100,8 +100,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javassist.bytecode.analysis.ControlFlow.Node;
-
 /**
  * Verifies events/alarms/nodes forwarded to Kafka.
  *
