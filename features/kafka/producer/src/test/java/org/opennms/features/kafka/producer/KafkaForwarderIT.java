@@ -100,6 +100,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import javassist.bytecode.analysis.ControlFlow.Node;
+
 /**
  * Verifies events/alarms/nodes forwarded to Kafka.
  *
@@ -293,6 +295,17 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
+
+        // Verify the consumed Node objects
+        List<org.opennms.features.kafka.producer.model.OpennmsModelProtos.Node> nodes = kafkaConsumer.getNodes();
+        assertThat(nodes.size(), equalTo(2));
+        // Verify the first node has hwInventory DAG including the Port with a hwEntAlias
+        assertThat(nodes.get(0), not(nullValue()));
+        assertThat(nodes.get(0).getHwInventory(), not(nullValue()));
+        assertThat(nodes.get(0).getHwInventory().getChildrenList().size(), equalTo(2));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAliasCount(), equalTo(1));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getIndex(), equalTo(0));
+        assertThat(nodes.get(0).getHwInventory().getChildren(1).getChildren(0).getChildren(0).getEntHwAlias(0).getOid(), equalTo(".1.3.6.1.2.1.2.2.1.1.10104"));
 
         // Now delete the alarm directly in the database
         alarmDao.delete(alarm);

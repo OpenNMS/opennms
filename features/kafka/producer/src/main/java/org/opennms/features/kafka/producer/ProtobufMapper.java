@@ -99,13 +99,13 @@ public class ProtobufMapper {
 
         OnmsHwEntity rootEntity = hwEntityDao.findRootByNodeId(node.getId());
         if (rootEntity != null) {
-            builder.setInventory(toHwEntity(rootEntity));
+            builder.setHwInventory(toHwEntity(rootEntity));
         }
 
         return builder;
     }
 
-    public OpennmsModelProtos.HwEntity.Builder toHwEntity(OnmsHwEntity entity) {
+    public static OpennmsModelProtos.HwEntity.Builder toHwEntity(OnmsHwEntity entity) {
         if (entity == null) {
             return null;
         }
@@ -113,10 +113,10 @@ public class ProtobufMapper {
         final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder();
 
         if (entity.getId() != null) {
-                builder.setEntityId(entity.getId());
+            builder.setEntityId(entity.getId());
         }
         if (entity.getEntPhysicalIndex() != null) {
-                builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
+            builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
         }
         if (entity.getEntPhysicalClass() != null) {
             builder.setEntPhysicalClass(entity.getEntPhysicalClass());
@@ -125,7 +125,7 @@ public class ProtobufMapper {
             builder.setEntPhysicalDescr(entity.getEntPhysicalDescr());
         }
         if (entity.getEntPhysicalIsFRU() != null) {
-            builder.setEntPhysicalIsFRU(entity.getEntPhysicalIsFRU());
+            builder.setEntPhysicalIsFru(entity.getEntPhysicalIsFRU());
         }
         if (entity.getEntPhysicalName() != null) {
             builder.setEntPhysicalName(entity.getEntPhysicalName());
@@ -133,7 +133,7 @@ public class ProtobufMapper {
         if (entity.getEntPhysicalVendorType() != null) {
             builder.setEntPhysicalVendorType(entity.getEntPhysicalVendorType());
         }
-        // Add aliases, sorting them by index
+        // Add aliases
         entity.getEntAliases()
                 .stream()
                 .forEach(alias -> builder.addEntHwAlias(toHwAlias(alias)));
@@ -145,7 +145,7 @@ public class ProtobufMapper {
         return builder;
     }
 
-    public OpennmsModelProtos.HwAlias.Builder toHwAlias(OnmsHwEntityAlias alias) {
+    public static OpennmsModelProtos.HwAlias.Builder toHwAlias(OnmsHwEntityAlias alias) {
         if (alias == null) {
             return null;
         }

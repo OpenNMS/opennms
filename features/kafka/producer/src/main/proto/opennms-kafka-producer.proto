@@ -101,14 +101,14 @@ message HwAlias {
 }
 
 message HwEntity {
-  uint32 entPhysicalIndex = 1;
-  uint32 entityId = 2;
-  string entPhysicalClass = 3;
-  string entPhysicalDescr = 4;
-  bool entPhysicalIsFRU = 5;
-  string entPhysicalName = 6;
-  string entPhysicalVendorType = 7;
-  repeated HwAlias entHwAlias = 8;
+  uint32 ent_physical_index = 1;
+  uint32 entity_id = 2;
+  string ent_physical_class = 3;
+  string ent_physical_descr = 4;
+  bool ent_physical_is_fru = 5;
+  string ent_physical_name = 6;
+  string ent_physical_vendor_type = 7;
+  repeated HwAlias ent_hw_alias = 8;
   repeated HwEntity children = 9;
 }
 
@@ -125,5 +125,5 @@ message Node {
   string sys_object_id = 10;
   repeated IpInterface ip_interface = 11;
   repeated SnmpInterface snmp_interface = 12;
-  HwEntity inventory = 13;
+  HwEntity hw_inventory = 13;
 }

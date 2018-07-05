@@ -32,7 +32,7 @@
 
   </changeSet>
 
-<changeSet author="smith" id="23.0.0-ent_alias_inventory">
+  <changeSet author="smith" id="23.0.0-ent_alias_inventory">
 	<createTable tableName="hwentityalias">
 		<column name="id" type="integer">
 			<constraints primaryKey="true" nullable="false" />
@@ -43,7 +43,7 @@
 		<column name="index" type="integer">
 			<constraints nullable="false" />
 		</column>
-		<column name="oid" type="varchar(256)">
+		<column name="oid" type="text">
 			<constraints nullable="false" />
 		</column>
 	</createTable>
@@ -63,6 +63,6 @@
 	<rollback>
 		<dropTable tableName="hwentityalias" />
 	</rollback>
-</changeSet>
+  </changeSet>
 
 </databaseChangeLog>

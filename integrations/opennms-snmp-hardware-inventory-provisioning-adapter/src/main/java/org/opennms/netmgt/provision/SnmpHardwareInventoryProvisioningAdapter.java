@@ -86,6 +86,9 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
     /** The Constant NAME. */
     public static final String NAME = "SnmpHardwareInventoryProvisioningAdapter";
 
+    /** The Constant SNMP OID for where we walk entAliasMapping. */
+    private static final SnmpObjId ENT_ALIAS_MAPPING_IDENTIFIER = SnmpObjId.get(".1.3.6.1.2.1.47.1.3.2.1.2");
+
     /** The node DAO. */
     private NodeDao m_nodeDao;
 
@@ -255,7 +258,7 @@ public class SnmpHardwareInventoryProvisioningAdapter extends SimplerQueuedProvi
 
 
         // walk the entAliasMappingTable
-        final CompletableFuture<List<SnmpResult>> aliasesFuture = m_locationAwareSnmpClient.walk(agentConfig, SnmpObjId.get(".1.3.6.1.2.1.47.1.3.2.1.2"))
+        final CompletableFuture<List<SnmpResult>> aliasesFuture = m_locationAwareSnmpClient.walk(agentConfig, ENT_ALIAS_MAPPING_IDENTIFIER)
             .withDescription("entHwAliasMib" + '_' + node.getLabel())
             .withLocation(node.getLocation() != null ? node.getLocation().getLocationName() : null)
             .execute();
