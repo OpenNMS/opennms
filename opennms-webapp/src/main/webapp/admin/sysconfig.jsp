@@ -37,6 +37,8 @@
 <%@page import="org.opennms.core.spring.BeanUtils"%>
 <%@page import="org.opennms.netmgt.config.SyslogdConfigFactory"%>
 <%@page import="org.opennms.netmgt.config.TrapdConfigFactory"%>
+<%@page import="java.time.Instant"%>
+<%@taglib uri="../WEB-INF/taglib.tld" prefix="onms" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="OpenNMS System Configuration" />
@@ -135,7 +137,7 @@
       <table class="table table-condensed">
         <tr>
           <th>Server&nbsp;Time:</th>
-          <td><%=new java.util.Date()%></td>
+          <td><onms:datetime instant="${Instant.now()}"/></td>
         </tr>
         <tr>
           <th>Client&nbsp;Time:</th>
