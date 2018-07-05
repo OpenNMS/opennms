@@ -30,6 +30,7 @@ package org.opennms.netmgt.dao;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -83,8 +84,7 @@ public class DaoServiceTester {
             .withIgnoredClass(
                     SessionFactoryWrapper.class,
                     TransactionOperations.class,
-                    DemandPollDao.class,
-                    NodeLabel.class // parts are already verified by NodeDao
+                    DemandPollDao.class
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
             // TODO MVR move to opennms only
@@ -119,6 +119,13 @@ public class DaoServiceTester {
             })
             .withTest(StatisticsService.class, bean -> {
                 bean.getTotalCount(new CriteriaBuilder(OnmsNode.class).toCriteria());
+            })
+            .withTest(NodeLabel.class, bean -> {
+                try {
+                    bean.computeLabel(1);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
             });
 
 
