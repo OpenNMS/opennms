@@ -183,11 +183,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 
-//		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
-//		demandPollDao.setAllocateIdStmt(m_db
-//				.getNextSequenceValStatement("demandPollNxtId"));
-//		m_demandPollDao = demandPollDao;
-
 		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
@@ -255,22 +250,6 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
         assertFalse(poller.pollableServiceInPackage(null, null, pkg));
         poller = null;
     }
-
-//	public void testDemandPollService() {
-//		DemandPoll demandPoll = new DemandPoll();
-//		demandPoll.setDescription("Test Poll");
-//		demandPoll.setRequestTime(new Date());
-//		demandPoll.setUserName("admin");
-//
-//		m_demandPollDao.save(demandPoll);
-//
-//		assertNotNull(demandPoll.getId());
-//
-//		MockService httpService = m_network
-//				.getService(2, "192.168.1.3", "HTTP");
-//		Event demandPollEvent = httpService.createDemandPollEvent(demandPoll.getId());
-//
-//	}
 
     @Test
     public void testNullInterfaceOnNodeDown() {

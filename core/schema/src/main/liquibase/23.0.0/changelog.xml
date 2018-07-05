@@ -65,4 +65,28 @@
 	</rollback>
   </changeSet>
 
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-table">
+    <dropTable tableName="pollresults"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'pollresultnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="pollresultnxtid" />
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-table">
+    <dropTable tableName="demandpolls"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'demandpollnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="demandpollnxtid" />
+  </changeSet>
 </databaseChangeLog>

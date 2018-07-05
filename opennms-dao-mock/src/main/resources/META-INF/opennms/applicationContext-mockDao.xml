@@ -63,9 +63,6 @@
     <bean id="categoryDao" class="org.opennms.netmgt.dao.mock.MockCategoryDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryDao" ref="categoryDao" />
 
-    <bean id="demandPollDao" class="org.opennms.netmgt.dao.mock.MockDemandPollDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.DemandPollDao" ref="demandPollDao" />
-
     <bean id="distPollerDao" class="org.opennms.netmgt.dao.mock.MockDistPollerDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 

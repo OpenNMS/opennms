@@ -486,11 +486,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 		System.out.println(executeCommand("feature:list -i"));
 	}
 	@Test
-	public void testInstallFeatureOpennmsPollerApi() {
-		installFeature("opennms-poller-api");
-		System.out.println(executeCommand("feature:list -i"));
-	}
-	@Test
 	public void testInstallFeatureOpennmsPollerMonitorsCore() {
 		installFeature("opennms-poller-monitors-core");
 		System.out.println(executeCommand("feature:list -i"));
@@ -499,7 +494,6 @@ public class OnmsFeatureKarafIT extends KarafTestCase {
 	public void testInstallFeatureOpennmsPollerShell() {
 		installFeature("opennms-config"); // System classpath
 		installFeature("opennms-dao-api"); // System classpath
-		installFeature("opennms-poller-api"); // System classpath
 		installFeature("opennms-poller-shell");
 		System.out.println(executeCommand("feature:list -i"));
 	}

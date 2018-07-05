@@ -410,16 +410,6 @@ public class MockService extends MockElement implements MonitoredService {
         return getInterface().getAddress();    
     }
 
-	/**
-	 * <p>createDemandPollEvent</p>
-	 *
-	 * @param demandPollId a int.
-	 * @return a {@link org.opennms.netmgt.xml.event.Event} object.
-	 */
-	public Event createDemandPollEvent(int demandPollId) {
-		return MockEventUtil.createDemandPollServiceEvent("Test", this, demandPollId);
-	}
-
     public Event createOutageCreatedEvent() {
         return MockEventUtil.createOutageCreatedEvent("Test", this, null);
     }

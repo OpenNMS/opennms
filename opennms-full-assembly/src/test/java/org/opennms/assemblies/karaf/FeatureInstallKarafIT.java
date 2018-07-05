@@ -109,7 +109,6 @@ public class FeatureInstallKarafIT extends KarafTestCase {
         installFeature("opennms-icmp-best");
         installFeature("opennms-javamail");
         installFeature("opennms-model");
-        installFeature("opennms-poller-api");
         // OSGi dependency problems
         //installFeature("opennms-provisioning");
         installFeature("opennms-rrd-api");
