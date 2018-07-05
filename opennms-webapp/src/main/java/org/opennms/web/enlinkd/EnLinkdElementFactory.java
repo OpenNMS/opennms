@@ -525,8 +525,10 @@ public class EnLinkdElementFactory implements InitializingBean,
 
         IsIsElement isiselement = m_isisElementDao.findByIsIsSysId(link.getIsisISAdjNeighSysID());
         if (isiselement != null) {
-            linknode.setIsisISAdjNeighSysID(getAdjSysIDString(link.getIsisISAdjNeighSysID(),
-                                                              isiselement.getNode().getLabel()));
+            linknode.setIsisISAdjNeighSysID(getHostString(isiselement.getNode().getLabel(), 
+                                                          "ISSysID", 
+                                                          link.getIsisISAdjNeighSysID()
+                                                              ));
             linknode.setIsisISAdjUrl(getNodeUrl(isiselement.getNode().getId()));
         } else {
             linknode.setIsisISAdjNeighSysID(link.getIsisISAdjNeighSysID());
@@ -601,8 +603,11 @@ public class EnLinkdElementFactory implements InitializingBean,
         return bridgeNode;
     }
     
-    private BridgeLinkNode create(BridgePort bridgePort) {
+    @Transactional
+    private BridgeLinkNode convertFromModel(Integer nodeid, SharedSegment segment) throws BridgeTopologyException {
+        
         BridgeLinkNode linknode = new BridgeLinkNode();
+        BridgePort bridgePort = segment.getBridgePort(nodeid);
         final OnmsSnmpInterface iface = bridgePort.getBridgePortIfIndex() == null
                 ? null
                 : m_snmpInterfaceDao.findByNodeIdAndIfIndex(bridgePort.getNodeId(),
@@ -610,7 +615,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         if (iface != null) {
             linknode.setBridgeLocalPort(getPortString(iface,"bridgeport", bridgePort.getBridgePort().toString()));
             linknode.setBridgeLocalPortUrl(getSnmpInterfaceUrl(bridgePort.getNodeId(),
-          bridgePort.getBridgePortIfIndex()));
+                                                               bridgePort.getBridgePortIfIndex()));
         } else {
             linknode.setBridgeLocalPort(getPortString("port",bridgePort.getBridgePortIfIndex(),"bridgeport", bridgePort.getBridgePort().toString()));
         }
@@ -618,15 +623,16 @@ public class EnLinkdElementFactory implements InitializingBean,
         if (bridgeElement != null) {
             linknode.setBridgeInfo(bridgeElement.getVlanname());
         }
-        return linknode;
+        return addBridgeRemotesNodes(nodeid, null, linknode, segment);
     }
 
     @Transactional
-    private BridgeLinkNode create(String mac, List<OnmsIpInterface> ipaddrs) {
+    private BridgeLinkNode convertFromModel(Integer nodeid, String mac, List<OnmsIpInterface> ipaddrs, SharedSegment segment) {
         BridgeLinkNode linknode = new BridgeLinkNode();
+        
         if (ipaddrs.size() == 0) {
             linknode.setBridgeLocalPort(getIdString("mac", mac));
-            return linknode;
+            return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
         }
         
         if (ipaddrs.size() == 1 ) {
@@ -641,23 +647,16 @@ public class EnLinkdElementFactory implements InitializingBean,
                     linknode.setBridgeLocalPortUrl(getIpInterfaceUrl(ipiface.getNodeId(),str(ipiface.getIpAddress())));
                 }
             }
-            return linknode;
+            return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
         }
         
         linknode.setBridgeLocalPort(getPortString(getIpListAsStringFromIpInterface(ipaddrs), null, "mac", mac));
-        return linknode;
+        return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
     }
 
     @Transactional
-    private BridgeLinkNode convertFromModel(Integer nodeid, String mac, List<OnmsIpInterface> ipaddrs,
-            SharedSegment segment) throws BridgeTopologyException {
-
-        final BridgeLinkNode linknode; 
-        if (mac == null) {
-            linknode = create(segment.getBridgePort(nodeid));
-        } else {
-            linknode = create(mac,ipaddrs);
-        }
+    private BridgeLinkNode addBridgeRemotesNodes(Integer nodeid, String mac, BridgeLinkNode linknode,
+            SharedSegment segment) {
 
         linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(segment.getCreateTime()));
         linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(segment.getLastPollTime()));
@@ -762,7 +761,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         List<BridgeLinkNode> bridgelinks = new ArrayList<BridgeLinkNode>();
         for (SharedSegment segment: m_bridgetopologyDao.getBridgeSharedSegments(nodeId)) {
             try {
-                bridgelinks.add(convertFromModel(nodeId, null,null, segment));
+                bridgelinks.add(convertFromModel(nodeId, segment));
             } catch (BridgeTopologyException e) {
                 e.printStackTrace();
             }
@@ -790,24 +789,15 @@ public class EnLinkdElementFactory implements InitializingBean,
             if (!segment.containsMac(mac)) {
                 continue;
             }
-            try {
-                nodelinks.add(convertFromModel(nodeId,
-                                               mac,
-                                               mactoIpNodeMap.get(mac),
-                                                                 segment));
-            } catch (BridgeTopologyException e) {
-                e.printStackTrace();
-            }
+            nodelinks.add(convertFromModel(nodeId,
+                                           mac,
+                                           mactoIpNodeMap.get(mac),
+                                                             segment));
         }
         Collections.sort(bridgelinks);
         return bridgelinks;
-
     }
-
-    private String getAdjSysIDString(String adjsysid, String label) {
-        return adjsysid + "(" + label + ")";
-    }
-
+    
     private OnmsSnmpInterface getFromCdpCacheDevicePort(Integer nodeid,
             String cdpCacheDevicePort) {
         final CriteriaBuilder builder = new CriteriaBuilder(
