@@ -168,6 +168,9 @@ public class DaoServiceTester {
 
     private <T> ServiceHolder<T> getService(Class<T> serviceType) {
         final ServiceReference<T> serviceReference = bundleContext.getServiceReference(serviceType);
+        if (serviceReference == null) {
+            throw new IllegalStateException("Service of type '" + serviceType + "' not resolvable");
+        }
         return new ServiceHolder(serviceReference);
     }
 
