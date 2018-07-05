@@ -40,9 +40,11 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SYSOID;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -51,6 +53,7 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
 import org.opennms.netmgt.model.IpNetToMedia;
 import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
@@ -60,6 +63,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -476,8 +480,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
         assertNotNull(m_bridgeTopologyDao);
         
-        //FIXME
-        // this test loading the topology...should be like this!
         m_linkd.getQueryManager().loadBridgeTopology();
 
         for (BroadcastDomain bd:m_linkd.getQueryManager().getAllBroadcastDomains()) {
@@ -892,6 +894,7 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         String mac4="0012cf68d780";
         String mac5="e48d8cf17bcb"; //no ip address
         String mac6="4c0082245938";
+        String mac7="4c0082245937";
         IpNetToMedia ip1mac0 = new IpNetToMedia();
         ip1mac0.setSourceNode(pe01);
         ip1mac0.setSourceIfIndex(25);
@@ -1030,7 +1033,16 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         asw01mac6port19.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
         asw01mac6port19.setBridgeMacLinkLastPollTime(asw01mac6port19.getBridgeMacLinkCreateTime());
 
+        BridgeMacLink shared = new BridgeMacLink();
+        shared.setNode(pe01);
+        shared.setBridgePort(24);
+        shared.setBridgePortIfIndex(10124);
+        shared.setMacAddress(mac7);
+        shared.setLinkType(BridgeMacLinkType.BRIDGE_LINK);        
+        shared.setBridgeMacLinkLastPollTime(shared.getBridgeMacLinkCreateTime());
+        
         m_bridgeBridgeLinkDao.save(asw01pe01link);
+        m_bridgeMacLinkDao.save(shared);
         m_bridgeMacLinkDao.save(pe01mac1port3);
         m_bridgeMacLinkDao.save(pe01mac2port3);
         m_bridgeMacLinkDao.save(pe01mac3port7);
@@ -1047,6 +1059,63 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         assertEquals(3,m_bridgeTopologyDao.getBridgeSharedSegments(pe01.getId()).size());
         assertEquals(3,m_bridgeTopologyDao.getBridgeSharedSegments(asw01.getId()).size());
         assertEquals(0,m_bridgeTopologyDao.getBridgeSharedSegments(ess01.getId()).size());
+        
+        
+        SharedSegment asw01port1segment = m_bridgeTopologyDao.getHostSharedSegment(mac0);
+        assertEquals(3,asw01port1segment.getMacsOnSegment().size());
+        assertTrue(asw01port1segment.containsMac(mac0));
+        assertTrue(asw01port1segment.containsMac(mac4));
+        assertTrue(asw01port1segment.containsMac(mac5));
+        assertEquals(1, asw01port1segment.getBridgePortsOnSegment().size());
+        BridgePort asw01port1 = asw01port1segment.getBridgePortsOnSegment().iterator().next();
+        assertEquals(asw01.getId(), asw01port1.getNodeId());
+        assertEquals(1, asw01port1.getBridgePort().intValue());
+        assertEquals(1001, asw01port1.getBridgePortIfIndex().intValue());
+        
+        SharedSegment pe01port3 = m_bridgeTopologyDao.getHostSharedSegment(mac1);
+        assertEquals(2,pe01port3.getMacsOnSegment().size());
+        assertTrue(pe01port3.containsMac(mac1));
+        assertTrue(pe01port3.containsMac(mac2));
+        assertEquals(1, pe01port3.getBridgePortsOnSegment().size());
+
+        SharedSegment pe01port7 = m_bridgeTopologyDao.getHostSharedSegment(mac3);
+        assertEquals(1,pe01port7.getMacsOnSegment().size());
+        assertTrue(pe01port7.containsMac(mac3));
+        assertEquals(1, pe01port7.getBridgePortsOnSegment().size());
+
+        SharedSegment asw01port19segment = m_bridgeTopologyDao.getHostSharedSegment(mac6);
+        assertEquals(1,asw01port19segment.getMacsOnSegment().size());
+        assertTrue(asw01port19segment.containsMac(mac6));
+        assertEquals(1, asw01port19segment.getBridgePortsOnSegment().size());
+
+        SharedSegment pe01asw01segment = m_bridgeTopologyDao.getHostSharedSegment(mac7);
+        assertEquals(1,pe01asw01segment.getMacsOnSegment().size());
+        assertTrue(pe01asw01segment.containsMac(mac7));
+        assertEquals(2, pe01asw01segment.getBridgePortsOnSegment().size());
+
+        SharedSegment emptysegment = m_bridgeTopologyDao.getHostSharedSegment("001763010920");
+        assertEquals(0, emptysegment.getBridgePortsOnSegment().size());
+        assertEquals(0, emptysegment.getMacsOnSegment().size());
+        
+        //This code is inherited from EnlinkElementFactory
+        Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
+        for (OnmsIpInterface ip : m_ipInterfaceDao.findByNodeId(ess01.getId())) {
+            for (IpNetToMedia ipnetomedia : m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
+                if (!mactoIpNodeMap.containsKey(ipnetomedia.getPhysAddress()))
+                    mactoIpNodeMap.put(ipnetomedia.getPhysAddress(),
+                                   new ArrayList<OnmsIpInterface>());
+                mactoIpNodeMap.get(ipnetomedia.getPhysAddress()).add(ip);
+            }
+        }
+        
+        assertEquals(1, mactoIpNodeMap.size());
+        assertEquals(mac0, mactoIpNodeMap.keySet().iterator().next());
+        Set<String> ipsonmap = new HashSet<String>();
+        mactoIpNodeMap.get(mac0).stream().forEach(onmsip -> ipsonmap.add(onmsip.getIpAddress().getHostAddress()));
+        assertEquals(2, ipsonmap.size());
+        assertTrue(ipsonmap.contains("10.25.39.34"));
+        assertTrue(ipsonmap.contains("10.25.139.61"));                
+
     }
     
 
