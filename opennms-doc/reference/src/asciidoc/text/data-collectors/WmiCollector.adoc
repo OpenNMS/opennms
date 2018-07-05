@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== WmiCollector
+=== WmiCollector
 
 The _WmiCollector_ collects peformance metrics from _Windows_ systems using Windows Management Instrumentation (WMI).
 
-===== Collector Facts
+==== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +15,7 @@ The _WmiCollector_ collects peformance metrics from _Windows_ systems using Wind
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+==== Collector Parameters
 
 .Collector specific parameters for the WmiCollector
 [options="header, autowidth"]

@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== VmwareCollector
+=== VmwareCollector
 
 The _VmwareCollector_ collects peformance metrics for managed entities from _vCenter_.
 
-===== Collector Facts
+==== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +15,7 @@ The _VmwareCollector_ collects peformance metrics for managed entities from _vCe
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+==== Collector Parameters
 
 .Collector specific parameters for the VmwareCollector
 [options="header, autowidth"]

@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== XmpCollector
+=== XmpCollector
 
 The _XmpCollector_ collects peformance metrics via the X/Open Management Protocol API (XMP) protocol.
 
-===== Collector Facts
+==== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +15,7 @@ The _XmpCollector_ collects peformance metrics via the X/Open Management Protoco
 | Supported on Minion | `No`
 |===
 
-===== Collector Parameters
+==== Collector Parameters
 
 .Collector specific parameters for the XmpCollector
 [options="header, autowidth"]

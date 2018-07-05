@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== XmlCollector
+=== XmlCollector
 
 The _XmlCollector_ is used to collect and extract metrics from a _XML_ and _JSON_ documents.
 
-===== Collector Facts
+==== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +15,7 @@ The _XmlCollector_ is used to collect and extract metrics from a _XML_ and _JSON
 | Supported on Minion   | `Yes` (see limitations)
 |===
 
-====== Limitations on _Minion_
+===== Limitations on _Minion_
 
 The following handlers are not currently supported on _Minion_:
 
@@ -23,7 +23,7 @@ The following handlers are not currently supported on _Minion_:
 * Sftp3gppXmlCollectionHandler
 * Sftp3gppVTDXmlCollectionHandler
 
-===== Collector Parameters
+==== Collector Parameters
 
 .Collector specific parameters for the XmlCollector
 [options="header, autowidth"]
@@ -42,7 +42,7 @@ The available handlers include:
 * `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler`
 * `org.opennms.protocols.http.collector.HttpCollectionHandler`
 
-===== XML Collection Configuration
+==== XML Collection Configuration
 
 _XML Collections_ are defined in the `etc/xml-datacollection-config.xml` and `etc/xml-datacollection/`.
 
@@ -82,7 +82,7 @@ With the configuration in place, you can test it using the `collect` command ava
 collection:collect -n 1 org.opennms.protocols.xml.collector.XmlCollector 127.0.0.1 collection=xml-opennms-nodes
 ----
 
-===== Caveats
+==== Caveats
 
 The `org.opennms.protocols.json.collector.DefaultJsonCollectionHandler` requires the fetched document to be single element of type object to make xpath query work.
 If the root element is an array, it will be wrapped in an object whereas the original array is accessible as `/elements`.

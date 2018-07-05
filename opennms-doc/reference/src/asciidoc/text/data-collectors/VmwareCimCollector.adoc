@@ -2,11 +2,11 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== VmwareCimCollector
+=== VmwareCimCollector
 
 The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.
 
-===== Collector Facts
+==== Collector Facts
 
 [options="autowidth"]
 |===
@@ -15,7 +15,7 @@ The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.
 | Supported on Minion | `Yes`
 |===
 
-===== Collector Parameters
+==== Collector Parameters
 
 .Collector specific parameters for the VmwareCimCollector
 [options="header, autowidth"]

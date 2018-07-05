@@ -23,6 +23,12 @@ include::text/cli/resource-cli.adoc[]
 include::text/cli/newts-repository-converter.adoc[]
 include::text/cli/stress-testing.adoc[]
 
+[[ref-daemon-config-files]]
+== Daemon Configuration Files
+include::text/daemon-config-files/eventd.adoc[]
+include::text/daemon-config-files/notifd.adoc[]
+include::text/daemon-config-files/pollerd.adoc[]
+
 [[ref-event-sources]]
 == Event Sources
 include::text/event-sources/snmp-traps.adoc[]
@@ -116,12 +122,6 @@ include::text/provisioning/adapters/ddns-adapter.adoc[]
 
 == Topology Provider
 include::text/topology-provider/graphml-asset-topology-provider.adoc[]
-
-[[ref-daemon-config-files]]
-== Daemon Configuration Files
-include::text/daemon-config-files/eventd.adoc[]
-include::text/daemon-config-files/notifd.adoc[]
-include::text/daemon-config-files/pollerd.adoc[]
 
 [[ref-ticketing-adapters]]
 == Ticketing Adapaters
