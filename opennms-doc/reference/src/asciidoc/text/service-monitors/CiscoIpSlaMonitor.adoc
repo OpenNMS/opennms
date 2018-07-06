@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === CiscoIpSlaMonitor
 
 This monitor can be used to monitor IP SLA configurations on your Cisco devices.

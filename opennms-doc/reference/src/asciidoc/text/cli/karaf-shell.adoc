@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 === Karaf Shell
 
 A number of _Karaf Shell_ commands are made available to help administer and diagnose issues related to performance data collection.

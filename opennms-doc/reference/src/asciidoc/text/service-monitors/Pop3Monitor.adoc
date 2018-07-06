@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === Pop3Monitor
 
 The _POP3_ monitor tests for _POP3_ service availability on a node.

@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images/service-monitors/DhcpMonitor
 
 === DhcpMonitor
 
@@ -85,10 +85,10 @@ This monitor implements the <<ga-service-assurance-monitors-common-parameters, C
 |===
 
 .Visualization of DHCP message flow in broadcast mode
-image::service-assurance/monitors/02_01_dhcp-monitor-messages-broadcast.png[]
+image::service-monitors/DhcpMonitor/01_dhcp-monitor-messages-broadcast.png[]
 
 .Visualization of DHCP message flow in relay mode
-image::service-assurance/monitors/02_02_dhcp-monitor-messages-unicast.png[]
+image::service-monitors/DhcpMonitor/02_dhcp-monitor-messages-unicast.png[]
 
 ==== Example testing DHCP server in the same subnet
 

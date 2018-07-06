@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 === Resource CLI
 
 Sometimes a user want to list or manually delete collected data (resources) of an _{opennms-product-name}_ instance.

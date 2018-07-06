@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === HttpCollector
 
 The _HttpCollector_ is used to collect performance data via _HTTP_ and _HTTPS_.

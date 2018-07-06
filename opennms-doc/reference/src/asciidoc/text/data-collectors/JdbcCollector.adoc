@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === JdbcCollector
 
 The _JdbcCollector_ is used to collect performance data via _JDBC_ drivers.

@@ -1,6 +1,6 @@
 
 // Allow GitHub image rendering
-:imagesdir: ../../../images
+:imagesdir: ../../images/service-monitors/PageSequenceMonitor
 
 === PageSequenceMonitor
 
@@ -33,7 +33,7 @@ First is the overall configuration for `retries` and `timeouts`.
 These parameters are global for the whole path through the web application.
 
 .Configuration overview of the _PSM_
-image::service-assurance/monitors/03_page-sequence-monitor-config.png[]
+image::service-monitors/PageSequenceMonitor/01_page-sequence-monitor-config.png[]
 
 The overall layout of the monitor configuration is more complex.
 Additionally, it is possible to configure a page sequence containing a path through a web application.

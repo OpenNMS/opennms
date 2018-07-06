@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === WmiCollector
 
 The _WmiCollector_ collects peformance metrics from _Windows_ systems using Windows Management Instrumentation (WMI).

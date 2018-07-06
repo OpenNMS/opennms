@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === TcpMonitor
 
 This monitor is used to test IP Layer 4 connectivity using _TCP_.

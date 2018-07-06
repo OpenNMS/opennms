@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === VmwareCimCollector
 
 The _VmwareCimCollector_ collects _ESXi_ host and sensor metrics from _vCenter_.

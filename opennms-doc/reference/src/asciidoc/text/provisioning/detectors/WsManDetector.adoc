@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 ==== WS-Man Detector
 
 The WS-Management detector attempts to connect to the agent defined in `wsman-config.xml` and issues an Identify command.

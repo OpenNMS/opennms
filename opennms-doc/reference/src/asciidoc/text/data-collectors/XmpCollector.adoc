@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === XmpCollector
 
 The _XmpCollector_ collects peformance metrics via the X/Open Management Protocol API (XMP) protocol.

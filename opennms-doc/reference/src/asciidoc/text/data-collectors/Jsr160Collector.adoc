@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === JmxCollector
 
 The _JmxCollector_ is used to collect performance data via _JMX_.

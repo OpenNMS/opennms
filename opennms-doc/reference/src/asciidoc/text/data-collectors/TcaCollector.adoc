@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === TcaCollector
 
 The _TcaCollector_ is used to collect special SNMP data from Juniper TCA Devices.

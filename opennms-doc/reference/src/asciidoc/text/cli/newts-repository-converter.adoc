@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 === Rrd/Jrb to Newts migration utility
 
 This utility can be used to migrate existing _RRDTool-_ or _JRobin_-based data to a _Newts_ cluster.

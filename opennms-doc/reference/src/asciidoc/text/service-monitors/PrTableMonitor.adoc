@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === PrTableMonitor
 
 The _PrTableMonitor_ monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a _Net-SNMP_ agent.

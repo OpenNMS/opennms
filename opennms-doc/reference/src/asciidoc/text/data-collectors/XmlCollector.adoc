@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === XmlCollector
 
 The _XmlCollector_ is used to collect and extract metrics from a _XML_ and _JSON_ documents.

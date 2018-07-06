@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ga-performance-mgmt-stress-testing]]
 ==== Stress Testing
 

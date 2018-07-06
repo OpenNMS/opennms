@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../images
-
 [[ref-ticketing-jira]]
 === JIRA Ticketing Plugin
 

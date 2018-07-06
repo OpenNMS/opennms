@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === SshMonitor
 
 The _SshMonitor_ tests the availability of a _SSH_ service.

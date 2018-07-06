@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === ImapsMonitor
 
 The _IMAPS_ monitor tests the response of an _SSL-enabled_ _IMAP_ server.

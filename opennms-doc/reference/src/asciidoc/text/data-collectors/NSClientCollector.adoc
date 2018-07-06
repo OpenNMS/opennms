@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === NSClientCollector
 
 The _NSClientCollector_ is used to collect performance data over _HTTP_ from _NSClient++_.

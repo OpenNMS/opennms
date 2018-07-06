@@ -1,7 +1,4 @@
 
-// Allow GitHub image rendering
-:imagesdir: ../../../images
-
 === VmwareCollector
 
 The _VmwareCollector_ collects peformance metrics for managed entities from _vCenter_.
