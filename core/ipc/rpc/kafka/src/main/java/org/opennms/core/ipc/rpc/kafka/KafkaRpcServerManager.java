@@ -39,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -56,12 +57,13 @@ import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.rpc.api.RpcModule;
 import org.opennms.core.rpc.api.RpcRequest;
 import org.opennms.core.rpc.api.RpcResponse;
-import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.minion.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
@@ -75,6 +77,11 @@ public class KafkaRpcServerManager {
     private ConfigurationAdmin configAdmin;
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
+    private static final long TIMEOUT_FOR_KAFKA_RPC = 30000;
+    private Cache<String, Long>  rpcIdCache = CacheBuilder.newBuilder()
+            .maximumSize(10000)
+            .expireAfterWrite(10, TimeUnit.MINUTES)
+            .build();
 
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("kafka-consumer-rpc-server-%d")
@@ -194,18 +201,31 @@ public class KafkaRpcServerManager {
                 consumer.subscribe(Arrays.asList(topic));
                 LOG.info("subscribed to topic {}", topic);
                 while (!closed.get()) {
-                    ConsumerRecords<String, byte[]> records = consumer.poll(100);
-                    for (ConsumerRecord<String, byte[]> record : records) {
-                        if (module.getId().equals(EchoRpcModule.RPC_MODULE_ID)) {
-                            String minionId = getMinionIdentity().getId();
-                            if (!(minionId.equals(record.key()))) {
-                                LOG.info("MinionIdentity {} doesn't match with key {}, ignore the request", minionId, record.key());
+                    ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
+                    for (ConsumerRecord<String, byte[]> record : records) {  
+                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
+                        String rpcId = rpcMessage.getRpcId();
+                        boolean hasSystemId = rpcMessage.hasSystemId();
+                        String minionId = getMinionIdentity().getId(); 
+                        if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
+                            // directed RPC and not directed at this minion
+                            LOG.info("MinionIdentity {} doesn't match with systemId {}, ignore the request", minionId,
+                                    rpcMessage.getSystemId());
+                            continue;
+                        } 
+                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
+                        if (hasSystemId) {
+                            // directed RPC, there may be more than one request with same request Id, cache and allow only one.
+                            Long cachedTime = rpcIdCache.getIfPresent(rpcId);
+                            final long now = System.currentTimeMillis();
+                            long cachedValue =  cachedTime != null ? cachedTime.longValue() : 0;
+                            long ttl = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs().longValue() : TIMEOUT_FOR_KAFKA_RPC;
+                            if (now - cachedValue > ttl) {
+                                rpcIdCache.put(rpcId, now);
+                            } else {
                                 continue;
                             }
                         }
-                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
-                        String rpcId = rpcMessage.getRpcId();
-                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
                         CompletableFuture<RpcResponse> future = module.execute(request);
                         future.whenComplete((res, ex) -> {
                             final RpcResponse response;

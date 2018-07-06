@@ -4,5 +4,6 @@ option java_outer_classname = "RpcMessageProtos";
 
 message RpcMessage {
 required string rpc_id = 1;
-required bytes  rpc_content = 2;
+optional string system_id = 2;
+required bytes  rpc_content = 3;
 }

@@ -89,12 +89,14 @@ public class EchoRpcKafkaIT {
     
     private MinionIdentity minionIdentity;
     
-    private EchoRpcModule rpcModule = new EchoRpcModule();
+    private EchoRpcModule echoRpcModule = new EchoRpcModule();
     
     @Before
     public void setup() throws Exception {
         System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID),
-                kafkaServer.getKafkaConnectString());  
+                kafkaServer.getKafkaConnectString());
+        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID),
+                "5000"); 
         rpcClientFactory.start();
         Hashtable<String, Object> kafkaConfig = new Hashtable<>();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
@@ -104,7 +106,7 @@ public class EchoRpcKafkaIT {
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(configAdmin, minionIdentity);
         kafkaRpcServer.init();
-        kafkaRpcServer.bind(rpcModule);
+        kafkaRpcServer.bind(echoRpcModule);
     }
     
     @Test(timeout=60000)
@@ -127,6 +129,16 @@ public class EchoRpcKafkaIT {
     }
     
     @Test(timeout=60000)
+    public void testKafkaRpcAtRemoteLocationWithOutSystemId() throws InterruptedException, ExecutionException {
+        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+        EchoRequest request = new EchoRequest("Kafka-RPC");
+        request.setLocation(REMOTE_LOCATION_NAME);
+        EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
+        EchoResponse actualResponse = echoClient.execute(request).get();
+        assertEquals(expectedResponse, actualResponse);
+    }
+    
+    @Test(timeout=90000)
     public void testKafkaRpcAtRemoteLocationWithWrongSystemId() throws InterruptedException {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
@@ -172,7 +184,7 @@ public class EchoRpcKafkaIT {
     @After
     public void destroy() throws Exception {
         rpcClientFactory.stop();
-        kafkaRpcServer.unbind(rpcModule);
+        kafkaRpcServer.unbind(echoRpcModule);
     }
 
 }
