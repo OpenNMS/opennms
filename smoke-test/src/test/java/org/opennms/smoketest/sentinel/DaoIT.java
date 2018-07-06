@@ -73,7 +73,7 @@ public class DaoIT {
             // Enable Netflow 5 Adapter
             builder.withSentinelEnvironment()
                     .addFile(getClass().getResource("/sentinel/features-dao.xml"), "deploy/features.xml")
-                    .addFile(Paths.get("../features/distributed/dao-test/target/org.opennms.features.distributed.dao-test-23.0.0-SNAPSHOT.jar").toUri().toURL(), "deploy/org.opennms.features.distributed.dao-test-23.0.0-SNAPSHOT.jar");
+                    .addFile(Paths.get("target/deploy-artifacts/org.opennms.features.distributed.dao-test.jar").toUri().toURL(), "deploy/org.opennms.features.distributed.dao-test.jar");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
