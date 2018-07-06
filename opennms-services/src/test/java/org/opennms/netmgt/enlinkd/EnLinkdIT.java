@@ -39,6 +39,7 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SYSOID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SYSOID;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1099,23 +1100,35 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         
         //This code is inherited from EnlinkElementFactory
         Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
-        for (OnmsIpInterface ip : m_ipInterfaceDao.findByNodeId(ess01.getId())) {
-            for (IpNetToMedia ipnetomedia : m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
-                if (!mactoIpNodeMap.containsKey(ipnetomedia.getPhysAddress()))
-                    mactoIpNodeMap.put(ipnetomedia.getPhysAddress(),
+        m_ipInterfaceDao.findByNodeId(ess01.getId()).stream().forEach( ip -> {
+            m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
+                if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress()))
+                    mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
                                    new ArrayList<OnmsIpInterface>());
-                mactoIpNodeMap.get(ipnetomedia.getPhysAddress()).add(ip);
-            }
-        }
+                mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
+            });
+        });
         
         assertEquals(1, mactoIpNodeMap.size());
         assertEquals(mac0, mactoIpNodeMap.keySet().iterator().next());
         Set<String> ipsonmap = new HashSet<String>();
-        mactoIpNodeMap.get(mac0).stream().forEach(onmsip -> ipsonmap.add(onmsip.getIpAddress().getHostAddress()));
+        mactoIpNodeMap.get(mac0).stream().forEach(onmsip -> ipsonmap.add(str(onmsip.getIpAddress())));
         assertEquals(2, ipsonmap.size());
         assertTrue(ipsonmap.contains("10.25.39.34"));
-        assertTrue(ipsonmap.contains("10.25.139.61"));                
-
+        assertTrue(ipsonmap.contains("10.25.139.61"));   
+        
+        Set<Integer> nodelinks = new HashSet<Integer>();
+        for (String mac : mactoIpNodeMap.keySet()) {
+            SharedSegment segment = m_bridgeTopologyDao.getHostSharedSegment(mac);
+            if (segment.isEmpty()) {
+                continue;
+            }
+            nodelinks.add(segment.getDesignatedBridge());
+        }
+       
+        assertEquals(1, nodelinks.size());
+        assertEquals(asw01.getId(), nodelinks.iterator().next());
+        
     }
     
 

@@ -64,6 +64,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.hibernate.BridgeTopologyDaoHibernate;
 import org.opennms.netmgt.dao.hibernate.IpNetToMediaDaoHibernate;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
@@ -91,6 +92,8 @@ import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.opennms.web.api.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -101,6 +104,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @Transactional(readOnly = true)
 public class EnLinkdElementFactory implements InitializingBean,
         EnLinkdElementFactoryInterface {
+
+    private final static Logger LOG = LoggerFactory.getLogger(EnLinkdElementFactory.class);
 
     @Autowired
     private OspfElementDao m_ospfElementDao;
@@ -632,10 +637,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         
         if (ipaddrs.size() == 0) {
             linknode.setBridgeLocalPort(getIdString("mac", mac));
-            return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
-        }
-        
-        if (ipaddrs.size() == 1 ) {
+        } else if (ipaddrs.size() == 1 ) {
             OnmsIpInterface ipiface =ipaddrs.iterator().next();
             if (ipiface != null) {
                 OnmsSnmpInterface snmpiface = ipiface.getSnmpInterface();
@@ -647,10 +649,10 @@ public class EnLinkdElementFactory implements InitializingBean,
                     linknode.setBridgeLocalPortUrl(getIpInterfaceUrl(ipiface.getNodeId(),str(ipiface.getIpAddress())));
                 }
             }
-            return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
+        } else {
+            linknode.setBridgeLocalPort(getPortString(getIpListAsStringFromIpInterface(ipaddrs), null, "mac", mac));
         }
         
-        linknode.setBridgeLocalPort(getPortString(getIpListAsStringFromIpInterface(ipaddrs), null, "mac", mac));
         return addBridgeRemotesNodes(nodeid, mac, linknode, segment);
     }
 
@@ -768,28 +770,29 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
         if (bridgelinks.size() > 0 ) {
             Collections.sort(bridgelinks);
+            LOG.debug("getBridgeLinks: node:[{}] is bridge found {} bridgelinks", nodeId, bridgelinks.size());
             return bridgelinks;
         }
         
         Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
-        for (OnmsIpInterface ip : m_ipInterfaceDao.findByNodeId(nodeId)) {
-            for (IpNetToMedia ipnetomedia : m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress())) {
-                if (!mactoIpNodeMap.containsKey(ipnetomedia.getPhysAddress()))
-                    mactoIpNodeMap.put(ipnetomedia.getPhysAddress(),
+        m_ipInterfaceDao.findByNodeId(nodeId).stream().forEach( ip -> {
+            LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{}", nodeId, str(ip.getIpAddress()));
+            m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
+                if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress())) {
+                    mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
                                    new ArrayList<OnmsIpInterface>());
-                mactoIpNodeMap.get(ipnetomedia.getPhysAddress()).add(ip);
-            }
-        }
-        List<BridgeLinkNode> nodelinks = new ArrayList<BridgeLinkNode>();
+                }
+                mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
+                LOG.debug("getBridgeLinks: node:[{}] is host found {} ip:{} mac:{}", nodeId, str(ip.getIpAddress()),ipnettomedia.getPhysAddress());
+            });
+        });
+
         for (String mac : mactoIpNodeMap.keySet()) {
             SharedSegment segment = m_bridgetopologyDao.getHostSharedSegment(mac);
             if (segment.isEmpty()) {
                 continue;
             }
-            if (!segment.containsMac(mac)) {
-                continue;
-            }
-            nodelinks.add(convertFromModel(nodeId,
+            bridgelinks.add(convertFromModel(nodeId,
                                            mac,
                                            mactoIpNodeMap.get(mac),
                                                              segment));
@@ -911,36 +914,31 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
         
     private String getIpListAsStringFromIpInterface(List<OnmsIpInterface> ipinterfaces) {
-        StringBuffer sb = new StringBuffer("(");
-        boolean start = true;
-        for (OnmsIpInterface ipiface: ipinterfaces) {
-            if (start) {
-                start=false;
-            } else {
-                sb.append(":");
-            }
-            sb.append(str(ipiface.getIpAddress()));
-        }
-        sb.append(")");
-        return sb.toString();
-
+        Set<String> ipstrings = new HashSet<String>();
+        ipinterfaces.stream().forEach(ipinterface -> ipstrings.add(str(ipinterface.getIpAddress())));
+        return getIpList(ipstrings);
     }
     
     private String getIpListAsStringFromIpNetToMedia(List<IpNetToMedia> ipnettomedias) {
+        Set<String> ipstrings = new HashSet<String>();
+        ipnettomedias.stream().forEach( ipnettomedia -> ipstrings.add(str(ipnettomedia.getNetAddress())));
+        return getIpList(ipstrings);
+    }
+
+    private String getIpList(Set<String> ipstrings) {
         StringBuffer sb = new StringBuffer("(");
         boolean start = true;
-        for (IpNetToMedia ipnettomedia: ipnettomedias) {
+        for (String ipstring: ipstrings) {
             if (start) {
                 start=false;
             } else {
                 sb.append(":");
             }
-            sb.append(ipnettomedia.getNetAddress().getHostAddress());
+            sb.append(ipstring);
         }
         sb.append(")");
         return sb.toString();
-
+        
     }
-
 
 }
