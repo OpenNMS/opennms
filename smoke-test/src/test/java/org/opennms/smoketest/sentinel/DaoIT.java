@@ -35,6 +35,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assume;
@@ -95,7 +96,7 @@ public class DaoIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
-                        final String command ="bundle:list | grep -i dao | grep -i test";
+                        final String command ="bundle:list";
                         pipe.println(command);
                         pipe.println("logout");
 
@@ -104,8 +105,10 @@ public class DaoIT {
 
                         // Read stdout and verify
                         final String shellOutput = sshClient.getStdout();
-                        final boolean bundleActive = shellOutput.contains("Active");
-
+                        final boolean bundleActive = Arrays.stream(shellOutput.split("\n"))
+                                            .filter(row -> row.contains("OpenNMS :: Features :: Distributed :: DAO :: Test"))
+                                            .findFirst().filter(bundle -> bundle.contains("Active"))
+                                            .isPresent();
                         logger.info(command);
                         logger.info("{}", shellOutput);
                         return bundleActive;
