@@ -51,6 +51,7 @@
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 <%@taglib tagdir="/WEB-INF/tags/form" prefix="form" %>
 
 <%!
@@ -143,7 +144,7 @@
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th class="col-md-1">Last&nbsp;Event</th>
-        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><fmt:formatDate value="<%=alarm.getLastEventTime()%>" type="BOTH" /></a></span></td>
+        <td class="col-md-3"><span title="Event <%= alarm.getLastEvent().getId()%>"><a href="event/detail.jsp?id=<%= alarm.getLastEvent().getId()%>"><onms:datetime date="<%=alarm.getLastEventTime()%>" /></a></span></td>
         <th class="col-md-1">Interface</th>
         <td class="col-md-3">
             <% if (alarm.getIpAddr() != null) {%>
@@ -163,7 +164,7 @@
     </tr>
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th class="col-md-1">First&nbsp;Event</th>
-        <td class="col-md-3"><fmt:formatDate value="<%=alarm.getFirstEventTime()%>" type="BOTH" /></td>
+        <td class="col-md-3"><onms:datetime date="<%=alarm.getFirstEventTime()%>" /></td>
         <th class="col-md-1">Service</th>
         <td class="col-md-3">
             <% if (alarm.getServiceType() != null) {%>
@@ -262,7 +263,7 @@
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <td><%=ack.getAckUser()%></td>
         <td><%=ack.getAckAction()%></td>
-        <td><fmt:formatDate value="<%=ack.getAckTime()%>" type="BOTH" /></td>
+        <td><onms:datetime date="<%=ack.getAckTime()%>" /></td>
     </tr>
     <% }%>
 </table>
@@ -292,10 +293,10 @@
 	         <div class="row">
         <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getStickyMemo().getAuthor() != null) ? alarm.getStickyMemo().getAuthor() : ""%></div>
         <div class="col-md-4"><strong>Updated:</strong><br/>
-       		<span style="white-space:nowrap;"><fmt:formatDate value="<%=alarm.getStickyMemo().getUpdated()%>" type="BOTH" /></span>
+       		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getStickyMemo().getUpdated()%>" /></span>
         </div>
         <div class="col-md-4"><strong>Created:</strong><br/>
-       		<span style="white-space:nowrap;"><fmt:formatDate value="<%=alarm.getStickyMemo().getCreated()%>" type="BOTH" /></span>
+       		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getStickyMemo().getCreated()%>"/></span>
         </div>
         </div>
         <% } else { %>
@@ -330,10 +331,10 @@
         <div class="row">
         <div class="col-md-4"><strong>Author:</strong><br/><%=(alarm.getReductionKeyMemo().getAuthor() != null) ? alarm.getReductionKeyMemo().getAuthor() : ""%></div>
         <div class="col-md-4"><strong>Updated:</strong><br/>
-       		<span style="white-space:nowrap;"><fmt:formatDate value="<%=alarm.getReductionKeyMemo().getUpdated()%>" type="BOTH" /></span>
+       		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getReductionKeyMemo().getUpdated()%>" /></span>
         </div>
         <div class="col-md-4"><strong>Created:</strong><br/>
-       		<span style="white-space:nowrap;"><fmt:formatDate value="<%=alarm.getReductionKeyMemo().getCreated()%>" type="BOTH" /></span>
+       		<span style="white-space:nowrap;"><onms:datetime date="<%=alarm.getReductionKeyMemo().getCreated()%>" /></span>
         </div>
         </div>
         <% } else { %>
