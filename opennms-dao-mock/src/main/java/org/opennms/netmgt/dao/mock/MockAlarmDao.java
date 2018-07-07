@@ -39,7 +39,6 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 
 public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements AlarmDao {
     private AtomicInteger m_id = new AtomicInteger(0);
