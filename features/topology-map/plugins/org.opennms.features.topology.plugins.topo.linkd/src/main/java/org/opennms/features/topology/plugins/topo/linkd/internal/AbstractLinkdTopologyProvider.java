@@ -74,6 +74,10 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
 
+    static final String getDefaultEdgeId(int sourceId,int targetId) {
+        return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
+    }
+
     static {
         m_nodeStatusMap = new EnumMap<>(OnmsNode.NodeType.class);
         m_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");

@@ -84,7 +84,6 @@ import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
-import org.opennms.netmgt.model.topology.EdgeAlarmStatusSummary;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -283,7 +282,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         private final Integer m_targetifIndex;
 
         public BridgeLinkDetail(String vertexNamespace, Vertex source, Integer sourceIfIndex, Vertex target, Integer targetIfIndex, Integer sourceBridgePort, Integer targetBridgePort,Integer sourceLink, Integer targetLink) {
-            super(EdgeAlarmStatusSummary.getDefaultEdgeId(sourceLink, targetLink), source, sourceLink, target, targetLink);
+            super(getDefaultEdgeId(sourceLink, targetLink), source, sourceLink, target, targetLink);
             m_vertexNamespace = vertexNamespace;
             m_sourceBridgePort = sourceBridgePort;
             m_targetBridgePort = targetBridgePort;
