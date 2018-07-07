@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -35,14 +35,11 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.StringReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,63 +50,21 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.db.install.Column;
 import org.opennms.core.db.install.Constraint;
-import org.opennms.core.db.install.InstallerDb;
 import org.opennms.core.db.install.Table;
 import org.opennms.core.db.install.Trigger;
-import org.opennms.core.test.db.TemporaryDatabaseITCase;
 import org.opennms.test.ThrowableAnticipator;
 import org.springframework.util.StringUtils;
 
-public class InstallerDbIT extends TemporaryDatabaseITCase {
-    private InstallerDb m_installerDb;
-    private Connection m_connection;
-
-    private ByteArrayOutputStream m_outputStream;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        m_installerDb = new InstallerDb();
-
-        resetOutputStream();
-        getInstallerDb().setDatabaseName(getTestDatabase());
-        m_installerDb.setPostgresOpennmsUser("opennms");
-
-        getInstallerDb().setCreateSqlLocation("../../../opennms-base-assembly/src/main/filtered/etc/create.sql");
-
-        getInstallerDb().setStoredProcedureDirectory("../../../opennms-base-assembly/src/main/filtered/etc");
-
-        getInstallerDb().setDebug(true);
-
-        getInstallerDb().readTables();
-
-        getInstallerDb().setDataSource(getDataSource());
-
-        m_connection = getDataSource().getConnection();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        m_connection.close();
-        getInstallerDb().closeConnection();
-
-        super.tearDown();
-    }
-
-    // XXX this should be an integration test
+public class InstallerDbIT extends InstallerDbITCase {
     @Test
     public void testCreateSequences() throws Exception {
         getInstallerDb().createSequences();
     }
 
-    // XXX this should be an integration test
     @Test
     public void testCreateTables() throws Exception {
         getInstallerDb().createSequences();
@@ -119,7 +74,6 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         getInstallerDb().createTables();
     }
 
-    // XXX this should be an integration test
     @Test
     public void testCreateTablesTwice() throws Exception {
         // First pass.
@@ -812,7 +766,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT eventsource from events");
         int count = 0;
         while (rs.next()) {
@@ -856,7 +810,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT outageid from outages");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -893,7 +847,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT svcregainedeventid from outages");
         int count = 0;
         while (rs.next()) {
@@ -934,7 +888,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from usersnotified");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -969,7 +923,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -1001,7 +955,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from snmpInterface");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1125,7 +1079,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from assets");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1190,7 +1144,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         Statement st;
         ResultSet rs;
 
-        st = m_connection.createStatement();
+        st = getConnection().createStatement();
         rs = st.executeQuery("SELECT id from snmpInterface ORDER BY nodeId");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1203,7 +1157,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         assertFalse("Too many entries", rs.next());
 
-        st = m_connection.createStatement();
+        st = getConnection().createStatement();
         rs = st.executeQuery("SELECT id, snmpInterfaceID from ipInterface ORDER BY nodeId");
 
         assertTrue("Could not ResultSet.next() to first result entry",
@@ -1280,7 +1234,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from ipInterface");
 
         assertTrue("could not advance results to first row", rs.next());
@@ -1362,7 +1316,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
 
         getInstallerDb().createTables();
 
-        Statement st = m_connection.createStatement();
+        Statement st = getConnection().createStatement();
         ResultSet rs = st.executeQuery("SELECT id from ifServices");
         int count = 0;
         for (int expected = 1; rs.next(); expected++) {
@@ -1787,20 +1741,11 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
                    + "' does not exist on table '"
                    + trigger.getTable() + "' to execute '"
                    + trigger.getStoredProcedure() + "' function",
-                   trigger.isOnDatabase(m_connection));
-    }
-
-    public InstallerDb getInstallerDb() {
-        return m_installerDb;
-    }
-    
-    public void resetOutputStream() {
-        m_outputStream = new ByteArrayOutputStream();
-        getInstallerDb().setOutputStream(new PrintStream(m_outputStream));
+                   trigger.isOnDatabase(getConnection()));
     }
 
     private void assertNoTablesHaveChanged() throws IOException {
-        ByteArrayInputStream in = new ByteArrayInputStream(m_outputStream.toByteArray());
+        ByteArrayInputStream in = new ByteArrayInputStream(getOutputStream().toByteArray());
         BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
 
         String line;
@@ -1832,7 +1777,7 @@ public class InstallerDbIT extends TemporaryDatabaseITCase {
         }
         
         if (unanticipatedOutput.size() > 0) {
-            org.junit.Assert.fail(unanticipatedOutput.size() + "unexpected line(s) output by createTables(): \n\t" + StringUtils.collectionToDelimitedString(unanticipatedOutput, "\n\t") + "\nAll output:\n" + m_outputStream);
+            org.junit.Assert.fail(unanticipatedOutput.size() + "unexpected line(s) output by createTables(): \n\t" + StringUtils.collectionToDelimitedString(unanticipatedOutput, "\n\t") + "\nAll output:\n" + getOutputStream());
         }
     }
 
