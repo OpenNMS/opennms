@@ -49,7 +49,6 @@ public class DateTimeTagTest {
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        Instant now = Instant.now();
         test("yyyy-MM-dd'T'HH:mm:ssxxx");
     }
 

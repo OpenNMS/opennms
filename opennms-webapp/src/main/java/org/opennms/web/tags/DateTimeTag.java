@@ -58,6 +58,7 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
 public class DateTimeTag extends SimpleTagSupport {
 
     final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
+
     private final static Logger LOG = Logger.getLogger(DateTimeTag.class.getName());
 
     private final static DateTimeFormatter DEFAULT_FORMATTER = new DateTimeFormatterBuilder()
@@ -72,8 +73,7 @@ public class DateTimeTag extends SimpleTagSupport {
             .appendValue(SECOND_OF_MINUTE, 2)
             .appendOffsetId().toFormatter()
             .withZone(ZoneId.systemDefault());
-
-
+  
     private Instant instant;
     private DateTimeFormatter formatter;
 
