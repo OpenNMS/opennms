@@ -233,12 +233,21 @@ public class AssetLocatorImpl extends AbstractResourceResolver implements AssetL
                 final JSONObject assetObj = assetsObj.getJSONObject(assetName);
                 final List<AssetResource> assets = new ArrayList<>(assetObj.length());
                 final JSONArray keys = assetObj.names();
+                int count = 0;
                 for (int j=0; j < keys.length(); j++) {
                     final String type = keys.getString(j);
-                    final String path = assetObj.getString(type);
-                    assets.add(new AssetResource(assetName, type, path));
+                    if (!assetObj.isNull(type)) {
+                        final Object item = assetObj.get(type);
+                        if (item instanceof JSONArray) {
+                            LOG.debug("{} is an anonymous type resource; skipping indexing", type);
+                        } else {
+                            final String path = assetObj.getString(type);
+                            assets.add(new AssetResource(assetName, type, path));
+                            count++;
+                        }
+                    }
                 }
-                if (assetObj.length() > 0) {
+                if (count > 0) {
                     newAssets.put(assetName, assets);
                 }
             }

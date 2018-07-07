@@ -411,7 +411,7 @@ const exportModalTemplate  = require('./views/modals/export-modal.html');
             function($scope, $http, $uibModalInstance, group, $window) {
                 $scope.group = group;
                 $scope.export = {};
-                $scope.export.requestedFileName = group.id + "_rules.csv";
+                $scope.export.requestedFileName = group.id + '_rules.csv';
                 $scope.exportGroup = function() {
                     var requestedFileName = $scope.export.requestedFileName.trim();
                     $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='

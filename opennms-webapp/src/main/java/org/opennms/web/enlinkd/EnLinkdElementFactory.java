@@ -64,11 +64,9 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.OspfElementDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dBaseType;
 import org.opennms.netmgt.model.BridgeElement.BridgeDot1dStpProtocolSpecification;
-import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpElement.CdpGlobalDeviceIdFormat;
 import org.opennms.netmgt.model.CdpLink;
@@ -546,7 +544,6 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
-    @SuppressWarnings("deprecation")
     private NodeLinkBridge convertFromModel(String mac,
             SharedSegment segment, String port) {
         final NodeLinkBridge linknode = new NodeLinkBridge();
@@ -554,9 +551,9 @@ public class EnLinkdElementFactory implements InitializingBean,
         
         for (BridgePort link : segment.getBridgePortsOnSegment()) {
             final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-            final Integer rempnodeId = link.getNode().getId();
+            final Integer rempnodeId = link.getNodeId();
             final Integer rembridgePortIfIndex = link.getBridgePortIfIndex();
-            remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
+            remlinknode.setBridgeRemoteNode(m_nodeDao.get(rempnodeId).getLabel());
             remlinknode.setBridgeRemoteUrl(getNodeUrl(rempnodeId));
 
             final OnmsSnmpInterface remiface = rembridgePortIfIndex == null
@@ -576,15 +573,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
         }
-        
-        for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-            if (link.getMacAddress().equals(mac)) {
-                linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
-                linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
-                break;
-            }
-        }
-        
+                
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();
         for (String shredmac: segment.getMacsOnSegment()) {
             if (shredmac.equals(mac))
@@ -663,17 +652,16 @@ public class EnLinkdElementFactory implements InitializingBean,
     }
 
     @Transactional
-    @SuppressWarnings("deprecation")
     private BridgeLinkNode convertFromModel(int nodeid, SharedSegment segment) {
         final BridgeLinkNode linknode = new BridgeLinkNode();
         for (BridgePort link : segment.getBridgePortsOnSegment()) {
-            final Integer rempnodeId = link.getNode().getId();
+            final Integer rempnodeId = link.getNodeId();
             final Integer rembridgePortIfIndex = link.getBridgePortIfIndex();
             final OnmsSnmpInterface remiface = rembridgePortIfIndex == null
                     ? null
                     : m_snmpInterfaceDao.findByNodeIdAndIfIndex(rempnodeId,
                                                                 rembridgePortIfIndex);
-            if (link.getNode().getId().intValue() == nodeid) {
+            if (link.getNodeId().intValue() == nodeid) {
                 if (remiface != null) {
                     linknode.setNodeLocalPort(getPortString(rembridgePortIfIndex,
                                                             remiface.getIfName(),
@@ -686,7 +674,7 @@ public class EnLinkdElementFactory implements InitializingBean,
                 continue;
             }
             final BridgeLinkRemoteNode remlinknode = new BridgeLinkRemoteNode();
-            remlinknode.setBridgeRemoteNode(link.getNode().getLabel());
+            remlinknode.setBridgeRemoteNode(m_nodeDao.get(rempnodeId).getLabel());
             remlinknode.setBridgeRemoteUrl(getNodeUrl(rempnodeId));
 
             if (remiface != null) {
@@ -701,23 +689,6 @@ public class EnLinkdElementFactory implements InitializingBean,
                                                                    rembridgePortIfIndex));
             remlinknode.setBridgeRemoteVlan(link.getVlan());
             linknode.getBridgeLinkRemoteNodes().add(remlinknode);
-        }
-        if (segment.getBridgeBridgeLinks().isEmpty()) {
-            for (BridgeMacLink link: segment.getBridgeMacLinks()) {
-                if (link.getNode().getId().intValue() == nodeid) {
-                    linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeMacLinkCreateTime()));
-                    linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeMacLinkLastPollTime()));
-                    break;
-                }
-            }
-        } else {
-            for (BridgeBridgeLink link: segment.getBridgeBridgeLinks()) {
-                if (link.getNode().getId().intValue() == nodeid || link.getDesignatedNode().getId().intValue() == nodeid) {
-                    linknode.setBridgeLinkCreateTime(Util.formatDateToUIString(link.getBridgeBridgeLinkCreateTime()));
-                    linknode.setBridgeLinkLastPollTime(Util.formatDateToUIString(link.getBridgeBridgeLinkLastPollTime()));
-                    break;
-                }
-            }
         }
 
         Map<String, List<IpNetToMedia>> sharedmacs = new HashMap<String, List<IpNetToMedia>>();

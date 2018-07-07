@@ -450,6 +450,7 @@ public abstract class AbstractSpringJerseyRestTestCase {
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         request.setParameters(parameters);
         request.setQueryString(getQueryString(parameters));
+        request.setRemoteUser(getUser());
         return sendRequest(request, expectedStatus, expectedUrlSuffix);
     }
 

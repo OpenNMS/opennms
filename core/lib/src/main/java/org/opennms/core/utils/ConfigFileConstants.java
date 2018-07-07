@@ -291,11 +291,6 @@ public abstract class ConfigFileConstants {
     public static final int KSC_REPORT_FILE_NAME;
 
     /**
-     * The opennms server config file
-     */
-    public static final int OPENNMS_SERVER_CONFIG_FILE_NAME;
-
-    /**
      * The opennms surveillance views config file
      */
     public static final int SURVEILLANCE_VIEWS_FILE_NAME;
@@ -511,8 +506,6 @@ public abstract class ConfigFileConstants {
         KSC_REPORT_FILE_NAME = 46;
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
-        OPENNMS_SERVER_CONFIG_FILE_NAME = 48;
-
         DHCPD_CONFIG_FILE_NAME = 50;
 
         RRD_CONFIG_FILE_NAME = 51;
@@ -633,7 +626,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 
-        FILE_ID_TO_NAME[OPENNMS_SERVER_CONFIG_FILE_NAME] = "opennms-server.xml";
         FILE_ID_TO_NAME[DHCPD_CONFIG_FILE_NAME] = "dhcpd-configuration.xml";
         FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
         FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";

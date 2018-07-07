@@ -92,12 +92,8 @@ abstract public class PollerConfigManager implements PollerConfig {
      * <p>Constructor for PollerConfigManager.</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @param localServer a {@link java.lang.String} object.
-     * @param verifyServer a boolean.
      */
-    public PollerConfigManager(final InputStream stream, final String localServer, final boolean verifyServer) {
-        m_localServer = localServer;
-        m_verifyServer = verifyServer;
+    public PollerConfigManager(final InputStream stream) {
         InputStreamReader isr = null;
         try {
             isr = new InputStreamReader(stream);
@@ -162,15 +158,6 @@ abstract public class PollerConfigManager implements PollerConfig {
      * the configuration file.
      */
     private Map<String, ServiceMonitor> m_svcMonitors = new ConcurrentSkipListMap<String, ServiceMonitor>();
-    /**
-     * A boolean flag to indicate If a filter rule against the local OpenNMS
-     * server has to be used.
-     */
-    private static boolean m_verifyServer;
-    /**
-     * The name of the local OpenNMS server
-     */
-    private static String m_localServer;
 
     /**
      * Go through the poller configuration and build a mapping of each
@@ -339,6 +326,36 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
+    @Override
+    public int getDefaultCriticalPathRetries() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathRetries();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public int getDefaultCriticalPathTimeout() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathTimeout();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
+    @Override
+    public InetAddress getDefaultCriticalPathIp() {
+        try {
+            getReadLock().lock();
+            return m_config.getDefaultCriticalPathIp();
+        } finally {
+            getReadLock().unlock();
+        }
+    }
+
     /**
      * This method returns the configured critical service name.
      *
@@ -456,17 +473,10 @@ abstract public class PollerConfigManager implements PollerConfig {
     public List<InetAddress> getIpList(final Package pkg) {
         try {
             getReadLock().lock();
-            final StringBuilder filterRules = new StringBuilder(pkg.getFilter().getContent());
-            if (m_verifyServer) {
-                filterRules.append(" & (serverName == ");
-                filterRules.append('\"');
-                filterRules.append(m_localServer);
-                filterRules.append('\"');
-                filterRules.append(")");
-            }
+            final String filterRules = pkg.getFilter().getContent();
             LOG.debug("createPackageIpMap: package is {}. filter rules are {}", pkg.getName(), filterRules);
             FilterDaoFactory.getInstance().flushActiveIpAddressListCache();
-            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules.toString());
+            return FilterDaoFactory.getInstance().getActiveIPAddressList(filterRules);
         } finally {
             getReadLock().unlock();
         }
@@ -952,10 +962,6 @@ abstract public class PollerConfigManager implements PollerConfig {
         }
     }
 
-    /**
-     * @param poller
-     * @return
-     */
     private void initializeServiceMonitors() {
         // Load up an instance of each monitor from the config
         // so that the event processor will have them for

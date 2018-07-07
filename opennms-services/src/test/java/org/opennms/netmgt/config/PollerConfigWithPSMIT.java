@@ -105,7 +105,7 @@ public class PollerConfigWithPSMIT {
     @Test
     public void testPSM() throws Exception {
         InputStream is = new FileInputStream(new File("src/test/resources/etc/psm-poller-configuration.xml"));
-        PollerConfigFactory factory = new PollerConfigFactory(0, is, "localhost", false);
+        PollerConfigFactory factory = new PollerConfigFactory(0, is);
         PollerConfigFactory.setInstance(factory);        
         IOUtils.closeQuietly(is);
         ServiceMonitor monitor = PollerConfigFactory.getInstance().getServiceMonitor("MQ_API_DirectRte_v2");

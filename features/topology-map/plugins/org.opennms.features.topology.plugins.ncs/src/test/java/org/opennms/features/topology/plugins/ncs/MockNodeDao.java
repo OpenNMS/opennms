@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.ncs;
 
 import java.net.InetAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -342,5 +343,14 @@ public class MockNodeDao implements NodeDao {
     public List<OnmsNode> findByForeignIdForLocation(String foreignId, String location) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void markHavingFlows(Collection<Integer> nodeIds) {
+    }
+
+    @Override
+    public List<OnmsNode> findAllHavingFlows() {
+        return Collections.emptyList();
     }
 }

@@ -132,6 +132,10 @@
       <artifactId>spring-web-dependencies</artifactId>
       <type>pom</type>
     </dependency>
+    <dependency>
+      <groupId>org.codehaus.groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+    </dependency>
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>

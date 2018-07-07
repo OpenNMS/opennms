@@ -495,6 +495,7 @@ create table node (
 	foreignSource	varchar(64),
 	foreignId       varchar(64),
 	location        text not null,
+	hasFlows        boolean not null default false,
 
 	constraint pk_nodeID primary key (nodeID),
 	constraint fk_node_location foreign key (location) references monitoringlocations (id) ON UPDATE CASCADE
@@ -563,6 +564,7 @@ create table snmpInterface (
     snmpCollect     varchar(2) default 'N',
     snmpPoll     varchar(1) default 'N',
     snmpLastSnmpPoll timestamp with time zone,
+	hasFlows        boolean not null default false,
 
     CONSTRAINT snmpinterface_pkey primary key (id),
 	constraint fk_nodeID2 foreign key (nodeID) references node ON DELETE CASCADE
@@ -1052,6 +1054,7 @@ ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (red
 
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
+    discriminator           TEXT NOT NULL,
     eventUei                VARCHAR(256) NOT NULL,
     systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
@@ -1121,6 +1124,17 @@ CREATE TABLE alarm_attributes (
 
 CREATE INDEX alarm_attributes_idx ON alarm_attributes(alarmID);
 CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attributeName);
+
+CREATE TABLE alarm_situations (
+    situation_id    INTEGER NOT NULL,
+    alarms_alarmid  INTEGER NOT NULL,
+    
+    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (alarms_alarmid) REFERENCES alarms (alarmid),
+    CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid)
+);
+
+CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, alarms_alarmid);
+
 
 --# This constraint not understood by installer
 --#        CONSTRAINT pk_usersNotified PRIMARY KEY (userID,notifyID) );
@@ -2029,6 +2043,7 @@ create table bridgeMacLink (
     bridgePortIfName    text,
     vlan                integer,
     macAddress          varchar(12) not null,
+    linkType            integer not null,
     bridgeMacLinkCreateTime     timestamp not null,
     bridgeMacLinkLastPollTime   timestamp not null,
     constraint pk_bridgemaclink_id primary key (id),

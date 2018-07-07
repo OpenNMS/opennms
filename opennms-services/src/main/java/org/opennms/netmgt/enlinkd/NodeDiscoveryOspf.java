@@ -70,7 +70,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
     	super(linkd, node);
     }
 
-    protected void runCollection() {
+    protected void runNodeDiscovery() {
 
     	final Date now = new Date(); 
 
@@ -87,11 +87,11 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: ospfGeneralGroup: {}", 
+           LOG.info("run: node [{}]: ExecutionException: ospf mib not supported {}", 
                     getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: ospfGeneralGroup: {}", 
+           LOG.info("run: node [{}]: InterruptedException: ospf mib not supported {}", 
                     getNodeId(), e.getMessage());
            return;
        }
@@ -104,13 +104,13 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
         } 
 
         if (ospfGeneralGroup.getOspfRouterId().equals(InetAddressUtils.addr("0.0.0.0"))) {
-    		LOG.info( "run: node[{}]: not valid ospf identifier 0.0.0.0",
+    		LOG.info( "run: node[{}]: ospf mib not supported not valid ospf identifier 0.0.0.0",
     				getNodeId());
             return;
         }
 
         if (Status.get(ospfGeneralGroup.getOspfAdminStat()) == Status.disabled) {
-    		LOG.info( "run: node[{}]: ospf status: disabled",
+    		LOG.info( "run: node[{}]: ospf mib not supported ospf status: disabled",
     				getNodeId());
             return;
         }
@@ -132,11 +132,11 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: ospfNbrTable: {}", 
+           LOG.debug("run: node [{}]: ExecutionException: {}", 
                     getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: ospfNbrTable: {}", 
+           LOG.debug("run: node [{}]: InterruptedException: {}", 
                      getNodeId(), e.getMessage());
             return;
        }
@@ -155,11 +155,11 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
             execute().
             get();
        } catch (ExecutionException e) {
-           LOG.info("run: node [{}]: ExecutionException: ospfIfTable: {}", 
+           LOG.debug("run: node [{}]: ExecutionException: {}", 
                     getNodeId(), e.getMessage());
            return;
        } catch (final InterruptedException e) {
-           LOG.info("run: node [{}]: InterruptedException: ospfIfTable: {}", 
+           LOG.debug("run: node [{}]: InterruptedException: {}", 
                     getNodeId(), e.getMessage());
             return;
        }
@@ -193,7 +193,7 @@ public final class NodeDiscoveryOspf extends NodeDiscovery {
 
 	@Override
 	public String getName() {
-		return "OspfLinkDiscovery";
+		return "NodeDiscoveryOspf";
 	}
 
 }

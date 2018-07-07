@@ -30,8 +30,6 @@
 
   <bean id="pollerConfigDao" class="org.opennms.netmgt.config.DefaultPollerConfigDao">
     <property name="configResource" value="classpath:/poller-configuration.xml"/>
-    <property name="localServer" value="nms1"/>
-    <property name="verifyServer" value="false"/>
   </bean>
 
   <bean id="pollerConfig" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

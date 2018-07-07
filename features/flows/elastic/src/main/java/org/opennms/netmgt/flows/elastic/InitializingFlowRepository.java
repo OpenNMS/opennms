@@ -31,7 +31,6 @@ package org.opennms.netmgt.flows.elastic;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 import org.opennms.netmgt.flows.api.Conversation;
@@ -80,16 +79,6 @@ public class InitializingFlowRepository implements FlowRepository {
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         return delegate.getFlowCount(filters);
-    }
-
-    @Override
-    public CompletableFuture<Set<Integer>> getExportersWithFlows(int limit, List<Filter> filters) {
-        return delegate.getExportersWithFlows(limit, filters);
-    }
-
-    @Override
-    public CompletableFuture<Set<Integer>> getSnmpInterfaceIdsWithFlows(int limit, List<Filter> filters) {
-        return delegate.getSnmpInterfaceIdsWithFlows(limit, filters);
     }
 
     @Override

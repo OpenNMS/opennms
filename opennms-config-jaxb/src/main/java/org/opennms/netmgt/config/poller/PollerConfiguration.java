@@ -29,10 +29,12 @@
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -41,7 +43,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.opennms.core.network.InetAddressXmlAdapter;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.pagesequence.PageSequence;
 
@@ -80,6 +84,19 @@ public class PollerConfiguration implements Serializable {
      */
     @XmlAttribute(name="pathOutageEnabled")
     private String m_pathOutageEnabled = "false";
+
+    @XmlAttribute(name="defaultCriticalPathIp")
+    @XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+    private InetAddress m_defaultCriticalPathIp;
+
+    @XmlAttribute(name="defaultCriticalPathService")
+    private String m_defaultCriticalPathService;
+
+    @XmlAttribute(name="defaultCriticalPathTimeout")
+    private Integer m_defaultCriticalPathTimeout;
+
+    @XmlAttribute(name="defaultCriticalPathRetries")
+    private Integer m_defaultCriticalPathRetries;
 
     /**
      * Configuration of node-outage functionality
@@ -242,84 +259,52 @@ public class PollerConfiguration implements Serializable {
         return newConfig;
     }
 
+    public InetAddress getDefaultCriticalPathIp() {
+        return m_defaultCriticalPathIp;
+    }
+
+    public void setDefaultCriticalPathIp(final InetAddress ip) {
+        m_defaultCriticalPathIp = ip;
+    }
+
+    public Integer getDefaultCriticalPathTimeout() {
+        return m_defaultCriticalPathTimeout == null? 1500 : m_defaultCriticalPathTimeout;
+    }
+
+    public void setDefaultCriticalPathTimeout(final Integer timeout) {
+        m_defaultCriticalPathTimeout = timeout;
+    }
+
+    public int getDefaultCriticalPathRetries() {
+        return m_defaultCriticalPathRetries == null? 0 : m_defaultCriticalPathRetries;
+    }
+
+    public void setDefaultCriticalPathRetries(final Integer retries) {
+        m_defaultCriticalPathRetries = retries;
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_monitors == null) ? 0 : m_monitors.hashCode());
-        result = prime * result + ((m_nextOutageId == null) ? 0 : m_nextOutageId.hashCode());
-        result = prime * result + ((m_nodeOutage == null) ? 0 : m_nodeOutage.hashCode());
-        result = prime * result + ((m_packages == null) ? 0 : m_packages.hashCode());
-        result = prime * result + ((m_pathOutageEnabled == null) ? 0 : m_pathOutageEnabled.hashCode());
-        result = prime * result + ((m_serviceUnresponsiveEnabled == null) ? 0 : m_serviceUnresponsiveEnabled.hashCode());
-        result = prime * result + ((m_threads == null) ? 0 : m_threads.hashCode());
-        return result;
+        return Objects.hash(m_threads, m_nextOutageId, m_serviceUnresponsiveEnabled, m_pathOutageEnabled, m_defaultCriticalPathIp, m_defaultCriticalPathService, m_defaultCriticalPathTimeout, m_defaultCriticalPathRetries, m_nodeOutage, m_packages, m_monitors);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof PollerConfiguration)) {
-            return false;
-        }
-        final PollerConfiguration other = (PollerConfiguration) obj;
-        if (m_monitors == null) {
-            if (other.m_monitors != null) {
-                return false;
-            }
-        } else if (!m_monitors.equals(other.m_monitors)) {
-            return false;
-        }
-        if (m_nextOutageId == null) {
-            if (other.m_nextOutageId != null) {
-                return false;
-            }
-        } else if (!m_nextOutageId.equals(other.m_nextOutageId)) {
-            return false;
-        }
-        if (m_nodeOutage == null) {
-            if (other.m_nodeOutage != null) {
-                return false;
-            }
-        } else if (!m_nodeOutage.equals(other.m_nodeOutage)) {
-            return false;
-        }
-        if (m_packages == null) {
-            if (other.m_packages != null) {
-                return false;
-            }
-        } else if (!m_packages.equals(other.m_packages)) {
-            return false;
-        }
-        if (m_pathOutageEnabled == null) {
-            if (other.m_pathOutageEnabled != null) {
-                return false;
-            }
-        } else if (!m_pathOutageEnabled.equals(other.m_pathOutageEnabled)) {
-            return false;
-        }
-        if (m_serviceUnresponsiveEnabled == null) {
-            if (other.m_serviceUnresponsiveEnabled != null) {
-                return false;
-            }
-        } else if (!m_serviceUnresponsiveEnabled.equals(other.m_serviceUnresponsiveEnabled)) {
-            return false;
-        }
-        if (m_threads == null) {
-            if (other.m_threads != null) {
-                return false;
-            }
-        } else if (!m_threads.equals(other.m_threads)) {
-            return false;
-        }
-        return true;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final PollerConfiguration that = (PollerConfiguration) o;
+        return Objects.equals(m_threads, that.m_threads)
+                && Objects.equals(m_nextOutageId, that.m_nextOutageId)
+                && Objects.equals(m_serviceUnresponsiveEnabled, that.m_serviceUnresponsiveEnabled)
+                && Objects.equals(m_pathOutageEnabled, that.m_pathOutageEnabled)
+                && Objects.equals(m_defaultCriticalPathIp, that.m_defaultCriticalPathIp)
+                && Objects.equals(m_defaultCriticalPathService, that.m_defaultCriticalPathService)
+                && Objects.equals(m_defaultCriticalPathTimeout, that.m_defaultCriticalPathTimeout)
+                && Objects.equals(m_defaultCriticalPathRetries, that.m_defaultCriticalPathRetries)
+                && Objects.equals(m_nodeOutage, that.m_nodeOutage)
+                && Objects.equals(m_packages, that.m_packages)
+                && Objects.equals(m_monitors, that.m_monitors);
     }
-
     @Override
     public String toString() {
         return "PollerConfiguration[" +
@@ -327,6 +312,10 @@ public class PollerConfiguration implements Serializable {
                 ",nextOutageId=" + m_nextOutageId +
                 ",serviceUnresponsiveEnabled=" + m_serviceUnresponsiveEnabled +
                 ",pathOutageEnabled=" + m_pathOutageEnabled +
+                ",pathOutageDefaultCriticalPathIp=" + m_defaultCriticalPathIp +
+                ",pathOutageDefaultCriticalPathService=" + m_defaultCriticalPathService +
+                ",pathOutageDefaultCriticalPathTimeout=" + m_defaultCriticalPathTimeout +
+                ",pathOutageDefaultCriticalPathRetries=" + m_defaultCriticalPathRetries +
                 ",nodeOutage=" + m_nodeOutage +
                 ",packages=" + m_packages +
                 ",monitors=" + m_monitors +

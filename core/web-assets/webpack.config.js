@@ -135,9 +135,6 @@ doWalk('vendor', scanUtils);
 /* scan vendor roll-ups */
 doWalk('vaadin', scanUtils);
 
-/* special case, make sure jQuery gets included as an endpoint */
-//vendorEntries['jquery'] = 'jquery';
-
 const dotPrint = (entry) => {
   console.log('* ' + entry);
 };
@@ -382,21 +379,12 @@ var config = {
     extensions: ['.tsx', '.ts', '.jsx', '.js']
   },
   plugins: [
+    /*
     new webpack.ProvidePlugin({
       jQuery: 'vendor/jquery-js',
       $: 'vendor/jquery-js'
-      /*,
-      angular: 'angular',
-      Backshift: 'backshift/dist/backshift.onms',
-      bootbox: 'bootbox',
-      c3: 'c3',
-      d3: 'd3',
-      Holder: 'holderjs',
-      holder: 'holderjs',
-      L: 'leaflet',
-      _: 'underscore'
-      */
     }),
+    */
     new WebpackMd5Hash(),
     new StringReplacePlugin()
   ]
@@ -465,7 +453,9 @@ function createConfig(options) {
     });
 
     myconf.optimization = {
-      runtimeChunk: false,
+      runtimeChunk: {
+        name: 'vendor'
+      },
       splitChunks: {
         chunks: 'all',
         minSize: 1,

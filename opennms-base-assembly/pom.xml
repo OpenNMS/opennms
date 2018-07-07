@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
@@ -741,18 +740,33 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.camel-impl</artifactId>
+      <groupId>org.opennms.core.ipc.sink.camel</groupId>
+      <artifactId>org.opennms.core.ipc.sink.camel.client</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.kafka-impl</artifactId>
+      <groupId>org.opennms.core.ipc.sink.camel</groupId>
+      <artifactId>org.opennms.core.ipc.sink.camel.server</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.sink</groupId>
-      <artifactId>org.opennms.core.ipc.sink.aws-sqs-impl</artifactId>
+      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.sink.kafka.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.sink.kafka.server</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
+      <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
+      <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

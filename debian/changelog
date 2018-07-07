@@ -1,6 +1,17 @@
+opennms (22.0.1-1) stable; urgency=low
+
+  * New stable release.  It contains a number of bug fixes and enhancements,
+    including an update to Drools 7, performance improvements to the flow
+    exporter ReST endpoint, and new karaf shell tools for diagnosing nodes.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.1/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 21 Jun 2018 12:20:00 -0500
+
 opennms (22.0.0-1) stable; urgency=low
 
-  * New major release.  It contains many bug fixes andenhancements, including
+  * New major release.  It contains many bug fixes and enhancements, including
     support for flow telemetry.
     
     For details on what has changed, see:

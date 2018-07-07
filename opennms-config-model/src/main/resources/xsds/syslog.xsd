@@ -151,6 +151,13 @@
                   </restriction>
                 </simpleType>
             </attribute>
+            <attribute name="timezone" type="string" use="optional">
+                <annotation>
+                    <documentation>time zone to use for log messages that doen't express a time zone. If none is given the
+                        system's default time zone will be taken. See java.util.TimeZone.
+                    </documentation>
+                </annotation>
+            </attribute>
         </complexType>
 
     </element>

@@ -74,7 +74,7 @@
 <table class="table table-condensed">
   <tr>
     <th>Version:</th>
-    <td><a href="http://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%> /releasenotes/releasenotes.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>
+    <td><a href="http://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/releasenotes/releasenotes.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>
   </tr>
 
   <tr>

@@ -286,4 +286,8 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
     Integer getNextNodeId (Integer nodeId);
 
     Integer getPreviousNodeId (Integer nodeId);
+
+    void markHavingFlows(final Collection<Integer> nodeIds);
+
+    List<OnmsNode> findAllHavingFlows();
 }
