@@ -38,8 +38,9 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides a centralized point to format date times consistently across OpenNMS.
@@ -49,12 +50,48 @@ public class CentralizedDateTimeFormat {
 
     public final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
 
-    private final static Logger log = Logger.getLogger(CentralizedDateTimeFormat.class.getName());
+    public static final Logger LOG = LoggerFactory.getLogger(CentralizedDateTimeFormat.class);
 
     private final DateTimeFormatter formatter;
 
     public CentralizedDateTimeFormat(){
         this.formatter = createFormatter();
+    }
+
+    private DateTimeFormatter createFormatter() {
+        String format = System.getProperty(SYSTEM_PROPERTY_DATE_FORMAT);
+        DateTimeFormatter formatter;
+        if (format == null) {
+            formatter = getDefaultFormatter();
+        } else {
+            try {
+                formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
+            } catch (IllegalArgumentException e) {
+                LOG.warn(String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
+                                " Please see also java.time.format.DateTimeFormatter for the correct syntax",
+                        SYSTEM_PROPERTY_DATE_FORMAT,
+                        format)
+                        , e);
+                formatter = getDefaultFormatter();
+            }
+        }
+        return formatter;
+    }
+
+    private DateTimeFormatter getDefaultFormatter() {
+
+        return new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .append(ISO_LOCAL_DATE)
+                .appendLiteral('T')
+                .appendValue(HOUR_OF_DAY, 2)
+                .appendLiteral(':')
+                .appendValue(MINUTE_OF_HOUR, 2)
+                .optionalStart()
+                .appendLiteral(':')
+                .appendValue(SECOND_OF_MINUTE, 2)
+                .appendOffsetId().toFormatter()
+                .withZone(ZoneId.systemDefault());
     }
 
     public String format(Instant instant) {
@@ -70,43 +107,5 @@ public class CentralizedDateTimeFormat {
             return null;
         }
         return format(date.toInstant());
-    }
-
-
-    private static DateTimeFormatter createFormatter() {
-        String format = System.getProperty(SYSTEM_PROPERTY_DATE_FORMAT);
-        DateTimeFormatter formatter;
-        if (format == null) {
-            formatter = getDefaultFormatter();
-        } else {
-            try {
-                formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
-            } catch (IllegalArgumentException e) {
-                log.log(Level.WARNING,
-                        String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
-                                        " Please see also java.time.format.DateTimeFormatter for the correct syntax",
-                                SYSTEM_PROPERTY_DATE_FORMAT,
-                                format)
-                        , e);
-                formatter = getDefaultFormatter();
-            }
-        }
-        return formatter;
-    }
-
-    private static DateTimeFormatter getDefaultFormatter() {
-
-        return new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendLiteral('T')
-                .appendValue(HOUR_OF_DAY, 2)
-                .appendLiteral(':')
-                .appendValue(MINUTE_OF_HOUR, 2)
-                .optionalStart()
-                .appendLiteral(':')
-                .appendValue(SECOND_OF_MINUTE, 2)
-                .appendOffsetId().toFormatter()
-                .withZone(ZoneId.systemDefault());
     }
 }
