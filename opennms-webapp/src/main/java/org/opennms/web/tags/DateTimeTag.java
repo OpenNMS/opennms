@@ -28,21 +28,14 @@
 
 package org.opennms.web.tags;
 
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
-import static java.time.temporal.ChronoField.SECOND_OF_MINUTE;
-
 import java.io.IOException;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Optional;
 
 import javax.servlet.jsp.tagext.SimpleTagSupport;
+
+import org.opennms.core.time.CentralizedDateTimeFormat;
 
 /**
  * This class replaces the &lt;fmt:formatDate /&gt; tag.
@@ -57,54 +50,12 @@ import javax.servlet.jsp.tagext.SimpleTagSupport;
  */
 public class DateTimeTag extends SimpleTagSupport {
 
-    final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
-    private final static Logger log = Logger.getLogger(DateTimeTag.class.getName());
-
-    private final static DateTimeFormatter DEFAULT_FORMATTER = getDefaultFormatter();
-
-
     private Instant instant;
-    private DateTimeFormatter formatter;
-
-
-    public DateTimeTag(){
-        String format = System.getProperty(SYSTEM_PROPERTY_DATE_FORMAT);
-        if(format == null) {
-            this.formatter = DEFAULT_FORMATTER;
-        } else {
-            try {
-                this.formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
-            } catch (IllegalArgumentException e) {
-                log.log(Level.WARNING,
-                        String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
-                                " Please see also java.time.format.DateTimeFormatter for the correct syntax",
-                                SYSTEM_PROPERTY_DATE_FORMAT,
-                                format)
-                        , e);
-                this.formatter = DEFAULT_FORMATTER;
-            }
-        }
-    }
-
-    private static DateTimeFormatter getDefaultFormatter() {
-
-        return new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendLiteral('T')
-                .appendValue(HOUR_OF_DAY, 2)
-                .appendLiteral(':')
-                .appendValue(MINUTE_OF_HOUR, 2)
-                .optionalStart()
-                .appendLiteral(':')
-                .appendValue(SECOND_OF_MINUTE, 2)
-                .appendOffsetId().toFormatter()
-                .withZone(ZoneId.systemDefault());
-    }
 
     @Override
     public void doTag() throws IOException {
-        String output = this.formatter.format(instant);
+        // Output an empty string for null values. I believe fmt:formatDate does the same
+        String output = Optional.ofNullable(new CentralizedDateTimeFormat().format(instant)).orElse("");
         getJspContext().getOut().write(output);
     }
 
