@@ -488,6 +488,7 @@
 
       <feature>opennms-core</feature>
       <feature>opennms-events-api</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-rrd-api</feature>
       <feature>opennms-snmp</feature>
 
@@ -558,6 +559,7 @@
       <feature>commons-codec</feature>
       <feature>opennms-config-api</feature>
       <feature>opennms-core-db</feature>
+      <feature>opennms-poller-api</feature>
       <feature>opennms-rrd-api</feature>
       <feature>opennms-snmp</feature>
 
@@ -778,6 +780,15 @@
       <feature>opennms-config-api</feature>
 
       <bundle>mvn:org.opennms/opennms-javamail-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-poller-api" description="OpenNMS :: Poller :: API" version="${project.version}">
+      <feature version="[4.2,4.3)">spring</feature>
+
+      <feature>hibernate36</feature>
+
+      <feature>opennms-core</feature>
+      <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.api/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-measurements-api" description="OpenNMS :: Measurements :: API" version="${project.version}">
@@ -1075,6 +1086,7 @@
       <feature>opennms-core-web</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
       <feature>opennms-icmp-api</feature> 
+      <feature>opennms-poller-api</feature>
       <feature>opennms-dao-api</feature>
       <feature>opennms-config</feature>
       <feature>opennms-javamail</feature>
@@ -1085,6 +1097,10 @@
     </feature>
 
     <feature name="opennms-poller-shell" description="OpenNMS :: Poller :: Shell" version="${project.version}">
+      <!--
+      These classes are in the system classpath inside OpenNMS
+      <feature>opennms-poller-api</feature>
+      -->
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
     </feature>
 
