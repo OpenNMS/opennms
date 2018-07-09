@@ -30,14 +30,20 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
+import static org.hamcrest.Matchers.lessThan;
+import static com.jayway.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.equalTo;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -66,59 +72,65 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
-        "classpath:/applicationContext-rpc-kafka-test.xml"})
+        "classpath:/applicationContext-rpc-kafka-test.xml" })
 @JUnitConfigurationEnvironment
-public class EchoRpcKafkaIT {
-    
+public class RpcKafkaIT {
+
     private static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka.";
     public static final String REMOTE_LOCATION_NAME = "remote";
-    
+
+    static {
+        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID), "5000");
+        System.setProperty(String.format("%sttl", KAFKA_CONFIG_PID), "5000");
+    }
+
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
-    
+
     @Autowired
     private OnmsDistPoller identity;
-    
+
     @Autowired
     private EchoClient echoClient;
-    
+
     @Autowired
     private KafkaRpcClientFactory rpcClientFactory;
-    
+
     private KafkaRpcServerManager kafkaRpcServer;
-    
+
     private MinionIdentity minionIdentity;
-    
+
     private EchoRpcModule echoRpcModule = new EchoRpcModule();
-    
+
+    private AtomicInteger count = new AtomicInteger(0);
+
     @Before
     public void setup() throws Exception {
-        System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID),
-                kafkaServer.getKafkaConnectString());
-        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID),
-                "5000"); 
+        System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
+        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID), "5000");
         rpcClientFactory.start();
         Hashtable<String, Object> kafkaConfig = new Hashtable<>();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(KafkaRpcServerManager.KAFKA_CLIENT_PID).getProperties()).thenReturn(kafkaConfig);
+        when(configAdmin.getConfiguration(KafkaRpcServerManager.KAFKA_CLIENT_PID).getProperties())
+                .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(configAdmin, minionIdentity);
         kafkaRpcServer.init();
         kafkaRpcServer.bind(echoRpcModule);
     }
-    
-    @Test(timeout=60000)
+
+    @Test(timeout = 30000)
     public void testKafkaRpcAtDefaultLocation() throws InterruptedException, ExecutionException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
     }
-    
-    @Test(timeout=60000)
-    public void testKafkaRpcAtRemoteLocation() throws InterruptedException, ExecutionException {
+
+    @Test(timeout = 30000)
+    public void testKafkaRpcAtRemoteLocationWithSystemId() throws InterruptedException, ExecutionException {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setSystemId(minionIdentity.getId());
@@ -127,9 +139,9 @@ public class EchoRpcKafkaIT {
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
     }
-    
-    @Test(timeout=60000)
-    public void testKafkaRpcAtRemoteLocationWithOutSystemId() throws InterruptedException, ExecutionException {
+
+    @Test(timeout = 30000)
+    public void testKafkaRpcAtRemoteLocation() throws InterruptedException, ExecutionException {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setLocation(REMOTE_LOCATION_NAME);
@@ -137,8 +149,8 @@ public class EchoRpcKafkaIT {
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
     }
-    
-    @Test(timeout=90000)
+
+    @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocationWithWrongSystemId() throws InterruptedException {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
@@ -148,11 +160,12 @@ public class EchoRpcKafkaIT {
             echoClient.execute(request).get();
             fail("Did not get ExecutionException");
         } catch (ExecutionException e) {
-            assertTrue("Cause is not of type TimedOutException: " + ExceptionUtils.getStackTrace(e), e.getCause() instanceof RequestTimedOutException);
+            assertTrue("Cause is not of type TimedOutException: " + ExceptionUtils.getStackTrace(e),
+                    e.getCause() instanceof RequestTimedOutException);
         }
     }
-    
-    @Test(timeout=60000)
+
+    @Test(timeout = 30000)
     public void testExceptionWhileExecutingLocally() throws InterruptedException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.shouldThrow(true);
@@ -163,10 +176,10 @@ public class EchoRpcKafkaIT {
             assertEquals("Kafka-RPC", e.getCause().getMessage());
             assertEquals(MyEchoException.class, e.getCause().getClass());
         }
-        
+
     }
-    
-    @Test(timeout=60000)
+
+    @Test(timeout = 30000)
     public void testExceptionWhileExecutingOnRemoteLocation() throws InterruptedException {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.shouldThrow(true);
@@ -180,7 +193,34 @@ public class EchoRpcKafkaIT {
             assertEquals(RemoteExecutionException.class, e.getCause().getClass());
         }
     }
-    
+
+    @Test(timeout = 90000)
+    public void testKafkaRpcWithDifferentTimeouts() {
+        EchoRequest request = new EchoRequest("Kafka-RPC");
+        request.setId(System.currentTimeMillis());
+        request.setLocation(REMOTE_LOCATION_NAME);
+        request.setSystemId("xxxxxxxx");
+        sendRequestAndVerifyResponse(request, 20000);
+        sendRequestAndVerifyResponse(request, 10000);
+        sendRequestAndVerifyResponse(request, 30000);
+        await().atMost(1, TimeUnit.MINUTES).untilAtomic(count, equalTo(3));
+
+    }
+
+    private void sendRequestAndVerifyResponse(EchoRequest request, long ttl) {
+        request.setTimeToLiveMs(ttl);
+        echoClient.execute(request).whenComplete((response, e) -> {
+            if (e != null) {
+                long responseTime = System.currentTimeMillis() - request.getId();
+                assertThat(responseTime, greaterThan(ttl));
+                assertThat(responseTime, lessThan(ttl + 10000));
+                count.getAndIncrement();
+            } else {
+                fail();
+            }
+        });
+    }
+
     @After
     public void destroy() throws Exception {
         rpcClientFactory.stop();
