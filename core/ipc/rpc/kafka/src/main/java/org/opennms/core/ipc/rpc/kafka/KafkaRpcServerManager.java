@@ -78,8 +78,9 @@ public class KafkaRpcServerManager {
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
     private static final long TIMEOUT_FOR_KAFKA_RPC = 30000;
+    // cache to hold rpcId for directed RPCs and expire them
     private Cache<String, Long>  rpcIdCache = CacheBuilder.newBuilder()
-            .maximumSize(10000)
+            .maximumSize(1000)
             .expireAfterWrite(10, TimeUnit.MINUTES)
             .build();
 

@@ -58,6 +58,7 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
+import org.opennms.core.logging.Logging;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
@@ -97,6 +98,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
             @Override
             public CompletableFuture<T> execute(S request) {
+                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
@@ -188,7 +190,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
         kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
         executor.execute(kafkaConsumerRunner);
-        executor.execute(() -> {
+        //Start a new thread which handles timeouts from delayQueue and calls response callback.
+        final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("rpc-client-timeout-tracker-%d")
+                .build();
+        Executors.newSingleThreadExecutor(threadFactory).execute(() -> {
             while (true) {
                 try {
                     ResponseCallback responseCb = delayQueue.take();
@@ -219,6 +224,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         @Override
         public void sendResponse(String message) {
             T response = null;
+            // When message is not null, it's called from kafka consumer otherwise it is from timeout tracker.
             if (message != null) {
                 response = rpcModule.unmarshalResponse(message);
                 if (response.getErrorMessage() != null) {
@@ -269,7 +275,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
                     for (ConsumerRecord<String, byte[]> record : records) {
                         RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
-                        // Get Handler from rpc Id and complete future.
+                        // Get Response callback from rpcId and send rpc content to callback.
                         ResponseCallback responseCb = rpcResponseMap.get(rpcMessage.getRpcId());
                         if (responseCb != null) {
                             responseCb.sendResponse(rpcMessage.getRpcContent().toStringUtf8());

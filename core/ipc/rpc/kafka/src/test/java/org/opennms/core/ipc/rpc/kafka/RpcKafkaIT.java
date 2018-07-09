@@ -42,11 +42,20 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.equalTo;
 import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -101,6 +110,8 @@ public class RpcKafkaIT {
     private MinionIdentity minionIdentity;
 
     private EchoRpcModule echoRpcModule = new EchoRpcModule();
+    
+    private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
 
     private AtomicInteger count = new AtomicInteger(0);
 
@@ -109,9 +120,9 @@ public class RpcKafkaIT {
         System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
         System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID), "5000");
         rpcClientFactory.start();
-        Hashtable<String, Object> kafkaConfig = new Hashtable<>();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, RpcKafkaIT.class.toGenericString());
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcServerManager.KAFKA_CLIENT_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -194,17 +205,77 @@ public class RpcKafkaIT {
         }
     }
 
-    @Test(timeout = 90000)
-    public void testKafkaRpcWithDifferentTimeouts() {
+    @Test(timeout = 60000)
+    public void stressTestKafkaRpcWithDifferentTimeouts() {
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setId(System.currentTimeMillis());
         request.setLocation(REMOTE_LOCATION_NAME);
         request.setSystemId("xxxxxxxx");
-        sendRequestAndVerifyResponse(request, 20000);
-        sendRequestAndVerifyResponse(request, 10000);
-        sendRequestAndVerifyResponse(request, 30000);
-        await().atMost(1, TimeUnit.MINUTES).untilAtomic(count, equalTo(3));
+        // Send 100 requests.
+        int maxRequests = 100;
+        count.set(0);
+        for (int i = 0; i < maxRequests; i++) {
+            int randomNum = ThreadLocalRandom.current().nextInt(5, 30);
+            sendRequestAndVerifyResponse(request, randomNum*1000);
+        }
+        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+    }
+    
+    @Test(timeout = 60000)
+    public void stressTestKafkaRpc() {
+        EchoRequest request = new EchoRequest("Kafka-RPC");
+        request.setId(System.currentTimeMillis());
+        request.setLocation(REMOTE_LOCATION_NAME);
+        count.set(0);
+        // Send 100 requests.
+        int maxRequests = 100;
+        for (int i = 0; i < maxRequests; i++) {
+            sendRequestAndVerifyResponse(request, 0);
+        }
+        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+    }
 
+    @SuppressWarnings("unused")
+    @Test(timeout = 60000)
+    public void stressTestKafkaRpcWithSystemIdAndTestMinionSingleRequest() {
+        EchoRequest request = new EchoRequest("Kafka-RPC");
+        request.setId(System.currentTimeMillis());
+        request.setLocation(REMOTE_LOCATION_NAME);
+        request.setSystemId(minionIdentity.getId());
+        count.set(0);
+        // Send 100 requests.
+        int maxRequests = 100;
+        for (int i = 0; i < maxRequests; i++) {
+            sendRequestAndVerifyResponse(request, 0);
+        }
+        // Try to consume response messages to test single request on minion.
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "testMinionCache");
+        kafkaConfig.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
+        kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
+        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+        AtomicBoolean closed = new AtomicBoolean(false);
+        AtomicInteger messageCount = new AtomicInteger(0);
+        Executors.newSingleThreadExecutor().execute(() -> {
+            try {
+                Pattern pattern = Pattern.compile(".*rpc-response.*");
+                kafkaConsumer.subscribe(pattern);
+                while (!closed.get()) {
+                    ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Long.MAX_VALUE);
+                    for (ConsumerRecord<String, byte[]> record : records) {
+                        messageCount.incrementAndGet();
+                    }
+                }
+            } catch (Exception e) {
+               //Ignore
+            } finally {
+               kafkaConsumer.close();
+            }
+            
+        });
+        await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
+        await().atMost(45, TimeUnit.SECONDS).untilAtomic(messageCount, equalTo(maxRequests));
+        closed.set(true);
     }
 
     private void sendRequestAndVerifyResponse(EchoRequest request, long ttl) {
@@ -213,13 +284,14 @@ public class RpcKafkaIT {
             if (e != null) {
                 long responseTime = System.currentTimeMillis() - request.getId();
                 assertThat(responseTime, greaterThan(ttl));
-                assertThat(responseTime, lessThan(ttl + 10000));
+                assertThat(responseTime, lessThan(ttl + 15000));
                 count.getAndIncrement();
             } else {
-                fail();
+                count.getAndIncrement();
             }
         });
     }
+    
 
     @After
     public void destroy() throws Exception {
