@@ -39,6 +39,7 @@
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%!
     public static DateFormat DATE_FORMAT = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
@@ -77,7 +78,7 @@
           </td>
           
           <th class="col-md-1">Lost&nbsp;Service&nbsp;Time</th>
-          <td class="col-md-3"><fmt:formatDate value="<%=outage.getLostServiceTime()%>" type="BOTH" /></td>
+          <td class="col-md-3"><onms:datetime date="<%=outage.getLostServiceTime()%>" /></td>
           
           <th class="col-md-1">Lost&nbsp;Service&nbsp;Event</th>
           <td class="col-md-3"><a href="event/detail.jsp?id=<%=outage.getLostServiceEventId()%>"><%=outage.getLostServiceEventId()%></a></td>          
@@ -106,7 +107,7 @@
             <% Date regainTime = outage.getRegainedServiceTime(); %>
             
             <% if(regainTime != null) { %>
-              <fmt:formatDate value="<%=regainTime%>" type="BOTH" />
+              <onms:datetime date="<%=regainTime%>" />
             <% } else { %>
               <% String label = OutageUtil.getStatusLabel(outage); %>
               <%=(label == null) ? "&nbsp;" : label %>
