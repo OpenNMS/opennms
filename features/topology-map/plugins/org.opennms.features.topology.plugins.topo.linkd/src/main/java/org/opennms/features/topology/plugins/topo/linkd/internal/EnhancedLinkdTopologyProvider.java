@@ -272,7 +272,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             return "IsIs";
         }
     }
-
+    
     class BridgeLinkDetail extends LinkDetail<Integer> {
 
         private final String m_vertexNamespace;
@@ -449,11 +449,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         Map<Integer, OnmsNode> nodemap = new HashMap<Integer, OnmsNode>();
-        Map<Integer, List<OnmsIpInterface>> nodeipmap = new HashMap<Integer,  List<OnmsIpInterface>>();
-        Map<Integer, OnmsIpInterface> nodeipprimarymap = new HashMap<Integer, OnmsIpInterface>();
-        Map<String, List<OnmsIpInterface>> macipmap = new HashMap<String, List<OnmsIpInterface>>();
-        Map<InetAddress, OnmsIpInterface> ipmap = new HashMap<InetAddress,  OnmsIpInterface>();
-        Map<Integer,List<OnmsSnmpInterface>> nodesnmpmap = new HashMap<Integer, List<OnmsSnmpInterface>>();
+        Map<Integer, List<OnmsIpInterface>> nodeToOnmsIp = new HashMap<Integer,  List<OnmsIpInterface>>();
+        Map<Integer,List<OnmsSnmpInterface>> nodeToOnmsSnmp = new HashMap<Integer, List<OnmsSnmpInterface>>();
+        Map<Integer, OnmsIpInterface> nodeToPrimaryIp = new HashMap<Integer, OnmsIpInterface>();
+        Map<String, List<OnmsIpInterface>> macToOnmsIp = new HashMap<String, List<OnmsIpInterface>>();
+        Map<InetAddress, OnmsIpInterface> ipToOnmsIp = new HashMap<InetAddress,  OnmsIpInterface>();
 
         Timer.Context context = m_loadNodesTimer.time();
         try {
@@ -473,28 +473,28 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             LOG.info("Loading Ip Interface");
             Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
             for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
-                if (!nodeipmap.containsKey(ip.getNode().getId())) {
-                    nodeipmap.put(ip.getNode().getId(), new ArrayList<OnmsIpInterface>());
-                    nodeipprimarymap.put(ip.getNode().getId(), ip);
+                if (!nodeToOnmsIp.containsKey(ip.getNode().getId())) {
+                    nodeToOnmsIp.put(ip.getNode().getId(), new ArrayList<OnmsIpInterface>());
+                    nodeToPrimaryIp.put(ip.getNode().getId(), ip);
                 }
-                nodeipmap.get(ip.getNode().getId()).add(ip);
+                nodeToOnmsIp.get(ip.getNode().getId()).add(ip);
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
-                    nodeipprimarymap.put(ip.getNode().getId(), ip);
+                    nodeToPrimaryIp.put(ip.getNode().getId(), ip);
                 }
 
                 if (duplicatedips.contains(ip.getIpAddress())) {
                     LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     continue;
                 }
-                if (ipmap.containsKey(ip.getIpAddress())) {
+                if (ipToOnmsIp.containsKey(ip.getIpAddress())) {
                     LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     duplicatedips.add(ip.getIpAddress());
                     continue;
                 }
-                ipmap.put(ip.getIpAddress(), ip);
+                ipToOnmsIp.put(ip.getIpAddress(), ip);
             }
             for (InetAddress duplicated: duplicatedips)
-                ipmap.remove(duplicated);
+                ipToOnmsIp.remove(duplicated);
             LOG.info("Ip Interface loaded");
         } catch (Exception e){
             LOG.error("Exception getting ip list: "+e.getMessage(),e);
@@ -508,10 +508,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
                 // Index the SNMP interfaces by node id
                 final int nodeId = snmp.getNode().getId();
-                List<OnmsSnmpInterface> snmpinterfaces = nodesnmpmap.get(nodeId);
+                List<OnmsSnmpInterface> snmpinterfaces = nodeToOnmsSnmp.get(nodeId);
                 if (snmpinterfaces == null) {
                     snmpinterfaces = new ArrayList<>();
-                    nodesnmpmap.put(nodeId, snmpinterfaces);
+                    nodeToOnmsSnmp.put(nodeId, snmpinterfaces);
                 }
                 snmpinterfaces.add(snmp);
             }
@@ -532,7 +532,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     LOG.info("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
                     continue;
                 }
-                OnmsIpInterface ip = ipmap.get(ipnettomedia.getNetAddress());
+                OnmsIpInterface ip = ipToOnmsIp.get(ipnettomedia.getNetAddress());
                 if (ip == null) {
                     LOG.info("load ip net media: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
                     continue;
@@ -545,14 +545,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     }
                 }
 
-                if (!macipmap.containsKey(ipnettomedia.getPhysAddress())) {
-                    macipmap.put(ipnettomedia.getPhysAddress(), new ArrayList<OnmsIpInterface>());
+                if (!macToOnmsIp.containsKey(ipnettomedia.getPhysAddress())) {
+                    macToOnmsIp.put(ipnettomedia.getPhysAddress(), new ArrayList<OnmsIpInterface>());
                     mactonodemap.put(ipnettomedia.getPhysAddress(), ip.getNode().getId());
                 }
-                macipmap.get(ipnettomedia.getPhysAddress()).add(ip);
+                macToOnmsIp.get(ipnettomedia.getPhysAddress()).add(ip);
             }
             for (String dupmac: duplicatednodemac)
-                macipmap.remove(dupmac);
+                macToOnmsIp.remove(dupmac);
             
             LOG.info("Ip net to media loaded");
         } catch (Exception e){
@@ -564,7 +564,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         context = m_loadLldpLinksTimer.time();
         try{
             LOG.info("Loading Lldp link");
-            getLldpLinks(nodemap, nodesnmpmap,nodeipprimarymap);
+            getLldpLinks(nodemap, nodeToOnmsSnmp,nodeToPrimaryIp);
             LOG.info("Lldp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
@@ -575,7 +575,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         context = m_loadOspfLinksTimer.time();
         try{
             LOG.info("Loading Ospf link");
-            getOspfLinks(nodemap,nodesnmpmap,nodeipprimarymap);
+            getOspfLinks(nodemap,nodeToOnmsSnmp,nodeToPrimaryIp);
             LOG.info("Ospf link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
@@ -583,10 +583,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             context.stop();
         }
 
-        context = m_loadIsisLinksTimer.time();
+        context = m_loadCdpLinksTimer.time();
         try{
             LOG.info("Loading Cdp link");
-            getCdpLinks(nodemap,nodesnmpmap,nodeipprimarymap,ipmap);
+            getCdpLinks(nodemap,nodeToOnmsSnmp,nodeToPrimaryIp,ipToOnmsIp);
             LOG.info("Cdp link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
@@ -594,10 +594,10 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             context.stop();
         }
 
-        context = m_loadCdpLinksTimer.time();
+        context = m_loadIsisLinksTimer.time();
         try{
             LOG.info("Loading IsIs link");
-            getIsIsLinks(nodemap,nodesnmpmap,nodeipprimarymap);
+            getIsIsLinks(nodemap,nodeToOnmsSnmp,nodeToPrimaryIp);
             LOG.info("IsIs link loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
@@ -608,7 +608,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         context = m_loadBridgeLinksTimer.time();
         try{
             LOG.info("Loading Bridge link");
-            getBridgeLinks(nodemap, nodesnmpmap,macipmap,nodeipmap,nodeipprimarymap);
+            getBridgeLinks(nodemap, nodeToOnmsSnmp,macToOnmsIp,nodeToOnmsIp,nodeToPrimaryIp);
             LOG.info("Bridge link loaded");
         } catch (Exception e){
             LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
@@ -620,7 +620,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         try {
             LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
             if (isAddNodeWithoutLink()) {
-                addNodesWithoutLinks(nodemap,nodeipmap,nodeipprimarymap);
+                addNodesWithoutLinks(nodemap,nodeToOnmsIp,nodeToPrimaryIp);
             }
         } finally {
             context.stop();
@@ -901,6 +901,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             edge.setTooltipText(getEdgeTooltipText(linkDetail,nodesnmpmap));
         }
     }
+    
     private void getIsIsLinks(Map<Integer,OnmsNode> nodemap,Map<Integer, List<OnmsSnmpInterface>> nodesnmpmap, Map<Integer, OnmsIpInterface> ipprimarymap){
 
         Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
