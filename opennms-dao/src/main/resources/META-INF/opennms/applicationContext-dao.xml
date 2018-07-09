@@ -49,6 +49,12 @@
     </property>
   </bean>
 
+  <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+    <property name="dataSource" ref="dataSource" />
+  </bean>
+
+  <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
+
   <!-- 
     DataSourceFactory has been changed to return TransactionAwareDataSources so
     legacy code can participate in transactions properly.
@@ -81,6 +87,16 @@
     <property name="configResource" ref="availabilityReportConfigResourceLocation" />
   </bean>
   <onmsgi:service interface="org.opennms.netmgt.dao.api.OnmsReportConfigDao" ref="availabilityReportConfigDao" />
+
+  <bean id="filterManager" class="org.opennms.netmgt.dao.hibernate.HibernateFilterManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.model.FilterManager" ref="filterManager" />
+
+  <bean id="eventdServiceManager" class="org.opennms.netmgt.dao.hibernate.EventdServiceManagerHibernate">
+    <property name="serviceTypeDao" ref="serviceTypeDao"/>
+  </bean>
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.EventdServiceManager" ref="eventdServiceManager" />
 
   <!-- Other Non-Database DAOs -->
   <!-- The time-series strategy specific context should provide beans that implement:

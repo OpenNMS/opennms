@@ -44,7 +44,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.DemandPollDao;
-import org.opennms.netmgt.dao.api.EventdServiceManager;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -54,7 +53,6 @@ import org.opennms.netmgt.dao.api.SessionFactoryWrapper;
 import org.opennms.netmgt.dao.api.StatisticsService;
 import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.filter.api.FilterDao;
-import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.OnmsNode;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -80,6 +78,8 @@ public class DaoServiceTester {
 
     private final static Pattern SERVICE_PATTERN = Pattern.compile("<onmsgi:service.*interface[\\s]*=[\\s]*\"([\\w\\d\\.-]*)\".*\\/>");
 
+    private final BundleContext bundleContext;
+
     private final TestRegistry testRegistry = new TestRegistry()
             .withIgnoredClass(
                     SessionFactoryWrapper.class,
@@ -87,20 +87,11 @@ public class DaoServiceTester {
                     DemandPollDao.class
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
-            // TODO MVR move to opennms only
-            .withTest(FilterManager.class, filterManager -> {
-                filterManager.enableAuthorizationFilter(new String[]{"USERS"});
-                filterManager.disableAuthorizationFilter();
-            })
             .withTest(BridgeTopologyDao .class, bean -> {
                 bean.load();
             })
             .withTest(AlarmRepository.class, bean -> {
                 bean.unacknowledgeAll("ulf");
-            })
-            // TODO MVR move to opennms only
-            .withTest(EventdServiceManager .class, bean -> {
-                bean.dataSourceSync();
             })
             .withTest(IfLabel .class, bean -> {
                 bean.getIfLabel(1, InetAddressUtils.addr("127.0.0.1"));
@@ -127,9 +118,6 @@ public class DaoServiceTester {
                     throw new RuntimeException(e);
                 }
             });
-
-
-    private final BundleContext bundleContext;
 
     public DaoServiceTester(BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
