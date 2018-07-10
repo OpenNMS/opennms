@@ -38,26 +38,46 @@ import org.opennms.netmgt.rrd.RrdRepository;
 
 public class OsgiPersisterFactory implements PersisterFactory {
 
-    private static final ServiceLookup SERVICE_LOOKUP = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
-                                                             .blocking().build();
-    private PersisterFactory delegate;
+    private final ServiceLookup serviceLookup;
+
+    public OsgiPersisterFactory() {
+        this(false);
+    }
+
+    public OsgiPersisterFactory(boolean blocking) {
+        if (blocking) {
+            serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+                    .blocking()
+                    .build();
+        } else {
+            serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+                    .build();
+        }
+    }
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
-        Persister persister = createPersister(params, repository, false, false, false);
-        return persister;
+        final PersisterFactory delegate = getDelegate();
+        if (delegate == null) {
+            return null;
+        }
+        return delegate.createPersister(params, repository);
     }
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
-        // There is only one persister that can load from osgi, so use the filter directly
-        delegate = SERVICE_LOOKUP.lookup(PersisterFactory.class, "(strategy=kafka)");
-        if (delegate != null) {
-            Persister persister = delegate.createPersister(params, repository);
-            return persister;
+        final PersisterFactory delegate = getDelegate();
+        if (delegate == null) {
+            return null;
         }
-        return null;
+        return delegate.createPersister(params, repository, dontPersistCounters, forceStoreByGroup, dontReorderAttributes);
+    }
+
+    private PersisterFactory getDelegate() {
+        // Find the first concrete persister factory implementation
+        // Exclude the delegate strategy to avoid circular calls since it may also be exposed in the service registry
+        return serviceLookup.lookup(PersisterFactory.class, "(!(strategy=delegate))");
     }
 
 }

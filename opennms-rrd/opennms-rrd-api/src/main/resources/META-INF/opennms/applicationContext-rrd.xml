@@ -129,11 +129,25 @@
 
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
 
-    <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory">
+    <bean id="rrdPersisterFactory" class="org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory">
         <property name="rrdStrategy" ref="rrdStrategy" />
         <property name="resourceStorageDao" ref="resourceStorageDao" />
     </bean>
 
-    <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+    <bean id="osgiPersisterFactory" class="org.opennms.features.collection.persistence.osgi.OsgiPersisterFactory" />
+
+    <bean id="delegatingPersisterFactory" class="org.opennms.netmgt.collection.support.DelegatingPersisterFactory" primary="true" >
+        <constructor-arg index="0" ref="rrdPersisterFactory"/>
+        <constructor-arg index="1" ref="osgiPersisterFactory"/>
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="delegatingPersisterFactory">
+        <onmsgi:service-properties>
+            <entry>
+                <key><value>strategy</value></key>
+                <value>delegate</value>
+            </entry>
+        </onmsgi:service-properties>
+    </onmsgi:service>
 
 </beans>
