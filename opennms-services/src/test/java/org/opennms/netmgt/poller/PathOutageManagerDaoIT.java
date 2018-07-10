@@ -140,11 +140,6 @@ public class PathOutageManagerDaoIT implements TemporaryDatabaseAware<MockDataba
 		m_db.populate(m_network);
 		DataSourceFactory.setInstance(m_db);
 
-//		DemandPollDao demandPollDao = new DemandPollDaoHibernate(m_db);
-//		demandPollDao.setAllocateIdStmt(m_db
-//				.getNextSequenceValStatement("demandPollNxtId"));
-//		m_demandPollDao = demandPollDao;
-
 		m_pollerConfig = new MockPollerConfig(m_network);
 		m_pollerConfig.setNextOutageIdSql(m_db.getNextOutageIdStatement());
 		m_pollerConfig.setNodeOutageProcessingEnabled(true);
