@@ -662,7 +662,7 @@
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-core-ipc-rpc-kafka" description="OpenNMS :: Core :: IPC :: RPC :: Kafka." version="${project.version}">
+    <feature name="opennms-core-ipc-rpc-kafka" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl." version="${project.version}">
       <feature>opennms-kafka</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>

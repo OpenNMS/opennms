@@ -123,6 +123,7 @@ public class RpcKafkaIT {
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, RpcKafkaIT.class.toGenericString());
+        kafkaConfig.put("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=15s");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
         when(configAdmin.getConfiguration(KafkaRpcServerManager.KAFKA_CLIENT_PID).getProperties())
                 .thenReturn(kafkaConfig);
@@ -275,6 +276,11 @@ public class RpcKafkaIT {
         });
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(count, equalTo(maxRequests));
         await().atMost(45, TimeUnit.SECONDS).untilAtomic(messageCount, equalTo(maxRequests));
+        await().atMost(45, TimeUnit.SECONDS).pollDelay(15, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() ->   {
+            // In real world scenario, this will be done by cache in read/write operations. Don't need explicit cleanUp.
+            kafkaRpcServer.getRpcIdCache().cleanUp();
+            return kafkaRpcServer.getRpcIdCache().size() == 0;
+        } );
         closed.set(true);
     }
 

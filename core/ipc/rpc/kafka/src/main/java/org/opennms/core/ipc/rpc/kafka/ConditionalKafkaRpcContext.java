@@ -30,6 +30,9 @@ package org.opennms.core.ipc.rpc.kafka;
 
 import static org.opennms.core.rpc.common.RpcStrategy.Strategy.KAFKA;
 
+import org.opennms.core.logging.Logging;
+import org.opennms.core.logging.Logging.MDCCloseable;
+import org.opennms.core.rpc.api.RpcClientFactory;
 import org.opennms.core.rpc.common.RpcStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +58,9 @@ public class ConditionalKafkaRpcContext {
         @Override
         public boolean matches(final ConditionContext context, final AnnotatedTypeMetadata metadata) {
             final boolean enabled = KAFKA.equals(RpcStrategy.getRpcStrategy());
-            LOG.debug("Enable Kafka RPC: {}", enabled);
+            try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
+                LOG.debug("Enable Kafka RPC: {}", enabled);
+            }
             return enabled;
         }
    }

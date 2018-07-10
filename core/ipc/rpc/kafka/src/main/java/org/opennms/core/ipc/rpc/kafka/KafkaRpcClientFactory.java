@@ -98,7 +98,6 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
 
             @Override
             public CompletableFuture<T> execute(S request) {
-                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
                 if (request.getLocation() == null || request.getLocation().equals(location)) {
                     // The request is for the current location, invoke it directly
                     return module.execute(request);
@@ -115,7 +114,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 // timeout for RPC > metadataRefreshRate, add default timeout to metadata refresh rate.
                 long timeout = metadataRefreshRate + Long.parseLong(TIMEOUT_FOR_KAFKA_RPC);
                 // ttl should be > default timeout otherwise use default.
-                timeout = ttl < timeout ? timeout : ttl;
+                timeout = Math.max(ttl, timeout);
                 // Create a future and add it to response handler which will complete the future when it receives callback.
                 final CompletableFuture<T> future = new CompletableFuture<>();
                 ResponseHandler<S, T> responseHandler = new ResponseHandler<S, T>(future, module, rpcId,
@@ -146,7 +145,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                             rpcMessage.toByteArray());
                     producer.send(record);
                 }
-                LOG.debug("RPC Request {} sent to minion at location {}", request.toString(), request.getLocation());
+                LOG.debug("RPC Request {} sent to minion at location {}", request, request.getLocation());
                 return future;
             }
         };
@@ -199,7 +198,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     ResponseCallback responseCb = delayQueue.take();
                     responseCb.sendResponse(null);
                 } catch (InterruptedException e) {
-                    // exit, nothing to do
+                    LOG.info("exited while waiting for an element from delayQueue {}", e);
+                } catch (Exception e) {
+                    LOG.warn("error while sending response from timeout handler {}", e);
                 }
             }
         });
@@ -268,8 +269,11 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         @Override
         public void run() {
             try {
-                // subscribe to topics with "rpc-response" as part of topic name.
-                Pattern pattern = Pattern.compile(".*rpc-response.*");
+                Logging.putPrefix(RpcClientFactory.LOG_PREFIX);
+                // subscribe to topics with "{OpenNMSInstanceName}.rpc-response." as prefix.
+                String topicName = new JmsQueueNameFactory("rpc-response","").getName();
+                String regex = String.format("%s.*", topicName);
+                Pattern pattern = Pattern.compile(regex);
                 consumer.subscribe(pattern);
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
@@ -277,8 +281,12 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
                         // Get Response callback from rpcId and send rpc content to callback.
                         ResponseCallback responseCb = rpcResponseMap.get(rpcMessage.getRpcId());
+                        LOG.debug("Received response {}", rpcMessage.getRpcContent().toStringUtf8());
                         if (responseCb != null) {
                             responseCb.sendResponse(rpcMessage.getRpcContent().toStringUtf8());
+                        } else {
+                            LOG.warn("received Response for the request which was timedout",
+                                    rpcMessage.getRpcContent().toStringUtf8());
                         }
                     }
                 }

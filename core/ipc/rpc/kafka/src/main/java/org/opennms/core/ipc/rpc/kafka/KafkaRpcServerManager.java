@@ -39,7 +39,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -77,18 +76,13 @@ public class KafkaRpcServerManager {
     private ConfigurationAdmin configAdmin;
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
-    private static final long TIMEOUT_FOR_KAFKA_RPC = 30000;
-    // cache to hold rpcId for directed RPCs and expire them
-    private Cache<String, Long>  rpcIdCache = CacheBuilder.newBuilder()
-            .maximumSize(1000)
-            .expireAfterWrite(10, TimeUnit.MINUTES)
-            .build();
-
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
             .setNameFormat("kafka-consumer-rpc-server-%d")
             .build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
+    // cache to hold rpcId for directed RPCs and expire them
+    private Cache<String, Long>  rpcIdCache;
 
     public KafkaRpcServerManager(ConfigurationAdmin configAdmin, MinionIdentity minionIdentity) {
         this.configAdmin = configAdmin;
@@ -122,6 +116,9 @@ public class KafkaRpcServerManager {
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
+        // Configurable cache config if needed.
+        String cacheConfig = kafkaConfig.getProperty("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=10m");
+        rpcIdCache = CacheBuilder.from(cacheConfig).build();
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -213,20 +210,17 @@ public class KafkaRpcServerManager {
                             LOG.info("MinionIdentity {} doesn't match with systemId {}, ignore the request", minionId,
                                     rpcMessage.getSystemId());
                             continue;
-                        } 
-                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
+                        }
                         if (hasSystemId) {
                             // directed RPC, there may be more than one request with same request Id, cache and allow only one.
                             Long cachedTime = rpcIdCache.getIfPresent(rpcId);
-                            final long now = System.currentTimeMillis();
-                            long cachedValue =  cachedTime != null ? cachedTime.longValue() : 0;
-                            long ttl = request.getTimeToLiveMs() != null ? request.getTimeToLiveMs().longValue() : TIMEOUT_FOR_KAFKA_RPC;
-                            if (now - cachedValue > ttl) {
-                                rpcIdCache.put(rpcId, now);
+                            if (cachedTime == null) {
+                                rpcIdCache.put(rpcId, System.currentTimeMillis());
                             } else {
                                 continue;
                             }
                         }
+                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
                         CompletableFuture<RpcResponse> future = module.execute(request);
                         future.whenComplete((res, ex) -> {
                             final RpcResponse response;
@@ -250,7 +244,7 @@ public class KafkaRpcServerManager {
                                 final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
                                         topicNameFactory.getName(), rpcResponse.toByteArray());
                                 producer.send(producerRecord);
-                                LOG.debug("request {} executed, sending response {} ", request.toString(),
+                                LOG.debug("request {} executed, sending response {} ", request,
                                         responseAsString);
                             } catch (Throwable t) {
                                 LOG.error("Marshalling response in RPC module {} failed.", module, t);
@@ -275,6 +269,10 @@ public class KafkaRpcServerManager {
 
     public MinionIdentity getMinionIdentity() {
         return minionIdentity;
+    }
+
+    public Cache<String, Long> getRpcIdCache() {
+        return rpcIdCache;
     }
 }
 ;

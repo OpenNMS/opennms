@@ -21,7 +21,7 @@ Enable and configure the _Kafka_ consumer on _{opennms-product-name}_ by using t
 ----
 echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
 echo 'org.opennms.core.ipc.sink.strategy=kafka
-org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
+org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
 ----
 
 Restart _{opennms-product-name}_ to apply the changes.
@@ -38,7 +38,7 @@ Enable the _Kafka_ producer on _Minion_ using:
 [source, sh]
 ----
 echo '!opennms-core-ipc-sink-camel
-opennms-core-ipc-sink-kafka' > "$MINION_HOME/etc/featuresBoot.d/kafka.boot"
+opennms-core-ipc-sink-kafka' >> "$MINION_HOME/etc/featuresBoot.d/kafka.boot"
 ----
 
 NOTE: The snippet above prevents the `opennms-core-ipc-sink-camel` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-sink-kafka` feature instead.
@@ -64,6 +64,8 @@ Enabling kafka for RPC will allow replacing _ActiveMQ_ if needed.
 _Kafka_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
 The _Kafka_ server must be compatible with _Kafka_ client version `1.0.1`.
+
+NOTE: For Kafka RPC, number of partitions should always be greater than number of minions at a location. When there are multiple locations, partitions >= max (number of minions at a location).
 
 ==== Client(OpenNMS) configuration
 
