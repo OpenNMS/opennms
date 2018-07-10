@@ -13,6 +13,7 @@
     <modules>
         <module>api</module>
         <module>impl</module>
+        <module>health</module>
         <module>jms</module>
         <module>shell</module>
     </modules>

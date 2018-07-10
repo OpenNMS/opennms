@@ -104,25 +104,50 @@
                 </executions>
             </plugin>
             <plugin>
-                <artifactId>maven-clean-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>cleanup-after-integration-tests</id>
-                        <phase>post-integration-test</phase>
+                        <id>copy-dependency</id>
+                        <phase>process-resources</phase>
                         <goals>
-                            <goal>clean</goal>
+                            <goal>copy</goal>
                         </goals>
                         <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                            <filesets>
-                                <fileset>
-                                    <directory>${project.build.directory}/maven-repo</directory>
-                                </fileset>
-                            </filesets>
+                            <outputDirectory>${project.build.directory}/maven-repo</outputDirectory>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.features.distributed</groupId>
+                                    <artifactId>org.opennms.features.distributed.dao-test</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/maven-repo/org/opennms/features/distributed/org.opennms.features.distributed.dao-test/${project.version}/</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!--<plugin>-->
+                <!--<artifactId>maven-clean-plugin</artifactId>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>cleanup-after-integration-tests</id>-->
+                        <!--<phase>post-integration-test</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>clean</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<excludeDefaultDirectories>true</excludeDefaultDirectories>-->
+                            <!--<filesets>-->
+                                <!--<fileset>-->
+                                    <!--<directory>${project.build.directory}/maven-repo</directory>-->
+                                <!--</fileset>-->
+                            <!--</filesets>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
         </plugins>
     </build>
 
@@ -289,6 +314,12 @@
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>
             <artifactId>org.opennms.features.distributed.dao-distributed</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TODO MVR remove again .. -->
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-test</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

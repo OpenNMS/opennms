@@ -21,7 +21,9 @@
     <module>dao-api</module>
     <module>dao-impl</module>
     <module>dao-distributed</module>
+    <module>dao-healthcheck</module>
     <module>dao-test</module>
     <module>datasource</module>
+    <module>datasource-healthcheck</module>
   </modules>
 </project>

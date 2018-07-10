@@ -19,6 +19,7 @@
 
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
 
@@ -35,6 +36,9 @@
         <!-- Needed by activemq-camel -->
         <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
         <feature>activemq-camel</feature>
+
+        <!-- This is also defined in "sentinel-jms" -->
+        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
 

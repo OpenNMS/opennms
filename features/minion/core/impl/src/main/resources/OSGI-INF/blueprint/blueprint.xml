@@ -54,4 +54,10 @@
     </bean>
     <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
 
+    <!-- ReST Health Check -->
+    <service interface="org.opennms.distributed.core.health.HealthCheck">
+        <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
+            <argument ref="restClient"/>
+        </bean>
+    </service>
 </blueprint>

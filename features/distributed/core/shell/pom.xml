@@ -23,6 +23,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Private-Package></Private-Package>
+                        <Import-Package>javax.jms.*;resolution:=optional,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

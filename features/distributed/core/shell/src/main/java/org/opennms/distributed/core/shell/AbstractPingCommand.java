@@ -60,6 +60,7 @@ public abstract class AbstractPingCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
+        System.out.println("WARNING: The ping command is deprecated, please use health:check instead\n");
         System.out.println("Connecting to ReST...");
         restClient.ping();
         System.out.println("OK");
