@@ -108,15 +108,10 @@ spawn_sentinel() {
 
   # Extract the default repository
   pushd repository/target > /dev/null
-  # TODO MVR remove this after the karaf-extender has been removed from sentinel startup
-  mkdir -p "${SENTINEL_HOME}/repositories/default"
   tar zxvf repository-*-repo.tar.gz -C "${SENTINEL_HOME}/system" > /dev/null
   popd > /dev/null
 
   echo "Updating configuration for Sentinel #$idx..."
-  # Enable Hawtio
-  echo 'hawtio-offline' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
-
   # Instance specific configuration
   set_instance_specific_configuration "$SENTINEL_HOME" "$idx"
 
