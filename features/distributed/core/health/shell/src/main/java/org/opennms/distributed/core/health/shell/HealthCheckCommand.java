@@ -102,7 +102,7 @@ public class HealthCheckCommand implements Action {
         switch (status) {
             case Failure: return Color.Red;
             case Timeout: return Color.Yellow;
-            case Waiting: return Color.Blue;
+            case Starting: return Color.Blue;
             case Success: return Color.Green;
             case Unknown: return Color.Yellow;
             default:      return Color.NoColor;

@@ -30,8 +30,9 @@ package org.opennms.distributed.core.health;
 
 public enum Status {
     Unknown,
-    Waiting /* Initial Delay TODO MVR name differently */,
-    Failure,
+    Starting,
     Success,
-    Timeout;
+    Timeout,
+    Failure
+    ;
 }

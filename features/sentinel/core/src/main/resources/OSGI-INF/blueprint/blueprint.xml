@@ -23,6 +23,9 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="bundleService" interface="org.apache.karaf.bundle.core.BundleService" availability="mandatory" />
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+
     <!-- Expose the controller configuration as a service, since other bundles cannot
          reliably access the configuration from the same PID -->
     <bean id="controllerConfig" class="org.opennms.distributed.core.impl.ControllerConfigImpl">
@@ -32,8 +35,6 @@
         <property name="brokerIdleTimeout" value="[[broker-idle-timeout]]"/>
     </bean>
     <service ref="controllerConfig" interface="org.opennms.distributed.core.api.ControllerConfig"/>
-
-    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- A canonical source for this Sentinel's identity -->
     <bean id="sentinelIdentity" class="org.opennms.distributed.core.impl.IdentityImpl">
@@ -59,6 +60,14 @@
     <service interface="org.opennms.distributed.core.health.HealthCheck">
         <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
             <argument ref="restClient"/>
+        </bean>
+    </service>
+
+    <!-- Container Health Check -->
+    <service interface="org.opennms.distributed.core.health.HealthCheck">
+        <bean class="org.opennms.sentinel.core.shell.ContainerIntegrityHealthCheck" >
+            <argument ref="blueprintBundleContext"/>
+            <argument ref="bundleService" />
         </bean>
     </service>
 
