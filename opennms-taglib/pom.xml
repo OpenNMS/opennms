@@ -9,12 +9,13 @@
     <artifactId>opennms-taglib</artifactId>
     <name>OpenNMS Taglib</name>
     <packaging>jar</packaging>
-    <dependencies>
-        
-        <dependency><!-- for SimpleTag -->
-            <groupId>org.mortbay.jasper</groupId>
+    <dependencies>   
+
+        <!-- for SimpleTag support -->
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
             <artifactId>apache-jsp</artifactId>
-            <version>RELEASE</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
@@ -28,6 +29,5 @@
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 </project>
