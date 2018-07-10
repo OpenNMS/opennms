@@ -9,10 +9,13 @@
         http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <!-- The Spring Application Context exposing the DAOs is first loaded AFTER the dao-impl bundle has
-    already been successfully started. Therefore it could be possible that the DaoServiceTester already tries to
-    dynamically pull in services, which have not yet been exposed. Therefore we reference at least one DAO here, to
-    ensure that gemini blueprint is doing its magic -->
+    <!--
+        The Spring Application Context starts exposing the DAOs AFTER the dao-impl bundle has
+        already been successfully started (Bundle-state: ACTIVE). This means it could be possible that the
+        DaoServiceTester tries to dynamically pull in services via bundleContext.getServiceReferences(clazz)) which
+        are not yet available. To avoid this, we reference at least one DAO here, to ensure gemini has finished
+        exposing Spring Application Context services.
+     -->
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
 
     <!-- Kick off the verification of the exposed DAOs -->

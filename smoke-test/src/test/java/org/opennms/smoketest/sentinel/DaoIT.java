@@ -70,7 +70,7 @@ public class DaoIT {
         try {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().sentinel();
 
-            // Enable Netflow 5 Adapter
+            // Auto-Deploy sentinel-persistence feature and the dao-test bundle, which verifies the DAOs afterwards
             builder.withSentinelEnvironment()
                     .addFile(getClass().getResource("/sentinel/features-dao.xml"), "deploy/features.xml")
                     .addFile(Paths.get("target/deploy-artifacts/org.opennms.features.distributed.dao-test.jar").toUri().toURL(), "deploy/org.opennms.features.distributed.dao-test.jar");
