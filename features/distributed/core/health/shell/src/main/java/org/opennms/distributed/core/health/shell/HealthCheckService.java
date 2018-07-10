@@ -95,7 +95,7 @@ public class HealthCheckService {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
                 }
-                onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + "ms"));
+                onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + " ms"));
             } catch (Exception ex) {
                 if (currentFuture != null) {
                     currentFuture.cancel(true);
