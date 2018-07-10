@@ -31,14 +31,16 @@ package org.opennms.features.kafka.producer;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
-
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.HwEntityDao;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
+import org.opennms.netmgt.model.OnmsHwEntity;
+import org.opennms.netmgt.model.OnmsHwEntityAlias;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -50,9 +52,11 @@ public class ProtobufMapper {
 
     private final EventConfDao eventConfDao;
 
+    private final HwEntityDao hwEntityDao;
 
-    public ProtobufMapper(EventConfDao eventConfDao) {
+    public ProtobufMapper(EventConfDao eventConfDao, HwEntityDao hwEntityDao) {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
+        this.hwEntityDao = Objects.requireNonNull(hwEntityDao);
     }
 
     public OpennmsModelProtos.Node.Builder toNode(OnmsNode node) {
@@ -93,6 +97,61 @@ public class ProtobufMapper {
 
         setTimeIfNotNull(node.getCreateTime(), builder::setCreateTime);
 
+        OnmsHwEntity rootEntity = hwEntityDao.findRootByNodeId(node.getId());
+        if (rootEntity != null) {
+            builder.setHwInventory(toHwEntity(rootEntity));
+        }
+
+        return builder;
+    }
+
+    public static OpennmsModelProtos.HwEntity.Builder toHwEntity(OnmsHwEntity entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        final OpennmsModelProtos.HwEntity.Builder builder = OpennmsModelProtos.HwEntity.newBuilder();
+
+        if (entity.getId() != null) {
+            builder.setEntityId(entity.getId());
+        }
+        if (entity.getEntPhysicalIndex() != null) {
+            builder.setEntPhysicalIndex(entity.getEntPhysicalIndex());
+        }
+        if (entity.getEntPhysicalClass() != null) {
+            builder.setEntPhysicalClass(entity.getEntPhysicalClass());
+        }
+        if (entity.getEntPhysicalDescr() != null) {
+            builder.setEntPhysicalDescr(entity.getEntPhysicalDescr());
+        }
+        if (entity.getEntPhysicalIsFRU() != null) {
+            builder.setEntPhysicalIsFru(entity.getEntPhysicalIsFRU());
+        }
+        if (entity.getEntPhysicalName() != null) {
+            builder.setEntPhysicalName(entity.getEntPhysicalName());
+        }
+        if (entity.getEntPhysicalVendorType() != null) {
+            builder.setEntPhysicalVendorType(entity.getEntPhysicalVendorType());
+        }
+        // Add aliases
+        entity.getEntAliases()
+                .stream()
+                .forEach(alias -> builder.addEntHwAlias(toHwAlias(alias)));
+        // Add children
+        entity.getChildren()
+                .stream()
+                .forEach(child -> builder.addChildren(toHwEntity(child)));
+
+        return builder;
+    }
+
+    public static OpennmsModelProtos.HwAlias.Builder toHwAlias(OnmsHwEntityAlias alias) {
+        if (alias == null) {
+            return null;
+        }
+        final OpennmsModelProtos.HwAlias.Builder builder = OpennmsModelProtos.HwAlias.newBuilder()
+                .setIndex(alias.getIndex())
+                .setOid(alias.getOid());
         return builder;
     }
 
