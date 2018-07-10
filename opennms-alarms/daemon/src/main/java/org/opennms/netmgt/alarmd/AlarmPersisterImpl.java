@@ -48,7 +48,6 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
@@ -269,15 +268,11 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
-        if (containedAlarms != null && !containedAlarms.isEmpty()) {
-            if (alarm instanceof Situation) {
-                for(OnmsAlarm related : containedAlarms) {
-                    // Related Alarms are additive for Situations reduced from Events.
-                    ((Situation)alarm).addAlarm(related);
-                }
-            } else {
-                LOG.warn("reduceEvent: Event {} attempts to add alarms to alarm that is not a Situation: {}.", event.getUei(), alarm);
+        Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+        if (relatedAlarms != null && !relatedAlarms.isEmpty()) {
+            // alarm.relatedAlarms becomes the union of any existing alarms and any in the event.
+            for (OnmsAlarm related : relatedAlarms) {
+                alarm.addRelatedAlarm(related);
             }
         }
 
@@ -285,15 +280,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
-        OnmsAlarm alarm;
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
+        OnmsAlarm alarm = new OnmsAlarm();
         // Situations are denoted by the existance of related-reductionKeys
-        if (containedAlarms == null || containedAlarms.isEmpty()) {
-            alarm = new OnmsAlarm();
-        } else {
-            alarm = new Situation();
-            ((Situation)alarm).setAlarms(containedAlarms);
-        }
+        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()));
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
@@ -320,7 +309,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
     
-    private Set<OnmsAlarm> getAlarms(List<Parm> list) {
+    private Set<OnmsAlarm> getRelatedAlarms(List<Parm> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptySet();
         }

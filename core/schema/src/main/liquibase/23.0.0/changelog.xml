@@ -89,4 +89,14 @@
     </preConditions>
     <dropSequence sequenceName="demandpollnxtid" />
   </changeSet>
+
+ <changeSet author="smith" id="23.0.0-situations-reverted-to-alarms">
+   <!--  Dropping the Situation subtype. -->
+   <dropColumn columnName="discriminator" tableName="alarms"/>
+   <!--  Renaming member to 'relatedAlarms' in OnmsAlarm type. -->
+   <renameColumn newColumnName="related_alarm_id"
+           oldColumnName="alarms_alarmid"
+            tableName="alarm_situations"/>
+ </changeSet>
+ 
 </databaseChangeLog>
