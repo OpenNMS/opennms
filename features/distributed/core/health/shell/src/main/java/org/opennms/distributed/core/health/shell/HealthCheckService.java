@@ -29,6 +29,7 @@
 package org.opennms.distributed.core.health.shell;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -64,7 +65,10 @@ public class HealthCheckService {
         if (serviceReferences.isEmpty()) {
             throw new IllegalStateException("No health checks available.");
         }
-        return serviceReferences.stream().map(ref -> bundleContext.getService(ref)).collect(Collectors.toList());
+        return serviceReferences.stream()
+                .sorted(Comparator.comparingLong(ref -> ref.getBundle().getBundleId()))
+                .map(ref -> bundleContext.getService(ref))
+                .collect(Collectors.toList());
     }
 
     // Perform check asynchronously
