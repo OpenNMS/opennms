@@ -31,9 +31,9 @@ package org.opennms.distributed.core.health.shell;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
@@ -69,31 +69,37 @@ public class HealthCheckService {
 
     // Perform check asynchronously
     public void performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
+        Future<Response> currentFuture = null;
         final List<HealthCheck> checks = getHealthChecks();
         for (HealthCheck check : checks) {
             try {
                 if (onStartConsumer != null) {
                     onStartConsumer.accept(check);
                 }
-                final CompletableFuture<Response> c = new CompletableFuture();
-                executorService.submit(() -> {
+                currentFuture = executorService.submit(() -> {
                     try {
                         final Response response = check.perform(context);
                         if (response == null) {
-                            c.complete(new Response(Status.Unknown));
+                            return new Response(Status.Unknown);
                         }
-                        c.complete(response);
+                        return response;
                     } catch (Exception ex) {
-                        c.complete(new Response(ex));
+                        return new Response(ex);
                     }
                 });
-                final Response response = c.get(context.getTimeout(), TimeUnit.MILLISECONDS);
+                final Response response = currentFuture.get(context.getTimeout(), TimeUnit.MILLISECONDS);
                 if (onFinishConsumer != null) {
                     onFinishConsumer.accept(response);
                 }
             } catch (TimeoutException timeoutException) {
+                if (currentFuture != null) {
+                    currentFuture.cancel(true);
+                }
                 onFinishConsumer.accept(new Response(Status.Timeout, "Health Check did not finish within " + context.getTimeout() + "ms"));
             } catch (Exception ex) {
+                if (currentFuture != null) {
+                    currentFuture.cancel(true);
+                }
                 onFinishConsumer.accept(new Response(ex));
             }
         }
