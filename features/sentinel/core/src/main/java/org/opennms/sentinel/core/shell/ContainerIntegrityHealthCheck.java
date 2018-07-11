@@ -29,14 +29,12 @@
 package org.opennms.sentinel.core.shell;
 
 import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 
 import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
 import org.opennms.distributed.core.health.Context;
+import org.opennms.distributed.core.health.Health;
 import org.opennms.distributed.core.health.HealthCheck;
 import org.opennms.distributed.core.health.Response;
 import org.opennms.distributed.core.health.Status;
@@ -67,7 +65,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
         }
 
         // Verify all bundles
-        final List<Response> responses = new ArrayList<>();
+        final Health health = new Health();
         for (Bundle b : bundleContext.getBundles()) {
             final BundleInfo info = bundleService.getInfo(b);
             switch (info.getState()) {
@@ -79,34 +77,27 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     if ((b.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
                         break;
                     }
-                    responses.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
+                    health.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
                     break;
                 case Waiting:
                 case GracePeriod:
-                    responses.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
+                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
                     break;
                 case Installed:
-                    responses.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is not yet started"));
+                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is not yet started"));
                     break;
                 case Starting:
-                    responses.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is starting"));
+                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is starting"));
                     break;
                 case Stopping:
                 case Failure:
                 case Unknown:
-                    responses.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is not started"));
+                    health.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is not started"));
                     break;
             }
         }
-        // If there are some issues, we return the worst one
-        if (!responses.isEmpty()) {
-            return responses.stream()
-                    .sorted(Comparator.comparingInt(response -> -1 * response.getStatus().ordinal()))
-                    .findFirst()
-                    .get();
-        }
 
-        // Otherwise everything is okay
-        return new Response(Status.Success);
+        // If there are some issues, we return the worst one, otherwise everything is okay
+        return health.getWorst().orElse(new Response(Status.Success));
     }
 }

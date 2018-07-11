@@ -29,14 +29,16 @@
 package org.opennms.distributed.core.health;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 public class Health {
 
     private List<Response> responses = new ArrayList<>();
 
     public Health withResponse(Response response) {
-        this.responses.add(response);
+        add(response);
         return this;
     }
 
@@ -45,5 +47,18 @@ public class Health {
             return false;
         }
         return responses.stream().filter(r -> r.getStatus() != Status.Success).count() == 0;
+    }
+
+    public Optional<Response> getWorst() {
+        if (responses.isEmpty()) {
+            return Optional.empty();
+        }
+        return responses.stream()
+                .sorted(Comparator.comparingInt(response -> -1 * response.getStatus().ordinal()))
+                .findFirst();
+    }
+
+    public void add(Response response) {
+        this.responses.add(response);
     }
 }
