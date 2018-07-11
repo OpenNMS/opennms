@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
 import org.opennms.netmgt.dao.api.BridgeElementDao;
@@ -319,14 +320,11 @@ public class BridgeTopologyDaoHibernate implements BridgeTopologyDao {
         
         LOG.debug("getHostNodeSharedSegment: founding segment for mac:{}", mac);
 
-        final List<BridgeMacLink> links = new ArrayList<BridgeMacLink>();
-        m_bridgeMacLinkDao.findByMacAddress(mac).
-            stream().
-            filter(maclink -> maclink.getLinkType() ==  BridgeMacLinkType.BRIDGE_LINK)
-            .forEach(maclink -> {
-                links.add(maclink);
-            });
-
+        final List<BridgeMacLink> links =  m_bridgeMacLinkDao.findByMacAddress(mac).
+                stream().
+                filter(maclink -> maclink.getLinkType() ==  BridgeMacLinkType.BRIDGE_LINK).
+                collect(Collectors.toCollection(ArrayList::new));
+        
         if (links.size() == 0 ) {
             LOG.info("getHostNodeSharedSegment: no segment found for mac:{}", mac);
             return SharedSegment.create();
