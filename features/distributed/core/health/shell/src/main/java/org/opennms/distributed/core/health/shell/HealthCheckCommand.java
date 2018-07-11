@@ -43,6 +43,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.distributed.core.health.Context;
 import org.opennms.distributed.core.health.Health;
 import org.opennms.distributed.core.health.HealthCheck;
+import org.opennms.distributed.core.health.HealthCheckService;
 import org.opennms.distributed.core.health.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
@@ -61,6 +62,9 @@ public class HealthCheckCommand implements Action {
     @Reference
     private BundleContext bundleContext;
 
+    @Reference
+    private HealthCheckService healthCheckService;
+
     @Override
     public Object execute() throws Exception {
         final Context context = new Context();
@@ -74,7 +78,7 @@ public class HealthCheckCommand implements Action {
         return null;
     }
 
-    private static CompletableFuture<Health> performHealthCheck(BundleContext bundleContext, Context context) throws InvalidSyntaxException {
+    private CompletableFuture<Health> performHealthCheck(BundleContext bundleContext, Context context) throws InvalidSyntaxException {
         // Determine attributes (e.g. max length) for visualization
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
@@ -85,7 +89,7 @@ public class HealthCheckCommand implements Action {
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
 
         // Run Health Checks
-        final CompletableFuture<Health> future = new HealthCheckService(bundleContext)
+        final CompletableFuture<Health> future = healthCheckService
                 .performAsyncHealthCheck(context,
                         healthCheck -> System.out.print(String.format(descFormat, healthCheck.getDescription())),
                         response -> {

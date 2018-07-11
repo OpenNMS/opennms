@@ -56,18 +56,18 @@
     </bean>
     <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
 
+    <!-- Container Health Check -->
+    <service interface="org.opennms.distributed.core.health.HealthCheck">
+        <bean class="org.opennms.distributed.core.health.impl.ContainerIntegrityHealthCheck" >
+            <argument ref="blueprintBundleContext"/>
+            <argument ref="bundleService" />
+        </bean>
+    </service>
+
     <!-- ReST Health Check -->
     <service interface="org.opennms.distributed.core.health.HealthCheck">
         <bean class="org.opennms.distributed.core.impl.RestConnectionHealthCheck" >
             <argument ref="restClient"/>
-        </bean>
-    </service>
-
-    <!-- Container Health Check -->
-    <service interface="org.opennms.distributed.core.health.HealthCheck">
-        <bean class="org.opennms.sentinel.core.shell.ContainerIntegrityHealthCheck" >
-            <argument ref="blueprintBundleContext"/>
-            <argument ref="bundleService" />
         </bean>
     </service>
 

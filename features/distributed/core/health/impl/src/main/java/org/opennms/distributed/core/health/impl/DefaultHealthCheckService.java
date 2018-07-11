@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.shell;
+package org.opennms.distributed.core.health.impl;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -44,6 +44,7 @@ import java.util.stream.Collectors;
 import org.opennms.distributed.core.health.Context;
 import org.opennms.distributed.core.health.Health;
 import org.opennms.distributed.core.health.HealthCheck;
+import org.opennms.distributed.core.health.HealthCheckService;
 import org.opennms.distributed.core.health.Response;
 import org.opennms.distributed.core.health.Status;
 import org.osgi.framework.BundleContext;
@@ -52,13 +53,13 @@ import org.osgi.framework.ServiceReference;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
-public class HealthCheckService {
+public class DefaultHealthCheckService implements HealthCheckService {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
 
     private BundleContext bundleContext;
 
-    public HealthCheckService(BundleContext bundleContext) {
+    public DefaultHealthCheckService(BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
     }
 
@@ -73,8 +74,8 @@ public class HealthCheckService {
                 .collect(Collectors.toList());
     }
 
-    // Perform check asynchronously
-    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
+    @Override
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
         final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
         final Health health = new Health();
         final Consumer<Response> consumer = response -> {
@@ -83,6 +84,8 @@ public class HealthCheckService {
         };
         try {
             runChecks(context, onStartConsumer, consumer);
+        } catch (InvalidSyntaxException ex) {
+            health.withResponse(new Response(Status.Failure, "Error while performing health checks", ex));
         } finally {
             returnFuture.complete(health);
         }

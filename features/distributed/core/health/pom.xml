@@ -29,6 +29,7 @@
     </build>
     <modules>
         <module>api</module>
+        <module>impl</module>
         <module>shell</module>
     </modules>
 </project>

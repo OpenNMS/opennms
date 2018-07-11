@@ -22,6 +22,12 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-health" description="Sentinel :: Health" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.shell/${project.version}</bundle>
+    </feature>
+
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
@@ -37,9 +43,8 @@
         <!-- Needed by activemq-camel -->
         <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
         <feature>activemq-camel</feature>
-        <!-- TODO MVR this is also defined in minion-jms -->
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
         <!-- TODO MVR this should probably be moved to org.opennms.features.distributed/jms/${project.version} -->
+        <!-- TODO MVR this is also defined in minion-jms -->
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
 
@@ -48,15 +53,12 @@
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
+        <feature>sentinel-health</feature>
 
         <!-- Used for the REST client in core-impl -->
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
-
-        <!-- Health API -->
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.shell/${project.version}</bundle>
 
         <!-- CORE Distributed -->
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>

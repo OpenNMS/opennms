@@ -26,7 +26,10 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.sentinel.core.shell;
+package org.opennms.distributed.core.health.impl;
+
+import static org.opennms.distributed.core.health.Status.Failure;
+import static org.opennms.distributed.core.health.Status.Starting;
 
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
@@ -61,7 +64,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
     public Response perform(Context context) throws Exception {
         // Don't check within this delay period, because the container may not be started yet
         if (ManagementFactory.getRuntimeMXBean().getUptime() <= 10000) {
-            return new Response(Status.Starting, "Container is in spin up phase");
+            return new Response(Starting, "Container is in spin up phase");
         }
 
         // Verify all bundles
@@ -77,22 +80,22 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     if ((b.adapt(BundleRevision.class).getTypes() & BundleRevision.TYPE_FRAGMENT) != 0) {
                         break;
                     }
-                    health.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
+                    health.add(new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
                     break;
                 case Waiting:
                 case GracePeriod:
-                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
+                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
                     break;
                 case Installed:
-                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is not yet started"));
+                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
                     break;
                 case Starting:
-                    health.add(new Response(Status.Starting, "Bundle " + b.getBundleId() + " is starting"));
+                    health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
                     break;
                 case Stopping:
                 case Failure:
                 case Unknown:
-                    health.add(new Response(Status.Failure, "Bundle " + b.getBundleId() + " is not started"));
+                    health.add(new Response(Failure, "Bundle " + b.getBundleId() + " is not started"));
                     break;
             }
         }
