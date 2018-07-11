@@ -1179,6 +1179,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
 
     // Any alarm with related alarms is a 'Situation'
     @Transient
+    @XmlTransient
     public boolean isSituation() {
         return ! m_relatedAlarms.isEmpty();
     }
