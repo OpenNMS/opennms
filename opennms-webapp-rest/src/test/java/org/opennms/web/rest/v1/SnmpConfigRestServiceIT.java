@@ -235,7 +235,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 
                 // change values
                 changedConfig.setAuthPassPhrase("authPassPhrase");
-                changedConfig.setAuthProtocol("authProtocol");
+                changedConfig.setAuthProtocol("MD5");
                 changedConfig.setReadCommunity("readCommunity");
                 changedConfig.setWriteCommunity("writeCommunity");
                 changedConfig.setContextEngineId("contextEngineId");
@@ -247,9 +247,9 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 changedConfig.setPort(3000);
                 changedConfig.setProxyHost("127.0.0.1");
                 changedConfig.setPrivPassPhrase("privPassPhrase");
-                changedConfig.setPrivProtocol("privProtocol");
+                changedConfig.setPrivProtocol("DES");
                 changedConfig.setRetries(4000);
-                changedConfig.setSecurityLevel(5000);
+                changedConfig.setSecurityLevel(3);
                 changedConfig.setSecurityName("securityName");
                 changedConfig.setTimeout(6000);
                 changedConfig.setVersion("v3");
@@ -261,7 +261,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 // prepare expected Result
                 expectedConfig = new SnmpInfo();
                 expectedConfig.setAuthPassPhrase("authPassPhrase");
-                expectedConfig.setAuthProtocol("authProtocol");
+                expectedConfig.setAuthProtocol("MD5");
                 expectedConfig.setContextEngineId("contextEngineId");
                 expectedConfig.setContextName("contextName");
                 expectedConfig.setEngineId("engineId");
@@ -271,9 +271,9 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 expectedConfig.setPort(3000);
                 expectedConfig.setProxyHost("127.0.0.1");
                 expectedConfig.setPrivPassPhrase("privPassPhrase");
-                expectedConfig.setPrivProtocol("privProtocol");
+                expectedConfig.setPrivProtocol("DES");
                 expectedConfig.setRetries(4000);
-                expectedConfig.setSecurityLevel(5000);
+                expectedConfig.setSecurityLevel(3);
                 expectedConfig.setSecurityName("securityName");
                 expectedConfig.setTimeout(6000);
                 expectedConfig.setVersion("v3");
@@ -322,7 +322,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
                 // change values
                 changedConfig.setAuthPassPhrase("authPassPhrase");
-                changedConfig.setAuthProtocol("authProtocol");
+                changedConfig.setAuthProtocol("MD5");
                 changedConfig.setReadCommunity("readCommunity");
                 changedConfig.setWriteCommunity("writeCommunity");
                 changedConfig.setContextEngineId("contextEngineId");
@@ -334,9 +334,9 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 changedConfig.setPort(3000);
                 changedConfig.setProxyHost("127.0.0.1");
                 changedConfig.setPrivPassPhrase("privPassPhrase");
-                changedConfig.setPrivProtocol("privProtocol");
+                changedConfig.setPrivProtocol("DES");
                 changedConfig.setRetries(4000);
-                changedConfig.setSecurityLevel(5000);
+                changedConfig.setSecurityLevel(3);
                 changedConfig.setSecurityName("securityName");
                 changedConfig.setTimeout(6000);
                 changedConfig.setVersion("v3");
@@ -348,7 +348,7 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 // prepare expected Result
                 expectedConfig = new SnmpInfo();
                 expectedConfig.setAuthPassPhrase("authPassPhrase");
-                expectedConfig.setAuthProtocol("authProtocol");
+                expectedConfig.setAuthProtocol("MD5");
                 expectedConfig.setContextEngineId("contextEngineId");
                 expectedConfig.setContextName("contextName");
                 expectedConfig.setEngineId("engineId");
@@ -358,9 +358,9 @@ public class SnmpConfigRestServiceIT extends AbstractSpringJerseyRestTestCase {
                 expectedConfig.setPort(3000);
                 expectedConfig.setProxyHost("127.0.0.1");
                 expectedConfig.setPrivPassPhrase("privPassPhrase");
-                expectedConfig.setPrivProtocol("privProtocol");
+                expectedConfig.setPrivProtocol("DES");
                 expectedConfig.setRetries(4000);
-                expectedConfig.setSecurityLevel(5000);
+                expectedConfig.setSecurityLevel(3);
                 expectedConfig.setSecurityName("securityName");
                 expectedConfig.setTimeout(6000);
                 expectedConfig.setVersion("v3");
