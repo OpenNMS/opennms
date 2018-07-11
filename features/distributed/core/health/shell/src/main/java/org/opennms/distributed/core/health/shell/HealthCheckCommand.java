@@ -78,9 +78,9 @@ public class HealthCheckCommand implements Action {
         // Determine attributes (e.g. max length) for visualization
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
-        final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsii()).max(Comparator.comparingInt(String::length)).get().length();
+        final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
         final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).get().length();
-        final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsii().length();
+        final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
         final String descFormat = String.format(DESC_FORMAT, maxDescriptionLength);
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
 

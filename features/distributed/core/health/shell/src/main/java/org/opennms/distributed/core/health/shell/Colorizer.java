@@ -35,7 +35,7 @@ public final class Colorizer {
     private static final String FORMAT = "\033[%sm%s\033[%sm";
 
     public static String colorize(String text, Color color) {
-        final String colorized = String.format(FORMAT, color.toAnsii(), text, Color.NoColor.toAnsii());
+        final String colorized = String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
         return colorized;
     }
 }

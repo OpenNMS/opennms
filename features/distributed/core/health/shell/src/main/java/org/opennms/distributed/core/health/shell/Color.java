@@ -41,7 +41,7 @@ public enum Color {
         this.ansiiCode = ansiiCode;
     }
 
-    public String toAnsii() {
+    public String toAnsi() {
         return ansiiCode;
     }
 }
