@@ -137,6 +137,9 @@ public class SearchPropertiesIT extends AbstractSpringJerseyRestTestCase {
         for (SearchProperty prop : properties) {
             System.err.println("Testing " + prop.getId());
             switch(prop.type) {
+            case BOOLEAN:
+                sendRequest(GET, url, parseParamData(String.format("_s=%s==true;%s==false", prop.getId(), prop.getId())), 204);
+                break;
             case FLOAT:
                 sendRequest(GET, url, parseParamData(String.format("_s=%s==1.0;%s!=1.0", prop.getId(), prop.getId())), 204);
                 break;
