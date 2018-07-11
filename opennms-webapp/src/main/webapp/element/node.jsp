@@ -442,55 +442,92 @@ function confirmAssetEdit() {
   
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-  <div class="panel panel-default">
-      <div class="panel-heading"><h3 class="panel-title">Asset Information</h3></div>
-      <table class="table table-condensed">
-      <tr><th>Description</th><td>${model.asset.description}</td></tr>
-      <tr><th>Comments</th><td>${model.asset.comments}</td></tr>
-      </table>
-  </div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Asset Information</h3>
+    </div>
+    <table class="table table-condensed">
+      <tr>
+        <th>Description</th>
+        <td>${model.asset.description}</td>
+      </tr>
+      
+      <tr>
+        <th>Comments</th>
+        <td>${model.asset.comments}</td>
+      </tr>
+    </table>
+    </div>
   </c:if>
-  <!--End Asset box, if info available --> 
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">SNMP Attributes</h3></div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">SNMP Attributes</h3>
+    </div>
+    
     <table class="table table-condensed">
-    <tr><th>Name</th><td>${model.sysName}</td></tr>
-    <tr><th>sysObjectID</th><td>${model.node.sysObjectId}</td></tr>
-	<tr><th>Location</th><td>${model.sysLocation}</td></tr>
-    <tr><th>Contact</th><td>${model.sysContact}</td></tr>
-    <tr><th valign="top">Description</th><td valign="top">${model.sysDescription}</td></tr>
+      <tr>
+        <th>Name</th>
+        <td>${model.sysName}</td>
+      </tr>
+      <tr>
+        <th>sysObjectID</th>
+        <td>${model.node.sysObjectId}</td>
+      </tr>
+      <tr>
+        <th>Location</th>
+        <td>${model.sysLocation}</td>
+      </tr>
+      <tr>
+        <th>Contact</th>
+        <td>${model.sysContact}</td>
+      </tr>
+      <tr>
+        <th valign="top">Description</th>
+        <td valign="top">${model.sysDescription}</td>
+      </tr>
     </table>
-  </div>
+    </div>
   </c:if>
-  <!--END SNMP box, if info available -->
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Path Outage - Critical Path</h3></div>
-    <div class="panel-body"><ul class="list-unstyled"><li>${model.criticalPath}</li></ul> </div>          
-  </div>    
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">Path Outage - Critical Path</h3>
+    </div>
+    <div class="panel-body">
+      <ul class="list-unstyled">
+        <li>
+          ${model.criticalPath}
+        </li>
+      </ul> 
+    </div>          
+    </div>    
   </c:if>
-  <!--END Critical Path info, if info available -->
 	
   <!-- Availability box -->
   <c:if test="${fn:length( model.intfs ) < 10}">
-    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" ><jsp:param name="node" value="${model.id}" /></jsp:include>
+    <jsp:include page="/includes/nodeAvailability-box.jsp" flush="false" >
+      <jsp:param name="node" value="${model.id}" />
+    </jsp:include>
   </c:if>
-  <!--END Availability box -->
 
   <div id="onms-interfaces" class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">Node Interfaces</h3></div>
+    <div class="panel-heading">
+        <h3 class="panel-title">Node Interfaces</h3>
+    </div>
     <onms-interfaces node="${model.id}"/>
   </div>
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">LLDP Information</h3></div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">LLDP Information</h3>
+    </div>
     <table class="table table-condensed">
       <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
       <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
@@ -498,12 +535,13 @@ function confirmAssetEdit() {
     </table>
     </div>
     </c:if>
-  <!--End LLDP box, if info available --> 
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">CDP Information</h3></div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">CDP Information</h3>
+    </div>
     <table class="table table-condensed">
       <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
       <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
@@ -515,8 +553,10 @@ function confirmAssetEdit() {
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">OSPF Information</h3></div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">OSPF Information</h3>
+    </div>
     <table class="table table-condensed">
       <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
       <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
@@ -524,12 +564,13 @@ function confirmAssetEdit() {
     </table>
   </div>
   </c:if>
-  <!--End OSPF box, if info available -->
 
   <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
-  <div class="panel panel-default">
-    <div class="panel-heading"><h3 class="panel-title">IS-IS Information</h3></div>
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3 class="panel-title">IS-IS Information</h3>
+    </div>
     <table class="table table-condensed">
       <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
       <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
@@ -537,12 +578,13 @@ function confirmAssetEdit() {
     </table>
     </div>
   </c:if>
-  <!--End IS-IS box, if info available -->
 
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
-  <div class="panel panel-default">
-   	<div class="panel-heading"><h3 class="panel-title">Bridge Information</h3></div>
+    <div class="panel panel-default">
+   	<div class="panel-heading">
+   	  <h3 class="panel-title">Bridge Information</h3>
+   	</div>
 	<table class="table table-condensed">
 	<c:forEach items="${model.bridges}" var="bridge">
    	<tr>
@@ -560,10 +602,8 @@ function confirmAssetEdit() {
 	</tr>
 	</c:forEach>
     </table>
-  </div>
+    </div>
   </c:if>
-  <!--End Bridge box if available -->
-
 
 </div> <!-- end of tag col-md-6 -->
 
