@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -41,6 +42,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.opennms.distributed.core.health.Context;
+import org.opennms.distributed.core.health.Health;
 import org.opennms.distributed.core.health.HealthCheck;
 import org.opennms.distributed.core.health.Response;
 import org.opennms.distributed.core.health.Status;
@@ -72,7 +74,22 @@ public class HealthCheckService {
     }
 
     // Perform check asynchronously
-    public void performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
+    public CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
+        final CompletableFuture<Health> returnFuture = new CompletableFuture<>();
+        final Health health = new Health();
+        final Consumer<Response> consumer = response -> {
+            health.withResponse(response);
+            onFinishConsumer.accept(response);
+        };
+        try {
+            runChecks(context, onStartConsumer, consumer);
+        } finally {
+            returnFuture.complete(health);
+        }
+        return returnFuture;
+    }
+
+    private void runChecks(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
         Future<Response> currentFuture = null;
         final List<HealthCheck> checks = getHealthChecks();
         for (HealthCheck check : checks) {

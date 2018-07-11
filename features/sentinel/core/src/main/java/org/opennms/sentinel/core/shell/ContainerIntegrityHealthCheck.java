@@ -56,7 +56,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
 
     @Override
     public String getDescription() {
-        return "Verify installed bundles";
+        return "Verifying installed bundles";
     }
 
     @Override

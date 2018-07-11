@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -40,6 +41,7 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.distributed.core.health.Context;
+import org.opennms.distributed.core.health.Health;
 import org.opennms.distributed.core.health.HealthCheck;
 import org.opennms.distributed.core.health.Status;
 import org.osgi.framework.BundleContext;
@@ -64,18 +66,17 @@ public class HealthCheckCommand implements Action {
         final Context context = new Context();
         context.setTimeout(timeout);
 
-        System.out.println("Verifying the health of the container");
-        performHealthCheck(bundleContext, context);
+        System.out.println("Verifying the health of the container\n");
+        final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
+        final Health health = future.get();
+        System.out.println(health.isSuccess() ? "=> Everything is awesome!" : "=> Oh no, something is wrong");
+
         return null;
     }
 
-    private static void performHealthCheck(BundleContext bundleContext, Context context) throws InvalidSyntaxException {
+    private static CompletableFuture<Health> performHealthCheck(BundleContext bundleContext, Context context) throws InvalidSyntaxException {
+        // Determine attributes (e.g. max length) for visualization
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
-        if (serviceReferences.isEmpty()) {
-            throw new IllegalStateException("No health checks available.");
-        }
-
-        // Determine max length for visualization
         final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
         final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsii()).max(Comparator.comparingInt(String::length)).get().length();
         final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).get().length();
@@ -83,8 +84,8 @@ public class HealthCheckCommand implements Action {
         final String descFormat = String.format(DESC_FORMAT, maxDescriptionLength);
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
 
-        // Run Health Check
-        new HealthCheckService(bundleContext)
+        // Run Health Checks
+        final CompletableFuture<Health> future = new HealthCheckService(bundleContext)
                 .performAsyncHealthCheck(context,
                         healthCheck -> System.out.print(String.format(descFormat, healthCheck.getDescription())),
                         response -> {
@@ -97,6 +98,7 @@ public class HealthCheckCommand implements Action {
                             }
                             System.out.println();
                         });
+        return future;
     }
 
     private static Color determineColor(Status status) {
