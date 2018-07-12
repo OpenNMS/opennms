@@ -30,32 +30,39 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.text.DecimalFormat;
 import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
+import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.topology.api.GraphContainer;
+import org.opennms.features.topology.api.OperationContext;
+import org.opennms.features.topology.api.browsers.ContentType;
+import org.opennms.features.topology.api.browsers.SelectionAware;
+import org.opennms.features.topology.api.browsers.SelectionChangedListener;
+import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
+import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Defaults;
+import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SearchProvider;
+import org.opennms.features.topology.api.topo.SearchResult;
+import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
-import org.opennms.netmgt.dao.api.TopologyDao;
-import org.opennms.netmgt.model.FilterManager;
+import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider.LinkDetail;
+import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
+import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.springframework.transaction.support.TransactionOperations;
-
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
 
@@ -96,15 +103,10 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
        "LowerLayerDown"   //7
      };
 
-    protected final boolean m_aclEnabled;
-    protected TransactionOperations m_transactionOperations;
-    protected NodeDao m_nodeDao;
-    protected SnmpInterfaceDao m_snmpInterfaceDao;
-    protected IpInterfaceDao m_ipInterfaceDao;
-    protected TopologyDao m_topologyDao;
-    protected FilterManager m_filterManager;
-    protected boolean m_addNodeWithoutLink = false;
-    protected LinkdHopCriteriaFactory m_criteriaHopFactory;
+    private final boolean m_aclEnabled;
+
+    private SelectionAware selectionAwareDelegate = new EnhancedLinkdSelectionAware();
+    private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
 
     protected AbstractLinkdTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_LINKD);
@@ -124,7 +126,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
      * @return A string representation of the speed (&quot;100 Mbps&quot; for
      *         example)
      */
-    protected static String getHumanReadableIfSpeed(long ifSpeed) {
+    public static String getHumanReadableIfSpeed(long ifSpeed) {
         DecimalFormat formatter;
         double displaySpeed;
         String units;
@@ -172,7 +174,195 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return "linkd.system.snmp." + nodeSysObjectId;
     }
 
-    protected static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
+    public static OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+        if(source.getId() != null && StringUtils.isNumeric(source.getId()) && ifIndex != null 
+                && snmpmap.containsKey(Integer.parseInt(source.getId()))) {
+            for (OnmsSnmpInterface snmpiface: snmpmap.get(Integer.parseInt(source.getId()))) {
+                if (ifIndex.intValue() == snmpiface.getIfIndex().intValue())
+                    return snmpiface;
+            }
+        }
+        return null;
+    }
+
+    public static AbstractVertex createLinkdVertex(OnmsNode sourceNode, OnmsIpInterface primary) {
+        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, sourceNode.getId().toString(), 0, 0);
+        vertex.setIconKey(getIconName(sourceNode.getSysObjectId()));
+        vertex.setLabel(sourceNode.getLabel());
+        vertex.setIpAddress(InetAddressUtils.str(primary.getIpAddress()));
+        vertex.setNodeID(sourceNode.getId());
+        vertex.setTooltipText(getNodeTooltipDefaultText(InetAddressUtils.str(primary.getIpAddress()),
+                                                                sourceNode.getLabel(),
+                                                                primary.isManaged(),
+                                                                sourceNode.getSysLocation(),
+                                                                sourceNode.getType())
+);
+        return vertex;
+    }
+
+    public static String getEdgeTooltipText(BridgeMacLink sourcelink,
+            Vertex source, Vertex target,
+            List<OnmsIpInterface> targetInterfaces,
+            Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourcelink.getBridgePortIfIndex(), target,snmpmap);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(source.getLabel());
+        if (sourceInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
+        tooltipText.append(sourcelink.getMacAddress());
+        tooltipText.append(")");
+        tooltipText.append("(");
+        if (targetInterfaces.size() == 1) {
+            tooltipText.append(InetAddressUtils.str(targetInterfaces.get(0).getIpAddress()));
+        } else if (targetInterfaces.size() > 1) {
+            tooltipText.append("Multiple ip Addresses ");
+        } else {
+            tooltipText.append("No ip Address found");
+        }
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);        
+
+        if ( sourceInterface != null) {
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+
+
+        return tooltipText.toString();
+    }
+
+    public static String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        tooltipText.append("(");
+        tooltipText.append(mac);
+        tooltipText.append(")");
+        tooltipText.append("(");
+        if (ipifaces.size() == 1) {
+            tooltipText.append(InetAddressUtils.str(ipifaces.get(0).getIpAddress()));
+        } else if (ipifaces.size() > 1) {
+            tooltipText.append("Multiple ip Addresses ");
+        } else {
+            tooltipText.append("No ip Address found");
+        }
+        tooltipText.append(")");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);        
+        
+        return tooltipText.toString();
+    }
+
+
+    public static String getEdgeTooltipText(BridgePort port, Vertex target, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+        final StringBuilder tooltipText = new StringBuilder();
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("Bridge Layer2");
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        if ( targetInterface != null) {
+            if (targetInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+        
+        return tooltipText.toString();
+    }
+
+    public static String getEdgeTooltipText(LinkDetail<?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+
+        final StringBuilder tooltipText = new StringBuilder();
+        Vertex source = linkDetail.getSource();
+        Vertex target = linkDetail.getTarget();
+        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source,snmpmap);
+        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target,snmpmap);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(linkDetail.getType());
+        String layerText = " Layer 2";
+        if (sourceInterface != null && targetInterface != null) {
+            final List<OnmsIpInterface> sourceNonLoopback = sourceInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+            final List<OnmsIpInterface> targetNonLoopback = targetInterface.getIpInterfaces().stream().filter(iface -> {
+                return !iface.getNetMask().isLoopbackAddress();
+            }).collect(Collectors.toList());
+
+            if (!sourceNonLoopback.isEmpty() && !targetNonLoopback.isEmpty()) {
+                // if both the source and target have non-loopback IP interfaces, assume this is a layer3 edge
+                layerText = " Layer3/Layer2";
+            }
+        }
+        tooltipText.append(layerText);
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append( source.getLabel());
+        if (sourceInterface != null ) {
+            tooltipText.append("(");
+            tooltipText.append(sourceInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(target.getLabel());
+        if (targetInterface != null) {
+            tooltipText.append("(");
+            tooltipText.append(targetInterface.getIfName());
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+
+        if ( targetInterface != null) {
+            if (targetInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        } else if (sourceInterface != null) {
+            if (sourceInterface.getIfSpeed() != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            }
+        }
+        return tooltipText.toString();
+    }
+
+    public static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(label);
@@ -203,175 +393,181 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     }
 
-    public TransactionOperations getTransactionOperations() {
-        return m_transactionOperations;
+    //Search Provider methods
+    @Override
+    public String getSearchProviderNamespace() {
+        return TOPOLOGY_NAMESPACE_LINKD;
+    }
+    
+    @Override
+    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+
     }
 
-    public void setTransactionOperations(TransactionOperations transactionOperations) {
-    	m_transactionOperations = transactionOperations;
+    @Override
+    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
+
     }
 
-    public SnmpInterfaceDao getSnmpInterfaceDao() {
-        return m_snmpInterfaceDao;
+    @Override
+    public boolean supportsPrefix(String searchPrefix) {
+        return AbstractSearchProvider.supportsPrefix("nodes=", searchPrefix);
     }
 
-    public void setSnmpInterfaceDao(SnmpInterfaceDao snmpInterfaceDao) {
-        m_snmpInterfaceDao = snmpInterfaceDao;
+    @Override
+    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
+        LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
+        org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
+
+        Set<VertexRef> vertices = ((VertexHopCriteria)criterion).getVertices();
+        LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
+
+        return vertices;
     }
 
-    public NodeDao getNodeDao() {
-        return m_nodeDao;
+    @Override
+    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
+        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
+        container.addCriteria(criterion);
+        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
+        logCriteriaInContainer(container);
     }
 
-    public void setNodeDao(NodeDao nodeDao) {
-        m_nodeDao = nodeDao;
-    }
+    @Override
+    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
+        LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
 
-    protected List<Vertex> getFilteredVertices() {
-        if(isAclEnabled()){
-            //Get All nodes when called should filter with ACL
-            List<OnmsNode> onmsNodes = getNodeDao().findAll();
+        Criteria criterion = findCriterion(searchResult.getId(), container);
 
-            //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
-                @Override
-                public Integer apply(OnmsNode node) {
-                    return node.getId();
-                }
-            });
-
-
-            //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), new Predicate<Vertex>() {
-                @Override
-                public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
-                }
-            }));
-        } else{
-            return m_vertexProvider.getVertices();
+        if (criterion != null) {
+            LOG.debug("SearchProvider->removeVertexHopCriteria: found criterion: {} for searchResult {}.", criterion, searchResult);
+            container.removeCriteria(criterion);
+        } else {
+            LOG.debug("SearchProvider->removeVertexHopCriteria: did not find criterion for searchResult {}.", searchResult);
         }
 
+        logCriteriaInContainer(container);
     }
 
-    public void setIpInterfaceDao(IpInterfaceDao ipInterfaceDao) {
-        m_ipInterfaceDao = ipInterfaceDao;
+    @Override
+    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
+        LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
     }
 
-    public void setTopologyDao(TopologyDao topologyDao) {
-        m_topologyDao = topologyDao;
+    @Override
+    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
+        LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
     }
 
-    public void setFilterManager(FilterManager filterManager) {
-        m_filterManager = filterManager;
+    @Override
+    public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
+       return selectionAwareDelegate.getSelection(selectedVertices, type);
     }
 
-    public FilterManager getFilterManager() {
-        return m_filterManager;
+    @Override
+    public boolean contributesTo(ContentType type) {
+        return selectionAwareDelegate.contributesTo(type);
     }
 
-    public void setAddNodeWithoutLink(boolean addNodeWithoutLink) { m_addNodeWithoutLink = addNodeWithoutLink; }
+    private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
 
-    public boolean isAddNodeWithoutLink(){ return m_addNodeWithoutLink; }
+        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
+        for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
+            if (criterion instanceof LinkdHopCriteria ) {
+                String id = ((LinkdHopCriteria) criterion).getId();
+                if (id.equals(resultId)) {
+                    return criterion;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void logCriteriaInContainer(GraphContainer container) {
+        Criteria[] criteria = container.getCriteria();
+        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.", criteria.length);
+        for (Criteria crit : criteria) {
+            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
+        }
+    }
+
 
     public boolean isAclEnabled() {
         return m_aclEnabled;
     }
 
-    protected Map<Integer, String> getAllNodesNoACL() {
-        if(getFilterManager().isEnabled()){
-            String[] userGroups = getFilterManager().getAuthorizationGroups();
-            Map<Integer, String> nodeLabelsById = null;
-            try{
-                getFilterManager().disableAuthorizationFilter();
-                nodeLabelsById = getNodeDao().getAllLabelsById();
-
-            } finally {
-                // Make sure that we re-enable the authorization filter
-                if(userGroups != null){
-                    getFilterManager().enableAuthorizationFilter(userGroups);
-                }
+    protected final Vertex getOrCreateVertex(OnmsNode node,OnmsIpInterface primary, boolean add) {
+        Vertex source = getVertex(getNamespace(), node.getNodeId());
+        if (source == null) {
+            source = createLinkdVertex(node,primary); 
+            if (add) {
+                addVertices(source);
             }
-            return nodeLabelsById != null ? nodeLabelsById : new HashMap<Integer, String>();
-        } else {
-            return getNodeDao().getAllLabelsById();
+        }        
+        return source;
+    }
+    
+    protected final LinkdEdge connectCloudMacVertices(String targetmac, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, targetRef.getId()+":"+targetmac, source, target);
+        edge.setTargetEndPoint(targetmac);
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgePort targetport, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+sourceRef.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, targetRef.getId()+":"+targetport.getBridgePort(), source, target);
+        edge.setTargetNodeid(targetport.getNodeId());
+        if (targetport.getBridgePortIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(targetport.getBridgePortIfIndex()));
+        addEdges(edge);
+        
+        return edge;
+    }
+
+    protected final LinkdEdge connectVertices(BridgeMacLink link, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
+        SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+link.getId()+"-connector", sourceRef);
+        SimpleConnector target = new SimpleConnector(targetRef.getNamespace(), targetRef.getId()+"-"+link.getId()+"-connector", targetRef);
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, String.valueOf(link.getId()), source, target);
+        edge.setSourceNodeid(link.getNode().getId());
+        if (link.getBridgePortIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(link.getBridgePortIfIndex()));
+        edge.setTargetEndPoint(String.valueOf(link.getMacAddress()));
+        addEdges(edge);
+        
+        return edge;
+    }
+    
+    protected final LinkdEdge connectVertices(LinkDetail<?> linkdetail, String nameSpace) {
+        SimpleConnector source = new SimpleConnector(linkdetail.getSource().getNamespace(), linkdetail.getSource().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getSource());
+        SimpleConnector target = new SimpleConnector(linkdetail.getTarget().getNamespace(), linkdetail.getTarget().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getTarget());
+
+        LinkdEdge edge = new LinkdEdge(nameSpace, linkdetail.getId(), source, target);
+        try {
+            edge.setSourceNodeid(Integer.parseInt(linkdetail.getSource().getId()));
+        } catch (NumberFormatException e) {
+            
         }
-    }
-
-    public IpInterfaceDao getIpInterfaceDao() {
-        return m_ipInterfaceDao;
-    }
-
-    public LinkdHopCriteriaFactory getLinkdHopCriteriaFactory() {
-        return m_criteriaHopFactory;
-    }
-
-    public void setLinkdHopCriteriaFactory(LinkdHopCriteriaFactory criteriaHopFactory) {
-        m_criteriaHopFactory = criteriaHopFactory;
-    }
-
-    protected OnmsIpInterface getAddress(Integer nodeId) {
-        //OnmsIpInterface ip = node.getPrimaryInterface();
-        OnmsIpInterface ip = getIpInterfaceDao().findPrimaryInterfaceByNodeId(nodeId);
-        if ( ip == null) {
-//            for (OnmsIpInterface iterip: node.getIpInterfaces()) {
-            for (OnmsIpInterface iterip: getIpInterfaceDao().findByNodeId(nodeId)) {
-                ip = iterip;
-                break;
-            }
+        try {
+            edge.setTargetNodeid(Integer.parseInt(linkdetail.getTarget().getId()));
+        } catch (NumberFormatException e) {
+            
         }
-        return ip;
-    }
-
-    protected AbstractVertex getDefaultVertex(Integer nodeId, String sysobjectId, String nodeLabel, String location, NodeType nodeType, boolean isManaged, String ip) {
-        return getVertex(nodeId,
-                           ip,
-                           sysobjectId,
-                           nodeLabel,
-                           getNodeTooltipDefaultText(ip,
-                                                     nodeLabel,
-                                                     isManaged,
-                                                     location,
-                                                     nodeType));
-    }
-
-    protected AbstractVertex getVertex(Integer nodeId, String ip, String sysobjectId, String nodeLabel, String tooltipText) {
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, nodeId.toString(), 0, 0);
-        vertex.setIconKey(getIconName(sysobjectId));
-        vertex.setLabel(nodeLabel);
-        vertex.setIpAddress(ip);
-        vertex.setNodeID(nodeId);
-        vertex.setTooltipText(tooltipText);
-        return vertex;
-    }
-
-    @Override
-    public Defaults getDefaults() {
-        return new Defaults()
-                .withSemanticZoomLevel(Defaults.DEFAULT_SEMANTIC_ZOOM_LEVEL)
-                .withPreferredLayout("D3 Layout") // D3 Layout
-                .withCriteria(() -> {
-                    final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
-
-                    if (node != null) {
-                        final Vertex defaultVertex = createVertexFor(node, getAddress(node.getId()));
-                        if (defaultVertex != null) {
-                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
-                        }
-                    }
-
-                    return Lists.newArrayList();
-                });
-    }
-
-    protected Vertex createVertexFor(OnmsNode node, OnmsIpInterface ipInterface) {
-        String ip = null;
-        boolean isManaged= false;
-        if (ipInterface != null && ipInterface.getIpAddress() != null) {
-            ip = ipInterface.getIpAddress().getHostAddress();
-            isManaged = ipInterface.isManaged();
-        }
-        return getVertex(node.getId(),ip,node.getSysObjectId(),node.getLabel(),getNodeTooltipDefaultText(ip,node.getLabel(),isManaged,node.getSysLocation(),node.getType()));
+        if (linkdetail.getSourceIfIndex() != null)
+            edge.setSourceEndPoint(String.valueOf(linkdetail.getSourceIfIndex()));
+        if (linkdetail.getTargetIfIndex() != null)
+            edge.setTargetEndPoint(String.valueOf(linkdetail.getTargetIfIndex()));
+        addEdges(edge);
+        
+        return edge;
     }
 
     private interface LinkState {

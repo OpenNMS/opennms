@@ -47,7 +47,6 @@ import org.opennms.netmgt.model.OnmsNode;
  */
 public class LinkdHopCriteria extends VertexHopCriteria {
 
-	public static final String NAMESPACE = "nodes";
 	private final String m_nodeId;
 	
 	private NodeDao m_nodeDao;
@@ -89,7 +88,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
 	@Override
 	public String getNamespace() {
-		return NAMESPACE;
+		return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
 	}
 
     @Override
