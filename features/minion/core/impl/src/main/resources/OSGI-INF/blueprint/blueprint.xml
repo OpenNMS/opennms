@@ -33,6 +33,7 @@
     <service ref="controllerConfig" interface="org.opennms.distributed.core.api.ControllerConfig"/>
 
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
+    <reference id="bundleService" interface="org.apache.karaf.bundle.core.BundleService" availability="mandatory" />
 
     <!-- A canonical source for this Minion's identity -->
     <bean id="minionIdentity" class="org.opennms.minion.core.impl.MinionIdentityImpl">
@@ -53,6 +54,14 @@
         <argument value="opennms.http"/>
     </bean>
     <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
+
+    <!-- Container Health Check -->
+    <service interface="org.opennms.distributed.core.health.HealthCheck">
+        <bean class="org.opennms.distributed.core.health.impl.ContainerIntegrityHealthCheck" >
+            <argument ref="blueprintBundleContext"/>
+            <argument ref="bundleService" />
+        </bean>
+    </service>
 
     <!-- ReST Health Check -->
     <service interface="org.opennms.distributed.core.health.HealthCheck">

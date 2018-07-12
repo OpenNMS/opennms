@@ -67,14 +67,26 @@ public class HealthCheckCommand implements Action {
 
     @Override
     public Object execute() throws Exception {
+        // Print header
+        System.out.println("Verifying the health of the container");
+        System.out.println();
+
+        // Perform check
         final Context context = new Context();
         context.setTimeout(timeout);
-
-        System.out.println("Verifying the health of the container\n");
         final CompletableFuture<Health> future = performHealthCheck(bundleContext, context);
         final Health health = future.get();
-        System.out.println(health.isSuccess() ? "=> Everything is awesome!" : "=> Oh no, something is wrong");
 
+        // Print results
+        System.out.println();
+        if (health.isSuccess()) {
+            System.out.println("=> Everything is awesome");
+        } else {
+            if (health.getErrorMessage() != null) {
+                System.out.println(Colorizer.colorize("Error: " +  health.getErrorMessage(), Color.Red));
+            }
+            System.out.println("=> Oh no, something is wrong");
+        }
         return null;
     }
 
@@ -83,7 +95,7 @@ public class HealthCheckCommand implements Action {
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         final List<HealthCheck> healthChecks = serviceReferences.stream().map(s -> bundleContext.getService(s)).collect(Collectors.toList());
         final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
-        final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).get().length();
+        final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).orElse("").length();
         final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
         final String descFormat = String.format(DESC_FORMAT, maxDescriptionLength);
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);

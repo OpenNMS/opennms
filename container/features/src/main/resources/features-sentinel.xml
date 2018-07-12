@@ -22,6 +22,7 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
     </feature>
 
+    <!-- TODO MVR this is identical to minion-health -->
     <feature name="sentinel-health" description="Sentinel :: Health" version="${project.version}">
         <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.impl/${project.version}</bundle>

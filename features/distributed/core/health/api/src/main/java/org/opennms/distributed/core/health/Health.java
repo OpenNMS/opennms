@@ -36,6 +36,7 @@ import java.util.Optional;
 public class Health {
 
     private List<Response> responses = new ArrayList<>();
+    private String errorMessage;
 
     public Health withResponse(Response response) {
         add(response);
@@ -43,7 +44,7 @@ public class Health {
     }
 
     public boolean isSuccess() {
-        if (responses.isEmpty()) {
+        if (responses.isEmpty() && errorMessage != null) {
             return false;
         }
         return responses.stream().filter(r -> r.getStatus() != Status.Success).count() == 0;
@@ -60,5 +61,13 @@ public class Health {
 
     public void add(Response response) {
         this.responses.add(response);
+    }
+
+    public void setError(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
     }
 }

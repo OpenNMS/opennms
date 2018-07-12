@@ -65,9 +65,6 @@ public class DefaultHealthCheckService implements HealthCheckService {
 
     private List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
-        if (serviceReferences.isEmpty()) {
-            throw new IllegalStateException("No health checks available.");
-        }
         return serviceReferences.stream()
                 .sorted(Comparator.comparingLong(ref -> ref.getBundle().getBundleId()))
                 .map(ref -> bundleContext.getService(ref))
@@ -83,18 +80,22 @@ public class DefaultHealthCheckService implements HealthCheckService {
             onFinishConsumer.accept(response);
         };
         try {
-            runChecks(context, onStartConsumer, consumer);
+            final List<HealthCheck> checks = getHealthChecks();
+            if (checks == null || checks.isEmpty()) {
+                health.setError("No Health Checks available");
+            } else {
+                runChecks(context, checks, onStartConsumer, consumer);
+            }
         } catch (InvalidSyntaxException ex) {
-            health.withResponse(new Response(Status.Failure, "Error while performing health checks", ex));
+            health.setError("Error while performing health checks: " + ex.getMessage());
         } finally {
             returnFuture.complete(health);
         }
         return returnFuture;
     }
 
-    private void runChecks(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) throws InvalidSyntaxException {
+    private void runChecks(Context context, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
         Future<Response> currentFuture = null;
-        final List<HealthCheck> checks = getHealthChecks();
         for (HealthCheck check : checks) {
             try {
                 if (onStartConsumer != null) {
