@@ -154,7 +154,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
-        alarm.setCounter(alarm.getCounter() + 1);
+        
+        if (event.getAlarmData().getAlarmType().equals(alarm.getAlarmType())) {
+            alarm.setCounter(alarm.getCounter() + 1);
+        }
 
         if (!event.getAlarmData().hasUpdateFields()) {
 
