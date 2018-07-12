@@ -44,6 +44,7 @@
 %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the NotificationQueryServlet
@@ -235,7 +236,7 @@
             <% } %>
           </td>
           <td class="bright divider" rowspan="2"><%=eventSeverity%></td>
-          <td class="divider"><fmt:formatDate value="<%=notification.getTimeSent()%>" type="BOTH" /></td>
+          <td class="divider"><onms:datetime date="<%=notification.getTimeSent()%>" /></td>
           <td class="divider">
             <% if ( event != null ) { %>
               <% Filter locationFilter = new LocationFilter(event.getLocation()); %>
@@ -260,7 +261,7 @@
             </td>
           <td class="divider">
             <%if (notification.getTimeReplied()!=null) { %>
-              <fmt:formatDate value="<%=notification.getTimeReplied()%>" type="BOTH" />
+              <onms:datetime date="<%=notification.getTimeReplied()%>" />
             <% } %>
           </td>
           <td class="divider">

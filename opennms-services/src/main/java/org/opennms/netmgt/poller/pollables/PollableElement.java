@@ -172,7 +172,7 @@ public abstract class PollableElement {
     /**
      * <p>doPoll</p>
      *
-     * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     public PollStatus doPoll(PollableElement elem) {
@@ -299,7 +299,7 @@ public abstract class PollableElement {
     /**
      * <p>poll</p>
      *
-     * @param elem a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
+     * @param elemvrendmunalv02 a {@link org.opennms.netmgt.poller.pollables.PollableElement} object.
      * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
      */
     protected PollStatus poll(PollableElement elem) {

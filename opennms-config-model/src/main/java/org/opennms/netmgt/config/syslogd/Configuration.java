@@ -30,8 +30,10 @@ package org.opennms.netmgt.config.syslogd;
 
 
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -40,6 +42,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
+
+import com.google.common.base.Strings;
 
 /**
  * Top-level element for the syslogd-configuration.xml configuration file.
@@ -145,6 +149,9 @@ public class Configuration implements Serializable {
     @XmlAttribute(name = "batch-interval")
     private Integer m_batchInterval;
 
+    @XmlAttribute(name = "timezone")
+    private String timeZone;
+
     public Optional<String> getListenAddress() {
         return Optional.ofNullable(m_listenAddress);
     }
@@ -241,6 +248,22 @@ public class Configuration implements Serializable {
         m_batchInterval = ConfigUtils.assertMinimumInclusive(batchInterval, 1, "batch-interval");
     }
 
+    public Optional<TimeZone> getTimeZone(){
+        if(Strings.emptyToNull(this.timeZone) ==null){
+            return Optional.empty();
+        }
+        return Optional.of(TimeZone.getTimeZone(ZoneId.of(timeZone)));
+    }
+
+    public void setTimeZone(String timeZone){
+        if(Strings.emptyToNull(timeZone) == null ){
+            this.timeZone = null;
+        }
+        // test if zone is valid:
+        ZoneId.of(timeZone);
+        this.timeZone = timeZone;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_listenAddress, 
@@ -254,7 +277,8 @@ public class Configuration implements Serializable {
                             m_threads, 
                             m_queueSize, 
                             m_batchSize, 
-                            m_batchInterval);
+                            m_batchInterval,
+                            timeZone);
     }
 
     /**
@@ -282,7 +306,8 @@ public class Configuration implements Serializable {
                     && Objects.equals(this.m_threads, that.m_threads)
                     && Objects.equals(this.m_queueSize, that.m_queueSize)
                     && Objects.equals(this.m_batchSize, that.m_batchSize)
-                    && Objects.equals(this.m_batchInterval, that.m_batchInterval);
+                    && Objects.equals(this.m_batchInterval, that.m_batchInterval)
+                    && Objects.equals(this.timeZone, that.timeZone);
         }
         return false;
     }

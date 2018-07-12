@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -137,6 +137,9 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
     private OnmsNode m_node;
 
     /** The custom hardware attributes. */
+    private SortedSet<OnmsHwEntityAlias> m_entAliases = new TreeSet<>();
+
+    /** The custom hardware attributes. */
     private SortedSet<OnmsHwEntityAttribute> m_hwAttributes = new TreeSet<>();
 
     /** The entity's parent. */
@@ -172,6 +175,27 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      */
     public void setId(Integer id) {
         m_id = id;
+    }
+
+    /**
+     * Gets the entity alias mappings.
+     *
+     * @return the entity alias mappings
+     */
+    @OneToMany(mappedBy="hwEntity", fetch=FetchType.LAZY, cascade={CascadeType.ALL}, orphanRemoval=true)
+    @Sort(type = SortType.NATURAL)
+    @XmlElement(name="hwEntityAliases")
+    public SortedSet<OnmsHwEntityAlias> getEntAliases() {
+        return m_entAliases;
+    }
+
+    /**
+     * Sets the entity alias mappings.
+     *
+     * @param entAliases the entity alias mappings to set
+     */
+    public void setEntAliases(SortedSet<OnmsHwEntityAlias> entAliases) {
+        m_entAliases = entAliases;
     }
 
     /**
@@ -775,6 +799,8 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
             b.append("parentPhysicalIndex", getParentIndex());
         if (m_entPhysicalIndex != null)
             b.append("entPhysicalIndex", m_entPhysicalIndex);
+        if (m_entAliases != null)
+            b.append("entAlias", m_entAliases);
         if (m_entPhysicalName != null)
             b.append("entPhysicalName", m_entPhysicalName);
         if (m_entPhysicalDescr != null)
@@ -837,7 +863,7 @@ public class OnmsHwEntity implements Serializable, Comparable<OnmsHwEntity> {
      * Fix relationships.
      * 
      * When a node is created from a XML, the internal relationships may not be correct.
-     * Prior storing an hardware object into the database, this method most be called to
+     * Prior storing an hardware object into the database, this method must be called to
      * ensure that the DB relationships are correct.
      */
     public void fixRelationships() {

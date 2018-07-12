@@ -33,6 +33,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
   <jsp:param name="title" value="Remote Poller Details" />
@@ -103,8 +104,7 @@
           <td>
             <c:choose>
               <c:when test="${!empty monitor.lastCheckInTime}">
-                <fmt:formatDate value="${monitor.lastCheckInTime}" type="date" dateStyle="short"/>
-                <fmt:formatDate value="${monitor.lastCheckInTime}" type="time" dateStyle="short"/>
+                <onms:datetime date="${monitor.lastCheckInTime}" />
               </c:when>
               <c:otherwise>
                 Never
