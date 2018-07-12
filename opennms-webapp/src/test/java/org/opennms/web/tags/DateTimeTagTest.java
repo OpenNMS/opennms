@@ -62,8 +62,7 @@ public class DateTimeTagTest {
 
     public void test(String expectedPattern) throws IOException {
         Instant now = Instant.now();
-        String output = DateTimeTagInvoker
-                .create()
+        String output = new DateTimeTagInvoker()
                 .setInstant(now)
                 .invokeAndGet();
         DateTimeFormatter formatter = DateTimeFormatter
@@ -89,10 +88,6 @@ public class DateTimeTagTest {
                     return jspContext;
                 }
             };
-        }
-
-        static DateTimeTagInvoker create(){
-            return new DateTimeTagInvoker();
         }
 
         public DateTimeTagInvoker setDate(Date date){
