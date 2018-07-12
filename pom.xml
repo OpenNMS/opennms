@@ -140,6 +140,7 @@
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
+    <module>opennms-taglib</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
