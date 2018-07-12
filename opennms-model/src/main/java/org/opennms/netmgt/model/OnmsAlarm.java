@@ -1170,7 +1170,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      * @param alarms a {@link java.util.Set} object.
      */
     public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
-        this.m_relatedAlarms = alarms;
+        m_relatedAlarms = alarms;
     }
 
     public void addRelatedAlarm(OnmsAlarm alarm) {
