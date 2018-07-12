@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,21 +26,29 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.stats;
+package org.opennms.netmgt.dao;
 
-import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Objects;
 
-public interface AlarmStatisticsService extends StatisticsService<OnmsAlarm> {
+import org.osgi.framework.ServiceReference;
 
-	@Transactional(readOnly=true)
-    public int getAcknowledgedCount(final Criteria criteria);
+public class ServiceHolder<T> implements AutoCloseable {
+    private final ServiceReference<T> reference;
 
-    @Transactional(readOnly=true)
-    public OnmsAlarm getAcknowledged(final Criteria criteria);
+    public ServiceHolder(ServiceReference<T> serviceReference) {
+        this.reference = Objects.requireNonNull(serviceReference);
+    }
 
-    @Transactional(readOnly=true)
-    public OnmsAlarm getUnacknowledged(final Criteria criteria);
+    public T getService() {
+        return reference.getBundle().getBundleContext().getService(reference);
+    }
 
+    public void release() {
+        reference.getBundle().getBundleContext().ungetService(reference);
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.release();
+    }
 }

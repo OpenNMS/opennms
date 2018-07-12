@@ -26,29 +26,14 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.dao.stats;
+package org.opennms.netmgt.dao.api;
 
 import org.opennms.core.criteria.Criteria;
-import org.opennms.netmgt.dao.api.OnmsDao;
-import org.opennms.netmgt.dao.api.StatisticsService;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
-public abstract class AbstractBaseStatisticsService<T> implements StatisticsService<T>, InitializingBean {
-
-    @Override
-    public void afterPropertiesSet() {
-        Assert.notNull(getDao());
-    }
-
-    public abstract OnmsDao<T, Integer> getDao();
-
-    @Transactional
-    @Override
-	public int getTotalCount(final Criteria criteria) {
-        return getDao().countMatching(criteria);
-	}
-
+public interface StatisticsService<T> {
+	
+	@Transactional(readOnly=true)
+    int getTotalCount(final Criteria criteria);
 
 }
