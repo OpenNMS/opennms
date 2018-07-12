@@ -14,7 +14,16 @@
           <constructor-arg index="0" value="true"/>
       </bean>
  
-      <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory" />
+	  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory">
+		<onmsgi:service-properties>
+			<entry>
+				<key>
+					<value>strategy</value>
+				</key>
+				<value>delegate</value>
+			</entry>
+		</onmsgi:service-properties>
+      </onmsgi:service>
 
 	  <!-- Some beans still require an RrdStrategy and resourceStorageDao -->
       <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />

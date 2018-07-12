@@ -42,9 +42,12 @@ import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
 import org.osgi.service.cm.ConfigurationAdmin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KafkaPersisterFactory implements PersisterFactory {
 
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterFactory.class);
     private CollectionSetMapper collectionSetMapper;
 
     private KafkaProducer<String, byte[]> producer;
@@ -61,6 +64,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         KafkaPersister persister = new KafkaPersister();
         persister.setCollectionSetMapper(collectionSetMapper);
         persister.setProducer(producer);
+        LOG.debug(" kafka persister created from factory");
         return persister;
     }
 
@@ -89,10 +93,12 @@ public class KafkaPersisterFactory implements PersisterFactory {
         } finally {
             Thread.currentThread().setContextClassLoader(currentClassLoader);
         }
+        LOG.info(" kafka producer initialized with {} ", producerConfig);
     }
 
     public void destroy() {
         if (producer != null) {
+            LOG.info(" close kafka producer");
             producer.close();
             producer = null;
         }
