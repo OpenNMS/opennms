@@ -164,11 +164,9 @@ public class BroadcastDomain implements Topology {
 
         List<BridgePortWithMacs> links = new ArrayList<BridgePortWithMacs>(domain.getForwarders(bridgeId));        
         
-        links.stream().forEach(link -> System.err.println("for:"+link.printTopology()));
         for (Integer bridgePort : bft.keySet()) {
             BridgePortWithMacs link = BridgePortWithMacs.create(portifindexmap.get(bridgePort), bft.get(bridgePort));
             links.add(link);
-            System.err.println("bft:"+link.printTopology());
         }
         
         Set<BridgeForwardingTableEntry> entries=new HashSet<BridgeForwardingTableEntry>();
