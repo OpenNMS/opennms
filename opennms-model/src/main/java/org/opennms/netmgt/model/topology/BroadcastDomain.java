@@ -428,7 +428,7 @@ public class BroadcastDomain implements Topology {
     private volatile Set<Bridge> m_bridges = new HashSet<Bridge>();
     private volatile List<SharedSegment> m_topology = new ArrayList<SharedSegment>();    
     private volatile Set<BridgePortWithMacs> m_forwarding = new HashSet<BridgePortWithMacs>();
-
+    
     public void cleanForwarders() {
         cleanForwarders(getMacsOnSegments());
     }
