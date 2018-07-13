@@ -61,7 +61,7 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.CLEARED);
-        alarmInTrans.setLastAutomationTime(clearTime);
+        updateAutomationTime(alarmInTrans, clearTime);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
@@ -104,7 +104,7 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.get(previousSeverity.getId() + 1));
-        alarmInTrans.setLastAutomationTime(now);
+        updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
@@ -124,6 +124,13 @@ public class DefaultAlarmService implements AlarmService {
         alarmInTrans.setAlarmAckTime(now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didAcknowledgeAlarm(alarmInTrans, previousAckUser, previousAckTime);
+    }
+
+    private static void updateAutomationTime(OnmsAlarm alarm, Date now) {
+        if (alarm.getFirstAutomationTime() == null) {
+            alarm.setFirstAutomationTime(now);
+        }
+        alarm.setLastAutomationTime(now);
     }
 
     public void setAlarmDao(AlarmDao alarmDao) {
