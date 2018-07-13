@@ -39,6 +39,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.drools.core.ClockType;
 import org.drools.core.time.SessionPseudoClock;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
@@ -101,7 +102,7 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
 
         final KieSessionConfiguration kieSessionConfig = KieServices.Factory.get().newKieSessionConfiguration();
         if (usePseudoClock) {
-            kieSessionConfig.setOption(ClockTypeOption.get("pseudo"));
+            kieSessionConfig.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
         }
 
         kieSession = kbase.newKieSession(kieSessionConfig, null);
