@@ -8,7 +8,7 @@
 An outage of a central network component can cause a lot of node outages.
 _Path Outages_ can be used to suppress _Notifications_ based on how _Nodes_ depend on each other in the network which are defined in a _Critical Path_.
 The _Critical Path_ needs to be configured from the network perspective of the monitoring system.
-By default the _Path Outage_ feature is disabled and has to be enabled in the `pollerd-configuration.xml`.
+By default the _Path Outage_ feature is disabled and has to be enabled in the `poller-configuration.xml`.
 
 The following image shows an example network topology.
 
