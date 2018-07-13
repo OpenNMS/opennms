@@ -51,7 +51,6 @@ import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -149,7 +148,7 @@ public class AlarmMapperTest {
     public void canMapSituation() throws IOException {
         eventConfDao.addEvent(getEvent());
 
-        Situation alarm = new Situation();
+        OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(16);
         alarm.setUei("uei.opennms.org/nodes/interfaceDown");
 
@@ -172,7 +171,7 @@ public class AlarmMapperTest {
         alarm.setSuppressedTime(new Date(1503412443118L));
         alarm.setLastEventTime(new Date(1503412443118L));
         alarm.setX733ProbableCause(0);
-        alarm.setAlarms(getRelatedAlarms());
+        alarm.setRelatedAlarms(getRelatedAlarms());
 
         OnmsServiceType serviceType = new OnmsServiceType();
         serviceType.setName("ICMP");

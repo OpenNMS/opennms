@@ -57,14 +57,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="categoryConfigDao" class="org.opennms.web.svclayer.dao.support.DefaultCategoryConfigDao"/>
   <bean id="viewDisplayDao" class="org.opennms.web.svclayer.dao.support.DefaultViewDisplayDao"/>
   <bean id="eventProxy" class="org.opennms.web.api.Util" factory-method="createEventProxy"/>
-  <bean id="pollerApi" class="org.opennms.web.svclayer.support.DefaultPollerService">
-    <property name="eventProxy" ref="eventProxy"/>
-  </bean>
-  <bean id="demandPollService" class="org.opennms.web.svclayer.support.DefaultDemandPollService">
-    <property name="demandPollDao" ref="demandPollDao"/>
-    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
-    <property name="pollerAPI" ref="pollerApi"/>
-  </bean>
   <bean id="troubleTicketProxy" class="org.opennms.web.svclayer.support.DefaultTroubleTicketProxy">
     <property name="alarmDao" ref="alarmDao"/>
     <property name="eventProxy" ref="eventProxy"/>
