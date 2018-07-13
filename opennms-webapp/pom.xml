@@ -798,6 +798,11 @@
       <artifactId>encoder-jsp</artifactId>
       <version>${owaspEncoderVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-taglib</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>
