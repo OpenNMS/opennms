@@ -522,38 +522,6 @@ function confirmAssetEdit() {
     <onms-interfaces node="${model.id}"/>
   </div>
 
-  <!-- Vlan box if available -->
-  <c:if test="${! empty model.vlans}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-    	<h3 class="panel-title">VLAN Information</h3>
-      </div>
-    <table class="table table-condensed">
-      <thead class="dark">
-        <tr>
-          <th>Vlan ID</th>
-          <th>Vlan Name</th>
-          <th>Vlan Type</th>
-          <th>Vlan Status</th>
-          <th>Status</th>
-          <th>Last Poll Time</th>
-        </tr>
-      </thead>
-  
-      <c:forEach items="${model.vlans}" var="vlan">
-        <tr>
-          <td>${vlan.vlanId}</td>
-          <td>${vlan.vlanName}</td>
-          <td>${vlan.vlanTypeString}</td>
-          <td>${vlan.vlanStatusString}</td>
-          <td>${vlan.statusString}</td>
-          <td>${vlan.lastPollTime}</td>
-        </tr>
-      </c:forEach>
-    </table>
-    </div>
-  </c:if>
-
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
     <div class="panel panel-default">
@@ -561,25 +529,12 @@ function confirmAssetEdit() {
       <h3 class="panel-title">LLDP Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr>
-        <th>chassis id</th>
-        <td>${model.lldp.lldpChassisIdString}</td>
-      </tr>
-      <tr>
-        <th>sysname</th>
-        <td>${model.lldp.lldpSysName}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.lldp.lldpCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.lldp.lldpLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
+      <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.lldp.lldpLastPollTime}</td></tr>
     </table>
     </div>
-  </c:if>
+    </c:if>
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
@@ -588,99 +543,13 @@ function confirmAssetEdit() {
       <h3 class="panel-title">CDP Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr>
-        <th>global device id</th>
-        <td>${model.cdp.cdpGlobalDeviceId}</td>
-      </tr>
-      <tr>
-        <th>global device id format</th>
-        <td>${model.cdp.cdpGlobalDeviceIdFormat}</td>
-      </tr>
-      <tr>
-        <th>global run</th>
-        <td>${model.cdp.cdpGlobalRun}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.cdp.cdpCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.cdp.cdpLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
+      <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.cdp.cdpLastPollTime}</td></tr>
     </table>
-    </div>
+  </div>
   </c:if>
-
-  <!-- Bridge box if available -->
-  <c:if test="${! empty model.bridges}">
-    <c:forEach items="${model.bridges}" var="bridge">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Bridge Information
-  		<c:if test="${! empty bridge.vlan}">
-  		 vlanid ${bridge.vlan}
-  		</c:if>
-  		<c:if test="${! empty bridge.vlanname}">
-  		  (${bridge.vlanname})
-  		</c:if>
-    </h3>
-    </div>
-    <table class="table table-condensed">
-      <tr>
-        <th>Base Bridge Address</th>
-        <td>${bridge.baseBridgeAddress}</td>
-      </tr>
-      <tr>
-        <th>Base Number of Ports</th>
-        <td>${bridge.baseNumPorts}</td>
-      </tr>
-      <tr>
-        <th>Base Type</th>
-        <td>${bridge.baseType}</td>
-      </tr>
- 	<c:if test="${! empty bridge.stpProtocolSpecification}">
-      <tr>
-        <th>STP Protocol Specification</th>
-        <td>${bridge.stpProtocolSpecification}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpPriority}">
-      <tr>
-        <th>STP Priority</th>
-        <td>${bridge.stpPriority}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpDesignatedRoot}">
-      <tr>
-        <th>STP Designated Root</th>
-        <td>${bridge.stpDesignatedRoot}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpRootCost}">
-      <tr>
-        <th>STP Root Cost</th>
-        <td>${bridge.stpRootCost}</td>
-      </tr>
-  	</c:if>
- 	<c:if test="${! empty bridge.stpRootPort}">
-      <tr>
-        <th>STP Root Port</th>
-        <td>${bridge.stpRootPort}</td>
-      </tr>
-  	</c:if>
-      <tr>
-        <th>Create Time</th>
-        <td>${bridge.bridgeNodeCreateTime}</td>
-      </tr>
-      <tr>
-        <th>Last Poll Time</th>
-        <td>${bridge.bridgeNodeLastPollTime}</td>
-      </tr>
-    </table>
-    </div>
-    </c:forEach>
-  </c:if>
+  <!--End CDP box, if info available --> 
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
@@ -689,28 +558,11 @@ function confirmAssetEdit() {
       <h3 class="panel-title">OSPF Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr>
-        <th>Router Id</th>
-        <td>${model.ospf.ospfRouterId}</td>
-      </tr>
-      <tr>
-        <th>Version Number</th>
-        <td>${model.ospf.ospfVersionNumber}</td>
-      </tr>
-      <tr>
-        <th>Admin Status</th>
-        <td>${model.ospf.ospfAdminStat}</td>
-      </tr>
-      <tr>
-        <th>create time</th>
-        <td>${model.ospf.ospfCreateTime}</td>
-      </tr>
-      <tr>
-        <th>last poll time</th>
-        <td>${model.ospf.ospfLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
+      <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
+      <tr><th>last poll time</th><td>${model.ospf.ospfLastPollTime}</td></tr>
     </table>
-    </div>
+  </div>
   </c:if>
 
   <!-- IS-IS box, if info available -->
@@ -720,27 +572,40 @@ function confirmAssetEdit() {
       <h3 class="panel-title">IS-IS Information</h3>
     </div>
     <table class="table table-condensed">
-      <tr>
-        <th>Sys ID</th>
-        <td>${model.isis.isisSysID}</td>
-      </tr>
-      <tr>
-        <th>Admin State</th>
-        <td>${model.isis.isisSysAdminState}</td>
-      </tr>
-      <tr>
-        <th>Create Time</th>
-        <td>${model.isis.isisCreateTime}</td>
-      </tr>
-      <tr>
-        <th>Last Poll Time</th>
-        <td>${model.isis.isisLastPollTime}</td>
-      </tr>
+      <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
+      <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
+      <tr><th width="50%">last poll time</th><td width="50%">${model.isis.isisLastPollTime}</td></tr>
     </table>
     </div>
   </c:if>
 
-</div>
+  <!-- Bridge box if available -->
+  <c:if test="${! empty model.bridges}">
+    <div class="panel panel-default">
+   	<div class="panel-heading">
+   	  <h3 class="panel-title">Bridge Information</h3>
+   	</div>
+	<table class="table table-condensed">
+	<c:forEach items="${model.bridges}" var="bridge">
+   	<tr>
+   	<th width="50%"><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>
+   	    <c:if test="${! empty bridge.vlan}">(vlanid ${bridge.vlan})</c:if>
+   	    <c:if test="${empty bridge.vlan}">Default</c:if>
+   	    (${bridge.baseNumPorts} port assigned)
+   	</th>
+    <td width="50%"> baseAddress:${bridge.baseBridgeAddress} type:${bridge.baseType} 
+    	<c:if test="${! empty bridge.stpProtocolSpecification}">stpProtocolSpec:${bridge.stpProtocolSpecification}</c:if>
+ 	    <c:if test="${! empty bridge.stpPriority && bridge.stpPriority > 0}">Priority:${bridge.stpPriority}</c:if>
+ 	    <c:if test="${! empty bridge.stpDesignatedRoot}">DesignatedRoot:${bridge.stpDesignatedRoot}</c:if>
+ 	    <c:if test="${! empty bridge.stpRootPort && bridge.stpRootPort > 0}">RootPort:${bridge.stpRootPort}</c:if>
+ 	    <c:if test="${! empty bridge.stpRootCost && bridge.stpRootCost > 0}">RootCost:${bridge.stpRootCost}</c:if>
+	</tr>
+	</c:forEach>
+    </table>
+    </div>
+  </c:if>
+
+</div> <!-- end of tag col-md-6 -->
 
 <div class="col-md-6">
   
@@ -759,25 +624,6 @@ function confirmAssetEdit() {
           <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
         </li>
       </c:if>
-
-      <c:if test="${model.showIpRoute}">
-        <c:url var="ipRouteLink" value="element/routeipnode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${ipRouteLink}"/>">View Node IP Route Info</a>
-        </li>
-      </c:if>
-     
-      <c:if test="${model.showBridge}">
-        <c:url var="bridgeLink" value="element/bridgenode.jsp">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li>
-          <a href="<c:out value="${bridgeLink}"/>">View Node Bridge/STP Info</a>
-        </li>
-      </c:if>
-
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
@@ -813,6 +659,7 @@ function confirmAssetEdit() {
   <jsp:include page="/outage/nodeOutages-box.htm" flush="false"> 
     <jsp:param name="node" value="${model.id}" />
   </jsp:include>
+
 </div>
 
 </div>
