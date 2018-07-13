@@ -29,10 +29,10 @@
 package org.opennms.web.tags;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.io.StringWriter;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -42,8 +42,8 @@ import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.JspWriter;
 
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
-import org.springframework.mock.web.MockJspWriter;
 
 public class DateTimeTagTest {
 
@@ -75,11 +75,10 @@ public class DateTimeTagTest {
     private static class DateTimeTagInvoker {
 
         private DateTimeTag tag;
-        private StringWriter writer;
+        private JspWriter jspWriter;
 
-        private DateTimeTagInvoker(){
-            writer = new StringWriter();
-            JspWriter jspWriter = new MockJspWriter(writer);
+        private DateTimeTagInvoker() throws IOException {
+            jspWriter = Mockito.mock(JspWriter.class);
             JspContext jspContext = Mockito.mock(JspContext.class);
             when(jspContext.getOut()).thenReturn(jspWriter);
             tag = new DateTimeTag(){
@@ -90,20 +89,21 @@ public class DateTimeTagTest {
             };
         }
 
-        public DateTimeTagInvoker setDate(Date date){
+        DateTimeTagInvoker setDate(Date date){
             this.tag.setDate(date);
             return this;
         }
 
-        public DateTimeTagInvoker setInstant(Instant instant){
+        DateTimeTagInvoker setInstant(Instant instant){
             this.tag.setInstant(instant);
             return this;
         }
 
-        public String invokeAndGet() throws IOException {
+        String invokeAndGet() throws IOException {
             this.tag.doTag();
-            this.writer.close();
-            return this.writer.getBuffer().toString();
+            ArgumentCaptor<String> output = ArgumentCaptor.forClass(String.class);
+            verify(jspWriter).write(output.capture());
+            return output.getValue();
         }
     }
 }
