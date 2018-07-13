@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.cxf.jaxrs.ext.search.ConditionType;
+import org.opennms.core.criteria.Alias;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.core.criteria.restrictions.SqlRestriction.Type;
@@ -198,6 +199,22 @@ public abstract class CriteriaBehaviors {
         ALARM_BEHAVIORS.put("suppressedUntil", new CriteriaBehavior<Date>(DATE_CONVERTER));
         ALARM_BEHAVIORS.put("troubleTicketState", new CriteriaBehavior<TroubleTicketState>(TroubleTicketState::valueOf));
         ALARM_BEHAVIORS.put("x733ProbableCause", new CriteriaBehavior<Integer>(INT_CONVERTER));
+
+        CriteriaBehavior<String> isSituation = new StringCriteriaBehavior(Aliases.alarm.prop("isSituation"), (b, v, c, w) -> {
+            switch (c) {
+            case EQUALS:
+                if (Boolean.valueOf((String)v)) {
+                    b.sql("exists (select related_alarm_id from alarm_situations where situation_id = {alias}.alarmid)");
+                } else {
+                    b.sql("not exists (select related_alarm_id from alarm_situations where situation_id = {alias}.alarmid)");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal condition type when filtering alarm.isSituation: " + c.toString());
+            }
+        });
+        isSituation.setSkipPropertyByDefault(true);
+        ALARM_BEHAVIORS.put("isSituation", isSituation);
 
         ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("name", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "name"));
         ALARM_LASTEVENT_PARAMETER_BEHAVIORS.put("value", new EventParameterBehavior("lastEvent.eventParameters", "lasteventid", "value"));
