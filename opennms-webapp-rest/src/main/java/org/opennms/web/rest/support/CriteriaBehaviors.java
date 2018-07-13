@@ -210,7 +210,7 @@ public abstract class CriteriaBehaviors {
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Illegal condition type when filtering category.description: " + c.toString());
+                throw new IllegalArgumentException("Illegal condition type when filtering alarm.isSituation: " + c.toString());
             }
         });
         isSituation.setSkipPropertyByDefault(true);
