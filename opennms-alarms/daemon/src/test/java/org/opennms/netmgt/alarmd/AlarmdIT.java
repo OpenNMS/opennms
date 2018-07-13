@@ -73,7 +73,6 @@ import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
@@ -349,8 +348,8 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         List<String> reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2"));
         sendSituationEvent("Situation1", node, reductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
-        Situation situation = (Situation) m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(2, situation.getAlarms().size());
+        OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation.getRelatedAlarms().size());
         
         // Expect an alarmUpdatedWithReducedEvent event
         m_eventMgr.getEventAnticipator().resetAnticipated();
@@ -361,8 +360,8 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         List<String> newReductionKeys = new ArrayList<>(Arrays.asList("Alarm3"));
         sendSituationEvent("Situation1", node, newReductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
-        situation = (Situation) m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(3, situation.getAlarms().size());
+        situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(3, situation.getRelatedAlarms().size());
     }
     
     @Test
@@ -671,7 +670,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     
     private void assertEmptyAlarmSituationTable() {
         List<String> alarmDescriptions = m_alarmDao.findAll().stream()
-                .map(a -> ((Situation)a).getAlarms())
+                .map(a -> a.getRelatedAlarms())
                 .flatMap(Collection::stream)
                 .map(a -> String.format("Alarm[id=%s, reductionKey=%s, severity=%s]", a.getId(), a.getReductionKey(), a.getSeverity()))
                 .collect(Collectors.toList());

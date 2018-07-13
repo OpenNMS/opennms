@@ -44,7 +44,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -98,95 +97,95 @@ public class SituationIT {
     @Transactional
     public void testCreate() {
         // create a situation relating multiple alarms
-        Situation situation = new Situation();
+        OnmsAlarm situation = new OnmsAlarm();
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
         
-        Situation retrieved = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getAlarms().size(), is(2));
-        assertThat(retrieved.getAlarms(), containsInAnyOrder(linkDownAlarmOnR1, linkDownAlarmOnR2));
+        OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved.getRelatedAlarms().size(), is(2));
+        assertThat(retrieved.getRelatedAlarms(), containsInAnyOrder(linkDownAlarmOnR1, linkDownAlarmOnR2));
     }
 
     @Test
     @Transactional
     public void testUpdateAddAlarm() {
 
-        Situation situation = new Situation();
+        OnmsAlarm situation = new OnmsAlarm();
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
 
-        Situation retrieved = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getAlarms().size(), is(2));
+        OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved.getRelatedAlarms().size(), is(2));
 
         // update the situation by adding an alarm
         OnmsAlarm alarm3 = new OnmsAlarm();
         alarm3.setDistPoller(m_distPollerDao.whoami());
         alarm3.setCounter(1);
         alarm3.setUei("linkDown");
-        retrieved.addAlarm(alarm3);
-        assertThat(retrieved.getAlarms().size(), is(3));
+        retrieved.addRelatedAlarm(alarm3);
+        assertThat(retrieved.getRelatedAlarms().size(), is(3));
 
         m_alarmDao.saveOrUpdate(retrieved);
 
-        Situation retrieved2 = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved2.getAlarms().size(), is(3));
+        OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved2.getRelatedAlarms().size(), is(3));
    }
 
     @Test
     @Transactional
     public void testUpdateRemoveAlarm() {
-        Situation situation = new Situation();
+        OnmsAlarm situation = new OnmsAlarm();
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
 
         m_alarmDao.saveOrUpdate(situation);
 
-        Situation retrieved = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getAlarms().size(), is(2));
+        OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved.getRelatedAlarms().size(), is(2));
 
         // remove one of the alarms
-        retrieved.setAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1)));
-        assertThat(retrieved.getAlarms().size(), is(1));
+        retrieved.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1)));
+        assertThat(retrieved.getRelatedAlarms().size(), is(1));
         
         m_alarmDao.saveOrUpdate(retrieved);
 
-        Situation retrieved2 = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved2.getAlarms().size(), is(1));
-        assertThat(retrieved2.getAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR1)));
+        OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved2.getRelatedAlarms().size(), is(1));
+        assertThat(retrieved2.getRelatedAlarms().stream().findFirst(), is(Optional.of(linkDownAlarmOnR1)));
     }
 
     @Test
     @Transactional
     public void testDelete() {
-        Situation situation = new Situation();
+        OnmsAlarm situation = new OnmsAlarm();
         situation.setDistPoller(m_distPollerDao.whoami());
         situation.setCounter(1);
         situation.setUei("cardDown");
-        situation.setAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
+        situation.setRelatedAlarms(new HashSet<>(Arrays.asList(linkDownAlarmOnR1, linkDownAlarmOnR2)));
         situation.setReductionKey("situation/reduction/key");
         
         m_alarmDao.saveOrUpdate(situation);
 
-        Situation retrieved = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
-        assertThat(retrieved.getAlarms().size(), is(2));
+        OnmsAlarm retrieved = m_alarmDao.findByReductionKey("situation/reduction/key");
+        assertThat(retrieved.getRelatedAlarms().size(), is(2));
         
         // delete the situation
         m_alarmDao.delete(retrieved);
 
-        Situation retrieved2 = (Situation) m_alarmDao.findByReductionKey("situation/reduction/key");
+        OnmsAlarm retrieved2 = m_alarmDao.findByReductionKey("situation/reduction/key");
         assertThat(retrieved2, is(nullValue()));
     }
 }
