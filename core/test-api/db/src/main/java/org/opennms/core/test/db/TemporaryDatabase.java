@@ -52,4 +52,5 @@ public interface TemporaryDatabase extends DataSource, XADataSource {
     public void setClassName(String string);
     public void setMethodName(String string);
     public void setTestDetails(String string);
+    public void setPlpgsqlIplike(boolean plpgsqlIplike);
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.install;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -36,19 +35,14 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.InetAddress;
 import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.sql.DataSource;
 
@@ -96,15 +90,12 @@ public class Installer {
     boolean m_update_iplike = false;
     boolean m_do_full_vacuum = false;
     boolean m_do_vacuum = false;
-    boolean m_install_webapp = false;
     boolean m_fix_constraint = false;
     boolean m_ignore_database_version = false;
     boolean m_remove_database = false;
     boolean m_skip_upgrade_tools = false;
 
     String m_etc_dir = "";
-    String m_tomcat_conf = null;
-    String m_webappdir = null;
     String m_import_dir = null;
     String m_install_servletdir = null;
     String m_library_search_path = null;
@@ -212,11 +203,6 @@ public class Installer {
 
         verifyFilesAndDirectories();
 
-        if (m_install_webapp) {
-            checkWebappOldOpennmsDir();
-            checkServerXmlOldOpennmsContext();
-        }
-
         if (doDatabase) {
             LOG.info(String.format("* using '%s' as the PostgreSQL user for OpenNMS", m_migration.getAdminUser()));
             LOG.info(String.format("* using '%s' as the PostgreSQL database name for OpenNMS", m_migration.getDatabaseName()));
@@ -239,14 +225,6 @@ public class Installer {
         }
 
         handleConfigurationChanges();
-
-        if (m_install_webapp) {
-            installWebApp();
-        }
-
-        if (m_tomcat_conf != null) {
-            updateTomcatConf();
-        }
 
         System.out.println();
         System.out.println("Installer completed successfully!");
@@ -437,6 +415,8 @@ public class Installer {
 
         options.addOption("c", "clean-database", false,
                 "this option does nothing");
+        options.addOption("i", "insert-data", false,
+                "(obsolete)");
         options.addOption("s", "stored-procedure", false,
                 "add the IPLIKE stored procedure if it's missing");
         options.addOption("v", "vacuum", false,
@@ -450,19 +430,10 @@ public class Installer {
                 "turn on debugging for the database data transformation");
         options.addOption("e", "extended-repairs", false,
                 "enable extended repairs of old schemas");
-        // tomcat-related options
-        options.addOption("y", "do-webapp", false,
-                "install web application (see '-w')");
-        options.addOption("T", "tomcat-conf", true, "location of tomcat.conf");
-        options.addOption("w", "tomcat-context", true,
-                "location of the tomcat context (eg, conf/Catalina/localhost)");
 
         // general installation options
         options.addOption("l", "library-path", true,
-                "library search path (directories separated by '"
-                        + File.pathSeparator + "')");
-        options.addOption("r", "rpm-install", false,
-                "RPM install (deprecated)");
+                "library search path (directories separated by '" + File.pathSeparator + "')");
 
         // upgrade tools options
         options.addOption("S", "skip-upgrade-tools", false,
@@ -518,15 +489,12 @@ public class Installer {
         m_library_search_path = m_commandLine.getOptionValue("l", m_library_search_path);
         m_ignore_database_version = m_commandLine.hasOption("Q");
         m_update_iplike = m_commandLine.hasOption("s");
-        m_tomcat_conf = m_commandLine.getOptionValue("T", m_tomcat_conf);
         m_do_vacuum = m_commandLine.hasOption("v");
-        m_webappdir = m_commandLine.getOptionValue("w", m_webappdir);
         //m_installerDb.setDebug(m_commandLine.hasOption("x"));
         if (m_commandLine.hasOption("x")) {
             m_migrator.enableDebug();
         }
         m_fix_constraint_remove_rows = m_commandLine.hasOption("X");
-        m_install_webapp = m_commandLine.hasOption("y");
         m_skip_upgrade_tools = m_commandLine.hasOption("S");
 
         if (m_commandLine.getArgList().size() > 0) {
@@ -535,14 +503,9 @@ public class Installer {
             System.exit(1);
         }
 
-        if (!m_update_database && !m_update_iplike && m_tomcat_conf == null && !m_install_webapp && m_library_search_path == null) {
+        if (!m_update_database && !m_update_iplike && m_library_search_path == null) {
             usage(options, m_commandLine, "Nothing to do.  Use -h for help.", null);
             System.exit(1);
-        }
-
-
-        if (m_commandLine.hasOption("i")) {
-            System.out.println("WARNING: the -i option is deprecated, it does nothing now");
         }
     }
 
@@ -558,17 +521,6 @@ public class Installer {
 
             verifyFileExists(false, m_etc_dir + File.separator + "create.sql",
                     "create.sql", "install.etc.dir property");
-        }
-
-        if (m_tomcat_conf != null) {
-            verifyFileExists(false, m_tomcat_conf, "Tomcat startup configuration file tomcat4.conf", "-T option");
-        }
-
-        if (m_install_webapp) {
-            verifyFileExists(true, m_webappdir, "Tomcat context directory", "-w option");
-
-            verifyFileExists(true, m_install_servletdir, "OpenNMS servlet directory",
-                    "install.servlet.dir property");
         }
     }
 
@@ -616,83 +568,6 @@ public class Installer {
         }
 
         System.out.println(f.getAbsolutePath());
-    }
-
-    /**
-     * <p>checkWebappOldOpennmsDir</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public void checkWebappOldOpennmsDir() throws Exception {
-        File f = new File(m_webappdir + File.separator + "opennms");
-
-        System.out.print("- Checking for old opennms webapp directory in "
-                + f.getAbsolutePath() + "... ");
-
-        if (f.exists()) {
-            throw new Exception("Old OpenNMS web application exists: "
-                    + f.getAbsolutePath() + ".  You need to remove this "
-                    + "before continuing.");
-        }
-
-        System.out.println("OK");
-    }
-
-    /**
-     * <p>checkServerXmlOldOpennmsContext</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public void checkServerXmlOldOpennmsContext() throws Exception {
-        String search_regexp = "(?ms).*<Context\\s+path=\"/opennms\".*";
-        final StringBuilder b = new StringBuilder();
-
-        File f = new File(m_webappdir + File.separator + ".."
-                + File.separator + "conf" + File.separator + "server.xml");
-
-        System.out.print("- Checking for old opennms context in "
-                + f.getAbsolutePath() + "... ");
-
-        if (!f.exists()) {
-            System.out.println("DID NOT CHECK (file does not exist)");
-            return;
-        }
-
-        Reader fr = new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8);
-        BufferedReader r = new BufferedReader(fr);
-        String line;
-
-        while ((line = r.readLine()) != null) {
-            b.append(line);
-            b.append("\n");
-        }
-        r.close();
-        fr.close();
-
-        if (b.toString().matches(search_regexp)) {
-            throw new Exception("Old OpenNMS context found in " + f.getAbsolutePath() +
-                    ".  You must remove this context from server.xml and re-run the installer.");
-        }
-
-        System.out.println("OK");
-
-        return;
-    }
-
-    /**
-     * <p>installWebApp</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public void installWebApp() throws Exception {
-        System.out.println("- Install OpenNMS webapp... ");
-
-        copyFile(m_install_servletdir + File.separator + "META-INF"
-                + File.separator + "context.xml", m_webappdir
-                + File.separator + "opennms.xml", "web application context",
-                false);
-
-        System.out.println("- Installing OpenNMS webapp... DONE");
     }
 
     /**
@@ -800,51 +675,6 @@ public class Installer {
     }
 
     /**
-     * <p>updateTomcatConf</p>
-     *
-     * @throws java.lang.Exception if any.
-     */
-    public void updateTomcatConf() throws Exception {
-        File f = new File(m_tomcat_conf);
-
-        // XXX give the user the option to set the user to something else?
-        // if so, should we chown the appropriate OpenNMS files to the
-        // tomcat user?
-        //
-        // XXX should we have the option to automatically try to determine
-        // the tomcat user and chown the OpenNMS files to that user?
-
-        System.out.print("- setting tomcat4 user to 'root'... ");
-
-        BufferedReader r = new BufferedReader(new InputStreamReader(new FileInputStream(f), StandardCharsets.UTF_8));
-        final StringBuilder b = new StringBuilder();
-        String line;
-
-        while ((line = r.readLine()) != null) {
-            if (line.startsWith("TOMCAT_USER=")) {
-                b.append("TOMCAT_USER=\"root\"\n");
-            } else {
-                b.append(line);
-                b.append("\n");
-            }
-        }
-        r.close();
-
-        if(!f.renameTo(new File(m_tomcat_conf + ".before-opennms-"
-                + System.currentTimeMillis()))) {
-            LOG.warn("Could not rename file: {}", f.getPath());
-        }
-
-        f = new File(m_tomcat_conf);
-        PrintWriter w = new PrintWriter(new FileOutputStream(f));
-
-        w.print(b.toString());
-        w.close();
-
-        System.out.println("DONE");
-    }
-
-    /**
      * <p>removeFile</p>
      *
      * @param destination a {@link java.lang.String} object.
@@ -918,58 +748,6 @@ public class Installer {
         Logging.putPrefix("install");
         new Installer().install(argv);
         Logging.setContextMap(mdc);
-    }
-
-    /**
-     * <p>checkServerVersion</p>
-     *
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    public String checkServerVersion() throws IOException {
-        File catalinaHome = new File(m_webappdir).getParentFile();
-        String readmeVersion = getTomcatVersion(new File(catalinaHome, "README.txt"));
-        String runningVersion = getTomcatVersion(new File(catalinaHome, "RUNNING.txt"));
-
-        if (readmeVersion == null && runningVersion == null) {
-            return null;
-        } else if (readmeVersion != null && runningVersion != null) {
-            return readmeVersion; // XXX what should be done here?
-        } else if (readmeVersion != null && runningVersion == null) {
-            return readmeVersion;
-        } else {
-            return runningVersion;
-        }
-    }
-
-    /**
-     * <p>getTomcatVersion</p>
-     *
-     * @param file a {@link java.io.File} object.
-     * @return a {@link java.lang.String} object.
-     * @throws java.io.IOException if any.
-     */
-    public String getTomcatVersion(File file) throws IOException {
-        if (file == null || !file.exists()) {
-            return null;
-        }
-        Pattern p = Pattern.compile("The Tomcat (\\S+) Servlet/JSP Container");
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8));
-        for (int i = 0; i < 5; i++) {
-            String line = in.readLine();
-            if (line == null) { // EOF
-                in.close();
-                return null;
-            }
-            Matcher m = p.matcher(line);
-            if (m.find()) {
-                in.close();
-                return m.group(1);
-            }
-        }
-
-        in.close();
-        return null;
     }
 
     /**

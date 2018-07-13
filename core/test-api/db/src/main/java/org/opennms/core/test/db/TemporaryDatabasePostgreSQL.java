@@ -187,6 +187,8 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
 
     private String m_blame = null;
 
+    private boolean m_plpgsqlIplike = false;
+
     public static final String TEMPLATE_DATABASE_NAME_PREFIX = "opennms_it_template_";
 
     public TemporaryDatabasePostgreSQL() throws Exception {
@@ -352,6 +354,12 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
                 create = "CREATE DATABASE " + getTestDatabase() + " WITH ENCODING='UNICODE'";
             }
             st.execute(create);
+
+            if (m_plpgsqlIplike) {
+                final Migrator m = createMigrator(m_dataSource, m_adminDataSource);
+                m.dropExistingIpLike();
+                m.createLangPlPgsql();
+            }
         } catch (final Throwable e) {
             try {
                 st = adminConnection.createStatement();
@@ -913,5 +921,9 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             }
         }
         return null;
+    }
+    
+    public void setPlpgsqlIplike(final boolean iplike) {
+        m_plpgsqlIplike = iplike;
     }
 }

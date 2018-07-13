@@ -650,7 +650,7 @@ public class Migrator {
         }
     }
 
-    private void dropExistingIpLike() throws MigrationException {
+    public void dropExistingIpLike() throws MigrationException {
         Connection c = null;
         Statement st = null;
 
