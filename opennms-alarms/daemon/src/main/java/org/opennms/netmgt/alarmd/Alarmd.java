@@ -48,8 +48,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventListener {
     private static final Logger LOG = LoggerFactory.getLogger(Alarmd.class);
 
-    /** Constant <code>NAME="Alarmd"</code> */
-    public static final String NAME = "Alarmd";
+    /** Constant <code>NAME="alarmd"</code> */
+    public static final String NAME = "alarmd";
 
     protected static final Integer THREADS = Integer.getInteger("org.opennms.alarmd.threads", 4);
 
