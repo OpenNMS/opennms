@@ -53,6 +53,7 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.slf4j.Logger;
@@ -303,6 +304,11 @@ public class DroolsAlarmContextIT {
         trigger.setSeverity(OnmsSeverity.WARNING);
         trigger.setReductionKey("n1:oops");
         trigger.setLastEventTime(new Date(100));
+
+        OnmsServiceType serviceType = new OnmsServiceType();
+        serviceType.setName("ICMP");
+        trigger.setServiceType(serviceType);
+
         when(alarmDao.get(trigger.getId())).thenReturn(trigger);
         dac.getClock().advanceTime( 100, TimeUnit.MILLISECONDS );
         dac.handleNewOrUpdatedAlarm(trigger);

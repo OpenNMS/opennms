@@ -121,6 +121,7 @@ rule "escalation"
     $alarm : OnmsAlarm((alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
                          OnmsSeverity.WARNING.isLessThanOrEqual(severity) &&
                          OnmsSeverity.CRITICAL.isGreaterThan(severity) &&
+                         serviceType != null &&
                          alarmAckTime == null)
     not( OnmsAlarm( this == $alarm ) over window:time( 1h ) )
   then
