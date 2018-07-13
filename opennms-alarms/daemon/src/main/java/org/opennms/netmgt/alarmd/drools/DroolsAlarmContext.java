@@ -195,10 +195,10 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
         } else {
             // Updating the fact doesn't always give us to expected results so we resort to deleting it
             // and adding it again instead
-            LOG.debug("Deleting alarm from session (for re-insertion): {}", alarm);
+            LOG.trace("Deleting alarm from session (for re-insertion): {}", alarm);
             kieSession.delete(alarmAndFact.getFact());
             // Reinsert
-            LOG.debug("Re-inserting alarm into session: {}", alarm);
+            LOG.trace("Re-inserting alarm into session: {}", alarm);
             final FactHandle fact = kieSession.insert(alarm);
             alarmAndFact.setFact(fact);
         }
