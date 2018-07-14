@@ -60,7 +60,7 @@
 			</attribute>
 
 			<attribute name="max_bft" type="int"
-				use="optional" default="10">
+				use="optional" default="100">
 				<annotation>
 					<documentation>
 						Max bridge forwarding table to hold in memory.
