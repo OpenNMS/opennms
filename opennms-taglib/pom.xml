@@ -14,7 +14,6 @@
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.lib</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- for SimpleTag support -->
