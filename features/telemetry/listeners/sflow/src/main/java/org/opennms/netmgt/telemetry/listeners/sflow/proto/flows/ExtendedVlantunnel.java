@@ -47,7 +47,7 @@ import com.google.common.primitives.UnsignedInteger;
 // };
 
 public class ExtendedVlantunnel implements FlowData {
-    public final Array<UnsignedInteger> stack;
+    public final Array<Long> stack;
 
     @Override
     public String toString() {
@@ -62,10 +62,13 @@ public class ExtendedVlantunnel implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartArray();
-        for (final UnsignedInteger unsignedInteger : stack) {
-            bsonWriter.writeInt64(unsignedInteger.longValue());
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeStartArray("stack");
+        for (final Long longValue : this.stack) {
+            bsonWriter.writeInt64(longValue);
         }
+
         bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

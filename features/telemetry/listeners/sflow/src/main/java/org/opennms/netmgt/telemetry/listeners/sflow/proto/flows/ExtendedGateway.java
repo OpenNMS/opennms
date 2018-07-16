@@ -56,7 +56,7 @@ public class ExtendedGateway implements FlowData {
     public final long src_as;
     public final long src_peer_as;
     public final Array<AsPathType> dst_as_path;
-    public final Array<UnsignedInteger> communities;
+    public final Array<Long> communities;
     public final long localpref;
 
     public ExtendedGateway(final ByteBuffer buffer) throws InvalidPacketException {
@@ -98,8 +98,8 @@ public class ExtendedGateway implements FlowData {
         bsonWriter.writeEndArray();
 
         bsonWriter.writeStartArray("communities");
-        for (final UnsignedInteger unsignedInteger : this.communities) {
-            bsonWriter.writeInt64(unsignedInteger.longValue());
+        for (final Long longValue : this.communities) {
+            bsonWriter.writeInt64(longValue);
         }
         bsonWriter.writeEndArray();
 

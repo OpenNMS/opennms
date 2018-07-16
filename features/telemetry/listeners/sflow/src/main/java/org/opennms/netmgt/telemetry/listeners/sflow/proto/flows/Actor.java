@@ -54,7 +54,7 @@ public class Actor {
     }
 
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartArray();
+        bsonWriter.writeStartArray("actor");
         for(final Utf8string utf8string : this.actor) {
             utf8string.writeBson(bsonWriter);
         }

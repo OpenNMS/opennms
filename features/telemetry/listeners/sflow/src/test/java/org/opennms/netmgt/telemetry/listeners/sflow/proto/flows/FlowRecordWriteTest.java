@@ -28,37 +28,33 @@
 
 package org.opennms.netmgt.telemetry.listeners.sflow.proto.flows;
 
-import java.nio.ByteBuffer;
-
+import org.bson.BsonDocument;
+import org.bson.BsonDocumentWriter;
 import org.bson.BsonWriter;
-import org.opennms.netmgt.telemetry.listeners.api.utils.BufferUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.opennms.netmgt.telemetry.listeners.sflow.InvalidPacketException;
 
-import com.google.common.base.MoreObjects;
+import java.util.Collection;
 
-// struct extended_decapsulate_egress {
-//    unsigned int inner_header_offset;
-// };
+@RunWith(Parameterized.class)
+public class FlowRecordWriteTest {
+    private Record.DataFormat dataFormat;
 
-public class ExtendedDecapsulateEgress implements FlowData {
-    public final long inner_header_offset;
-
-    public ExtendedDecapsulateEgress(final ByteBuffer buffer) throws InvalidPacketException {
-        this.inner_header_offset = BufferUtils.uint32(buffer);
+    @Parameterized.Parameters(name = "dataFormat: {0}")
+    public static Collection data() {
+        return FlowRecord.flowDataFormats.keySet();
     }
 
-    @Override
-    public String toString() {
-        return MoreObjects.toStringHelper(this)
-                .add("inner_header_offset", this.inner_header_offset)
-                .toString();
+    public FlowRecordWriteTest(final Record.DataFormat dataFormat) {
+        this.dataFormat = dataFormat;
     }
 
-    @Override
-    public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartDocument();
-        bsonWriter.writeInt64("inner_header_offset", this.inner_header_offset);
-        bsonWriter.writeEndDocument();
+    @Test
+    public void testBsonWrite() throws InvalidPacketException {
+        final FlowRecord flowRecord = new FlowRecord(CounterRecordWriteTest.byteBufferForFormat(this.dataFormat));
+        final BsonWriter bsonWriter = new BsonDocumentWriter(new BsonDocument());
+        flowRecord.writeBson(bsonWriter);
     }
 }
-
