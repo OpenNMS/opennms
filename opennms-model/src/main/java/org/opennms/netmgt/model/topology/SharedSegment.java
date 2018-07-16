@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model.topology;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,8 @@ public class SharedSegment implements Topology{
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeMacLink(link));
         segment.getMacsOnSegment().add(link.getMacAddress());
         segment.setDesignatedBridge(link.getNode().getId());
+        segment.setCreateTime(link.getBridgeMacLinkCreateTime());
+        segment.setLastPollTime(link.getBridgeMacLinkLastPollTime());
         return segment;
     }
 
@@ -61,6 +64,8 @@ public class SharedSegment implements Topology{
         segment.getBridgePortsOnSegment().add(BridgePort.getFromBridgeBridgeLink(link));
         segment.getBridgePortsOnSegment().add(BridgePort.getFromDesignatedBridgeBridgeLink(link));
         segment.setDesignatedBridge(link.getDesignatedNode().getId());
+        segment.setCreateTime(link.getBridgeBridgeLinkCreateTime());
+        segment.setLastPollTime(link.getBridgeBridgeLinkLastPollTime());
         return segment;
     }
         
@@ -143,7 +148,24 @@ public class SharedSegment implements Topology{
     private Integer m_designatedBridgeId;
     private Set<String> m_macsOnSegment = new HashSet<String>();
     private Set<BridgePort> m_portsOnSegment = new HashSet<BridgePort>();
+    private Date m_createTime;
+    private Date m_lastPollTime;
 
+    public Date getCreateTime() {
+        return m_createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        m_createTime = createTime;
+    }
+
+    public Date getLastPollTime() {
+        return m_lastPollTime;
+    }
+
+    public void setLastPollTime(Date lastPollTime) {
+        m_lastPollTime = lastPollTime;
+    }
 
     public boolean setDesignatedBridge(Integer designatedBridge) {
         m_designatedBridgeId = designatedBridge;
