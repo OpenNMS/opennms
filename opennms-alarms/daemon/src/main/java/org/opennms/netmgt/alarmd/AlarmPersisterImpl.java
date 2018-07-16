@@ -47,6 +47,7 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.Situation;
+import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.UpdateField;
@@ -154,77 +155,87 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
-        
-        if (event.getAlarmData().getAlarmType().equals(alarm.getAlarmType())) {
-            alarm.setCounter(alarm.getCounter() + 1);
-        }
 
-        if (!event.getAlarmData().hasUpdateFields()) {
+        AlarmData alarmData = event.getAlarmData();
+        if (alarmData != null) {
 
-            //We always set these even if there are not update fields specified
-            alarm.setLogMsg(e.getEventLogMsg());
-        } else {
-            for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
-                String fieldName = field.getFieldName();
-
-                //Always set these, unless specified not to, in order to maintain current behavior
-                if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
-                    continue;
+            Integer newAlarmType = alarmData.getAlarmType();
+            Integer currentAlarmType = alarm.getAlarmType();
+            if (newAlarmType != null && currentAlarmType != null) {
+                if (!newAlarmType.equals(OnmsAlarm.RESOLUTION_TYPE)) {
+                    alarm.setCounter(alarm.getCounter() + 1);
                 } else {
-                    alarm.setLogMsg(e.getEventLogMsg());
+                    alarm.setAlarmType(newAlarmType);
                 }
+            }
 
-                //Set these others
-                if (field.isUpdateOnReduction()) {
+            if (!alarmData.hasUpdateFields()) {
 
-                    if (fieldName.toLowerCase().startsWith("distpoller")) {
-                        alarm.setDistPoller(e.getDistPoller());
-                    } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
-                        alarm.setIpAddr(e.getIpAddr());
-                    } else if (fieldName.toLowerCase().startsWith("mouseover")) {
-                        alarm.setMouseOverText(e.getEventMouseOverText());
-                    } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
-                        alarm.setOperInstruct(e.getEventOperInstruct());
-                    } else if (fieldName.equalsIgnoreCase("severity")) {
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
-                    } else if (fieldName.toLowerCase().contains("descr")) {
-                        alarm.setDescription(e.getEventDescr());
-                    } else if (fieldName.toLowerCase().startsWith("acktime")) {
-                        final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
-                        if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
-                            alarm.unacknowledge("admin");
-                        } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) { 
-                            alarm.setAlarmAckTime(Calendar.getInstance().getTime());
-                        } else if (expandedAckTime.matches("^\\d+$")) {
-                            final long ackTimeLong;
-                            try {
-                                ackTimeLong = Long.valueOf(expandedAckTime);
-                                // Heuristic: values < 2**31 * 1000 (10 Jan 2004) are probably whole seconds, otherwise milliseconds
-                                if (ackTimeLong < 1073741824000L) {
-                                    alarm.setAlarmAckTime(new java.util.Date(ackTimeLong * 1000));
-                                } else {
-                                    alarm.setAlarmAckTime(new java.util.Date(ackTimeLong));
+                //We always set these even if there are not update fields specified
+                alarm.setLogMsg(e.getEventLogMsg());
+            } else {
+                for (UpdateField field : alarmData.getUpdateFieldList()) {
+                    String fieldName = field.getFieldName();
+
+                    //Always set these, unless specified not to, in order to maintain current behavior
+                    if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
+                        continue;
+                    } else {
+                        alarm.setLogMsg(e.getEventLogMsg());
+                    }
+
+                    //Set these others
+                    if (field.isUpdateOnReduction()) {
+
+                        if (fieldName.toLowerCase().startsWith("distpoller")) {
+                            alarm.setDistPoller(e.getDistPoller());
+                        } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
+                            alarm.setIpAddr(e.getIpAddr());
+                        } else if (fieldName.toLowerCase().startsWith("mouseover")) {
+                            alarm.setMouseOverText(e.getEventMouseOverText());
+                        } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
+                            alarm.setOperInstruct(e.getEventOperInstruct());
+                        } else if (fieldName.equalsIgnoreCase("severity")) {
+                            alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                        } else if (fieldName.toLowerCase().contains("descr")) {
+                            alarm.setDescription(e.getEventDescr());
+                        } else if (fieldName.toLowerCase().startsWith("acktime")) {
+                            final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
+                            if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
+                                alarm.unacknowledge("admin");
+                            } else if ("".equals(expandedAckTime) || expandedAckTime.toLowerCase().startsWith("now")) { 
+                                alarm.setAlarmAckTime(Calendar.getInstance().getTime());
+                            } else if (expandedAckTime.matches("^\\d+$")) {
+                                final long ackTimeLong;
+                                try {
+                                    ackTimeLong = Long.valueOf(expandedAckTime);
+                                    // Heuristic: values < 2**31 * 1000 (10 Jan 2004) are probably whole seconds, otherwise milliseconds
+                                    if (ackTimeLong < 1073741824000L) {
+                                        alarm.setAlarmAckTime(new java.util.Date(ackTimeLong * 1000));
+                                    } else {
+                                        alarm.setAlarmAckTime(new java.util.Date(ackTimeLong));
+                                    }
+                                } catch (NumberFormatException nfe) {
+                                    LOG.warn("Could not parse update-field 'acktime' value '{}' as a Long. Using current time instead.", expandedAckTime);
+                                    alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                                 }
-                            } catch (NumberFormatException nfe) {
-                                LOG.warn("Could not parse update-field 'acktime' value '{}' as a Long. Using current time instead.", expandedAckTime);
+                            } else if (expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{22}$") || expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{16}$")) {
+                                alarm.setAlarmAckTime(m_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
+                            } else {
+                                LOG.warn("Not sure what to do with update-field 'acktime' value '{}'. Using current time instead.", expandedAckTime);
                                 alarm.setAlarmAckTime(Calendar.getInstance().getTime());
                             }
-                        } else if (expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{22}$") || expandedAckTime.toLowerCase().matches("^0x[0-9a-f]{16}$")) {
-                            alarm.setAlarmAckTime(m_eventUtil.decodeSnmpV2TcDateAndTime(new BigInteger(expandedAckTime.substring(2), 16)));
-                        } else {
-                            LOG.warn("Not sure what to do with update-field 'acktime' value '{}'. Using current time instead.", expandedAckTime);
-                            alarm.setAlarmAckTime(Calendar.getInstance().getTime());
+                        } else if (fieldName.toLowerCase().startsWith("ackuser")) {
+                            final String expandedAckUser = m_eventUtil.expandParms(field.getValueExpression(), event);
+                            if ("null".equalsIgnoreCase(expandedAckUser) || "".equals(expandedAckUser)) {
+                                alarm.unacknowledge("admin");
+                            } else {
+                                alarm.setAlarmAckUser(expandedAckUser);
+                            }
                         }
-                    } else if (fieldName.toLowerCase().startsWith("ackuser")) {
-                        final String expandedAckUser = m_eventUtil.expandParms(field.getValueExpression(), event);
-                        if ("null".equalsIgnoreCase(expandedAckUser) || "".equals(expandedAckUser)) {
-                            alarm.unacknowledge("admin");
-                        } else {
-                            alarm.setAlarmAckUser(expandedAckUser);
-                        }
+                    } else {
+                        LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                     }
-                } else {
-                    LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                 }
             }
         }
