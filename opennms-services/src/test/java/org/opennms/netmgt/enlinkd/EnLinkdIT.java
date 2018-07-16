@@ -39,9 +39,13 @@ import static org.opennms.netmgt.nb.NmsNetworkBuilder.MUMBAI_SYSOID;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_IP;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_NAME;
 import static org.opennms.netmgt.nb.NmsNetworkBuilder.SWITCH1_SYSOID;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -50,13 +54,17 @@ import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.model.BridgeBridgeLink;
 import org.opennms.netmgt.model.BridgeElement;
 import org.opennms.netmgt.model.BridgeMacLink;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.BridgeMacLink.BridgeMacLinkType;
+import org.opennms.netmgt.model.IpNetToMedia;
+import org.opennms.netmgt.model.IpNetToMedia.IpNetToMediaType;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry.BridgeDot1qTpFdbStatus;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.topology.BridgeForwardingTableEntry;
+import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.topology.BridgeTopologyException;
 import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
@@ -473,8 +481,6 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
 
         assertNotNull(m_bridgeTopologyDao);
         
-        //FIXME
-        // this test loading the topology...should be like this!
         m_linkd.getQueryManager().loadBridgeTopology();
 
         for (BroadcastDomain bd:m_linkd.getQueryManager().getAllBroadcastDomains()) {
@@ -845,6 +851,286 @@ public class EnLinkdIT extends EnLinkdBuilderITCase {
         topology.checkBC(domain);
         
     }
+    
+    @Test
+    public void checkBridgeTopologyDao() throws BridgeTopologyException {
+        
+        NetworkBuilder nb = new NetworkBuilder();
+        nb.addNode("pe01").
+            setForeignSource("linkd").
+            setForeignId("pe01").
+            setSysObjectId(".1.3.6.1.4.1.9.1.1252").
+            setSysName("pe01").
+            setType(NodeType.ACTIVE);
+        nb.addInterface("10.25.39.1").setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        
+        nb.addNode("asw01").
+            setForeignSource("linkd").
+            setForeignId("asw01").
+            setSysObjectId(".1.3.6.1.4.1.6486.800.1.1.2.1.10.1.1").
+            setSysName("asw01").
+            setType(NodeType.ACTIVE);
+        nb.addInterface("10.25.39.1").setIsSnmpPrimary("P").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+        
+        nb.addNode("ess01").
+            setForeignSource("linkd").
+            setForeignId("ess01").
+            setSysObjectId(".1.3.6.1.4.1.8072.3.2.10").
+            setSysName("ess01").
+            setType(NodeType.ACTIVE);
+        nb.addInterface("10.25.39.34").setIsSnmpPrimary("P").setIsManaged("M");
+        nb.addInterface("10.25.139.61").setIsSnmpPrimary("N").setIsManaged("M");
+        m_nodeDao.save(nb.getCurrentNode());
+
+        OnmsNode pe01 = m_nodeDao.findByForeignId("linkd", "pe01");
+        OnmsNode asw01 = m_nodeDao.findByForeignId("linkd", "asw01");
+        OnmsNode ess01 = m_nodeDao.findByForeignId("linkd", "ess01");
+        
+        String mac0="00176301092d"; //mac of ess01
+        String mac1="54a050847462";
+        String mac2="a0d3c1333de9";
+        String mac3="e48d8c2e100c";
+        String mac4="0012cf68d780";
+        String mac5="e48d8cf17bcb"; //no ip address
+        String mac6="4c0082245938";
+        String mac7="4c0082245937";
+        IpNetToMedia ip1mac0 = new IpNetToMedia();
+        ip1mac0.setSourceNode(pe01);
+        ip1mac0.setSourceIfIndex(25);
+        ip1mac0.setPhysAddress(mac0);
+        ip1mac0.setNetAddress(InetAddressUtils.addr("10.25.39.34"));
+        ip1mac0.setLastPollTime(ip1mac0.getCreateTime());
+        
+        ip1mac0.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        IpNetToMedia ip2mac0 = new IpNetToMedia();
+        ip2mac0.setSourceNode(pe01);
+        ip2mac0.setSourceIfIndex(25);
+        ip2mac0.setPhysAddress(mac0);
+        ip2mac0.setNetAddress(InetAddressUtils.addr("10.25.139.61"));
+        ip2mac0.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip2mac0.setLastPollTime(ip2mac0.getCreateTime());
+        IpNetToMedia ip1mac1 = new IpNetToMedia();
+        ip1mac1.setSourceNode(pe01);
+        ip1mac1.setSourceIfIndex(3001);
+        ip1mac1.setPhysAddress(mac1);
+        ip1mac1.setNetAddress(InetAddressUtils.addr("172.22.128.109"));
+        ip1mac1.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip1mac1.setLastPollTime(ip1mac1.getCreateTime());
+
+        IpNetToMedia ip1mac2 = new IpNetToMedia();
+        ip1mac2.setSourceNode(pe01);
+        ip1mac2.setSourceIfIndex(3001);
+        ip1mac2.setPhysAddress(mac2);
+        ip1mac2.setNetAddress(InetAddressUtils.addr("172.22.128.115"));
+        ip1mac2.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip1mac2.setLastPollTime(ip1mac2.getCreateTime());
+        IpNetToMedia ip1mac3 = new IpNetToMedia();
+        ip1mac3.setSourceNode(pe01);
+        ip1mac3.setSourceIfIndex(3072);
+        ip1mac3.setPhysAddress(mac3);
+        ip1mac3.setNetAddress(InetAddressUtils.addr("10.125.39.18"));
+        ip1mac3.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip1mac3.setLastPollTime(ip1mac3.getCreateTime());
+        IpNetToMedia ip2mac3 = new IpNetToMedia();
+        ip2mac3.setSourceNode(pe01);
+        ip2mac3.setSourceIfIndex(3072);
+        ip2mac3.setPhysAddress(mac3);
+        ip2mac3.setNetAddress(InetAddressUtils.addr("10.125.39.5"));
+        ip2mac3.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip2mac3.setLastPollTime(ip2mac3.getCreateTime());
+        IpNetToMedia ip3mac3 = new IpNetToMedia();
+        ip3mac3.setSourceNode(pe01);
+        ip3mac3.setSourceIfIndex(3072);
+        ip3mac3.setPhysAddress(mac3);
+        ip3mac3.setNetAddress(InetAddressUtils.addr("10.125.39.133"));
+        ip3mac3.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip3mac3.setLastPollTime(ip3mac3.getCreateTime());
+        IpNetToMedia ip1mac4 = new IpNetToMedia();
+        ip1mac4.setSourceNode(pe01);
+        ip1mac4.setSourceIfIndex(3072);
+        ip1mac4.setPhysAddress(mac4);
+        ip1mac4.setNetAddress(InetAddressUtils.addr("10.25.39.61"));
+        ip1mac4.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip1mac4.setLastPollTime(ip1mac4.getCreateTime());
+        IpNetToMedia ip1mac6 = new IpNetToMedia();
+        ip1mac6.setSourceNode(pe01);
+        ip1mac6.setSourceIfIndex(8011);
+        ip1mac6.setPhysAddress(mac6);
+        ip1mac6.setNetAddress(InetAddressUtils.addr("10.101.39.2"));
+        ip1mac6.setIpNetToMediaType(IpNetToMediaType.IPNETTOMEDIA_TYPE_DYNAMIC);
+        ip1mac6.setLastPollTime(ip1mac6.getCreateTime());
+
+        m_ipNetToMediaDao.save(ip1mac0);
+        m_ipNetToMediaDao.save(ip2mac0);
+        m_ipNetToMediaDao.save(ip1mac1);
+        m_ipNetToMediaDao.save(ip1mac2);
+        m_ipNetToMediaDao.save(ip1mac3);
+        m_ipNetToMediaDao.save(ip2mac3);
+        m_ipNetToMediaDao.save(ip3mac3);
+        m_ipNetToMediaDao.save(ip1mac4);      
+        m_ipNetToMediaDao.save(ip1mac6);      
+        
+        BridgeBridgeLink asw01pe01link = new BridgeBridgeLink();
+        asw01pe01link.setNode(asw01);
+        asw01pe01link.setBridgePort(24);
+        asw01pe01link.setBridgePort(1024);
+        asw01pe01link.setDesignatedNode(pe01);
+        asw01pe01link.setDesignatedPort(24);
+        asw01pe01link.setDesignatedPortIfIndex(10124);
+        asw01pe01link.setDesignatedVlan(25);
+        asw01pe01link.setBridgeBridgeLinkLastPollTime(asw01pe01link.getBridgeBridgeLinkCreateTime());
+        BridgeMacLink pe01mac1port3 = new BridgeMacLink();
+        pe01mac1port3.setNode(pe01);
+        pe01mac1port3.setBridgePort(3);
+        pe01mac1port3.setBridgePortIfIndex(10103);
+        pe01mac1port3.setVlan(3001);
+        pe01mac1port3.setMacAddress(mac1);
+        pe01mac1port3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        pe01mac1port3.setBridgeMacLinkLastPollTime(pe01mac1port3.getBridgeMacLinkCreateTime());
+        BridgeMacLink pe01mac2port3 = new BridgeMacLink();
+        pe01mac2port3.setNode(pe01);
+        pe01mac2port3.setBridgePort(3);
+        pe01mac2port3.setBridgePortIfIndex(10103);
+        pe01mac2port3.setVlan(3001);
+        pe01mac2port3.setMacAddress(mac2);
+        pe01mac2port3.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        pe01mac2port3.setBridgeMacLinkLastPollTime(pe01mac2port3.getBridgeMacLinkCreateTime());
+        BridgeMacLink pe01mac3port7 = new BridgeMacLink();
+        pe01mac3port7.setNode(pe01);
+        pe01mac3port7.setBridgePort(7);
+        pe01mac3port7.setBridgePortIfIndex(10107);
+        pe01mac3port7.setVlan(3072);
+        pe01mac3port7.setMacAddress(mac3);
+        pe01mac3port7.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        pe01mac3port7.setBridgeMacLinkLastPollTime(pe01mac3port7.getBridgeMacLinkCreateTime());
+        BridgeMacLink asw01mac4port1 = new BridgeMacLink();
+        asw01mac4port1.setNode(asw01);
+        asw01mac4port1.setBridgePort(1);
+        asw01mac4port1.setBridgePortIfIndex(1001);
+        asw01mac4port1.setMacAddress(mac4);
+        asw01mac4port1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);        
+        asw01mac4port1.setBridgeMacLinkLastPollTime(asw01mac4port1.getBridgeMacLinkCreateTime());
+        BridgeMacLink asw01mac5port1 = new BridgeMacLink();
+        asw01mac5port1.setNode(asw01);
+        asw01mac5port1.setBridgePort(1);
+        asw01mac5port1.setBridgePortIfIndex(1001);
+        asw01mac5port1.setMacAddress(mac5);
+        asw01mac5port1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        asw01mac5port1.setBridgeMacLinkLastPollTime(asw01mac5port1.getBridgeMacLinkCreateTime());
+        BridgeMacLink asw01mac0port1 = new BridgeMacLink();
+        asw01mac0port1.setNode(asw01);
+        asw01mac0port1.setBridgePort(1);
+        asw01mac0port1.setBridgePortIfIndex(1001);
+        asw01mac0port1.setMacAddress(mac0);
+        asw01mac0port1.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        asw01mac0port1.setBridgeMacLinkLastPollTime(asw01mac0port1.getBridgeMacLinkCreateTime());
+        BridgeMacLink asw01mac6port19 = new BridgeMacLink();
+        asw01mac6port19.setNode(asw01);
+        asw01mac6port19.setBridgePort(19);
+        asw01mac6port19.setBridgePortIfIndex(1019);
+        asw01mac6port19.setMacAddress(mac6);
+        asw01mac6port19.setLinkType(BridgeMacLinkType.BRIDGE_LINK);
+        asw01mac6port19.setBridgeMacLinkLastPollTime(asw01mac6port19.getBridgeMacLinkCreateTime());
+
+        BridgeMacLink shared = new BridgeMacLink();
+        shared.setNode(pe01);
+        shared.setBridgePort(24);
+        shared.setBridgePortIfIndex(10124);
+        shared.setMacAddress(mac7);
+        shared.setLinkType(BridgeMacLinkType.BRIDGE_LINK);        
+        shared.setBridgeMacLinkLastPollTime(shared.getBridgeMacLinkCreateTime());
+        
+        m_bridgeBridgeLinkDao.save(asw01pe01link);
+        m_bridgeMacLinkDao.save(shared);
+        m_bridgeMacLinkDao.save(pe01mac1port3);
+        m_bridgeMacLinkDao.save(pe01mac2port3);
+        m_bridgeMacLinkDao.save(pe01mac3port7);
+        m_bridgeMacLinkDao.save(asw01mac0port1);
+        m_bridgeMacLinkDao.save(asw01mac4port1);
+        m_bridgeMacLinkDao.save(asw01mac5port1);
+        m_bridgeMacLinkDao.save(asw01mac6port19);
+
+        m_ipNetToMediaDao.flush();
+        m_bridgeBridgeLinkDao.flush();
+        m_bridgeMacLinkDao.flush();
+
+        assertEquals(1,m_bridgeTopologyDao.load().size());
+        assertEquals(3,m_bridgeTopologyDao.getBridgeSharedSegments(pe01.getId()).size());
+        assertEquals(3,m_bridgeTopologyDao.getBridgeSharedSegments(asw01.getId()).size());
+        assertEquals(0,m_bridgeTopologyDao.getBridgeSharedSegments(ess01.getId()).size());
+        
+        
+        SharedSegment asw01port1segment = m_bridgeTopologyDao.getHostSharedSegment(mac0);
+        assertEquals(3,asw01port1segment.getMacsOnSegment().size());
+        assertTrue(asw01port1segment.containsMac(mac0));
+        assertTrue(asw01port1segment.containsMac(mac4));
+        assertTrue(asw01port1segment.containsMac(mac5));
+        assertEquals(1, asw01port1segment.getBridgePortsOnSegment().size());
+        BridgePort asw01port1 = asw01port1segment.getBridgePortsOnSegment().iterator().next();
+        assertEquals(asw01.getId(), asw01port1.getNodeId());
+        assertEquals(1, asw01port1.getBridgePort().intValue());
+        assertEquals(1001, asw01port1.getBridgePortIfIndex().intValue());
+        
+        SharedSegment pe01port3 = m_bridgeTopologyDao.getHostSharedSegment(mac1);
+        assertEquals(2,pe01port3.getMacsOnSegment().size());
+        assertTrue(pe01port3.containsMac(mac1));
+        assertTrue(pe01port3.containsMac(mac2));
+        assertEquals(1, pe01port3.getBridgePortsOnSegment().size());
+
+        SharedSegment pe01port7 = m_bridgeTopologyDao.getHostSharedSegment(mac3);
+        assertEquals(1,pe01port7.getMacsOnSegment().size());
+        assertTrue(pe01port7.containsMac(mac3));
+        assertEquals(1, pe01port7.getBridgePortsOnSegment().size());
+
+        SharedSegment asw01port19segment = m_bridgeTopologyDao.getHostSharedSegment(mac6);
+        assertEquals(1,asw01port19segment.getMacsOnSegment().size());
+        assertTrue(asw01port19segment.containsMac(mac6));
+        assertEquals(1, asw01port19segment.getBridgePortsOnSegment().size());
+
+        SharedSegment pe01asw01segment = m_bridgeTopologyDao.getHostSharedSegment(mac7);
+        assertEquals(1,pe01asw01segment.getMacsOnSegment().size());
+        assertTrue(pe01asw01segment.containsMac(mac7));
+        assertEquals(2, pe01asw01segment.getBridgePortsOnSegment().size());
+
+        SharedSegment emptysegment = m_bridgeTopologyDao.getHostSharedSegment("001763010920");
+        assertEquals(0, emptysegment.getBridgePortsOnSegment().size());
+        assertEquals(0, emptysegment.getMacsOnSegment().size());
+        
+        //This code is inherited from EnlinkElementFactory
+        Map<String, List<OnmsIpInterface>> mactoIpNodeMap = new HashMap<String, List<OnmsIpInterface>>();
+        m_ipInterfaceDao.findByNodeId(ess01.getId()).stream().forEach( ip -> {
+            m_ipNetToMediaDao.findByNetAddress(ip.getIpAddress()).stream().forEach( ipnettomedia -> {
+                if (!mactoIpNodeMap.containsKey(ipnettomedia.getPhysAddress()))
+                    mactoIpNodeMap.put(ipnettomedia.getPhysAddress(),
+                                   new ArrayList<OnmsIpInterface>());
+                mactoIpNodeMap.get(ipnettomedia.getPhysAddress()).add(ip);
+            });
+        });
+        
+        assertEquals(1, mactoIpNodeMap.size());
+        assertEquals(mac0, mactoIpNodeMap.keySet().iterator().next());
+        Set<String> ipsonmap = new HashSet<String>();
+        mactoIpNodeMap.get(mac0).stream().forEach(onmsip -> ipsonmap.add(str(onmsip.getIpAddress())));
+        assertEquals(2, ipsonmap.size());
+        assertTrue(ipsonmap.contains("10.25.39.34"));
+        assertTrue(ipsonmap.contains("10.25.139.61"));   
+        
+        Set<Integer> nodelinks = new HashSet<Integer>();
+        for (String mac : mactoIpNodeMap.keySet()) {
+            SharedSegment segment = m_bridgeTopologyDao.getHostSharedSegment(mac);
+            if (segment.isEmpty()) {
+                continue;
+            }
+            nodelinks.add(segment.getDesignatedBridge());
+        }
+       
+        assertEquals(1, nodelinks.size());
+        assertEquals(asw01.getId(), nodelinks.iterator().next());
+        
+    }
+    
 
 
 }
