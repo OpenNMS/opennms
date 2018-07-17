@@ -30,6 +30,10 @@
 
   <bean id="alarmPersister" class="org.opennms.netmgt.alarmd.AlarmPersisterImpl" />
 
+  <onmsgi:list id="alarmPersisterExtensions" interface="org.opennms.netmgt.alarmd.api.AlarmPersisterExtension">
+    <onmsgi:listener ref="alarmPersister" bind-method="onExtensionRegistered" unbind-method="onExtensionUnregistered" />
+  </onmsgi:list>
+
   <bean id="daemon" class="org.opennms.netmgt.alarmd.Alarmd" >
     <property name="persister" ref="alarmPersister" />
   </bean>

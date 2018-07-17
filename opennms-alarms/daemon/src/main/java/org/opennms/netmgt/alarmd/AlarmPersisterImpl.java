@@ -34,11 +34,13 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
+import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -55,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Striped;
 
 /**
@@ -84,6 +87,8 @@ public class AlarmPersisterImpl implements AlarmPersister {
     private AlarmEntityNotifier m_alarmEntityNotifier;
 
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
+
+    private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
 
     @Override
     public OnmsAlarm persist(Event event) {
@@ -128,6 +133,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
             alarm = createNewAlarm(e, event);
 
+            // Trigger extensions, allowing them to mangle the alarm
+            try {
+                final OnmsAlarm alarmCreated = alarm;
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, e));
+            } catch (Exception ex) {
+                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+            }
+
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
 
@@ -137,6 +150,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             }
             reduceEvent(e, alarm, event);
+
+            // Trigger extensions, allowing them to mangle the alarm
+            try {
+                final OnmsAlarm alarmCreated = alarm;
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, e));
+            } catch (Exception ex) {
+                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+            }
+
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
 
@@ -381,4 +403,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
         m_alarmEntityNotifier = alarmEntityNotifier;
     }
 
+    public void onExtensionRegistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
+        LOG.debug("onExtensionRegistered: {} with properties: {}", ext, properties);
+        extensions.add(ext);
+    }
+
+    public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
+        LOG.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
+        extensions.remove(ext);
+    }
 }
