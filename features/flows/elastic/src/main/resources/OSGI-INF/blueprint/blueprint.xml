@@ -83,6 +83,7 @@
 
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
+    <service ref="jestClient" interface="io.searchbox.client.JestClient"/>
 
     <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
