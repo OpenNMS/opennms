@@ -20,6 +20,7 @@
       <cm:property name="alarmSyncIntervalMs" value="300000"/> <!-- 5 minutes -->
       <cm:property name="eventFilter" value=""/>
       <cm:property name="alarmFilter" value=""/>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
@@ -35,6 +36,9 @@
   <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
     <argument ref="eventConfDao"/>
     <argument ref="hwEntityDao"/>
+    <argument ref="transactionOperations"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
   </bean>
 
   <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">

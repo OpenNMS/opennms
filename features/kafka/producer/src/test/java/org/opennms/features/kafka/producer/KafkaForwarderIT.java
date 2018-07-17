@@ -31,8 +31,10 @@ package org.opennms.features.kafka.producer;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -290,6 +292,15 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         await().atMost(1, TimeUnit.MINUTES).until(() -> kafkaConsumer.getAlarmByReductionKey(alarmReductionKey), not(nullValue()));
 
         // Events, nodes and alarms were forwarded and consumed!
+
+        // Ensure that we have some events with a fs:fid
+
+        List<OpennmsModelProtos.Event> eventsWithFsAndFid = kafkaConsumer.getEvents().stream()
+                .filter(e -> e.getNodeCriteria() != null
+                        && e.getNodeCriteria().getForeignId() != null
+                        && e.getNodeCriteria().getForeignSource() != null)
+                .collect(Collectors.toList());
+        assertThat(eventsWithFsAndFid, hasSize(greaterThanOrEqualTo(2)));
 
         // Verify the consumed alarm object
         assertThat(kafkaConsumer.getAlarmByReductionKey(alarmReductionKey).getDescription(), equalTo("node down"));
