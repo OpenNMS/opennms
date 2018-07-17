@@ -67,7 +67,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
     public static final Logger LOG = LoggerFactory.getLogger(ParameterSubstitutingMonitor.class);
 
     private static Map<String, Pattern> subPatterns = new HashMap<>();
-    private static Pattern m_subPat;
+    private static Pattern substitutionPattern;
     private static final Supplier<NodeDao> nodeDao = Suppliers.memoize(() -> BeanUtils.getBean("daoContext", "nodeDao", NodeDao.class));
     static {
         StringBuilder patternBuilder = new StringBuilder();
@@ -83,7 +83,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
             LOG.warn("Failed to introspect OnmsAssetRecord when initializing due to {}", ie.getLocalizedMessage());
         }
         patternBuilder.append("[}]).*");
-        m_subPat = Pattern.compile(patternBuilder.toString());
+        substitutionPattern = Pattern.compile(patternBuilder.toString());
 
         Pattern p = Pattern.compile("(.*)[{]ipAddr(?:ess)?[}](.*)");
         subPatterns.put("ipAddr", p);
@@ -108,7 +108,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
     public static Map<String, Object> getSubstitutedParameters(final MonitoredService svc, Map<String, Object> parameters) {
         Map<String, Object> subbedParams = new HashMap<>();
         parameters.forEach((k, v) -> {
-            Matcher m = m_subPat.matcher(v.toString());
+            Matcher m = substitutionPattern.matcher(v.toString());
             if (m.matches()) {
                 subbedParams.put("subbed-" + k, parseString(v.toString(), m, svc));
             }
@@ -159,7 +159,7 @@ public abstract class ParameterSubstitutingMonitor extends AbstractServiceMonito
             sb.append(n.group(2));
             formattedString = sb.toString();
         }
-        Matcher o = m_subPat.matcher(formattedString);
+        Matcher o = substitutionPattern.matcher(formattedString);
         if (o.matches()) {
             return parseString(formattedString, o, svc);
         }
