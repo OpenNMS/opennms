@@ -161,11 +161,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             Integer newAlarmType = alarmData.getAlarmType();
             Integer currentAlarmType = alarm.getAlarmType();
+
             if (newAlarmType != null && currentAlarmType != null) {
+                if (!newAlarmType.equals(currentAlarmType)) {
+                    alarm.setAlarmType(newAlarmType);
+                }
+                
                 if (!newAlarmType.equals(OnmsAlarm.RESOLUTION_TYPE)) {
                     alarm.setCounter(alarm.getCounter() + 1);
-                } else {
-                    alarm.setAlarmType(newAlarmType);
                 }
             }
 
