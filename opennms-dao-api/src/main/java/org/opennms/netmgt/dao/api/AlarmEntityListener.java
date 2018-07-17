@@ -26,25 +26,42 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.dao.api;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.Date;
 
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsMemo;
+import org.opennms.netmgt.model.OnmsReductionKeyMemo;
+import org.opennms.netmgt.model.OnmsSeverity;
 
-public interface AlarmDataStore {
+/**
+ * Used to get callbacks when alarm entities are created, updated and/or deleted.
+ *
+ * @author jwhite
+ */
+public interface AlarmEntityListener {
 
-    boolean isEnabled();
+    void onAlarmCreated(OnmsAlarm alarm);
 
-    boolean isReady();
+    void onAlarmUpdatedWithReducedEvent(OnmsAlarm alarm);
 
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
+    void onAlarmAcknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime);
 
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
+    void onAlarmUnacknowledged(OnmsAlarm alarm, String previousAckUser, Date previousAckTime);
 
-    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
+    void onAlarmSeverityUpdated(OnmsAlarm alarm, OnmsSeverity previousSeverity);
+
+    void onAlarmDeleted(OnmsAlarm alarm);
+
+    void onStickyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
+
+    void onReductionKeyMemoUpdated(OnmsAlarm alarm, String previousBody, String previousAuthor, Date previousUpdated);
+
+    void onStickyMemoDeleted(OnmsAlarm alarm, OnmsMemo memo);
+
+    void onReductionKeyMemoDeleted(OnmsAlarm alarm, OnmsReductionKeyMemo memo);
+
+    void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime);
 
 }

@@ -454,6 +454,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
+    @Override
     @Column(name="severity", nullable=false)
     // @Enumerated(EnumType.ORDINAL)
     @Type(type="org.opennms.netmgt.model.OnmsSeverityUserType")
@@ -812,6 +813,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return new ToStringCreator(this)
             .append("alarmid", getId())
             .append("distPoller", getDistPoller())
+            .append("uei", getUei())
+            .append("severity", getSeverity())
+            .append("lastEventTime",getLastEventTime())
             .toString();
     }
 
@@ -1150,7 +1154,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public Date getAckTime() {
         return m_alarmAckTime;
     }
-    
+
     /**
      * <p>getAlarms</p>
      *
@@ -1182,6 +1186,15 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     @XmlTransient
     public boolean isSituation() {
         return ! m_relatedAlarms.isEmpty();
+    }
+
+    @Transient
+    @XmlTransient
+    public Date getLastUpdateTime() {
+        if (getLastAutomationTime() != null && getLastAutomationTime().compareTo(getLastEventTime()) > 0) {
+            return getLastAutomationTime();
+        }
+        return getLastEventTime();
     }
 
 }

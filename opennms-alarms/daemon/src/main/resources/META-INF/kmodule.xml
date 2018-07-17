@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+
+    <kbase name="alarmKBase" packages="org.opennms.netmgt.alarmd" default="true">
+        <ksession name="alarmKSession" default="true" />
+    </kbase>
+
+</kmodule>

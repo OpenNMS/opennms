@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,25 +26,30 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.bsm.daemon;
+package org.opennms.netmgt.alarmd.driver;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.Date;
+import java.util.Objects;
 
-public class BsmdTest {
+public class AcknowledgeAlarmAction implements Action {
+    private final String ackUser;
+    private final Date ackTime;
+    private final String reductionKey;
 
-    @Test
-    public void testGetPollInterval() {
-        Bsmd bsmd = new Bsmd();
-        Assert.assertEquals(30L, bsmd.getPollInterval());
 
-        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "-1");
-        Assert.assertEquals(30L, bsmd.getPollInterval());
+    public AcknowledgeAlarmAction(String ackUser, Date ackTime, String reductionKey) {
+        this.ackUser = Objects.requireNonNull(ackUser);
+        this.ackTime = Objects.requireNonNull(ackTime);
+        this.reductionKey = Objects.requireNonNull(reductionKey);
+    }
 
-        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "abc");
-        Assert.assertEquals(30L, bsmd.getPollInterval());
+    @Override
+    public Date getTime() {
+        return ackTime;
+    }
 
-        System.setProperty(Bsmd.POLL_INTERVAL_KEY, "5");
-        Assert.assertEquals(5L, bsmd.getPollInterval());
+    @Override
+    public void visit(ActionVisitor visitor) {
+        visitor.acknowledgeAlarm(ackUser, ackTime, (a) -> Objects.equals(reductionKey, a.getReductionKey()));
     }
 }

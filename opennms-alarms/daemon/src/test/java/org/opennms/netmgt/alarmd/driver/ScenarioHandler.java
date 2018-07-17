@@ -26,12 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.alarmd.api;
+package org.opennms.netmgt.alarmd.driver;
 
-public interface AlarmLifecycleSubscriptionService {
+public interface ScenarioHandler {
 
-    void addAlarmLifecyleListener(AlarmLifecycleListener listener);
+    void setScenario(Scenario scenario);
 
-    void removeAlarmLifecycleListener(AlarmLifecycleListener listener);
+    ScenarioResults getResults();
 
 }

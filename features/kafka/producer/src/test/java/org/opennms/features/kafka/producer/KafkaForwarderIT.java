@@ -45,6 +45,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -100,7 +101,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Verifies events/alarms/nodes forwarded to Kafka.
@@ -108,7 +108,6 @@ import org.springframework.transaction.support.TransactionTemplate;
  * @author cgorantla
  * @author jwhite
  */
-
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
@@ -145,9 +144,6 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     private AlarmLifecycleListenerManager alarmLifecycleListenerManager;
-
-    @Autowired
-    private TransactionTemplate transactionTemplate;
 
     @Autowired
     private AlarmDao alarmDao;
@@ -221,7 +217,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         when(configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties()).thenReturn(producerConfig);
         when(configAdmin.getConfiguration(KafkaAlarmDataSync.KAFKA_STREAMS_PID).getProperties()).thenReturn(streamsConfig);
 
-        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr, alarmLifecycleListenerManager);
+        kafkaProducer = new OpennmsKafkaProducer(protobufMapper, nodeCache, configAdmin, eventdIpcMgr);
         kafkaProducer.setEventTopic(EVENT_TOPIC_NAME);
         // Don't forward newSuspect events
         kafkaProducer.setEventFilter("!getUei().equals(\"" + EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI + "\")");
@@ -231,10 +227,13 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         kafkaProducer.setNodeTopic(NODE_TOPIC_NAME);
         kafkaProducer.init();
 
-        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, alarmDao, protobufMapper, transactionTemplate);
+        kafkaAlarmaDataStore = new KafkaAlarmDataSync(configAdmin, kafkaProducer, protobufMapper);
         kafkaAlarmaDataStore.setAlarmTopic(ALARM_TOPIC_NAME);
-        kafkaAlarmaDataStore.setAlarmSyncIntervalMs(1000);
+        kafkaAlarmaDataStore.setAlarmSync(true);
         kafkaAlarmaDataStore.init();
+        kafkaProducer.setDataSync(kafkaAlarmaDataStore);
+
+        alarmLifecycleListenerManager.onListenerRegistered(kafkaProducer, Collections.emptyMap());
     }
 
     @Test

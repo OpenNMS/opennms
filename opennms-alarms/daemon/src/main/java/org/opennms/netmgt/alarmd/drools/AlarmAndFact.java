@@ -26,25 +26,33 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.kafka.producer.datasync;
+package org.opennms.netmgt.alarmd.drools;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.netmgt.model.OnmsAlarm;
 
-public interface AlarmDataStore {
+public class AlarmAndFact {
+    private OnmsAlarm alarm;
+    private FactHandle fact;
 
-    boolean isEnabled();
+    public AlarmAndFact(OnmsAlarm alarm, FactHandle fact) {
+        this.alarm = alarm;
+        this.fact = fact;
+    }
 
-    boolean isReady();
+    public OnmsAlarm getAlarm() {
+        return alarm;
+    }
 
-    Map<String, OpennmsModelProtos.Alarm> getAlarms();
+    public void setAlarm(OnmsAlarm alarm) {
+        this.alarm = alarm;
+    }
 
-    OpennmsModelProtos.Alarm getAlarm(String reductionKey);
+    public FactHandle getFact() {
+        return fact;
+    }
 
-    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
-
+    public void setFact(FactHandle fact) {
+        this.fact = fact;
+    }
 }
