@@ -40,6 +40,7 @@ message Event {
   bool log = 11;
   bool display = 12;
   NodeCriteria node_criteria = 13;
+  string ip_address = 14;
 }
 
 message Alarm {
@@ -67,6 +68,9 @@ message Alarm {
   uint32 if_index = 17;
   string operator_instructions = 18;
   string clear_key = 19;
+  string managed_object_instance = 20;
+  string managed_object_type = 21;
+
 }
 
 message IpInterface {
