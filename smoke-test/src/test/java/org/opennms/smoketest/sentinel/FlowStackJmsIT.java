@@ -28,7 +28,18 @@
 
 package org.opennms.smoketest.sentinel;
 
+import static com.jayway.awaitility.Awaitility.await;
+import static java.util.concurrent.TimeUnit.MINUTES;
+import static java.util.concurrent.TimeUnit.SECONDS;
+
+import java.io.PrintStream;
+import java.net.InetSocketAddress;
+
+import org.junit.Test;
+import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
+import org.opennms.test.system.api.utils.SshClient;
+import org.springframework.util.StringUtils;
 
 // Verifies that flows can be processed by a sentinel and are persisted to Elastic communicating via activemq (jms)
 public class FlowStackJmsIT extends AbstractFlowIT {
@@ -48,6 +59,36 @@ public class FlowStackJmsIT extends AbstractFlowIT {
             // Enable Netflow 5 Listener
             builder.withMinionEnvironment()
                     .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
+    }
+
+    @Test
+    public void verifyHealthCheck() {
+        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
+
+        // Ensure we are actually started the sink and are ready to listen for messages
+        await().atMost(5, MINUTES)
+                .pollInterval(5, SECONDS)
+                .until(() -> {
+                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
+                        final PrintStream pipe = sshClient.openShell();
+                        pipe.println("health:check");
+                        pipe.println("logout");
+
+                        // Wait for karaf to process the commands
+                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+
+                        // Read stdout and verify
+                        final String shellOutput = sshClient.getStdout();
+                        final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
+
+                        logger.info("log:display");
+                        logger.info("{}", shellOutput);
+                        return count == 6;
+                    } catch (Exception ex) {
+                        logger.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        return false;
+                    }
+                });
     }
 
     @Override
