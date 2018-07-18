@@ -2,15 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms.features.distributed</groupId>
-        <artifactId>core-health</artifactId>
+        <groupId>org.opennms.core</groupId>
+        <artifactId>org.opennms.core.health</artifactId>
         <version>23.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.opennms.features.distributed.health</groupId>
-    <artifactId>org.opennms.features.distributed.health.shell</artifactId>
+    <groupId>org.opennms.core.health</groupId>
+    <artifactId>org.opennms.core.health.impl</artifactId>
     <packaging>bundle</packaging>
-    <name>OpenNMS :: Features :: Distributed :: Core :: Health :: Shell</name>
+    <name>OpenNMS :: Core :: Health :: Impl</name>
     <build>
         <plugins>
             <plugin>
@@ -18,22 +18,14 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
-                        <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Version>${project.version}</Bundle-Version>
-                        <Private-Package></Private-Package>
-                        <Karaf-Commands>org.opennms.distributed.core.health.*</Karaf-Commands>
+                        <!-- TODO MVR change package name -->
+                        <Export-Package>org.opennms.distributed.core.health.impl</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.opennms.features.distributed.health</groupId>
-            <artifactId>org.opennms.features.distributed.health.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.apache.karaf.shell</groupId>
             <artifactId>org.apache.karaf.shell.core</artifactId>
@@ -43,6 +35,22 @@
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.bundle</groupId>
+            <artifactId>org.apache.karaf.bundle.core</artifactId>
+            <version>${karafVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
             <scope>provided</scope>
         </dependency>
     </dependencies>

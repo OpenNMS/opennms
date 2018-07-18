@@ -18,9 +18,9 @@
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>wrap:mvn:com.google.code.gson/gson/2.8.0</bundle>
 
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/core-impl/${project.version}</bundle>
     </feature>
 
@@ -39,7 +39,7 @@
         <feature>activemq-camel</feature>
 
         <!-- This is also defined in "sentinel-jms" -->
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
     </feature>
 
@@ -51,8 +51,8 @@
 
     <!-- TODO MVR this is identical to sentinel-health -->
     <feature name="minion-health" description="Minion :: Core :: Health" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
     </feature>
 </features>

@@ -46,8 +46,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-        <groupId>org.opennms.features.distributed.health</groupId>
-            <artifactId>org.opennms.features.distributed.health.api</artifactId>
+        <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

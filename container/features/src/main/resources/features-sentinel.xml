@@ -24,9 +24,9 @@
 
     <!-- TODO MVR this is identical to minion-health -->
     <feature name="sentinel-health" description="Sentinel :: Health" version="${project.version}">
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.impl/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.distributed.health/org.opennms.features.distributed.health.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
