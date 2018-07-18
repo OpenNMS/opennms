@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.elastic.healtcheck;
+package org.opennms.netmgt.flows.elastic.health;
 
 import java.io.IOException;
 import java.util.Objects;

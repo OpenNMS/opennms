@@ -83,7 +83,6 @@
 
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
-    <service ref="jestClient" interface="io.searchbox.client.JestClient"/>
 
     <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
@@ -146,5 +145,12 @@
         <argument ref="indexSettings" />
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
+
+    <!-- Health Check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.netmgt.flows.elastic.health.ElasticHealthCheck" >
+            <argument ref="blueprintBundleContext"/>
+        </bean>
+    </service>
 
 </blueprint>
