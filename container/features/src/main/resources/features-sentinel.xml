@@ -32,7 +32,6 @@
     <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
         <feature>opennms-persistence</feature>
         <feature>sentinel-distpoller-dao</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.datasource-healthcheck/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
     </feature>
 

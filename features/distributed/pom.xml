@@ -24,6 +24,5 @@
     <module>dao-healthcheck</module>
     <module>dao-test</module>
     <module>datasource</module>
-    <module>datasource-healthcheck</module>
   </modules>
 </project>
