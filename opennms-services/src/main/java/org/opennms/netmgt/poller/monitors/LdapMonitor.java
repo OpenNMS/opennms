@@ -155,8 +155,9 @@ public class LdapMonitor extends AbstractServiceMonitor {
         // thus tying
         // up the thread
         Double responseTime = null;
-        Socket socket = null;
+//        Socket socket = null;
         try {
+/* Deactivate to avoid GLPSRV044W error messages in ibm ldap server logs
 
             socket = new Socket();
             socket.connect(new InetSocketAddress((InetAddress) iface.getAddress(), ldapPort), tracker.getConnectionTimeout());
@@ -169,7 +170,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
 
             if (socket != null)
                 socket.close();
-
+*/
             // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(tracker.getSoTimeout()));
 
@@ -257,6 +258,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
                     LOG.debug(e.getMessage());
                 }
             }
+/* Deactivate to avoid GLPSRV044W error messages in ibm ldap server logs
         } catch (ConnectException e) {
 		LOG.debug("connection refused to host {}", address, e);
         	reason = "connection refused to host " + address;
@@ -266,6 +268,7 @@ public class LdapMonitor extends AbstractServiceMonitor {
         } catch (InterruptedIOException e) {
 		LOG.debug("did not connect to host with {}", tracker);
         	reason = "did not connect to host with "+tracker;
+*/
         } catch (Throwable t) {
 		LOG.debug("An undeclared throwable exception caught contacting host {}", address, t);
         	reason = "An undeclared throwable exception caught contacting host " + address;
@@ -275,3 +278,4 @@ public class LdapMonitor extends AbstractServiceMonitor {
     }
 
 }
+
