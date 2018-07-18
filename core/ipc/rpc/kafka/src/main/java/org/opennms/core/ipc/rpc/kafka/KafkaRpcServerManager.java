@@ -203,6 +203,11 @@ public class KafkaRpcServerManager {
                     for (ConsumerRecord<String, byte[]> record : records) {  
                         RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
                         String rpcId = rpcMessage.getRpcId();
+                        long expirationTime = rpcMessage.getExpiresAt();
+                        if ( expirationTime < System.currentTimeMillis()) {
+                            LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
+                            continue;
+                        }
                         boolean hasSystemId = rpcMessage.hasSystemId();
                         String minionId = getMinionIdentity().getId(); 
                         if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {

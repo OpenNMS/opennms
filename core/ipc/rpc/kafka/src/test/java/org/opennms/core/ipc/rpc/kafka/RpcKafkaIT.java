@@ -89,8 +89,7 @@ public class RpcKafkaIT {
     public static final String REMOTE_LOCATION_NAME = "remote";
 
     static {
-        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID), "5000");
-        System.setProperty(String.format("%sttl", KAFKA_CONFIG_PID), "5000");
+        System.setProperty(String.format("%sttl", KAFKA_CONFIG_PID), "10000");
     }
 
     @Rule
@@ -118,7 +117,6 @@ public class RpcKafkaIT {
     @Before
     public void setup() throws Exception {
         System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
-        System.setProperty(String.format("%smetadata.max.age.ms", KAFKA_CONFIG_PID), "5000");
         rpcClientFactory.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
@@ -155,8 +153,10 @@ public class RpcKafkaIT {
     @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocation() throws InterruptedException, ExecutionException {
         assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
+        Thread.sleep(5000);
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setLocation(REMOTE_LOCATION_NAME);
+        request.setDelay(5000L);
         EchoResponse expectedResponse = new EchoResponse("Kafka-RPC");
         EchoResponse actualResponse = echoClient.execute(request).get();
         assertEquals(expectedResponse, actualResponse);
@@ -290,7 +290,7 @@ public class RpcKafkaIT {
             if (e != null) {
                 long responseTime = System.currentTimeMillis() - request.getId();
                 assertThat(responseTime, greaterThan(ttl));
-                assertThat(responseTime, lessThan(ttl + 15000));
+                assertThat(responseTime, lessThan(ttl + 10000));
                 count.getAndIncrement();
             } else {
                 count.getAndIncrement();

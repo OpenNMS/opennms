@@ -54,27 +54,36 @@ public final class RpcMessageProtos {
         getRpcIdBytes();
 
     /**
-     * <code>optional string system_id = 2;</code>
-     */
-    boolean hasSystemId();
-    /**
-     * <code>optional string system_id = 2;</code>
-     */
-    java.lang.String getSystemId();
-    /**
-     * <code>optional string system_id = 2;</code>
-     */
-    com.google.protobuf.ByteString
-        getSystemIdBytes();
-
-    /**
-     * <code>required bytes rpc_content = 3;</code>
+     * <code>required bytes rpc_content = 2;</code>
      */
     boolean hasRpcContent();
     /**
-     * <code>required bytes rpc_content = 3;</code>
+     * <code>required bytes rpc_content = 2;</code>
      */
     com.google.protobuf.ByteString getRpcContent();
+
+    /**
+     * <code>optional uint64 expiresAt = 3;</code>
+     */
+    boolean hasExpiresAt();
+    /**
+     * <code>optional uint64 expiresAt = 3;</code>
+     */
+    long getExpiresAt();
+
+    /**
+     * <code>optional string system_id = 4;</code>
+     */
+    boolean hasSystemId();
+    /**
+     * <code>optional string system_id = 4;</code>
+     */
+    java.lang.String getSystemId();
+    /**
+     * <code>optional string system_id = 4;</code>
+     */
+    com.google.protobuf.ByteString
+        getSystemIdBytes();
   }
   /**
    * Protobuf type {@code RpcMessage}
@@ -135,14 +144,19 @@ public final class RpcMessageProtos {
               break;
             }
             case 18: {
-              com.google.protobuf.ByteString bs = input.readBytes();
               bitField0_ |= 0x00000002;
-              systemId_ = bs;
+              rpcContent_ = input.readBytes();
               break;
             }
-            case 26: {
+            case 24: {
               bitField0_ |= 0x00000004;
-              rpcContent_ = input.readBytes();
+              expiresAt_ = input.readUInt64();
+              break;
+            }
+            case 34: {
+              com.google.protobuf.ByteString bs = input.readBytes();
+              bitField0_ |= 0x00000008;
+              systemId_ = bs;
               break;
             }
           }
@@ -227,16 +241,46 @@ public final class RpcMessageProtos {
       }
     }
 
-    public static final int SYSTEM_ID_FIELD_NUMBER = 2;
-    private java.lang.Object systemId_;
+    public static final int RPC_CONTENT_FIELD_NUMBER = 2;
+    private com.google.protobuf.ByteString rpcContent_;
     /**
-     * <code>optional string system_id = 2;</code>
+     * <code>required bytes rpc_content = 2;</code>
      */
-    public boolean hasSystemId() {
+    public boolean hasRpcContent() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     /**
-     * <code>optional string system_id = 2;</code>
+     * <code>required bytes rpc_content = 2;</code>
+     */
+    public com.google.protobuf.ByteString getRpcContent() {
+      return rpcContent_;
+    }
+
+    public static final int EXPIRESAT_FIELD_NUMBER = 3;
+    private long expiresAt_;
+    /**
+     * <code>optional uint64 expiresAt = 3;</code>
+     */
+    public boolean hasExpiresAt() {
+      return ((bitField0_ & 0x00000004) == 0x00000004);
+    }
+    /**
+     * <code>optional uint64 expiresAt = 3;</code>
+     */
+    public long getExpiresAt() {
+      return expiresAt_;
+    }
+
+    public static final int SYSTEM_ID_FIELD_NUMBER = 4;
+    private java.lang.Object systemId_;
+    /**
+     * <code>optional string system_id = 4;</code>
+     */
+    public boolean hasSystemId() {
+      return ((bitField0_ & 0x00000008) == 0x00000008);
+    }
+    /**
+     * <code>optional string system_id = 4;</code>
      */
     public java.lang.String getSystemId() {
       java.lang.Object ref = systemId_;
@@ -253,7 +297,7 @@ public final class RpcMessageProtos {
       }
     }
     /**
-     * <code>optional string system_id = 2;</code>
+     * <code>optional string system_id = 4;</code>
      */
     public com.google.protobuf.ByteString
         getSystemIdBytes() {
@@ -269,25 +313,11 @@ public final class RpcMessageProtos {
       }
     }
 
-    public static final int RPC_CONTENT_FIELD_NUMBER = 3;
-    private com.google.protobuf.ByteString rpcContent_;
-    /**
-     * <code>required bytes rpc_content = 3;</code>
-     */
-    public boolean hasRpcContent() {
-      return ((bitField0_ & 0x00000004) == 0x00000004);
-    }
-    /**
-     * <code>required bytes rpc_content = 3;</code>
-     */
-    public com.google.protobuf.ByteString getRpcContent() {
-      return rpcContent_;
-    }
-
     private void initFields() {
       rpcId_ = "";
-      systemId_ = "";
       rpcContent_ = com.google.protobuf.ByteString.EMPTY;
+      expiresAt_ = 0L;
+      systemId_ = "";
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -314,10 +344,13 @@ public final class RpcMessageProtos {
         output.writeBytes(1, getRpcIdBytes());
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeBytes(2, getSystemIdBytes());
+        output.writeBytes(2, rpcContent_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeBytes(3, rpcContent_);
+        output.writeUInt64(3, expiresAt_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        output.writeBytes(4, getSystemIdBytes());
       }
       getUnknownFields().writeTo(output);
     }
@@ -334,11 +367,15 @@ public final class RpcMessageProtos {
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(2, getSystemIdBytes());
+          .computeBytesSize(2, rpcContent_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeBytesSize(3, rpcContent_);
+          .computeUInt64Size(3, expiresAt_);
+      }
+      if (((bitField0_ & 0x00000008) == 0x00000008)) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(4, getSystemIdBytes());
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -459,10 +496,12 @@ public final class RpcMessageProtos {
         super.clear();
         rpcId_ = "";
         bitField0_ = (bitField0_ & ~0x00000001);
-        systemId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         rpcContent_ = com.google.protobuf.ByteString.EMPTY;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        expiresAt_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000004);
+        systemId_ = "";
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -498,11 +537,15 @@ public final class RpcMessageProtos {
         if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
           to_bitField0_ |= 0x00000002;
         }
-        result.systemId_ = systemId_;
+        result.rpcContent_ = rpcContent_;
         if (((from_bitField0_ & 0x00000004) == 0x00000004)) {
           to_bitField0_ |= 0x00000004;
         }
-        result.rpcContent_ = rpcContent_;
+        result.expiresAt_ = expiresAt_;
+        if (((from_bitField0_ & 0x00000008) == 0x00000008)) {
+          to_bitField0_ |= 0x00000008;
+        }
+        result.systemId_ = systemId_;
         result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
@@ -524,13 +567,16 @@ public final class RpcMessageProtos {
           rpcId_ = other.rpcId_;
           onChanged();
         }
-        if (other.hasSystemId()) {
-          bitField0_ |= 0x00000002;
-          systemId_ = other.systemId_;
-          onChanged();
-        }
         if (other.hasRpcContent()) {
           setRpcContent(other.getRpcContent());
+        }
+        if (other.hasExpiresAt()) {
+          setExpiresAt(other.getExpiresAt());
+        }
+        if (other.hasSystemId()) {
+          bitField0_ |= 0x00000008;
+          systemId_ = other.systemId_;
+          onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -643,15 +689,82 @@ public final class RpcMessageProtos {
         return this;
       }
 
-      private java.lang.Object systemId_ = "";
+      private com.google.protobuf.ByteString rpcContent_ = com.google.protobuf.ByteString.EMPTY;
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>required bytes rpc_content = 2;</code>
        */
-      public boolean hasSystemId() {
+      public boolean hasRpcContent() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>required bytes rpc_content = 2;</code>
+       */
+      public com.google.protobuf.ByteString getRpcContent() {
+        return rpcContent_;
+      }
+      /**
+       * <code>required bytes rpc_content = 2;</code>
+       */
+      public Builder setRpcContent(com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  bitField0_ |= 0x00000002;
+        rpcContent_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>required bytes rpc_content = 2;</code>
+       */
+      public Builder clearRpcContent() {
+        bitField0_ = (bitField0_ & ~0x00000002);
+        rpcContent_ = getDefaultInstance().getRpcContent();
+        onChanged();
+        return this;
+      }
+
+      private long expiresAt_ ;
+      /**
+       * <code>optional uint64 expiresAt = 3;</code>
+       */
+      public boolean hasExpiresAt() {
+        return ((bitField0_ & 0x00000004) == 0x00000004);
+      }
+      /**
+       * <code>optional uint64 expiresAt = 3;</code>
+       */
+      public long getExpiresAt() {
+        return expiresAt_;
+      }
+      /**
+       * <code>optional uint64 expiresAt = 3;</code>
+       */
+      public Builder setExpiresAt(long value) {
+        bitField0_ |= 0x00000004;
+        expiresAt_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>optional uint64 expiresAt = 3;</code>
+       */
+      public Builder clearExpiresAt() {
+        bitField0_ = (bitField0_ & ~0x00000004);
+        expiresAt_ = 0L;
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object systemId_ = "";
+      /**
+       * <code>optional string system_id = 4;</code>
+       */
+      public boolean hasSystemId() {
+        return ((bitField0_ & 0x00000008) == 0x00000008);
+      }
+      /**
+       * <code>optional string system_id = 4;</code>
        */
       public java.lang.String getSystemId() {
         java.lang.Object ref = systemId_;
@@ -668,7 +781,7 @@ public final class RpcMessageProtos {
         }
       }
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>optional string system_id = 4;</code>
        */
       public com.google.protobuf.ByteString
           getSystemIdBytes() {
@@ -684,72 +797,37 @@ public final class RpcMessageProtos {
         }
       }
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>optional string system_id = 4;</code>
        */
       public Builder setSystemId(
           java.lang.String value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000008;
         systemId_ = value;
         onChanged();
         return this;
       }
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>optional string system_id = 4;</code>
        */
       public Builder clearSystemId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000008);
         systemId_ = getDefaultInstance().getSystemId();
         onChanged();
         return this;
       }
       /**
-       * <code>optional string system_id = 2;</code>
+       * <code>optional string system_id = 4;</code>
        */
       public Builder setSystemIdBytes(
           com.google.protobuf.ByteString value) {
         if (value == null) {
     throw new NullPointerException();
   }
-  bitField0_ |= 0x00000002;
+  bitField0_ |= 0x00000008;
         systemId_ = value;
-        onChanged();
-        return this;
-      }
-
-      private com.google.protobuf.ByteString rpcContent_ = com.google.protobuf.ByteString.EMPTY;
-      /**
-       * <code>required bytes rpc_content = 3;</code>
-       */
-      public boolean hasRpcContent() {
-        return ((bitField0_ & 0x00000004) == 0x00000004);
-      }
-      /**
-       * <code>required bytes rpc_content = 3;</code>
-       */
-      public com.google.protobuf.ByteString getRpcContent() {
-        return rpcContent_;
-      }
-      /**
-       * <code>required bytes rpc_content = 3;</code>
-       */
-      public Builder setRpcContent(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
-        rpcContent_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>required bytes rpc_content = 3;</code>
-       */
-      public Builder clearRpcContent() {
-        bitField0_ = (bitField0_ & ~0x00000004);
-        rpcContent_ = getDefaultInstance().getRpcContent();
         onChanged();
         return this;
       }
@@ -779,10 +857,10 @@ public final class RpcMessageProtos {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\trpc.proto\"D\n\nRpcMessage\022\016\n\006rpc_id\030\001 \002(" +
-      "\t\022\021\n\tsystem_id\030\002 \001(\t\022\023\n\013rpc_content\030\003 \002(" +
-      "\014B8\n$org.opennms.core.ipc.rpc.kafka.mode" +
-      "lB\020RpcMessageProtos"
+      "\n\trpc.proto\"W\n\nRpcMessage\022\016\n\006rpc_id\030\001 \002(" +
+      "\t\022\023\n\013rpc_content\030\002 \002(\014\022\021\n\texpiresAt\030\003 \001(" +
+      "\004\022\021\n\tsystem_id\030\004 \001(\tB8\n$org.opennms.core" +
+      ".ipc.rpc.kafka.modelB\020RpcMessageProtos"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -801,7 +879,7 @@ public final class RpcMessageProtos {
     internal_static_RpcMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_RpcMessage_descriptor,
-        new java.lang.String[] { "RpcId", "SystemId", "RpcContent", });
+        new java.lang.String[] { "RpcId", "RpcContent", "ExpiresAt", "SystemId", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)
