@@ -34,4 +34,8 @@ public interface ResponseCallback extends Delayed {
 
     public void sendResponse(String response);
 
+    public boolean isProcessed();
+
+    public String getRpcId();
+
 }

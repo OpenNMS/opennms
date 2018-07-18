@@ -107,7 +107,7 @@ public class KafkaRpcServerManager {
                 kafkaConfig.put(key, properties.get(key));
             }
         }
-        LOG.info("KafkaRpcServerManager: initializing the Kafka producer with: {}", kafkaConfig);
+        LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
         final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
             // Class-loader hack for accessing the org.apache.kafka.common.serialization.ByteArraySerializer
@@ -201,60 +201,63 @@ public class KafkaRpcServerManager {
                 while (!closed.get()) {
                     ConsumerRecords<String, byte[]> records = consumer.poll(Long.MAX_VALUE);
                     for (ConsumerRecord<String, byte[]> record : records) {  
-                        RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
-                        String rpcId = rpcMessage.getRpcId();
-                        long expirationTime = rpcMessage.getExpiresAt();
-                        if ( expirationTime < System.currentTimeMillis()) {
-                            LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
-                            continue;
-                        }
-                        boolean hasSystemId = rpcMessage.hasSystemId();
-                        String minionId = getMinionIdentity().getId(); 
-                        if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
-                            // directed RPC and not directed at this minion
-                            LOG.info("MinionIdentity {} doesn't match with systemId {}, ignore the request", minionId,
-                                    rpcMessage.getSystemId());
-                            continue;
-                        }
-                        if (hasSystemId) {
-                            // directed RPC, there may be more than one request with same request Id, cache and allow only one.
-                            Long cachedTime = rpcIdCache.getIfPresent(rpcId);
-                            if (cachedTime == null) {
-                                rpcIdCache.put(rpcId, System.currentTimeMillis());
-                            } else {
+                        try {
+                            RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
+                                                                          .parseFrom(record.value());
+                            String rpcId = rpcMessage.getRpcId();
+                            long expirationTime = rpcMessage.getExpiresAt();
+                            if (expirationTime < System.currentTimeMillis()) {
+                                LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
                                 continue;
                             }
+                            boolean hasSystemId = rpcMessage.hasSystemId();
+                            String minionId = getMinionIdentity().getId();
+                            if (hasSystemId && !(minionId.equals(rpcMessage.getSystemId()))) {
+                                // directed RPC and not directed at this minion
+                                LOG.debug("MinionIdentity {} doesn't match with systemId {}, ignore the request", minionId, rpcMessage.getSystemId());
+                                continue;
+                            }
+                            if (hasSystemId) {
+                                // directed RPC, there may be more than one request with same request Id, cache and allow only one.
+                                Long cachedTime = rpcIdCache.getIfPresent(rpcId);
+                                if (cachedTime == null) {
+                                    rpcIdCache.put(rpcId, System.currentTimeMillis());
+                                } else {
+                                    continue;
+                                }
+                            }
+                            RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
+                            CompletableFuture<RpcResponse> future = module.execute(request);
+                            future.whenComplete((res, ex) -> {
+                                final RpcResponse response;
+                                if (ex != null) {
+                                    // An exception occurred, store the exception in a new response
+                                    LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
+                                    response = module.createResponseWithException(ex);
+                                } else {
+                                    // No exception occurred, use the given response
+                                    response = res;
+                                }
+                                String responseAsString = null;
+                                try {
+                                    responseAsString = module.marshalResponse(response);
+                                    final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-response",
+                                            module.getId());
+                                    RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
+                                            .setRpcId(rpcId).setRpcContent(ByteString.copyFromUtf8(responseAsString))
+                                            .build();
+                                    final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
+                                            topicNameFactory.getName(), rpcResponse.toByteArray());
+                                    producer.send(producerRecord);
+                                    LOG.debug("request with id {} executed, sending response {} ", rpcId,
+                                            responseAsString);
+                                } catch (Throwable t) {
+                                    LOG.error("Marshalling response in RPC module {} failed.", module, t);
+                                }
+                            });
+                        } catch (InvalidProtocolBufferException e) {
+                             LOG.error("error while parsing the request", e);
                         }
-                        RpcRequest request = module.unmarshalRequest(rpcMessage.getRpcContent().toStringUtf8());
-                        CompletableFuture<RpcResponse> future = module.execute(request);
-                        future.whenComplete((res, ex) -> {
-                            final RpcResponse response;
-                            if (ex != null) {
-                                // An exception occurred, store the exception in a new response
-                                LOG.warn("An error occured while executing a call in {}.", module.getId(), ex);
-                                response = module.createResponseWithException(ex);
-                            } else {
-                                // No exception occurred, use the given response
-                                response = res;
-                            }
-                            String responseAsString = null;
-                            try {
-                                responseAsString = module.marshalResponse(response);
-                                final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-response",
-                                        module.getId());
-                                RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
-                                                                              .setRpcId(rpcId)
-                                                                              .setRpcContent(ByteString.copyFromUtf8(responseAsString))
-                                                                              .build();
-                                final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
-                                        topicNameFactory.getName(), rpcResponse.toByteArray());
-                                producer.send(producerRecord);
-                                LOG.debug("request {} executed, sending response {} ", request,
-                                        responseAsString);
-                            } catch (Throwable t) {
-                                LOG.error("Marshalling response in RPC module {} failed.", module, t);
-                            }
-                        });
                     }
                 }
             } catch (WakeupException e) {
@@ -262,12 +265,9 @@ public class KafkaRpcServerManager {
                 if (!closed.get()) {
                     throw e;
                 }
-            } catch (InvalidProtocolBufferException e) {
-                LOG.error(" Error while parsing request for module {}", module.getId(), e);
             } finally {
                 consumer.close();
             }
-
         }
 
     }

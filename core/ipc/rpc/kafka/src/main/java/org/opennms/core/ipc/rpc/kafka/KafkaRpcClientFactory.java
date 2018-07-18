@@ -61,6 +61,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.rpc.kafka.model.RpcMessageProtos;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.logging.Logging.MDCCloseable;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
 import org.opennms.core.rpc.api.RpcClient;
@@ -114,8 +115,9 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 long expirationTime = System.currentTimeMillis() + ttl;
                 // Create a future and add it to response handler which will complete the future when it receives callback.
                 final CompletableFuture<T> future = new CompletableFuture<>();
+                final Map<String, String> loggingContext = Logging.getCopyOfContextMap();
                 ResponseHandler<S, T> responseHandler = new ResponseHandler<S, T>(future, module, rpcId,
-                        expirationTime);
+                        expirationTime, loggingContext);
                 delayQueue.offer(responseHandler);
                 rpcResponseMap.put(rpcId, responseHandler);
                 kafkaConsumerRunner.startConsumingForModule(module.getId());
@@ -132,7 +134,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                     partitionInfo.stream().forEach(partition -> {
                         // Use rpc Id as key.
                         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
-                                partition.partition(), rpcMessage.getRpcId(), rpcMessage.toByteArray());
+                                partition.partition(), rpcId, rpcMessage.toByteArray());
                         producer.send(record);
                     });
                 } else {
@@ -143,10 +145,10 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                                                                 .build();
                     // Use rpc Id as key.
                     final ProducerRecord<String, byte[]> record = new ProducerRecord<>(requestTopic,
-                            rpcMessage.getRpcId(), rpcMessage.toByteArray());
+                            rpcId, rpcMessage.toByteArray());
                     producer.send(record);
                 }
-                LOG.debug("RPC Request {} sent to minion at location {}", request, request.getLocation());
+                LOG.debug("RPC Request {} with id {} sent to minion at location {}", request, rpcId, request.getLocation());
                 return future;
             }
         };
@@ -158,51 +160,61 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
     }
 
     public void start() {
-        // Set the defaults
-        kafkaConfig.clear();
-        kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
-        kafkaConfig.put("enable.auto.commit", "true");
-        kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
-        kafkaConfig.put("auto.commit.interval.ms", "1000");
-        kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
-        kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
-        kafkaConfig.put("auto.offset.reset", "earliest");
+        try (MDCCloseable mdc = Logging.withPrefixCloseable(RpcClientFactory.LOG_PREFIX)) {
+            // Set the defaults
+            kafkaConfig.clear();
+            kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
+            kafkaConfig.put("enable.auto.commit", "true");
+            kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
+            kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
+            kafkaConfig.put("auto.commit.interval.ms", "1000");
+            kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
+            kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
+            kafkaConfig.put("auto.offset.reset", "earliest");
 
-        // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config. 
-        // See https://kafka.apache.org/10/documentation.html#newconsumerconfigs for the list of supported properties
-        for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
-            final Object keyAsObject = entry.getKey();
-            if (keyAsObject == null || !(keyAsObject instanceof String)) {
-                continue;
-            }
-            final String key = (String) keyAsObject;
+            // Find all of the system properties that start with 'org.opennms.core.ipc.rpc.kafka.' and add them to the config.
+            // See https://kafka.apache.org/10/documentation.html#newconsumerconfigs for the list of supported properties
+            for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
+                final Object keyAsObject = entry.getKey();
+                if (keyAsObject == null || !(keyAsObject instanceof String)) {
+                    continue;
+                }
+                final String key = (String) keyAsObject;
 
-            if (key.length() > KAFKA_CONFIG_SYS_PROP_PREFIX.length() && key.startsWith(KAFKA_CONFIG_SYS_PROP_PREFIX)) {
-                final String kafkaConfigKey = key.substring(KAFKA_CONFIG_SYS_PROP_PREFIX.length());
-                kafkaConfig.put(kafkaConfigKey, entry.getValue());
-            }
-        }
-        producer = new KafkaProducer<>(kafkaConfig);
-        // Start consumer which handles all the responses.
-        KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
-        kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
-        executor.execute(kafkaConsumerRunner);
-        //Start a new thread which handles timeouts from delayQueue and calls response callback.
-        final ThreadFactory threadFactory = new ThreadFactoryBuilder().setNameFormat("rpc-client-timeout-tracker-%d")
-                .build();
-        Executors.newSingleThreadExecutor(threadFactory).execute(() -> {
-            while (true) {
-                try {
-                    ResponseCallback responseCb = delayQueue.take();
-                    responseCb.sendResponse(null);
-                } catch (InterruptedException e) {
-                    LOG.info("exited while waiting for an element from delayQueue {}", e);
-                } catch (Exception e) {
-                    LOG.warn("error while sending response from timeout handler {}", e);
+                if (key.length() > KAFKA_CONFIG_SYS_PROP_PREFIX.length()
+                        && key.startsWith(KAFKA_CONFIG_SYS_PROP_PREFIX)) {
+                    final String kafkaConfigKey = key.substring(KAFKA_CONFIG_SYS_PROP_PREFIX.length());
+                    kafkaConfig.put(kafkaConfigKey, entry.getValue());
                 }
             }
-        });
+            producer = new KafkaProducer<>(kafkaConfig);
+            LOG.info("initializing the Kafka producer with: {}", kafkaConfig);
+            // Start consumer which handles all the responses.
+            KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
+            kafkaConsumerRunner = new KafkaConsumerRunner(kafkaConsumer);
+            executor.execute(kafkaConsumerRunner);
+            LOG.info("started  kafka consumer with : {}", kafkaConfig);
+            // Start a new thread which handles timeouts from delayQueue and calls response callback.
+            final ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                                        .setNameFormat("rpc-client-timeout-tracker-%d")
+                                                        .build();
+            Executors.newSingleThreadExecutor(threadFactory).execute(() -> {
+                while (true) {
+                    try {
+                        ResponseCallback responseCb = delayQueue.take();
+                        if (!responseCb.isProcessed()) {
+                            LOG.info("RPC request with id {} timedout ", responseCb.getRpcId());
+                            responseCb.sendResponse(null);
+                        }
+                    } catch (InterruptedException e) {
+                        LOG.info("exited while waiting for an element from delayQueue {}", e);
+                    } catch (Exception e) {
+                        LOG.warn("error while sending response from timeout handler {}", e);
+                    }
+                }
+            });
+            LOG.info("started timeout tracker");
+        }
     }
 
     /** Handle Response from kafka consumer and timeout thread **/
@@ -212,30 +224,42 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         private final RpcModule<S, T> rpcModule;
         private final long expirationTime;
         private final String rpcId;
+        private Map<String, String> loggingContext;
+        private boolean isProcessed = false;
  
         public ResponseHandler(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
-                long timeout) {
+                long timeout, Map<String, String> loggingContext) {
             this.responseFuture = responseFuture;
             this.rpcModule = rpcModule;
             this.expirationTime = timeout;
             this.rpcId = rpcId;
+            this.loggingContext = loggingContext;
         }
 
         @Override
         public void sendResponse(String message) {
             T response = null;
-            // When message is not null, it's called from kafka consumer otherwise it is from timeout tracker.
-            if (message != null) {
-                response = rpcModule.unmarshalResponse(message);
-                if (response.getErrorMessage() != null) {
-                    responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+            // restore Logging context on callback.
+            try (MDCCloseable mdc = Logging.withContextMapCloseable(loggingContext)){
+                // When message is not null, it's called from kafka consumer otherwise it is from timeout tracker.
+                if (message != null) {
+                    response = rpcModule.unmarshalResponse(message);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Received RPC response {} for id {}", message, rpcId);
+                    }
+                    if (response.getErrorMessage() != null) {
+                        responseFuture.completeExceptionally(new RemoteExecutionException(response.getErrorMessage()));
+                    } else {
+                        responseFuture.complete(response);
+                    }
+                    isProcessed = true;
                 } else {
-                    responseFuture.complete(response);
+                    responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
                 }
-            } else {
-                responseFuture.completeExceptionally(new RequestTimedOutException(new TimeoutException()));
+                rpcResponseMap.remove(rpcId);
+            } catch (Exception e) {
+               LOG.warn("error while handling response for RPC request id {}", rpcId, e);
             }
-            rpcResponseMap.remove(rpcId);
         }
 
         @Override
@@ -253,6 +277,16 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
         public long getDelay(TimeUnit unit) {
             long now = System.currentTimeMillis();
             return unit.convert(expirationTime - now, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public boolean isProcessed() {
+            return isProcessed;
+        }
+
+        @Override
+        public String getRpcId() {
+            return rpcId;
         }
 
     }
@@ -300,9 +334,6 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                         rpcMessage = RpcMessageProtos.RpcMessage.parseFrom(record.value());
                         // Get Response callback from rpcId and send rpc content to callback.
                         ResponseCallback responseCb = rpcResponseMap.get(rpcMessage.getRpcId());
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Received response {}", rpcMessage.getRpcContent().toStringUtf8());
-                        }
                         if (responseCb != null) {
                             responseCb.sendResponse(rpcMessage.getRpcContent().toStringUtf8());
                         } else {
@@ -313,7 +344,7 @@ public class KafkaRpcClientFactory implements RpcClientFactory {
                 } catch (InvalidProtocolBufferException e) {
                     LOG.error("error while parsing response", e);
                 } catch (WakeupException e) {
-                    LOG.info(" consumer got wakeup exception, topicAdded = {} closed = {} ", topicAdded.get(), closed.get(), e);
+                    LOG.info(" consumer got wakeup exception, closed = {} ", closed.get(), e);
                 }
             }
             // Close consumer when while loop is closed.
