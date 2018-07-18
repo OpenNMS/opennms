@@ -26,21 +26,21 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.impl;
+package org.opennms.core.health.impl;
 
-import static org.opennms.distributed.core.health.Status.Failure;
-import static org.opennms.distributed.core.health.Status.Starting;
+import static org.opennms.core.health.api.Status.Failure;
+import static org.opennms.core.health.api.Status.Starting;
 
 import java.lang.management.ManagementFactory;
 import java.util.Objects;
 
 import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
-import org.opennms.distributed.core.health.Context;
-import org.opennms.distributed.core.health.Health;
-import org.opennms.distributed.core.health.HealthCheck;
-import org.opennms.distributed.core.health.Response;
-import org.opennms.distributed.core.health.Status;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.Health;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;

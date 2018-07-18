@@ -13,8 +13,8 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <service interface="org.opennms.distributed.core.health.HealthCheckService">
-        <bean class="org.opennms.distributed.core.health.impl.DefaultHealthCheckService" >
+    <service interface="org.opennms.core.health.api.HealthCheckService">
+        <bean class="org.opennms.core.health.impl.DefaultHealthCheckService" >
             <argument ref="blueprintBundleContext"/>
         </bean>
     </service>

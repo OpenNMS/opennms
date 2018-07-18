@@ -31,10 +31,10 @@ package org.opennms.netmgt.flows.elastic.healtcheck;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.opennms.distributed.core.health.Context;
-import org.opennms.distributed.core.health.HealthCheck;
-import org.opennms.distributed.core.health.Response;
-import org.opennms.distributed.core.health.Status;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 

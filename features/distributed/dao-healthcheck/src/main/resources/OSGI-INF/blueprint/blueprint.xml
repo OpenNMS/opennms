@@ -14,7 +14,7 @@
 ">
 
 
-    <service interface="org.opennms.distributed.core.health.HealthCheck">
+    <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class="org.opennms.features.distributed.dao.healthcheck.DaoHealthCheck" >
             <argument ref="blueprintBundleContext"/>
         </bean>

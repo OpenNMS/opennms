@@ -26,12 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health;
+package org.opennms.core.health.shell;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
+public final class Colorizer {
 
-public interface HealthCheckService {
+    private Colorizer() {}
 
-    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
+    private static final String FORMAT = "\033[%sm%s\033[%sm";
+
+    public static String colorize(String text, Color color) {
+        final String colorized = String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
+        return colorized;
+    }
 }

@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.shell;
+package org.opennms.core.health.shell;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -40,11 +40,11 @@ import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.distributed.core.health.Context;
-import org.opennms.distributed.core.health.Health;
-import org.opennms.distributed.core.health.HealthCheck;
-import org.opennms.distributed.core.health.HealthCheckService;
-import org.opennms.distributed.core.health.Status;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.Health;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.HealthCheckService;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;

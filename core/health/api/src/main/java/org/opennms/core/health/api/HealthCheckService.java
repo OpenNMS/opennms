@@ -26,11 +26,12 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health;
+package org.opennms.core.health.api;
 
-public interface HealthCheck {
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
-    String getDescription();
+public interface HealthCheckService {
 
-    Response perform(Context context) throws Exception;
+    CompletableFuture<Health> performAsyncHealthCheck(Context context, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer);
 }

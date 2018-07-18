@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health;
+package org.opennms.core.health.api;
 
 public class Response {
 

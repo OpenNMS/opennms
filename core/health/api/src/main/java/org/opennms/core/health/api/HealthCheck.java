@@ -26,22 +26,11 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.shell;
+package org.opennms.core.health.api;
 
-public enum Color {
-    NoColor("0"),
-    Red("0;31"),
-    Green("0;32"),
-    Yellow("1;33"),
-    Blue("0;34");
+public interface HealthCheck {
 
-    private final String ansiiCode;
+    String getDescription();
 
-    private Color(final String ansiiCode) {
-        this.ansiiCode = ansiiCode;
-    }
-
-    public String toAnsi() {
-        return ansiiCode;
-    }
+    Response perform(Context context) throws Exception;
 }

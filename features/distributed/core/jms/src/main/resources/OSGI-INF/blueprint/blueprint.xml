@@ -50,7 +50,7 @@
     </service>
 
     <!-- JMS HealthCheck -->
-    <service interface="org.opennms.distributed.core.health.HealthCheck">
+    <service interface="org.opennms.core.health.api.HealthCheck">
         <!-- TODO MVR should be distributed -->
         <bean class="org.opennms.distribute.jms.impl.JmsConnectionHealthCheck" >
             <argument ref="blueprintBundleContext"/>

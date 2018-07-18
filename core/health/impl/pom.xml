@@ -18,8 +18,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <!-- TODO MVR change package name -->
-                        <Export-Package>org.opennms.distributed.core.health.impl</Export-Package>
+                        <Export-Package>org.opennms.core.health.impl</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

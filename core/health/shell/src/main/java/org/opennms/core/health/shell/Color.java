@@ -26,16 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.shell;
+package org.opennms.core.health.shell;
 
-public final class Colorizer {
+public enum Color {
+    NoColor("0"),
+    Red("0;31"),
+    Green("0;32"),
+    Yellow("1;33"),
+    Blue("0;34");
 
-    private Colorizer() {}
+    private final String ansiiCode;
 
-    private static final String FORMAT = "\033[%sm%s\033[%sm";
+    private Color(final String ansiiCode) {
+        this.ansiiCode = ansiiCode;
+    }
 
-    public static String colorize(String text, Color color) {
-        final String colorized = String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
-        return colorized;
+    public String toAnsi() {
+        return ansiiCode;
     }
 }

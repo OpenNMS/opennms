@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.distributed.core.health.impl;
+package org.opennms.core.health.impl;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -41,12 +41,12 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import org.opennms.distributed.core.health.Context;
-import org.opennms.distributed.core.health.Health;
-import org.opennms.distributed.core.health.HealthCheck;
-import org.opennms.distributed.core.health.HealthCheckService;
-import org.opennms.distributed.core.health.Response;
-import org.opennms.distributed.core.health.Status;
+import org.opennms.core.health.api.Context;
+import org.opennms.core.health.api.Health;
+import org.opennms.core.health.api.HealthCheck;
+import org.opennms.core.health.api.HealthCheckService;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
