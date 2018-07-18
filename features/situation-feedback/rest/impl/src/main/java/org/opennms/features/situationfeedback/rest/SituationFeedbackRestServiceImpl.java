@@ -30,18 +30,23 @@ package org.opennms.features.situationfeedback.rest;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestService {
 
+    private final AlarmDao alarmDao;
+
     private final FeedbackRepository repository;
 
-    public SituationFeedbackRestServiceImpl(FeedbackRepository feedbackRepository) {
+    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, FeedbackRepository feedbackRepository) {
+        this.alarmDao = Objects.requireNonNull(alarmDao);
         this.repository = Objects.requireNonNull(feedbackRepository);
     }
 
@@ -53,12 +58,35 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
 
     @Override
     public void setFeedback(List<AlarmFeedback> feedback) {
-        // TODO update Situation in case of false_neg and false_pos
+        // Update Situation in case of false_neg and false_pos
+        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> removeCorrelation(c, alarmDao));
+        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> addCorrelation(c, alarmDao));
         try {
             repository.persist(feedback);
         } catch (FeedbackException e) {
             throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
         }
+    }
+
+    protected static void removeCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
+        OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
+        OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
+        if (situation == null || alarm == null) {
+            return;
+        }
+        situation.getRelatedAlarms().remove(alarm);
+        alarmDao.saveOrUpdate(situation);
+        // TODO - require any logging?
+    }
+
+    protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
+        OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
+        OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
+        if (situation == null || alarm == null) {
+            return;
+        }
+        situation.getRelatedAlarms().add(alarm);
+        alarmDao.saveOrUpdate(situation);
     }
 
 }

@@ -28,6 +28,9 @@
 
 package org.opennms.features.situationfeedback.api;
 
+/**
+ * Expresses Feedback on the Correlation of an Alarm.
+ */
 public interface AlarmFeedback {
 
     public enum FeedbackType {
@@ -35,5 +38,19 @@ public interface AlarmFeedback {
         FALSE_NEGATIVE, // Alarm was missing from this Situation
         CORRECT // Alarm is correctly correlated
     }
+
+    String getSituationKey();
+
+    String getSituationThumbprint();
+
+    String getAlarmKey();
+
+    FeedbackType getFeedbackType();
+
+    String getReason();
+
+    String getUser();
+
+    long getTimestamp();
 
 }

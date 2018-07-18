@@ -1,0 +1,27 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xsi:schemaLocation="
+                http://www.osgi.org/xmlns/blueprint/v1.0.0
+                https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+">
+
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+    <reference id="feedbackRepository" interface="org.opennms.features.situationfeedback.api.FeedbackRepository" availability="mandatory"/>
+
+    <bean id="situationFeedbackRestService" class="org.opennms.features.situationfeedback.rest.SituationFeedbackRestServiceImpl">
+        <argument ref="alarmDao" />
+        <argument ref="feedbackRepository" />
+    </bean>
+
+    <service interface="org.opennms.features.situationfeedback.rest.SituationFeedbackRestService" ref="situationFeedbackRestService" >
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+
+</blueprint>
+

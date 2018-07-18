@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.situation-feedback</groupId>
   <artifactId>org.opennms.features.situation-feedback.rest</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Features :: Situation-Feedback:: ReST</name>
+  <name>OpenNMS :: Features :: Situation-Feedback :: ReST</name>
   <modules>
     <module>api</module>
     <module>impl</module>
