@@ -57,6 +57,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
@@ -195,8 +196,14 @@ public class Provisioner implements SpringServiceDaemon {
         return m_importSchedule;
     }
 
+    public MonitoringSystemDao getMonitoringSystemDao() {
+        return monitoringSystemDao;
+    }
 
-	
+    public void setMonitoringSystemDao(MonitoringSystemDao monitoringSystemDao) {
+        this.monitoringSystemDao = monitoringSystemDao;
+    }
+
     /**
      * <p>start</p>
      *
@@ -611,28 +618,31 @@ public class Provisioner implements SpringServiceDaemon {
                     	return;
                     }
 
-                    final String location;
+                    String effectiveLocation = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
                     if (paramMap.containsKey("location")) {
-                        location = paramMap.get("location");
+                        effectiveLocation = paramMap.get("location");
                     } else if (event.getDistPoller() != null) {
-                        location = monitoringSystemDao.get(event.getDistPoller()).getLocation();
-                    } else {
-                        location = MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID;
+                        final OnmsMonitoringSystem monitoringSystem = monitoringSystemDao.get(event.getDistPoller());
+                        if (monitoringSystem != null) {
+                            effectiveLocation = monitoringSystem.getLocation();
+                        } else {
+                            LOG.info("newSuspect event references monitoring system with id {}, but this system was not found. Using the default location.",
+                                    event.getDistPoller());
+                        }
                     }
 
                     final String foreignSource = paramMap.get("foreignSource");
                     LOG.debug("Triggering new suspect scan for: {} at location: {} with foreign source: {}.",
-                            addr, location, foreignSource);
-                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, location);
+                            addr, effectiveLocation, foreignSource);
+                    final NewSuspectScan scan = createNewSuspectScan(addr, foreignSource, effectiveLocation);
                     Task t = scan.createTask();
                     t.schedule();
                     t.waitFor();
                 } catch (InterruptedException ex) {
-                    LOG.error("Task interrupted waiting for new suspect scan of {} to finish", ip, ex);
-                } catch (ExecutionException ex) {
-                    LOG.error("An expected execution occurred waiting for new suspect scan of {} to finish", ip, ex);
+                    LOG.error("Task interrupted waiting for new suspect scan of {} at location {} to finish", ip, ex);
+                } catch (Exception ex) {
+                    LOG.error("An unexpected execution occurred waiting for new suspect scan of {} to finish", ip, ex);
                 }
-                
             }
         };
 
