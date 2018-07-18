@@ -63,10 +63,12 @@ import javax.net.ssl.X509TrustManager;
 
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.VmwareConfigDao;
+
 import org.sblim.wbem.cim.CIMException;
 import org.sblim.wbem.cim.CIMNameSpace;
 import org.sblim.wbem.cim.CIMObject;
@@ -76,6 +78,7 @@ import org.sblim.wbem.cim.CIMValue;
 import org.sblim.wbem.client.CIMClient;
 import org.sblim.wbem.client.PasswordCredential;
 import org.sblim.wbem.client.UserPrincipal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -100,7 +103,9 @@ import com.vmware.vim25.mo.ServerConnection;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 import com.vmware.vim25.mo.util.MorUtil;
-import com.vmware.vim25.ws.Client;
+import com.vmware.vim25.ws.WSClient;
+//Fix for NMS-8204: import ConcurrentHashMap
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Class VmwareViJavaAccess
@@ -134,6 +139,9 @@ public class VmwareViJavaAccess {
     private Map<HostSystem, HostServiceTicket> m_hostServiceTickets = new HashMap<HostSystem, HostServiceTicket>();
 
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
+
+    //Fix for NMS-8204: Singleton of ServerConnection
+    private static Map<String, String> m_userSessions = new ConcurrentHashMap<String, String>();
 
     /**
      * Constructor for creating a instance for a given server and credentials.
@@ -202,7 +210,26 @@ public class VmwareViJavaAccess {
     public void connect() throws MalformedURLException, RemoteException {
         relax();
 
-        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+	//Fix for NMS-8204: use singleton of serverConnection, also make method synchronized
+	String connectionString = new String(m_hostname + m_username + m_password);
+	if(m_userSessions.get(connectionString) == null)
+	{
+	        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+		m_userSessions.put(connectionString, m_serviceInstance.getServerConnection().getSessionStr());
+	}
+	else
+	{
+		//try to use an exisiting user session
+		m_serviceInstance =  new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), 
+								m_userSessions.get(connectionString), 
+								true);
+		//if the session is not valid, create a new user session
+		if(m_serviceInstance.getSessionManager().getCurrentSession() == null)
+		{
+	      	 	m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+			m_userSessions.put(connectionString, m_serviceInstance.getServerConnection().getSessionStr());
+		}
+	}
     }
 
     /**
@@ -217,10 +244,10 @@ public class VmwareViJavaAccess {
             if (serverConnection != null) {
                 VimPortType vimService = serverConnection.getVimService();
                 if (vimService != null) {
-                    Client client = vimService.getWsc();
-                    if (client != null) {
-                        client.setConnectTimeout(timeout);
-                        client.setReadTimeout(timeout);
+                    WSClient wsClient = vimService.getWsc();
+                    if (wsClient != null) {
+                        wsClient.setConnectTimeout(timeout);
+                        wsClient.setReadTimeout(timeout);
                         return true;
                     }
                 }
@@ -233,19 +260,22 @@ public class VmwareViJavaAccess {
      * Disconnects from the server.
      */
     public void disconnect() {
-        if (m_serviceInstance == null) {
-            // not connected
-            return;
-        } else {
-            ServerConnection serverConnection = m_serviceInstance.getServerConnection();
+	//Fix for NMS-8204: Doing nothing here
+	return;
 
-            if (serverConnection == null) {
+        //if (m_serviceInstance == null) {
+            // not connected
+        //    return;
+        //} else {
+        //    ServerConnection serverConnection = m_serviceInstance.getServerConnection();
+
+        //    if (serverConnection == null) {
                 // not connected
-                return;
-            } else {
-                m_serviceInstance.getServerConnection().logout();
-            }
-        }
+        //        return;
+        //    } else {
+        //        m_serviceInstance.getServerConnection().logout();
+        //    }
+        //}
     }
 
     /**
@@ -470,14 +500,16 @@ public class VmwareViJavaAccess {
         CIMNameSpace ns = new CIMNameSpace(cimAgentAddress, namespace);
         CIMClient cimClient = new CIMClient(ns, userPr, pwCred);
 
-        cimClient.getSessionProperties().setHttpTimeOut(3000);
-
         // very important to query esx5 hosts
         cimClient.useMPost(false);
+
         CIMObjectPath rpCOP = new CIMObjectPath(cimClass);
+
         Enumeration<?> rpEnm = cimClient.enumerateInstances(rpCOP);
+
         while (rpEnm.hasMoreElements()) {
             CIMObject rp = (CIMObject) rpEnm.nextElement();
+
             cimObjects.add(rp);
         }
 
@@ -504,10 +536,11 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the primary ip address
+     * @throws RemoteException
      */
     // TODO We should use the IP of the "Management Network" (i.e. the port that has enabled "Management Traffic" on the available vSwitches).
     //      Resolving the name of the HostSystem as the FQDN is the most closest thing for that.
-    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) {
+    public String getPrimaryHostSystemIpAddress(HostSystem hostSystem) throws RemoteException {
         TreeSet<String> addresses = getHostSystemIpAddresses(hostSystem);
         String ipAddress = null;
         try {
@@ -526,18 +559,12 @@ public class VmwareViJavaAccess {
      *
      * @param hostSystem the host system to query
      * @return the ip addresses of the host system, the first one is the primary
+     * @throws RemoteException
      */
-    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) {
+    public TreeSet<String> getHostSystemIpAddresses(HostSystem hostSystem) throws RemoteException {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
-        HostNetworkSystem hostNetworkSystem = null;
-        try {
-            hostNetworkSystem = hostSystem.getHostNetworkSystem();
-        } catch (RemoteException e) {
-            logger.warn("Error fetching network information for Host System '{}' (ID: {})", hostSystem.getName(), hostSystem.getMOR().getVal());
-            logger.warn("Exception thrown while fetching network information: {}", e);
-            return ipAddresses;
-        }
+        HostNetworkSystem hostNetworkSystem = hostSystem.getHostNetworkSystem();
 
         if (hostNetworkSystem != null) {
             HostNetworkInfo hostNetworkInfo = hostNetworkSystem.getNetworkInfo();
@@ -564,14 +591,14 @@ public class VmwareViJavaAccess {
      *
      * @param virtualMachine the virtual machine to query
      * @return the ip addresses of the virtual machine, the first one is the primary
+     * @throws RemoteException
      */
-    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) {
+    public TreeSet<String> getVirtualMachineIpAddresses(VirtualMachine virtualMachine) throws RemoteException {
         TreeSet<String> ipAddresses = new TreeSet<String>();
 
         // add the Ip address reported by VMware tools, this should be primary
-        if (virtualMachine.getGuest().getIpAddress() != null) {
+        if (virtualMachine.getGuest().getIpAddress() != null)
             ipAddresses.add(virtualMachine.getGuest().getIpAddress());
-        }
 
         // if possible, iterate over all virtual networks networks and add interface Ip addresses
         if (virtualMachine.getGuest().getNet() != null) {
@@ -657,3 +684,4 @@ public class VmwareViJavaAccess {
         }
     }
 }
+
