@@ -104,6 +104,8 @@ import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.VirtualMachine;
 import com.vmware.vim25.mo.util.MorUtil;
 import com.vmware.vim25.ws.WSClient;
+//Fix for NMS-8204: import ConcurrentHashMap
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The Class VmwareViJavaAccess
@@ -139,7 +141,7 @@ public class VmwareViJavaAccess {
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
 
     //Fix for NMS-8204: Singleton of ServerConnection
-    private static Map<Integer, String> m_userSessions = new HashMap<Integer, String>();
+    private static Map<String, String> m_userSessions = new ConcurrentHashMap<String, String>();
 
     /**
      * Constructor for creating a instance for a given server and credentials.
@@ -209,26 +211,23 @@ public class VmwareViJavaAccess {
         relax();
 
 	//Fix for NMS-8204: use singleton of serverConnection, also make method synchronized
-	synchronized(m_userSessions)
+	String connectionString = new String(m_hostname + m_username + m_password);
+	if(m_userSessions.get(connectionString) == null)
 	{
-		int connectionHash = new String(m_hostname + m_username + m_password).hashCode();
-		if(m_userSessions.get(connectionHash) == null)
+	        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+		m_userSessions.put(connectionString, m_serviceInstance.getServerConnection().getSessionStr());
+	}
+	else
+	{
+		//try to use an exisiting user session
+		m_serviceInstance =  new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), 
+								m_userSessions.get(connectionString), 
+								true);
+		//if the session is not valid, create a new user session
+		if(m_serviceInstance.getSessionManager().getCurrentSession() == null)
 		{
-	        	m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
-			m_userSessions.put(connectionHash, m_serviceInstance.getServerConnection().getSessionStr());
-		}
-		else
-		{
-			//try to use an exisiting user session
-			m_serviceInstance =  new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), 
-									m_userSessions.get(connectionHash), 
-									true);
-			//if the session is not valid, create a new user session
-			if(m_serviceInstance.getSessionManager().getCurrentSession() == null)
-			{
-	       	 		m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
-				m_userSessions.put(connectionHash, m_serviceInstance.getServerConnection().getSessionStr());
-			}
+	      	 	m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+			m_userSessions.put(connectionString, m_serviceInstance.getServerConnection().getSessionStr());
 		}
 	}
     }
