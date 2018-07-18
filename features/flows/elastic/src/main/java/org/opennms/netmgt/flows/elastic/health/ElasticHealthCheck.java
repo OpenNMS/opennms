@@ -35,8 +35,8 @@ import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+
+import com.google.common.base.Strings;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestResult;
@@ -51,10 +51,10 @@ import io.searchbox.core.Ping;
  */
 public class ElasticHealthCheck implements HealthCheck {
 
-    private BundleContext bundleContext;
+    private final JestClient client;
 
-    public ElasticHealthCheck(BundleContext bundleContext) {
-        this.bundleContext = Objects.requireNonNull(bundleContext);
+    public ElasticHealthCheck(JestClient jestClient) {
+        this.client = Objects.requireNonNull(jestClient);
     }
 
     @Override
@@ -64,22 +64,16 @@ public class ElasticHealthCheck implements HealthCheck {
 
     @Override
     public Response perform(Context context) {
-        final ServiceReference<JestClient> serviceReference = bundleContext.getServiceReference(JestClient.class);
-        if (serviceReference != null) {
-                final JestClient client = bundleContext.getService(serviceReference);
-                final Ping ping = new Ping.Builder().build();
-            try {
-                final JestResult result = client.execute(ping);
-                if (result.isSucceeded() && result.getErrorMessage() != null) {
-                    return new Response(Status.Success);
-                } else {
-                    return new Response(Status.Failure, result.getErrorMessage() != null ? result.getErrorMessage() : "");
-                }
-            } catch (IOException e) {
-                return new Response(e);
+        final Ping ping = new Ping.Builder().build();
+        try {
+            final JestResult result = client.execute(ping);
+            if (result.isSucceeded() && Strings.isNullOrEmpty(result.getErrorMessage())) {
+                return new Response(Status.Success);
+            } else {
+                return new Response(Status.Failure, Strings.isNullOrEmpty(result.getErrorMessage()) ? null : result.getErrorMessage());
             }
-        } else {
-            return new Response(Status.Failure, "No service of type " + JestClient.class.getName() + " available");
+        } catch (IOException e) {
+            return new Response(e);
         }
     }
 }
