@@ -54,7 +54,6 @@ import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider.LinkDetail;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -65,6 +64,52 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
+
+    abstract class LinkDetail<K, L> {
+        private final String m_id;
+        private final Vertex m_source;
+        private final K m_sourceLink;
+        private final Vertex m_target;
+        private final L m_targetLink;
+
+        public LinkDetail(String id, Vertex source, K sourceLink, Vertex target, L targetLink){
+            m_id = id;
+            m_source = source;
+            m_sourceLink = sourceLink;
+            m_target = target;
+            m_targetLink = targetLink;
+        }
+
+        public abstract int hashCode();
+
+        public abstract boolean equals(Object obj);
+
+        public abstract Integer getSourceIfIndex();
+
+        public abstract Integer getTargetIfIndex();
+
+        public abstract String getType();
+
+        public String getId() {
+            return m_id;
+        }
+
+        public Vertex getSource() {
+            return m_source;
+        }
+
+        public Vertex getTarget() {
+            return m_target;
+        }
+
+        public K getSourceLink() {
+            return m_sourceLink;
+        }
+
+        public L getTargetLink() {
+            return m_targetLink;
+        }
+    }
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
@@ -91,17 +136,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         m_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
         m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
     }
-
-    static final String[] OPER_ADMIN_STATUS = new String[] {
-       "&nbsp;",          //0 (not supported)
-       "Up",              //1
-       "Down",            //2
-       "Testing",         //3
-       "Unknown",         //4
-       "Dormant",         //5
-       "NotPresent",      //6
-       "LowerLayerDown"   //7
-     };
 
     private final boolean m_aclEnabled;
 
@@ -196,14 +230,14 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
                                                                 primary.isManaged(),
                                                                 sourceNode.getSysLocation(),
                                                                 sourceNode.getType())
-);
+        );
         return vertex;
     }
 
-    public static String getEdgeTooltipText(BridgeMacLink sourcelink,
+    public static String getEdgeTooltipText(BridgePort sourcelink,
             Vertex source, Vertex target,
             List<OnmsIpInterface> targetInterfaces,
-            Map<Integer, List<OnmsSnmpInterface>> snmpmap) {
+            Map<Integer, List<OnmsSnmpInterface>> snmpmap, String mac) {
         final StringBuilder tooltipText = new StringBuilder();
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append("Bridge Layer2");
@@ -223,7 +257,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
         tooltipText.append(target.getLabel());
         tooltipText.append("(");
-        tooltipText.append(sourcelink.getMacAddress());
+        tooltipText.append(mac);
         tooltipText.append(")");
         tooltipText.append("(");
         if (targetInterfaces.size() == 1) {
@@ -301,7 +335,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return tooltipText.toString();
     }
 
-    public static String getEdgeTooltipText(LinkDetail<?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+    public static String getEdgeTooltipText(LinkDetail<?,?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
 
         final StringBuilder tooltipText = new StringBuilder();
         Vertex source = linkDetail.getSource();
@@ -546,7 +580,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return edge;
     }
     
-    protected final LinkdEdge connectVertices(LinkDetail<?> linkdetail, String nameSpace) {
+    protected final LinkdEdge connectVertices(LinkDetail<?,?> linkdetail, String nameSpace) {
         SimpleConnector source = new SimpleConnector(linkdetail.getSource().getNamespace(), linkdetail.getSource().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getSource());
         SimpleConnector target = new SimpleConnector(linkdetail.getTarget().getNamespace(), linkdetail.getTarget().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getTarget());
 
@@ -570,146 +604,4 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return edge;
     }
 
-    private interface LinkState {
-        void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface);
-        String getLinkStatus();
-    }
-
-    protected class LinkStateMachine {
-        LinkState m_upState;
-        LinkState m_downState;
-        LinkState m_unknownState;
-        LinkState m_state;
-
-        public LinkStateMachine() {
-            m_upState = new AbstractLinkdTopologyProvider.LinkUpState(this);
-            m_downState = new AbstractLinkdTopologyProvider.LinkDownState(this);
-            m_unknownState = new AbstractLinkdTopologyProvider.LinkUnknownState(this);
-            m_state = m_upState;
-        }
-
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            m_state.setParentInterfaces(sourceInterface, targetInterface);
-        }
-
-        public String getLinkStatus() {
-            return m_state.getLinkStatus();
-        }
-
-        public LinkState getUpState() {
-            return m_upState;
-        }
-
-        public LinkState getDownState() {
-            return m_downState;
-        }
-
-        public LinkState getUnknownState() {
-            return m_unknownState;
-        }
-
-        public void setState(LinkState state) {
-            m_state = state;
-        }
-    }
-
-    private abstract class AbstractLinkState implements LinkState {
-
-        private LinkStateMachine m_linkStateMachine;
-
-        public AbstractLinkState(LinkStateMachine linkStateMachine) {
-            m_linkStateMachine = linkStateMachine;
-        }
-
-        protected LinkStateMachine getLinkStateMachine() {
-            return m_linkStateMachine;
-        }
-    }
-
-    private class LinkUpState extends AbstractLinkState {
-
-        public LinkUpState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(sourceInterface != null && sourceInterface.getIfOperStatus() != null) {
-                if(sourceInterface.getIfOperStatus() != 1) {
-                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                }
-            }
-
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(targetInterface.getIfOperStatus() != 1) {
-                    getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                }
-            }
-
-            if(sourceInterface == null && targetInterface == null) {
-                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
-            }
-
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[1];
-        }
-
-    }
-
-    private class LinkDownState extends AbstractLinkState {
-
-        public LinkDownState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(sourceInterface != null) {
-                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
-                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
-                    }
-                }
-            } else if(sourceInterface == null) {
-                getLinkStateMachine().setState( getLinkStateMachine().getUnknownState() );
-            }
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[2];
-        }
-
-    }
-
-    private class LinkUnknownState extends AbstractLinkState{
-
-        public LinkUnknownState(LinkStateMachine linkStateMachine) {
-            super(linkStateMachine);
-        }
-
-
-        @Override
-        public void setParentInterfaces(OnmsSnmpInterface sourceInterface, OnmsSnmpInterface targetInterface) {
-            if(targetInterface != null && targetInterface.getIfOperStatus() != null) {
-                if(sourceInterface != null) {
-                    if(sourceInterface.getIfOperStatus() == 1 && targetInterface.getIfOperStatus() == 1) {
-                        getLinkStateMachine().setState( getLinkStateMachine().getUpState() );
-                    } else {
-                        getLinkStateMachine().setState( getLinkStateMachine().getDownState() );
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        public String getLinkStatus() {
-            return OPER_ADMIN_STATUS[4];
-        }
-
-    }
 }
