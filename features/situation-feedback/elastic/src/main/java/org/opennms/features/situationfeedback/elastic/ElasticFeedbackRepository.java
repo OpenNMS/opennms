@@ -28,8 +28,6 @@
 package org.opennms.features.situationfeedback.elastic;
 
 import java.util.Collection;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
