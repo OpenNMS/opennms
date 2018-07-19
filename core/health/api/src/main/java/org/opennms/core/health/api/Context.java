@@ -30,7 +30,7 @@ package org.opennms.core.health.api;
 
 /**
  * A Context object to store all parameters required by the {@link HealthCheckService}
- * to calculate the overall {@@ink Health}.
+ * to calculate the overall {@link Health}.
  *
  * @author mvrueden
  */

@@ -8,7 +8,6 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core</groupId>
-    <!-- TOOD MVR change references from core-health to org.opennms.core/org.opennms.core.health -->
     <artifactId>org.opennms.core.health</artifactId>
     <packaging>pom</packaging>
     <name>OpenNMS :: Core :: Health (Parent)</name>

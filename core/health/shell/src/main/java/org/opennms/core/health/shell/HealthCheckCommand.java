@@ -53,7 +53,7 @@ import org.osgi.framework.ServiceReference;
 @Service
 public class HealthCheckCommand implements Action {
 
-    private static final String DESC_FORMAT = "%%-%ds   ";
+    private static final String DESCRIPTION_FORMAT = "%%-%ds   ";
     private static final String STATUS_FORMAT = "[ %%-%ds ]";
 
     @Option(name = "-t", description = "Maximum number of milliseconds to wait before failing when waiting for a check to complete (e.g. try to establish a JMS session.")
@@ -97,7 +97,7 @@ public class HealthCheckCommand implements Action {
         final int maxColorLength = Arrays.stream(Color.values()).map(c -> c.toAnsi()).max(Comparator.comparingInt(String::length)).get().length();
         final int maxDescriptionLength = healthChecks.stream().map(check -> check.getDescription()).max(Comparator.comparingInt(String::length)).orElse("").length();
         final int maxStatusLength = Arrays.stream(Status.values()).map(v -> v.name()).max(Comparator.comparingInt(String::length)).get().length() + maxColorLength + "\033[m".length() * 2 + Color.NoColor.toAnsi().length();
-        final String descFormat = String.format(DESC_FORMAT, maxDescriptionLength);
+        final String descFormat = String.format(DESCRIPTION_FORMAT, maxDescriptionLength);
         final String statusFormat = String.format(STATUS_FORMAT, maxStatusLength);
 
         // Run Health Checks
