@@ -87,7 +87,7 @@ public class JmsConnectionHealthCheck implements HealthCheck {
                     return new Response(Status.Success);
                 }
             } catch (Exception ex) {
-                return new Response(Status.Failure, "Failed to create a JMS session." + ex.getMessage(), ex);
+                return new Response(Status.Failure, "Failed to create a JMS session." + ex.getMessage());
             } finally {
                 bundleContext.ungetService(connectionFactoryRef);
             }

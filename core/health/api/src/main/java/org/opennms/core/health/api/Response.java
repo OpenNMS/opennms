@@ -39,25 +39,17 @@ public class Response {
     // An optional (error) message
     private final String message;
 
-    // TODO MVR remove unused variable
-    private final Exception ex;
-
     public Response(Status status) {
-        this(status, null, null);
-    }
-
-    public Response(Status status, String message) {
-        this(status, message, null);
+        this(status, null);
     }
 
     public Response(Exception ex) {
-        this(Status.Failure, ex.getMessage(), ex);
+        this(Status.Failure, ex.getMessage());
     }
 
-    public Response(Status status, String message, Exception ex) {
+    public Response(Status status, String message) {
         this.status = status;
         this.message = message;
-        this.ex = ex;
     }
 
     public boolean isSuccess() {
