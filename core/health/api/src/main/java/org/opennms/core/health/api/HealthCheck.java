@@ -55,11 +55,9 @@ public interface HealthCheck {
      * The response indicates if the check was successful, or encountered other problems. If null is returned,
      * the {@link HealthCheckService} should consider this as {@link Status#Unknown}.
      *
-     * @param context The context
      * @return The response indicating the Success/Failure/Timeout/etc of the check
      * @throws Exception In case of an error
      * @see HealthCheckService
      */
-    // TODO MVR remove context here, as it is not needed for now
-    Response perform(Context context) throws Exception;
+    Response perform() throws Exception;
 }

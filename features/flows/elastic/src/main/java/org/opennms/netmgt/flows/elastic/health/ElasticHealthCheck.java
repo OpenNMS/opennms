@@ -31,7 +31,6 @@ package org.opennms.netmgt.flows.elastic.health;
 import java.io.IOException;
 import java.util.Objects;
 
-import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
@@ -49,7 +48,7 @@ import io.searchbox.core.Ping;
  * In order to not configure the client for the health check module as well, this healthcheck is
  * only validating if ElasticSearch from the view of the flows/elastic bundle is working.
  *
- * @author mvrueden 
+ * @author mvrueden
  */
 public class ElasticHealthCheck implements HealthCheck {
 
@@ -65,7 +64,7 @@ public class ElasticHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform(Context context) {
+    public Response perform() {
         final Ping ping = new Ping.Builder().build();
         try {
             final JestResult result = client.execute(ping);

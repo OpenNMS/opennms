@@ -36,7 +36,6 @@ import java.util.Objects;
 
 import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
-import org.opennms.core.health.api.Context;
 import org.opennms.core.health.api.Health;
 import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
@@ -72,7 +71,7 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
     }
 
     @Override
-    public Response perform(Context context) throws Exception {
+    public Response perform() {
         // Don't check within this delay period, because the container may not be started yet
         if (ManagementFactory.getRuntimeMXBean().getUptime() <= 10000) {
             return new Response(Starting, "Container is in spin up phase");
