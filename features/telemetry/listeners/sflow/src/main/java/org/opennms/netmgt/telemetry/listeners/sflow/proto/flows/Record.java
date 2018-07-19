@@ -60,15 +60,15 @@ public abstract class Record<T> {
         private final int enterpriseNumber;
         private final int formatNumber;
 
-        private DataFormat(final int enterpriseNumber, final int formatNumber) {
+        protected DataFormat(final int enterpriseNumber, final int formatNumber) {
             this.enterpriseNumber = enterpriseNumber;
             this.formatNumber = formatNumber;
         }
 
         public DataFormat(final ByteBuffer buffer) throws InvalidPacketException {
             final int dataFormat = (int) BufferUtils.uint32(buffer);
-            this.enterpriseNumber = (dataFormat >> 12 & (2 << 20) - 1);
-            this.formatNumber = (dataFormat & (2 << 12) - 1);
+            this.enterpriseNumber = (dataFormat >> 12 & 0x000FFFFF);
+            this.formatNumber = (dataFormat & 0xFFF);
         }
 
         @Override
@@ -103,6 +103,11 @@ public abstract class Record<T> {
 
         public String toId() {
             return String.format("%s:%s", this.enterpriseNumber, this.formatNumber);
+        }
+
+        protected byte[] toBytes() {
+            int dataFormat = (enterpriseNumber << 12) | (formatNumber & 0xFFF);
+            return ByteBuffer.allocate(4).putInt(0, dataFormat).array();
         }
     }
 

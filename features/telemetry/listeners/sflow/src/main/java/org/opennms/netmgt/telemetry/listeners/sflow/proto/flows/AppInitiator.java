@@ -55,6 +55,8 @@ public class AppInitiator implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
+        bsonWriter.writeStartDocument();
         this.actor.writeBson(bsonWriter);
+        bsonWriter.writeEndDocument();
     }
 }
