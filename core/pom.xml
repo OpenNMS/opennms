@@ -32,7 +32,6 @@
     <module>daemon</module>
     <module>db</module>
     <module>db-install</module>
-    <module>doc</module>
     <module>icmp-jna</module>
     <module>ipc</module>
     <module>jmx</module>
