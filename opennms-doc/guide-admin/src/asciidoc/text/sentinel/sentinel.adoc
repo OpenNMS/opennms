@@ -49,6 +49,14 @@ Therefore at least the following configurations are necessary:
  - Configure the communication layer (for now either JMS or Kafka)
  - Install features
 
+===== Health Check / Troubleshooting
+
+The `health:check` command allows to verify the health of the _Sentinel_ container.
+It performs various health checks depending on the installed features to calculate the overall container health.
+For more information please try `health:check --help`.
+
+NOTE: This is also available in _Minion_ Containers and will replace the now deprecated command `minion:ping`.
+
 ===== Configure the datasource
 
 ```
