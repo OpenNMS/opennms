@@ -94,4 +94,8 @@ public class AlarmFeedbackDTO implements AlarmFeedback {
         return timestamp;
     }
 
+    @Override 
+    public String toString() {
+        return "Feedback[" + getFeedbackType() + ":" + getSituationKey() + ":" + getAlarmKey() + ":" + getReason() + "]";
+    }
 }

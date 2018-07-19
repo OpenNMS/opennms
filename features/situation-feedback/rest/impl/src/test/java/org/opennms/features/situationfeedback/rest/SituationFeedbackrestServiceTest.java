@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -50,17 +49,21 @@ import org.opennms.features.situationfeedback.rest.model.AlarmFeedbackDTO;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath*:/META-INF/opennms/component-dao.xml"
+        "classpath*:/META-INF/opennms/component-dao.xml", "classpath:/META-INF/opennms/mockEventIpcManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"
 })
+@JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
 public class SituationFeedbackrestServiceTest {
 
@@ -85,12 +88,14 @@ public class SituationFeedbackrestServiceTest {
         linkDownAlarmOnR1.setDistPoller(distPollerDao.whoami());
         linkDownAlarmOnR1.setCounter(1);
         linkDownAlarmOnR1.setUei("linkDown");
+        linkDownAlarmOnR1.setReductionKey("linkDownAlarmOnR1");
 
         // Create second alarm
         linkDownAlarmOnR2 = new OnmsAlarm();
         linkDownAlarmOnR2.setDistPoller(distPollerDao.whoami());
         linkDownAlarmOnR2.setCounter(1);
         linkDownAlarmOnR2.setUei("linkDown");
+        linkDownAlarmOnR2.setReductionKey("linkDownAlarmOnR2");
 
         alarmDao.save(linkDownAlarmOnR1);
         alarmDao.save(linkDownAlarmOnR2);
@@ -106,8 +111,8 @@ public class SituationFeedbackrestServiceTest {
         alarmDao.saveOrUpdate(situation);
     }
 
-    @Ignore // FIXME
     @Test
+    @Transactional
     public void testRemoveAlarmWithFeedback() {
         SituationFeedbackRestServiceImpl sut = new SituationFeedbackRestServiceImpl(alarmDao, mockFeebackRepository);
         AlarmFeedback falsePositive = new AlarmFeedbackDTO(situation.getReductionKey(), "meh", linkDownAlarmOnR1.getReductionKey(), FeedbackType.FALSE_POSITVE,

@@ -59,8 +59,8 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     @Override
     public void setFeedback(List<AlarmFeedback> feedback) {
         // Update Situation in case of false_neg and false_pos
-        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> removeCorrelation(c, alarmDao));
-        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> addCorrelation(c, alarmDao));
+        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao));
+        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao));
         try {
             repository.persist(feedback);
         } catch (FeedbackException e) {
@@ -77,6 +77,8 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         situation.getRelatedAlarms().remove(alarm);
         alarmDao.saveOrUpdate(situation);
         // TODO - require any logging?
+
+        // FIXME - must update AlarmChangeNotifier
     }
 
     protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {

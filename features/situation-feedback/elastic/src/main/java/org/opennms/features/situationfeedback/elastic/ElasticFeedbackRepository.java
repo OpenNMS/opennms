@@ -28,6 +28,7 @@
 package org.opennms.features.situationfeedback.elastic;
 
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.FeedbackException;
@@ -35,10 +36,16 @@ import org.opennms.features.situationfeedback.api.FeedbackRepository;
 
 public class ElasticFeedbackRepository implements FeedbackRepository {
 
+    private final ElasticFeedbackRepositoryInitializer initializer;
+
+    public ElasticFeedbackRepository(ElasticFeedbackRepositoryInitializer initializer) {
+        this.initializer = initializer;
+    }
+
     @Override
     public void persist(Collection<AlarmFeedback> feedback) throws FeedbackException {
-        // TODO Auto-generated method stub
-
+        ensureInitialized();
+        // TODO - persist
     }
 
     @Override
@@ -59,4 +66,9 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         return null;
     }
 
+    private void ensureInitialized() {
+        if (!initializer.isInitialized()) {
+            initializer.initialize();
+        }
+    }
 }
