@@ -30,18 +30,23 @@ package org.opennms.netmgt.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.hibernate.ObjectNotFoundException;
 import org.opennms.netmgt.dao.api.AcknowledgmentDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.Acknowledgeable;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNotification;
+import org.opennms.netmgt.model.OnmsSeverity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -53,6 +58,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowledgment, Integer> implements AcknowledgmentDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(AcknowledgmentDaoHibernate.class);
+
+    @Autowired
+    private AlarmEntityNotifier alarmEntityNotifier;
+
     /**
      * <p>Constructor for AcknowledgmentDaoHibernate.</p>
      */
@@ -185,24 +194,45 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
             try {
                 Acknowledgeable ackable = it.next();
 
+                final boolean isAlarm = ackable instanceof OnmsAlarm;
+                Consumer<OnmsAlarm> callback = null;
+
                 switch (ack.getAckAction()) {
                 case ACKNOWLEDGE:
                     LOG.debug("processAck: Acknowledging ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final String ackUser = ackable.getAckUser();
+                        final Date ackTime = ackable.getAckTime();
+                        callback = (alarm) -> alarmEntityNotifier.didAcknowledgeAlarm(alarm, ackUser, ackTime);
+                    }
                     ackable.acknowledge(ack.getAckUser());
                     LOG.debug("processAck: Acknowledged ackable: {}", ackable);
                     break;
                 case UNACKNOWLEDGE:
                     LOG.debug("processAck: Unacknowledging ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final String ackUser = ackable.getAckUser();
+                        final Date ackTime = ackable.getAckTime();
+                        callback = (alarm) -> alarmEntityNotifier.didUnacknowledgeAlarm(alarm, ackUser, ackTime);
+                    }
                     ackable.unacknowledge(ack.getAckUser());
                     LOG.debug("processAck: Unacknowledged ackable: {}", ackable);
                     break;
                 case CLEAR:
                     LOG.debug("processAck: Clearing ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final OnmsSeverity previousSeverity = ackable.getSeverity();
+                        callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+                    }
                     ackable.clear(ack.getAckUser());
                     LOG.debug("processAck: Cleared ackable: {}", ackable);
                     break;
                 case ESCALATE:
                     LOG.debug("processAck: Escalating ackable: {}...", ackable);
+                    if (isAlarm) {
+                        final OnmsSeverity previousSeverity = ackable.getSeverity();
+                        callback = (alarm) -> alarmEntityNotifier.didUpdateAlarmSeverity(alarm, previousSeverity);
+                    }
                     ackable.escalate(ack.getAckUser());
                     LOG.debug("processAck: Escalated ackable: {}", ackable);
                     break;
@@ -213,6 +243,10 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
                 updateAckable(ackable);
                 save(ack);
                 flush();
+
+                if (callback != null) {
+                    callback.accept((OnmsAlarm)ackable);
+                }
             } catch (Throwable t) {
                 LOG.error("processAck: exception while processing: {}; {}", ack, t);
             }

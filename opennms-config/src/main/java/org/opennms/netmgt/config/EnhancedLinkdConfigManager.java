@@ -162,7 +162,7 @@ abstract public class EnhancedLinkdConfigManager implements EnhancedLinkdConfig 
     
     public int getMaxBft() {
         if (m_config.getMaxBft() != null) return m_config.getMaxBft();
-        return 1;
+        return 100;
     }
 
     public int getDiscoveryBridgeThreads() {

@@ -446,6 +446,13 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
         return m_event == null ? null : m_event.getSeverityLabel();
     }
 
+    @Transient
+    @XmlTransient
+    @Override
+    public OnmsSeverity getSeverity() {
+        return m_event == null ? null : OnmsSeverity.get(m_event.getEventSeverity());
+    }
+
     /**
      * <p>getNode</p>
      *

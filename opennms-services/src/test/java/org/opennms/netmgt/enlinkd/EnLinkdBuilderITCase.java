@@ -42,6 +42,7 @@ import org.opennms.netmgt.dao.api.BridgeElementDao;
 import org.opennms.netmgt.dao.api.BridgeStpLinkDao;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.IpNetToMediaDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.BridgeBridgeLinkDao;
@@ -77,7 +78,10 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
 
     @Autowired
     protected NodeDao m_nodeDao;
-    
+
+    @Autowired
+    protected IpInterfaceDao m_ipInterfaceDao;
+
     @Autowired
     protected CdpLinkDao m_cdpLinkDao;
     

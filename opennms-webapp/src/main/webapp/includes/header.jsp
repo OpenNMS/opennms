@@ -55,6 +55,7 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%!
     public void init() throws ServletException {
@@ -203,9 +204,7 @@ final String baseHref = Util.calculateUrlBase( request );
 					</c:otherwise>
 				</c:choose>
                 <jsp:useBean id="currentDate" class="java.util.Date" />
-                <fmt:formatDate value="${currentDate}" type="date" dateStyle="medium"/>
-                &nbsp;
-                <fmt:formatDate value="${currentDate}" type="time" pattern="HH:mm z"/> 
+                <onms:datetime date="${currentDate}" />
 			</p>
 		</div>
 		<hr />

@@ -139,6 +139,7 @@
     <module>opennms-provision</module>
     <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
+    <module>opennms-taglib</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
     <module>opennms-reporting</module>
@@ -1260,7 +1261,7 @@
     <args4jVersion>2.32</args4jVersion>
     <asmVersion>5.0.4</asmVersion>
     <asciidoctorVersion>1.5.6</asciidoctorVersion>
-    <asciidoctorjVersion>1.5.6</asciidoctorjVersion>
+    <asciidoctorjVersion>1.5.7</asciidoctorjVersion>
     <asciidoctorjPdfVersion>1.5.0-alpha.16</asciidoctorjPdfVersion>
     <activemqVersion>5.14.5</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
@@ -1322,7 +1323,7 @@
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>4.4.0</jnaVersion>
     <jodaTimeVersion>2.1</jodaTimeVersion>
-    <jrubyVersion>9.0.4.0</jrubyVersion>
+    <jrubyVersion>9.1.16.0</jrubyVersion>
     <jsonVersion>20171018</jsonVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <karafVersion>4.1.5</karafVersion>

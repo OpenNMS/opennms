@@ -299,7 +299,7 @@ public class AlarmEventToIndexTest extends AbstractEventToIndexTest {
 
 	private static Event createDummyEvent(int eventId) {
 		final Event event = new Event();
-		event.setUei(EventConstants.ALARM_CLEARED_UEI);
+		event.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
 		event.setCreationTime(new Date());
 		event.setDistPoller(DistPollerDao.DEFAULT_DIST_POLLER_ID);
 		event.setDescr("Dummy Event");

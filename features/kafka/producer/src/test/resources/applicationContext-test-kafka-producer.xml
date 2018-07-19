@@ -15,6 +15,10 @@
 
     <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
         <constructor-arg ref="eventConfDao"/>
+        <constructor-arg ref="hwEntityDao"/>
+        <constructor-arg ref="transactionTemplate"/>
+        <constructor-arg ref="nodeDao"/>
+        <constructor-arg value="10000"/>
     </bean>
 
     <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">

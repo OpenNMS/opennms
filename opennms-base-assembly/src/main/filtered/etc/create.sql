@@ -59,8 +59,6 @@ drop table monitoringsystems cascade;
 drop table events cascade;
 drop table event_parameters cascade;
 drop table pathOutage cascade;
-drop table demandPolls cascade;
-drop table pollResults cascade;
 drop table reportLocator cascade;
 drop table atinterface cascade;
 drop table stpnode cascade;
@@ -95,8 +93,6 @@ drop sequence memoNxtId;
 drop sequence outageNxtId;
 drop sequence notifyNxtId;
 drop sequence userNotifNxtId;
-drop sequence demandPollNxtId;
-drop sequence pollResultNxtId;
 drop sequence reportNxtId;
 drop sequence reportCatalogNxtId;
 drop sequence mapNxtId;
@@ -189,16 +185,6 @@ create sequence catNxtId minvalue 1;
 --#          sequence, column, table
 --# install: userNotifNxtId id   usersNotified
 create sequence userNotifNxtId minvalue 1;
-
---# Sequence for the id column in the demandPolls table
---#          sequence, column, table
---# install: demandPollNxtId id   demandPolls
-create sequence demandPollNxtId minvalue 1;
-
---# Sequence for the id column in the pollResults table
---#          sequence, column, table
---# install: pollResultNxtId id   pollResults
-create sequence pollResultNxtId minvalue 1;
 
 --# Sequence for the mapID column in the map table
 --#          sequence,   column, table
@@ -1054,7 +1040,6 @@ ALTER TABLE memos ADD CONSTRAINT reductionkey_type_unique_constraint UNIQUE (red
 
 create table alarms (
     alarmID                 INTEGER, CONSTRAINT pk_alarmID PRIMARY KEY (alarmID),
-    discriminator           TEXT NOT NULL,
     eventUei                VARCHAR(256) NOT NULL,
     systemId                TEXT NOT NULL, CONSTRAINT fk_alarms_systemid FOREIGN KEY (systemId) REFERENCES monitoringsystems (id) ON DELETE CASCADE,
     nodeID                  INTEGER, CONSTRAINT fk_alarms_nodeid FOREIGN KEY (nodeID) REFERENCES node (nodeID) ON DELETE CASCADE,
@@ -1127,13 +1112,13 @@ CREATE UNIQUE INDEX alarm_attributes_aan_idx ON alarm_attributes(alarmID, attrib
 
 CREATE TABLE alarm_situations (
     situation_id    INTEGER NOT NULL,
-    alarms_alarmid  INTEGER NOT NULL,
+    related_alarm_id  INTEGER NOT NULL,
     
-    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (alarms_alarmid) REFERENCES alarms (alarmid),
+    CONSTRAINT fk_alarm_situations_alarm_id FOREIGN KEY (related_alarm_id) REFERENCES alarms (alarmid),
     CONSTRAINT fk_alarm_situations_situation_id FOREIGN KEY (situation_id) REFERENCES alarms (alarmid)
 );
 
-CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, alarms_alarmid);
+CREATE UNIQUE INDEX alarm_situations_situation_id_alarms_alarmid_key ON alarm_situations(situation_id, related_alarm_id);
 
 
 --# This constraint not understood by installer
@@ -1379,65 +1364,7 @@ create table pathOutage (
 create unique index pathoutage_nodeid on pathOutage(nodeID);
 create index pathoutage_criticalpathip on pathOutage(criticalPathIp);
 create index pathoutage_criticalpathservicename_idx on pathOutage(criticalPathServiceName);
-
---########################################################################
---# demandPolls Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id                      : Unique identifier of the demand poll
---#  requestTime             : the time the user requested the poll
---#  user                    : the user that requested the poll
---#  description             : ?
---#
---########################################################################
-create table demandPolls (
-	id			integer,
-	requestTime	timestamp with time zone,
-	username	varchar(32),
-	description varchar(128),
 	
-	constraint demandpoll_pkey primary key (id)
-	
-);
-
-create index demandpoll_request_time on demandPolls(requestTime);
-	
---########################################################################
---# pollResults Table - contains a list of requested polls
---#
---# This table contains the following information:
---#
---#  id			: unique identifier of the demand poll
---#  pollId		: unique identifier of this specific service poll
---#  nodeId		: node id of the polled service
---#  ipAddr		: ip address of the polled service
---#  ifIndex		: ifIndex of the polled service's interface
---#  serviceId		: serviceid of the polled service
---#  statusCode		: status code of the pollstatus returned by the monitor
---#  statusName		: status name of the pollstaus returnd by the monitor
---#  reason		: the reason of the pollstatus returned by the monitor
---#
---########################################################################
-create table pollResults (
-	id			integer,
-	pollId      integer,
-	nodeId		integer,
-	ipAddr		text,
-	ifIndex		integer,
-	serviceId	integer,
-	statusCode	integer,
-	statusName	varchar(32),
-	reason		varchar(128),
-	
-	constraint pollresult_pkey primary key (id),
-	constraint fk_demandPollId foreign key (pollID) references demandPolls (id) ON DELETE CASCADE
-
-);
-
-create index pollresults_poll_id on pollResults(pollId);
-create index pollresults_service on pollResults(nodeId, ipAddr, ifIndex, serviceId);
-
 --#############################################################################
 --# location_specific_status_changes Table - contains a list status
 --#      changed reported for a service by a monitor in a remote
@@ -2344,6 +2271,16 @@ create table hwEntityAttribute (
 );
 create unique index hwEntityAttribute_unique_idx on hwEntityAttribute(hwEntityId,hwAttribTypeId);
 
+create table hwEntityAlias (
+    id          integer default nextval('opennmsNxtId') not null,
+    hwEntityId  integer ,
+    index       integer not null,
+    oid         text not null,
+    constraint pk_hwentityalias PRIMARY KEY (id),
+    constraint fk_hwentity_hwentityalias foreign key (hwentityid) references hwEntity (id) on delete cascade
+);
+
+create unique index hwentityalias_unique_idx on hwentityalias(hwentityid, index);
 
 --##################################################################
 --# NCS component tables

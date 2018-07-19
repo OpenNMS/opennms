@@ -41,9 +41,9 @@ import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
-import org.opennms.netmgt.dao.api.DemandPollDao;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
 import org.opennms.netmgt.dao.api.IfLabel;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -84,7 +84,7 @@ public class DaoServiceTester {
             .withIgnoredClass(
                     SessionFactoryWrapper.class,
                     TransactionOperations.class,
-                    DemandPollDao.class
+                    AlarmEntityNotifier.class // we skip testing this for now
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
             .withTest(BridgeTopologyDao .class, bean -> {
