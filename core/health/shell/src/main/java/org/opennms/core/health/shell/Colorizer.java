@@ -28,12 +28,17 @@
 
 package org.opennms.core.health.shell;
 
+/**
+ * Helper to colorize strings.
+ */
 public final class Colorizer {
 
     private Colorizer() {}
 
+    // Format to colorize a string
     private static final String FORMAT = "\033[%sm%s\033[%sm";
 
+    // Helper method to colorize strings
     public static String colorize(String text, Color color) {
         final String colorized = String.format(FORMAT, color.toAnsi(), text, Color.NoColor.toAnsi());
         return colorized;

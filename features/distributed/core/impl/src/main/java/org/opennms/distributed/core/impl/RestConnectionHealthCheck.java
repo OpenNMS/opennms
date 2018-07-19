@@ -34,6 +34,11 @@ import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.health.api.Response;
 import org.opennms.core.health.api.Status;
 
+/**
+ * Verifies the connection to the OpenNMS ReST API.
+ *
+ * @author mvrueden
+ */
 public class RestConnectionHealthCheck implements HealthCheck {
 
     private final RestClient restClient;

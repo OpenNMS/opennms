@@ -28,11 +28,26 @@
 
 package org.opennms.core.health.api;
 
+/**
+ * The status of the {@link HealthCheck}.
+ *
+ * @author mvrueden
+ */
 public enum Status {
+    // Unknown: Not possible to determine the status
     Unknown,
+
+    // Starting: The container is starting or not ready.
+    // It is not possible to make any assumption about the response of healthCheck.perform()
     Starting,
+
+    // Success: No errors
     Success,
+
+    // Timeout: Health check timed out.
     Timeout,
+
+    // Failure: One or more errors occured while running the healthCheck.perform() method
     Failure
     ;
 }

@@ -28,6 +28,9 @@
 
 package org.opennms.core.health.shell;
 
+/**
+ * ANSI Color Code
+ */
 public enum Color {
     NoColor("0"),
     Red("0;31"),
@@ -35,13 +38,13 @@ public enum Color {
     Yellow("1;33"),
     Blue("0;34");
 
-    private final String ansiiCode;
+    private final String ansiCode;
 
-    private Color(final String ansiiCode) {
-        this.ansiiCode = ansiiCode;
+    private Color(final String ansiCode) {
+        this.ansiCode = ansiCode;
     }
 
     public String toAnsi() {
-        return ansiiCode;
+        return ansiCode;
     }
 }

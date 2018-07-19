@@ -33,6 +33,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents the "Health", by holding a list of {@link Response}s.
+ * It allows accessing the responses and also provides some helper methods (e.g. to get the worst response).
+ *
+ * @author mvrueden
+ */
 public class Health {
 
     private List<Response> responses = new ArrayList<>();

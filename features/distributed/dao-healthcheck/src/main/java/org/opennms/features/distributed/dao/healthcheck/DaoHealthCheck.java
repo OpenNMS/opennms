@@ -37,6 +37,15 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+/**
+ * Verifies that at least the NodeDao can be consumed as a OSGi service, otherwise
+ * it is considered a Failure.
+ * This is necessary to ensure that in case of running the DAOs inside sentinel they
+ * were exposed through the spring extender as the bundle may be ACTIVE but no spring services were
+ * exposed.
+ *
+ * @author mvrueden
+ */
 public class DaoHealthCheck implements HealthCheck {
 
     private BundleContext bundleContext;
@@ -52,6 +61,9 @@ public class DaoHealthCheck implements HealthCheck {
 
     @Override
     public Response perform(Context context) {
+        // IMPORTANT: Do not change to Class reference here. This is a string on purpose to not have the maven bundle
+        // plugin put a IMPORT-Package statement for org.opennms.netmgt.dao.api. Otherwise this Health Check is never
+        // loaded and will never be invoked, thus can not fullfil its purpose.
         final ServiceReference serviceReference = bundleContext.getServiceReference("org.opennms.netmgt.dao.api.NodeDao");
         if (serviceReference != null) {
             return new Response(Status.Success);

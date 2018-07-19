@@ -48,6 +48,8 @@ import io.searchbox.core.Ping;
  * The reason for this is, that multiple Modules create their own clients.
  * In order to not configure the client for the health check module as well, this healthcheck is
  * only validating if ElasticSearch from the view of the flows/elastic bundle is working.
+ *
+ * @author mvrueden 
  */
 public class ElasticHealthCheck implements HealthCheck {
 

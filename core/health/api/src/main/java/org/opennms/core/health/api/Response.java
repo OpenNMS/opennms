@@ -28,10 +28,18 @@
 
 package org.opennms.core.health.api;
 
+/**
+ * The response of a health check.
+ */
 public class Response {
 
+    // The status
     private final Status status;
+
+    // An optional (error) message
     private final String message;
+
+    // TODO MVR remove unused variable
     private final Exception ex;
 
     public Response(Status status) {

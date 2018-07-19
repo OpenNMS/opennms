@@ -42,6 +42,14 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+/**
+ * Verifies that a connection to the configured ActiveMQ Broker can be established.
+ * In earlier versions of this a timeout was implemented individually.
+ * With the introduction of the {@link HealthCheck} interface, the {@link org.opennms.core.health.api.HealthCheckService}
+ * should take care of this.
+ *
+ * @author mvrueden
+ */
 public class JmsConnectionHealthCheck implements HealthCheck {
 
     private final BundleContext bundleContext;

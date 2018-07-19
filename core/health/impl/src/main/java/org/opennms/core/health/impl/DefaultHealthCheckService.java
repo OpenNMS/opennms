@@ -53,16 +53,26 @@ import org.osgi.framework.ServiceReference;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+/**
+ * The "Default" implementation of the {@link HealthCheckService}.
+ * It loads all available {@link HealthCheckService}s from the OSGi service registry.
+ * If no checks are available, the overall health is "Unhealthy".
+ *
+ * @author mvrueden
+ */
 public class DefaultHealthCheckService implements HealthCheckService {
 
+    // HealthChecks are performed asynchronously with this executor.
     private final ExecutorService executorService = Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setNameFormat("health-check-%d").build());
 
+    // Context to load the services
     private BundleContext bundleContext;
 
     public DefaultHealthCheckService(BundleContext bundleContext) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
     }
 
+    // Resolve all HealthChecks from the OSGi registry
     private List<HealthCheck> getHealthChecks() throws InvalidSyntaxException {
         final Collection<ServiceReference<HealthCheck>> serviceReferences = bundleContext.getServiceReferences(HealthCheck.class, null);
         return serviceReferences.stream()
@@ -80,6 +90,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
             onFinishConsumer.accept(response);
         };
         try {
+            // Fail if no checks are available
             final List<HealthCheck> checks = getHealthChecks();
             if (checks == null || checks.isEmpty()) {
                 health.setError("No Health Checks available");
@@ -94,6 +105,7 @@ public class DefaultHealthCheckService implements HealthCheckService {
         return returnFuture;
     }
 
+    // Asynchronously run all checks
     private void runChecks(Context context, List<HealthCheck> checks, Consumer<HealthCheck> onStartConsumer, Consumer<Response> onFinishConsumer) {
         Future<Response> currentFuture = null;
         for (HealthCheck check : checks) {

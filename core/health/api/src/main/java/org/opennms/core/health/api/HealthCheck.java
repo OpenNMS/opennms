@@ -28,9 +28,38 @@
 
 package org.opennms.core.health.api;
 
+/**
+ * Interface to define a {@link HealthCheck}.
+ *
+ * @author mvrueden
+ * @see Health, {@link HealthCheckService}
+ */
 public interface HealthCheck {
 
+    /**
+     * The description of the {@link HealthCheck}, e.g. "Connecting to OpenNMS ReST API".
+     * This is used when visualizing the progress or result of the checks.
+     *
+     * @return The string, describing the check.
+     */
     String getDescription();
 
+    /**
+     * Implements the check itself, e.g. Connecting to a HTTP Endpoint.
+     *
+     * As the method is called by the {@link HealthCheckService}, it is advised that all timeout restrictions
+     * etc are handled by the service instead of the {@link HealthCheck} implementation.
+     *
+     * Implementations might throw an Exception, which should be handled by the {@link HealthCheckService} as well.
+     *
+     * The response indicates if the check was successful, or encountered other problems. If null is returned,
+     * the {@link HealthCheckService} should consider this as {@link Status#Unknown}.
+     *
+     * @param context The context
+     * @return The response indicating the Success/Failure/Timeout/etc of the check
+     * @throws Exception In case of an error
+     * @see HealthCheckService
+     */
+    // TODO MVR remove context here, as it is not needed for now
     Response perform(Context context) throws Exception;
 }

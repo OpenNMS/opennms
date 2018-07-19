@@ -45,6 +45,17 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
 
+/**
+ * Verifies the integrity of the container.
+ * This is achieved by iterating over all bundles and checking its state.
+ * Every bundle which is not ACTIVE is considered failed.
+ *
+ * The only exceptions are:
+ *  - fragment bundles as those never reach ACTIVE state and are considered successful if they are RESOLVED.
+ *  - stopped bundles as they are very likely manually stopped or installed but not automatically started
+ *
+ * @author mvrueden
+ */
 public class ContainerIntegrityHealthCheck implements HealthCheck {
 
     private final BundleService bundleService;
@@ -82,16 +93,20 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
                     }
                     health.add(new Response(Failure, "Bundle " + b.getBundleId() + " is resolved, but not active"));
                     break;
+                // Waiting for dependencies
                 case Waiting:
                 case GracePeriod:
                     health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is waiting for dependencies"));
                     break;
+                // Installed, but not yet started
                 case Installed:
                     health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is not yet started"));
                     break;
+                // Starting
                 case Starting:
                     health.add(new Response(Starting, "Bundle " + b.getBundleId() + " is starting"));
                     break;
+                // Stopping, Failed ur Unknown are considered Failures
                 case Stopping:
                 case Failure:
                 case Unknown:

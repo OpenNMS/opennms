@@ -28,8 +28,14 @@
 
 package org.opennms.core.health.api;
 
+/**
+ * A Context object to store all parameters required by the {@link HealthCheckService}
+ * to calculate the overall {@@ink Health}.
+ *
+ * @author mvrueden
+ */
 public class Context {
-    long timeout;
+    private long timeout;
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
