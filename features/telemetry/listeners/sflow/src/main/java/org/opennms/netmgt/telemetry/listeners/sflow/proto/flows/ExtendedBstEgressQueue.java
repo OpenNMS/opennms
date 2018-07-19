@@ -56,6 +56,8 @@ public class ExtendedBstEgressQueue implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeInt64(this.queue);
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("queue", this.queue);
+        bsonWriter.writeEndDocument();
     }
 }

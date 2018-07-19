@@ -56,7 +56,9 @@ public class ExtendedDecapsulateEgress implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeInt64(this.inner_header_offset);
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("inner_header_offset", this.inner_header_offset);
+        bsonWriter.writeEndDocument();
     }
 }
 

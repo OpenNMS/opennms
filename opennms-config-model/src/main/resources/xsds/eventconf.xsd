@@ -637,19 +637,19 @@
     </annotation>
 
     <complexType mixed="true">
-      <choice minOccurs="0" maxOccurs="unbounded">
-        <element maxOccurs="1" minOccurs="1" name="vbnumber" type="int">
+      <sequence minOccurs="0" maxOccurs="1">
+        <element minOccurs="1" maxOccurs="1" name="vbnumber" type="int">
           <annotation>
             <documentation>The varbind element number</documentation>
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="1" name="vbvalue" type="string">
+        <element minOccurs="1" maxOccurs="unbounded" name="vbvalue" type="string">
           <annotation>
             <documentation>The varbind element value</documentation>
           </annotation>
         </element>
-      </choice>
+      </sequence>
       <attribute name="textual-convention" type="this:rfc1903-snmp-tc" use="optional" />
     </complexType>
   </element>

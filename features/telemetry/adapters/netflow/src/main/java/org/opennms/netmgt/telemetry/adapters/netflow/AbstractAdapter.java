@@ -92,6 +92,7 @@ public abstract class AbstractAdapter<P> implements Adapter {
                 LOG.trace("Parsing packet: {}", eachMessage);
                 final P flowPacket = parse(eachMessage);
                 if (flowPacket != null) {
+                    flowPackets.add(flowPacket);
                     flows.addAll(converter.convert(flowPacket));
                 }
             }
@@ -99,7 +100,7 @@ public abstract class AbstractAdapter<P> implements Adapter {
         }
 
         try {
-            LOG.debug("Persisting {} packets.", flowPackets.size());
+            LOG.debug("Persisting {} packets, {} flows.", flowPackets.size(), flows.size());
             final FlowSource source = new FlowSource(messageLog.getLocation(), messageLog.getSourceAddress());
             flowRepository.persist(flows, source);
         } catch (FlowException ex) {

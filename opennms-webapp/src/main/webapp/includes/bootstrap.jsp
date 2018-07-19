@@ -115,15 +115,6 @@
     <jsp:param name="asset" value="vendor" />
   </jsp:include>
   <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="jquery-js" />
-  </jsp:include>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="jquery-ui-js" />
-  </jsp:include>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="bootstrap-js" />
-  </jsp:include>
-  <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="global" />
   </jsp:include>
 
