@@ -44,6 +44,7 @@ import org.springframework.transaction.support.TransactionOperations;
 public class KafkaPersisterActivator implements BundleActivator {
     
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
+    public static final String PERSISTER = "collection.persister";
 
     @Override
     public void start(BundleContext context) throws Exception {
@@ -51,14 +52,11 @@ public class KafkaPersisterActivator implements BundleActivator {
         Boolean isCollectionPersisterEnabled = false;
         try {
             configAdmin = context.getService(context.getServiceReference(ConfigurationAdmin.class));
-            isCollectionPersisterEnabled = false;
             if (configAdmin != null) {
-                Dictionary<String, Object> properties = configAdmin
-                        .getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
-                if (properties != null && properties.get("enable.collection.persister") != null) {
-                    if (properties.get("enable.collection.persister") instanceof String) {
-                        String enablePersister = (String) properties.get("enable.collection.persister");
-                        isCollectionPersisterEnabled = Boolean.valueOf(enablePersister);
+                Dictionary<String, Object> properties = configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
+                if (properties != null && properties.get(PERSISTER) != null) {
+                    if (properties.get(PERSISTER) instanceof String) {
+                        isCollectionPersisterEnabled = Boolean.parseBoolean((String) properties.get(PERSISTER));
                     }
                 }
             }
@@ -71,8 +69,8 @@ public class KafkaPersisterActivator implements BundleActivator {
                 NodeDao nodeDao = context.getService(context.getServiceReference(NodeDao.class));
                 TransactionOperations transactionOperations = context
                         .getService(context.getServiceReference(TransactionOperations.class));
+                
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, transactionOperations);
-
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
                 kafkaPersisterFactory.setConfigAdmin(configAdmin);
@@ -81,6 +79,7 @@ public class KafkaPersisterActivator implements BundleActivator {
                 props.put("strategy", "kafka");
                 props.put("registration.export", "true");
                 context.registerService(PersisterFactory.class, kafkaPersisterFactory, props);
+                LOG.info("registered kafka persister factory to onms registry");
             } catch (Exception e) {
                 LOG.error(" Exception while enabling kafka persister", e);
             }
@@ -90,8 +89,7 @@ public class KafkaPersisterActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        // TODO Auto-generated method stub
-        
+         // no unregister service on bundle context, nothing to do
     }
 
 }

@@ -57,32 +57,37 @@ public class KafkaPersister implements Persister {
 
         CollectionSetProtos.CollectionSet collectionSetProto = collectionSetMapper
                 .buildCollectionSetProtos(collectionSet);
-        // Get first NodeId and set it as key.
-        String key = "";
-        if (collectionSetProto.getResourceCount() > 0) {
-            CollectionSetResource firstResource = collectionSetProto.getResource(0);
-            if (firstResource.getNode() != null) {
-                key = Long.toString(firstResource.getNode().getNodeId());
-            } else if (firstResource.getInterface() != null) {
-                key = Long.toString(firstResource.getInterface().getNode().getNodeId());
-            } else {
-                key = Long.toString(firstResource.getGeneric().getNode().getNodeId());
-            }
-        }
-
+        // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
+        final String key = deriveKeyFromCollectionSet(collectionSetProto);
         final ProducerRecord<String, byte[]> record = new ProducerRecord<>(COLLECTION_TOPIC_NAME, key,
                 collectionSetProto.toByteArray());
-
         producer.send(record, (recordMetadata, e) -> {
             if (e != null) {
                 LOG.warn("Failed to send record to producer: {}.", record, e);
                 return;
-            } else {
-                LOG.debug("persisted collection {} to kafka", collectionSetProto.toString());
+            } else if (LOG.isDebugEnabled()) {
+                LOG.debug("persisted collection {} to kafka with key {}", collectionSetProto.toString(), key);
             }
-
         });
 
+    }
+
+    private String deriveKeyFromCollectionSet(CollectionSetProtos.CollectionSet collectionSetProto) {
+        String key = "";
+        if (collectionSetProto.getResourceCount() > 0) {
+            CollectionSetResource firstResource = collectionSetProto.getResource(0);
+            if (firstResource.hasResponse()) {
+                // For response time resources, key will be instance i.e. IpAddress
+                key = firstResource.getResponse().getInstance();
+            } else if (firstResource.hasInterface()) {
+                key = Long.toString(firstResource.getInterface().getNode().getNodeId());
+            } else if (firstResource.hasGeneric()) {
+                key = Long.toString(firstResource.getGeneric().getNode().getNodeId());
+            } else if (firstResource.hasNode()) {
+                key = Long.toString(firstResource.getNode().getNodeId());
+            } 
+        }
+        return key;
     }
 
     public void setProducer(KafkaProducer<String, byte[]> producer) {

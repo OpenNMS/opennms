@@ -37,11 +37,17 @@ message GenericTypeResource {
   string instance = 3;
 }
 
+message ResponseTimeResource {
+  string instance = 1;
+  string location = 2;
+}
+
 message CollectionSetResource {
   oneof resource {
      NodeLevelResource node = 1;
      InterfaceLevelResource interface = 2;
      GenericTypeResource generic = 3;
+     ResponseTimeResource response = 4;
   }
   repeated StringAttribute string = 10;
   repeated NumericAttribute numeric = 11;

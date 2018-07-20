@@ -28,6 +28,8 @@
 
 package org.opennms.features.kafka.producer.collection;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Objects;
 
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -41,11 +43,17 @@ import org.opennms.netmgt.collection.api.CollectionSetVisitor;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.ResourceTypeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
+import com.google.common.base.Strings;
+
 public class CollectionSetMapper {
+    
+    private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
 
     @Autowired
     private NodeDao nodeDao;
@@ -81,11 +89,21 @@ public class CollectionSetMapper {
                     CollectionSetProtos.InterfaceLevelResource.Builder interfaceResourceBuilder = CollectionSetProtos.InterfaceLevelResource
                             .newBuilder();
                     String nodeCriteria = getNodeCriteriaFromResource(resource);
-                    CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
-                            nodeCriteria);
-                    interfaceResourceBuilder.setNode(nodeResourceBuilder);
-                    interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
-                    collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                    if (!Strings.isNullOrEmpty(nodeCriteria)) {
+                        CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = buildNodeLevelResourceForProto(
+                                nodeCriteria);
+                        interfaceResourceBuilder.setNode(nodeResourceBuilder);
+                        interfaceResourceBuilder.setInstance(resource.getInterfaceLabel());
+                        collectionSetResourceBuilder.setInterface(interfaceResourceBuilder);
+                    } else {
+                        // it is likely to be response time resource.
+                        CollectionSetProtos.ResponseTimeResource.Builder responseTimeResource = buildResponseTimeResource(
+                                resource);
+                        if (responseTimeResource != null) {
+                            collectionSetResourceBuilder.setResponse(responseTimeResource);
+                        }
+                    }
+
                 } else {
                     CollectionSetProtos.GenericTypeResource.Builder genericResourceBuilder = CollectionSetProtos.GenericTypeResource
                             .newBuilder();
@@ -154,38 +172,81 @@ public class CollectionSetMapper {
 
     private String getNodeCriteriaFromResource(CollectionResource resource) {
 
-        String[] parentResourcePathElements = null;
-        if ( resource != null && resource.getParent() != null ) {
-          parentResourcePathElements = resource.getParent().elements();
-        } else {
-            return null;
-        }
         String nodeCriteria = null;
-        if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(parentResourcePathElements[0])) {
-            final String fs = parentResourcePathElements[1];
-            final String fid = parentResourcePathElements[2];
-            nodeCriteria = fs + ":" + fid;
-        } else {
-            final String nodeId = parentResourcePathElements[0];
-            nodeCriteria = nodeId;
+        if (resource.getParent() != null) {
+            String[] resourcePathArray = resource.getParent().elements();
+            if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0]) && resourcePathArray.length == 3) {
+                // parent denotes nodeCriteria, form fs:fid
+                nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
+            } else if (checkNumeric(resourcePathArray[0])){
+                // parent denotes nodeId
+                nodeCriteria = resourcePathArray[0];
+            }
         }
         return nodeCriteria;
     }
 
-    
+    private CollectionSetProtos.ResponseTimeResource.Builder buildResponseTimeResource(CollectionResource resource) {
+        boolean validIp = false;
+        //Check if resource parent is an IpAddress.
+        if (resource.getParent() != null && resource.getParent().elements().length == 1) {
+            String[] resourcePathArray = resource.getParent().elements();
+            validIp = checkForValidIpAddress(resourcePathArray[0]);
+        }
+        if (resource.getPath() != null && validIp) {
+            // extract path which consists of location and IpAddress.
+            String[] resourcePathArray = resource.getPath().elements();
+            CollectionSetProtos.ResponseTimeResource.Builder responseTimeResourceBuilder = CollectionSetProtos.ResponseTimeResource
+                    .newBuilder();
+            if (resourcePathArray.length == 2) {
+                // first element is location, 2nd IpAddress.
+                responseTimeResourceBuilder.setLocation(resourcePathArray[0]);
+                responseTimeResourceBuilder.setInstance(resourcePathArray[1]);
+            } else if (resourcePathArray.length == 1) {
+                responseTimeResourceBuilder.setInstance(resourcePathArray[0]);
+            }
+            return responseTimeResourceBuilder;
+        }
+        return null;
+    }
+
+    private boolean checkNumeric(String nodeCriteria) {
+        try {
+            Integer.parseInt(nodeCriteria);
+            return true;
+        } catch (NumberFormatException e) {
+            // not a number
+            return false;
+        }
+    }
+
+    private boolean checkForValidIpAddress(String resourcePath) {
+        try {
+            InetAddress.getByName(resourcePath);
+            return true;
+        } catch (UnknownHostException e) {
+            // not an ipaddress.
+            return false;
+        }
+    }
+
     public CollectionSetProtos.NodeLevelResource.Builder buildNodeLevelResourceForProto(String nodeCriteria) {
         CollectionSetProtos.NodeLevelResource.Builder nodeResourceBuilder = CollectionSetProtos.NodeLevelResource
                 .newBuilder();
         transactionOperations.execute((TransactionCallback<Void>) status -> {
             try {
                 OnmsNode node = nodeDao.get(nodeCriteria);
-                nodeResourceBuilder.setNodeId(node.getId());
-                nodeResourceBuilder.setNodeLabel(node.getLabel());
-                nodeResourceBuilder.setForeignId(node.getForeignId());
-                nodeResourceBuilder.setForeignSource(node.getForeignSource());
-                nodeResourceBuilder.setLocation(node.getLocation().getLocationName());
+                if (node != null) {
+                    nodeResourceBuilder.setNodeId(node.getId());
+                    nodeResourceBuilder.setNodeLabel(node.getLabel());
+                    nodeResourceBuilder.setForeignId(node.getForeignId());
+                    nodeResourceBuilder.setForeignSource(node.getForeignSource());
+                    if (node.getLocation() != null) {
+                        nodeResourceBuilder.setLocation(node.getLocation().getLocationName());
+                    }
+                }
             } catch (Exception e) {
-               //TODO: Deal with response time resources
+               LOG.error("error while trying to match node from {}", nodeCriteria);
             }
             return null;
         });
