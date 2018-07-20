@@ -57,10 +57,12 @@ public class HostAdapters implements CounterData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartArray();
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeStartArray("adapters");
         for (final HostAdapter hostAdapter : this.adapters) {
             hostAdapter.writeBson(bsonWriter);
         }
         bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

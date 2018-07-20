@@ -44,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
 // };
 
 public class SampleRecord extends Record<SampleData> {
-    private static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<SampleData>>builder()
+    protected static Map<DataFormat, Opaque.Parser<SampleData>> sampleDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<SampleData>>builder()
             .put(DataFormat.from(1), FlowSample::new)
             .put(DataFormat.from(2), CountersSample::new)
             .put(DataFormat.from(3), FlowSampleExpanded::new)
