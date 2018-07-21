@@ -9,4 +9,4 @@ Learn the first steps to setup, configure, and maintain an _{opennms-product-nam
 
 * Reference Guide
 +
-Find indepth information on the detecters, monitors, collectors, and configuration files used by the _{opennms-product-name}_ platform.
+Find in-depth information on the detecters, monitors, collectors, and configuration files used by the _{opennms-product-name}_ platform.

@@ -10,7 +10,7 @@ The following steps will be described:
 . Install _PostgreSQL_ on _Microsoft Windows_
 . Install _{opennms-product-name}_ with GUI installer
 . Initialize _PostgreSQL_ database and configure access
-. Login Web User Interface and change default admin password
+. Log in to the Web User Interface and change default admin password
 
 It is required to have local administration permission to install _{opennms-product-name}_.
 

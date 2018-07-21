@@ -18,7 +18,7 @@ apt update
 apt -y install opennms
 ----
 
-The following packages depend depend on the `opennms` package and will be automatically installed:
+The following packages depend on the `opennms` package and will be automatically installed:
 
 * _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _OpenNMS_ repository.
 * _opennms-core_: _OpenNMS_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _OpenNMS_ repository.
