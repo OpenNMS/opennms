@@ -157,7 +157,7 @@ public class NodeACLVertexProvider implements GraphProvider, SearchProvider {
     @Override
     public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
         LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
+        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getId(), searchResult.getLabel());
         container.addCriteria(criterion);
         LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
         logCriteriaInContainer(container);

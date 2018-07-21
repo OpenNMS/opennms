@@ -73,7 +73,6 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
-    private String m_originalFilename;
 
 
     @Before
@@ -82,7 +81,6 @@ public class EnhancedLinkdTopologyProviderTest {
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
-        m_topologyProvider.refresh();
     }
 
     @Test
@@ -115,9 +113,9 @@ public class EnhancedLinkdTopologyProviderTest {
         Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void test() throws Exception {
+        m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getVertices().size());
 
         // Add v0 vertex
@@ -225,6 +223,7 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testLoadSimpleGraph() throws Exception {
+        m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getVertices().size());
         assertEquals(9, m_topologyProvider.getEdges().size());
 

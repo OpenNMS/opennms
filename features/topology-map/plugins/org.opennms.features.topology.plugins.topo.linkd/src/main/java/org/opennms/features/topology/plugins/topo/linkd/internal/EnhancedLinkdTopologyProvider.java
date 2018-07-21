@@ -854,7 +854,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     if (node != null) {
                         final Vertex defaultVertex = getOrCreateVertex(node, null, false);
                         if (defaultVertex != null) {
-                            return Lists.newArrayList(LinkdHopCriteriaFactory.createCriteria(node.getNodeId(), node.getLabel()));
+                            return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getNodeId(), node.getLabel()));
                         }
                     }
 

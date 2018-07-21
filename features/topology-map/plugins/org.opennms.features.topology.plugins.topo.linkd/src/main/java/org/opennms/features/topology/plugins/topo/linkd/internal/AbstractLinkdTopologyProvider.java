@@ -46,7 +46,6 @@ import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
