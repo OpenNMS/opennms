@@ -14,6 +14,8 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
+include::text/java-environment.adoc[]
+
 // Basic Setup OpenNMS
 include::text/basic-setup-opennms/setting-up-opennms.adoc[]
 
@@ -114,5 +116,3 @@ include::text/time-series-storage/newts/rhel.adoc[]
 include::text/time-series-storage/newts/debian.adoc[]
 include::text/time-series-storage/newts/windows.adoc[]
 include::text/time-series-storage/newts/configure-opennms.adoc[]
-
-include::text/java-environment.adoc[]
