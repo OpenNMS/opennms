@@ -32,84 +32,31 @@ import java.text.DecimalFormat;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.AbstractTopologyProvider;
 import org.opennms.features.topology.api.topo.AbstractVertex;
-import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.topology.BridgePort;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
-public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider,  SearchProvider {
-
-    abstract class LinkDetail<K, L> {
-        private final String m_id;
-        private final Vertex m_source;
-        private final K m_sourceLink;
-        private final Vertex m_target;
-        private final L m_targetLink;
-
-        public LinkDetail(String id, Vertex source, K sourceLink, Vertex target, L targetLink){
-            m_id = id;
-            m_source = source;
-            m_sourceLink = sourceLink;
-            m_target = target;
-            m_targetLink = targetLink;
-        }
-
-        public abstract int hashCode();
-
-        public abstract boolean equals(Object obj);
-
-        public abstract Integer getSourceIfIndex();
-
-        public abstract Integer getTargetIfIndex();
-
-        public abstract String getType();
-
-        public String getId() {
-            return m_id;
-        }
-
-        public Vertex getSource() {
-            return m_source;
-        }
-
-        public Vertex getTarget() {
-            return m_target;
-        }
-
-        public K getSourceLink() {
-            return m_sourceLink;
-        }
-
-        public L getTargetLink() {
-            return m_targetLink;
-        }
-    }
+public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProvider implements GraphProvider {
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
@@ -137,15 +84,11 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
     }
 
-    private final boolean m_aclEnabled;
-
     private SelectionAware selectionAwareDelegate = new EnhancedLinkdSelectionAware();
-    private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
+//    private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
 
     protected AbstractLinkdTopologyProvider() {
         super(TOPOLOGY_NAMESPACE_LINKD);
-        String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
-        m_aclEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
 
     /**
@@ -335,7 +278,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return tooltipText.toString();
     }
 
-    public static String getEdgeTooltipText(LinkDetail<?,?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
+    public static String getEdgeTooltipText(LinkdDetail<?,?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
 
         final StringBuilder tooltipText = new StringBuilder();
         Vertex source = linkDetail.getSource();
@@ -427,72 +370,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
 
     }
 
-    //Search Provider methods
-    @Override
-    public String getSearchProviderNamespace() {
-        return TOPOLOGY_NAMESPACE_LINKD;
-    }
-    
-    @Override
-    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix("nodes=", searchPrefix);
-    }
-
-    @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
-        org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
-
-        Set<VertexRef> vertices = ((VertexHopCriteria)criterion).getVertices();
-        LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
-
-        return vertices;
-    }
-
-    @Override
-    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteriaFactory.createCriteria(searchResult.getId(), searchResult.getLabel());
-        container.addCriteria(criterion);
-        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
-        logCriteriaInContainer(container);
-    }
-
-    @Override
-    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-
-        Criteria criterion = findCriterion(searchResult.getId(), container);
-
-        if (criterion != null) {
-            LOG.debug("SearchProvider->removeVertexHopCriteria: found criterion: {} for searchResult {}.", criterion, searchResult);
-            container.removeCriteria(criterion);
-        } else {
-            LOG.debug("SearchProvider->removeVertexHopCriteria: did not find criterion for searchResult {}.", searchResult);
-        }
-
-        logCriteriaInContainer(container);
-    }
-
-    @Override
-    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-        LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
-    }
-
-    @Override
-    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
-        LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
-    }
 
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
@@ -502,33 +379,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     @Override
     public boolean contributesTo(ContentType type) {
         return selectionAwareDelegate.contributesTo(type);
-    }
-
-    private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
-
-        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-        for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
-            if (criterion instanceof LinkdHopCriteria ) {
-                String id = ((LinkdHopCriteria) criterion).getId();
-                if (id.equals(resultId)) {
-                    return criterion;
-                }
-            }
-        }
-        return null;
-    }
-
-    private void logCriteriaInContainer(GraphContainer container) {
-        Criteria[] criteria = container.getCriteria();
-        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.", criteria.length);
-        for (Criteria crit : criteria) {
-            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
-        }
-    }
-
-
-    public boolean isAclEnabled() {
-        return m_aclEnabled;
     }
 
     protected final Vertex getOrCreateVertex(OnmsNode node,OnmsIpInterface primary, boolean add) {
@@ -580,7 +430,7 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return edge;
     }
     
-    protected final LinkdEdge connectVertices(LinkDetail<?,?> linkdetail, String nameSpace) {
+    protected final LinkdEdge connectVertices(LinkdDetail<?,?> linkdetail, String nameSpace) {
         SimpleConnector source = new SimpleConnector(linkdetail.getSource().getNamespace(), linkdetail.getSource().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getSource());
         SimpleConnector target = new SimpleConnector(linkdetail.getTarget().getNamespace(), linkdetail.getTarget().getId()+"-"+linkdetail.getId()+"-connector", linkdetail.getTarget());
 

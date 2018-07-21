@@ -141,7 +141,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link2.setId(105);
         
         m_edges.add(connectVertices(
-                                    new IsIsLinkDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
+                                    new IsIsLinkdDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
                                     ISIS_EDGE_NAMESPACE));
 
         // lldp link
@@ -156,7 +156,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link4.setId(205);
          
          m_edges.add(connectVertices(
-                                    new LldpLinkDetail(Math.min(link3.getId(), link4.getId()) + "|" + Math.max(link3.getId(), link4.getId()),
+                                    new LldpLinkdDetail(this, Math.min(link3.getId(), link4.getId()) + "|" + Math.max(link3.getId(), link4.getId()),
                                                        source, link3, target, link4), LLDP_EDGE_NAMESPACE));
         
         //ospf link
@@ -166,7 +166,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
          OspfLink link6 = createOspfLink(m_node5, "192.168.100.245", "255.255.255.252", 0, 10100, "192.168.100.250", "192.168.100.246", 0);
          link6.setId(405);
          m_edges.add(connectVertices(
-                                  new OspfLinkDetail(Math.min(link5.getId(), link6.getId()) + "|" + Math.max(link5.getId(), link6.getId()),
+                                  new OspfLinkdDetail(Math.min(link5.getId(), link6.getId()) + "|" + Math.max(link5.getId(), link6.getId()),
                                                        source, link5, target, link6), OSPF_EDGE_NAMESPACE));
 
         //cdp link

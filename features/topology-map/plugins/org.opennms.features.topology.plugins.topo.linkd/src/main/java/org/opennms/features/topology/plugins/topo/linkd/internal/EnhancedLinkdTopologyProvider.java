@@ -41,11 +41,8 @@ import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
-import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
-import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
@@ -85,245 +82,9 @@ import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider {
-
-    class LldpLinkDetail extends LinkDetail<LldpLink,LldpLink> {
-
-
-        public LldpLinkDetail(String id, Vertex source, LldpLink sourceLink, Vertex target, LldpLink targetLink) {
-            super(id, source, sourceLink, target, targetLink);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
-            result = prime * result
-                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof LldpLinkDetail){
-                LldpLinkDetail objDetail = (LldpLinkDetail)obj;
-
-                return getId().equals(objDetail.getId());
-            } else  {
-                return false;
-            }
-
-        }
-
-        @Override
-        public Integer getSourceIfIndex() {
-            return getSourceLink().getLldpPortIfindex();
-        }
-
-        @Override
-        public Integer getTargetIfIndex() {
-            return getTargetLink().getLldpPortIfindex();
-        }
-
-        @Override
-        public String getType() {
-            return "LLDP";
-        }
-    }
-
-    class OspfLinkDetail extends LinkDetail<OspfLink,OspfLink>{
-
-        public OspfLinkDetail(String id, Vertex source, OspfLink sourceLink, Vertex target, OspfLink targetLink) {
-            super(id, source, sourceLink, target, targetLink);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId().hashCode()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId().hashCode());
-            result = prime * result
-                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof OspfLinkDetail){
-                OspfLinkDetail objDetail = (OspfLinkDetail)obj;
-
-                return getId().equals(objDetail.getId());
-            } else  {
-                return false;
-            }
-        }
-
-        @Override
-        public Integer getSourceIfIndex() {
-            return getSourceLink().getOspfIfIndex();
-        }
-
-        @Override
-        public Integer getTargetIfIndex() {
-            return getTargetLink().getOspfIfIndex();
-        }
-
-        @Override
-        public String getType() {
-            return "OSPF";
-        }
-    }
-
-    class IsIsLinkDetail extends LinkDetail<IsIsLink,IsIsLink>{
-
-
-        public IsIsLinkDetail(String id, Vertex source, IsIsLink sourceLink, Vertex target, IsIsLink targetLink) {
-            super(id, source, sourceLink, target, targetLink);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId());
-            result = prime * result
-                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof IsIsLinkDetail){
-                IsIsLinkDetail objDetail = (IsIsLinkDetail)obj;
-
-                return getId().equals(objDetail.getId());
-            } else  {
-                return false;
-            }
-        }
-
-        @Override
-        public Integer getSourceIfIndex() {
-            return getSourceLink().getIsisCircIfIndex();
-        }
-
-        @Override
-        public Integer getTargetIfIndex() {
-            return getTargetLink().getIsisCircIfIndex();
-        }
-
-        @Override
-        public String getType() {
-            return "IsIs";
-        }
-    }
-    
-    class BridgeLinkDetail extends LinkDetail<BridgePort,BridgePort> {
-
-        private final Integer m_sourceBridgePort;
-        private final Integer m_targetBridgePort;
-        private final Integer m_sourceIfIndex;
-        private final Integer m_targetifIndex;
-
-        public BridgeLinkDetail(Vertex source, BridgePort sourceBridgePort, Vertex target, BridgePort targetBridgePort) {
-            super(getDefaultEdgeId(sourceBridgePort.getNodeId(), targetBridgePort.getNodeId()), source, sourceBridgePort, target, targetBridgePort);
-            m_sourceBridgePort = sourceBridgePort.getBridgePort();
-            m_targetBridgePort = targetBridgePort.getBridgePort();
-            m_sourceIfIndex = sourceBridgePort.getBridgePortIfIndex();
-            m_targetifIndex = targetBridgePort.getBridgePortIfIndex();
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
-            result = prime * result;
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof BridgeLinkDetail){
-                BridgeLinkDetail objDetail = (BridgeLinkDetail)obj;
-
-                return getId().equals(objDetail.getId());
-            } else  {
-                return false;
-            }
-        }
-        
-        public Integer getSourceBridgePort() {
-            return m_sourceBridgePort;
-        }
-
-        public Integer getTargetBridgePort() {
-            return m_targetBridgePort;
-        }
-
-        @Override
-        public String getType() {
-            return "Bridge";
-        }
-
-        @Override
-        public Integer getSourceIfIndex() {
-            return m_sourceIfIndex;
-        }
-
-        @Override
-        public Integer getTargetIfIndex() {
-            return m_targetifIndex;
-        }
-    }
-
-    public class CdpLinkDetail extends LinkDetail<CdpLink,CdpLink> {
-
-        public CdpLinkDetail(String id, Vertex source, CdpLink sourceLink, Vertex target, CdpLink targetLink) {
-            super(id, source, sourceLink, target, targetLink);
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
-            result = prime * result
-                    + ((getNamespace() == null) ? 0 : getNamespace().hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof CdpLinkDetail){
-                CdpLinkDetail objDetail = (CdpLinkDetail)obj;
-
-                return getId().equals(objDetail.getId());
-            } else  {
-                return false;
-            }
-        }
-
-        @Override
-        public Integer getSourceIfIndex() {
-            return getSourceLink().getCdpCacheIfIndex();
-        }
-
-        @Override
-        public Integer getTargetIfIndex() {
-            return getTargetLink().getCdpCacheIfIndex();
-        }
-
-        @Override
-        public String getType() { return "CDP"; }
-
-    }
 
     private static Logger LOG = LoggerFactory.getLogger(EnhancedLinkdTopologyProvider.class);
 
@@ -334,7 +95,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private TopologyDao m_topologyDao;
     private FilterManager m_filterManager;
     private boolean m_addNodeWithoutLink = false;
-    private LinkdHopCriteriaFactory m_criteriaHopFactory;
 
     private LldpLinkDao m_lldpLinkDao;
     private LldpElementDao m_lldpElementDao;
@@ -390,21 +150,21 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private void loadCompleteTopology() {
         Timer.Context context = m_loadNodesTimer.time();
+        LOG.info("Loading nodes");
         try {
-            LOG.info("Loading nodes");
             for (OnmsNode node: m_nodeDao.findAll()) {
                 m_nodeMap.put(node.getId(), node);
             }
             LOG.info("Nodes loaded");
         } catch (Exception e){
-            LOG.error("Exception getting node list: "+e.getMessage(),e);
+            LOG.error("Loading nodes failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadIpInterfacesTimer.time();
+        LOG.info("Loading Ip Interface");
         try {
-            LOG.info("Loading Ip Interface");
             Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
             for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
                 if (!m_nodeToOnmsIpMap.containsKey(ip.getNode().getId())) {
@@ -417,11 +177,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 }
 
                 if (duplicatedips.contains(ip.getIpAddress())) {
-                    LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    LOG.debug("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     continue;
                 }
                 if (m_ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
-                    LOG.info("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    LOG.debug("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
                     duplicatedips.add(ip.getIpAddress());
                     continue;
                 }
@@ -432,14 +192,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             }
             LOG.info("Ip Interface loaded");
         } catch (Exception e){
-            LOG.error("Exception getting ip list: "+e.getMessage(),e);
+            LOG.error("Loading Ip Interface failed: {}", e.getMessage(), e);
         } finally {
             context.stop();
         }
 
         context = m_loadSnmpInterfacesTimer.time();
+        LOG.info("Loading Snmp Interface");
         try {
-            LOG.info("Loading Snmp Interface");
             for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
                 // Index the SNMP interfaces by node id
                 final int nodeId = snmp.getNode().getId();
@@ -452,29 +212,29 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             }
             LOG.info("Snmp Interface loaded");
         } catch (Exception e){
-            LOG.error("Exception getting snmp interface list: "+e.getMessage(),e);
+            LOG.error("Loading Snmp Interface failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadIpNetToMediaTimer.time();
+        LOG.info("Loading ipNetToMedia");
         try {
             Set<String> duplicatednodemac = new HashSet<String>();
             Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
-            LOG.info("Loading ip net to media");
             for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
                 if (duplicatednodemac.contains(ipnettomedia.getPhysAddress())) {
-                    LOG.info("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    LOG.debug("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
                     continue;
                 }
                 OnmsIpInterface ip = m_ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
                 if (ip == null) {
-                    LOG.info("load ip net media: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    LOG.debug("load ip net media: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
                     continue;
                 }
                 if (mactonodemap.containsKey(ipnettomedia.getPhysAddress())) {
                     if (mactonodemap.get(ipnettomedia.getPhysAddress()).intValue() != ip.getNode().getId().intValue()) {
-                        LOG.info("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                        LOG.debug("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
                         duplicatednodemac.add(ipnettomedia.getPhysAddress());
                         continue;
                     }
@@ -489,52 +249,51 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             for (String dupmac: duplicatednodemac) {
                 m_macToOnmsIpMap.remove(dupmac);
             }
-            
-            LOG.info("Ip net to media loaded");
+            LOG.info("IpNetToMedia loaded");
         } catch (Exception e){
-            LOG.error("Exception getting ip net to media list: "+e.getMessage(),e);
+            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadLldpLinksTimer.time();
+        LOG.info("Loading LldpLink");
         try{
-            LOG.info("Loading Lldp link");
             getLldpLinks();
-            LOG.info("Lldp link loaded");
+            LOG.info("LldpLink loaded");
         } catch (Exception e){
-            LOG.error("Exception getting Lldp link: "+e.getMessage(),e);
+            LOG.error("Loading LldpLink failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadOspfLinksTimer.time();
+        LOG.info("Loading OspfLink");
         try{
-            LOG.info("Loading Ospf link");
             getOspfLinks();
-            LOG.info("Ospf link loaded");
+            LOG.info("OspfLink loaded");
         } catch (Exception e){
-            LOG.error("Exception getting Ospf link: "+e.getMessage(),e);
+            LOG.error("Loading OspfLink failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadCdpLinksTimer.time();
+        LOG.info("Loading CdpLink");
         try{
-            LOG.info("Loading Cdp link");
             getCdpLinks();
-            LOG.info("Cdp link loaded");
+            LOG.info("CdpLink loaded");
         } catch (Exception e){
-            LOG.error("Exception getting Cdp link: "+e.getMessage(),e);
+            LOG.error("Loading CdpLink failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadIsisLinksTimer.time();
+        LOG.info("Loading IsIsLink");
         try{
-            LOG.info("Loading IsIs link");
             getIsIsLinks();
-            LOG.info("IsIs link loaded");
+            LOG.info("IsIsLink loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
         } finally {
@@ -542,21 +301,22 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         context = m_loadBridgeLinksTimer.time();
+        LOG.info("Loading BridgeLink");
         try{
-            LOG.info("Loading Bridge link");
             getBridgeLinks();
-            LOG.info("Bridge link loaded");
+            LOG.info("BridgeLink loaded");
         } catch (Exception e){
-            LOG.error("Exception getting Bridge link: "+e.getMessage(),e);
+            LOG.error("Loading BridgeLink failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
 
         context = m_loadNoLinksTimer.time();
         try {
-            LOG.debug("loadtopology: adding nodes without links: " + isAddNodeWithoutLink());
             if (isAddNodeWithoutLink()) {
+                LOG.info("Adding nodes without links");
                 addNodesWithoutLinks();
+                LOG.info("Nodes without links added");
             }
         } finally {
             context.stop();
@@ -596,7 +356,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             linksWithRemoteChassisId.add(link);
         }
 
-        Set<LldpLinkDetail> combinedLinkDetails = new HashSet<LldpLinkDetail>();
+        Set<LldpLinkdDetail> combinedLinkDetails = new HashSet<LldpLinkdDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for (LldpLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
@@ -648,12 +408,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             parsed.add(targetLink.getId());
             Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
             Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
-            combinedLinkDetails.add(new LldpLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+            combinedLinkDetails.add(new LldpLinkdDetail(this, Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
         }
 
-        for (LldpLinkDetail linkDetail : combinedLinkDetails) {
+        for (LldpLinkdDetail linkDetail : combinedLinkDetails) {
             LinkdEdge edge = connectVertices(linkDetail, LLDP_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,m_nodeToOnmsSnmpMap));
         }
@@ -661,7 +421,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     private void getOspfLinks() {
         List<OspfLink> allLinks =  getOspfLinkDao().findAll();
-        Set<OspfLinkDetail> combinedLinkDetails = new HashSet<OspfLinkDetail>();
+        Set<OspfLinkdDetail> combinedLinkDetails = new HashSet<OspfLinkdDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
         for(OspfLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) 
@@ -677,7 +437,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     parsed.add(targetLink.getId());
                     Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
                     Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
-                    OspfLinkDetail linkDetail = new OspfLinkDetail(
+                    OspfLinkdDetail linkDetail = new OspfLinkdDetail(
                             Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                             source, sourceLink, target, targetLink);
                     combinedLinkDetails.add(linkDetail);
@@ -686,7 +446,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             }
         }
 
-        for (OspfLinkDetail linkDetail : combinedLinkDetails) {
+        for (OspfLinkdDetail linkDetail : combinedLinkDetails) {
             LinkdEdge edge = connectVertices(linkDetail, OSPF_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,m_nodeToOnmsSnmpMap));
         }
@@ -767,7 +527,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
         }
 
         List<IsIsLink> isislinks = m_isisLinkDao.findAll();
-        Set<IsIsLinkDetail> combinedLinkDetails = new HashSet<IsIsLinkDetail>();
+        Set<IsIsLinkdDetail> combinedLinkDetails = new HashSet<IsIsLinkdDetail>();
         Set<Integer> parsed = new HashSet<Integer>();
 
         for (IsIsLink sourceLink : isislinks) {
@@ -806,11 +566,11 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),
                                                m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
             Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
-            combinedLinkDetails.add(new IsIsLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
+            combinedLinkDetails.add(new IsIsLinkdDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
         }
 
-        for (IsIsLinkDetail linkDetail : combinedLinkDetails) {
+        for (IsIsLinkdDetail linkDetail : combinedLinkDetails) {
             LinkdEdge edge = connectVertices(linkDetail, ISIS_EDGE_NAMESPACE);
             edge.setTooltipText(getEdgeTooltipText(linkDetail,m_nodeToOnmsSnmpMap));
         }
@@ -877,14 +637,12 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             Vertex target = null;
             List<OnmsIpInterface> targetInterfaces;
             BridgePort sourcebp = null;
-            OnmsIpInterface targetIp = null;
             for (BridgePort bp: portToVertexMap.keySet()) {
                 sourcebp = bp;
                 source = portToVertexMap.get(bp);        
             }
             for (String mac : macToVertexMap.keySet()) { 
                 targetInterfaces = m_macToOnmsIpMap.get(mac);
-                targetIp = targetInterfaces.get(0);
                 LinkdEdge edge = connectVertices(sourcebp, source, target, BRIDGE_EDGE_NAMESPACE);
                 edge.setTooltipText(getEdgeTooltipText(sourcebp,source,target, targetInterfaces,m_nodeToOnmsSnmpMap,mac));
             }
@@ -915,27 +673,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             OnmsNode node = entry.getValue();
             OnmsIpInterface ip = m_nodeToOnmsIpPrimaryMap.get(nodeId);
             getOrCreateVertex(node, ip,true);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void refresh() {
-        final Timer.Context context = m_loadFullTimer.time();
-        m_nodeMap = new HashMap<Integer, OnmsNode>();
-        m_nodeToOnmsIpMap = new HashMap<Integer,  List<OnmsIpInterface>>();
-        m_nodeToOnmsSnmpMap = new HashMap<Integer, List<OnmsSnmpInterface>>();
-        m_nodeToOnmsIpPrimaryMap = new HashMap<Integer, OnmsIpInterface>();
-        m_macToOnmsIpMap = new HashMap<String, List<OnmsIpInterface>>();
-        m_ipToOnmsIpMap = new HashMap<InetAddress,  OnmsIpInterface>();
-        
-        try {
-            resetContainer();
-            loadCompleteTopology();
-        } catch (Exception e){
-            LOG.error("Exception reset Container: "+e.getMessage(),e);
-        } finally {
-            context.stop();
         }
     }
 
@@ -989,14 +726,6 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
 
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
-    }
-
-    public LinkdHopCriteriaFactory getLinkdHopCriteriaFactory() {
-        return m_criteriaHopFactory;
-    }
-
-    public void setLinkdHopCriteriaFactory(LinkdHopCriteriaFactory criteriaHopFactory) {
-        m_criteriaHopFactory = criteriaHopFactory;
     }
 
     public void setLldpLinkDao(LldpLinkDao lldpLinkDao) {
@@ -1125,7 +854,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     if (node != null) {
                         final Vertex defaultVertex = getOrCreateVertex(node, null, false);
                         if (defaultVertex != null) {
-                            return Lists.newArrayList(new LinkdHopCriteria(node.getNodeId(), node.getLabel(), m_nodeDao));
+                            return Lists.newArrayList(LinkdHopCriteriaFactory.createCriteria(node.getNodeId(), node.getLabel()));
                         }
                     }
 
@@ -1134,68 +863,25 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     }
 
     @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        //LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
-
-        List<Vertex> vertices = getFilteredVertices();
-        List<SearchResult> searchResults = Lists.newArrayList();
-
-        for(Vertex vertex : vertices){
-            if(searchQuery.matches(vertex.getLabel())) {
-                searchResults.add(new SearchResult(vertex, false, false));
-            }
-        }
-
-        //LOG.debug("SearchProvider->query: found {} search results.", searchResults.size());
-        return searchResults;
-    }
-
-    protected List<Vertex> getFilteredVertices() {
-        if(isAclEnabled()){
-            //Get All nodes when called should filter with ACL
-            List<OnmsNode> onmsNodes = m_nodeDao.findAll();
-
-            //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
-                @Override
-                public Integer apply(OnmsNode node) {
-                    return node.getId();
-                }
-            });
-
-
-            //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(m_vertexProvider.getVertices(), new Predicate<Vertex>() {
-                @Override
-                public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
-                }
-            }));
-        } else{
-            return m_vertexProvider.getVertices();
-        }
-
-    }
-
-    
-    protected Map<Integer, String> getAllNodesNoACL() {
-        if(getFilterManager().isEnabled()){
-            String[] userGroups = getFilterManager().getAuthorizationGroups();
-            Map<Integer, String> nodeLabelsById = null;
-            try{
-                getFilterManager().disableAuthorizationFilter();
-                nodeLabelsById = getNodeDao().getAllLabelsById();
-
-            } finally {
-                // Make sure that we re-enable the authorization filter
-                if(userGroups != null){
-                    getFilterManager().enableAuthorizationFilter(userGroups);
-                }
-            }
-            return nodeLabelsById != null ? nodeLabelsById : new HashMap<Integer, String>();
-        } else {
-            return getNodeDao().getAllLabelsById();
+    @Transactional
+    public void refresh() {
+        final Timer.Context context = m_loadFullTimer.time();
+        m_nodeMap = new HashMap<Integer, OnmsNode>();
+        m_nodeToOnmsIpMap = new HashMap<Integer,  List<OnmsIpInterface>>();
+        m_nodeToOnmsSnmpMap = new HashMap<Integer, List<OnmsSnmpInterface>>();
+        m_nodeToOnmsIpPrimaryMap = new HashMap<Integer, OnmsIpInterface>();
+        m_macToOnmsIpMap = new HashMap<String, List<OnmsIpInterface>>();
+        m_ipToOnmsIpMap = new HashMap<InetAddress,  OnmsIpInterface>();
+        
+        try {
+            resetContainer();
+            loadCompleteTopology();
+        } catch (Exception e){
+            LOG.error("Exception reset Container: "+e.getMessage(),e);
+        } finally {
+            context.stop();
         }
     }
+
 
 }
