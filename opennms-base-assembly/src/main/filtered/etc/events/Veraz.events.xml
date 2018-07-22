@@ -93,8 +93,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalEMSHAAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalEMSHAAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -283,8 +285,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalSCTPAssociationInitializationFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalSCTPAssociationInitializationFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -473,8 +477,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalInvalidIUAVersion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalInvalidIUAVersion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -663,8 +669,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalInvalidIUAASPTrafficHandlingMode:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalInvalidIUAASPTrafficHandlingMode:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -853,8 +861,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalIUASCTPAssociationDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalIUASCTPAssociationDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1043,8 +1053,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalLocalGatewatInitializationFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalLocalGatewatInitializationFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1233,8 +1245,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalTrunkGroupinCriticalBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalTrunkGroupinCriticalBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1423,8 +1437,10 @@
 			Veraz RESOLVED Critical Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalMGWMGCPCommunicationLinkFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapCriticalMGWMGCPCommunicationLinkFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -15497,8 +15513,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -15687,8 +15705,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCPDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCPDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -15877,8 +15897,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionGroupDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionGroupDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -16067,8 +16089,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -16257,8 +16281,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSessionLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -16447,8 +16473,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -16637,8 +16665,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEBackupPersistentDataIsInUse:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEBackupPersistentDataIsInUse:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -16827,8 +16857,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSCTP_SESSION_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSCTP_SESSION_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17017,8 +17049,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17207,8 +17241,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7GW_FAILOVER_REQ_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7GW_FAILOVER_REQ_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17397,8 +17433,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7GW_FAILBACK_REQ_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7GW_FAILBACK_REQ_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17587,8 +17625,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17777,8 +17817,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDynamicProvisioningBlocked:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDynamicProvisioningBlocked:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -17967,8 +18009,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -18157,8 +18201,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -18347,8 +18393,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -18537,8 +18585,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_FAILURE:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPE_FAILURE:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -18727,8 +18777,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -18917,8 +18969,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFTPRetransmitFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFTPRetransmitFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -19107,8 +19161,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFTPRetransmitSucceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFTPRetransmitSucceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -19297,8 +19353,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENShutdownRequested:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENShutdownRequested:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -19487,8 +19545,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRTFTPDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRTFTPDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -19677,8 +19737,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -19867,8 +19929,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDChannelOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDChannelOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -20057,8 +20121,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorBrassServerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorBrassServerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -20247,8 +20313,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEmanateMasterAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEmanateMasterAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -20437,8 +20505,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTrapreceiverDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTrapreceiverDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -20627,8 +20697,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSSNMPAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSSNMPAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -20817,8 +20889,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSSNMPTrapAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSSNMPTrapAgentDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21007,8 +21081,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEVNT_ARBTR_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEVNT_ARBTR_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21197,8 +21273,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSConfigurationLookupServerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSConfigurationLookupServerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21387,8 +21465,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSLoggerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSLoggerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21577,8 +21657,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSCMIGatewayDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSCMIGatewayDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21767,8 +21849,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSCorrelatorDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSCorrelatorDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -21957,8 +22041,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSJavaServicesDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFMSJavaServicesDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -22147,8 +22233,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSProcessMonitorDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEMSProcessMonitorDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -22337,8 +22425,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorXMSGatewayDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorXMSGatewayDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -22527,8 +22617,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -22717,8 +22809,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIStartFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIStartFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -22907,8 +23001,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGAgentDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGAgentDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -23097,8 +23193,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIStartError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorOMNIStartError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -23287,8 +23385,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorGatekeeperdiscoveryisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorGatekeeperdiscoveryisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -23477,8 +23577,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorGatekeeperregistrationisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorGatekeeperregistrationisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -23667,8 +23769,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorNotregisteredwiththeGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorNotregisteredwiththeGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -23857,8 +23961,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFailedtosendmessagetoGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorFailedtosendmessagetoGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24047,8 +24153,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorLostConnectiontoxMS:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorLostConnectiontoxMS:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24237,8 +24345,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorControlSwitchManagerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorControlSwitchManagerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24427,8 +24537,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDigitRuleTemplateServerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDigitRuleTemplateServerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24617,8 +24729,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDataAnalysisServerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDataAnalysisServerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24807,8 +24921,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTransactionManagerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTransactionManagerDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -24997,8 +25113,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSyslogManagerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSyslogManagerDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -25187,8 +25305,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseBackupFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseBackupFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -25377,8 +25497,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseTableSegmentHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseTableSegmentHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -25567,8 +25689,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseTableSpaceHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDatabaseTableSpaceHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -25757,8 +25881,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorUNIXFileSystemHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorUNIXFileSystemHighThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -25947,8 +26073,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGProvisioningDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGProvisioningDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -26137,8 +26265,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWDChannelOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWDChannelOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -26327,8 +26457,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -26517,8 +26649,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGStartError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSGStartError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -26707,8 +26841,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -26897,8 +27033,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -27087,8 +27225,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -27277,8 +27417,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCPProvisionError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCPProvisionError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -27467,8 +27609,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDataCongestionAtEntry:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDataCongestionAtEntry:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -27657,8 +27801,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -27847,8 +27993,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28037,8 +28185,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEventVersionIncompatible:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorEventVersionIncompatible:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28227,8 +28377,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICDRDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICDRDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28417,8 +28569,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRGENDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28607,8 +28761,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorBAFCDRDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorBAFCDRDataCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28797,8 +28953,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRTFTPDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRTFTPDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -28987,8 +29145,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRInternalError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRInternalError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -29177,8 +29337,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDiskSpaceLow:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDiskSpaceLow:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -29367,8 +29529,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECFTPConnectFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECFTPConnectFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -29557,8 +29721,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECFTPCommandFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRToECFTPCommandFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -29747,8 +29913,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -29937,8 +30105,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEExternalServiceUnavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEExternalServiceUnavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -30127,8 +30297,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEOutofMemory:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEOutofMemory:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -30317,8 +30489,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEPolicyInfiniteLoopDetected:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPEPolicyInfiniteLoopDetected:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -30507,8 +30681,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEDisabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -30697,8 +30873,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEProvisioningError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -30887,8 +31065,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEDisabled_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEDisabled_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -31077,8 +31257,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEProvisioningError_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEProvisioningError_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -31267,8 +31449,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEAllPEsunavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSEEAllPEsunavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -31457,8 +31641,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorNotregisteredwithGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorNotregisteredwithGatekeeper:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -31647,8 +31833,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorICEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -31837,8 +32025,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTrunkGroupinMajorBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorTrunkGroupinMajorBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32027,8 +32217,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCCEOverloaded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32217,8 +32409,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDChannelFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorDChannelFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32407,8 +32601,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPRISessionGroupFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorPRISessionGroupFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32597,8 +32793,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSpanStatus:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorMGWSpanStatus:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32787,8 +32985,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -32977,8 +33177,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -33167,8 +33369,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkSetFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkSetFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -33357,8 +33561,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkSetCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7LinkSetCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -33547,8 +33753,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7RouteSetFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7RouteSetFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -33737,8 +33945,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7RouteSetCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorSS7RouteSetCongestion:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -33927,8 +34137,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorECDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -34117,8 +34329,10 @@
 			Veraz RESOLVED Major Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMajorCDRDatabaseAccessFailure:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -34307,8 +34521,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -34497,8 +34713,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorTG_ENDPOINT_OUT_OF_SERVICE:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorTG_ENDPOINT_OUT_OF_SERVICE:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -34687,8 +34905,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorOVERLOAD:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorOVERLOAD:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -34877,8 +35097,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_CONFIG_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_CONFIG_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -35067,8 +35289,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_START_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_START_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -35257,8 +35481,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_SHUTDOWN_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_SHUTDOWN_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -35447,8 +35673,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCPDegraded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCPDegraded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -35637,8 +35865,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -35827,8 +36057,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_SHUTDOWN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_SHUTDOWN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36017,8 +36249,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_START_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_START_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36207,8 +36441,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_RESTORED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GW_RESTORED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36397,8 +36633,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGConfigurationError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGConfigurationError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36587,8 +36825,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorBLOTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorBLOTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36777,8 +37017,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCGBTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCGBTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -36967,8 +37209,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCGUTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCGUTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -37157,8 +37401,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGRSTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGRSTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -37347,8 +37593,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRELTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRELTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -37537,8 +37785,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRSCTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRSCTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -37727,8 +37977,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorUBLTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorUBLTimeouts:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -37917,8 +38169,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorContinuityTestsFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorContinuityTestsFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -38107,8 +38361,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCVTAlarms:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCVTAlarms:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -38297,8 +38553,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_TIMED_OUT:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_TIMED_OUT:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -38487,8 +38745,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -38677,8 +38937,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_TIMED_OUT:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_TIMED_OUT:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -38867,8 +39129,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_RESET_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_RESET_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -39057,8 +39321,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -39247,8 +39513,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPEIsBackingUpThePersistentData:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPEIsBackingUpThePersistentData:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -39437,8 +39705,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorNoneofSS7GatewaysEnabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorNoneofSS7GatewaysEnabled:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -39627,8 +39897,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPrimarySCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPrimarySCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -39817,8 +40089,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSecondarySCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSecondarySCTPLinkDown:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40007,8 +40281,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40197,8 +40473,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_DEGRADED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40387,8 +40665,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCOMPONENT_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCOMPONENT_DOWN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40577,8 +40857,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_INIT_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40767,8 +41049,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEConfigurationError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEConfigurationError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -40957,8 +41241,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEStartFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEStartFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -41147,8 +41433,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_SHUTDOWN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_SHUTDOWN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -41337,8 +41625,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_GEN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_GEN_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -41527,8 +41817,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_TFTP_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_TFTP_FAILED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -41717,8 +42009,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSHUTTING_DOWN_CDR_GEN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSHUTTING_DOWN_CDR_GEN:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -41907,8 +42201,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSHUTTING_DOWN_CDR_TFTP:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSHUTTING_DOWN_CDR_TFTP:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -42097,8 +42393,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelMaintenance:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelMaintenance:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -42287,8 +42585,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelManualOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelManualOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -42477,8 +42777,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelWait:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDChannelWait:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -42667,8 +42969,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRSIP_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorRSIP_ERR:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -42857,8 +43161,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorChannelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorChannelStatusChange:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43047,8 +43353,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPE_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPE_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43237,8 +43545,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCCP_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43427,8 +43737,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICE_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43617,8 +43929,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDR_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43807,8 +44121,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorEC_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -43997,8 +44313,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7_GW_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7_GW_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -44187,8 +44505,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorOMNI_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorOMNI_MANUAL_STARTUP_NEEDED:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -44377,8 +44697,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGatekeeperRegistrationPending_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGatekeeperRegistrationPending_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -44567,8 +44889,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGatekeeperunregistrationisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorGatekeeperunregistrationisrejected_:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -44757,8 +45081,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDatabaseTableSegmentLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDatabaseTableSegmentLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -44947,8 +45273,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDatabaseTableSpaceLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorDatabaseTableSpaceLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -45137,8 +45465,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorUNIXFileSystemLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorUNIXFileSystemLowThresholdExceeded:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -45327,8 +45657,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelMaintainenceBusy:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelMaintainenceBusy:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -45517,8 +45849,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelManualOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelManualOutofService:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -45707,8 +46041,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelWait:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorMGWDChannelWait:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -45897,8 +46233,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -46087,8 +46425,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGFailbackError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSGFailbackError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -46277,8 +46617,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDRShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDRShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -46467,8 +46809,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorECShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorECShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -46657,8 +47001,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICEShutdownError:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -46847,8 +47193,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDRGENDataCongestionAtEntry:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorCDRGENDataCongestionAtEntry:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47037,8 +47385,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSEEPEunavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSEEPEunavailable:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47227,8 +47577,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorTrunkGroupinMinorBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorTrunkGroupinMinorBusyout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47417,8 +47769,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorContinuityTestFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorContinuityTestFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47607,8 +47961,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CGBTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CGBTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47797,8 +48153,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CGUTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CGUTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -47987,8 +48345,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GRSTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7GRSTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -48177,8 +48537,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7BLOTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7BLOTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -48367,8 +48729,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7UBLTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7UBLTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -48557,8 +48921,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7RSCTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7RSCTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -48747,8 +49113,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7RELTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7RELTimeout:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -48937,8 +49305,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CVTAlarm:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorSS7CVTAlarm:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -49127,8 +49497,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPRISessionFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorPRISessionFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -49317,8 +49689,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICDRDiskFullThresholdReached:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorICDRDiskFullThresholdReached:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -49507,8 +49881,10 @@
 			Veraz RESOLVED Minor Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorBAFCDRDiskFullThresholdReached:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapMinorBAFCDRDiskFullThresholdReached:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -49697,8 +50073,10 @@
 			Veraz RESOLVED Warning Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningEMSToOMNIConnectionFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningEMSToOMNIConnectionFailed:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -49887,8 +50265,10 @@
 			Veraz RESOLVED Warning Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningControlSwitchLicenseExpiring:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningControlSwitchLicenseExpiring:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -50077,8 +50457,10 @@
 			Veraz RESOLVED Warning Event: %parm[#12]% - %parm[#1]%
 			&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningLongDurationCallDetected:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/veraz/traps/ipvrEmsTrapWarningLongDurationCallDetected:%dpname%:%nodeid%:%interface%:%parm[#12]%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

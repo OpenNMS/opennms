@@ -375,8 +375,10 @@ was involved in the generation of this notification.&lt;/p>&lt;table>
 			ciscoPimInterfaceUp trap received 
 			pimInterfaceStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown:%nodeid%:%dpname%:%parm[names-all]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown:%nodeid%:%dpname%:%parm[names-all]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

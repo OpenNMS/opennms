@@ -263,8 +263,10 @@ sent&lt;/p>&lt;table>
 			bsnAPUp trap received 
 			bsnAPDot3MacAddress=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -330,8 +332,10 @@ Airespace AP and add to system.&lt;/p>&lt;table>
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnAPPortNumberTrapVariable=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPDisassociated:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPDisassociated:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -416,8 +420,10 @@ trap will be sent&lt;/p>&lt;table>
 			bsnAPPortNumber=%parm[#3]% 
 			bsnAPIfUpDownCause=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPIfDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPIfDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1460,8 +1466,10 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p>&lt;table>
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPLoadProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1497,8 +1505,10 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p>&lt;table>
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPNoiseProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1534,8 +1544,10 @@ enable /disable using bsnRrmProfileTrapControlFlag &lt;/p>&lt;table>
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPInterferenceProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPInterferenceProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1571,8 +1583,10 @@ enable/disable using bsnRrmProfileTrapControlFlag &lt;/p>&lt;table>
 			bsnAPDot3MacAddress=%parm[#1]% 
 			bsnAPIfSlotId=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPCoverageProfileFailed:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1626,8 +1640,10 @@ with APMacAddress on which its detected&lt;/p>&lt;table>
 			bsnRogueAPRadioType=%parm[#4]% 
 			bsnRogueAPAirespaceAPName=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#5]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1776,8 +1792,10 @@ sensor is operating within proper temp range&lt;/p>&lt;table>
 			bsnTemperatureSensorClear trap received 
 			bsnSensorTemperature=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnSensedTemperatureOutOfRange:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1859,8 +1877,10 @@ User intervention is required.&lt;/p>&lt;table>&lt;/table></descr>
 			bsnMaxRogueCountClear trap received 
 			bsnMaxRogueCount=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1929,8 +1949,10 @@ AP&lt;/p>&lt;table>
 			bsnAPMacAddrTrapVariable=%parm[#1]% 
 			bsnMaxRogueCount=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnApMaxRogueCountExceeded:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2147,7 +2169,7 @@ the station may be wrong.&lt;/p>&lt;table>
 			bsnStationAPMacAddr=%parm[#2]% 
 			bsnStationAPIfSlotId=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
+      <severity>Cleared</severity>
       <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
    </event>
    <event>
@@ -2237,7 +2259,9 @@ clear the previous trap.&lt;/p>&lt;table>
 			bsnRogueAPOnWiredNetwork=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Minor</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnRogueAPDetectedOnWiredNetwork:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2375,8 +2399,10 @@ be using the duplicate IP.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#4]% 
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedByAP:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2505,8 +2531,10 @@ be using the duplicate IP.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#4]% 
 			bsnDuplicateIpTrapClear=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnDuplicateIpAddressReportedBySwitch:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2623,8 +2651,10 @@ longer being contained.&lt;/p>&lt;table>
 			bsnAPIfType=%parm[#3]% 
 			bsnClearTrapVariable=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPContainedAsARogue:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2720,8 +2750,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidSsid:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2803,8 +2835,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApIsMissing:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnTrustedApIsMissing:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2885,8 +2919,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAdhocRogueAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2967,8 +3003,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnRogueAPDot11MacAddress=%parm[#1]% 
 			bsnClearTrapVariable=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRogueApAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnRogueApAutoContained:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3071,8 +3109,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnTrustedApEncryptionRequired=%parm[#3]% 
 			bsnClearTrapVariable=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidEncryption:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3197,8 +3237,10 @@ earlier alert.&lt;/p>&lt;table>
 			bsnTrustedApRadioPolicyRequired=%parm[#3]% 
 			bsnClearTrapVariable=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidRadioPolicy:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3303,8 +3345,10 @@ is issued.&lt;/p>&lt;table>
 			bsnNetworkType=%parm[#1]% 
 			bsnNetworkState=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnNetworkStateChangedDisable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3465,8 +3509,10 @@ bsnSignatureMacInfo. &lt;/p>&lt;table>
 			bsnSignatureAttackerMacAddress=%parm[#12]% 
 			bsnSignatureMacInfo=%parm[#13]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnSignatureAttackDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%:%parm[#4]%:%parm[#5]%:%parm[#6]%:%parm[#12]%:%parm[#13]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3670,8 +3716,10 @@ starts transmitting again after a prior failure.&lt;/p>&lt;table>
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardTxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3758,8 +3806,10 @@ starts receiving again after a prior failure.&lt;/p>&lt;table>
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfType=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnAPRadioCardRxFailure:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3871,8 +3921,10 @@ true, then the trap clears the earlier alert.&lt;/p>&lt;table>
 			bsnTrustedApPreambleRequired=%parm[#3]% 
 			bsnClearTrapVariable=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnTrustedApHasInvalidPreamble:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -4338,8 +4390,10 @@ generated earlier, after the expiry of Non-Occupancy Period.&lt;/p>&lt;table>
 			bsnAPIfSlotId=%parm[#2]% 
 			bsnAPIfPhyChannelNumber=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/bsnRadarChannelDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/bsnRadarChannelDetected:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

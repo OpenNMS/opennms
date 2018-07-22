@@ -13080,7 +13080,9 @@
 			sipServerEventState=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -13128,7 +13130,9 @@
 			sipServerEventState=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/sipServerEvent:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -14829,6 +14833,8 @@
 			webServiceAvailablityChangeOldState=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/Covergence/CXC-MIB/webServiceAvailablityChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
 </events>

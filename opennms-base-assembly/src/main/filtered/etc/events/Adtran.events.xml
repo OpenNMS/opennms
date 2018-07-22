@@ -148,7 +148,9 @@
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm:%dpname%:%nodeid%:%interface%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -216,7 +218,9 @@
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm:%dpname%:%nodeid%:%interface%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -284,7 +288,9 @@
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm:%dpname%:%nodeid%:%interface%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -352,7 +358,9 @@
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -420,7 +428,9 @@
 			sysName=%parm[#2]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -493,7 +503,9 @@
 			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
 		</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="true"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

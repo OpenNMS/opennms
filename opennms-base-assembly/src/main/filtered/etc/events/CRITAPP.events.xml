@@ -71,8 +71,10 @@ critAppIndex changed status to up.&lt;/p>&lt;table>
 			critAppName=%parm[#1]% 
 			critAppProcID=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/snmpResearch/traps/critAppDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -95,8 +97,10 @@ critAppIndex changed status to up.&lt;/p>&lt;table>
       <logmsg dest="logndisplay">&lt;p>
 			critAppAllRunning trap received&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/snmpResearch/traps/critAppNotAllRunning:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/snmpResearch/traps/critAppNotAllRunning:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

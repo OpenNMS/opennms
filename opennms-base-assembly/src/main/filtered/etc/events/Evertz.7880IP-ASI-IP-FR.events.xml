@@ -24,7 +24,9 @@
             ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -76,7 +78,9 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii1False trap received
             ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -128,7 +132,9 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz IPASIIP7880FR Event: faultasiInputPresentAsii2False trap received
             ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputPresentAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -181,7 +187,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -235,7 +243,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputSyncErrorAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -289,7 +299,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -343,7 +355,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultasiInputContinuityErrorAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -397,7 +411,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -451,7 +467,9 @@
             received ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]%
             faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamMissingStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -505,7 +523,9 @@
             faultinputStreamCorrectedFECFramesStream1False trap received ipasiipInstance=%parm[#1]%
             faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -559,7 +579,9 @@
             faultinputStreamCorrectedFECFramesStream2False trap received ipasiipInstance=%parm[#1]%
             faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -613,7 +635,9 @@
             faultinputStreamUnCorrectedFECFramesStream1False trap received ipasiipInstance=%parm[#1]%
             faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -667,7 +691,9 @@
             faultinputStreamUnCorrectedFECFramesStream2False trap received ipasiipInstance=%parm[#1]%
             faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultinputStreamUnCorrectedFECFramesStream2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -720,7 +746,9 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii1False trap received
             ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -772,7 +800,9 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz IPASIIP7880FR Event: faultsdiInputPresentAsii2False trap received
             ipasiipInstance=%parm[#1]% faultReservedData=%parm[#2]% faultExtraData=%parm[#3]%&lt;/p></logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/ipasiip7880fr/faultsdiInputPresentAsii2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

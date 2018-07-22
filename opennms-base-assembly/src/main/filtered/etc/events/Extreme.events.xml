@@ -107,8 +107,10 @@ is now operating correctly.&lt;/p>&lt;table>
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/fanfailed:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/fanfailed:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -287,8 +289,10 @@ the DOS threshold is cleared .&lt;/p>&lt;table>
 			extremeDosThresholdCleared trap received 
 			extremeDosAlertLevel=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremeDosThresholdReached:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremeDosThresholdReached:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -387,8 +391,10 @@ the DOS threshold is cleared for any of the ports.&lt;/p>&lt;table>
 			extremeEnhDosPortIfIndex=%parm[#1]% 
 			extremeEnhDosPortRateLimitThreshold=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremeEnhDosThresholdReached:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremeEnhDosThresholdReached:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1542,8 +1548,10 @@ is now operating correctly.&lt;/p>&lt;table>
 			sysDescr=%parm[#2]% 
 			extremeFanNumber=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremeFanfailed:%dpname%:%nodeid%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremeFanfailed:%dpname%:%nodeid%:%parm[#3]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1657,8 +1665,10 @@ has come back to life without causing an agent restart.&lt;/p>&lt;table>
 			sysDescr=%parm[#2]% 
 			extremePowerSupplyNumber=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremePowerSupplyFail:%dpname%:%nodeid%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremePowerSupplyFail:%dpname%:%nodeid%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1727,8 +1737,10 @@ indicating an alarm condition.&lt;/p>&lt;table>
 			sysUpTime=%parm[#1]% 
 			sysDescr=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremeRpsAlarm:%dpname%:%nodeid%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremeRpsAlarm:%dpname%:%nodeid%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2482,8 +2494,10 @@ extremeCpuUtilRisingThreshold&lt;/p>&lt;table>
 			extremeCpuAggregateUtilization=%parm[#2]% 
 			extremeCpuUtilRisingThreshold=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/extremeCpuUtilizationRisingTrap:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/extremeCpuUtilizationRisingTrap:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -5180,8 +5194,10 @@ the specified interface has been detected.&lt;/p>&lt;table>
 			dsx1IfIndex=%parm[#4]% 
 			dsx1LineStatus=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx1LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/wanDsx1LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -5330,7 +5346,9 @@ the specified interface has been detected.&lt;/p>&lt;table>
 			dsx3IfIndex=%parm[#4]% 
 			dsx3LineStatus=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/extreme/traps/wanDsx3LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/extreme/traps/wanDsx3LossOfMasterClock:%dpname%:%nodeid%:%parm[#3]%:%parm[#4]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
 </events>

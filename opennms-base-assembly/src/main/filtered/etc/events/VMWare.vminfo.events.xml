@@ -39,8 +39,10 @@ poll the vmwVmTable to obtain current status.&lt;/p>&lt;table>
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmPoweredOff:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -166,8 +168,10 @@ poll the vmwVmTable to obtain current status.&lt;/p>&lt;table>
 			vmwVmConfigFilePath=%parm[#2]% 
 			vmwVmDisplayName=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/vmware/traps/vmwVmHBLost:%dpname%:%nodeid%:%parm[#3]%" alarm-type="2" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

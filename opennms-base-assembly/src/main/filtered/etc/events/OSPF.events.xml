@@ -110,8 +110,10 @@ state (i.e., Point-to-Point).&lt;/p>&lt;table>
 			ospfVirtIfNeighbor=%parm[#3]% 
 			ospfVirtIfState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -240,8 +242,10 @@ progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
 			ospfVirtNbrRtrId=%parm[#3]% 
 			ospfVirtNbrState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -302,8 +306,10 @@ progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
 			ospfVirtNbrRtrId=%parm[#3]% 
 			ospfVirtNbrState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1182,8 +1188,10 @@ Backup).&lt;/p>&lt;table>
 			ospfAddressLessIf=%parm[#3]% 
 			ospfIfState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1244,8 +1252,10 @@ Backup).&lt;/p>&lt;table>
 			ospfAddressLessIf=%parm[#3]% 
 			ospfIfState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1306,8 +1316,10 @@ Backup).&lt;/p>&lt;table>
 			ospfAddressLessIf=%parm[#3]% 
 			ospfIfState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1368,8 +1380,10 @@ Backup).&lt;/p>&lt;table>
 			ospfAddressLessIf=%parm[#3]% 
 			ospfIfState=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1530,8 +1544,10 @@ a per-area basis.&lt;/p>&lt;table>
 	ospfAreaId=%parm[#2]%
 	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1792,8 +1808,10 @@ transitions for a neighbor.&lt;/p>&lt;table>
 	ospfNbrRestartHelperAge=%parm[#6]%
 	ospfNbrRestartHelperExitReason=%parm[#7]%&lt;/p>
 	</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -1934,7 +1952,9 @@ status transitions for a virtual neighbor.&lt;/p>&lt;table>
 	ospfVirtNbrRestartHelperAge=%parm[#5]%
 	ospfVirtNbrRestartHelperExitReason=%parm[#6]%&lt;/p>
 	</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
 </events>
