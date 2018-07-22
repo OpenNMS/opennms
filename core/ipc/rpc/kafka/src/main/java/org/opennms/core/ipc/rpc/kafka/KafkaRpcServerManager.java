@@ -41,10 +41,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.ByteArrayDeserializer;
@@ -70,15 +72,14 @@ import com.google.protobuf.InvalidProtocolBufferException;
 public class KafkaRpcServerManager {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRpcServerManager.class);
-    public static final String KAFKA_CLIENT_PID = "org.opennms.core.ipc.rpc.kafka";
     private final Map<String, RpcModule<RpcRequest, RpcResponse>> registerdModules = new ConcurrentHashMap<>();
     private final Properties kafkaConfig = new Properties();
     private ConfigurationAdmin configAdmin;
     private KafkaProducer<String, byte[]> producer;
     private MinionIdentity minionIdentity;
     private final ThreadFactory threadFactory = new ThreadFactoryBuilder()
-            .setNameFormat("kafka-consumer-rpc-server-%d")
-            .build();
+                                                       .setNameFormat("rpc-server-kafka-consumer-%d")
+                                                       .build();
     private final ExecutorService executor = Executors.newCachedThreadPool(threadFactory);
     private Map<RpcModule<RpcRequest, RpcResponse>, KafkaConsumerRunner> rpcModuleConsumers = new ConcurrentHashMap<>();
     // cache to hold rpcId for directed RPCs and expire them
@@ -91,15 +92,16 @@ public class KafkaRpcServerManager {
 
     public void init() throws IOException {
         // group.id is mapped to minion location, so one of the minion executes the request.
-        kafkaConfig.put("group.id", minionIdentity.getLocation());
-        kafkaConfig.put("enable.auto.commit", "true");
-        kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
-        kafkaConfig.put("auto.commit.interval.ms", "1000");
-        kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
-        kafkaConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, minionIdentity.getLocation());
+        kafkaConfig.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+        kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+        kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        kafkaConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
+        kafkaConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
         // Retrieve all of the properties from org.opennms.core.ipc.rpc.kafka.cfg
-        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KAFKA_CLIENT_PID).getProperties();
+        final Dictionary<String, Object> properties = configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties();
         if (properties != null) {
             final Enumeration<String> keys = properties.keys();
             while (keys.hasMoreElements()) {
@@ -135,7 +137,7 @@ public class KafkaRpcServerManager {
     }
 
     private void startConsumerForModule(RpcModule<RpcRequest, RpcResponse> rpcModule) {
-        final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-request", rpcModule.getId(),
+        final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_REQUEST_TOPIC_NAME, rpcModule.getId(),
                 minionIdentity.getLocation());
         KafkaConsumer<String, byte[]> consumer;
         final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
@@ -205,9 +207,9 @@ public class KafkaRpcServerManager {
                             RpcMessageProtos.RpcMessage rpcMessage = RpcMessageProtos.RpcMessage
                                                                           .parseFrom(record.value());
                             String rpcId = rpcMessage.getRpcId();
-                            long expirationTime = rpcMessage.getExpiresAt();
+                            long expirationTime = rpcMessage.getExpirationTime();
                             if (expirationTime < System.currentTimeMillis()) {
-                                LOG.warn("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
+                                LOG.debug("ttl already expired for the request id = {}, won't process.", rpcMessage.getRpcId());
                                 continue;
                             }
                             boolean hasSystemId = rpcMessage.hasSystemId();
@@ -241,13 +243,13 @@ public class KafkaRpcServerManager {
                                 String responseAsString = null;
                                 try {
                                     responseAsString = module.marshalResponse(response);
-                                    final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory("rpc-response",
+                                    final JmsQueueNameFactory topicNameFactory = new JmsQueueNameFactory(KafkaRpcConstants.RPC_RESPONSE_TOPIC_NAME,
                                             module.getId());
                                     RpcMessageProtos.RpcMessage rpcResponse = RpcMessageProtos.RpcMessage.newBuilder()
                                             .setRpcId(rpcId).setRpcContent(ByteString.copyFromUtf8(responseAsString))
                                             .build();
                                     final ProducerRecord<String, byte[]> producerRecord = new ProducerRecord<>(
-                                            topicNameFactory.getName(), rpcResponse.toByteArray());
+                                            topicNameFactory.getName(), rpcId, rpcResponse.toByteArray());
                                     producer.send(producerRecord);
                                     LOG.debug("request with id {} executed, sending response {} ", rpcId,
                                             responseAsString);

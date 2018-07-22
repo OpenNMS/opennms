@@ -28,23 +28,29 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import org.opennms.minion.core.api.MinionIdentity;
+import java.util.concurrent.CompletableFuture;
 
-public class MockMinionIdentity implements MinionIdentity {
+import org.opennms.core.rpc.api.RpcClient;
+import org.opennms.core.rpc.api.RpcClientFactory;
+import org.opennms.core.rpc.echo.EchoRequest;
+import org.opennms.core.rpc.echo.EchoResponse;
+import org.opennms.core.rpc.echo.EchoRpcModule;
 
-    private final String location;
+public class MockEchoClient implements RpcClient<EchoRequest, EchoResponse> {
     
-    public MockMinionIdentity(String location) {
-        this.location = location;
+    private final RpcClientFactory rpcProxy;
+    
+    public MockEchoClient(RpcClientFactory rpcProxy) {
+        this.rpcProxy = rpcProxy;
     }
 
     @Override
-    public String getId() {
-        return "0";
+    public CompletableFuture<EchoResponse> execute(EchoRequest request) {
+        return getRpcProxy().getClient(new EchoRpcModule()).execute(request);
     }
 
-    @Override
-    public String getLocation() {
-        return location;
+    public RpcClientFactory getRpcProxy() {
+        return rpcProxy;
     }
+
 }

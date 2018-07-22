@@ -29,7 +29,6 @@
 package org.opennms.core.ipc.rpc.kafka;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -60,29 +59,16 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.opennms.core.rpc.api.RemoteExecutionException;
 import org.opennms.core.rpc.api.RequestTimedOutException;
-import org.opennms.core.rpc.echo.EchoClient;
 import org.opennms.core.rpc.echo.EchoRequest;
 import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
-import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.minion.core.api.MinionIdentity;
-import org.opennms.netmgt.model.OnmsDistPoller;
-import org.opennms.test.JUnitConfigurationEnvironment;
 import org.osgi.service.cm.ConfigurationAdmin;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 
-@RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
-        "classpath:/META-INF/opennms/applicationContext-rpc-echo.xml",
-        "classpath:/applicationContext-rpc-kafka-test.xml" })
-@JUnitConfigurationEnvironment
 public class RpcKafkaIT {
 
     private static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka.";
@@ -95,14 +81,9 @@ public class RpcKafkaIT {
     @Rule
     public JUnitKafkaServer kafkaServer = new JUnitKafkaServer();
 
-    @Autowired
-    private OnmsDistPoller identity;
+    private MockEchoClient echoClient;
 
-    @Autowired
-    private EchoClient echoClient;
-
-    @Autowired
-    private KafkaRpcClientFactory rpcClientFactory;
+    private KafkaRpcClientFactory rpcClient;
 
     private KafkaRpcServerManager kafkaRpcServer;
 
@@ -113,17 +94,20 @@ public class RpcKafkaIT {
     private Hashtable<String, Object> kafkaConfig = new Hashtable<>();
 
     private AtomicInteger count = new AtomicInteger(0);
+    
 
     @Before
     public void setup() throws Exception {
         System.setProperty(String.format("%sbootstrap.servers", KAFKA_CONFIG_PID), kafkaServer.getKafkaConnectString());
-        rpcClientFactory.start();
+        System.setProperty(String.format("%sauto.offset.reset", KAFKA_CONFIG_PID), "earliest");
+        rpcClient = new KafkaRpcClientFactory();
+        echoClient = new MockEchoClient(rpcClient);
+        rpcClient.start();
         kafkaConfig.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServer.getKafkaConnectString());
         kafkaConfig.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, RpcKafkaIT.class.toGenericString());
         kafkaConfig.put("rpcid.cache.config", "maximumSize=1000,expireAfterWrite=15s");
         ConfigurationAdmin configAdmin = mock(ConfigurationAdmin.class, RETURNS_DEEP_STUBS);
-        when(configAdmin.getConfiguration(KafkaRpcServerManager.KAFKA_CLIENT_PID).getProperties())
+        when(configAdmin.getConfiguration(KafkaRpcConstants.KAFKA_CONFIG_PID).getProperties())
                 .thenReturn(kafkaConfig);
         minionIdentity = new MockMinionIdentity(REMOTE_LOCATION_NAME);
         kafkaRpcServer = new KafkaRpcServerManager(configAdmin, minionIdentity);
@@ -141,7 +125,6 @@ public class RpcKafkaIT {
 
     @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocationWithSystemId() throws InterruptedException, ExecutionException {
-        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setSystemId(minionIdentity.getId());
         request.setLocation(REMOTE_LOCATION_NAME);
@@ -152,8 +135,6 @@ public class RpcKafkaIT {
 
     @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocation() throws InterruptedException, ExecutionException {
-        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
-        Thread.sleep(5000);
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setLocation(REMOTE_LOCATION_NAME);
         request.setDelay(5000L);
@@ -164,7 +145,6 @@ public class RpcKafkaIT {
 
     @Test(timeout = 30000)
     public void testKafkaRpcAtRemoteLocationWithWrongSystemId() throws InterruptedException {
-        assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
         EchoRequest request = new EchoRequest("Kafka-RPC");
         request.setSystemId("!" + minionIdentity.getId());
         request.setLocation(REMOTE_LOCATION_NAME);
@@ -252,8 +232,8 @@ public class RpcKafkaIT {
         // Try to consume response messages to test single request on minion.
         kafkaConfig.put(ConsumerConfig.GROUP_ID_CONFIG, "testMinionCache");
         kafkaConfig.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
-        kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ByteArrayDeserializer.class.getCanonicalName());
         KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(kafkaConfig);
         AtomicBoolean closed = new AtomicBoolean(false);
         AtomicInteger messageCount = new AtomicInteger(0);
@@ -286,6 +266,7 @@ public class RpcKafkaIT {
 
     private void sendRequestAndVerifyResponse(EchoRequest request, long ttl) {
         request.setTimeToLiveMs(ttl);
+        System.out.printf("request = %s ", request.toString());
         echoClient.execute(request).whenComplete((response, e) -> {
             if (e != null) {
                 long responseTime = System.currentTimeMillis() - request.getId();
@@ -297,12 +278,11 @@ public class RpcKafkaIT {
             }
         });
     }
-    
 
     @After
     public void destroy() throws Exception {
-        rpcClientFactory.stop();
         kafkaRpcServer.unbind(echoRpcModule);
+        rpcClient.stop();
     }
 
 }

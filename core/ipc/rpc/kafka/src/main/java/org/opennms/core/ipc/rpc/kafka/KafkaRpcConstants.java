@@ -28,23 +28,11 @@
 
 package org.opennms.core.ipc.rpc.kafka;
 
-import org.opennms.minion.core.api.MinionIdentity;
-
-public class MockMinionIdentity implements MinionIdentity {
-
-    private final String location;
+public interface KafkaRpcConstants {
     
-    public MockMinionIdentity(String location) {
-        this.location = location;
-    }
+    public static final String KAFKA_CONFIG_PID = "org.opennms.core.ipc.rpc.kafka";
+    public static final String KAFKA_CONFIG_SYS_PROP_PREFIX = KAFKA_CONFIG_PID + ".";
+    public static final String RPC_REQUEST_TOPIC_NAME = "rpc-request";
+    public static final String RPC_RESPONSE_TOPIC_NAME = "rpc-response";
 
-    @Override
-    public String getId() {
-        return "0";
-    }
-
-    @Override
-    public String getLocation() {
-        return location;
-    }
 }
