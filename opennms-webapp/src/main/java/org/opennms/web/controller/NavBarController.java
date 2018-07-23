@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.jsp.PageContext;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -48,6 +50,7 @@ import org.opennms.web.api.OnmsHeaderProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
+import org.opennms.web.tags.DateTimeTag;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -113,7 +116,7 @@ public class NavBarController extends AbstractController implements Initializing
                 org.opennms.web.api.Util.calculateUrlBase(request));
         model.put("isProvision", request.isUserInRole(Authentication.ROLE_PROVISION));
         model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
-        model.put("formattedTime", this.dateTimeFormat.format(Instant.now()));
+        model.put("formattedTime", this.dateTimeFormat.format(Instant.now(), extractUserTimeZone(request)));
 
         String noticeStatus = "Unknown";
         try {
@@ -126,6 +129,14 @@ public class NavBarController extends AbstractController implements Initializing
         model.put("shouldDisplay", new ShouldDisplayEntryMethod(request));
 
         return model;
+    }
+
+    private ZoneId extractUserTimeZone(HttpServletRequest request){
+        ZoneId timeZoneId = (ZoneId) request.getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
+        return timeZoneId;
     }
 
     /**

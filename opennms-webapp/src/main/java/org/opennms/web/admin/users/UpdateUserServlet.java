@@ -91,6 +91,11 @@ public class UpdateUserServlet extends HttpServlet {
                 newUser.setTuiPin(tuiPin);
             }
 
+            String timeZoneId = request.getParameter("timeZoneId");
+            if (timeZoneId != null && !timeZoneId.trim().equals("")) {
+                newUser.setTimeZoneId(timeZoneId);
+            }
+
             String email = request.getParameter(ContactType.email.toString());
             String pagerEmail = request.getParameter("pemail");
             String xmppAddress = request.getParameter(ContactType.xmppAddress.toString());
