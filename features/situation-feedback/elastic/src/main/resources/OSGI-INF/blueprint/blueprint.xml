@@ -11,8 +11,59 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
+        <cm:default-properties>
+            <!-- Elastic Connection Settings -->
+            <cm:property name="elasticUrl" value="http://localhost:9200" />
+            <cm:property name="globalElasticUser" value="" />
+            <cm:property name="globalElasticPassword" value="" />
+            <cm:property name="elasticIndexStrategy" value="monthly" />
+            <cm:property name="maxFlowDurationMs" value="120000" />
+            <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
+            <cm:property name="maxTotalConnection" value="-1" />
+            <cm:property name="nodeDiscovery" value="false" />
+            <cm:property name="nodeDiscoveryFrequency" value="0" />
+            <cm:property name="proxy" value=""/>
+            <cm:property name="retryCooldown" value="500" />
+            <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
+            <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
+            <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
+            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+
+            <!-- Bulk Action Retry settings -->
+            <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
+
+            <!-- Index settings -->
+            <!-- https://www.elastic.co/guide/en/elasticsearch/reference/current/index-modules.html#index-modules-settings -->
+            <cm:property name="settings.index.number_of_shards" value="" />
+            <cm:property name="settings.index.number_of_replicas" value="" />
+            <cm:property name="settings.index.refresh_interval" value="" />
+            <cm:property name="settings.index.routing_partition_size" value="" />
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+
+    <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
+
+    <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
+        <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
+        <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
+        <property name="refreshInterval" value="${settings.index.refresh_interval}"/>
+        <property name="routingPartitionSize" value="${settings.index.routing_partition_size}"/>
+    </bean>
+
+	<bean id="elasticFeedbackRepositoryInitializer" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepositoryInitializer">
+		<argument ref="blueprintBundleContext" />
+		<argument ref="jestClient" />
+		<argument ref="indexSettings" />
+	</bean>
+	
     <bean id="elasticFeedbackRepository" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepository">
-        
+        <argument ref="elasticFeedbackRepositoryInitializer" />
     </bean>
     <service interface="org.opennms.features.situationfeedback.api.FeedbackRepository" ref="elasticFeedbackRepository" />
 
