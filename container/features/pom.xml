@@ -272,6 +272,7 @@
             <feature>opennms-provisioning-shell</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
+            <feature>opennms-situation-feedback</feature>
             <feature>opennms-snmp</feature>
             <feature>opennms-snmp-commands</feature>
             <feature>opennms-syslogd</feature>

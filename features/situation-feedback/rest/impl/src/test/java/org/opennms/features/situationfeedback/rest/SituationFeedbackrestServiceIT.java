@@ -65,7 +65,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class SituationFeedbackrestServiceTest {
+public class SituationFeedbackrestServiceIT {
 
     @Autowired
     private AlarmDao alarmDao;

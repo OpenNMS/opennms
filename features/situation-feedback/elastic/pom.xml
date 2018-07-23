@@ -63,10 +63,14 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${jestGsonVersion}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
     	<groupId>org.opennms.features.situation-feedback</groupId>
-    	<artifactId>
-    		org.opennms.features.situation-feedback.api
-    	</artifactId>
+    	<artifactId>org.opennms.features.situation-feedback.api</artifactId>
     	<version>${project.version}</version>
     </dependency>
   </dependencies>
