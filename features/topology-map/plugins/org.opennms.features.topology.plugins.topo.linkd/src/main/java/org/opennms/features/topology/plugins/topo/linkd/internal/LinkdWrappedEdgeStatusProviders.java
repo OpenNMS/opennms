@@ -28,8 +28,6 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import org.osgi.framework.ServiceReference;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -46,8 +44,6 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
     private EdgeStatusProvider m_edgeStatusProvider;
     private List<EdgeStatusProvider> m_providers;
-
-    private Boolean m_enlinkdIsActive = false;
 
     public void init() {
         m_providers = new ArrayList<>();
@@ -71,12 +67,6 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
     @Override
     public boolean contributesTo(String namespace) {
         return namespace != null &&  namespace.equals(getNamespace());
-    }
-
-    public void setEnlinkdService(ServiceReference<?> enlinkdService) {
-        if(enlinkdService != null){
-            m_enlinkdIsActive = true;
-        }
     }
 
     public void setEdgeStatusProvider(EdgeStatusProvider edgeStatusProvider) {
