@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.api.MessageConsumer;
@@ -73,6 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-ipc-sink-camel-client.xml"
 })
 @JUnitConfigurationEnvironment
+@Ignore("TODO MVR enable when merging sentinel back to develop")
 public class HeartbeatSinkBlueprintIT extends CamelBlueprintTest {
 
     private static final String REMOTE_LOCATION_NAME = "remote";
