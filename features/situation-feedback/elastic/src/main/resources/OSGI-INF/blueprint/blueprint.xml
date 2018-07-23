@@ -47,6 +47,31 @@
     </cm:property-placeholder>
 
 
+    <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
+    <bean id="credentialsProvider" class="org.opennms.plugins.elasticsearch.rest.credentials.DefaultCredentialsProvider">
+        <argument value="elastic-credentials.xml" />
+    </bean>
+
+    <!-- Proxy for the JestClientFactory -->
+    <bean id="requestExecutorFactory" class="org.opennms.plugins.elasticsearch.rest.executors.DefaultRequestExecutor">
+        <argument value="${retryCooldown}"/>
+    </bean>
+    <bean id="clientFactory" class="org.opennms.plugins.elasticsearch.rest.RestClientFactory">
+        <argument value="${elasticUrl}"/>
+        <argument value="${globalElasticUser}"/>
+        <argument value="${globalElasticPassword}"/>
+        <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
+        <property name="maxTotalConnection" value="${maxTotalConnection}"/>
+        <property name="discovery" value="${nodeDiscovery}" />
+        <property name="discoveryFrequency" value="${nodeDiscoveryFrequency}" />
+        <property name="proxy" value="${proxy}" />
+        <property name="credentials" ref="credentialsProvider" />
+        <property name="requestExecutorFactory" ref="requestExecutorFactory" />
+        <property name="connTimeout" value="${connTimeout}" />
+        <property name="readTimeout" value="${readTimeout}" />
+        <property name="retries" value="${retries}" />
+    </bean>
+
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
     <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
