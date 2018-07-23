@@ -43,6 +43,7 @@ import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.features.timeformat.TimeformatService;
 import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
@@ -104,6 +105,8 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
     private final TransactionOperations m_transactionTemplate;
 
+    private final TimeformatService timeformatService;
+
     /**
      * Constructor for instantiating new objects.
      *
@@ -111,7 +114,8 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository
+            , TransactionOperations transactionTemplate, TimeformatService timeformatService) {
         super(name, dashletSpec);
 
         /**
@@ -121,6 +125,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
+        this.timeformatService = timeformatService;
     }
 
     @Override
@@ -354,7 +359,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()) + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + timeformatService.format(onmsAlarm.getLastEventTime()) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
