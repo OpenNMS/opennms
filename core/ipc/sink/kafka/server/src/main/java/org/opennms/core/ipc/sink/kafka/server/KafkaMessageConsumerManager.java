@@ -161,7 +161,7 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
         kafkaConfig.put("auto.commit.interval.ms", "1000");
 
         // Find all of the  system properties that start with 'org.opennms.core.ipc.sink.kafka.'
-        // and add them to the config. See https://kafka.apache.org/0100/documentation.html#newconsumerconfigs
+        // and add them to the config. See https://kafka.apache.org/10/documentation.html#newconsumerconfigs
         // for the list of supported properties
         for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
             final Object keyAsObject = entry.getKey();

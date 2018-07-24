@@ -93,19 +93,24 @@ public class DetectorsOnMinionIT {
     public void checkServicesDetectedOnMinion() throws ClientProtocolException, IOException, InterruptedException {
 
         final InetSocketAddress opennmsHttp = m_testEnvironment.getServiceAddress(ContainerAlias.OPENNMS, 8980);
-
         RestClient client = new RestClient(opennmsHttp);
+        addRequisition(client, "MINION", LOCALHOST);
+        await().atMost(5, MINUTES).pollDelay(0, SECONDS).pollInterval(30, SECONDS)
+                .until(getnumberOfServicesDetected(client), greaterThan(0));
+    }
+    
+    public static void addRequisition(RestClient client, String location, String ipAddress) {
 
         Requisition requisition = new Requisition("foreignSource");
         List<RequisitionInterface> interfaces = new ArrayList<>();
         RequisitionInterface requisitionInterface = new RequisitionInterface();
-        requisitionInterface.setIpAddr(LOCALHOST);
+        requisitionInterface.setIpAddr(ipAddress);
         requisitionInterface.setManaged(true);
         requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         interfaces.add(requisitionInterface);
         RequisitionNode node = new RequisitionNode();
         node.setNodeLabel("label");
-        node.setLocation("MINION");
+        node.setLocation(location);
         node.setInterfaces(interfaces);
         node.setForeignId("foreignId");
         requisition.insertNode(node);
@@ -113,8 +118,6 @@ public class DetectorsOnMinionIT {
         client.addOrReplaceRequisition(requisition);
         client.importRequisition("foreignSource");
 
-        await().atMost(5, MINUTES).pollDelay(0, SECONDS).pollInterval(30, SECONDS)
-                .until(getnumberOfServicesDetected(client), greaterThan(0));
     }
 
     public static Callable<Integer> getnumberOfServicesDetected(RestClient client) {

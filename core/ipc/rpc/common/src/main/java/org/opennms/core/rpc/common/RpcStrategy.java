@@ -36,9 +36,12 @@ public class RpcStrategy {
 
     private static final String SQS_RPC_STRATEGY_NAME = "sqs";
 
+    private static final String KAFKA_RPC_STRATEGY_NAME = "kafka";
+
     public static enum Strategy {
         JMS(JMS_RPC_STRATEGY_NAME, "JMS implementation using Camel"),
-        SQS(SQS_RPC_STRATEGY_NAME, "Amazon SQS implementation");
+        SQS(SQS_RPC_STRATEGY_NAME, "Amazon SQS implementation"),
+        KAFKA(KAFKA_RPC_STRATEGY_NAME, "Kafka implementation");
 
         private final String m_name;
         private final String m_descr;
