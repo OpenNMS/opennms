@@ -1,0 +1,74 @@
+{
+    "order": 0,
+    "template": "situation-feedback*",
+    "mappings": {
+        "_default_": {
+            "_meta": {
+                "version": "1.0.0"
+            },
+            "dynamic_templates": [
+                {
+                    "alarm_key": {
+                        "path_match": "alarm_key",
+                        "mapping": {
+                            "type": "keyword",
+                            "norms": false
+                        }
+                    }
+                },
+                {
+                    "situation_key": {
+                        "path_match": "situation_key",
+                        "mapping": {
+                            "type": "keyword",
+                            "norms": false
+                        }
+                    }
+                },
+                {
+                    "user": {
+                        "path_match": "user",
+                        "mapping": {
+                            "type": "keyword",
+                            "norms": false
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "@version": {
+                    "type": "keyword"
+                },
+                "@timestamp": {
+                    "type": "date",
+                    "format": "epoch_millis"
+                },
+                "alarm_key": {
+                    "type": "keyword",
+                    "norms": false
+                },
+                "feedback_type": {
+                    "type": "keyword",
+                    "norms": false
+                },
+                "situation_fingerprint": {
+                    "type": "keyword",
+                    "norms": false
+                },
+                "situation_key": {
+                    "type": "keyword",
+                    "norms": false
+                },
+                "reason": {
+                    "type": "keyword",
+                    "norms": false
+                },
+                "user": {
+                    "type": "keyword",
+                    "norms": false
+                }
+            }
+        }
+    },
+    "aliases": { }
+}

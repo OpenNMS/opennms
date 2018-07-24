@@ -130,7 +130,7 @@ public class FeedbackDocument {
         doc.setAlarmKey(feedback.getAlarmKey());
         doc.setFeedbackType(feedback.getFeedbackType().toString());
         doc.setReason(feedback.getReason());
-        doc.setSituationFingerprint(feedback.getSituationThumbprint());
+        doc.setSituationFingerprint(feedback.getSituationFingerprint());
         doc.setSituationKey(feedback.getSituationKey());
         doc.setUser(feedback.getUser());
         return doc;

@@ -27,23 +27,67 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.elastic;
 
+import java.io.IOException;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.List;
+
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkRequest;
+import org.opennms.plugins.elasticsearch.rest.bulk.BulkWrapper;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.searchbox.client.JestClient;
+import io.searchbox.core.Bulk;
+import io.searchbox.core.Index;
 
 public class ElasticFeedbackRepository implements FeedbackRepository {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ElasticFeedbackRepository.class);
+
+    private static final String TYPE = "situation-feedback";
+
     private final ElasticFeedbackRepositoryInitializer initializer;
 
-    public ElasticFeedbackRepository(ElasticFeedbackRepositoryInitializer initializer) {
+    private final JestClient client;
+
+    // TODO - make configurable
+    private final int bulkRetryCount = 2;
+
+    // TODO - make configurable
+    private IndexStrategy indexStrindexStrategyategy = IndexStrategy.MONTHLY;;
+
+    public ElasticFeedbackRepository(JestClient jestClient, ElasticFeedbackRepositoryInitializer initializer) {
+        this.client = jestClient;
         this.initializer = initializer;
     }
 
     @Override
     public void persist(Collection<AlarmFeedback> feedback) throws FeedbackException {
         ensureInitialized();
-        // TODO - persist
+        LOG.debug("Persiting {} feedbacks.", feedback.size());
+
+        List<FeedbackDocument> feedbackDocuments = null;
+        BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
+            final Bulk.Builder bulkBuilder = new Bulk.Builder();
+            for (FeedbackDocument document : documents) {
+                final String index = indexStrindexStrategyategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
+                final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
+                bulkBuilder.addAction(indexBuilder.build());
+            }
+            return new BulkWrapper(bulkBuilder);
+        }, bulkRetryCount);
+        // the bulk request considers retries
+        try {
+            bulkRequest.execute();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -66,6 +110,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private void ensureInitialized() {
         if (!initializer.isInitialized()) {
+            LOG.debug("Initializing Repository.");
             initializer.initialize();
         }
     }
