@@ -32,22 +32,20 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
@@ -78,8 +76,6 @@ import org.springframework.core.style.ToStringCreator;
 @XmlRootElement(name="alarm")
 @Entity
 @Table(name="alarms")
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "discriminator", discriminatorType=DiscriminatorType.STRING)
 @Filter(name=FilterManager.AUTH_FILTER_NAME, condition="exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class OnmsAlarm implements Acknowledgeable, Serializable {
@@ -200,7 +196,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     private OnmsMemo m_stickyMemo;
     
     private OnmsReductionKeyMemo m_reductionKeyMemo;
-    
+
+    private Set<OnmsAlarm> m_relatedAlarms = new HashSet<>();
+
     /**
      * default constructor
      */
@@ -456,6 +454,7 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
      *
      * @return a {@link org.opennms.netmgt.model.OnmsSeverity} object.
      */
+    @Override
     @Column(name="severity", nullable=false)
     // @Enumerated(EnumType.ORDINAL)
     @Type(type="org.opennms.netmgt.model.OnmsSeverityUserType")
@@ -814,6 +813,9 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
         return new ToStringCreator(this)
             .append("alarmid", getId())
             .append("distPoller", getDistPoller())
+            .append("uei", getUei())
+            .append("severity", getSeverity())
+            .append("lastEventTime",getLastEventTime())
             .toString();
     }
 
@@ -1152,5 +1154,47 @@ public class OnmsAlarm implements Acknowledgeable, Serializable {
     public Date getAckTime() {
         return m_alarmAckTime;
     }
-    
+
+    /**
+     * <p>getAlarms</p>
+     *
+     * @return a {@link java.util.Set} object.
+     */
+    @XmlTransient
+    @ElementCollection
+    @JoinTable(name = "alarm_situations", joinColumns = @JoinColumn(name = "situation_id"), inverseJoinColumns = @JoinColumn(name = "related_alarm_id"))
+    @Column(name="alarm_id", nullable=false)
+    public Set<OnmsAlarm> getRelatedAlarms() {
+        return m_relatedAlarms;
+    }
+
+    /**
+     * <p>setDetails</p>
+     *
+     * @param alarms a {@link java.util.Set} object.
+     */
+    public void setRelatedAlarms(Set<OnmsAlarm> alarms) {
+        m_relatedAlarms = alarms;
+    }
+
+    public void addRelatedAlarm(OnmsAlarm alarm) {
+        m_relatedAlarms.add(alarm);
+    }
+
+    // Any alarm with related alarms is a 'Situation'
+    @Transient
+    @XmlTransient
+    public boolean isSituation() {
+        return ! m_relatedAlarms.isEmpty();
+    }
+
+    @Transient
+    @XmlTransient
+    public Date getLastUpdateTime() {
+        if (getLastAutomationTime() != null && getLastAutomationTime().compareTo(getLastEventTime()) > 0) {
+            return getLastAutomationTime();
+        }
+        return getLastEventTime();
+    }
+
 }

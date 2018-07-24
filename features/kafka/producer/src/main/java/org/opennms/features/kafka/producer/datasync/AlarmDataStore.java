@@ -28,9 +28,12 @@
 
 package org.opennms.features.kafka.producer.datasync;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
+import org.opennms.netmgt.model.OnmsAlarm;
 
 public interface AlarmDataStore {
 
@@ -42,6 +45,6 @@ public interface AlarmDataStore {
 
     OpennmsModelProtos.Alarm getAlarm(String reductionKey);
 
-    AlarmSyncResults synchronizeAlarmsWithDb();
+    AlarmSyncResults handleAlarmSnapshot(List<OnmsAlarm> alarms);
 
 }

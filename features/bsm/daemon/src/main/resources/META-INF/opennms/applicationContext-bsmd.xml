@@ -20,4 +20,10 @@
     <property name="eventSubscriptionService" ref="eventSubscriptionService" />
   </bean>
 
+  <onmsgi:service interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener" ref="daemon" >
+    <onmsgi:service-properties>
+      <entry key="registration.export" value="true" />
+    </onmsgi:service-properties>
+  </onmsgi:service>
+
 </beans>

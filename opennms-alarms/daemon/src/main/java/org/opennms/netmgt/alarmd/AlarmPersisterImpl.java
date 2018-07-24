@@ -34,30 +34,30 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
-import org.hibernate.Hibernate;
+import org.opennms.netmgt.alarmd.api.AlarmPersisterExtension;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.eventd.EventUtil;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.Situation;
-import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Parm;
 import org.opennms.netmgt.xml.event.UpdateField;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.support.TransactionOperations;
-import org.springframework.util.Assert;
 
+import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.Striped;
 
 /**
@@ -71,35 +71,28 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
+    @Autowired
     private AlarmDao m_alarmDao;
+
+    @Autowired
     private EventDao m_eventDao;
-    private EventForwarder m_eventForwarder;
+
+    @Autowired
     private EventUtil m_eventUtil;
+
+    @Autowired
     private TransactionOperations m_transactionOperations;
+
+    @Autowired
+    private AlarmEntityNotifier m_alarmEntityNotifier;
+
     private Striped<Lock> lockStripes = StripedExt.fairLock(NUM_STRIPE_LOCKS);
 
-    private static class OnmsAlarmAndLifecycleEvent {
-        private final OnmsAlarm m_alarm;
-        private final Event m_event;
+    private final Set<AlarmPersisterExtension> extensions = Sets.newConcurrentHashSet();
 
-        public OnmsAlarmAndLifecycleEvent(OnmsAlarm alarm, Event event) {
-            m_alarm = alarm;
-            m_event = event;
-        }
-
-        public OnmsAlarm getAlarm() {
-            return m_alarm;
-        }
-
-        public Event getEvent() {
-            return m_event;
-        }
-    }
-
-    /** {@inheritDoc} 
-     * @return */
     @Override
-    public OnmsAlarm persist(Event event, boolean eagerlyLoadAlarm) {
+    public OnmsAlarm persist(Event event) {
+        Objects.requireNonNull(event, "Cannot create alarm from null event.");
         if (!checkEventSanityAndDoWeProcess(event)) {
             return null;
         }
@@ -112,47 +105,60 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // We do this to ensure that clears and triggers are processed in the same order
         // as the calls are made
         final Iterable<Lock> locks = lockStripes.bulkGet(getLockKeys(event));
-        final OnmsAlarmAndLifecycleEvent alarmAndEvent;
+        final OnmsAlarm alarm;
         try {
             locks.forEach(Lock::lock);
             // Process the alarm inside a transaction
-            alarmAndEvent = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event, eagerlyLoadAlarm));
+            alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
         } finally {
             locks.forEach(Lock::unlock);
         }
 
-        // Send the event outside of the database transaction
-        m_eventForwarder.sendNow(alarmAndEvent.getEvent());
-
-        return alarmAndEvent.getAlarm();
+        return alarm;
     }
 
-    private OnmsAlarmAndLifecycleEvent addOrReduceEventAsAlarm(Event event, boolean eagerlyLoadAlarm) {
-        // 2012-03-11 pbrane: for some reason when we get here the event from the DB doesn't have the LogMsg (in my tests anyway)
-        OnmsEvent e = m_eventDao.get(event.getDbid());
-        Assert.notNull(e, "Event was deleted before we could retrieve it and create an alarm.");
+    private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
+        final OnmsEvent e = m_eventDao.get(event.getDbid());
+        if (e == null) {
+            throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
+        }
 
         final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
 
-        final EventBuilder ebldr;
         if (alarm == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
             alarm = createNewAlarm(e, event);
 
-            //FIXME: this should be a cascaded save
+            // Trigger extensions, allowing them to mangle the alarm
+            try {
+                final OnmsAlarm alarmCreated = alarm;
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, e));
+            } catch (Exception ex) {
+                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+            }
+
             m_alarmDao.save(alarm);
             m_eventDao.saveOrUpdate(e);
 
-            ebldr = new EventBuilder(EventConstants.ALARM_CREATED_UEI, Alarmd.NAME);
+            m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             }
             reduceEvent(e, alarm, event);
+
+            // Trigger extensions, allowing them to mangle the alarm
+            try {
+                final OnmsAlarm alarmCreated = alarm;
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, e));
+            } catch (Exception ex) {
+                LOG.error("An error occurred while invoking the extension callbacks.", ex);
+            }
+
             m_alarmDao.update(alarm);
             m_eventDao.update(e);
 
@@ -160,29 +166,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
             }
 
-            ebldr = new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, Alarmd.NAME);
+            m_alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
         }
-
-        if (eagerlyLoadAlarm) {
-            // Load fields which are known to be used by the NBIs
-            if (alarm.getServiceType() != null) {
-                alarm.getServiceType().getName(); // To avoid potential LazyInitializationException when dealing with NorthboundAlarm
-            }
-            if (alarm.getNodeId() != null) {
-                alarm.getNode().getForeignSource(); // This should trigger the lazy loading of the node object, to properly populate the NorthboundAlarm class.
-            }
-            Hibernate.initialize(alarm.getEventParameters());
-        }
-
-        ebldr.addParam(EventConstants.PARM_ALARM_UEI, alarm.getUei());
-        ebldr.addParam(EventConstants.PARM_ALARM_ID, alarm.getId());
-
-        return new OnmsAlarmAndLifecycleEvent(alarm, ebldr.getEvent());
+        return alarm;
     }
 
     private void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
-
-        //Always set these
+        // Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
         alarm.setCounter(alarm.getCounter() + 1);
@@ -196,7 +186,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 String fieldName = field.getFieldName();
 
                 //Always set these, unless specified not to, in order to maintain current behavior
-                if (fieldName.equalsIgnoreCase("LogMsg") && field.isUpdateOnReduction() == false) {
+                if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
                     continue;
                 } else {
                     alarm.setLogMsg(e.getEventLogMsg());
@@ -254,30 +244,14 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 } else {
                     LOG.warn("reduceEvent: The specified field: {}, is not supported.", fieldName);
                 }
-
-                /* This doesn't work because the properties are not consistent from OnmsEvent to OnmsAlarm
-                    try {
-                        final BeanWrapper ew = PropertyAccessorFactory.forBeanPropertyAccess(e);
-                        final BeanWrapper aw = PropertyAccessorFactory.forBeanPropertyAccess(alarm);
-                        aw.setPropertyValue(fieldName, ew.getPropertyValue(fieldName));
-                    } catch (BeansException be) {                        
-                        LOG.error("reduceEvent", be);
-                        continue;
-                    }
-                 */
-
             }
         }
 
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
-        if (containedAlarms != null && !containedAlarms.isEmpty()) {
-            if (alarm instanceof Situation) {
-                for(OnmsAlarm related : containedAlarms) {
-                    // Related Alarms are additive for Situations reduced from Events.
-                    ((Situation)alarm).addAlarm(related);
-                }
-            } else {
-                LOG.warn("reduceEvent: Event {} attempts to add alarms to alarm that is not a Situation: {}.", event.getUei(), alarm);
+        Set<OnmsAlarm> relatedAlarms = getRelatedAlarms(event.getParmCollection());
+        if (relatedAlarms != null && !relatedAlarms.isEmpty()) {
+            // alarm.relatedAlarms becomes the union of any existing alarms and any in the event.
+            for (OnmsAlarm related : relatedAlarms) {
+                alarm.addRelatedAlarm(related);
             }
         }
 
@@ -285,15 +259,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
-        OnmsAlarm alarm;
-        Set<OnmsAlarm> containedAlarms = getAlarms(event.getParmCollection());
+        OnmsAlarm alarm = new OnmsAlarm();
         // Situations are denoted by the existance of related-reductionKeys
-        if (containedAlarms == null || containedAlarms.isEmpty()) {
-            alarm = new OnmsAlarm();
-        } else {
-            alarm = new Situation();
-            ((Situation)alarm).setAlarms(containedAlarms);
-        }
+        alarm.setRelatedAlarms(getRelatedAlarms(event.getParmCollection()));
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
         alarm.setClearKey(event.getAlarmData().getClearKey());
         alarm.setCounter(1);
@@ -310,17 +278,15 @@ public class AlarmPersisterImpl implements AlarmPersister {
         alarm.setOperInstruct(e.getEventOperInstruct());
         alarm.setReductionKey(event.getAlarmData().getReductionKey());
         alarm.setServiceType(e.getServiceType());
-        alarm.setSeverity(OnmsSeverity.get(e.getEventSeverity())); //TODO: what to do?
-        alarm.setSuppressedUntil(e.getEventTime()); //TODO: fix UI to not require this be set
-        alarm.setSuppressedTime(e.getEventTime()); //TODO: Fix UI to not require this be set
-        //alarm.setTTicketId(e.getEventTTicket());
-        //alarm.setTTicketState(TroubleTicketState.CANCEL_FAILED);  //FIXME
+        alarm.setSeverity(OnmsSeverity.get(e.getEventSeverity()));
+        alarm.setSuppressedUntil(e.getEventTime()); //UI requires this be set
+        alarm.setSuppressedTime(e.getEventTime()); // UI requires this be set
         alarm.setUei(e.getEventUei());
         e.setAlarm(alarm);
         return alarm;
     }
     
-    private Set<OnmsAlarm> getAlarms(List<Parm> list) {
+    private Set<OnmsAlarm> getRelatedAlarms(List<Parm> list) {
         if (list == null || list.isEmpty()) {
             return Collections.emptySet();
         }
@@ -338,16 +304,13 @@ public class AlarmPersisterImpl implements AlarmPersister {
     }
 
     private static boolean checkEventSanityAndDoWeProcess(final Event event) {
-        // 2009-01-07 pbrane: TODO: Understand why we use Assert
-        Assert.notNull(event, "Incoming event was null, aborting"); 
-
-        if (event.getLogmsg() != null && "donotpersist".equals(event.getLogmsg().getDest())) {
+        if (event.getLogmsg() != null && LogDestType.DONOTPERSIST.toString().equalsIgnoreCase(event.getLogmsg().getDest())) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("checkEventSanity: uei '{}' marked as 'donotpersist'; not processing event.", event.getUei());
+                LOG.debug("checkEventSanity: uei '{}' marked as '{}'; not processing event.", event.getUei(), LogDestType.DONOTPERSIST);
             }
             return false;
         }
-        
+
         if (event.getAlarmData() == null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("checkEventSanity: uei '{}' has no alarm data; not processing event.", event.getUei());
@@ -355,8 +318,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
             return false;
         }
 
-        // 2009-01-07 pbrane: TODO: Understand why we use Assert
-        Assert.isTrue(event.getDbid() > 0, "Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+        if (event.getDbid() <= 0) {
+            throw new IllegalArgumentException("Incoming event has an illegal dbid (" + event.getDbid() + "), aborting");
+        }
 
         return true;
     }
@@ -431,11 +395,21 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return m_eventUtil;
     }
 
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        m_eventForwarder = eventForwarder;
+    public AlarmEntityNotifier getAlarmChangeListener() {
+        return m_alarmEntityNotifier;
     }
 
-    public EventForwarder getEventForwarder() {
-        return m_eventForwarder;
+    public void setAlarmChangeListener(AlarmEntityNotifier alarmEntityNotifier) {
+        m_alarmEntityNotifier = alarmEntityNotifier;
+    }
+
+    public void onExtensionRegistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
+        LOG.debug("onExtensionRegistered: {} with properties: {}", ext, properties);
+        extensions.add(ext);
+    }
+
+    public void onExtensionUnregistered(final AlarmPersisterExtension ext, final Map<String,String> properties) {
+        LOG.debug("onExtensionUnregistered: {} with properties: {}", ext, properties);
+        extensions.remove(ext);
     }
 }

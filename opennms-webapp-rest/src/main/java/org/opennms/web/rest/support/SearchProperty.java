@@ -38,6 +38,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import com.google.common.collect.ImmutableMap;
+
 /**
  * @author Seth
  */
@@ -54,14 +56,20 @@ public class SearchProperty implements Comparable<SearchProperty> {
 		// Compare the property ID
 		.thenComparing(SearchProperty::getId);
 
-	public static enum SearchPropertyType {
-		FLOAT,
-		INTEGER,
-		IP_ADDRESS,
-		LONG,
-		STRING,
-		TIMESTAMP
-	}
+    public static final Map<String, String> TRUE_OR_FALSE_VALUES = ImmutableMap.<String, String> builder()
+            .put("1", "TRUE")
+            .put("0", "FALSE")
+            .build();
+
+    public static enum SearchPropertyType {
+        BOOLEAN,
+        FLOAT,
+        INTEGER,
+        IP_ADDRESS,
+        LONG,
+        STRING,
+        TIMESTAMP
+    }
 
 	public SearchProperty() {}
 

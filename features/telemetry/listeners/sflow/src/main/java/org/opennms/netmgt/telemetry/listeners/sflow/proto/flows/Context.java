@@ -63,8 +63,11 @@ public class Context {
 
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
+        bsonWriter.writeName("application");
         this.application.writeBson(bsonWriter);
+        bsonWriter.writeName("operation");
         this.operation.writeBson(bsonWriter);
+        bsonWriter.writeName("attributes");
         this.attributes.writeBson(bsonWriter);
         bsonWriter.writeEndDocument();
     }

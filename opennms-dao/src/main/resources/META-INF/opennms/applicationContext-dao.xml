@@ -257,12 +257,6 @@
 
   <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
-  <bean id="demandPollDao" class="org.opennms.netmgt.dao.hibernate.DemandPollDaoHibernate">
-    <property name="sessionFactory" ref="sessionFactory" />
-  </bean>
-
-  <onmsgi:service interface="org.opennms.netmgt.dao.api.DemandPollDao" ref="demandPollDao" />
-
   <bean id="eventDao" class="org.opennms.netmgt.dao.hibernate.EventDaoHibernate">
     <property name="sessionFactory" ref="sessionFactory" />
   </bean>
@@ -549,4 +543,13 @@
   <bean id="alarmStatisticsService" class="org.opennms.netmgt.dao.stats.DefaultAlarmStatisticsService" />
 
   <onmsgi:service interface="org.opennms.netmgt.dao.stats.AlarmStatisticsService" ref="alarmStatisticsService" />
+
+  <bean id="alarmEntityNotifier" class="org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" ref="alarmEntityNotifier" />
+
+  <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
+    <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
+  </onmsgi:list>
+
 </beans>

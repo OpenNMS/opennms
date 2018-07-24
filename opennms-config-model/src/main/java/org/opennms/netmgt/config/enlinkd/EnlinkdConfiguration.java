@@ -158,7 +158,7 @@ public class EnlinkdConfiguration implements java.io.Serializable {
     }
 
     public Integer getMaxBft() {
-        return m_maxBft != null ? m_maxBft : 10;
+        return m_maxBft != null ? m_maxBft : 100;
     }
 
     public void setMaxBft(final Integer maxBft) {

@@ -334,7 +334,7 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                     }
 
                     m_eventWriter.writeEvent(event);
-                    broadcastNow(event, false);
+                    broadcastNow(event, synchronous);
                     m_anticipator.eventProcessed(event);
                 } finally {
                     synchronized(MockEventIpcManager.this) {
@@ -350,8 +350,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
                 }
             }
         };
-        
-        if (isSynchronous()) {
+
+        if (synchronous) {
             r.run();
         } else {
             getScheduler().schedule(r, m_eventDelay, TimeUnit.MILLISECONDS);

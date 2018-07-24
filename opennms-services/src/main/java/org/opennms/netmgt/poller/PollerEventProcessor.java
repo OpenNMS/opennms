@@ -156,9 +156,6 @@ final class PollerEventProcessor implements EventListener {
         // scheduled outage configuration change
         ueiList.add(EventConstants.SCHEDOUTAGES_CHANGED_EVENT_UEI);
 
-        // demand poll
-        ueiList.add(EventConstants.DEMAND_POLL_SERVICE_EVENT_UEI);
-
         // update threshold configuration
         ueiList.add(EventConstants.THRESHOLDCONFIG_CHANGED_EVENT_UEI);
 

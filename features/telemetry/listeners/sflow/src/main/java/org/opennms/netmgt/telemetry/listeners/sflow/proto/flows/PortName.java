@@ -56,6 +56,8 @@ public class PortName implements CounterData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeString(this.name.value);
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeString("name", this.name.value);
+        bsonWriter.writeEndDocument();
     }
 }

@@ -66,14 +66,12 @@ import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.mock.MockNetwork;
 import org.opennms.netmgt.mock.MockNode;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.AlarmData;
 import org.opennms.netmgt.xml.event.Event;
@@ -175,12 +173,12 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         BeanUtils.assertAutowiring(this);
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         m_mockNetwork.createStandardNetwork();
 
         m_eventMgr.setEventWriter(m_database);
@@ -192,10 +190,12 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         
         m_northbounder = new MockNorthbounder();
         m_registry.register(m_northbounder, Northbounder.class);
+
+        m_alarmd.start();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         m_alarmd.destroy();
     }
 
@@ -207,32 +207,17 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         //there should be no alarms in the alarms table
         assertEmptyAlarmTable();
 
-        // Expect an alarmCreated event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
         //this should be the first occurrence of this alarm
         //there should be 1 alarm now
         sendNodeDownEvent("%nodeid%", node);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         assertEquals(1, m_alarmDao.findAll().size());
 
-        // Expect an alarmUpdatedWithReducedEvent event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
         //this should be the second occurrence and shouldn't create another row
         //there should still be only 1 alarm
         sendNodeDownEvent("%nodeid%", node);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         assertEquals(1, m_alarmDao.findAll().size());
-
-        // Expect an alarmCreated event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         //this should be a new alarm because of the new key
         //there should now be 2 alarms
@@ -315,63 +300,41 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         //there should be no alarms in the alarm_situations table
         assertEmptyAlarmSituationTable();
 
-        // Expect an alarmCreated event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
         //create 3 alarms to roll up into situation
         sendNodeDownEvent("Alarm1", node);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         assertEquals(1, m_alarmDao.findAll().size());
 
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
         sendNodeDownEvent("Alarm2", node);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         assertEquals(2, m_alarmDao.findAll().size());
-
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
 
         sendNodeDownEvent("Alarm3", node);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
         assertEquals(3, m_alarmDao.findAll().size());
 
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_CREATED_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
-
         //create situation rolling up the first 2 alarms
         List<String> reductionKeys = new ArrayList<>(Arrays.asList("Alarm1", "Alarm2"));
         sendSituationEvent("Situation1", node, reductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
-        Situation situation = (Situation) m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(2, situation.getAlarms().size());
-        
-        // Expect an alarmUpdatedWithReducedEvent event
-        m_eventMgr.getEventAnticipator().resetAnticipated();
-        m_eventMgr.getEventAnticipator().anticipateEvent(new EventBuilder(EventConstants.ALARM_UPDATED_WITH_REDUCED_EVENT_UEI, "alarmd").getEvent());
-        m_eventMgr.getEventAnticipator().setDiscardUnanticipated(true);
+        OnmsAlarm situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(2, situation.getRelatedAlarms().size());
 
         //send situation in with 3rd alarm, should result in 1 situation with 3 alarms
         List<String> newReductionKeys = new ArrayList<>(Arrays.asList("Alarm3"));
         sendSituationEvent("Situation1", node, newReductionKeys);
         await().atMost(1, SECONDS).until(allAnticipatedEventsWereReceived());
-        situation = (Situation) m_alarmDao.findByReductionKey("Situation1");
-        assertEquals(3, situation.getAlarms().size());
+        situation = m_alarmDao.findByReductionKey("Situation1");
+        assertEquals(3, situation.getRelatedAlarms().size());
     }
     
     @Test
     @Transactional
     public void testNullEvent() throws Exception {
         ThrowableAnticipator ta = new ThrowableAnticipator();
-        ta.anticipate(new IllegalArgumentException("Incoming event was null, aborting"));
+        ta.anticipate(new NullPointerException("Cannot create alarm from null event."));
         try {
-            m_alarmd.getPersister().persist(null, true);
+            m_alarmd.getPersister().persist(null);
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -408,7 +371,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent(), false);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -421,7 +384,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         EventBuilder bldr = new EventBuilder("testNoAlarmData", "AlarmdTest");
         bldr.setLogMessage(null);
 
-        m_alarmd.getPersister().persist(bldr.getEvent(), false);
+        m_alarmd.getPersister().persist(bldr.getEvent());
     }
 
     @Test
@@ -434,7 +397,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         ThrowableAnticipator ta = new ThrowableAnticipator();
         ta.anticipate(new IllegalArgumentException("Incoming event has an illegal dbid (0), aborting"));
         try {
-            m_alarmd.getPersister().persist(bldr.getEvent(), false);
+            m_alarmd.getPersister().persist(bldr.getEvent());
         } catch (Throwable t) {
             ta.throwableReceived(t);
         }
@@ -599,7 +562,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         m_eventMgr.sendNow(event.getEvent());
     }
 
-    private void sendNodeDownEventWithUpdateFieldSeverity(String reductionKey, MockNode node, OnmsSeverity severity) throws SQLException {
+    private void sendNodeDownEventWithUpdateFieldSeverity(String reductionKey, MockNode node, OnmsSeverity severity) {
         EventBuilder event = MockEventUtil.createNodeDownEventBuilder("Test", node);
 
         if (reductionKey != null) {
@@ -671,7 +634,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
     
     private void assertEmptyAlarmSituationTable() {
         List<String> alarmDescriptions = m_alarmDao.findAll().stream()
-                .map(a -> ((Situation)a).getAlarms())
+                .map(a -> a.getRelatedAlarms())
                 .flatMap(Collection::stream)
                 .map(a -> String.format("Alarm[id=%s, reductionKey=%s, severity=%s]", a.getId(), a.getReductionKey(), a.getSeverity()))
                 .collect(Collectors.toList());

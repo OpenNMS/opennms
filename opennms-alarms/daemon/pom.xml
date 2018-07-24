@@ -8,10 +8,9 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-alarmd</artifactId>
   <name>OpenNMS :: Alarms :: Daemon</name>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
-<!--
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
@@ -21,11 +20,9 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Export-Package>org.opennms.netmgt.alarmd.*;version="${project.version}"</Export-Package>
           </instructions>
         </configuration>
       </plugin>
--->
     </plugins>
   </build>
   <dependencies>
@@ -59,6 +56,12 @@
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.daemon</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>drools-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>org.opennms</groupId>
@@ -119,6 +122,16 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

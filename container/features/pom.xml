@@ -266,7 +266,6 @@
             <feature>opennms-javamail</feature>
             <feature>opennms-kafka-producer</feature>
             <feature>opennms-model</feature>
-            <feature>opennms-poller-api</feature>
             <feature>opennms-poller-shell</feature>
             <feature>opennms-provisioning</feature>
             <feature>opennms-provisioning-detectors</feature>

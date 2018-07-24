@@ -40,6 +40,7 @@ message Event {
   bool log = 11;
   bool display = 12;
   NodeCriteria node_criteria = 13;
+  string ip_address = 14;
 }
 
 message Alarm {
@@ -67,6 +68,9 @@ message Alarm {
   uint32 if_index = 17;
   string operator_instructions = 18;
   string clear_key = 19;
+  string managed_object_instance = 20;
+  string managed_object_type = 21;
+
 }
 
 message IpInterface {
@@ -95,6 +99,23 @@ message SnmpInterface {
   string if_alias = 10;
 }
 
+message HwAlias {
+  uint32 index = 1;
+  string oid = 2;
+}
+
+message HwEntity {
+  uint32 ent_physical_index = 1;
+  uint32 entity_id = 2;
+  string ent_physical_class = 3;
+  string ent_physical_descr = 4;
+  bool ent_physical_is_fru = 5;
+  string ent_physical_name = 6;
+  string ent_physical_vendor_type = 7;
+  repeated HwAlias ent_hw_alias = 8;
+  repeated HwEntity children = 9;
+}
+
 message Node {
   uint64 id = 1;
   string foreign_source = 2;
@@ -108,4 +129,5 @@ message Node {
   string sys_object_id = 10;
   repeated IpInterface ip_interface = 11;
   repeated SnmpInterface snmp_interface = 12;
+  HwEntity hw_inventory = 13;
 }

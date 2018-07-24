@@ -71,7 +71,7 @@
 <%@ page import="org.opennms.netmgt.model.OnmsEventParameter" %>
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="onms-taglib" prefix="onms" %>
 
 <%--
   This page is written to be the display (view) portion of the AlarmQueryServlet
@@ -488,14 +488,14 @@
             </c:if>
           </td>
           <td class="divider">
-            <nobr><span title="Event <%= alarms[i].getLastEvent().getId() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEvent().getId() %>"><fmt:formatDate value="${alarm.lastEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.lastEventTime}" type="time" pattern="HH:mm:ss"/></a></span></nobr>
+            <nobr><span title="Event <%= alarms[i].getLastEvent().getId() %>"><a href="event/detail.jsp?id=<%= alarms[i].getLastEvent().getId() %>"><onms:datetime date="${alarm.lastEventTime}" /></a></span></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeLastEventTimeFilter(alarms[i].getLastEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>
             </nobr>
           <c:if test="${param.display == 'long'}">
           <br />
-            <nobr><fmt:formatDate value="${alarm.firstEventTime}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${alarm.firstEventTime}" type="time" pattern="HH:mm:ss"/></nobr>
+            <nobr><onms:datetime date="${alarm.firstEventTime}" /></nobr>
             <nobr>
               <a href="<%=this.makeLink( parms, new AfterFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>"  class="filterLink" title="Only show alarms occurring after this one">${addAfterFilter}</a>            
               <a href="<%=this.makeLink( parms, new BeforeFirstEventTimeFilter(alarms[i].getFirstEventTime()), true)%>" class="filterLink" title="Only show alarms occurring before this one">${addBeforeFilter}</a>

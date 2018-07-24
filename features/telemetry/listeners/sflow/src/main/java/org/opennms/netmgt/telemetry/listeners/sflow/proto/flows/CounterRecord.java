@@ -44,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
 // };
 
 public class CounterRecord extends Record<CounterData> {
-    private static Map<DataFormat, Opaque.Parser<CounterData>> counterDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<CounterData>>builder()
+    protected static Map<DataFormat, Opaque.Parser<CounterData>> counterDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<CounterData>>builder()
             .put(DataFormat.from(0, 1), IfCounters::new)
             .put(DataFormat.from(0, 2), EthernetCounters::new)
             .put(DataFormat.from(0, 3), TokenringCounters::new)

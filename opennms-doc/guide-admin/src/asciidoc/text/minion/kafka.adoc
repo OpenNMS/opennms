@@ -2,15 +2,12 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
-=== Using Kafka
+=== Using Kafka for Sink ( Traps and Syslog)
 
 By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
 This broker is used for both issuing remote procedure calls (RPCs, ie. ping this host) and for transporting unsolicited messages such as SNMP traps and syslog messages.
 
 _Apache Kafka_ can be used as an alternative to _ActiveMQ_ for transporting the unsolicited messages.
-
-WARNING: _Kafka_ cannot currently be used for handling RPC messages.
-This means that _ActiveMQ_ is still required even when _Kafka_ support is enabled.
 
 _Kafka_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
 
@@ -24,7 +21,7 @@ Enable and configure the _Kafka_ consumer on _{opennms-product-name}_ by using t
 ----
 echo 'org.opennms.core.ipc.sink.initialSleepTime=60000' > "$OPENNMS_HOME/etc/opennms.properties.d/sink-initial-sleep-time.properties"
 echo 'org.opennms.core.ipc.sink.strategy=kafka
-org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' > "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
+org.opennms.core.ipc.sink.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
 ----
 
 Restart _{opennms-product-name}_ to apply the changes.
@@ -41,7 +38,7 @@ Enable the _Kafka_ producer on _Minion_ using:
 [source, sh]
 ----
 echo '!opennms-core-ipc-sink-camel
-opennms-core-ipc-sink-kafka' > "$MINION_HOME/etc/featuresBoot.d/kafka.boot"
+opennms-core-ipc-sink-kafka' >> "$MINION_HOME/etc/featuresBoot.d/kafka.boot"
 ----
 
 NOTE: The snippet above prevents the `opennms-core-ipc-sink-camel` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-sink-kafka` feature instead.
@@ -58,3 +55,54 @@ Restart _Minion_ to apply the changes.
 
 Additional _Kafka_ producer options can be set directly in the `org.opennms.core.ipc.sink.kafka.cfg` file reference above.
 A list of all the available options can be found here in link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs].
+
+=== Using Kafka for RPC
+
+By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
+Enabling kafka for RPC will allow replacing _ActiveMQ_ if needed.
+
+_Kafka_ must be enabled on both _{opennms-product-name}_ and _Minion_ to function.
+
+The _Kafka_ server must be compatible with _Kafka_ client version `1.0.1`.
+
+NOTE: For Kafka RPC, number of partitions should always be greater than number of minions at a location. When there are multiple locations, partitions >= max (number of minions at a location).
+
+==== Client(OpenNMS) configuration
+
+Enable and configure the _Kafka_ on _{opennms-product-name}_ by using the following commands.
+
+[source, sh]
+----
+echo 'org.opennms.core.ipc.rpc.strategy=kafka
+org.opennms.core.ipc.rpc.kafka.bootstrap.servers=127.0.0.1:9092' >> "$OPENNMS_HOME/etc/opennms.properties.d/kafka.properties"
+----
+
+Restart _{opennms-product-name}_ to apply the changes.
+Additional _Kafka_ producer/consumer options can be set by defining additional system properties prefixed with `org.opennms.core.ipc.rpc.kafka`.
+
+NOTE: Default time to live (time at which request will expire) is 30 secs. It can be changed by configuring system property `org.opennms.core.ipc.rpc.kafka.ttl`
+
+
+==== Server(Minion) configuration
+
+Enable the _Kafka_ on _Minion_ using:
+
+[source, sh]
+----
+echo '!opennms-core-ipc-rpc-jms
+opennms-core-ipc-rpc-kafka' >> "$MINION_HOME/etc/featuresBoot.d/kafka.boot"
+----
+
+NOTE: The snippet above prevents the `opennms-core-ipc-rpc-jms` feature from starting when _Minion_ is started, and loads the `opennms-core-ipc-rpc-kafka` feature instead.
+
+Next, configure the _Kafka_ on _Minion_ using:
+
+[source, sh]
+----
+echo 'bootstrap.servers=127.0.0.1:9092
+acks=1' > "$MINION_HOME/etc/org.opennms.core.ipc.rpc.kafka.cfg"
+----
+
+A list of all the available options for kafka producer/consumer configuration can be found here.
+link:https://kafka.apache.org/10/documentation.html#producerconfigs[Producer Configs].
+link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[New Consumer Configs]

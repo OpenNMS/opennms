@@ -11,7 +11,7 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <!-- See https://kafka.apache.org/0100/documentation.html#producerconfigs
+    <!-- See https://kafka.apache.org/10/documentation.html#producerconfigs
          for the list of supported properties -->
     <cm:property-placeholder id="kafkaProperties" persistent-id="org.opennms.core.ipc.sink.kafka" update-strategy="reload" />
 
