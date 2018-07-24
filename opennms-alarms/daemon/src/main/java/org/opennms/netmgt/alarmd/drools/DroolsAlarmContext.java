@@ -28,6 +28,13 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,18 +45,25 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.drools.core.ClockType;
 import org.drools.core.time.SessionPseudoClock;
 import org.kie.api.KieBase;
 import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.Message;
 import org.kie.api.conf.EventProcessingOption;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.KieSessionConfiguration;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.internal.io.ResourceFactory;
+import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -95,11 +109,33 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
 
     public void start() {
         final KieServices ks = KieServices.Factory.get();
-        final KieContainer kcont = ks.newKieClasspathContainer(getClass().getClassLoader());
+        final KieRepository kr = ks.getRepository();
+        final KieFileSystem kfs = ks.newKieFileSystem();
+
+        final List<File> rulesFiles;
+        try {
+            rulesFiles = getRulesFiles();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        LOG.info("Using rules files: {}", rulesFiles);
+        for (File file : rulesFiles) {
+            kfs.write(ResourceFactory.newFileResource(file));
+        }
+
+        // Validate
+        final KieBuilder kb = ks.newKieBuilder(kfs);
+        kb.buildAll();
+        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
+        }
+
+        final KieContainer kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
+
         final KieBaseConfiguration kbaseConfig = ks.newKieBaseConfiguration();
         kbaseConfig.setOption(EventProcessingOption.STREAM);
-        final KieBase kbase = kcont.newKieBase("alarmKBase", kbaseConfig);
 
+        final KieBase kbase = kContainer.newKieBase(kbaseConfig);
         final KieSessionConfiguration kieSessionConfig = KieServices.Factory.get().newKieSessionConfiguration();
         if (usePseudoClock) {
             kieSessionConfig.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
@@ -137,6 +173,19 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
                 }
             }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
         }
+    }
+
+    protected List<File> getRulesFiles() throws IOException {
+        final Path droolsRulesRoot = Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d");
+        if (!droolsRulesRoot.toFile().isDirectory()) {
+            throw new IllegalStateException("Expected to find Drools rules for alarmd in '" + droolsRulesRoot
+                    + "' but the path is not a directory! Aborting.");
+        }
+        return Files.find(droolsRulesRoot, 3, (path,attrs) -> attrs.isRegularFile()
+                && path.toString().endsWith(".drl"))
+                .map(Path::toFile)
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
     }
 
     @Override
