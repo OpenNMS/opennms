@@ -30,6 +30,7 @@ package org.opennms.features.situationfeedback.rest;
 import java.util.Collection;
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -52,6 +53,7 @@ public interface SituationFeedbackRestService {
 
     @POST
     @Path("/{situationKey}")
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public void setFeedback(List<AlarmFeedback> feedback);
 }

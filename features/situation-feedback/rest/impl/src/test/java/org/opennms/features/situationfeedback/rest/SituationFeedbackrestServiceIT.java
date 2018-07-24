@@ -45,7 +45,6 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
-import org.opennms.features.situationfeedback.rest.model.AlarmFeedbackDTO;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.model.OnmsAlarm;
@@ -115,8 +114,8 @@ public class SituationFeedbackrestServiceIT {
     @Transactional
     public void testRemoveAlarmWithFeedback() {
         SituationFeedbackRestServiceImpl sut = new SituationFeedbackRestServiceImpl(alarmDao, mockFeebackRepository);
-        AlarmFeedback falsePositive = new AlarmFeedbackDTO(situation.getReductionKey(), "meh", linkDownAlarmOnR1.getReductionKey(), FeedbackType.FALSE_POSITVE,
-                                                           "not related", "user", System.currentTimeMillis());
+        AlarmFeedback falsePositive = new AlarmFeedback(situation.getReductionKey(), "fingerprint", linkDownAlarmOnR1.getReductionKey(),
+                                                        FeedbackType.FALSE_POSITVE, "not related", "user", System.currentTimeMillis());
         List<AlarmFeedback> feedback = Collections.singletonList(falsePositive);
         sut.setFeedback(feedback);
 
