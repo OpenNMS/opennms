@@ -390,6 +390,7 @@ p a > code:hover { color: rgba(0, 0, 0, 0.9); }
 
 .audioblock, .imageblock, .literalblock, .listingblock, .stemblock, .videoblock { margin-bottom: 1.25em; }
 
+.admonitionblock { background-color: #f7f7f7; }
 .admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title { text-rendering: optimizeLegibility; text-align: left; font-family: "Roboto", Arial, Helvetica, sans-serif; font-size: 1rem; }
 
 table.tableblock.fit-content > caption.title { white-space: nowrap; width: 0; }
