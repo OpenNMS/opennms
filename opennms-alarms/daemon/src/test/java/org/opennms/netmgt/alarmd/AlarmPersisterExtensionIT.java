@@ -30,6 +30,7 @@ package org.opennms.netmgt.alarmd;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 import java.util.Collections;
 import java.util.Date;
@@ -124,6 +125,9 @@ public class AlarmPersisterExtensionIT implements TemporaryDatabaseAware<MockDat
     public void canIssueCreateAndUpdateCallbacks() throws Exception {
         // Send a nodeDown
         sendNodeDownEvent(1);
+
+        // Wait until the alarm is created
+        await().until(() -> getNodeDownAlarmWithDaoFor(1).call(), notNullValue());
 
         // Verify that the persisted alarm has some property we have set in the (create) callback
         await().until(() -> getNodeDownAlarmWithDaoFor(1).call().getManagedObjectType(), equalTo("create"));
