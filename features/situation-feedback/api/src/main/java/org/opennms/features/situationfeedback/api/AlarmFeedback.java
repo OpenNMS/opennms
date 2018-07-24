@@ -31,7 +31,7 @@ package org.opennms.features.situationfeedback.api;
 /**
  * Expresses Feedback on the Correlation of an Alarm.
  */
-public interface AlarmFeedback {
+public class AlarmFeedback {
 
     public enum FeedbackType {
         FALSE_POSITVE, // Alarm does not belong in this Situation
@@ -39,18 +39,68 @@ public interface AlarmFeedback {
         CORRECT // Alarm is correctly correlated
     }
 
-    String getSituationKey();
+    // Situation ReductionKey
+    private String situationKey;
 
-    String getSituationThumbprint();
+    // this may not be nesc but may prove helpful
+    private String situationFingerprint; // fingerprint of situation/alarms at
+                                         // time of feedback;
+    // Alarm ReductionKey
+    private String alarmKey;
 
-    String getAlarmKey();
+    private FeedbackType feedbackType;
 
-    FeedbackType getFeedbackType();
+    private String reason;
 
-    String getReason();
+    private String user;
 
-    String getUser();
+    private long timestamp;
 
-    long getTimestamp();
+    public AlarmFeedback() {
+    }
+
+    public AlarmFeedback(String situationKey, String situationFingerprint, String alarmKey, FeedbackType feedbackType, String reason, String user,
+            long timestamp) {
+        this.situationKey = situationKey;
+        this.situationFingerprint = situationFingerprint;
+        this.alarmKey = alarmKey;
+        this.feedbackType = feedbackType;
+        this.reason = reason;
+        this.user = user;
+        this.timestamp = timestamp;
+    }
+
+    public String getSituationKey() {
+        return situationKey;
+    }
+
+    public String getSituationFingerprint() {
+        return situationFingerprint;
+    }
+
+    public String getAlarmKey() {
+        return alarmKey;
+    }
+
+    public FeedbackType getFeedbackType() {
+        return feedbackType;
+    }
+
+    public String getReason() {
+        return reason;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    @Override
+    public String toString() {
+        return "Feedback[" + getFeedbackType() + ":" + getSituationKey() + ":" + getAlarmKey() + ":" + getReason() + "]";
+    }
 
 }
