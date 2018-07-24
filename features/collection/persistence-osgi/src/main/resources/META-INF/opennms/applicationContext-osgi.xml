@@ -16,12 +16,10 @@
  
 	  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory">
 		<onmsgi:service-properties>
-			<entry>
-				<key>
-					<value>strategy</value>
-				</key>
-				<value>delegate</value>
-			</entry>
+          <entry>
+            <key><value>strategy</value></key>
+            <value>delegate</value>
+          </entry>
 		</onmsgi:service-properties>
       </onmsgi:service>
 

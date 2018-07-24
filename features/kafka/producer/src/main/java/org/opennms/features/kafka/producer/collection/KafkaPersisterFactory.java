@@ -64,7 +64,6 @@ public class KafkaPersisterFactory implements PersisterFactory {
         KafkaPersister persister = new KafkaPersister();
         persister.setCollectionSetMapper(collectionSetMapper);
         persister.setProducer(producer);
-        LOG.debug(" kafka persister created from factory");
         return persister;
     }
 

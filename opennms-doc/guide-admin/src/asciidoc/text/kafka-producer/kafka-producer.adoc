@@ -221,21 +221,23 @@ At this time, existing events cannot be referenced by this tool, so this functio
 
 ==== Kafka Persister ====
 
-Kafka producer also allows performance data to be persisted in Kafka. It needs opennms-kafka-producer feature to be enabled. <<Enabling the Kafka Producer>>
+Kafka producer also allows performance data (collections) to be persisted in Kafka.
+It can be enabled as follows.
+[source]
+----
+echo 'collection.persister=true' >> "$OPENNMS_HOME/etc/org.opennms.features.kafka.producer.client.cfg"
+----
 
-.There are two ways you can enable Kafka Persister.
+It also needs opennms-kafka-producer feature to be enabled. <<Enabling the Kafka Producer>>
 
-. As a separate time series strategy (as an alternative to `RRD` or `Newts`). For this add below system property in `opennms.properties`and restart _{opennms-product-name}_ instance.
-+
+This allows collection data to be persisted in kafka as well along with either `RRD` or `Newts` whichever is enabled by default.
+
+===== Standalone Kafka Persister =====
+
+Kafka persister can also work as standalone persister as alternative to `RRD` or `Newts`.
+
+For this enable kafka persister as above and also configure below system property in `opennms.properties` and restart _{opennms-product-name}_ instance.
 [source]
 ----
 org.opennms.timeseries.strategy=osgi
 ----
-+
-. Allow performance data to be persisted in Kafka along with RRD or Newts. For this add below system property in `opennms.properties` and restart _{opennms-product-name}_ instance.
-+
-[source]
-----
-org.opennms.timeseries.kafka.persister=true
-----
-+

@@ -68,8 +68,9 @@ public class OsgiPersisterFactory implements PersisterFactory {
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
             boolean forceStoreByGroup, boolean dontReorderAttributes) {
         final PersisterFactory delegate = getDelegate();
+        // atleast one of the persister factory should be on osgi registry, else it will use Null Persister.
         if (delegate == null) {
-            return null;
+            return new NullPersister();
         }
         return delegate.createPersister(params, repository, dontPersistCounters, forceStoreByGroup, dontReorderAttributes);
     }
