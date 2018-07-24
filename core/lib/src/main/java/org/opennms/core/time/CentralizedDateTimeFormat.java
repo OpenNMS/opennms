@@ -102,6 +102,9 @@ public class CentralizedDateTimeFormat {
         if(instant == null){
             return null;
         }
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
         return formatter.withZone(timeZoneId).format(instant);
     }
 

@@ -41,6 +41,7 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
@@ -60,7 +61,7 @@ public class UserSettingsFilter implements Filter {
         String userId = httpRequest.getRemoteUser();
         if(userSession != null
                 && userId !=null
-                && userSession.getAttribute(DateTimeTag.SESSION_PROPERTY_TIMEZONE_ID) == null){
+                && userSession.getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID) == null){
             setUserTimeZoneIdIfPossible(httpRequest, userId);
         }
         filterChain.doFilter(request, response);
@@ -76,7 +77,7 @@ public class UserSettingsFilter implements Filter {
             // set default zone so that the next http request won't run through the same (expensive) logic again
             timeZoneId = ZoneId.systemDefault();
         }
-        httpRequest.getSession().setAttribute(DateTimeTag.SESSION_PROPERTY_TIMEZONE_ID, timeZoneId);
+        httpRequest.getSession().setAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID, timeZoneId);
     }
 
     private Optional<User> getUser(String userId){
