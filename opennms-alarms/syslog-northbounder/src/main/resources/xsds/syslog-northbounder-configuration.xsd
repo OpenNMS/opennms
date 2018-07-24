@@ -14,7 +14,7 @@
       <xs:element name="batch-size" type="xs:int" default="100" minOccurs="0"/>
       <xs:element name="queue-size" type="xs:int" default="300000" minOccurs="0"/>
       <xs:element name="message-format" type="xs:string" default="ALARM ID:${alarmId} NODE:${nodeLabel} ${logMsg}" minOccurs="0"/>
-      <xs:element name="date-format" type="xs:string" default="yyyy-MM-dd'T'HH:mm:ss:SSSXXX" minOccurs="0"/>
+      <xs:element name="date-format" type="xs:string" default="yyyy-MM-dd'T'HH:mm:ss.SSSXXX" minOccurs="0"/>
       <xs:element name="destination" type="syslogDestination" minOccurs="0" maxOccurs="unbounded"/>
       <xs:element name="uei" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>

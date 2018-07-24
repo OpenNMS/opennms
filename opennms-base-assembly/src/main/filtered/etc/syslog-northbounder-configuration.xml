@@ -6,7 +6,7 @@
    <batch-size>100</batch-size>
    <queue-size>300000</queue-size>
    <message-format>ALARM ID:${alarmId} NODE:${nodeLabel}; ${logMsg}</message-format>
-    <!-- You can specify date format, default is ISO 8601  <date-format>yyyy-MM-dd'T'HH:mm:ss:SSSXXX</date-format> -->
+    <!-- You can specify date format, default is ISO 8601  <date-format>yyyy-MM-dd'T'HH:mm:ss.SSSXXX</date-format> -->
 <!-- You could do something like the following
    <message-format>ALARM ID:${alarmId} NODE:${nodeLabel} IP:${ipAddr} 
       FIRST:${firstOccurrence} LAST:${lastOccurrence} 
