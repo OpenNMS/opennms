@@ -23,7 +23,6 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <reference id="bundleService" interface="org.apache.karaf.bundle.core.BundleService" availability="mandatory" />
     <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" />
 
     <!-- Expose the controller configuration as a service, since other bundles cannot
@@ -55,14 +54,6 @@
         <argument value="opennms.http"/>
     </bean>
     <service ref="restClient" interface="org.opennms.distributed.core.api.RestClient"/>
-
-    <!-- Container Health Check -->
-    <service interface="org.opennms.core.health.api.HealthCheck">
-        <bean class="org.opennms.core.health.impl.ContainerIntegrityHealthCheck" >
-            <argument ref="blueprintBundleContext"/>
-            <argument ref="bundleService" />
-        </bean>
-    </service>
 
     <!-- ReST Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">

@@ -32,7 +32,13 @@ import static org.opennms.core.health.api.Status.Failure;
 import static org.opennms.core.health.api.Status.Starting;
 
 import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.karaf.bundle.core.BundleInfo;
 import org.apache.karaf.bundle.core.BundleService;
@@ -43,6 +49,10 @@ import org.opennms.core.health.api.Status;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.wiring.BundleRevision;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * Verifies the integrity of the container.
@@ -57,12 +67,15 @@ import org.osgi.framework.wiring.BundleRevision;
  */
 public class ContainerIntegrityHealthCheck implements HealthCheck {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ContainerIntegrityHealthCheck.class);
     private final BundleService bundleService;
     private final BundleContext bundleContext;
+    private final List<String> ignoreBundles;
 
-    public ContainerIntegrityHealthCheck(BundleContext bundleContext, BundleService bundleService) {
+    public ContainerIntegrityHealthCheck(BundleContext bundleContext, BundleService bundleService, String ignoreBundleList) {
         this.bundleContext = Objects.requireNonNull(bundleContext);
         this.bundleService = Objects.requireNonNull(bundleService);
+        this.ignoreBundles = parse(ignoreBundleList);
     }
 
     @Override
@@ -80,6 +93,10 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
         // Verify all bundles
         final Health health = new Health();
         for (Bundle b : bundleContext.getBundles()) {
+            if (ignoreBundles.contains(b.getSymbolicName())) {
+                LOG.debug("Bundle {} with symbolic name {} is ignored while performing health:check", b.getBundleId(), b.getSymbolicName());
+                continue;
+            }
             final BundleInfo info = bundleService.getInfo(b);
             switch (info.getState()) {
                 // Success
@@ -116,5 +133,16 @@ public class ContainerIntegrityHealthCheck implements HealthCheck {
 
         // If there are some issues, we return the worst one, otherwise everything is okay
         return health.getWorst().orElse(new Response(Status.Success));
+    }
+
+    private List<String> parse(String bundlesToIgnore) {
+        if (Strings.isNullOrEmpty(bundlesToIgnore)) {
+            return Collections.emptyList();
+        }
+        final Set<String> symbolicBundleNamesToIgnore = Arrays.stream(bundlesToIgnore.split(","))
+                .map(s -> s == null ? null : s.trim()) // remove spaces, to catch "x, y" or " x, y"
+                .filter(s -> s != null && !s.isEmpty()) // remove possible empty values, e.g. "x,,y"
+                .collect(Collectors.toSet());// remove duplicates
+        return new ArrayList<>(symbolicBundleNamesToIgnore);
     }
 }
