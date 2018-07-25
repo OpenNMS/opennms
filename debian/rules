@@ -327,6 +327,14 @@ install: build
 	find debian/opennms-webapp-remoting/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 
 	##
+	## Setup the opennms-webapp-hawtio package
+	##
+	install -d -m 755 debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio debian/opennms-webapp-hawtio/usr/share/lintian/overrides
+	install -m 644 debian/opennms-webapp-hawtio.overrides debian/opennms-webapp-hawtio/usr/share/lintian/overrides/opennms-webapp-hawtio
+	mv debian/temp/jetty-webapps/hawtio/* debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio/
+	find debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio* -type f -execdir chmod 644 {} \;
+
+	##
 	## Setup the opennms-doc package
 	##
 	mv debian/temp/docs/* debian/opennms-doc/usr/share/doc/opennms/
