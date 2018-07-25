@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.smoketest.sentinel;
+package org.opennms.smoketest.health;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -43,7 +43,6 @@ import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
-import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
@@ -51,9 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-public class HealthCheckIT {
-
-    private static final int EXPECTED_HEALTH_CHECK_SERVICES = 5;
+public abstract class AbstractHealthCheckIT {
 
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
@@ -63,21 +60,19 @@ public class HealthCheckIT {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    protected abstract void applyTestEnvironment(TestEnvironmentBuilder builder);
+
+    public abstract InetSocketAddress getSshAddress();
+
+    public abstract int getExpectedHealthCheckServices();
+
     protected TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
             return new NullTestEnvironment();
         }
         try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder()
-                    .opennms()
-                    .minion()
-                    .es6()
-                    .sentinel();
-
-            // Install some features to have health:check process something
-
-            builder.withSentinelEnvironment()
-                    .addFile(getClass().getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
+            final TestEnvironmentBuilder builder = TestEnvironment.builder();
+            applyTestEnvironment(builder);
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
@@ -91,20 +86,22 @@ public class HealthCheckIT {
     }
 
     @Test
-    public void verifyHealthCheck() {
-        final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
+    public void verifyHealthCheck() throws Exception {
+        final int expectedHealthCheckServicesCount = getExpectedHealthCheckServices();
 
         // Ensure we are actually started the sink and are ready to listen for messages
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    try (final SshClient sshClient = new SshClient(sentinelSshAddress, "admin", "admin")) {
+                    try (final SshClient sshClient = new SshClient(getSshAddress(), "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
                         pipe.println("health:check");
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
-                        await().atMost(10, SECONDS).until(sshClient.isShellClosedCallable());
+                        // each health check times out after 5 seconds, so we wait at least that long
+                        int maxWaitTime = expectedHealthCheckServicesCount * 5;
+                        await().atMost(maxWaitTime, SECONDS).until(sshClient.isShellClosedCallable());
 
                         // Read stdout and verify
                         final String shellOutput = sshClient.getStdout();
@@ -112,7 +109,7 @@ public class HealthCheckIT {
 
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
-                        return count == EXPECTED_HEALTH_CHECK_SERVICES;
+                        return count == expectedHealthCheckServicesCount;
                     } catch (Exception ex) {
                         logger.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return false;
