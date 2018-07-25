@@ -53,6 +53,8 @@ import org.springframework.util.StringUtils;
 
 public class HealthCheckIT {
 
+    private static final int EXPECTED_HEALTH_CHECK_SERVICES = 5;
+
     @Rule
     public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
 
@@ -110,7 +112,7 @@ public class HealthCheckIT {
 
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
-                        return count == 6;
+                        return count == EXPECTED_HEALTH_CHECK_SERVICES;
                     } catch (Exception ex) {
                         logger.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return false;
