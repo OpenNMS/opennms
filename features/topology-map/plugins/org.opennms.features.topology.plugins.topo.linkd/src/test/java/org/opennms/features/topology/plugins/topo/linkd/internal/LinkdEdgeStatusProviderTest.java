@@ -62,7 +62,7 @@ import org.opennms.netmgt.model.topology.BridgePort;
 
 import com.codahale.metrics.MetricRegistry;
 
-public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
+public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
 
     public LinkdEdgeStatusProviderTest() {
         super(new MetricRegistry());
@@ -141,7 +141,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link2.setId(105);
         
         m_edges.add(connectVertices(
-                                    new IsIsLinkdDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
+                                    new LinkdIsIsDetail(Math.min(link1.getId(), link2.getId()) + "|" + Math.max(link1.getId(), link2.getId()), source, link1, target, link2), 
                                     ISIS_EDGE_NAMESPACE));
 
         // lldp link
@@ -156,7 +156,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         link4.setId(205);
          
          m_edges.add(connectVertices(
-                                    new LldpLinkdDetail(this, Math.min(link3.getId(), link4.getId()) + "|" + Math.max(link3.getId(), link4.getId()),
+                                    new LinkdLldpDetail(this, Math.min(link3.getId(), link4.getId()) + "|" + Math.max(link3.getId(), link4.getId()),
                                                        source, link3, target, link4), LLDP_EDGE_NAMESPACE));
         
         //ospf link
@@ -166,11 +166,11 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
          OspfLink link6 = createOspfLink(m_node5, "192.168.100.245", "255.255.255.252", 0, 10100, "192.168.100.250", "192.168.100.246", 0);
          link6.setId(405);
          m_edges.add(connectVertices(
-                                  new OspfLinkdDetail(Math.min(link5.getId(), link6.getId()) + "|" + Math.max(link5.getId(), link6.getId()),
+                                  new LinkdOspfDetail(Math.min(link5.getId(), link6.getId()) + "|" + Math.max(link5.getId(), link6.getId()),
                                                        source, link5, target, link6), OSPF_EDGE_NAMESPACE));
 
         //cdp link
-        LinkdEdge edgeG = new LinkdEdge(EnhancedLinkdTopologyProvider.CDP_EDGE_NAMESPACE, "504|505", source, target);
+        LinkdEdge edgeG = new LinkdEdge(LinkdTopologyProvider.CDP_EDGE_NAMESPACE, "504|505", source, target);
         edgeG.setSourceNodeid(m_node4.getId());
         edgeG.setTargetNodeid(m_node5.getId());
         edgeG.setSourceEndPoint("101");
@@ -178,7 +178,7 @@ public class LinkdEdgeStatusProviderTest extends EnhancedLinkdTopologyProvider {
         m_edges.add(edgeG);
 
         // another ospf link
-        LinkdEdge edgeChennaiTodehli = new LinkdEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "310|314", dehli, chennai);
+        LinkdEdge edgeChennaiTodehli = new LinkdEdge(LinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "310|314", dehli, chennai);
         edgeChennaiTodehli.setSourceNodeid(m_nodeDehli.getId());
         edgeChennaiTodehli.setTargetNodeid(m_nodeChennai.getId());
         edgeChennaiTodehli.setSourceEndPoint("13");

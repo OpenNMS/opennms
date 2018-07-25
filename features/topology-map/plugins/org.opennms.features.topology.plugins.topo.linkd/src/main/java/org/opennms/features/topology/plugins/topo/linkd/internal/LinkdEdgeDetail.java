@@ -29,46 +29,51 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.model.IsIsLink;
 
-public class IsIsLinkdDetail extends LinkdDetail<IsIsLink,IsIsLink>{
+public abstract class LinkdEdgeDetail<K,L> {
 
+    private final String m_id;
+    private final Vertex m_source;
+    private final K m_sourceLink;
+    private final Vertex m_target;
+    private final L m_targetLink;
 
-    public IsIsLinkdDetail(String id, Vertex source, IsIsLink sourceLink, Vertex target, IsIsLink targetLink) {
-        super(id, source, sourceLink, target, targetLink);
+    public LinkdEdgeDetail(String id, Vertex source, K sourceLink, Vertex target, L targetLink){
+        m_id = id;
+        m_source = source;
+        m_sourceLink = sourceLink;
+        m_target = target;
+        m_targetLink = targetLink;
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId());
-        return result;
+    public abstract int hashCode();
+
+    public abstract boolean equals(Object obj);
+
+    public abstract Integer getSourceIfIndex();
+
+    public abstract Integer getTargetIfIndex();
+
+    public abstract String getType();
+
+    public String getId() {
+        return m_id;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof IsIsLinkdDetail){
-            IsIsLinkdDetail objDetail = (IsIsLinkdDetail)obj;
-
-            return getId().equals(objDetail.getId());
-        } else  {
-            return false;
-        }
+    public Vertex getSource() {
+        return m_source;
     }
 
-    @Override
-    public Integer getSourceIfIndex() {
-        return getSourceLink().getIsisCircIfIndex();
+    public Vertex getTarget() {
+        return m_target;
     }
 
-    @Override
-    public Integer getTargetIfIndex() {
-        return getTargetLink().getIsisCircIfIndex();
+    public K getSourceLink() {
+        return m_sourceLink;
     }
 
-    @Override
-    public String getType() {
-        return "IsIs";
+    public L getTargetLink() {
+        return m_targetLink;
     }
+
 }

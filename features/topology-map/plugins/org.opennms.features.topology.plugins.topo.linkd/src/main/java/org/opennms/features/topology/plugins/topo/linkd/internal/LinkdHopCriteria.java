@@ -73,7 +73,7 @@ public class LinkdHopCriteria extends VertexHopCriteria {
     
     @Override
     public String getNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override

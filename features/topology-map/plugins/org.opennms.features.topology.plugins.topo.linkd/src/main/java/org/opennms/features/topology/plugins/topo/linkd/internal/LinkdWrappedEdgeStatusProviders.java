@@ -61,7 +61,7 @@ public class LinkdWrappedEdgeStatusProviders implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return m_edgeStatusProvider.getNamespace();
     }
 
     @Override

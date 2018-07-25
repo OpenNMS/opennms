@@ -89,7 +89,7 @@ public class LinkdEdgeStatusProvider implements EdgeStatusProvider {
 
     @Override
     public String getNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override
@@ -124,7 +124,7 @@ EDGES:        for (EdgeRef edgeRef : edges) {
 
     @Override
     public boolean contributesTo(String namespace) {
-        return namespace.equals(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
+        return namespace.equals(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD);
     }
 
     public AlarmDao getAlarmDao() {

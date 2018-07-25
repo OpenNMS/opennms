@@ -69,7 +69,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private EnhancedLinkdTopologyProvider m_topologyProvider;
+    private LinkdTopologyProvider m_topologyProvider;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
@@ -96,14 +96,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
+        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
+        Assert.assertTrue("linkd.system".equals(LinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
 
     }
 
@@ -263,9 +263,9 @@ public class EnhancedLinkdTopologyProviderTest {
         int countLLDP = 0;
         int countOSPF = 0;
         for (Edge edge : m_topologyProvider.getEdges()) {
-            if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE)) {
+            if (edge.getNamespace().equals(LinkdTopologyProvider.LLDP_EDGE_NAMESPACE)) {
                 countLLDP++;
-            } else if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE)) {
+            } else if (edge.getNamespace().equals(LinkdTopologyProvider.OSPF_EDGE_NAMESPACE)) {
                 countOSPF++;
             }
         }

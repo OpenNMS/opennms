@@ -29,11 +29,12 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.IsIsLink;
 
-public class CdpLinkDetail extends LinkdDetail<CdpLink,CdpLink> {
+public class LinkdIsIsDetail extends LinkdEdgeDetail<IsIsLink,IsIsLink>{
 
-    public CdpLinkDetail(String id, Vertex source, CdpLink sourceLink, Vertex target, CdpLink targetLink) {
+
+    public LinkdIsIsDetail(String id, Vertex source, IsIsLink sourceLink, Vertex target, IsIsLink targetLink) {
         super(id, source, sourceLink, target, targetLink);
     }
 
@@ -41,14 +42,14 @@ public class CdpLinkDetail extends LinkdDetail<CdpLink,CdpLink> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getSourceLink() == null) ? 0 : getSource().getNodeID().hashCode()) + ((getTargetLink() == null) ? 0 : getTarget().getNodeID().hashCode());
+        result = prime * result + ((getSourceLink() == null) ? 0 : getSourceLink().getId()) + ((getTargetLink() == null) ? 0 : getTargetLink().getId());
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof CdpLinkDetail){
-            CdpLinkDetail objDetail = (CdpLinkDetail)obj;
+        if(obj instanceof LinkdIsIsDetail){
+            LinkdIsIsDetail objDetail = (LinkdIsIsDetail)obj;
 
             return getId().equals(objDetail.getId());
         } else  {
@@ -58,15 +59,16 @@ public class CdpLinkDetail extends LinkdDetail<CdpLink,CdpLink> {
 
     @Override
     public Integer getSourceIfIndex() {
-        return getSourceLink().getCdpCacheIfIndex();
+        return getSourceLink().getIsisCircIfIndex();
     }
 
     @Override
     public Integer getTargetIfIndex() {
-        return getTargetLink().getCdpCacheIfIndex();
+        return getTargetLink().getIsisCircIfIndex();
     }
 
     @Override
-    public String getType() { return "CDP"; }
-
+    public String getType() {
+        return "IsIs";
+    }
 }

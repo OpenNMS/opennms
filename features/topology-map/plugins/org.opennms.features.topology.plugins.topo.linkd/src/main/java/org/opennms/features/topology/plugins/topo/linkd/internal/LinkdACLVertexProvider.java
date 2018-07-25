@@ -34,21 +34,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.opennms.features.topology.api.GraphContainer;
-import org.opennms.features.topology.api.OperationContext;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionChangedListener;
-import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractSearchProvider;
 import org.opennms.features.topology.api.topo.Criteria;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.EdgeListener;
 import org.opennms.features.topology.api.topo.EdgeRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.SearchProvider;
-import org.opennms.features.topology.api.topo.SearchQuery;
-import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.TopologyProviderInfo;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
@@ -63,155 +56,49 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-public class NodeACLVertexProvider implements GraphProvider, SearchProvider {
+public class LinkdACLVertexProvider implements GraphProvider {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NodeACLVertexProvider.class);
+    private static final Logger LOG = LoggerFactory.getLogger(LinkdACLVertexProvider.class);
 
     private final GraphProvider m_delegate;
     private final NodeDao m_nodeDao;
     private final boolean m_aclsEnabled;
 
-    public NodeACLVertexProvider(GraphProvider delegate, NodeDao nodeDao){
+    public LinkdACLVertexProvider(GraphProvider delegate, NodeDao nodeDao){
         m_delegate = delegate;
         m_nodeDao = nodeDao;
         String aclsProp = System.getProperty("org.opennms.web.aclsEnabled");
         m_aclsEnabled = aclsProp != null ? aclsProp.equals("true") : false;
     }
 
-    //Search Provider methods
-    @Override
-    public List<SearchResult> query(SearchQuery searchQuery, GraphContainer graphContainer) {
-        LOG.debug("SearchProvider->query: called with search query: '{}'", searchQuery);
 
-        List<Vertex> vertices = getFilteredVertices();
-        List<SearchResult> searchResults = Lists.newArrayList();
-
-        for(Vertex vertex : vertices){
-            if(searchQuery.matches(vertex.getLabel())) {
-                searchResults.add(new SearchResult(vertex, false, false));
-            }
-        }
-
-        LOG.debug("SearchProvider->query: found {} search results.", searchResults.size());
-        return searchResults;
-    }
-
-    private List<Vertex> getFilteredVertices() {
+    private List<Vertex> filterVertices(List<Vertex> vertices) {
         if(m_aclsEnabled){
-            //TODO Get All nodes when called should filter with ACL
+            LOG.debug("filterVertices: aclEnabled filtering");
+            //Get All nodes when called should filter with ACL
             List<OnmsNode> onmsNodes = m_nodeDao.findAll();
 
             //Transform the onmsNodes list to a list of Ids
-            final List<Integer> nodes = Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
+            final Set<Integer> nodes = new HashSet<Integer>(Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
                 @Override
                 public Integer apply(OnmsNode node) {
                     return node.getId();
                 }
-            });
-
+            }));
 
             //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(m_delegate.getVertices(), new Predicate<Vertex>() {
+            return Lists.newArrayList(Collections2.filter(vertices, new Predicate<Vertex>() {
                 @Override
                 public boolean apply(Vertex vertex) {
-                    return nodes.contains(vertex.getNodeID());
+                    return vertex.getNamespace().equals(getNamespace()) ? nodes.contains(vertex.getNodeID()) : true;
                 }
             }));
-        } else{
-            return m_delegate.getVertices();
-        }
-
-    }
-
-    @Override
-    public String getSearchProviderNamespace() {
-        return getNamespace();
-    }
-    
-    @Override
-    public void onFocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public void onDefocusSearchResult(SearchResult searchResult, OperationContext operationContext) {
-
-    }
-
-    @Override
-    public boolean supportsPrefix(String searchPrefix) {
-        return AbstractSearchProvider.supportsPrefix("nodes=", searchPrefix);
-    }
-
-    @Override
-    public Set<VertexRef> getVertexRefsBy(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->getVertexRefsBy: called with search result: '{}'", searchResult);
-        org.opennms.features.topology.api.topo.Criteria criterion = findCriterion(searchResult.getId(), container);
-
-        Set<VertexRef> vertices = ((VertexHopCriteria)criterion).getVertices();
-        LOG.debug("SearchProvider->getVertexRefsBy: found '{}' vertices.", vertices.size());
-
-        return vertices;
-    }
-
-    @Override
-    public void addVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->addVertexHopCriteria: called with search result: '{}'", searchResult);
-        VertexHopCriteria criterion = LinkdHopCriteria.createCriteria(searchResult.getId(), searchResult.getLabel());
-        container.addCriteria(criterion);
-        LOG.debug("SearchProvider->addVertexHop: adding hop criteria {}.", criterion);
-        logCriteriaInContainer(container);
-    }
-
-    @Override
-    public void removeVertexHopCriteria(SearchResult searchResult, GraphContainer container) {
-        LOG.debug("SearchProvider->removeVertexHopCriteria: called with search result: '{}'", searchResult);
-
-        Criteria criterion = findCriterion(searchResult.getId(), container);
-
-        if (criterion != null) {
-            LOG.debug("SearchProvider->removeVertexHopCriteria: found criterion: {} for searchResult {}.", criterion, searchResult);
-            container.removeCriteria(criterion);
-        } else {
-            LOG.debug("SearchProvider->removeVertexHopCriteria: did not find criterion for searchResult {}.", searchResult);
-        }
-
-        logCriteriaInContainer(container);
-    }
-    
-    private org.opennms.features.topology.api.topo.Criteria findCriterion(String resultId, GraphContainer container) {
-
-        org.opennms.features.topology.api.topo.Criteria[] criteria = container.getCriteria();
-        for (org.opennms.features.topology.api.topo.Criteria criterion : criteria) {
-            if (criterion instanceof LinkdHopCriteria ) {
-                String id = ((LinkdHopCriteria) criterion).getId();
-                if (id.equals(resultId)) {
-                    return criterion;
-                }
-            }
-        }
-        return null;
-    }
-
-    private void logCriteriaInContainer(GraphContainer container) {
-        Criteria[] criteria = container.getCriteria();
-        LOG.debug("SearchProvider->addVertexHopCriteria: there are now {} criteria in the GraphContainer.", criteria.length);
-        for (Criteria crit : criteria) {
-            LOG.debug("SearchProvider->addVertexHopCriteria: criterion: '{}' is in the GraphContainer.", crit);
+        }else{
+            LOG.debug("filterVerices: aclDisabled");
+            return vertices;
         }
     }
 
-
-
-    @Override
-    public void onCenterSearchResult(SearchResult searchResult, GraphContainer graphContainer) {
-        LOG.debug("SearchProvider->onCenterSearchResult: called with search result: '{}'", searchResult);
-    }
-
-    @Override
-    public void onToggleCollapse(SearchResult searchResult, GraphContainer graphContainer) {
-        LOG.debug("SearchProvider->onToggleCollapse: called with search result: '{}'", searchResult);
-    }
 
     @Override
     public void refresh() {
@@ -355,31 +242,6 @@ public class NodeACLVertexProvider implements GraphProvider, SearchProvider {
     public List<Vertex> getVertices(Criteria... criteria) {
         //Filter out vertices not in ACLs
         return filterVertices(m_delegate.getVertices(criteria));
-    }
-
-    private List<Vertex> filterVertices(List<Vertex> vertices) {
-        if(m_aclsEnabled){
-            //Get All nodes when called should filter with ACL
-            List<OnmsNode> onmsNodes = m_nodeDao.findAll();
-
-            //Transform the onmsNodes list to a list of Ids
-            final Set<Integer> nodes = new HashSet<Integer>(Lists.transform(onmsNodes, new Function<OnmsNode, Integer>() {
-                @Override
-                public Integer apply(OnmsNode node) {
-                    return node.getId();
-                }
-            }));
-
-            //Filter out the nodes that are not viewable by the user.
-            return Lists.newArrayList(Collections2.filter(vertices, new Predicate<Vertex>() {
-                @Override
-                public boolean apply(Vertex vertex) {
-                    return vertex.getNamespace().toLowerCase().equals("nodes") ? nodes.contains(vertex.getNodeID()) : true;
-                }
-            }));
-        }else{
-            return vertices;
-        }
     }
 
     @Override

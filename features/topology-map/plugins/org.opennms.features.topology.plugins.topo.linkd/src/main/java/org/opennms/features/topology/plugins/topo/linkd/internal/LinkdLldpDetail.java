@@ -29,11 +29,12 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.LldpLink;
 
-public class OspfLinkdDetail extends LinkdDetail<OspfLink,OspfLink>{
+public class LinkdLldpDetail extends LinkdEdgeDetail<LldpLink,LldpLink> {
 
-    public OspfLinkdDetail(String id, Vertex source, OspfLink sourceLink, Vertex target, OspfLink targetLink) {
+
+    public LinkdLldpDetail(LinkdTopologyProvider enhancedLinkdTopologyProvider, String id, Vertex source, LldpLink sourceLink, Vertex target, LldpLink targetLink) {
         super(id, source, sourceLink, target, targetLink);
     }
 
@@ -47,27 +48,28 @@ public class OspfLinkdDetail extends LinkdDetail<OspfLink,OspfLink>{
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof OspfLinkdDetail){
-            OspfLinkdDetail objDetail = (OspfLinkdDetail)obj;
+        if(obj instanceof LinkdLldpDetail){
+            LinkdLldpDetail objDetail = (LinkdLldpDetail)obj;
 
             return getId().equals(objDetail.getId());
         } else  {
             return false;
         }
+
     }
 
     @Override
     public Integer getSourceIfIndex() {
-        return getSourceLink().getOspfIfIndex();
+        return getSourceLink().getLldpPortIfindex();
     }
 
     @Override
     public Integer getTargetIfIndex() {
-        return getTargetLink().getOspfIfIndex();
+        return getTargetLink().getLldpPortIfindex();
     }
 
     @Override
     public String getType() {
-        return "OSPF";
+        return "LLDP";
     }
 }

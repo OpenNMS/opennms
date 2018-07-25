@@ -31,15 +31,15 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.netmgt.model.topology.BridgePort;
 
-public class BridgeLinkDetail extends LinkdDetail<BridgePort,BridgePort> {
+public class LinkdBridgeDetail extends LinkdEdgeDetail<BridgePort,BridgePort> {
 
     private final Integer m_sourceBridgePort;
     private final Integer m_targetBridgePort;
     private final Integer m_sourceIfIndex;
     private final Integer m_targetifIndex;
 
-    public BridgeLinkDetail(Vertex source, BridgePort sourceBridgePort, Vertex target, BridgePort targetBridgePort) {
-        super(EnhancedLinkdTopologyProvider.getDefaultEdgeId(sourceBridgePort.getNodeId(), targetBridgePort.getNodeId()), source, sourceBridgePort, target, targetBridgePort);
+    public LinkdBridgeDetail(Vertex source, BridgePort sourceBridgePort, Vertex target, BridgePort targetBridgePort) {
+        super(LinkdTopologyProvider.getDefaultEdgeId(sourceBridgePort.getNodeId(), targetBridgePort.getNodeId()), source, sourceBridgePort, target, targetBridgePort);
         m_sourceBridgePort = sourceBridgePort.getBridgePort();
         m_targetBridgePort = targetBridgePort.getBridgePort();
         m_sourceIfIndex = sourceBridgePort.getBridgePortIfIndex();
@@ -57,8 +57,8 @@ public class BridgeLinkDetail extends LinkdDetail<BridgePort,BridgePort> {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj instanceof BridgeLinkDetail){
-            BridgeLinkDetail objDetail = (BridgeLinkDetail)obj;
+        if(obj instanceof LinkdBridgeDetail){
+            LinkdBridgeDetail objDetail = (LinkdBridgeDetail)obj;
 
             return getId().equals(objDetail.getId());
         } else  {
