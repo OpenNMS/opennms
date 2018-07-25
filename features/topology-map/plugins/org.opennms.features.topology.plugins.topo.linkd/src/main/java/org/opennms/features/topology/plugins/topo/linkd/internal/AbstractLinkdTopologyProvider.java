@@ -387,15 +387,6 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
     public boolean contributesTo(ContentType type) {
         return selectionAwareDelegate.contributesTo(type);
     }
-
-    protected final Vertex getOrCreateVertex(OnmsNode node,OnmsIpInterface primary) {
-        Vertex source = getVertex(getNamespace(), node.getNodeId());
-        if (source == null) {
-            source = createLinkdVertex(node,primary); 
-            addVertices(source);
-        }        
-        return source;
-    }
     
     protected final LinkdEdge connectCloudMacVertices(String targetmac, VertexRef sourceRef, VertexRef targetRef,String nameSpace) {
         SimpleConnector source = new SimpleConnector(sourceRef.getNamespace(), sourceRef.getId()+"-"+targetRef.getId()+"-connector", sourceRef);
