@@ -38,11 +38,13 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Assume;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Timeout;
 import org.opennms.smoketest.NullTestEnvironment;
 import org.opennms.smoketest.OpenNMSSeleniumTestCase;
+import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
@@ -50,29 +52,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
-public abstract class AbstractHealthCheckIT {
+public class HealthCheckIT {
 
-    @Rule
-    public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
+    @ClassRule
+    public static TestEnvironment testEnvironment = getTestEnvironment();
 
-    @Rule
-    public TestEnvironment testEnvironment = getTestEnvironment();
-
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    protected abstract void applyTestEnvironment(TestEnvironmentBuilder builder);
-
-    public abstract InetSocketAddress getSshAddress();
-
-    public abstract int getExpectedHealthCheckServices();
-
-    protected TestEnvironment getTestEnvironment() {
+    private static TestEnvironment getTestEnvironment() {
         if (!OpenNMSSeleniumTestCase.isDockerEnabled()) {
             return new NullTestEnvironment();
         }
         try {
-            final TestEnvironmentBuilder builder = TestEnvironment.builder();
-            applyTestEnvironment(builder);
+            final TestEnvironmentBuilder builder = TestEnvironment.builder()
+                    .opennms()
+                    .minion()
+                    .es6()
+                    .sentinel();
+
+            // Install some features to have health:check process something,
+            // as by default sentinel does not start any bundles
+            builder.withSentinelEnvironment()
+                    .addFile(HealthCheckIT.class.getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
+
+            builder.withOpenNMSEnvironment()
+                    .addFile(HealthCheckIT.class.getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
@@ -80,27 +82,44 @@ public abstract class AbstractHealthCheckIT {
         }
     }
 
+    @Rule
+    public Timeout timeout = new Timeout(20, TimeUnit.MINUTES);
+
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
     @Before
     public void checkForDocker() {
         Assume.assumeTrue(OpenNMSSeleniumTestCase.isDockerEnabled());
     }
 
     @Test
-    public void verifyHealthCheck() throws Exception {
-        final int expectedHealthCheckServicesCount = getExpectedHealthCheckServices();
+    public void verifyOpenNMSHealth() {
+        verifyHealthCheck(2, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+    }
 
+    @Test
+    public void verifyMinionHealth() {
+        verifyHealthCheck(3, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 8201));
+    }
+
+    @Test
+    public void verifySentinelHealth() {
+        verifyHealthCheck(5, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
+    }
+
+    private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {
         // Ensure we are actually started the sink and are ready to listen for messages
         await().atMost(5, MINUTES)
                 .pollInterval(5, SECONDS)
                 .until(() -> {
-                    try (final SshClient sshClient = new SshClient(getSshAddress(), "admin", "admin")) {
+                    try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
                         pipe.println("health:check");
                         pipe.println("logout");
 
                         // Wait for karaf to process the commands
                         // each health check times out after 5 seconds, so we wait at least that long
-                        int maxWaitTime = expectedHealthCheckServicesCount * 5;
+                        int maxWaitTime = expectedHealthCheckServices * 5;
                         await().atMost(maxWaitTime, SECONDS).until(sshClient.isShellClosedCallable());
 
                         // Read stdout and verify
@@ -109,7 +128,7 @@ public abstract class AbstractHealthCheckIT {
 
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
-                        return count == expectedHealthCheckServicesCount;
+                        return count == expectedHealthCheckServices;
                     } catch (Exception ex) {
                         logger.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return false;
