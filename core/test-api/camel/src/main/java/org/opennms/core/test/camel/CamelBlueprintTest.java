@@ -64,12 +64,6 @@ public class CamelBlueprintTest extends CamelBlueprintTestSupport {
     }
 
     @Override
-    public boolean isUseDebugger() {
-        // Must enable debugger
-        return true;
-    }
-
-    @Override
     public String isMockEndpoints() {
         return "*";
     }
