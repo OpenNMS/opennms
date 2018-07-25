@@ -26,15 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.timeformat;
+package org.opennms.features.timeformat.impl;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-public interface TimeformatService {
+import org.opennms.features.timeformat.api.TimeformatService;
 
-    String format(Instant instant);
+public class DefaultTimeformatService implements TimeformatService {
 
-    @Deprecated // please try to use the new Java Date API when possible: format(Instant instant)
-    String format(Date date);
+    @Override
+    public String format(Instant instant) {
+        return DateTimeFormatter.ISO_DATE_TIME.format(instant); // TODO: replace with centralized class
+    }
+
+    @Override
+    public String format(Date date) {
+        if(date != null){
+            return format(date.toInstant());
+        }
+        return null;
+    }
 }

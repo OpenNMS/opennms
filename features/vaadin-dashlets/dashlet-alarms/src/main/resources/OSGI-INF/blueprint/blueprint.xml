@@ -4,7 +4,7 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
     <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
-    <reference id="timeformatService" interface="org.opennms.features.timeformat.TimeformatService" availability="mandatory" />
+    <reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" availability="mandatory" />
 
     <bean id="alarmsDashletFactory" class="org.opennms.features.vaadin.dashboard.dashlets.AlarmsDashletFactory" scope="singleton">
         <argument ref="alarmDao"/>

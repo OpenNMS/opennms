@@ -12,7 +12,7 @@
     ">
 
     <context:annotation-config />
-    <bean id="timeformatService" class="org.opennms.features.timeformat.DefaultTimeformatService" />
-    <onmsgi:service interface="org.opennms.features.timeformat.TimeformatService" ref="timeformatService" />
+    <bean id="timeformatService" class="org.opennms.features.timeformat.impl.DefaultTimeformatService" />
+    <onmsgi:service interface="org.opennms.features.timeformat.api.TimeformatService" ref="timeformatService" />
 
 </beans>

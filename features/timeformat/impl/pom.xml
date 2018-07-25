@@ -6,8 +6,9 @@
         <version>21.1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.opennms.features.timeformat</groupId>
     <artifactId>org.opennms.features.timeformat.impl</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>OpenNMS :: Features :: Timeformat :: Impl</name>
     <build>
         <plugins>

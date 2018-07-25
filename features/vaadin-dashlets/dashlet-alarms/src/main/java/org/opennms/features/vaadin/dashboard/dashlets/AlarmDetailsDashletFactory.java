@@ -28,7 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import org.opennms.features.timeformat.TimeformatService;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletFactory;
 import org.opennms.features.vaadin.dashboard.model.Dashlet;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
