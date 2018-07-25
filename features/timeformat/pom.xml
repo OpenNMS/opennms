@@ -9,7 +9,7 @@
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.timeformat</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Features :: Timeformat</name>
+  <name>OpenNMS :: Features :: Timeformat (Parent)</name>
   <modules>
     <module>api</module>
     <module>impl</module>
