@@ -165,11 +165,19 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, sourceNode.getId().toString(), 0, 0);
         vertex.setIconKey(getIconName(sourceNode.getSysObjectId()));
         vertex.setLabel(sourceNode.getLabel());
-        vertex.setIpAddress(InetAddressUtils.str(primary.getIpAddress()));
+        if (primary != null) {
+            vertex.setIpAddress(InetAddressUtils.str(primary.getIpAddress()));
+        } else {
+            vertex.setIpAddress("no ip address");
+        }
+        boolean isManaged = false;
+        if (primary != null) {
+            isManaged = primary.isManaged();
+        }
         vertex.setNodeID(sourceNode.getId());
-        vertex.setTooltipText(getNodeTooltipDefaultText(InetAddressUtils.str(primary.getIpAddress()),
+        vertex.setTooltipText(getNodeTooltipDefaultText(vertex.getIpAddress(),
                                                                 sourceNode.getLabel(),
-                                                                primary.isManaged(),
+                                                                isManaged,
                                                                 sourceNode.getSysLocation(),
                                                                 sourceNode.getType())
         );
@@ -380,13 +388,11 @@ public abstract class AbstractLinkdTopologyProvider extends AbstractTopologyProv
         return selectionAwareDelegate.contributesTo(type);
     }
 
-    protected final Vertex getOrCreateVertex(OnmsNode node,OnmsIpInterface primary, boolean add) {
+    protected final Vertex getOrCreateVertex(OnmsNode node,OnmsIpInterface primary) {
         Vertex source = getVertex(getNamespace(), node.getNodeId());
         if (source == null) {
             source = createLinkdVertex(node,primary); 
-            if (add) {
-                addVertices(source);
-            }
+            addVertices(source);
         }        
         return source;
     }

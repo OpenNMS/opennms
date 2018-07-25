@@ -406,8 +406,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
-            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
+            Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()));
             combinedLinkDetails.add(new LldpLinkdDetail(this, Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
@@ -435,8 +435,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     LOG.info("loadtopology: found ospf mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     parsed.add(sourceLink.getId());
                     parsed.add(targetLink.getId());
-                    Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
-                    Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
+                    Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()));
+                    Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()));
                     OspfLinkdDetail linkDetail = new OspfLinkdDetail(
                             Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                             source, sourceLink, target, targetLink);
@@ -506,8 +506,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
-            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
+            Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()));
             combinedLinkDetails.add(new CdpLinkDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
@@ -564,8 +564,8 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
             Vertex source =  getOrCreateVertex(m_nodeMap.get(sourceLink.getNode().getId()),
-                                               m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()),true);
-            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()),true);
+                                               m_nodeToOnmsIpPrimaryMap.get(sourceLink.getNode().getId()));
+            Vertex target = getOrCreateVertex(m_nodeMap.get(targetLink.getNode().getId()),m_nodeToOnmsIpPrimaryMap.get(targetLink.getNode().getId()));
             combinedLinkDetails.add(new IsIsLinkdDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
         }
@@ -595,7 +595,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
     private void parseSegment(SharedSegment segment) throws BridgeTopologyException {
         Map<BridgePort,Vertex> portToVertexMap = new HashMap<BridgePort, Vertex>();
         for (BridgePort bp : segment.getBridgePortsOnSegment()) {
-            portToVertexMap.put(bp,getOrCreateVertex(m_nodeMap.get(bp.getNodeId()), m_nodeToOnmsIpPrimaryMap.get(bp.getNodeId()),true));
+            portToVertexMap.put(bp,getOrCreateVertex(m_nodeMap.get(bp.getNodeId()), m_nodeToOnmsIpPrimaryMap.get(bp.getNodeId())));
         }
         
         Map<String,Vertex> macToVertexMap = new HashMap<String, Vertex>();
@@ -605,7 +605,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                List<OnmsIpInterface> targetInterfaces = m_macToOnmsIpMap.get(mac);
                OnmsIpInterface targetIp = targetInterfaces.get(0);
                macToVertexMap.put(mac,
-                 getOrCreateVertex(m_nodeMap.get(targetIp.getNode().getId()), m_nodeToOnmsIpPrimaryMap.get(targetIp.getNode().getId()),true));
+                 getOrCreateVertex(m_nodeMap.get(targetIp.getNode().getId()), m_nodeToOnmsIpPrimaryMap.get(targetIp.getNode().getId())));
             } else {
                 macswithoutip.add(mac);
             }
@@ -672,7 +672,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
             Integer nodeId = entry.getKey();
             OnmsNode node = entry.getValue();
             OnmsIpInterface ip = m_nodeToOnmsIpPrimaryMap.get(nodeId);
-            getOrCreateVertex(node, ip,true);
+            getOrCreateVertex(node, ip);
         }
     }
 
@@ -852,7 +852,14 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
 
                     if (node != null) {
-                        final Vertex defaultVertex = getOrCreateVertex(node, null, true);
+                        OnmsIpInterface ipprimary = m_ipInterfaceDao.findPrimaryInterfaceByNodeId(node.getId());
+                        if (ipprimary == null) {
+                            List<OnmsIpInterface> ips= m_ipInterfaceDao.findByNodeId(node.getId());
+                            if (ips.size() > 0) {
+                                ipprimary=ips.get(0);
+                            }
+                        }
+                        final Vertex defaultVertex = getOrCreateVertex(node, ipprimary);
                         if (defaultVertex != null) {
                             return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getNodeId(), node.getLabel()));
                         }
