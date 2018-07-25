@@ -62,6 +62,40 @@
       <artifactId>org.opennms.core.cache</artifactId>
       <version>${project.version}</version>
     </dependency>
+
+
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.db</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.test-api</groupId>
+      <artifactId>org.opennms.core.test-api.elasticsearch</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <!--
+      A parent module defines netty-all with version 4.1.9.Final, but elastic requires a higher version.
+      We overwrite it here manually to make the tests pass.
+      Otherwise io.netty.util.NettyRuntime cannot be found (ClassNotFoundException).
+    -->
+    <dependency>
+      <groupId>io.netty</groupId>
+      <artifactId>netty-all</artifactId>
+      <version>4.1.17.Final</version>
+      <scope>test</scope>
+    </dependency>
+	<dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.jayway.awaitility</groupId>
+      <artifactId>awaitility</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
       <artifactId>gson</artifactId>
@@ -73,6 +107,12 @@
     	<artifactId>org.opennms.features.situation-feedback.api</artifactId>
     	<version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
 </project>

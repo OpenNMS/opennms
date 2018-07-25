@@ -30,7 +30,9 @@ package org.opennms.features.situationfeedback.elastic;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.FeedbackException;
@@ -44,6 +46,9 @@ import org.slf4j.LoggerFactory;
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
+import io.searchbox.core.Search;
+import io.searchbox.core.SearchResult;
+import io.searchbox.core.SearchResult.Hit;
 
 public class ElasticFeedbackRepository implements FeedbackRepository {
 
@@ -71,7 +76,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         ensureInitialized();
         LOG.debug("Persiting {} feedbacks.", feedback.size());
 
-        List<FeedbackDocument> feedbackDocuments = null;
+        List<FeedbackDocument> feedbackDocuments = feedback.stream().map(FeedbackDocument::from).collect(Collectors.toList());
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
@@ -91,21 +96,42 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     }
 
     @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey) {
+    public Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException {
+        String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": \"" + situationKey + "\" } }\n" + "}";
+        try {
+            return search(query);
+        } catch (IOException e) {
+            throw new FeedbackException("Failed to get feedback for " + situationKey, e);
+        }
+    }
+
+    @Override
+    public Collection<AlarmFeedback> getFeedback(String situationKey, String situationFingerprint) throws FeedbackException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey, String situationFingerprint) {
+    public Collection<AlarmFeedback> getFeedback(String situationKey, Collection<String> alarmKeys) throws FeedbackException {
         // TODO Auto-generated method stub
         return null;
     }
 
-    @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey, Collection<String> alarmKeys) {
-        // TODO Auto-generated method stub
-        return null;
+    private Collection<AlarmFeedback> search(String query) throws IOException, FeedbackException {
+        Search.Builder builder = new Search.Builder(query).addType(TYPE);
+        return execute(builder.build());
+    }
+
+    private Collection<AlarmFeedback> execute(Search search) throws IOException, FeedbackException {
+        SearchResult result = client.execute(search);
+        if (result == null) {
+            throw new FeedbackException("Failed to get result");
+        }
+        List<Hit<AlarmFeedback, Void>> feedback = result.getHits(AlarmFeedback.class);
+        if (feedback == null) {
+            return Collections.emptyList();
+        }
+        return feedback.stream().map(hit -> hit.source).collect(Collectors.toList());
     }
 
     private void ensureInitialized() {

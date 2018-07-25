@@ -28,6 +28,7 @@
 package org.opennms.features.situationfeedback.rest;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.ws.rs.WebApplicationException;
@@ -53,7 +54,13 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     @Override
     public Collection<AlarmFeedback> getFeedback(String situationKey) {
         // TODO - filtering?? User/Fingerprint/
-        return repository.getFeedback(situationKey);
+        try {
+            return repository.getFeedback(situationKey);
+        } catch (FeedbackException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
     }
 
     @Override

@@ -34,11 +34,11 @@ public interface FeedbackRepository {
 
     void persist(Collection<AlarmFeedback> feedback) throws FeedbackException;
 
-    Collection<AlarmFeedback> getFeedback(String situationKey);
+    Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException;
 
-    Collection<AlarmFeedback> getFeedback(String situationKey, String situationFingerprint);
+    Collection<AlarmFeedback> getFeedback(String situationKey, String situationFingerprint) throws FeedbackException;
 
-    Collection<AlarmFeedback> getFeedback(String situationKey, Collection<String> alarmKeys);
+    Collection<AlarmFeedback> getFeedback(String situationKey, Collection<String> alarmKeys) throws FeedbackException;
 
     // TODO - where to filter based on latest feedback?
     // TODO - where to filter on user.
