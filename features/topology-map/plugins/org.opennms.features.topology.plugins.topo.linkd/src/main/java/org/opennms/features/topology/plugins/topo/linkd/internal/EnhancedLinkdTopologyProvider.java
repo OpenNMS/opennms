@@ -852,7 +852,7 @@ public class EnhancedLinkdTopologyProvider extends AbstractLinkdTopologyProvider
                     final OnmsNode node = m_topologyDao.getDefaultFocusPoint();
 
                     if (node != null) {
-                        final Vertex defaultVertex = getOrCreateVertex(node, null, false);
+                        final Vertex defaultVertex = getOrCreateVertex(node, null, true);
                         if (defaultVertex != null) {
                             return Lists.newArrayList(LinkdHopCriteria.createCriteria(node.getNodeId(), node.getLabel()));
                         }
