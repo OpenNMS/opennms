@@ -15,7 +15,7 @@
 
     <#if request.remoteUser?has_content >
       <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-        ${currentDate?string["MMM d, y HH:mm z"]}
+        ${formattedTime}
         <span class="fa-stack" style="text-shadow:none">
         <#if noticeStatus = 'Unknown'>
             <!-- Gray circle with bell inside -->
