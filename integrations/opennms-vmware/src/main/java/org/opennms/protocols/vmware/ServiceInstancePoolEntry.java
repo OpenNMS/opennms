@@ -105,6 +105,8 @@ public class ServiceInstancePoolEntry {
                 return false;
             }
         });
+
+        this.accessTimestamp.entrySet().removeIf(e -> !this.locked.contains(e.getKey()) && !this.unlocked.contains(e.getKey()));
     }
 
     public synchronized boolean isUnused() {
