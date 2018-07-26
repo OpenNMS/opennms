@@ -397,13 +397,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
-        lastEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()));
+        lastEvent.setValue(timeformatService.format(onmsAlarm.getLastEventTime()));
 
         Label firstEvent = new Label();
         firstEvent.setSizeUndefined();
         firstEvent.addStyleName("alert-details-font");
         firstEvent.setCaption("First event");
-        firstEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getFirstEventTime()));
+        firstEvent.setValue(timeformatService.format(onmsAlarm.getFirstEventTime()));
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);
