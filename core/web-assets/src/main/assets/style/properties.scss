@@ -39,27 +39,31 @@ $color_success_darker: darken($color_success,20%);
 /* for now just disable menu collapse */
 /* $grid-float-breakpoint: 300px; */
 
-$font-size-base:  12px;
+//$font-size-base:  12px;
 
-$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
+//$font-family-base-sans-serif: 'Lucida Grande', Verdana, sans-serif;
+
 
 $navbar-logo-height: 64px;
-$navbar-margin-bottom: 0;
-$navbar-inverse-color: white;
-$navbar-inverse-bg: $color_mine_shaft_approx;
+$navbar-height: $navbar-logo-height;
+//$navbar-margin-bottom: 0;
+//$navbar-inverse-color: white;
+//$navbar-inverse-bg: $color_mine_shaft_approx;
 
-$breadcrumb-bg: transparent;
-$breadcrumb-padding-horizontal: 0; /* container-fluid already gives us a good padding */
-$breadcrumb-padding-vertical: 0; /* container-fluid already gives us a good padding */
+//$breadcrumb-bg: transparent;
+//$breadcrumb-padding-horizontal: 0; /* container-fluid already gives us a good padding */
+//$breadcrumb-padding-vertical: 0; /* container-fluid already gives us a good padding */
 
-$border-radius-base:  0;
-$border-radius-large: 0;
-$border-radius-small: 0;
-
-$table-border-color: $color_mountain_mist_approx;
-
-$panel-heading-padding: 6px;
-$panel-body-padding: 4px 6px;
+//$border-radius-base:  0;
+//$border-radius-large: 0;
+//$border-radius-small: 0;
+//
+// This is the default color, and does not overwrite, but reset the styling. Is required for the vaadin themes to compile
+$table-border-color: #ddd !default;
+//$table-border-color: $color_mountain_mist_approx;
+//
+//$panel-heading-padding: 6px;
+//$panel-body-padding: 4px 6px;
 
 /* override bootstrap nav-tabs colors */
 /*
@@ -71,4 +75,4 @@ $nav-tabs-link-hover-border-color:          $color_opennms_lighter;
 $nav-tabs-active-link-hover-bg:             $body-bg !default;
 $nav-tabs-active-link-hover-border-color:   #ddd !default;
 */
-$nav-tabs-active-link-hover-color:          $color_opennms_dark;
+//$nav-tabs-active-link-hover-color:          $color_opennms_dark;
