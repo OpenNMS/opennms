@@ -8,27 +8,19 @@
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
-    <!-- TODO MVR this is a duplicate, as it is already defined in minion-${project.version} features-xml -->
+    <!-- Required by sentinel-jms -->
     <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
     </feature>
 
-    <!-- TODO MVR this is identical to opennms-dao-minion -->
     <feature name="sentinel-distpoller-dao" description="Sentinel :: DAO :: Distpoller" version="${project.version}">
         <feature>opennms-dao-api</feature>
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-distributed/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
-        <feature>opennms-persistence</feature>
-        <feature>sentinel-distpoller-dao</feature>
-        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
-    </feature>
-
-    <!-- TODO MVR this is very similar to minion-jms and may be better consolidated than just copy & pasting -->
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
         <feature>sentinel-core</feature>
         <feature>geronimo-jms-api</feature>
@@ -36,13 +28,18 @@
         <!-- Needed by activemq-camel -->
         <bundle>mvn:javax.annotation/javax.annotation-api/1.2</bundle>
         <feature>activemq-camel</feature>
-        <!-- TODO MVR this should probably be moved to org.opennms.features.distributed/jms/${project.version} -->
-        <!-- TODO MVR this is also defined in minion-jms -->
         <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
+
+        <feature>opennms-core-ipc-sink-camel-server</feature>
     </feature>
 
-    <!-- TODO MVR this is very similar to minion-core and may be better consolidated than just copy & pasting -->
+    <feature name="sentinel-kafka" description="Sentinel :: Core :: Kafka" version="${project.version}">
+        <feature>opennms-core-ipc-sink-kafka-server</feature>
+    </feature>
+
     <feature name="sentinel-core" description="OpenNMS :: Sentinel :: Core" version="${project.version}">
+        <feature>opennms-spring-extender</feature>
+
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
@@ -58,12 +55,20 @@
         <bundle>mvn:org.opennms.features.distributed/core-impl/${project.version}</bundle>
 
         <!-- Core Sentinel -->
-        <!-- TODO MVR this is not ideal we should figure out an alternative... -->
         <bundle>mvn:org.opennms.features.distributed/shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
     </feature>
 
+    <feature name="sentinel-persistence" description="Sentinel :: Persistence" version="${project.version}">
+        <feature>sentinel-core</feature>
+        <feature>opennms-persistence</feature>
+        <feature>sentinel-distpoller-dao</feature>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-healthcheck/${project.version}</bundle>
+    </feature>
+
     <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
+        <feature>sentinel-persistence</feature>
+
         <feature>camel-netty4</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
@@ -89,6 +94,7 @@
     </feature>
 
     <feature name="sentinel-flows" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+        <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-telemetry-collection</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
