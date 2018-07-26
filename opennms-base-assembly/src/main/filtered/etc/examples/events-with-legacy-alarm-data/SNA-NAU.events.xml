@@ -1,0 +1,322 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.1.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>1</vbvalue>
+            <vbvalue>3</vbvalue>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaNodeStateChangeTrap</event-label>
+      <descr>&lt;p>This trap indicates that the operational state
+(i.e., value of the snaNodeOperState object) of a Node
+ has changed. The following variables are returned:
+  snaNodeOperName - current name of the Node,
+    with the instance identifying the Node; and,
+  snaNodeOperState - current state after
+    the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		active(2)
+		waiting(3)
+		stopping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaNodeStateChangeTrap trap received 
+			snaNodeOperName=%parm[#1]% 
+			snaNodeOperState=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.1.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapActive</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaNodeStateChangeTrap</event-label>
+      <descr>&lt;p>This trap indicates that the operational state
+(i.e., value of the snaNodeOperState object) of a Node
+ has changed. The following variables are returned:
+  snaNodeOperName - current name of the Node,
+    with the instance identifying the Node; and,
+  snaNodeOperState - current state after
+    the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		active(2)
+		waiting(3)
+		stopping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaNodeStateChangeTrap trap received 
+			snaNodeOperName=%parm[#1]% 
+			snaNodeOperState=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1666/traps/snaNodeStateChangeTrapNotActive:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.1.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaNodeActFailTrap</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaNodeActFailTrap</event-label>
+      <descr>&lt;p>This trap indicates a Node activation failure.
+The value of snaNodeOperState indicates the current
+state after the activation attempt.
+The value of snaNodeOperActFailureReason indicates
+the failure reason.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		active(2)
+		waiting(3)
+		stopping(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaNodeOperActFailureReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		linkFailure(2)
+		noResources(3)
+		badConfiguration(4)
+		internalError(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaNodeActFailTrap trap received 
+			snaNodeOperName=%parm[#1]% 
+			snaNodeOperState=%parm[#2]% 
+			snaNodeOperActFailureReason=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaLuStateChangeTrap</event-label>
+      <descr>&lt;p>This trap indicates that the operational state
+(i.e., snaLuOperState value) of the LU has changed.
+The value of snaLuOperName indicates the name of the
+LU.
+The value of snaLuOperSnaName indicates the SNA name
+of LU.
+The value of snaLuOperState indicates the current
+state after change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperSnaName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		active(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaLuStateChangeTrap trap received 
+			snaLuOperName=%parm[#1]% 
+			snaLuOperSnaName=%parm[#2]% 
+			snaLuOperState=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeActiveTrap</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaLuStateChangeTrap</event-label>
+      <descr>&lt;p>This trap indicates that the operational state
+(i.e., snaLuOperState value) of the LU has changed.
+The value of snaLuOperName indicates the name of the
+LU.
+The value of snaLuOperSnaName indicates the SNA name
+of LU.
+The value of snaLuOperState indicates the current
+state after change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperSnaName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		active(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaLuStateChangeTrap trap received 
+			snaLuOperName=%parm[#1]% 
+			snaLuOperSnaName=%parm[#2]% 
+			snaLuOperState=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc1666/traps/snaLuStateChangeTrap:%dpname%:%nodeid%:%parm[#2]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.34.1.2.5</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc1666/traps/snaLuSessnBindFailTrap</uei>
+      <event-label>SNA-NAU-MIB defined trap event: snaLuSessnBindFailTrap</event-label>
+      <descr>&lt;p>This trap indicates the failure of a BIND.
+The value of snaLuSessnLocalApplName indicates the local
+application name.
+The value of snaLuSessnPartnerName indicates the partner
+name.
+The value of snaLuSessnOperState indicates the current
+state after change.
+The value of snaLuSessnBindFailureReason
+indicates the failure reason.
+The Agent should not generate more than 1 trap of this
+type per minute to minimize the level of management
+traffic on the network.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuSessnLocalApplName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuSessnRemoteLuName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuSessnOperState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		unbound(1)
+		pendingBind(2)
+		bound(3)
+		pendingUnbind(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snaLuSessnSenseData&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snaLuSessnBindFailTrap trap received 
+			snaLuSessnLocalApplName=%parm[#1]% 
+			snaLuSessnRemoteLuName=%parm[#2]% 
+			snaLuSessnOperState=%parm[#3]% 
+			snaLuSessnSenseData=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+</events>

@@ -1,0 +1,1099 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.2.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpAgentDeviceCommunicationLost</uei>
+      <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentDeviceCommunicationLost</event-label>
+      <descr>&lt;p>The agent has lost communications with a managed device.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpAgentDeviceCommunicationLost trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.2.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpAgentFirmwareUpdateSuccessful</uei>
+      <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentFirmwareUpdateSuccessful</event-label>
+      <descr>&lt;p>The firmware update to the agent card has completed successfully.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpAgentFirmwareUpdateSuccessful trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.2.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpAgentFirmwareCorrupt</uei>
+      <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentFirmwareCorrupt</event-label>
+      <descr>&lt;p>The firmware update to the agent card has failed and the firmware is
+now corrupt.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpAgentFirmwareCorrupt trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.2.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpAgentHeartbeat</uei>
+      <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentHeartbeat</event-label>
+      <descr>&lt;p>The agent card is alive.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionsPresent&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpAgentConnectedDeviceCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpAgentHeartbeat trap received
+	sysUpTime=%parm[#1]%
+	lgpConditionsPresent=%parm[#2]%
+	lgpAgentConnectedDeviceCount=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.2.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpAgentDnsLookupFailure</uei>
+      <event-label>LIEBERT-GP-AGENT-MIB defined trap event: lgpAgentDnsLookupFailure</event-label>
+      <descr>&lt;p>A Domain Name System (DNS) lookup of a network name failed to
+resolve.  This may result in one or more of the following:&#xd;
+   1. failure to notify a target address of an important condition&#xd;
+   2. failure allow access for monitoring purposes&#xd;
+This issue should be resolved as soon as possible with a&#xd;
+network or system administrator.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpNetworkName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpAgentDnsLookupFailure trap received
+	sysUpTime=%parm[#1]%
+	lgpNetworkName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventConditionEntryAdded</event-label>
+      <descr>&lt;p>This notification is sent each time a condition is inserted into the
+conditions table.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>A unique identifier for a condition. This value must remain
+        constant between agent initializations.  This OID is used as
+        an index to identify a row in the table 'lgpConditionsTable'.
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>A reference to a condition description object. The object
+        referenced should not be accessible, but rather be used to provide
+        a unique description.
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventConditionEntryAdded trap received
+	lgpConditionId=%parm[#1]%
+	lgpConditionDescr=%parm[#2]%
+	lgpConditionTime=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1" varbinddecodedstring="lgpConditionsWellKnown"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1" varbinddecodedstring="lgpConditionHighTemperature"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.2" varbinddecodedstring="lgpConditionLowTemperature"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.3" varbinddecodedstring="lgpConditionHighHumidity"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.4" varbinddecodedstring="lgpConditionLowHumidity"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.5" varbinddecodedstring="lgpConditionLossOfAirflow"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.6" varbinddecodedstring="lgpConditionChangeFilter"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7" varbinddecodedstring="lgpConditionCompressorHighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7.1" varbinddecodedstring="lgpConditionCompressor1HighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7.2" varbinddecodedstring="lgpConditionCompressor2HighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8" varbinddecodedstring="lgpConditionCompressorOverload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8.1" varbinddecodedstring="lgpConditionCompressor1Overload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8.2" varbinddecodedstring="lgpConditionCompressor2Overload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.9" varbinddecodedstring="lgpConditionCompressorShortCycle"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.10" varbinddecodedstring="lgpConditionCompressorLowSuctionPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.11" varbinddecodedstring="lgpConditionMainFanOverLoad"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.12" varbinddecodedstring="lgpConditionManualOverride"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.13" varbinddecodedstring="lgpConditionStandbyGlycoolPumpOn"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.14" varbinddecodedstring="lgpConditionWaterUnderFloor"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.15" varbinddecodedstring="lgpConditionHumidifierProblem"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.16" varbinddecodedstring="lgpConditionLowWaterInHumidifier"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.17" varbinddecodedstring="lgpConditionSmokeDetected"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.18" varbinddecodedstring="lgpConditionLowWaterFlow"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.19" varbinddecodedstring="lgpConditionLostPower"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.20" varbinddecodedstring="lgpGeneralFault"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21" varbinddecodedstring="lgpConditionLocalAlarm"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.1" varbinddecodedstring="lgpConditionLocalAlarm1"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.2" varbinddecodedstring="lgpConditionLocalAlarm2"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.3" varbinddecodedstring="lgpConditionLocalAlarm3"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.4" varbinddecodedstring="lgpConditionLocalAlarm4"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.22" varbinddecodedstring="lgpConditionStandbyUnitOn"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryRemoved</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventConditionEntryRemoved</event-label>
+      <descr>&lt;p>This notification is sent each time a condition is removed from the
+conditions table.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	lgpConditionTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventConditionEntryRemoved trap received
+	lgpConditionId=%parm[#1]%
+	lgpConditionDescr=%parm[#2]%
+	lgpConditionTime=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1" varbinddecodedstring="lgpConditionsWellKnown"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.1" varbinddecodedstring="lgpConditionHighTemperature"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.2" varbinddecodedstring="lgpConditionLowTemperature"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.3" varbinddecodedstring="lgpConditionHighHumidity"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.4" varbinddecodedstring="lgpConditionLowHumidity"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.5" varbinddecodedstring="lgpConditionLossOfAirflow"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.6" varbinddecodedstring="lgpConditionChangeFilter"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7" varbinddecodedstring="lgpConditionCompressorHighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7.1" varbinddecodedstring="lgpConditionCompressor1HighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.7.2" varbinddecodedstring="lgpConditionCompressor2HighHeadPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8" varbinddecodedstring="lgpConditionCompressorOverload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8.1" varbinddecodedstring="lgpConditionCompressor1Overload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.8.2" varbinddecodedstring="lgpConditionCompressor2Overload"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.9" varbinddecodedstring="lgpConditionCompressorShortCycle"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.10" varbinddecodedstring="lgpConditionCompressorLowSuctionPressure"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.11" varbinddecodedstring="lgpConditionMainFanOverLoad"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.12" varbinddecodedstring="lgpConditionManualOverride"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.13" varbinddecodedstring="lgpConditionStandbyGlycoolPumpOn"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.14" varbinddecodedstring="lgpConditionWaterUnderFloor"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.15" varbinddecodedstring="lgpConditionHumidifierProblem"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.16" varbinddecodedstring="lgpConditionLowWaterInHumidifier"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.17" varbinddecodedstring="lgpConditionSmokeDetected"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.18" varbinddecodedstring="lgpConditionLowWaterFlow"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.19" varbinddecodedstring="lgpConditionLostPower"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.20" varbinddecodedstring="lgpGeneralFault"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21" varbinddecodedstring="lgpConditionLocalAlarm"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.1" varbinddecodedstring="lgpConditionLocalAlarm1"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.2" varbinddecodedstring="lgpConditionLocalAlarm2"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.3" varbinddecodedstring="lgpConditionLocalAlarm3"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.4" varbinddecodedstring="lgpConditionLocalAlarm4"/>
+         <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.22" varbinddecodedstring="lgpConditionStandbyUnitOn"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventLowBatteryWarning</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventLowBatteryWarning</event-label>
+      <descr>&lt;p>The battery's remaining charge is less than or equal to the agent's
+configured low threshold 'lgpPwrConfigLowBatteryWarningTime'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventLowBatteryWarning trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventLoadTransferedToBypass</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventLoadTransferedToBypass</event-label>
+      <descr>&lt;p>The device has transfered the load to the bypass source.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventLoadTransferedToBypass trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventInternalFault</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventInternalFault</event-label>
+      <descr>&lt;p>The device has reported an internal fault.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventInternalFault trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventBatteryTestFailed</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventBatteryTestFailed</event-label>
+      <descr>&lt;p>The device has reported a battery self-test failure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventBatteryTestFailed trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventOutputOverload</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventOutputOverload</event-label>
+      <descr>&lt;p>The device has reported an output overload condition.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventOutputOverload trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventEstablishedPowerRedundancy</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventEstablishedPowerRedundancy</event-label>
+      <descr>&lt;p>The device has transitioned to the user defined redundant state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventEstablishedPowerRedundancy trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Cleared</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventLostPowerRedundancy</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventLostPowerRedundancy</event-label>
+      <descr>&lt;p>The device as transitioned to a non-redundant power state as defined
+by the user configured threshold.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventLostPowerRedundancy trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventPowerModuleFailure</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventPowerModuleFailure</event-label>
+      <descr>&lt;p>Device power module failure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventPowerModuleFailure trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventBatteryModuleFailure</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventBatteryModuleFailure</event-label>
+      <descr>&lt;p>Device battery module failure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventBatteryModuleFailure trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventControlModuleFailure</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventControlModuleFailure</event-label>
+      <descr>&lt;p>Device control module failure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventControlModuleFailure trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventPowerModuleWarning</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventPowerModuleWarning</event-label>
+      <descr>&lt;p>Device power module warning.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventPowerModuleWarning trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventBatteryModuleWarning</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventBatteryModuleWarning</event-label>
+      <descr>&lt;p>Device battery module warning.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventBatteryModuleWarning trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventControlModuleWarning</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventControlModuleWarning</event-label>
+      <descr>&lt;p>Device control module warning.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventControlModuleWarning trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventAgentFirmwareUpdateSuccessful</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventAgentFirmwareUpdateSuccessful</event-label>
+      <descr>&lt;p>The firmware update to the agent card has completed successfully.
+
+This element has been relocated to lgpAgentFirmwareUpdateSuccessful
+in the LIEBERT-GP-AGENT-MIB document.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventAgentFirmwareUpdateSuccessful trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3.0</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventAgentFirmwareCorrupt</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventAgentFirmwareCorrupt</event-label>
+      <descr>&lt;p>The firmware update to the agent card has failed and the firmware is
+now corrupt.
+This element has been relocated to lgpAgentFirmwareCorrupt
+in the LIEBERT-GP-AGENT-MIB document.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysUpTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	lgpEventAgentFirmwareCorrupt trap received
+	sysUpTime=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventConfigModified</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventConfigModified</event-label>
+      <descr>&lt;p>Configuration for the referenced PDU has been modified.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventConfigModified trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventModuleAdded</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventModuleAdded</event-label>
+      <descr>&lt;p>A hot-swappable module has been added to the object specified by the
+         lgpEventParmTableRef and lgpEventParmTableRowRef.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventModuleAdded trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventModuleRemoved</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventModuleRemoved</event-label>
+      <descr>&lt;p>A hot-swappable module has been removed from the object specified by
+         the lgpEventParmTableRef and lgpEventParmTableRowRef.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventModuleRemoved trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventRcpLoadAdded</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventRcpLoadAdded</event-label>
+      <descr>&lt;p>The receptacle's load started drawing power. This notification
+        is asserted when the receptacle power is ON and the associated load
+        was previously not drawing power but is now drawing power.
+        This event is not asserted as a result of turning the
+        receptacle power ON.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventRcpLoadAdded trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventRcpLoadRemoved</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventRcpLoadRemoved</event-label>
+      <descr>&lt;p>The receptacle's load stopped drawing power. This notification
+        is asserted when the receptacle power is ON and the associated load
+        was previously drawing power but is now no longer drawing power.
+        This event is not asserted as a result of turning the
+        receptacle power OFF.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventRcpLoadRemoved trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventRcpPowerStateChangeOff</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventRcpPowerStateChangeOff</event-label>
+      <descr>&lt;p>Receptacle's power state has been changed from ON to OFF.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventRcpPowerStateChangeOff trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpEventRcpPowerStateChangeOn</uei>
+      <event-label>LIEBERT-GP-NOTIFICATIONS-MIB defined trap event: lgpEventRcpPowerStateChangeOn</event-label>
+      <descr>&lt;p>Receptacle's power state has been changed from OFF to ON.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpEventParmTableRowRef&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpEventRcpPowerStateChangeOn trap received
+        sysUpTime=%parm[#1]%
+        lgpEventParmTableRef=%parm[#2]%
+        lgpEventParmTableRowRef=%parm[#3]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.7.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpSysNormal</uei>
+      <event-label>LIEBERT-GP-SYSTEM-MIB defined trap event: lgpSysNormal</event-label>
+      <descr>&lt;p>The system has returned to a normal operating state. This implies
+        prior to the generation of this event the system was operating in a
+        state where one or more alarm or warning conditions were present.
+        All of those alarms or conditions have now cleared.
+
+        NOTE: This notification may be generated after a short delay during a
+        cold boot of the system -- if no alarms or conditions are present in the
+        monitored device(s) at that time.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpAgentConnectedDeviceCount&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpSysNormal trap received
+        sysUpTime=%parm[#1]%
+        lgpAgentConnectedDeviceCount=%parm[#2]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.476.1.42.3.7.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/liebert/traps/lgpSysNotification</uei>
+      <event-label>LIEBERT-GP-SYSTEM-MIB defined trap event: lgpSysNotification</event-label>
+      <descr>&lt;p>This notification is a generic notification intended for direct user
+        visibility.  The user event description identifies the system
+        condition that has occurred.  This text will be prefixed with either
+        'Active:', 'Cleared:', or 'Message:' depending on the state of the
+        event.  Note: That a prefix of 'Message:' identifies a stateless event
+        and as such there will be no corresponding 'Cleared:' trap sent.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        sysUpTime&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        lgpSysEventDescription&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+        lgpSysNotification trap received
+        sysUpTime=%parm[#1]%
+        lgpSysEventDescription=%parm[#2]%&lt;/p>
+        </logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+</events>

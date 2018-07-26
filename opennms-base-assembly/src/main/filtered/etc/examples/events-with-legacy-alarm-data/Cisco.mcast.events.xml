@@ -1,0 +1,904 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.2.3.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoIpMRouteMib/traps/ciscoIpMRouteMissingHeartBeats</uei>
+      <event-label>CISCO-IPMROUTE-MIB defined trap event: ciscoIpMRouteMissingHeartBeats</event-label>
+      <descr>&lt;p>A ciscoIpMRouteMissingHeartBeat is sent if a multicast router
+with this feature enabled failed to receive configured number
+of heartbeat packets from heartbeat sources within a
+configured time interval.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoIpMRouteHeartBeatSourceAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoIpMRouteHeartBeatInterval&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoIpMRouteHeartBeatWindowSize&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoIpMRouteHeartBeatCount&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoIpMRouteMissingHeartBeats trap received 
+			ciscoIpMRouteHeartBeatSourceAddr=%parm[#1]% 
+			ciscoIpMRouteHeartBeatInterval=%parm[#2]% 
+			ciscoIpMRouteHeartBeatWindowSize=%parm[#3]% 
+			ciscoIpMRouteHeartBeatCount=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.113</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscpMvpnMib/traps/ciscoMvpnMvrfChangeCreated</uei>
+      <event-label>CISCO-MVPN-MIB defined trap event: ciscoMvpnMvrfChange - MVRF Created</event-label>
+      <descr>&lt;p>A ciscoMvpnMvrfChange notification signifies a change about
+a MVRF in the device. The change event can be creation of 
+the MVRF, deletion of the MVRF or an update on the default 
+or data MDT configuration of the MVRF. The change event 
+is indicated by ciscoMvpnGenOperStatusChange embedded in 
+the notification. The user can then query 
+ciscoMvpnGenericTable, ciscoMvpnMdtDefaultTable and/or 
+ciscoMvpnMdtDataTable to get the details of the change as 
+necessary.
+
+Note: Since the creation of a MVRF is often followed by 
+configuration of default and data MDT groups for the MVRF, 
+more than one (three at most) notifications for a MVRF may 
+be generated serially, and it is really not necessary to 
+generate all three of them. An agent may choose to generate a 
+notification for the last event only, that is for data MDT 
+configuration.
+
+Similarly, deletion of default or data MDT configuration on a 
+MVRF happens before a MVRF is deleted, it is recommended 
+that the agent send the notification for MVRF deletion 
+event only.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoMvpnGenOperStatusChange&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		createdMvrf(1)
+		deletedMvrf(2)
+		modifiedMvrfDefMdtConfig(3)
+		modifiedMvrfDataMdtConfig(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoMvpnMvrfChange trap received  - MVRF Created
+			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.113</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscpMvpnMib/traps/ciscoMvpnMvrfChangeDeleted</uei>
+      <event-label>CISCO-MVPN-MIB defined trap event: ciscoMvpnMvrfChange - MVRF Deleted</event-label>
+      <descr>&lt;p>A ciscoMvpnMvrfChange notification signifies a change about
+a MVRF in the device. The change event can be creation of 
+the MVRF, deletion of the MVRF or an update on the default 
+or data MDT configuration of the MVRF. The change event 
+is indicated by ciscoMvpnGenOperStatusChange embedded in 
+the notification. The user can then query 
+ciscoMvpnGenericTable, ciscoMvpnMdtDefaultTable and/or 
+ciscoMvpnMdtDataTable to get the details of the change as 
+necessary.
+
+Note: Since the creation of a MVRF is often followed by 
+configuration of default and data MDT groups for the MVRF, 
+more than one (three at most) notifications for a MVRF may 
+be generated serially, and it is really not necessary to 
+generate all three of them. An agent may choose to generate a 
+notification for the last event only, that is for data MDT 
+configuration.
+
+Similarly, deletion of default or data MDT configuration on a 
+MVRF happens before a MVRF is deleted, it is recommended 
+that the agent send the notification for MVRF deletion 
+event only.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoMvpnGenOperStatusChange&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		createdMvrf(1)
+		deletedMvrf(2)
+		modifiedMvrfDefMdtConfig(3)
+		modifiedMvrfDataMdtConfig(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoMvpnMvrfChange trap received - MVRF Deleted
+			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.113</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscpMvpnMib/traps/ciscoMvpnMvrfChangeModifiedDef</uei>
+      <event-label>CISCO-MVPN-MIB defined trap event: ciscoMvpnMvrfChange - Modified Default MDT Config</event-label>
+      <descr>&lt;p>A ciscoMvpnMvrfChange notification signifies a change about
+a MVRF in the device. The change event can be creation of 
+the MVRF, deletion of the MVRF or an update on the default 
+or data MDT configuration of the MVRF. The change event 
+is indicated by ciscoMvpnGenOperStatusChange embedded in 
+the notification. The user can then query 
+ciscoMvpnGenericTable, ciscoMvpnMdtDefaultTable and/or 
+ciscoMvpnMdtDataTable to get the details of the change as 
+necessary.
+
+Note: Since the creation of a MVRF is often followed by 
+configuration of default and data MDT groups for the MVRF, 
+more than one (three at most) notifications for a MVRF may 
+be generated serially, and it is really not necessary to 
+generate all three of them. An agent may choose to generate a 
+notification for the last event only, that is for data MDT 
+configuration.
+
+Similarly, deletion of default or data MDT configuration on a 
+MVRF happens before a MVRF is deleted, it is recommended 
+that the agent send the notification for MVRF deletion 
+event only.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoMvpnGenOperStatusChange&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		createdMvrf(1)
+		deletedMvrf(2)
+		modifiedMvrfDefMdtConfig(3)
+		modifiedMvrfDataMdtConfig(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoMvpnMvrfChange trap received - Modified default MDT Config
+			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.113</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscpMvpnMib/traps/ciscoMvpnMvrfChangeModifiedData</uei>
+      <event-label>CISCO-MVPN-MIB defined trap event: ciscoMvpnMvrfChange - Modified Data MDT Config</event-label>
+      <descr>&lt;p>A ciscoMvpnMvrfChange notification signifies a change about
+a MVRF in the device. The change event can be creation of 
+the MVRF, deletion of the MVRF or an update on the default 
+or data MDT configuration of the MVRF. The change event 
+is indicated by ciscoMvpnGenOperStatusChange embedded in 
+the notification. The user can then query 
+ciscoMvpnGenericTable, ciscoMvpnMdtDefaultTable and/or 
+ciscoMvpnMdtDataTable to get the details of the change as 
+necessary.
+
+Note: Since the creation of a MVRF is often followed by 
+configuration of default and data MDT groups for the MVRF, 
+more than one (three at most) notifications for a MVRF may 
+be generated serially, and it is really not necessary to 
+generate all three of them. An agent may choose to generate a 
+notification for the last event only, that is for data MDT 
+configuration.
+
+Similarly, deletion of default or data MDT configuration on a 
+MVRF happens before a MVRF is deleted, it is recommended 
+that the agent send the notification for MVRF deletion 
+event only.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoMvpnGenOperStatusChange&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		createdMvrf(1)
+		deletedMvrf(2)
+		modifiedMvrfDefMdtConfig(3)
+		modifiedMvrfDataMdtConfig(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoMvpnMvrfChange trap received - Modified Data MDT Config
+			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.10.113</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscpMvpnMib/traps/ciscoMvpnMvrfChange</uei>
+      <event-label>CISCO-MVPN-MIB defined trap event: ciscoMvpnMvrfChange</event-label>
+      <descr>&lt;p>A ciscoMvpnMvrfChange notification signifies a change about
+a MVRF in the device. The change event can be creation of 
+the MVRF, deletion of the MVRF or an update on the default 
+or data MDT configuration of the MVRF. The change event 
+is indicated by ciscoMvpnGenOperStatusChange embedded in 
+the notification. The user can then query 
+ciscoMvpnGenericTable, ciscoMvpnMdtDefaultTable and/or 
+ciscoMvpnMdtDataTable to get the details of the change as 
+necessary.
+
+Note: Since the creation of a MVRF is often followed by 
+configuration of default and data MDT groups for the MVRF, 
+more than one (three at most) notifications for a MVRF may 
+be generated serially, and it is really not necessary to 
+generate all three of them. An agent may choose to generate a 
+notification for the last event only, that is for data MDT 
+configuration.
+
+Similarly, deletion of default or data MDT configuration on a 
+MVRF happens before a MVRF is deleted, it is recommended 
+that the agent send the notification for MVRF deletion 
+event only.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ciscoMvpnGenOperStatusChange&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		createdMvrf(1)
+		deletedMvrf(2)
+		modifiedMvrfDefMdtConfig(3)
+		modifiedMvrfDataMdtConfig(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoMvpnMvrfChange trap received 
+			ciscoMvpnGenOperStatusChange=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceUp</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimInterfaceUp</event-label>
+      <descr>&lt;p>A ciscoPimInterfaceUp notification signifies the 
+restoration of a PIM interface. This notification
+should be generated whenever pimInterfaceStatus
+transitions into the 'active' state.
+pimInterfaceStatus identifies the interface which 
+was involved in the generation of this notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimInterfaceStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		active(1)
+		notInService(2)
+		notReady(3)
+		createAndGo(4)
+		createAndWait(5)
+		destroy(6)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimInterfaceUp trap received 
+			pimInterfaceStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown:%nodeid%:%dpname%:%parm[names-all]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInterfaceDown</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimInterfaceDown</event-label>
+      <descr>&lt;p>A ciscoPimInterfaceDown notification signifies the loss
+of a PIM interface. This notification should be generated 
+whenever an entry is about to be deleted from the
+PimInterfaceTable.
+pimInterfaceStatus identifies the interface which 
+was involved in the generation of this notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimInterfaceStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		active(1)
+		notInService(2)
+		notReady(3)
+		createAndGo(4)
+		createAndWait(5)
+		destroy(6)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimInterfaceDown trap received 
+			pimInterfaceStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[names-all]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimRPMappingChangeNew</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimRPMappingChange - New Mapping</event-label>
+      <descr>&lt;p>A ciscoPimRPMappingChange notification signifies a change
+in the RP Mapping on the device in question. A change in RP
+Mapping could be because of addition of new entries to the
+RP Mapping cache, deletion of existing entries, or a
+modification to an existing mapping. The type of change is
+indicated by cpimRPMappingChangeType. pimRPSetHoldTime 
+is used to identify the row in the pimRPSetTable that is
+responsible for the generation of this notification.
+
+In case of modification to existing entries, a
+notification should be generated once before the
+modification (with cpimRPMappingChangeType set to
+modifiedOldMapping) and once after modification (with 
+cpimRPMappingChangeType set to modifiedNewMapping).
+
+NOTE: A high frequency of RP Mapping change could result
+in a large number of ciscoPimRPMappingChange notifications
+being generated. Hence, in environments where the
+possibility of a high frequency of RP Mapping change
+exists, enable this notification with utmost care.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimRPSetHoldTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimRPMappingChangeType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		newMapping(1)
+		deletedMapping(2)
+		modifiedOldMapping(3)
+		modifiedNewMapping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimRPMappingChange trap received - New Mapping
+			pimRPSetHoldTime=%parm[#1]% 
+			cpimRPMappingChangeType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimRPMappingChangeDeleted</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimRPMappingChange - Mapping Deleted</event-label>
+      <descr>&lt;p>A ciscoPimRPMappingChange notification signifies a change
+in the RP Mapping on the device in question. A change in RP
+Mapping could be because of addition of new entries to the
+RP Mapping cache, deletion of existing entries, or a
+modification to an existing mapping. The type of change is
+indicated by cpimRPMappingChangeType. pimRPSetHoldTime 
+is used to identify the row in the pimRPSetTable that is
+responsible for the generation of this notification.
+
+In case of modification to existing entries, a
+notification should be generated once before the
+modification (with cpimRPMappingChangeType set to
+modifiedOldMapping) and once after modification (with 
+cpimRPMappingChangeType set to modifiedNewMapping).
+
+NOTE: A high frequency of RP Mapping change could result
+in a large number of ciscoPimRPMappingChange notifications
+being generated. Hence, in environments where the
+possibility of a high frequency of RP Mapping change
+exists, enable this notification with utmost care.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimRPSetHoldTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimRPMappingChangeType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		newMapping(1)
+		deletedMapping(2)
+		modifiedOldMapping(3)
+		modifiedNewMapping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimRPMappingChange trap received - Mapping Deleted
+			pimRPSetHoldTime=%parm[#1]% 
+			cpimRPMappingChangeType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimRPMappingChangeModifiedOld</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimRPMappingChange - Modified Old Mapping</event-label>
+      <descr>&lt;p>A ciscoPimRPMappingChange notification signifies a change
+in the RP Mapping on the device in question. A change in RP
+Mapping could be because of addition of new entries to the
+RP Mapping cache, deletion of existing entries, or a
+modification to an existing mapping. The type of change is
+indicated by cpimRPMappingChangeType. pimRPSetHoldTime 
+is used to identify the row in the pimRPSetTable that is
+responsible for the generation of this notification.
+
+In case of modification to existing entries, a
+notification should be generated once before the
+modification (with cpimRPMappingChangeType set to
+modifiedOldMapping) and once after modification (with 
+cpimRPMappingChangeType set to modifiedNewMapping).
+
+NOTE: A high frequency of RP Mapping change could result
+in a large number of ciscoPimRPMappingChange notifications
+being generated. Hence, in environments where the
+possibility of a high frequency of RP Mapping change
+exists, enable this notification with utmost care.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimRPSetHoldTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimRPMappingChangeType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		newMapping(1)
+		deletedMapping(2)
+		modifiedOldMapping(3)
+		modifiedNewMapping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimRPMappingChange trap received - Modified Old Mapping
+			pimRPSetHoldTime=%parm[#1]% 
+			cpimRPMappingChangeType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimRPMappingChangeModifiedNew</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimRPMappingChange - Modified New Mapping</event-label>
+      <descr>&lt;p>A ciscoPimRPMappingChange notification signifies a change
+in the RP Mapping on the device in question. A change in RP
+Mapping could be because of addition of new entries to the
+RP Mapping cache, deletion of existing entries, or a
+modification to an existing mapping. The type of change is
+indicated by cpimRPMappingChangeType. pimRPSetHoldTime 
+is used to identify the row in the pimRPSetTable that is
+responsible for the generation of this notification.
+
+In case of modification to existing entries, a
+notification should be generated once before the
+modification (with cpimRPMappingChangeType set to
+modifiedOldMapping) and once after modification (with 
+cpimRPMappingChangeType set to modifiedNewMapping).
+
+NOTE: A high frequency of RP Mapping change could result
+in a large number of ciscoPimRPMappingChange notifications
+being generated. Hence, in environments where the
+possibility of a high frequency of RP Mapping change
+exists, enable this notification with utmost care.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimRPSetHoldTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimRPMappingChangeType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		newMapping(1)
+		deletedMapping(2)
+		modifiedOldMapping(3)
+		modifiedNewMapping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimRPMappingChange trap received - Modified New Mapping
+			pimRPSetHoldTime=%parm[#1]% 
+			cpimRPMappingChangeType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimRPMappingChange</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimRPMappingChange</event-label>
+      <descr>&lt;p>A ciscoPimRPMappingChange notification signifies a change
+in the RP Mapping on the device in question. A change in RP
+Mapping could be because of addition of new entries to the
+RP Mapping cache, deletion of existing entries, or a
+modification to an existing mapping. The type of change is
+indicated by cpimRPMappingChangeType. pimRPSetHoldTime 
+is used to identify the row in the pimRPSetTable that is
+responsible for the generation of this notification.
+
+In case of modification to existing entries, a
+notification should be generated once before the
+modification (with cpimRPMappingChangeType set to
+modifiedOldMapping) and once after modification (with 
+cpimRPMappingChangeType set to modifiedNewMapping).
+
+NOTE: A high frequency of RP Mapping change could result
+in a large number of ciscoPimRPMappingChange notifications
+being generated. Hence, in environments where the
+possibility of a high frequency of RP Mapping change
+exists, enable this notification with utmost care.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pimRPSetHoldTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimRPMappingChangeType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		newMapping(1)
+		deletedMapping(2)
+		modifiedOldMapping(3)
+		modifiedNewMapping(4)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimRPMappingChange trap received 
+			pimRPSetHoldTime=%parm[#1]% 
+			cpimRPMappingChangeType=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInvalidRegister</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimInvalidRegister</event-label>
+      <descr>&lt;p>A ciscoPimInvalidRegister notification signifies that 
+an invalid Register message was received by this device.
+
+This notification is generated whenever the 
+cpimInvalidRegisterMsgsRcvd counter is incremented.
+cpimLastErrorOrigin, cpimLastErrorGroup, and
+cpimLastErrorRP should signify the source address, group
+address and the RP address in the invalid register
+packet.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorOriginType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorGroupType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorRPType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorRP&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimInvalidRegisterMsgsRcvd&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimInvalidRegister trap received 
+			cpimLastErrorOriginType=%parm[#1]% 
+			cpimLastErrorOrigin=%parm[#2]% 
+			cpimLastErrorGroupType=%parm[#3]% 
+			cpimLastErrorGroup=%parm[#4]% 
+			cpimLastErrorRPType=%parm[#5]% 
+			cpimLastErrorRP=%parm[#6]% 
+			cpimInvalidRegisterMsgsRcvd=%parm[#7]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.9.9.184.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/ciscoPimMib/traps/ciscoPimInvalidJoinPrune</uei>
+      <event-label>CISCO-PIM-MIB defined trap event: ciscoPimInvalidJoinPrune</event-label>
+      <descr>&lt;p>A ciscoPimInvalidJoinPrune notification signifies the
+receipt of an invalid join/prune message.             
+
+This notification is generated whenever the
+cpimInvalidJoinPruneMsgsRcvd counter is incremented.
+cpimLastErrorOrigin, cpimLastErrorGroup, and
+cpimLastErrorRP should signify the source address, group
+address and the RP address in the invalid join/prune
+packet.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorOriginType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorOrigin&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorGroupType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorRPType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		ipv4(1)
+		ipv6(2)
+		ipv4z(3)
+		ipv6z(4)
+		dns(16)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimLastErrorRP&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	cpimInvalidJoinPruneMsgsRcvd&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ciscoPimInvalidJoinPrune trap received 
+			cpimLastErrorOriginType=%parm[#1]% 
+			cpimLastErrorOrigin=%parm[#2]% 
+			cpimLastErrorGroupType=%parm[#3]% 
+			cpimLastErrorGroup=%parm[#4]% 
+			cpimLastErrorRPType=%parm[#5]% 
+			cpimLastErrorRP=%parm[#6]% 
+			cpimInvalidJoinPruneMsgsRcvd=%parm[#7]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#4]%:%parm[#6]%" alarm-type="1" auto-clean="false"/>
+   </event>
+</events>

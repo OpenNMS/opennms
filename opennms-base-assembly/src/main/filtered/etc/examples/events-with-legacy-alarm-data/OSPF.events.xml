@@ -1,0 +1,1940 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual interface.
+This trap should be generated when  the  inter-
+face  state  regresses  (e.g., goes from Point-
+to-Point to Down) or progresses to  a  terminal
+state (i.e., Point-to-Point).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		pointToPoint(4)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfVirtIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangePointToPoint</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual interface.
+This trap should be generated when  the  inter-
+face  state  regresses  (e.g., goes from Point-
+to-Point to Down) or progresses to  a  terminal
+state (i.e., Point-to-Point).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		pointToPoint(4)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfVirtIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtIfStateChangeDown:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNbrStateChange</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNbrStateChange</event-label>
+      <descr>&lt;p>An  ospfNbrStateChange  trap  signifies   that
+there  has been a change in the state of a non-
+virtual OSPF neighbor.   This  trap  should  be
+generated  when  the  neighbor  state regresses
+(e.g., goes from Attempt or Full  to  1-Way  or
+Down)  or progresses to a terminal state (e.g.,
+2-Way or Full).  When an  neighbor  transitions
+from  or  to Full on non-broadcast multi-access
+and broadcast networks, the trap should be gen-
+erated  by the designated router.  A designated
+router transitioning to Down will be  noted  by
+ospfIfStateChange.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrAddressLessIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrState&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfNbrStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfNbrIpAddr=%parm[#2]% 
+			ospfNbrAddressLessIndex=%parm[#3]% 
+			ospfNbrRtrId=%parm[#4]% 
+			ospfNbrState=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>8</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChangeFull</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtNbrStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual neighbor.  This trap should  be  generated
+when  the  neighbor state regresses (e.g., goes
+from Attempt or  Full  to  1-Way  or  Down)  or
+progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrArea&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtNbrStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtNbrArea=%parm[#2]% 
+			ospfVirtNbrRtrId=%parm[#3]% 
+			ospfVirtNbrState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChangeTwoWay</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtNbrStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual neighbor.  This trap should  be  generated
+when  the  neighbor state regresses (e.g., goes
+from Attempt or  Full  to  1-Way  or  Down)  or
+progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrArea&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtNbrStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtNbrArea=%parm[#2]% 
+			ospfVirtNbrRtrId=%parm[#3]% 
+			ospfVirtNbrState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtNbrStateChange</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtNbrStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has  been a change in the state of an OSPF vir-
+tual neighbor.  This trap should  be  generated
+when  the  neighbor state regresses (e.g., goes
+from Attempt or  Full  to  1-Way  or  Down)  or
+progresses to a terminal state (e.g., Full).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrArea&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		attempt(2)
+		init(3)
+		twoWay(4)
+		exchangeStart(5)
+		exchange(6)
+		loading(7)
+		full(8)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtNbrStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtNbrArea=%parm[#2]% 
+			ospfVirtNbrRtrId=%parm[#3]% 
+			ospfVirtNbrState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfConfigError</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfConfigError</event-label>
+      <descr>&lt;p>An ospfIfConfigError  trap  signifies  that  a
+packet  has  been received on a non-virtual in-
+terface  from  a  router  whose   configuration
+parameters  conflict  with this router's confi-
+guration parameters.  Note that the  event  op-
+tionMismatch  should  cause  a  trap only if it
+prevents an adjacency from forming.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketSrc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfConfigErrorType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		authTypeMismatch(5)
+		authFailure(6)
+		netMaskMismatch(7)
+		helloIntervalMismatch(8)
+		deadIntervalMismatch(9)
+		optionMismatch(10)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfConfigError trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfConfigErrorType=%parm[#5]% 
+			ospfPacketType=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfConfigError</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfConfigError</event-label>
+      <descr>&lt;p>An ospfConfigError trap signifies that a pack-
+et  has  been  received  on a virtual interface
+from a router  whose  configuration  parameters
+conflict   with   this  router's  configuration
+parameters.  Note that the event optionMismatch
+should  cause a trap only if it prevents an ad-
+jacency from forming.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfConfigErrorType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		authTypeMismatch(5)
+		authFailure(6)
+		netMaskMismatch(7)
+		helloIntervalMismatch(8)
+		deadIntervalMismatch(9)
+		optionMismatch(10)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtIfConfigError trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfConfigErrorType=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfAuthFailure</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfAuthFailure</event-label>
+      <descr>&lt;p>An ospfIfAuthFailure  trap  signifies  that  a
+packet  has  been received on a non-virtual in-
+terface from a router whose authentication  key
+or  authentication  type  conflicts  with  this
+router's authentication key  or  authentication
+type.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketSrc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfConfigErrorType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		authTypeMismatch(5)
+		authFailure(6)
+		netMaskMismatch(7)
+		helloIntervalMismatch(8)
+		deadIntervalMismatch(9)
+		optionMismatch(10)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfAuthFailure trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfConfigErrorType=%parm[#5]% 
+			ospfPacketType=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfAuthFailure</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfAuthFailure</event-label>
+      <descr>&lt;p>An ospfVirtIfAuthFailure trap signifies that a
+packet has been received on a virtual interface
+from a router whose authentication key  or  au-
+thentication  type conflicts with this router's
+authentication key or authentication type.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfConfigErrorType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		badVersion(1)
+		areaMismatch(2)
+		unknownNbmaNbr(3)
+		unknownVirtualNbr(4)
+		authTypeMismatch(5)
+		authFailure(6)
+		netMaskMismatch(7)
+		helloIntervalMismatch(8)
+		deadIntervalMismatch(9)
+		optionMismatch(10)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtIfAuthFailure trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfConfigErrorType=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfRxBadPacket</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfRxBadPacket</event-label>
+      <descr>&lt;p>An ospfIfRxBadPacket trap  signifies  that  an
+OSPF  packet has been received on a non-virtual
+interface that cannot be parsed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketSrc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfRxBadPacket trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfPacketSrc=%parm[#4]% 
+			ospfPacketType=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfRxBadPacket</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfRxBadPacket</event-label>
+      <descr>&lt;p>An ospfRxBadPacket trap signifies that an OSPF
+packet has been received on a virtual interface
+that cannot be parsed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfVirtIfRxBadPacket trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfPacketType=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfTxRetransmit</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfTxRetransmit</event-label>
+      <descr>&lt;p>An ospfTxRetransmit  trap  signifies  than  an
+OSPF  packet  has  been retransmitted on a non-
+virtual interface.  All packets that may be re-
+transmitted  are associated with an LSDB entry.
+The LS type, LS ID, and Router ID are  used  to
+identify the LSDB entry.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbType&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>
+		routerLink(1)
+		networkLink(2)
+		summaryLink(3)
+		asSummaryLink(4)
+		asExternalLink(5)
+		multicastLink(6)
+		nssaExternalLink(7)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbLsid&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="donotpersist">&lt;p>
+			ospfTxRetransmit trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfNbrRtrId=%parm[#4]% 
+			ospfPacketType=%parm[#5]% 
+			ospfLsdbType=%parm[#6]% 
+			ospfLsdbLsid=%parm[#7]% 
+			ospfLsdbRouterId=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtIfTxRetransmit</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtIfTxRetransmit</event-label>
+      <descr>&lt;p>An ospfTxRetransmit  trap  signifies  than  an
+OSPF packet has been retransmitted on a virtual
+interface.  All packets that may be retransmit-
+ted  are  associated with an LSDB entry. The LS
+type, LS ID, and Router ID are used to identify
+the LSDB entry.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtIfNeighbor&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfPacketType&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		hello(1)
+		dbDescript(2)
+		lsReq(3)
+		lsUpdate(4)
+		lsAck(5)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbType&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>
+		routerLink(1)
+		networkLink(2)
+		summaryLink(3)
+		asSummaryLink(4)
+		asExternalLink(5)
+		multicastLink(6)
+		nssaExternalLink(7)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbLsid&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="donotpersist">&lt;p>
+			ospfVirtIfTxRetransmit trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfVirtIfAreaId=%parm[#2]% 
+			ospfVirtIfNeighbor=%parm[#3]% 
+			ospfPacketType=%parm[#4]% 
+			ospfLsdbType=%parm[#5]% 
+			ospfLsdbLsid=%parm[#6]% 
+			ospfLsdbRouterId=%parm[#7]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfOriginateLsa</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfOriginateLsa</event-label>
+      <descr>&lt;p>An ospfOriginateLsa trap signifies that a  new
+LSA  has  been originated by this router.  This
+trap should not be invoked for simple refreshes
+of  LSAs  (which happesn every 30 minutes), but
+instead will only be invoked  when  an  LSA  is
+(re)originated due to a topology change.  Addi-
+tionally, this trap does not include LSAs  that
+are  being  flushed  because  they have reached
+MaxAge.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+		routerLink(1)
+		networkLink(2)
+		summaryLink(3)
+		asSummaryLink(4)
+		asExternalLink(5)
+		multicastLink(6)
+		nssaExternalLink(7)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbLsid&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfOriginateLsa trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfLsdbAreaId=%parm[#2]% 
+			ospfLsdbType=%parm[#3]% 
+			ospfLsdbLsid=%parm[#4]% 
+			ospfLsdbRouterId=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfMaxAgeLsa</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfMaxAgeLsa</event-label>
+      <descr>&lt;p>An ospfMaxAgeLsa trap signifies  that  one  of
+the LSA in the router's link-state database has
+aged to MaxAge.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbType&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>
+		routerLink(1)
+		networkLink(2)
+		summaryLink(3)
+		asSummaryLink(4)
+		asExternalLink(5)
+		multicastLink(6)
+		nssaExternalLink(7)
+	&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbLsid&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfLsdbRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfMaxAgeLsa trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfLsdbAreaId=%parm[#2]% 
+			ospfLsdbType=%parm[#3]% 
+			ospfLsdbLsid=%parm[#4]% 
+			ospfLsdbRouterId=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfLsdbOverflow</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfLsdbOverflow</event-label>
+      <descr>&lt;p>An ospfLsdbOverflow trap  signifies  that  the
+number of LSAs in the router's link-state data-
+base has exceeded ospfExtLsdbLimit.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfExtLsdbLimit&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfLsdbOverflow trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfExtLsdbLimit=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfLsdbApproachingOverflow</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfLsdbApproachingOverflow</event-label>
+      <descr>&lt;p>An ospfLsdbApproachingOverflow trap  signifies
+that  the  number of LSAs in the router's link-
+state database has exceeded ninety  percent  of
+ospfExtLsdbLimit.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfExtLsdbLimit&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfLsdbApproachingOverflow trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfExtLsdbLimit=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfStateChangePointToPoint</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfStateChangeDR</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>6</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfStateChangeBackupDR</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>7</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfStateChangeOtherDR</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfIfStateChange:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfIfStateChange</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfIfStateChange</event-label>
+      <descr>&lt;p>An ospfIfStateChange trap signifies that there
+has been a change in the state of a non-virtual
+OSPF interface. This trap should  be  generated
+when  the interface state regresses (e.g., goes
+from Dr to Down) or progresses  to  a  terminal
+state  (i.e.,  Point-to-Point, DR Other, Dr, or
+Backup).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAddressLessIf&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfIfState&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p;>
+		down(1)
+		loopback(2)
+		waiting(3)
+		pointToPoint(4)
+		designatedRouter(5)
+		backupDesignatedRouter(6)
+		otherDesignatedRouter(7)
+	&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ospfIfStateChange trap received 
+			ospfRouterId=%parm[#1]% 
+			ospfIfIpAddress=%parm[#2]% 
+			ospfAddressLessIf=%parm[#3]% 
+			ospfIfState=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNssaTranslatorStatusChange</event-label>
+      <descr>&lt;p>An ospfNssaTranslatorStatusChange trap indicates that
+there has been a change in the router's ability to
+translate OSPF type-7 LSAs into OSPF type-5 LSAs.
+This trap should be generated when the translator
+status transitions from or to any defined status on
+a per-area basis.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaNssaTranslatorState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		enabled(1)
+		elected(2)
+		disabled(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfNssaTranslatorStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfAreaId=%parm[#2]%
+	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeEnabled</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNssaTranslatorStatusChange</event-label>
+      <descr>&lt;p>An ospfNssaTranslatorStatusChange trap indicates that
+there has been a change in the router's ability to
+translate OSPF type-7 LSAs into OSPF type-5 LSAs.
+This trap should be generated when the translator
+status transitions from or to any defined status on
+a per-area basis.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaNssaTranslatorState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		enabled(1)
+		elected(2)
+		disabled(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfNssaTranslatorStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfAreaId=%parm[#2]%
+	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeDisabled:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNssaTranslatorStatusChangeElected</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNssaTranslatorStatusChange</event-label>
+      <descr>&lt;p>An ospfNssaTranslatorStatusChange trap indicates that
+there has been a change in the router's ability to
+translate OSPF type-7 LSAs into OSPF type-5 LSAs.
+This trap should be generated when the translator
+status transitions from or to any defined status on
+a per-area basis.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfAreaNssaTranslatorState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		enabled(1)
+		elected(2)
+		disabled(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfNssaTranslatorStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfAreaId=%parm[#2]%
+	ospfAreaNssaTranslatorState=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfRestartStatusChange</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfRestartStatusChange</event-label>
+      <descr>&lt;p>An ospfRestartStatusChange trap signifies that
+there has been a change in the graceful restart
+state for the router.  This trap should be
+generated when the router restart status
+changes.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRestartStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		notRestarting(1)
+		plannedRestart(2)
+		unplannedRestart(3)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRestartInterval&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRestartExitReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfRestartStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfRestartStatus=%parm[#2]%
+	ospfRestartInterval=%parm[#3]%
+	ospfRestartExitReason=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNbrRestartHelperStatusChange</event-label>
+      <descr>&lt;p>An ospfNbrRestartHelperStatusChange trap signifies that
+there has been a change in the graceful restart
+helper state for the neighbor.  This trap should be
+generated when the neighbor restart helper status
+transitions for a neighbor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrAddressLessIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		notHelping(1)
+		helping(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperAge&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperExitReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfNbrRestartHelperStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfNbrIpAddr=%parm[#2]%
+	ospfNbrAddressLessIndex=%parm[#3]%
+	ospfNbrRtrId=%parm[#4]%
+	ospfNbrRestartHelperStatus=%parm[#5]%
+	ospfNbrRestartHelperAge=%parm[#6]%
+	ospfNbrRestartHelperExitReason=%parm[#7]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeHelping</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfNbrRestartHelperStatusChange</event-label>
+      <descr>&lt;p>An ospfNbrRestartHelperStatusChange trap signifies that
+there has been a change in the graceful restart
+helper state for the neighbor.  This trap should be
+generated when the neighbor restart helper status
+transitions for a neighbor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrIpAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrAddressLessIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		notHelping(1)
+		helping(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperAge&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfNbrRestartHelperExitReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfNbrRestartHelperStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfNbrIpAddr=%parm[#2]%
+	ospfNbrAddressLessIndex=%parm[#3]%
+	ospfNbrRtrId=%parm[#4]%
+	ospfNbrRestartHelperStatus=%parm[#5]%
+	ospfNbrRestartHelperAge=%parm[#6]%
+	ospfNbrRestartHelperExitReason=%parm[#7]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#4]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtNbrRestartHelperStatusChange</event-label>
+      <descr>&lt;p>An ospfVirtNbrRestartHelperStatusChange trap signifies
+that there has been a change in the graceful restart
+helper state for the virtual neighbor.  This trap should
+be generated when the virtual neighbor restart helper
+status transitions for a virtual neighbor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrArea&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		notHelping(1)
+		helping(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperAge&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperExitReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfVirtNbrRestartHelperStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfVirtNbrArea=%parm[#2]%
+	ospfVirtNbrRtrId=%parm[#3]%
+	ospfVirtNbrRestartHelperStatus=%parm[#4]%
+	ospfVirtNbrRestartHelperAge=%parm[#5]%
+	ospfVirtNbrRestartHelperExitReason=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.14.16.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeHelping</uei>
+      <event-label>OSPF-TRAP-MIB defined trap event: ospfVirtNbrRestartHelperStatusChange</event-label>
+      <descr>&lt;p>An ospfVirtNbrRestartHelperStatusChange trap signifies
+that there has been a change in the graceful restart
+helper state for the virtual neighbor.  This trap should
+be generated when the virtual neighbor restart helper
+status transitions for a virtual neighbor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfRouterId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrArea&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRtrId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		notHelping(1)
+		helping(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperAge&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ospfVirtNbrRestartHelperExitReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		inProgress(2)
+		completed(3)
+		timedOut(4)
+		topologyChanged(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	ospfVirtNbrRestartHelperStatusChange trap received
+	ospfRouterId=%parm[#1]%
+	ospfVirtNbrArea=%parm[#2]%
+	ospfVirtNbrRtrId=%parm[#3]%
+	ospfVirtNbrRestartHelperStatus=%parm[#4]%
+	ospfVirtNbrRestartHelperAge=%parm[#5]%
+	ospfVirtNbrRestartHelperExitReason=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/IETF/OSPF/ospfVirtNbrRestartHelperStatusChangeNotHelping:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+   </event>
+</events>

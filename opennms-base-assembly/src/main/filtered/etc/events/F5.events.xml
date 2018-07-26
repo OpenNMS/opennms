@@ -44,8 +44,10 @@
       <logmsg dest="logndisplay">&lt;p>
 			threednsTrapVSRedToGreen trap received&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/f5/traps/threednsTrapVSGreenToRed:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/f5/traps/threednsTrapVSGreenToRed:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -68,8 +70,10 @@
       <logmsg dest="logndisplay">&lt;p>
 			threednsTrapServerRedToGreen trap received&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/f5/traps/threednsTrapServerGreenToRed:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/f5/traps/threednsTrapServerGreenToRed:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -223,8 +227,10 @@
 			ipAddressString=%parm[#2]% 
 			memberPort=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/f5/traps/loadBalTrapServiceDown`:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/f5/traps/loadBalTrapServiceDown`:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -368,8 +374,10 @@
 			loadBalTrapAddUnit trap received 
 			loadBalTrapMessage=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/f5/traps/loadBalTrapRemoveUnit:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/f5/traps/loadBalTrapRemoveUnit:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -392,8 +400,10 @@
       <logmsg dest="logndisplay">&lt;p>
 			bigipAgentStart trap received&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/F5/traps/bigipAgentShutdown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/F5/traps/bigipAgentShutdown:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -694,8 +704,10 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 			bigipNotifyObjNode=%parm[#2]% 
 			bigipNotifyObjPort=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/F5/traps/bigipServiceDown:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/F5/traps/bigipServiceDown:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -762,8 +774,10 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 			bigipNotifyObjMsg=%parm[#1]% 
 			bigipNotifyObjNode=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/F5/traps/bigipNodeDown:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/F5/traps/bigipNodeDown:%dpname%:%nodeid%:%interface%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -907,8 +921,10 @@ changed (unlike the standard coldStart or warmStart traps)&lt;/p>&lt;table>&lt;/
 			bigipFeatureOnline trap received 
 			bigipNotifyObjMsg=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/F5/traps/bigipFeatureFailed:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/F5/traps/bigipFeatureFailed:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

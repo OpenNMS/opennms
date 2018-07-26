@@ -106,7 +106,9 @@ traps.&lt;/p>&lt;table>
 			alarmValue=%parm[#4]% 
 			alarmFallingThreshold=%parm[#5]%&lt;/p>
 		</logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc2819/traps/risingAlarm:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc2819/traps/risingAlarm:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
 </events>

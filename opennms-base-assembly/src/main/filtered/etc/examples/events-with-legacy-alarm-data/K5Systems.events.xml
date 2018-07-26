@@ -1,0 +1,30 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.k5systems.com/analysis/outOfBounds</uei>
+      <event-label>K5-Systems-defined predictive analysis: outOfBounds</event-label>
+      <descr>&lt;p>Services are failing on node %nodelabel%
+			&lt;/p> &lt;p>This event is generated when the K5 engine
+			determines that the applications and its services on a node 
+			have reached an out of bounds condition &lt;/p> &lt;p>
+			See operator instructions.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+			Node %nodelabel% is failing.
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1"/>
+   </event>
+   <event>
+      <uei>uei.k5systems.com/analysis/inBounds</uei>
+      <event-label>K5-Systems-defined predictive analysis: inBounds</event-label>
+      <descr>&lt;p>Services are no longer failing on node %nodelabel%
+			&lt;/p> &lt;p>This event is generated when the K5 engine
+			determines that the applications and its services on a node 
+			have been restored from an out of bounds condition &lt;/p> &lt;p>
+			See operator instructions.&lt;/p></descr>
+      <logmsg dest="logndisplay">
+			Node %nodelabel% is no longer failing.
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.k5systems.com/analysis/outOfBounds:%dpname%:%nodeid%"/>
+   </event>
+</events>

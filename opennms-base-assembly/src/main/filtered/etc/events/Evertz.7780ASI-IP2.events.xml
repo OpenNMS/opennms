@@ -23,7 +23,9 @@
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultboardStatusTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -75,7 +77,9 @@
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -127,7 +131,9 @@
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputPresentAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -179,7 +185,9 @@
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -231,7 +239,9 @@
             faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputSyncErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -283,7 +293,9 @@
             received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -335,7 +347,9 @@
             received faultReservedData=%parm[#1]% faultExtraData=%parm[#2]%
         </logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/evertz/asiip27780/faultasiInputContinuityErrorAsi2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

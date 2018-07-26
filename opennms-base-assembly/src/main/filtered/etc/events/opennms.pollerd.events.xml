@@ -78,8 +78,10 @@
             %service% data collection on interface %interface% previously
             failed and has been restored.
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/dataCollectionFailed:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/deleteService</uei>
@@ -204,8 +206,10 @@
       <logmsg dest="logndisplay">
             Interface %interface% is up.
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/interfaceDown:%dpname%:%nodeid%:%interface%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceOperUp</uei>
@@ -217,8 +221,10 @@
       <logmsg dest="logndisplay">Operational status Up on interface ifname:%parm[snmpifname]%
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/snmp/interfaceOperDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/snmp/interfaceAdminUp</uei>
@@ -231,8 +237,10 @@
       <logmsg dest="logndisplay">Administration status Up on interface ifname:%parm[snmpifname]%
             ifindex:%parm[snmpifindex]% ifdescr:%parm[snmpifdescr]%
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" alarm-type="2" clear-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/snmp/interfaceAdminDown:%dpname%:%nodeid%:%interface%:%parm[snmpifindex]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/nodeAdded</uei>
@@ -396,8 +404,10 @@
             The %service% outage on interface %interface% has been
             cleared. Service is restored.
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%service%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/nodeUp</uei>
@@ -410,8 +420,10 @@
       <logmsg dest="logndisplay">
             Node %parm[nodelabel]% is up.
         </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/nodes/nodeDown:%dpname%:%nodeid%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/nodes/primarySnmpInterfaceChanged</uei>

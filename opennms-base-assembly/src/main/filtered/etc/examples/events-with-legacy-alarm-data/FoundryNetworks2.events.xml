@@ -1,0 +1,4271 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>155</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLACPLinkStateChange</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLACPLinkStateChange</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when LACP port changes its state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLACPLinkStateChange trap received
+	ifIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>156</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringNotFoundryOptics</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringNotFoundryOptics</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if optical monitoring is enabled but optics vendor is not Foundry Networks.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringNotFoundryOptics trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>157</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringFoundryOpticsNotCapable</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringFoundryOpticsNotCapable</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if optical monitoring is enabled but the Foundry optic is not capable.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringFoundryOpticsNotCapable trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>158</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStaticMulticastMacConfigAdd</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStaticMulticastMacConfigAdd</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if a new entry is added to static multicast mac configuration table.
+Format 1: Static Mac entry with Mac Address &lt;xxxx:xxxx:xxxx> is added to portnumber &lt;port> on VLAN &lt;id>
+Format 2: Static Mac entry with Mac Address &lt;xxxx:xxxx:xxxx> is added to portmask &lt;0xXXXXXXXX-XXXXXXXX> on VLAN &lt;id>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStaticMulticastMacConfigAdd trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>159</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStaticMulticastMacConfigRemove</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStaticMulticastMacConfigRemove</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if an entry is removed from static multicast mac configuration table .
+Format 1: Static Mac entry with Mac Address &lt;xxxx:xxxx:xxxx> is deleted from portnumber &lt;port> on VLAN &lt;id>
+Format 2: Static Mac entry with Mac Address &lt;xxxx:xxxx:xxxx> is deleted from portmask &lt;0xXXXXXXXX-XXXXXXXX> on VLAN &lt;id>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStaticMulticastMacConfigRemove trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>160</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSTPBPDUGuardExpire</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSTPBPDUGuardExpire</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a port is re-enabled after being disabled due to BPDU Guard Violation.
+Format: STP: BPDU Guard re-enabled on VLAN &lt;id> port &lt;slot>/&lt;port>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snVLanByPortCfgVLanId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSTPBPDUGuardExpire trap received
+	ifIndex=%parm[#1]%
+	snVLanByPortCfgVLanId=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>161</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapPortLoopDetection</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapPortLoopDetection</event-label>
+      <descr>&lt;p>The SNMP notification is generated when a port loop is detected.
+Format: LOOP DETECTION: VLAN &lt;id>,  port &lt;slot>/&lt;port> detect, putting into err-disable state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snVLanByPortCfgVLanId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapPortLoopDetection trap received
+	ifIndex=%parm[#1]%
+	snVLanByPortCfgVLanId=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>162</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapNoFreeTcamEntry</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapNoFreeTcamEntry</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when system is running out of TCAM spaces allocated for routing entries.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapNoFreeTcamEntry trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>163</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingMasterElected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingMasterElected</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a unit is elected as Master unit for the stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingMasterElected trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>164</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingUnitAdded</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingUnitAdded</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a unit has been added to the stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingUnitAdded trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>165</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingUnitDeleted</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingUnitDeleted</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a unit has been deleted from the stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingUnitDeleted trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>166</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingChasPwrSupplyOK</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingChasPwrSupplyOK</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a power supply operational
+status changed from failure to normal for a stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingChasPwrSupplyOK trap received
+	snChasUnitIndex=%parm[#1]%
+	snChasPwrSupplyIndex=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasPwrSupplyFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>167</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingChasPwrSupplyFailed</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingChasPwrSupplyFailed</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a power supply operational
+status changed from normal to failure for a stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingChasPwrSupplyFailed trap received
+	snChasUnitIndex=%parm[#1]%
+	snChasPwrSupplyIndex=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>168</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingChasFanNormal</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingChasFanNormal</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a fan operational status
+changed from failure to normal for a stacking system&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingChasFanNormal trap received
+	snChasUnitIndex=%parm[#1]%
+	snChasFanIndex=%parm[#2]%
+	snChasFanDescription=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasFanFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>169</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingChasFanFailed</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingChasFanFailed</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a fan fails
+to operate normally for a stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingChasFanFailed trap received
+	snChasUnitIndex=%parm[#1]%
+	snChasFanIndex=%parm[#2]%
+	snChasFanDescription=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>170</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingManagementMACChanged</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingManagementMACChanged</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the managemnet MAC
+address of a stacking system has been changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingManagementMACChanged trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>171</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingTemperatureWarning</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingTemperatureWarning</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the actual temperature
+reading is above the warning temperature threshold for a stack
+sytem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingTemperatureWarning trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>172</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapIfIndexAssignmentChanged</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapIfIndexAssignmentChanged</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the Interface Index (IfIndex)
+assignment for the physical interfaces was changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapIfIndexAssignmentChanged trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>173</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapPBRConfigChanged</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapPBRConfigChanged</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a Policy Based Routing (PBR) routemap
+is bound or unbound either globally or to an interface.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapPBRConfigChanged trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>174</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasPwrSupplyRPSAdd</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChasPwrSupplyRPSAdd</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when an External Redundant
+Power Supply (RPS2-EIF) is added to the system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChasPwrSupplyRPSAdd trap received
+	snChasPwrSupplyIndex=%parm[#1]%
+	snChasPwrSupplyDescription=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>175</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasPwrSupplyRPSRemove</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChasPwrSupplyRPSRemove</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when an External Redundant
+Power Supply (RPS2-EIF) is removed from the system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasPwrSupplyDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChasPwrSupplyRPSRemove trap received
+	snChasPwrSupplyIndex=%parm[#1]%
+	snChasPwrSupplyDescription=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>9</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/comingUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/rejected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/bad</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>8</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/configured</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>10</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/running</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>176</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>11</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/blocked</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapModuleStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when a module's operational state changes.
+The management entity receiving the notification can identify the
+module and the event by referencing snChasUnitIndex, snAgentBrdIndex, snAgentBrdModuleStatus.
+In case of a module-down event, the varbind snAgGblTrapMessage is a text string
+that describes the cause. In case of module-up event, snAgGblTrapMessage is a null
+string. &lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapModuleStatusChange trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgentBrdIndex=%parm[#2]%
+	snAgentBrdModuleStatus=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>177</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasHighSpeedFansNeeded</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChasHighSpeedFansNeeded</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when chassis doesn't have high speed fans for specific modules&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChasHighSpeedFansNeeded trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>178</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSysmaxReverted</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSysmaxReverted</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the revertible
+sysmax elements are reverted during the card bringup
+if they can not be accommodated in the available memory.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSysmaxReverted trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>179</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSysmaxLeftLowMem</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSysmaxLeftLowMem</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when its found during bootup that
+the configured sysmax set shall leave less than 10% available memory free.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSysmaxLeftLowMem trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>180</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSysMemoryLowThreshold</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSysMemoryLowThreshold</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the available dynamic memory
+in a card is below 5% of the installed physical memory.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSysMemoryLowThreshold trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>181</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSysMemoryOutThreshold</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSysMemoryOutThreshold</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the dynamic memory
+fails to be allocated in a system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSysMemoryOutThreshold trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>182</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLinkDown</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLinkOAMLinkDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when Link-OAM port link status
+has changed to down.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLinkOAMLinkDown trap received
+	ifIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>183</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLinkUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLinkOAMLinkUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when Link-OAM port link status
+has changed to up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLinkOAMLinkUp trap received
+	ifIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>184</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapI2CAccessLog</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapI2CAccessLog</event-label>
+      <descr>&lt;p>The SNMP trap that is generated to provide information about state of the management module's  I2C accesses.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapI2CAccessLog trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>185</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLinkOAMLoopbackEntered</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when Link-OAM port has entered
+loopback mode. The link is not useful for data transfer any more.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot3OamLoopbackStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		noLoopback(1)
+		initiatingLoopback(2)
+		remoteLoopback(3)
+		terminatingLoopback(4)
+		localLoopback(5)
+		unknown(6)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLinkOAMLoopbackEntered trap received
+	ifIndex=%parm[#1]%
+	dot3OamLoopbackStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="noLoopback"/>
+         <decode varbindvalue="2" varbinddecodedstring="initiatingLoopback"/>
+         <decode varbindvalue="3" varbinddecodedstring="remoteLoopback"/>
+         <decode varbindvalue="4" varbinddecodedstring="terminatingLoopback"/>
+         <decode varbindvalue="5" varbinddecodedstring="localLoopback"/>
+         <decode varbindvalue="6" varbinddecodedstring="unknown"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>186</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackCleared</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLinkOAMLoopbackCleared</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when Link-OAM port has entered
+loopback mode. The link is not useful for data transfer any more.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot3OamLoopbackStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		noLoopback(1)
+		initiatingLoopback(2)
+		remoteLoopback(3)
+		terminatingLoopback(4)
+		localLoopback(5)
+		unknown(6)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLinkOAMLoopbackCleared trap received
+	ifIndex=%parm[#1]%
+	dot3OamLoopbackStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="noLoopback"/>
+         <decode varbindvalue="2" varbinddecodedstring="initiatingLoopback"/>
+         <decode varbindvalue="3" varbinddecodedstring="remoteLoopback"/>
+         <decode varbindvalue="4" varbinddecodedstring="terminatingLoopback"/>
+         <decode varbindvalue="5" varbinddecodedstring="localLoopback"/>
+         <decode varbindvalue="6" varbinddecodedstring="unknown"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>187</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLicenseAdded</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLicenseAdded</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a new license is added to the system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	fdryLicenseType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		trial(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLicenseAdded trap received
+	fdryLicenseType=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="trial"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>188</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLicenseRemoved</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLicenseRemoved</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when an existing license is removed from the system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	fdryLicenseType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		trial(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLicenseRemoved trap received
+	fdryLicenseType=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="trial"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>189</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLicenseExpires</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLicenseExpires</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a trial license is about to expire. This trap is generated
+daily for last 3 days and every 2 hours on the last day of expire.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	fdryLicenseType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		trial(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLicenseExpires trap received
+	fdryLicenseType=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="trial"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>190</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLicenseExpired</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLicenseExpired</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a trial license has expired.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	fdryLicenseType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		trial(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLicenseExpired trap received
+	fdryLicenseType=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#1]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="trial"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>191</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapUDLDCrcFailureDetected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapUDLDCrcFailureDetected</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when UDLD detects CRC failures on PDUs received on a port&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapUDLDCrcFailureDetected trap received
+	ifIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>192</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1agCfmRemoteMEPAgeOut</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapDot1agCfmRemoteMEPAgeOut</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 802.1ag Remote MEP ages out.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMdName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMaNetName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMepDbRMepState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		rMepIdle(1)
+		rMepStart(2)
+		rMepFailed(3)
+		rMepOk(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapDot1agCfmRemoteMEPAgeOut trap received
+	dot1agCfmMdName=%parm[#1]%
+	dot1agCfmMaNetName=%parm[#2]%
+	dot1agCfmMepDbRMepState=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="rMepIdle"/>
+         <decode varbindvalue="2" varbinddecodedstring="rMepStart"/>
+         <decode varbindvalue="3" varbinddecodedstring="rMepFailed"/>
+         <decode varbindvalue="4" varbinddecodedstring="rMepOk"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>193</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1agCfmRemoteMEPUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapDot1agCfmRemoteMEPUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 802.1ag Remote MEP is up.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMdName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMaNetName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMepDbRMepState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		rMepIdle(1)
+		rMepStart(2)
+		rMepFailed(3)
+		rMepOk(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapDot1agCfmRemoteMEPUp trap received
+	dot1agCfmMdName=%parm[#1]%
+	dot1agCfmMaNetName=%parm[#2]%
+	dot1agCfmMepDbRMepState=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="rMepIdle"/>
+         <decode varbindvalue="2" varbinddecodedstring="rMepStart"/>
+         <decode varbindvalue="3" varbinddecodedstring="rMepFailed"/>
+         <decode varbindvalue="4" varbinddecodedstring="rMepOk"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>194</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1agCfmDomainCrossConnection</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapDot1agCfmDomainCrossConnection</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 802.1ag domain gets cross-connected.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMdName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMaNetName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapDot1agCfmDomainCrossConnection trap received
+	dot1agCfmMdName=%parm[#1]%
+	dot1agCfmMaNetName=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>195</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapDot1agCfmDuplicateMEPId</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapDot1agCfmDuplicateMEPId</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 802.1ag Remote MEP reports a duplicate MEP Id
+that conflicts with local MEP Id.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMdName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMaNetName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	dot1agCfmMepDbRMepState&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		rMepIdle(1)
+		rMepStart(2)
+		rMepFailed(3)
+		rMepOk(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapDot1agCfmDuplicateMEPId trap received
+	dot1agCfmMdName=%parm[#1]%
+	dot1agCfmMaNetName=%parm[#2]%
+	dot1agCfmMepDbRMepState=%parm[#3]%
+	snAgGblTrapMessage=%parm[#4]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#3]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="rMepIdle"/>
+         <decode varbindvalue="2" varbinddecodedstring="rMepStart"/>
+         <decode varbindvalue="3" varbinddecodedstring="rMepFailed"/>
+         <decode varbindvalue="4" varbinddecodedstring="rMepOk"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>196</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapStackingStandbyElected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapStackingStandbyElected</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a unit is elected as Standby unit for the stacking system.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasUnitIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapStackingStandbyElected trap received
+	snChasUnitIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>197</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacMoveThresholdRate</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapMacMoveThresholdRate</event-label>
+      <descr>&lt;p>The SNMP notification is generated when MAC movement exceeding the certain threshold for a sampling interval is detected.
+Format: Mac-Move threshold-rate: MAC address &lt;mac> moved from interface &lt;port-id> to interface &lt;port-id> for vlan &lt;vlan-id>, 
+&lt;move-count> times exceeding the threshold rate &lt;threshold-rate> for a sampling interval &lt;interval> seconds&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapMacMoveThresholdRate trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>198</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapMacMoveIntervalHistory</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapMacMoveIntervalHistory</event-label>
+      <descr>&lt;p>The SNMP notification is generated every user configured interval, summarizing the moves in the interval .
+Format: Mac-Move Interval-History: &lt;#macs> macs moved in last &lt;interval> seconds. Total number of mac moves in the interval is &lt;#moves>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapMacMoveIntervalHistory trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1000</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChasFanOK</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChasFanOK</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a fan operational status changed from failure to normal or change in the fan speed due to
+temperature variations downwards.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snChasFanDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChasFanOK trap received
+	snChasFanIndex=%parm[#1]%
+	snChasFanDescription=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTemperatureOK</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTemperatureOK</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the actual temperature
+reading is below the warning temperature threshold.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTemperatureOK trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1002</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapCAMOverflow</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapCAMOverflow</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when any CAM partition
+becomes full.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapCAMOverflow trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1003</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringWarning</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringWarning</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is a warning during optical
+monitoring.
+The first varbind, snAgGblTrapMessage, will have a detailed message on
+the cause of event. The second optional varbind, ifIndex, points to the affected interface
+originating this event. If an event does not have associated port, or has multiple
+associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringWarning trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1004</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringAlarm</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is an alarm during optical
+monitoring.
+The first varbind, snAgGblTrapMessage, will have a detailed message on
+the cause of event. The second optional varbind, ifIndex, points to the affected interface
+originating this event. If an event does not have associated port, or has multiple
+associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringAlarm trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1005</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringError</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringError</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is an error during optical
+monitoring.
+The first varbind, snAgGblTrapMessage, will have a detailed message on
+the cause of event. The second optional varbind, ifIndex, points to the affected interface
+originating this event. If an event does not have associated port, or has multiple
+associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringError trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1006</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapPosMonitoringWarning</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapPosMonitoringWarning</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is a warning during POS
+alarm monitoring.
+ The first varbind, snAgGblTrapMessage, will have a detailed message on
+ the cause of event. The second optional varbind, ifIndex, points to the affected interface
+ originating this event. If an event does not have associated port, or has multiple
+ associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapPosMonitoringWarning trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1007</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapPosMonitoringAlarm</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapPosMonitoringAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is an alarm up/down
+during POS alarm monitoring.
+ The first varbind, snAgGblTrapMessage, will have a detailed message on
+ the cause of event. The second optional varbind, ifIndex, points to the affected interface
+ originating this event. If an event does not have associated port, or has multiple
+ associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapPosMonitoringAlarm trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1008</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapPosMonitoringError</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapPosMonitoringError</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if there is an error during POS
+alarm monitoring.
+The first varbind, snAgGblTrapMessage, will have a detailed message on
+the cause of event. The second optional varbind, ifIndex, points to the affected interface
+originating this event. If an event does not have associated port, or has multiple
+associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapPosMonitoringError trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1009</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapXfpSfpIncompatibleOptics</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapXfpSfpIncompatibleOptics</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if optics is incompatible with port configuration.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapXfpSfpIncompatibleOptics trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1015</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTMLoggingStart</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTMLoggingStart</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if TM logging is started by an event trigger.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTMLoggingStart trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1016</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTMLoggingStop</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTMLoggingStop</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if TM logging stopped due to storage full.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTMLoggingStop trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1017</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTMLoggingRestart</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTMLoggingRestart</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if TM logging restarted after user clearing the log.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTMLoggingRestart trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1018</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapXfpSfpNotFoundryOptics</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapXfpSfpNotFoundryOptics</event-label>
+      <descr>&lt;p>The SNMP trap that is generated if optics vendor is not Foundry Networks.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapXfpSfpNotFoundryOptics trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1019</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTMRecoverySlotReset</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTMRecoverySlotReset</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when TM recovery slot reset is triggered.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTMRecoverySlotReset trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1020</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapTMEgressDataError</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapTMEgressDataError</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when system detects egress data errors on Traffic Manager.
+For e.g.  Fabric Monitoring : TM Egress data errors detected on LP &lt;num>/TM &lt;num>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapTMEgressDataError trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1100</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMLinkDown</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMLinkDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a link from LP Traffic Manager to
+SFM Fabric Element is down.
+For eg.  Fabric Monitoring Link Down : SFM &lt;num>/FE &lt;num>/Link &lt;num>, LP &lt;num>/TM &lt;num>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMLinkDown trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1101</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMLinkUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMLinkUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a link from LP Traffic Manager to
+SFM Fabric Element is up.
+For eg.  Fabric Monitoring Link Up : SFM &lt;num>/FE &lt;num>/Link &lt;num>, LP &lt;num>/TM &lt;num>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMLinkUp trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1102</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMAccessError</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMAccessError</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when system fails to access a  SFM Fabric Element.
+For e.g.  Fabric Monitoring : Device access failure in SFM &lt;num>/FE &lt;num>&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMAccessError trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>9</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/comingUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/rejected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/bad</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>8</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/configured</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>11</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/blocked</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/empty</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1103</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMStatusChange</event-label>
+      <descr>&lt;p>The SNMP notification that is generated when there is a change in the operational state
+of the Switch Fabric Module (SFM). For example,
+    System: Health Monitoring: SFM &lt;num> powered off due to failure detection&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>9</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/comingUp</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/empty</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/rejected</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/bad</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>8</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/configured</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>10</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/running</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>11</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/blocked</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1104</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLPFabricStatusChange</event-label>
+      <descr>&lt;p>Health Monitoring:  LP Fabric status change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdModuleStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		moduleEmpty(0)
+		moduleGoingDown(2)
+		moduleRejected(3)
+		moduleBad(4)
+		moduleConfigured(8)
+		moduleComingUp(9)
+		moduleRunning(10)
+		moduleBlocked(11)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLPFabricStatusChange trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgentBrdModuleStatus=%parm[#2]%
+	snAgGblTrapMessage=%parm[#3]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
+         <decode varbindvalue="2" varbinddecodedstring="moduleGoingDown"/>
+         <decode varbindvalue="3" varbinddecodedstring="moduleRejected"/>
+         <decode varbindvalue="4" varbinddecodedstring="moduleBad"/>
+         <decode varbindvalue="8" varbinddecodedstring="moduleConfigured"/>
+         <decode varbindvalue="9" varbinddecodedstring="moduleComingUp"/>
+         <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
+         <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1200</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChassisFanSpeedLow</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChassisFanSpeedLow</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when all chassis fans change to low speed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChassisFanSpeedLow trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1201</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChassisFanSpeedMedium</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChassisFanSpeedMedium</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when all chassis fans change to medium speed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChassisFanSpeedMedium trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1202</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChassisFanSpeedMedHigh</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChassisFanSpeedMedHigh</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when all chassis fans change to medium high speed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChassisFanSpeedMedHigh trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1203</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapChassisFanSpeedHigh</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapChassisFanSpeedHigh</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when all chassis fans change to high speed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapChassisFanSpeedHigh trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1207</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSModeEnable</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSModeEnable</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when FIPS mode is enabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSModeEnable trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1208</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSModeDisable</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSModeDisable</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when FIPS mode is disabled.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSModeDisable trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1209</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSHostZeroized</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSHostZeroized</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when host keys are zeroized in FIPS mode&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSHostZeroized trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1210</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSSharedSecretZeroized</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSSharedSecretZeroized</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when shared secret are zeroized in FIPS mode&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSSharedSecretZeroized trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1211</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSPOSTStatus</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSPOSTStatus</event-label>
+      <descr>&lt;p>The SNMP trap that is generated after POST.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSPOSTStatus trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1212</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapFIPSCryptoModuleFailure</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapFIPSCryptoModuleFailure</event-label>
+      <descr>&lt;p>The SNMP trap that is generated on cryptographic  module failure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapFIPSCryptoModuleFailure trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1213</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapLicense2PortNotSupported</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapLicense2PortNotSupported</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when a 2 port license cannot be applied due to hardware limitation.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapLicense2PortNotSupported trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1214</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringOK</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapOpticalMonitoringOK</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when an interface transitions from an error to normal state because
+the alarms/warnings are below the threshold. snTrapOpticalMonitoringError would have been earlier generated
+when the interface transitioned to the error state. The first varbind, snAgGblTrapMessage, will have a detailed message on
+the cause of event. The second varbind, ifIndex, points to the affected interface
+originating this event. If an event does not have associated port, or has multiple
+associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapOpticalMonitoringOK trap received
+	snAgGblTrapMessage=%parm[#1]%
+	ifIndex=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringError:%dpname%:%nodeid%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1215</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapSFMAccessOK</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapSFMAccessOK</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when system can successfully access an SFM Fabric Element.
+snTrapSFMAccessError would have been generated when the system failed to access the FE.
+For e.g.  Fabric Monitoring : Device SFM &lt;num>/FE &lt;num> is OK to access.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapSFMAccessOK trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMAccessError:%dpname%:%nodeid%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1216</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapUpgradeSingleCmdStart</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapUpgradeSingleCmdStart</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the single-command package
+upgrade has started. This happens after a successful download
+and validation of manifest file and before the first image download
+takes place.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapUpgradeSingleCmdStart trap received&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1217</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapUpgradeSingleCmdDone</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapUpgradeSingleCmdDone</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the single-command package
+upgrade completed, or partially completed. The table
+brcdSwPackageLoadResultTable lists the result of the upgrade.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapUpgradeSingleCmdDone trap received
+	snAgGblTrapMessage=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1218</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapAutoUpgradeStart</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapAutoUpgradeStart</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when an auto-upgrade on a line card
+has started.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapAutoUpgradeStart trap received
+	snAgentBrdIndex=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.1991</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1219</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/foundry/traps/snTrapAutoUpgradeDone</uei>
+      <event-label>FOUNDRY-SN-NOTIFICATION-MIB defined trap event: snTrapAutoUpgradeDone</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the auto-upgrade of interface
+module completed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgentBrdIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	snAgGblTrapMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	snTrapAutoUpgradeDone trap received
+	snAgentBrdIndex=%parm[#1]%
+	snAgGblTrapMessage=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/foundry/traps/snTrapAutoUpgradeStart:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+</events>

@@ -1,0 +1,69 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.3.92.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/ietf/msdpMib/traps/msdpEstablished</uei>
+      <event-label>DRAFT-MSDP-MIB defined trap event: msdpEstablished</event-label>
+      <descr>&lt;p>The MSDP Established event is generated when the MSDP
+FSM enters the ESTABLISHED state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	msdpPeerFsmEstablishedTransitions&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			msdpEstablished trap received 
+			msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" alarm-type="2" clear-key="uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.3.92.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/ietf/msdpMib/traps/msdpBackwardTransition</uei>
+      <event-label>DRAFT-MSDP-MIB defined trap event: msdpBackwardTransition</event-label>
+      <descr>&lt;p>The MSDPBackwardTransition Event is generated when
+the MSDP FSM moves from a higher numbered state to a
+lower numbered state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	msdpPeerState&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		inactive(1)
+		listen(2)
+		connecting(3)
+		established(4)
+		disabled(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			msdpBackwardTransition trap received 
+			msdpPeerState=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[name-#1.-4:]%" alarm-type="1" auto-clean="false"/>
+   </event>
+</events>

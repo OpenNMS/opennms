@@ -277,7 +277,7 @@ conditions table.&lt;/p>&lt;table>
 	lgpConditionDescr=%parm[#2]%
 	lgpConditionTime=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Normal</severity>
+      <severity>Cleared</severity>
       <varbindsdecode>
          <parmid>parm[#2]</parmid>
          <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1" varbinddecodedstring="lgpConditionsWellKnown"/>
@@ -312,7 +312,9 @@ conditions table.&lt;/p>&lt;table>
          <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.21.4" varbinddecodedstring="lgpConditionLocalAlarm4"/>
          <decode varbindvalue=".1.3.6.1.4.1.476.1.42.3.2.1.22" varbinddecodedstring="lgpConditionStandbyUnitOn"/>
       </varbindsdecode>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/liebert/traps/lgpEventConditionEntryAdded:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

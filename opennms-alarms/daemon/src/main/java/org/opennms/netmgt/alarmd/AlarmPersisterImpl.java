@@ -175,7 +175,17 @@ public class AlarmPersisterImpl implements AlarmPersister {
         // Always set these
         alarm.setLastEvent(e);
         alarm.setLastEventTime(e.getEventTime());
-        alarm.setCounter(alarm.getCounter() + 1);
+        
+        //only increment the alarm counter if the reducing event is a resolution
+        Integer resolution_type = Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE);
+        if (!Objects.equals(event.getAlarmData().getAlarmType(), resolution_type)) {
+            alarm.setCounter(alarm.getCounter() + 1);
+            if (Objects.equals(alarm.getAlarmType(), resolution_type)) {
+                alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+            }
+
+        }
+        alarm.setAlarmType(event.getAlarmData().getAlarmType());
 
         if (!event.getAlarmData().hasUpdateFields()) {
 

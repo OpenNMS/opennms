@@ -181,8 +181,10 @@ The error message is &lt;strong>%parm[#7]%&lt;/strong>.
                         Net-SNMP Event: A procTable falling alert has generated for process 
                         %parm[#6]%&lt;/p>
                 </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#6]%" alarm-type="2" clear-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/netsnmp/traps/procTableAlertRising:%dpname%:%nodeid%:%parm[#6]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

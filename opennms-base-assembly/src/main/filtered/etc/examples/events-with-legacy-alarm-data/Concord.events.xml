@@ -1,0 +1,1333 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/netHealthInfo</uei>
+      <event-label>DiagnosticsMonitor defined trap event: netHealthInfo</event-label>
+      <descr>&lt;p>An event (not an error) has occurred in eHealth.
+This trap is an informational message from the eHealth &#xd;
+Diagnostic Monitor. No action is required.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorDate&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	netHealthInfo trap received
+	nhdErrorDate=%parm[#1]%
+	nhdErrorTime=%parm[#2]%
+	nhdErrorCode=%parm[#3]%
+	nhdErrorMessage=%parm[#4]%
+	nhdServerIp=%parm[#5]%
+	nhdServerName=%parm[#6]%
+	nhServerPort=%parm[#7]%
+	nhElementId=%parm[#8]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#8]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/netHealthWarning</uei>
+      <event-label>DiagnosticsMonitor defined trap event: netHealthWarning</event-label>
+      <descr>&lt;p>An error has occurred in eHealth.
+Polling will continue, please investigate as &#xd;
+soon as possible. This trap is sent from the eHealth &#xd;
+Diagnostic Monitor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorDate&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	netHealthWarning trap received
+	nhdErrorDate=%parm[#1]%
+	nhdErrorTime=%parm[#2]%
+	nhdErrorCode=%parm[#3]%
+	nhdErrorMessage=%parm[#4]%
+	nhdServerIp=%parm[#5]%
+	nhdServerName=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/netHealthReset</uei>
+      <event-label>DiagnosticsMonitor defined trap event: netHealthReset</event-label>
+      <descr>&lt;p>A system critical error has occurred in eHealth.
+Polling may not occur. Restart the eHealth servers as&#xd;
+soon as possible. This trap is sent from the eHealth &#xd;
+Diagnostic Monitor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorDate&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	netHealthReset trap received
+	nhdErrorDate=%parm[#1]%
+	nhdErrorTime=%parm[#2]%
+	nhdErrorCode=%parm[#3]%
+	nhdErrorMessage=%parm[#4]%
+	nhdServerIp=%parm[#5]%
+	nhdServerName=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/netHealthUrgent</uei>
+      <event-label>DiagnosticsMonitor defined trap event: netHealthUrgent</event-label>
+      <descr>&lt;p>A system critical error has occurred in eHealth.
+Polling may not occur. System administrator intervention &#xd;
+is required. This trap is sent from the eHealth &#xd;
+Diagnostic Monitor.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorDate&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	netHealthUrgent trap received
+	nhdErrorDate=%parm[#1]%
+	nhdErrorTime=%parm[#2]%
+	nhdErrorCode=%parm[#3]%
+	nhdErrorMessage=%parm[#4]%
+	nhdServerIp=%parm[#5]%
+	nhdServerName=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#6]%:%parm[#3]:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/netHealthException</uei>
+      <event-label>DiagnosticsMonitor defined trap event: netHealthException</event-label>
+      <descr>&lt;p>A scheduled eHealth report has detected one or more health
+exceptions for an element.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorDate&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorCode&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdErrorMessage&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAgentIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhdServerIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	netHealthException trap received
+	nhdErrorDate=%parm[#1]%
+	nhdErrorTime=%parm[#2]%
+	nhdErrorCode=%parm[#3]%
+	nhdErrorMessage=%parm[#4]%
+	nhdServerName=%parm[#5]%
+	nhdServerIp=%parm[#6]%
+	nhServerPort=%parm[#7]%
+	nhElementId=%parm[#8]%
+	nhServerIp=%parm[#9]%
+	nhAgentIPv6=%parm[#10]%
+	nhServerIPv6=%parm[#11]%
+	nhdServerIPv6=%parm[#12]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#5]%:%parm[#8]%:%parm[#3]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveException</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveException</event-label>
+      <descr>&lt;p>A eHealth exception has occurred. This trap
+sends generic information about an exception when it first becomes&#xd;
+active. Deprecated in eHealth 5.6 Release.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDisplayStr&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroupList&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		warning(2)
+		minor(3)
+		major(4)
+		critical(5)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfile&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhTechType&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveException trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhElementIp=%parm[#4]%
+	nhElementName=%parm[#5]%
+	nhElementId=%parm[#6]%
+	nhStartTime=%parm[#7]%
+	nhDisplayStr=%parm[#8]%
+	nhGroup=%parm[#9]%
+	nhGroupList=%parm[#10]%
+	nhSeverity=%parm[#11]%
+	nhProfile=%parm[#12]%
+	nhExceptionId=%parm[#13]%
+	nhTechType=%parm[#14]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#11]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveAlarm</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveAlarm</event-label>
+      <descr>&lt;p>A eHealth alarm has occurred. This trap
+sends detailed information about an alarm.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDisplayStr&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroupList&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhVariable&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		warning(2)
+		minor(3)
+		major(4)
+		critical(5)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	openViewSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfile&lt;/b>&lt;/td>&lt;td>
+	%parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhTechType&lt;/b>&lt;/td>&lt;td>
+	%parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhEventCarrier&lt;/b>&lt;/td>&lt;td>
+	%parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementAlias&lt;/b>&lt;/td>&lt;td>
+	%parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhComponent&lt;/b>&lt;/td>&lt;td>
+	%parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAlarmOccurId&lt;/b>&lt;/td>&lt;td>
+	%parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfileId&lt;/b>&lt;/td>&lt;td>
+	%parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementBasetype&lt;/b>&lt;/td>&lt;td>
+	%parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAgentIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveAlarm trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhElementIp=%parm[#4]%
+	nhElementName=%parm[#5]%
+	nhElementId=%parm[#6]%
+	nhStartTime=%parm[#7]%
+	nhDisplayStr=%parm[#8]%
+	nhGroup=%parm[#9]%
+	nhGroupList=%parm[#10]%
+	nhExceptionType=%parm[#11]%
+	nhVariable=%parm[#12]%
+	nhSeverity=%parm[#13]%
+	openViewSeverity=%parm[#14]%
+	nhProfile=%parm[#15]%
+	nhExceptionId=%parm[#16]%
+	nhTechType=%parm[#17]%
+	nhEventCarrier=%parm[#18]%
+	nhElementAlias=%parm[#19]%
+	nhComponent=%parm[#20]%
+	nhDescription=%parm[#21]%
+	nhAlarmOccurId=%parm[#22]%
+	nhProfileId=%parm[#23]%
+	nhElementBasetype=%parm[#24]%
+	nhAgentIPv6=%parm[#25]%
+	nhServerIPv6=%parm[#26]%
+	nhElementIPv6=%parm[#27]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#13]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#22]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveClearException</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveClearException</event-label>
+      <descr>&lt;p>A eHealth exception has been cleared. The conditions causing
+the corresponding exception no longer exist. Deprecated in eHealth 5.6 Release.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDisplayStr&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroupList&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		warning(2)
+		minor(3)
+		major(4)
+		critical(5)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfile&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhTechType&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProblemStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProblemDuration&lt;/b>&lt;/td>&lt;td>
+	%parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveClearException trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhElementIp=%parm[#4]%
+	nhElementName=%parm[#5]%
+	nhElementId=%parm[#6]%
+	nhStartTime=%parm[#7]%
+	nhDisplayStr=%parm[#8]%
+	nhGroup=%parm[#9]%
+	nhGroupList=%parm[#10]%
+	nhSeverity=%parm[#11]%
+	nhProfile=%parm[#12]%
+	nhExceptionId=%parm[#13]%
+	nhTechType=%parm[#14]%
+	nhProblemStartTime=%parm[#15]%
+	nhProblemDuration=%parm[#16]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#11]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveClearAlarm</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveClearAlarm</event-label>
+      <descr>&lt;p>A eHealth alarm has been cleared. The conditions causing
+the corresponding alarm no longer exist.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDisplayStr&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroupList&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhVariable&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		warning(2)
+		minor(3)
+		major(4)
+		critical(5)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	openViewSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfile&lt;/b>&lt;/td>&lt;td>
+	%parm[#15]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#16]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhTechType&lt;/b>&lt;/td>&lt;td>
+	%parm[#17]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProblemStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#18]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProblemDuration&lt;/b>&lt;/td>&lt;td>
+	%parm[#19]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhEventCarrier&lt;/b>&lt;/td>&lt;td>
+	%parm[#20]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementAlias&lt;/b>&lt;/td>&lt;td>
+	%parm[#21]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhComponent&lt;/b>&lt;/td>&lt;td>
+	%parm[#22]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#23]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAlarmOccurId&lt;/b>&lt;/td>&lt;td>
+	%parm[#24]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAgentIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#25]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#26]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#27]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveClearAlarm trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhElementIp=%parm[#4]%
+	nhElementName=%parm[#5]%
+	nhElementId=%parm[#6]%
+	nhStartTime=%parm[#7]%
+	nhDisplayStr=%parm[#8]%
+	nhGroup=%parm[#9]%
+	nhGroupList=%parm[#10]%
+	nhExceptionType=%parm[#11]%
+	nhVariable=%parm[#12]%
+	nhSeverity=%parm[#13]%
+	openViewSeverity=%parm[#14]%
+	nhProfile=%parm[#15]%
+	nhExceptionId=%parm[#16]%
+	nhTechType=%parm[#17]%
+	nhProblemStartTime=%parm[#18]%
+	nhProblemDuration=%parm[#19]%
+	nhEventCarrier=%parm[#20]%
+	nhElementAlias=%parm[#21]%
+	nhComponent=%parm[#22]%
+	nhDescription=%parm[#23]%
+	nhAlarmOccurId=%parm[#24]%
+	nhAgentIPv6=%parm[#25]%
+	nhServerIPv6=%parm[#26]%
+	nhElementIPv6=%parm[#27]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <varbindsdecode>
+         <parmid>parm[#13]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveUpdateException</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveUpdateException</event-label>
+      <descr>&lt;p>The severity of a eHealth exception has changed.
+Deprecated in eHealth 5.6 Release.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhStartTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhDisplayStr&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroup&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhGroupList&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>
+		normal(1)
+		warning(2)
+		minor(3)
+		major(4)
+		critical(5)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhProfile&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhExceptionId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhTechType&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveUpdateException trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhElementIp=%parm[#4]%
+	nhElementName=%parm[#5]%
+	nhElementId=%parm[#6]%
+	nhStartTime=%parm[#7]%
+	nhDisplayStr=%parm[#8]%
+	nhGroup=%parm[#9]%
+	nhGroupList=%parm[#10]%
+	nhSeverity=%parm[#11]%
+	nhProfile=%parm[#12]%
+	nhExceptionId=%parm[#13]%
+	nhTechType=%parm[#14]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+      <varbindsdecode>
+         <parmid>parm[#11]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="normal"/>
+         <decode varbindvalue="2" varbinddecodedstring="warning"/>
+         <decode varbindvalue="3" varbinddecodedstring="minor"/>
+         <decode varbindvalue="4" varbinddecodedstring="major"/>
+         <decode varbindvalue="5" varbinddecodedstring="critical"/>
+      </varbindsdecode>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhLiveResetExceptions</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhLiveResetExceptions</event-label>
+      <descr>&lt;p>The LiveExceptions server has restarted. All LiveExceptions alarms
+and exceptions sent before this time will NOT be cleared automatically. All trap &#xd;
+    destinations should reset any pre-existing eHealth exceptions &#xd;
+    and alarms by setting them to a clear state or unhighlighting&#xd;
+    any icons.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIp&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhResetTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhAgentIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhServerIPv6&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhLiveResetExceptions trap received
+	nhServerIp=%parm[#1]%
+	nhServerName=%parm[#2]%
+	nhServerPort=%parm[#3]%
+	nhResetTime=%parm[#4]%
+	nhAgentIPv6=%parm[#5]%
+	nhServerIPv6=%parm[#6]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateWarning</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateWarning</event-label>
+      <descr>&lt;p>The maximum severity level of alarms for all the paths that
+belong to this PathSetAggregate element is at the warning level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateWarning trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateWarningClear</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateWarningClear</event-label>
+      <descr>&lt;p>The nhPathSetAggregateWarning trap has been cleared.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateWarningClear trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateMinor</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateMinor</event-label>
+      <descr>&lt;p>The maximum severity level of alarms for all the paths that
+belong to this PathSetAggregate element is at the minor level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateMinor trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateMinorClear</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateMinorClear</event-label>
+      <descr>&lt;p>The nhPathSetAggregateMinor trap has been cleared.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateMinorClear trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateMajor</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateMajor</event-label>
+      <descr>&lt;p>The maximum severity level of alarms for all the paths that
+belong to this PathSetAggregate element is at the major level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateMajor trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>31</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateMajorClear</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateMajorClear</event-label>
+      <descr>&lt;p>The nhPathSetAggregateMajor trap has been cleared.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateMajorClear trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>32</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateCritical</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateCritical</event-label>
+      <descr>&lt;p>The maximum severity level of alarms for all the paths that
+belong to this PathSetAggregate element is at the critical level.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateCritical trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.149</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>33</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Concord/traps/nhPathSetAggregateCriticalClear</uei>
+      <event-label>DiagnosticsMonitor defined trap event: nhPathSetAggregateCriticalClear</event-label>
+      <descr>&lt;p>The nhPathSetAggregateCritical trap has been cleared.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nhElementName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	nhPathSetAggregateCriticalClear trap received
+	nhElementId=%parm[#1]%
+	nhElementName=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+</events>

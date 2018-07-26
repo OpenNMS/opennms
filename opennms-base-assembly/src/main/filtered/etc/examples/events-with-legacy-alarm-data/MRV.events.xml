@@ -1,0 +1,1409 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/invalidPassword</uei>
+      <event-label>DEV-CFG-MIB defined trap event: invalidPassword</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+invalid password was used in the current protocol session.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		cliSession(1)
+		telnetSession(2)
+		none(3)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevAuthenticationRejectReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		localAgentReject(1)
+		radiusServerReject(2)
+		radiusServerNotFound(3)
+		none(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsTrapHostIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			invalidPassword trap received 
+			nbsDevSessionType=%parm[#1]% 
+			nbsDevAuthenticationRejectReason=%parm[#2]% 
+			nbsTrapHostIpAddress=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/wrongAccess</uei>
+      <event-label>DEV-CFG-MIB defined trap event: wrongAccess</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+wrong access attempt is occured.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsTrapWrongAccessDateTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevSessionType&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		cliSession(1)
+		telnetSession(2)
+		none(3)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevAuthenticationRejectReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		localAgentReject(1)
+		radiusServerReject(2)
+		radiusServerNotFound(3)
+		none(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsTrapLoginName&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsTrapHostIpAddress&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			wrongAccess trap received 
+			nbsTrapWrongAccessDateTime=%parm[#1]% 
+			nbsDevSessionType=%parm[#2]% 
+			nbsDevAuthenticationRejectReason=%parm[#3]% 
+			nbsTrapLoginName=%parm[#4]% 
+			nbsTrapHostIpAddress=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/deviceRCMredundancyState</uei>
+      <event-label>DEV-CFG-MIB defined trap event: deviceRCMredundancyState</event-label>
+      <descr>&lt;p>Generate SNMP trap when RCM Redundancy
+state of the device is changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsTrapRCMredundancyState&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			deviceRCMredundancyState trap received 
+			nbsTrapRCMredundancyState=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/snmpAccessMode</uei>
+      <event-label>DEV-CFG-MIB defined trap event: snmpAccessMode</event-label>
+      <descr>&lt;p>Generate SNMP trap when SNMP Access
+mode of the device is changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevSNMPAccessMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		readOnWriteOn(1)
+		readOnWriteOff(2)
+		readOffWriteOff(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snmpAccessMode trap received 
+			nbsDevSNMPAccessMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/snmpRequestRejected</uei>
+      <event-label>DEV-CFG-MIB defined trap event: snmpRequestRejected</event-label>
+      <descr>&lt;p>Generate SNMP trap when an SNMP Request
+is rejected due to SNMP Access Mode of the Device.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevSNMPAccessMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		readOnWriteOn(1)
+		readOnWriteOff(2)
+		readOffWriteOff(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			snmpRequestRejected trap received 
+			nbsDevSNMPAccessMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/powerSupplyUp</uei>
+      <event-label>DEV-CFG-MIB defined trap event: powerSupplyUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+power supply unit changes it's state from notActive to active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevPSIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyUp trap received 
+			nbsDevPSIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.11.1.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/powerSupplyDown</uei>
+      <event-label>DEV-CFG-MIB defined trap event: powerSupplyDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+power supply unit changes it's state from active to notActive&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsDevPSIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyDown trap received 
+			nbsDevPSIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/unresolvedMAC</uei>
+      <event-label>MSCR-MIB defined trap event: unresolvedMAC</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the Port receives frame
+with source address not included in this port's MAC security
+table.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbMacScrRunPort&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbMacScrRunPortLockingMAC&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			unresolvedMAC trap received 
+			nbMacScrRunPort=%parm[#1]% 
+			nbMacScrRunPortLockingMAC=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>32</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/portMacLimitExceeded</uei>
+      <event-label>VLAN-MIB defined trap event: portMacLimitExceeded</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+the Maximum number of MAC Addresses
+for the Port is exceeded.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbVlansRunPortMacLimitPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbVlansRunPortMacLimitValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbVlansRunPortMacLimitActionDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			portMacLimitExceeded trap received 
+			nbVlansRunPortMacLimitPortNumber=%parm[#1]% 
+			nbVlansRunPortMacLimitValue=%parm[#2]% 
+			nbVlansRunPortMacLimitActionDescription=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.629.1.50.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/specSlotLinkChanged</uei>
+      <event-label>NSTACK-MIB defined trap event: specSlotLinkChanged</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+Link status was changed on the GER Module.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	nbsStackSlotSpecNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			specSlotLinkChanged trap received 
+			nbsStackSlotSpecNumber=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.1.10.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/powerSupplyUp</uei>
+      <event-label>OADWDM-MIB defined trap event: powerSupplyUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+power supply unit changes it's state from notActive to active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdDevPSIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyUp trap received 
+			oaLdDevPSIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.1.10.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/powerSupplyDown</uei>
+      <event-label>OADWDM-MIB defined trap event: powerSupplyDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+power supply unit changes it's state from active to notActive&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdDevPSIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyDown trap received 
+			oaLdDevPSIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.1.10.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/fanUp</uei>
+      <event-label>OADWDM-MIB defined trap event: fanUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+Fan unit changes it's state from notActive or fail to active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdDevFANIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			fanUp trap received 
+			oaLdDevFANIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/fanDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.1.10.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/fanDown</uei>
+      <event-label>OADWDM-MIB defined trap event: fanDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+Fan unit changes it's state from active to notActive or fail&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdDevFANIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			fanDown trap received 
+			oaLdDevFANIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/configChangeIn</uei>
+      <event-label>OADWDM-MIB defined trap event: configChangeIn</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a card is inserted into the chassis&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			configChangeIn trap received 
+			oaLdCardIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/configChangeOut:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderAccessRxOn</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderAccessRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's Access receive indication&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardOptAccRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderAccessRx trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardOptAccRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/transponderAccessRx:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderAccessRx</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderAccessRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's Access receive indication&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardOptAccRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderAccessRx trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardOptAccRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderWdmRxOn</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderWdmRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's WDM receive indication&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardOptDwdmRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderWdmRx trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardOptDwdmRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/transponderWdmRx:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderWdmRx</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderWdmRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's WDM receive indication&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardOptDwdmRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderWdmRx trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardOptDwdmRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/configChangeOut</uei>
+      <event-label>OADWDM-MIB defined trap event: configChangeOut</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a card is taken out of the chassis&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			configChangeOut trap received 
+			oaLdCardIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderCardLoopBackNormal</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderCardLoopBack</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's LoopBack state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardLoopBack&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		normal(2)
+		loopback(3)
+		remoteLoopback(4)
+		localLoopback(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderCardLoopBack trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardLoopBack=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/transponderCardLoopBack</uei>
+      <event-label>OADWDM-MIB defined trap event: transponderCardLoopBack</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+a transponder card changes it's LoopBack state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardLoopBack&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		normal(2)
+		loopback(3)
+		remoteLoopback(4)
+		localLoopback(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			transponderCardLoopBack trap received 
+			oaLdCardIndex=%parm[#1]% 
+			oaLdCardLoopBack=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/switchPrimary</uei>
+      <event-label>OADWDM-MIB defined trap event: switchPrimary</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+optical switch on redundant card changes it's state
+from Secondary to Primary&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			switchPrimary trap received&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/switchSecondary:%nodeid%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/switchSecondary</uei>
+      <event-label>OADWDM-MIB defined trap event: switchSecondary</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+optical switch on redundant card changes it's state
+from Primary to Secondary&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			switchSecondary trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/redundantCardPrimaryRx</uei>
+      <event-label>OADWDM-MIB defined trap event: redundantCardPrimaryRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+on redundant card the Primary fiber Receive status is changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdRedOptSlotNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdRedOptPrimaryRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			redundantCardPrimaryRx trap received 
+			oaLdRedOptSlotNumber=%parm[#1]% 
+			oaLdRedOptPrimaryRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/redundantCardSecondaryRx:%nodeid%:%parm[#1]%"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/redundantCardSecondaryRx</uei>
+      <event-label>OADWDM-MIB defined trap event: redundantCardSecondaryRx</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+on redundant card the Secondary fiber Receive status is changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdRedOptSlotNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdRedOptSecondaryRx&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			redundantCardSecondaryRx trap received 
+			oaLdRedOptSlotNumber=%parm[#1]% 
+			oaLdRedOptSecondaryRx=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/cardPortsLinkOn</uei>
+      <event-label>OADWDM-MIB defined trap event: cardPortsLink</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+the link status of a port at the card is changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsSlotNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsLink&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cardPortsLink trap received 
+			oaLdCardPortsSlotNumber=%parm[#1]% 
+			oaLdCardPortsPortNumber=%parm[#2]% 
+			oaLdCardPortsLink=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/cardPortsLink:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.41.8</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/cardPortsLink</uei>
+      <event-label>OADWDM-MIB defined trap event: cardPortsLink</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+the link status of a port at the card is changed&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsSlotNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsPortNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaLdCardPortsLink&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		on(2)
+		off(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cardPortsLink trap received 
+			oaLdCardPortsSlotNumber=%parm[#1]% 
+			oaLdCardPortsPortNumber=%parm[#2]% 
+			oaLdCardPortsLink=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.51</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/vdslPortBer</uei>
+      <event-label>OA-VDSL-MIB defined trap event: vdslPortBer</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when BER value at a port
+exceeds the value defined in oaVdslMaxOKBerValue.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVdslPortBER&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVdslBerInterval&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVdslBerMinValueToReport&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			vdslPortBer trap received 
+			ifIndex=%parm[#1]% 
+			oaVdslPortBER=%parm[#2]% 
+			oaVdslBerInterval=%parm[#3]% 
+			oaVdslBerMinValueToReport=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.51</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/vdslPortLinkUp</uei>
+      <event-label>OA-VDSL-MIB defined trap event: vdslPortLinkUp</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+VDSL Link changes it's state to UP.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			vdslPortLinkUp trap received 
+			ifIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/vdslPortLinkDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.51</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/vdslPortLinkDown</uei>
+      <event-label>OA-VDSL-MIB defined trap event: vdslPortLinkDown</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when 
+VDSL Link changes it's state to DOWN.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ifIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			vdslPortLinkDown trap received 
+			ifIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.71</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection</uei>
+      <event-label>OA-VOICE-MIB defined trap event: oaVoiceBrokenRtpConnection</event-label>
+      <descr>&lt;p>Generated when the IP(RTP) connection to the destination port
+is broken, if the sub-trunk index is not 0, the trap relates
+to specific sub-trunk.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoiceSlotIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoicePortIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoiceSubTrunkIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaVoiceBrokenRtpConnection trap received 
+			oaVoiceSlotIndex=%parm[#1]% 
+			oaVoicePortIndex=%parm[#2]% 
+			oaVoiceSubTrunkIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.71</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaVoiceRtpConnectionReastablished</uei>
+      <event-label>OA-VOICE-MIB defined trap event: oaVoiceRtpConnectionReastablished</event-label>
+      <descr>&lt;p>Generated when the IP(RTP) connection to the destination port
+is reastablished, if the sub-trunk index is not 0, the trap relates
+to specific sub-trunk.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoiceSlotIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoicePortIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaVoiceSubTrunkIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaVoiceRtpConnectionReastablished trap received 
+			oaVoiceSlotIndex=%parm[#1]% 
+			oaVoicePortIndex=%parm[#2]% 
+			oaVoiceSubTrunkIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerTxTotalLaserPowerAlarm</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerTxTotalLaserPowerAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when total laser power
+drops below the user set minimum value. This trap includes
+the total laser power measured by the transmit module. 
+total laser power = arg[0] / 100mW&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerTxTotalLaserPower&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerTxTotalLaserPowerAlarm trap received 
+			oaATerTxTotalLaserPower=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarmOn</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerTxUserDataStatusAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the user data is
+not present.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerTxUserDataStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		on(1)
+		off(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerTxUserDataStatusAlarm trap received 
+			oaATerTxUserDataStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm:%nodeid%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerTxUserDataStatusAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the user data is
+not present.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerTxUserDataStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		on(1)
+		off(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerTxUserDataStatusAlarm trap received 
+			oaATerTxUserDataStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerRxAPDCurrentAlarm</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerRxAPDCurrentAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the APD current
+drops below the user set minimum value. This trap includes
+the measured APD current in microAmps (uA). 
+APD current = arg[0] / 100uA&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerRxAPDCurrent&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerRxAPDCurrentAlarm trap received 
+			oaATerRxAPDCurrent=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerRxTempAlarm</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerRxTempAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the receiver board
+temperature rises above the user set maximum value. This 
+trap includes the measured temperature in degrees celcius. 
+temperature = arg[0] / 100 degrees C&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerRxTemperature&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerRxTempAlarm trap received 
+			oaATerRxTemperature=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.6926.1.31.3.1.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendors/MRV/oaATerTxTempAlarm</uei>
+      <event-label>OAATERESCOPE-MIB defined trap event: oaATerTxTempAlarm</event-label>
+      <descr>&lt;p>The SNMP trap that is generated when the transmitter board
+temperature rises above the user set maximum value. This 
+trap includes the measured temperature in degrees celcius. 
+temperature = arg[0] / 100 degrees C&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	oaATerTxTemperature&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			oaATerTxTempAlarm trap received 
+			oaATerTxTemperature=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+</events>

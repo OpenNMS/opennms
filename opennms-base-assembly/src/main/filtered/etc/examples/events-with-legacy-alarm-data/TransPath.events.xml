@@ -1,0 +1,2159 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>~.*Point.*Code.*Unavailable.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeUnavailable</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: commAlarm</event-label>
+      <descr>&lt;p>Notification of a communication error with Point Code.  This shows 
+which component had failed, the fault type and severity 
+level and the time it occurred from the MIB-II restart time. 
+Because many of the failures need to be described in detail 
+for troubleshooting, an alarm log is written with supplemental 
+information.  The trap and log are correlated based on the 
+alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			commAlarm trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>4</vbnumber>
+            <vbvalue>~.*Point.*Code.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeAvailable</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: commAlarm</event-label>
+      <descr>&lt;p>Notification of a communication error with Point Code.  This shows 
+which component had failed, the fault type and severity 
+level and the time it occurred from the MIB-II restart time. 
+Because many of the failures need to be described in detail 
+for troubleshooting, an alarm log is written with supplemental 
+information.  The trap and log are correlated based on the 
+alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			commAlarm trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarm/PointCodeUnavailable:%dpname%:%nodeid%:%parm[#1]" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarmSet</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: commAlarm</event-label>
+      <descr>&lt;p>Notification of a communication error.  This shows 
+which component had failed, the fault type and severity 
+level and the time it occurred from the MIB-II restart time. 
+Because many of the failures need to be described in detail 
+for troubleshooting, an alarm log is written with supplemental 
+information.  The trap and log are correlated based on the 
+alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			commAlarm trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/commAlarmClear</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: commAlarm</event-label>
+      <descr>&lt;p>Notification of a communication error.  This shows 
+which component had failed, the fault type and severity 
+level and the time it occurred from the MIB-II restart time. 
+Because many of the failures need to be described in detail 
+for troubleshooting, an alarm log is written with supplemental 
+information.  The trap and log are correlated based on the 
+alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			commAlarm trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/commAlarmSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/qualityOfServiceSet</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: qualityOfService</event-label>
+      <descr>&lt;p>Notification when there is a failure in the quality of service. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			qualityOfService trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/qualityOfServiceClear</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: qualityOfService</event-label>
+      <descr>&lt;p>Notification when there is a failure in the quality of service. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			qualityOfService trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/qualityOfServiceSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/processingErrorSet</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: processingError</event-label>
+      <descr>&lt;p>Notification of a process fault. This shows which component had 
+failed, its operational status, fault type and severity level and 
+the time it occurred from the MIB-II restart time. Because many 
+of the failures need to be described in detail for troubleshooting, 
+an alarm log is written with supplemental information.  The trap 
+and log are correlated based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			processingError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/processingErrorClear</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: processingError</event-label>
+      <descr>&lt;p>Notification of a process fault. This shows which component had 
+failed, its operational status, fault type and severity level and 
+the time it occurred from the MIB-II restart time. Because many 
+of the failures need to be described in detail for troubleshooting, 
+an alarm log is written with supplemental information.  The trap 
+and log are correlated based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			processingError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/processingErrorSet:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadLight</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadLight</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadLight in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <operinstruct>&lt;p>Eseguire Controlli</operinstruct>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadMedium</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadMedium</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadMedium in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <operinstruct>&lt;p>Eseguire Controlli</operinstruct>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadHeavy</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadHeavy in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <operinstruct>&lt;p>ESEGUIRE PROCEDURA Troubleshooting su SC2200 di Davide Sciandra</operinstruct>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadLight</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadLightCleared</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadLight in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadLight:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadMedium</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadMediumCleared</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadMedium in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadMedium:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>3</vbnumber>
+            <vbvalue>OverloadHeavy</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavyCleared</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment OverloadHeavy in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/OverloadHeavy:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/equipmentError</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment error in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/equipmentErrorClear</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: equipmentError</event-label>
+      <descr>&lt;p>Notification of an equipment error in the TransPath system. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			equipmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/equipmentError:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/environmentError</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: environmentError</event-label>
+      <descr>&lt;p>Notification of an TransPath system.s environment problem. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			environmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.2496.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>5</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/cisco/transpath/traps/environmentErrorClear</uei>
+      <event-label>CISCO-TRANSPATH-MIB defined trap event: environmentError</event-label>
+      <descr>&lt;p>Notification of an TransPath system.s environment problem. 
+This shows which component had failed, its operational status, 
+fault type and severity level and the time it occurred from the 
+MIB-II restart time. Because many of the failures need to be 
+described in detail for troubleshooting, an alarm log is written 
+with supplemental information.  The trap and log are correlated 
+based on the alarm time.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatId&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatName&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmCatDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSet&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>
+		clear(1)
+		set(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmNotify&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		informational(1)
+		minor(2)
+		major(3)
+		critical(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmReported&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>
+		no(1)
+		yes(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#9]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpComponentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#10]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompMMLName&lt;/b>&lt;/td>&lt;td>
+	%parm[#11]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompDesc&lt;/b>&lt;/td>&lt;td>
+	%parm[#12]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpCompParentId&lt;/b>&lt;/td>&lt;td>
+	%parm[#13]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	tpAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#14]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			environmentError trap received 
+			tpAlarmId=%parm[#1]% 
+			tpAlarmCatId=%parm[#2]% 
+			tpAlarmCatName=%parm[#3]% 
+			tpAlarmCatDesc=%parm[#4]% 
+			tpAlarmSet=%parm[#5]% 
+			tpAlarmNotify=%parm[#6]% 
+			tpAlarmSeverity=%parm[#7]% 
+			tpAlarmReported=%parm[#8]% 
+			tpComponentId=%parm[#9]% 
+			tpComponentType=%parm[#10]% 
+			tpCompMMLName=%parm[#11]% 
+			tpCompDesc=%parm[#12]% 
+			tpCompParentId=%parm[#13]% 
+			tpAlarmTime=%parm[#14]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/transpath/traps/environmentError:%dpname%:%nodeid%:%parm[#2]%:%parm[#9]%" auto-clean="true"/>
+   </event>
+</events>

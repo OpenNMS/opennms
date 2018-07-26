@@ -1,0 +1,1521 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/operationalStatusOperationalTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: operationalStatusOperationalTrap</event-label>
+      <descr>&lt;p>OperationalStatusOperational notification signifies that the
+agent entity has detected the sysOperationalStatus
+object in this MIB has changed to 'operational(3)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysOperationalStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			operationalStatusOperationalTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/operationalStatusWarningTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: operationalStatusWarningTrap</event-label>
+      <descr>&lt;p>OperationalStatusWarning notification signifies that the agent
+entity has detected the sysOperationalStatus object
+in this MIB has changed to 'warning(4)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysOperationalStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			operationalStatusWarningTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/operationalStatusFailureTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: operationalStatusFailureTrap</event-label>
+      <descr>&lt;p>OperationalStatusFailure notification signifies that the agent
+entity has detected the sysOperationalStatus object in 
+this MIB has changed to 'failure(5)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysOperationalStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		boot(2)
+		operational(3)
+		warning(4)
+		failure(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			operationalStatusFailureTrap trap received 
+			sysOperationalStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/pcube/traps/operationalStatusNotOperational:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/systemResetTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: systemResetTrap</event-label>
+      <descr>&lt;p>A systemReset notification signifies that the agent entity
+is about to reset itself either per user's request or 
+due to a fatal event.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			systemResetTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisTempAlarmOnTrap</event-label>
+      <descr>&lt;p>A chassisTempAlarmOn notification signifies that the agent
+entity has detected the chassisTempAlarm object in this
+MIB has changed to the 'on(3)' state 
+(temperature is too high).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisTempAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisTempAlarmOnTrap trap received 
+			pchassisTempAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOffTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisTempAlarmOffTrap</event-label>
+      <descr>&lt;p>A chassisTempAlarmOff notification signifies that the agent
+entity has detected the chassisTempAlarm object in this
+MIB has changed to the 'off(2)' state 
+(temperature level is back to normal).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisTempAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisTempAlarmOffTrap trap received 
+			pchassisTempAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/chassisTempAlarmOnTrap:%dpname%:%nodeid%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisVoltageAlarmOnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisVoltageAlarmOnTrap</event-label>
+      <descr>&lt;p>A chassisVoltageAlarmOn notification signifies that the agent
+entity has detected the chassisVoltageAlarm object in this
+MIB has changed to the 'on(3)' state
+(voltage level is too high).&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisVoltageAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisVoltageAlarmOnTrap trap received 
+			pchassisVoltageAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisFansAlarmOnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisFansAlarmOnTrap</event-label>
+      <descr>&lt;p>A chassisFanStatusFailure notification signifies that the
+agent entity has detected the chassisFansAlarm object in this
+MIB has changed to the 'on(3)' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisFansAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisFansAlarmOnTrap trap received 
+			pchassisFansAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisPowerSupplyAlarmOnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisPowerSupplyAlarmOnTrap</event-label>
+      <descr>&lt;p>A chassisPsuStatusFailure notification signifies that the
+agent entity has detected the chassisPowerSupplyAlarm object
+in this MIB has changed to the 'on(3)' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisPowerSupplyAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisPowerSupplyAlarmOnTrap trap received 
+			pchassisPowerSupplyAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrActiveConnectionTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrActiveConnectionTrap</event-label>
+      <descr>&lt;p>RdrConnectionDestTypeActive notification signifies that 
+the agent entity has detected the rdrFormatterDestStatus 
+object in this MIB has changed to the 'active(2)' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestIPAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrActiveConnectionTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrNoActiveConnectionTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrNoActiveConnectionTrap</event-label>
+      <descr>&lt;p>A rdrNoActiveConnection notification signifies that the 
+agent entity has detected  there is no active 
+connection between the RDR-formatter and any 
+Data Collector.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrNoActiveConnectionTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrConnectionUpTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrConnectionUpTrap</event-label>
+      <descr>&lt;p>RdrConnectionStatusUp notification signifies that the agent 
+entity has detected the rdrFormatterDestConnectionStatus 
+object in this MIB has changed to 'up(2)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestIPAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestConnectionStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrConnectionUpTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrConnectionDownTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrConnectionDownTrap</event-label>
+      <descr>&lt;p>RdrConnectionStatusDown notification signifies that the agent
+entity has detected the rdrFormatterDestConnectionStatus
+object in this MIB has changed to 'down(3)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestIPAddr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterDestConnectionStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrConnectionDownTrap trap received 
+			rdrFormatterDestIPAddr=%parm[#1]% 
+			rdrFormatterDestConnectionStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/telnetSessionStartedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: telnetSessionStartedTrap</event-label>
+      <descr>&lt;p>Replaced by the more generic sessionStartedTrap.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			telnetSessionStartedTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/telnetSessionEndedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: telnetSessionEndedTrap</event-label>
+      <descr>&lt;p>Replaced by the more generic sessionEndedTrap.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			telnetSessionEndedTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/telnetSessionDeniedAccessTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: telnetSessionDeniedAccessTrap</event-label>
+      <descr>&lt;p>Replaced by the more generic sessionDeniedAccessTrap.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			telnetSessionDeniedAccessTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/telnetSessionBadLoginTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: telnetSessionBadLoginTrap</event-label>
+      <descr>&lt;p>Replaced by the more generic sessionBadLoginTrap.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			telnetSessionBadLoginTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/loggerUserLogIsFullTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: loggerUserLogIsFullTrap</event-label>
+      <descr>&lt;p>A loggerUserLogIsFull notification signifies that the agent 
+entity has detected the User log file is full.
+In such case the agent entity rolls to the next file.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			loggerUserLogIsFullTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/sntpClockDriftWarnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: sntpClockDriftWarnTrap</event-label>
+      <descr>&lt;p>An sntpClockDriftWarn notification signifies that the entity's
+SNTP agent did not receive time update for 
+a long period, this may cause a time drift.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			sntpClockDriftWarnTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/linkModeBypassTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: linkModeBypassTrap</event-label>
+      <descr>&lt;p>A linkModeBypass notification signifies that the agent entity
+has detected that the linkOperMode object in this MIB 
+has changed to 'bypass(2)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	linkOperMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkModeBypassTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/linkModeForwardingTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: linkModeForwardingTrap</event-label>
+      <descr>&lt;p>A linkModeForwarding notification signifies that the agent
+entity has detected that the linkOperMode object
+in this MIB has changed to 'forwarding(3)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	linkOperMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkModeForwardingTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="linkMode:%dpname%:%nodeid%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/linkModeCutoffTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: linkModeCutoffTrap</event-label>
+      <descr>&lt;p>A linkModeCutoff notification signifies that the agent 
+entity has detected that the linkOperMode object
+in this MIB has changed to 'cutoff(4)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	linkOperMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkModeCutoffTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleAttackFilterActivatedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleAttackFilterActivatedTrap</event-label>
+      <descr>&lt;p>A moduleAttackFilterActivated notification signifies 
+that the agent entity's attack filter module has
+activated a filter. The pcubeSeEventGenericString1 
+is the type of attack-filter, which was activated.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleAttackFilterActivatedTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleAttackFilterDeactivatedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleAttackFilterDeactivatedTrap</event-label>
+      <descr>&lt;p>A portAttackFilterDeactivated notification signifies that the
+agent entity's attack filter module has removed a 
+filter that was previously activated.
+The pcubeSeEventGenericString1 is the attack-filter 
+type, which was sent in the corresponding 
+moduleAttackFilterActivatedTrap.
+the pcubeSeEventGenericString2 is the reason
+for deactivating the filter.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString2&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleAttackFilterDeactivatedTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]% 
+			pcubeSeEventGenericString2=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleEmAgentGenericTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleEmAgentGenericTrap</event-label>
+      <descr>&lt;p>A generic notification used by the P-Cube EM agent. 
+pcubeSeEventGenericString1 specifies what 
+notification is it, and pcubeSeEventGenericString2 
+is the relevant parameter.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString2&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleEmAgentGenericTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]% 
+			pcubeSeEventGenericString2=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>28</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/linkModeSniffingTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: linkModeSniffingTrap</event-label>
+      <descr>&lt;p>A linkModeSniffing notification signifies that the 
+agent entity has detected  that the linkOperMode 
+object in this MIB has changed to 'sniffing(5)'.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	linkOperMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		bypass(2)
+		forwarding(3)
+		cutoff(4)
+		sniffing(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkModeSniffingTrap trap received 
+			linkOperMode=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="linkMode:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>29</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleRedundancyReadyTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleRedundancyReadyTrap</event-label>
+      <descr>&lt;p>A moduleRedundancyReady notification signifies that the module
+was able to connect and synchronize with a redundant entity, 
+and is now ready to handle fail-over if needed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleRedundancyReadyTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>30</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleRedundantConfigurationMismatchTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleRedundantConfigurationMismatchTrap</event-label>
+      <descr>&lt;p>A moduleRedundantConfigurationMismatch notification signifies 
+that the module was not able to synchronize with a redundant 
+entity, due to a essential configuration parameters that are do
+not match between the
+module and the redundant entity.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleRedundantConfigurationMismatchTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>31</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleLostRedundancyTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleLostRedundancyTrap</event-label>
+      <descr>&lt;p>A moduleLostRedundancy notification signifies that the module
+has lost the ability to perform the fail-over procedure.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleLostRedundancyTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>32</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleSmConnectionDownTrap</event-label>
+      <descr>&lt;p>A moduleSmConnectionDown notification signifies that the 
+module's virtual connection to the subscriber 
+manager is broken.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleSmConnectionDownTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>33</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleSmConnectionUpTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleSmConnectionUpTrap</event-label>
+      <descr>&lt;p>A moduleSmConnectionUp notification signifies that 
+the module's virtual connection to the subscriber manager 
+is up and working.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleSmConnectionUpTrap trap received 
+			pmoduleIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/pcube/traps/moduleSmConnectionDownTrap:%dpname%:%nodeid%:%parm[#1]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>34</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/moduleOperStatusChangeTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: moduleOperStatusChangeTrap</event-label>
+      <descr>&lt;p>A moduleOperStatusChangeTrap notification signifies
+that the moduleOperStatus has changed its value.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		active(2)
+		standby(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			moduleOperStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pmoduleOperStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>35</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/portOperStatusChangeTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: portOperStatusChangeTrap</event-label>
+      <descr>&lt;p>A portOperStatusChangeTrap notification signifies 
+that the portOperStatus object of the portIndex has changed
+its value, i.e., the link was forced down or the force 
+down was released.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pportIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pportOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		up(2)
+		reflectionForcingDown(3)
+		redundancyForcingDown(4)
+		otherDown(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			portOperStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pportIndex=%parm[#2]% 
+			pportOperStatus=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>36</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/chassisLineFeedAlarmOnTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: chassisLineFeedAlarmOnTrap</event-label>
+      <descr>&lt;p>A chassisLineFeedAlarmOn notification signifies that the agent
+entity has detected the chassisLineFeed object in this
+MIB has changed to the 'on(3)' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pchassisLineFeedAlarm&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		off(2)
+		on(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			chassisLineFeedAlarmOnTrap trap received 
+			pchassisLineFeedAlarm=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>37</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrFormatterCategoryDiscardingReportsTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrFormatterCategoryDiscardingReportsTrap</event-label>
+      <descr>&lt;p>rdrCategoryDiscardingReportsTrap notification signifies that
+the agent entity has detected that reports send to this
+category are being discarded. 
+The rdrFormatterCategoryNumReportsDiscarded object in 
+this MIB is counting the amount of discarded reports.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterCategoryIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrFormatterCategoryDiscardingReportsTrap trap received 
+			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>38</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/rdrFormatterCategoryStoppedDiscardingReportsTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: rdrFormatterCategoryStoppedDiscardingReportsTrap</event-label>
+      <descr>&lt;p>rdrCategoryStoppedDiscardingReportsTrap notification signifies 
+that the agent entity has detected that reports send to this 
+category are not being discarded any more. 
+The rdrFormatterCategoryNumReportsDiscarded object in this
+MIB is counting the amount of discarded reports.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rdrFormatterCategoryIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rdrFormatterCategoryStoppedDiscardingReportsTrap trap received 
+			rdrFormatterCategoryIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>39</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/sessionStartedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: sessionStartedTrap</event-label>
+      <descr>&lt;p>A sessionStarted notification signifies that the agent
+entity has accepted a new session. 
+The pcubeSeEventGenericString1 is the session 
+type (telnet/SSH) and client IP address.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			sessionStartedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>40</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/sessionEndedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: sessionEndedTrap</event-label>
+      <descr>&lt;p>A sessionEnded notification signifies that the agent
+entity has detected end of a session. 
+The pcubeSeEventGenericString1 is the session 
+type (telnet/SSH) and client IP address.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			sessionEndedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>41</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/sessionDeniedAccessTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: sessionDeniedAccessTrap</event-label>
+      <descr>&lt;p>A sessionDeniedAccess notification signifies that the agent
+entity has refused a session from unauthorized source.
+The pcubeSeEventGenericString1 is the session type 
+(telnet/SSH) and client IP address.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			sessionDeniedAccessTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>42</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/sessionBadLoginTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: sessionBadLoginTrap</event-label>
+      <descr>&lt;p>A sessionBadLogin notification signifies that the agent
+entity has detected attempt to login with a wrong
+password. The pcubeSeEventGenericString1 
+is the session type (telnet/SSH) and client IP address.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			sessionBadLoginTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>43</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/illegalSubscriberMappingTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: illegalSubscriberMappingTrap</event-label>
+      <descr>&lt;p>A illegalSubscriberMappingTrap notification signifies that 
+some external entity has attempted to create illegal or 
+inconsistent subscriber mappings. 
+The pcubeSeEventGenericString1 contains a message 
+describing the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			illegalSubscriberMappingTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			pcubeSeEventGenericString1=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>44</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/loggerLineAttackLogFullTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: loggerLineAttackLogFullTrap</event-label>
+      <descr>&lt;p>Signifies that the agent entity has detected 
+the line-attack log file is full. In such case the 
+agent entity rolls to the next file.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			loggerLineAttackLogFullTrap trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>45</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/vasServerOpertionalStatusChangeTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: vasServerOpertionalStatusChangeTrap</event-label>
+      <descr>&lt;p>Signifies that the agent entity has detected 
+that the vas server operational status has changed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pmoduleIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	vasServerIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	vasServerId&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	vasServerOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		up(2)
+		down(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			vasServerOpertionalStatusChangeTrap trap received 
+			pmoduleIndex=%parm[#1]% 
+			vasServerIndex=%parm[#2]% 
+			vasServerId=%parm[#3]% 
+			vasServerOperStatus=%parm[#4]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>47</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/pullRequestRetryFailedTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: pullRequestRetryFailedTrap</event-label>
+      <descr>&lt;p>Signifies that an unknown subscriber
+wasn't identified after a certain number of pull 
+requests. The value of pcubeSeEventGenericString1 is the
+subscriber id and the pullRequestNumber is the number of
+pull requests made on this sub.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	pcubeSeEventGenericString1&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	pullRequestNumber&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			pullRequestRetryFailedTrap trap received 
+			pcubeSeEventGenericString1=%parm[#1]% 
+			pullRequestNumber=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.5655.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>48</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/pcube/traps/mplsVpnTotalHWMappingsThresholdExceededTrap</uei>
+      <event-label>PCUBE-SE-MIB defined trap event: mplsVpnTotalHWMappingsThresholdExceededTrap</event-label>
+      <descr>&lt;p>Sent when the value of mplsVpnCurrentHWMappings 
+exceeds the allowed threshold.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	mplsVpnCurrentHWMappings&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mplsVpnTotalHWMappingsThresholdExceededTrap trap received 
+			mplsVpnCurrentHWMappings=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+</events>

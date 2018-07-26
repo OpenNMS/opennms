@@ -38,8 +38,10 @@
       %parm[componentType]% %parm[componentName]% was previously impacted due to event %parm[cause]%
       and has been resolved
     </logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" alarm-type="2" clear-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/ncs/componentImpacted:%parm[componentType]%:%parm[componentForeignSource]%:%parm[componentForeignId]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <uei>uei.opennms.org/internal/ncs/componentAdded</uei>

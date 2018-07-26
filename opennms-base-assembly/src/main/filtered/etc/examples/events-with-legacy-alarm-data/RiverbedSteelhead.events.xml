@@ -1,0 +1,1140 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/procCrash</uei>
+      <event-label>STEELHEAD-MIB defined trap event: procCrash</event-label>
+      <descr>&lt;p>A procCrash trap signifies that a process managed by PM
+has crashed and left a core file.  The variable sent with
+the notification indicates which process crashed.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	procName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			procCrash trap received 
+			procName=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/procExit</uei>
+      <event-label>STEELHEAD-MIB defined trap event: procExit</event-label>
+      <descr>&lt;p>A procExit trap signifies that a process managed by PM
+has exited unexpectedly, but not left a core file.
+The variable sent with the notification indicates 
+which process exited.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	procName&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			procExit trap received 
+			procName=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/cpuUtil</uei>
+      <event-label>STEELHEAD-MIB defined trap event: cpuUtil</event-label>
+      <descr>&lt;p>The average CPU utilization in the past minute has gone
+above the acceptable threshold&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cpuUtil trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/pagingActivity</uei>
+      <event-label>STEELHEAD-MIB defined trap event: pagingActivity</event-label>
+      <descr>&lt;p>The system has been paging excessively (thrashing)&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			pagingActivity trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/smartError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: smartError</event-label>
+      <descr>&lt;p>SMART has sent an event about a possible disk error&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			smartError trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/peerVersionMismatch</uei>
+      <event-label>STEELHEAD-MIB defined trap event: peerVersionMismatch</event-label>
+      <descr>&lt;p>Detected a peer with a mismatched software version&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	systemVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			peerVersionMismatch trap received 
+			systemVersion=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/bypassMode</uei>
+      <event-label>STEELHEAD-MIB defined trap event: bypassMode</event-label>
+      <descr>&lt;p>Traffic is being passed through&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			bypassMode trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/raidError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: raidError</event-label>
+      <descr>&lt;p>An error has been generated by the RAID array&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			raidError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/storeCorruption</uei>
+      <event-label>STEELHEAD-MIB defined trap event: storeCorruption</event-label>
+      <descr>&lt;p>The data store is corrupted&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			storeCorruption trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>10</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/admissionMemError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: admissionMemError</event-label>
+      <descr>&lt;p>Memory pressure is high. No additional connections will be
+optimized&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			admissionMemError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/admissionConnError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: admissionConnError</event-label>
+      <descr>&lt;p>Connection limit reached. No additional connections will be
+optimized&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			admissionConnError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/haltError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: haltError</event-label>
+      <descr>&lt;p>The service is halted due to a software error&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			haltError trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/serviceError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: serviceError</event-label>
+      <descr>&lt;p>There has been a non-fatal optimization service error. 
+Please consult the log file&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			serviceError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/scheduledJobError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: scheduledJobError</event-label>
+      <descr>&lt;p>A scheduled job has failed during execution&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			scheduledJobError trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>15</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/confModeEnter</uei>
+      <event-label>STEELHEAD-MIB defined trap event: confModeEnter</event-label>
+      <descr>&lt;p>A user has entered configuration mode&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			confModeEnter trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>16</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/confModeExit</uei>
+      <event-label>STEELHEAD-MIB defined trap event: confModeExit</event-label>
+      <descr>&lt;p>A user has exited configuration mode&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			confModeExit trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/confModeEnter:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>17</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/linkError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: linkError</event-label>
+      <descr>&lt;p>An interface on the appliance has lost its link&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>18</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/nfsV2V4</uei>
+      <event-label>STEELHEAD-MIB defined trap event: nfsV2V4</event-label>
+      <descr>&lt;p>NFS v2/v4 alarm notification&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			nfsV2V4 trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>19</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/powerSupplyError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: powerSupplyError</event-label>
+      <descr>&lt;p>A power supply on the appliance has failed&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyError trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>20</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/asymRouteError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: asymRouteError</event-label>
+      <descr>&lt;p>Asymmetric routes have been detected,certain connections might
+not have been optimized because of this.&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			asymRouteError trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/fanError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: fanError</event-label>
+      <descr>&lt;p>A fan has failed on this appliance&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			fanError trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>22</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/memoryError</uei>
+      <event-label>STEELHEAD-MIB defined trap event: memoryError</event-label>
+      <descr>&lt;p>A memory error has been detected on the appliance&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			memoryError trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>23</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/ipmi</uei>
+      <event-label>STEELHEAD-MIB defined trap event: ipmi</event-label>
+      <descr>&lt;p>An IPMI event has been detected on the appliance. Please check
+the details in the alarm report on the web UI&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ipmi trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>24</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/configChange</uei>
+      <event-label>STEELHEAD-MIB defined trap event: configChange</event-label>
+      <descr>&lt;p>A change has been made to the system's configuration&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			configChange trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>25</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/datastoreWrapped</uei>
+      <event-label>STEELHEAD-MIB defined trap event: datastoreWrapped</event-label>
+      <descr>&lt;p>The datastore has wrapped around&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			datastoreWrapped trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>26</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureWarning</uei>
+      <event-label>STEELHEAD-MIB defined trap event: temperatureWarning</event-label>
+      <descr>&lt;p>The system temperature has exceeded the threshold&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			temperatureWarning trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>27</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureCritical</uei>
+      <event-label>STEELHEAD-MIB defined trap event: temperatureCritical</event-label>
+      <descr>&lt;p>The system temperature has reached a critical stage&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			temperatureCritical trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1003</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/cpuUtilClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: cpuUtilClear</event-label>
+      <descr>&lt;p>The average CPU utilization has fallen back 
+within the acceptable threshold&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			cpuUtilClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/cpuUtil:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1004</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/pagingActivityClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: pagingActivityClear</event-label>
+      <descr>&lt;p>The system has stopped paging excessively (thrashing)&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			pagingActivityClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/pagingActivity:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1006</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/peerVersionMismatchClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: peerVersionMismatchClear</event-label>
+      <descr>&lt;p>All peers are compatible&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	systemVersion&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			peerVersionMismatchClear trap received 
+			systemVersion=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/peerVersionMismatch:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1007</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/bypassModeClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: bypassModeClear</event-label>
+      <descr>&lt;p>Traffic is now being optimized&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			bypassModeClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/bypassMode:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1008</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/raidErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: raidErrorClear</event-label>
+      <descr>&lt;p>A RAID error has been cleared&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			raidErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/raidError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1009</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/storeCorruptionClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: storeCorruptionClear</event-label>
+      <descr>&lt;p>The data store is normal&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			storeCorruptionClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/storeCorruption:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1010</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/admissionMemErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: admissionMemErrorClear</event-label>
+      <descr>&lt;p>Admission control memory alarm has been cleared,
+and the optimization service is running normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			admissionMemErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/admissionMemError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1011</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/admissionConnErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: admissionConnErrorClear</event-label>
+      <descr>&lt;p>Admission control connections alarm has been cleared,
+and the service is running normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			admissionConnErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/admissionConnError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1012</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/haltErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: haltErrorClear</event-label>
+      <descr>&lt;p>The service is now running normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			haltErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/haltError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1013</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/serviceErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: serviceErrorClear</event-label>
+      <descr>&lt;p>The service is now running normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			serviceErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/serviceError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1017</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/linkErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: linkErrorClear</event-label>
+      <descr>&lt;p>An interface on the appliance has regained its link&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			linkErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/linkError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1018</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/nfsV2V4Clear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: nfsV2V4Clear</event-label>
+      <descr>&lt;p>NFS v2/v4 alarm has been cleared&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			nfsV2V4Clear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/nfsV2V4:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1019</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/powerSupplyErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: powerSupplyErrorClear</event-label>
+      <descr>&lt;p>All power supplies are now functioning normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			powerSupplyErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/powerSupplyError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1020</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/asymRouteErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: asymRouteErrorClear</event-label>
+      <descr>&lt;p>All asymmetric routes have expired or have been cleared&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			asymRouteErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/asymRouteError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1021</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/fanErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: fanErrorClear</event-label>
+      <descr>&lt;p>All system fans are now functioning normally&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			fanErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/fanError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1022</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/memoryErrorClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: memoryErrorClear</event-label>
+      <descr>&lt;p>A memory error has been rectified on the appliance&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			memoryErrorClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/memoryError:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1023</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/ipmiClear</uei>
+      <event-label>STEELHEAD-MIB defined trap event: ipmiClear</event-label>
+      <descr>&lt;p>An IPMI event has been rectified on the appliance&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ipmiClear trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/ipmi:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1026</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureNormal</uei>
+      <event-label>STEELHEAD-MIB defined trap event: temperatureNormal</event-label>
+      <descr>&lt;p>The system temperature is back within the threshold&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			temperatureNormal trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureWarning:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.17163.1.1.4</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1027</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureNonCritical</uei>
+      <event-label>STEELHEAD-MIB defined trap event: temperatureNonCritical</event-label>
+      <descr>&lt;p>The system temperature is no longer in a critical stage&lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			temperatureNonCritical trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/riverbed/steelhead/traps/temperatureCritical:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+</events>

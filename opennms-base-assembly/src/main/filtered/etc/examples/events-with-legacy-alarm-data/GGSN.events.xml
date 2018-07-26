@@ -1,0 +1,1343 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~(^(Contact [Ll]ost with)|^([Uu]nsupported [Aa]pplications)).*([Pp]eer)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnContactUnsupported</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnContactUnsupported</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~(^(Contact [Ll]ost with)|^([Uu]nsupported [Aa]pplications)).*([Pp]eer)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnContactUnsupported</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnContactUnsupported</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~^.*\s*([Bb]uffer).*\s([Ff]ull)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnBufferFull</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnBufferFull</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~^.*\s*([Bb]uffer).*\s([Ff]ull)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnBufferFull</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnBufferFull</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~^.*\s*(GGSN lost contact)\s.*(P[RP]S)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnLostContactPRS-PPS</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnLostContactPRS-PPS</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+         <varbind>
+            <vbnumber>8</vbnumber>
+            <vbvalue>~^.*\s*(GGSN lost contact)\s.*(P[RP]S)\s*.*</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnLostContactPRS-PPS</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnLostContactPRS-PPS</event-label>
+      <descr>&lt;p>A trap describing the newly or changed generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapNew</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapNew</event-label>
+      <descr>&lt;p>A trap describing the newly generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapNew</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapNew</event-label>
+      <descr>&lt;p>A trap describing the newly generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapNew</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapNew</event-label>
+      <descr>&lt;p>A trap describing the newly generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapNew</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapNew</event-label>
+      <descr>&lt;p>A trap describing the newly generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapNew</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapNew</event-label>
+      <descr>&lt;p>A trap describing the newly generated event or
+alarm. The text in ggsnTrapDescription indicates 
+the nature of the problem.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapNew trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapChanged</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapChanged</event-label>
+      <descr>&lt;p>A trap indicating a change in some of the alarm or
+event's attributes has occured. The text in
+ggsnTrapDescription indicates the nature
+of the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Critical</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapChanged</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapChanged</event-label>
+      <descr>&lt;p>A trap indicating a change in some of the alarm or
+event's attributes has occured. The text in
+ggsnTrapDescription indicates the nature
+of the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapChanged</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapChanged</event-label>
+      <descr>&lt;p>A trap indicating a change in some of the alarm or
+event's attributes has occured. The text in
+ggsnTrapDescription indicates the nature
+of the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>7</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapChanged</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapChanged</event-label>
+      <descr>&lt;p>A trap indicating a change in some of the alarm or
+event's attributes has occured. The text in
+ggsnTrapDescription indicates the nature
+of the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapChanged</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapChanged</event-label>
+      <descr>&lt;p>A trap indicating a change in some of the alarm or
+event's attributes has occured. The text in
+ggsnTrapDescription indicates the nature
+of the change.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapChanged trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.10923.1.1</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/ggsn/traps/ggsnTrapCleared</uei>
+      <event-label>GGSN-MIB defined trap event: ggsnTrapCleared</event-label>
+      <descr>&lt;p>A trap indicating the clear of the event or alarm.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmId&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSourceId&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectClass&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmObjectInstance&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmSeverity&lt;/b>&lt;/td>&lt;td>
+	%parm[#7]%;&lt;/td>&lt;td>&lt;p>
+		unknown(1)
+		critical(2)
+		major(3)
+		minor(4)
+		warning(5)
+		cleared(6)
+		informational(7)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	ggsnAlarmDescription&lt;/b>&lt;/td>&lt;td>
+	%parm[#8]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			ggsnTrapCleared trap received 
+			ggsnAlarmId=%parm[#1]% 
+			ggsnAlarmName=%parm[#2]% 
+			ggsnAlarmTime=%parm[#3]% 
+			ggsnAlarmSourceId=%parm[#4]% 
+			ggsnAlarmObjectClass=%parm[#5]% 
+			ggsnAlarmObjectInstance=%parm[#6]% 
+			ggsnAlarmSeverity=%parm[#7]% 
+			ggsnAlarmDescription=%parm[#8]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="ggsnAlarmsClear:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]" auto-clean="false"/>
+   </event>
+</events>

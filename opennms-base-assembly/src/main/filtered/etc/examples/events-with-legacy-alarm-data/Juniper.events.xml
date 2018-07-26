@@ -1,0 +1,2298 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemHighMemUtil</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemHighMemUtil</event-label>
+      <descr>&lt;p>Report system memory utilization has met the conditions of
+juniSystemHighMemUtilThreshold.  If the memory capacity is greater than
+2147483647, a -1 value is returned in juniSystemMemCapacity, and the
+actual memory capacity in units of 1024 bytes is returned in
+juniSystemMemKBytesCapacity.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemCapacity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemUtilPct&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemAbatedMemUtilThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemHighMemUtilThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemKBytesCapacity&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemHighMemUtil trap received 
+			juniSystemMemCapacity=%parm[#1]% 
+			juniSystemMemUtilPct=%parm[#2]% 
+			juniSystemAbatedMemUtilThreshold=%parm[#3]% 
+			juniSystemHighMemUtilThreshold=%parm[#4]% 
+			juniSystemMemKBytesCapacity=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemAbatedMemUtil</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemAbatedMemUtil</event-label>
+      <descr>&lt;p>Reports system memory utilization has met the conditions of
+juniSystemAbatedMemUtilThreshold.  If the memory capacity is greater
+than 2147483647, a -1 value is returned in juniSystemMemCapacity, and
+the actual memory capacity in units of 1024 bytes is returned in
+juniSystemMemKBytesCapacity.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemCapacity&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemUtilPct&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemAbatedMemUtilThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemHighMemUtilThreshold&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemMemKBytesCapacity&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemAbatedMemUtil trap received 
+			juniSystemMemCapacity=%parm[#1]% 
+			juniSystemMemUtilPct=%parm[#2]% 
+			juniSystemAbatedMemUtilThreshold=%parm[#3]% 
+			juniSystemHighMemUtilThreshold=%parm[#4]% 
+			juniSystemMemKBytesCapacity=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemModuleOperStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemModuleOperStatusChange</event-label>
+      <descr>&lt;p>Reports a status change for a module.  This trap is generated on a
+transition into a stable state (online or disabled) or on a transition
+out of online.  If redundancy is supported for the module
+(juniSystemModuleRedundancySupported is true(1)), then the
+juniSystemModuleSpareServer and juniSystemModuleAssociatedSlot objects
+are also included in the notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemModuleCurrentType&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		erxSrp(1)
+		erxCt3(2)
+		erxOc3(3)
+		erxUt3Atm(4)
+		erxUt3Frame(5)
+		erxUe3Atm(6)
+		erxUe3Frame(7)
+		erxCe1(8)
+		erxCt1(9)
+		erxDpfe(10)
+		erxOc12Pos(11)
+		erxOc12Atm(12)
+		erxOc3Pos(13)
+		erxOc3Atm(14)
+		erxGe(15)
+		erxFe8(16)
+		erxOc3oc12Pos(17)
+		erxOc3oc12Atm(18)
+		erxCoc3oc12(19)
+		erxCoc3(20)
+		erxCoc12(21)
+		erxOc12Server(22)
+		erxHssi(23)
+		erxGeFe(24)
+		erxCt3P12(25)
+		erxV35(26)
+		erxUt3f12(27)
+		erxUe3f12(28)
+		erxCoc12F3(29)
+		erxCoc3F3(30)
+		erxCocxF3(31)
+		erxVts(32)
+		erxOc48(33)
+		erxUt3Atm4(34)
+		erxHybrid(35)
+		erxOc3AtmGe(36)
+		erxOc3AtmPos(37)
+		erxGe2(38)
+		erxGeHde(39)
+		erxSrpIoa(1024)
+		erxCt1Ioa(1025)
+		erxCe1Ioa(1026)
+		erxCe1TIoa(1027)
+		erxCt3Ioa(1028)
+		erxE3Ioa(1029)
+		erxOc3Mm2Ioa(1030)
+		erxOc3Sm2Ioa(1031)
+		erxOc3Mm4Ioa(1032)
+		erxOc3SmIr4Ioa(1033)
+		erxOc3SmLr4Ioa(1034)
+		erxCOc3Mm4Ioa(1035)
+		erxCOc3SmIr4Ioa(1036)
+		erxCOc3SmLr4Ioa(1037)
+		erxOc12Mm1Ioa(1038)
+		erxOc12SmIr1Ioa(1039)
+		erxOc12SmLr1Ioa(1040)
+		erxCOc12Mm1Ioa(1041)
+		erxCOc12SmIr1Ioa(1042)
+		erxCOc12SmLr1Ioa(1043)
+		erxFe2Ioa(1044)
+		erxFe8Ioa(1045)
+		erxGeMm1Ioa(1046)
+		erxGeSm1Ioa(1047)
+		erxHssiIoa(1048)
+		erxCt3P12Ioa(1049)
+		erxV35Ioa(1050)
+		erxGeSfpIoa(1051)
+		erxUe3P12Ioa(1052)
+		erxT3Atm4Ioa(1053)
+		erxCOc12Mm1ApsIoa(1054)
+		erxCOc12SmIr1ApsIoa(1055)
+		erxCOc12SmLr1ApsIoa(1056)
+		erxOc12Mm1ApsIoa(1057)
+		erxOc12SmIr1ApsIoa(1058)
+		erxOc12SmLr1ApsIoa(1059)
+		erxCOc12AtmPosMm1Ioa(1060)
+		erxCOc12AtmPosSmIr1Ioa(1061)
+		erxCOc12AtmPosSmLr1Ioa(1062)
+		erxCOc12AtmPosMm1ApsIoa(1063)
+		erxCOc12AtmPosSmIr1ApsIoa(1064)
+		erxCOc12AtmPosSmLr1ApsIoa(1065)
+		erxT1E1RedundantIoa(1066)
+		erxT3E3RedundantIoa(1067)
+		erxCt3RedundantIoa(1068)
+		erxOcxRedundantIoa(1069)
+		erxCOcxRedundantIoa(1070)
+		erxOc3Mm4ApsIoa(1071)
+		erxOc3SmIr4ApsIoa(1072)
+		erxOc3SmLr4ApsIoa(1073)
+		erxOc48Ioa(1074)
+		erxOc3Atm2Ge1Ioa(1075)
+		erxOc3Atm2Pos2Ioa(1076)
+		erxGe2Ioa(1077)
+		erxFe8FxIoa(1078)
+		erxGe8Ioa(1079)
+		e320Srp100(2048)
+		e320Sfm100(2049)
+		es2Lm4(2050)
+		es2Lm10Uplink(2051)
+		es2Lm10(2052)
+		e320Srp320(2053)
+		e320Sfm320(2054)
+		e320SrpIoa(3072)
+		es2Ge4S1Ioa(3073)
+		es2Oc48Stm16PosS1Ioa(3074)
+		es2ServiceS1Ioa(3075)
+		es2Oc3Stm1x8AtmS1Ioa(3076)
+		es2RedundancyS1Ioa(3077)
+		es2Oc12Stm4x2PosS1Ioa(3078)
+		es2Oc12Stm4x2AtmS1Ioa(3079)
+		es2dash10GeS1Ioa(3080)
+		es2Ge8S1Ioa(3081)
+		es2dash10GePrS2Ioa(3082)
+		e120Srp120(4096)
+		e120Sfm120(4097)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemModuleAdminStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		disable(0)
+		enable(1)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemModuleOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		notPresent(1)
+		disabled(2)
+		hardwareError(3)
+		booting(4)
+		initializing(5)
+		online(6)
+		standby(7)
+		inactive(8)
+		notResponding(9)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemModuleDisableReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>
+		none(0)
+		unknown(1)
+		assessing(2)
+		admin(3)
+		typeMismatch(4)
+		fabricLimit(5)
+		imageError(6)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemModuleDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemModuleOperStatusChange trap received 
+			juniSystemModuleCurrentType=%parm[#1]% 
+			juniSystemModuleAdminStatus=%parm[#2]% 
+			juniSystemModuleOperStatus=%parm[#3]% 
+			juniSystemModuleDisableReason=%parm[#4]% 
+			juniSystemModuleDescr=%parm[#5]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemPowerStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemPowerStatusChange</event-label>
+      <descr>&lt;p>Reports a change in the status of a power element.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	entPhysicalDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemPowerStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		notPresent(0)
+		inactive(1)
+		good(2)
+		failed(3)
+		sensorFailed(4)
+		unknown(5)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemPowerStatusChange trap received 
+			entPhysicalDescr=%parm[#1]% 
+			juniSystemPowerStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemFanStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+      <descr>&lt;p>Reports a transition between the three states of the fan subsystem.
+When the fan subsystem transitions to the failed state the Thermal
+Protection hold off time begins.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	entPhysicalDescr&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemFanStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		failed(0)
+		ok(1)
+		warning(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemFanStatusChange trap received 
+			entPhysicalDescr=%parm[#1]% 
+			juniSystemFanStatus=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemTempStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>&lt;p>Reports a change in the temperature status.  When the status
+transitions to the tooHigh state the system enters Thermal Protection
+mode.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		unknown(0)
+		failed(1)
+		tooLow(2)
+		nominal(3)
+		tooHigh(4)
+		tooLowWarning(5)
+		tooHighWarning(6)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemTempStatusChange trap received 
+			juniSystemTempStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemTempProtectionStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>&lt;p>Notification about changes in the state of Thermal Protection.  This
+notification is sent when the tempProtectionStatus changes.  It is also
+sent when the holdOffTimeRemaining is 50% of the holdOffTime.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		off(0)
+		monitoring(1)
+		inHoldOff(2)
+		activatedHoldOffExpired(3)
+		activatedTempTooHigh(4)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemTempProtectionStatusChange trap received 
+			juniSystemTempProtectionStatus=%parm[#1]% 
+			juniSystemTempProtectionHoldOffTimeRemaining=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemReloadCommand</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemReloadCommand</event-label>
+      <descr>&lt;p>Notification indicating that a slot or the entire system is about to
+restart due to a system console reload command.  If the reload is only
+on an individual slot then the following object is included in the
+notification:
+    juniSystemReloadSlotNumber &lt;/p>&lt;table>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemReloadCommand trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniSystemUtilizationThreshold</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemUtilizationThreshold</event-label>
+      <descr>&lt;p>Notification indicating that a system resource's utilization has met
+the conditions of juniSystemUtilizationThresholdDirection.  See the
+DESCRIPTIONs for the juniSystemUtilizationTable elements for details on
+what conditions trigger a resource utilization notification.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationThresholdDirection&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		rising(1)
+		falling(2)
+	&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationMaxCapacity&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationCurrentValue&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationThresholdRising&lt;/b>&lt;/td>&lt;td>
+	%parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationThresholdFalling&lt;/b>&lt;/td>&lt;td>
+	%parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniSystemUtilizationHoldDownTime&lt;/b>&lt;/td>&lt;td>
+	%parm[#6]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			Juniper Event: juniSystemUtilizationThreshold trap received 
+			juniSystemUtilizationThresholdDirection=%parm[#1]% 
+			juniSystemUtilizationMaxCapacity=%parm[#2]% 
+			juniSystemUtilizationCurrentValue=%parm[#3]% 
+			juniSystemUtilizationThresholdRising=%parm[#4]% 
+			juniSystemUtilizationThresholdFalling=%parm[#5]% 
+			juniSystemUtilizationHoldDownTime=%parm[#6]%&lt;/p>
+		</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority0</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority1</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority2</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Major</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority3</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Minor</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority4</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority5</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>6</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority6</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>7</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlertPriority7</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Normal</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.30</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniCliSecurityAlert</uei>
+      <event-label>Juniper-CLI-MIB defined trap event: juniCliSecurityAlert</event-label>
+      <descr>Reports a cli security alert. Events such as the following
+	generate this notification when it is enabled: Logins/logouts from
+	telnet or console access, Logins/logout from SSH, Access from
+	unknown IP addreses, Access list accept or failures, Successful and
+	unsuccessful authentications.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertPriority&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>off(-1) emergency(0) alert(1) critical(2) error(3) warning(4) notice(5) info(6) debug(7) &lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertMessage&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniCliSecurityAlertTime&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper CLI Security Alert: %parm[#2]%.</logmsg>
+      <severity>Indeterminate</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerUnavailable</event-label>
+      <descr>This trap will be generated when the requested authentication server is not available.&lt;table>
+	&lt;tr>&lt;td>&lt;b>UnavailableServer&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>NextAvailableServer&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: RADIUS authentication server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientNoServerAvailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientNoServerAvailable</event-label>
+      <descr>This trap will be generated when all of the requested servers were not available.</descr>
+      <logmsg dest="logndisplay">Juniper Event: No RADIUS authentication server available.</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerUnavailable</event-label>
+      <descr>This trap will be generated when the requested accounting server is not available.&lt;table>
+	&lt;tr>&lt;td>&lt;b>UnavailableServer&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>NextAvailableServer&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: RADIUS accounting server %parm[#1]% unavailable, next available server %parm[#2]%.</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientNoServerAvailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientNoServerAvailable</event-label>
+      <descr>This trap will be generated when all of the requested servers were not available.</descr>
+      <logmsg dest="logndisplay">Juniper Event: No RADIUS accounting server available.</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerAvailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAuthClientServerAvailable</event-label>
+      <descr>This trap will be generated when the requested authentication server becomes available again after a period of time.&lt;table>
+	&lt;tr>&lt;td>&lt;b>AvailableServer&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: RADIUS authentication server %parm[#1]% available.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAuthClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.19.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerAvailable</uei>
+      <event-label>Juniper-RADIUS-CLIENT-MIB defined trap event: juniRadiusAcctClientServerAvailable</event-label>
+      <descr>This trap will be generated when the requested accounting server becomes available again after a period of time.&lt;table>
+	&lt;tr>&lt;td>&lt;b>AvailableServer&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: RADUS accounting server %parm[#1]% available.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniRadiusAcctClientServerUnavailable:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemHighMemUtil</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemHighMemUtil</event-label>
+      <descr>Report system memory utilization has met the conditions of
+	juniSystemHighMemUtilThreshold. If the memory capacity is greater
+	than 2147483647, a -1 value is returned in juniSystemMemCapacity,
+	and the actual memory capacity in units of 1024 bytes is returned in
+	juniSystemMemKBytesCapacity.&lt;table>
+	&lt;tr>&lt;td>&lt;b>MemCapacity&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>MemUtilPct&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>AbatedMemUtilThreshold&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>HighMemUtilThreshold&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>MemKBytesCapacity&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: High Memory Utilization MemCapacity=%parm[#1]% MemUtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% MemKBytesCapacity=%parm[#5]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemAbatedMemUtil</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemAbatedMemUtil</event-label>
+      <descr>Reports system memory utilization has met the conditions of
+	juniSystemAbatedMemUtilThreshold.  If the memory capacity is greater
+	than 2147483647, a -1 value is returned in juniSystemMemCapacity,
+	and the actual memory capacity in units of 1024 bytes is returned in
+	juniSystemMemKBytesCapacity.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemMemCapacity&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemMemUtilPct&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemAbatedMemUtilThreshold&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemHighMemUtilThreshold&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemMemKBytesCapacity&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: System Memory utilization abated. Capacity=%parm[#1]% UtilPct=%parm[#2]% AbatedMemUtilThreshold=%parm[#3]% HighMemUtilThreshold=%parm[#4]% KBytesCapacity=%parm[#5]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemHighMemUtil:%dpname%:%nodeid%:%interface%" alarm-type="2" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemModuleOperStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemModuleOperStatusChange</event-label>
+      <descr>Reports a status change for a module.  This trap is generated
+	on a transition into a stable state (online or disabled) or on a
+	transition out of online.  If redundancy is supported for the module
+	(juniSystemModuleRedundancySupported is true(1)), then the
+	juniSystemModuleSpareServer and juniSystemModuleAssociatedSlot
+	objects are also included in the notification.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemModuleCurrentType&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) erxSrp(1) erxCt3(2) erxOc3(3) erxUt3Atm(4) erxUt3Frame(5) erxUe3Atm(6) erxUe3Frame(7) erxCe1(8) erxCt1(9) erxDpfe(10) erxOc12Pos(11) erxOc12Atm(12) erxOc3Pos(13) erxOc3Atm(14) erxGe(15) erxFe8(16) erxOc3oc12Pos(17) erxOc3oc12Atm(18) erxCoc3oc12(19) erxCoc3(20) erxCoc12(21) erxOc12Server(22) erxHssi(23) erxGeFe(24) erxCt3P12(25) erxV35(26) erxUt3f12(27) erxUe3f12(28) erxCoc12F3(29) erxCoc3F3(30) erxCocxF3(31) erxVts(32) erxOc48(33) erxUt3Atm4(34) erxHybrid(35) erxOc3AtmGe(36) erxOc3AtmPos(37) erxGe2(38) erxGeHde(39) erxSrpIoa(1024) erxCt1Ioa(1025) erxCe1Ioa(1026) erxCe1TIoa(1027) erxCt3Ioa(1028) erxE3Ioa(1029) erxOc3Mm2Ioa(1030) erxOc3Sm2Ioa(1031) erxOc3Mm4Ioa(1032) erxOc3SmIr4Ioa(1033) erxOc3SmLr4Ioa(1034) erxCOc3Mm4Ioa(1035) erxCOc3SmIr4Ioa(1036) erxCOc3SmLr4Ioa(1037) erxOc12Mm1Ioa(1038) erxOc12SmIr1Ioa(1039) erxOc12SmLr1Ioa(1040) erxCOc12Mm1Ioa(1041) erxCOc12SmIr1Ioa(1042) erxCOc12SmLr1Ioa(1043) erxFe2Ioa(1044) erxFe8Ioa(1045) erxGeMm1Ioa(1046) erxGeSm1Ioa(1047) erxHssiIoa(1048) erxCt3P12Ioa(1049) erxV35Ioa(1050) erxGeSfpIoa(1051) erxUe3P12Ioa(1052) erxT3Atm4Ioa(1053) erxCOc12Mm1ApsIoa(1054) erxCOc12SmIr1ApsIoa(1055) erxCOc12SmLr1ApsIoa(1056) erxOc12Mm1ApsIoa(1057) erxOc12SmIr1ApsIoa(1058) erxOc12SmLr1ApsIoa(1059) erxCOc12AtmPosMm1Ioa(1060) erxCOc12AtmPosSmIr1Ioa(1061) erxCOc12AtmPosSmLr1Ioa(1062) erxCOc12AtmPosMm1ApsIoa(1063) erxCOc12AtmPosSmIr1ApsIoa(1064) erxCOc12AtmPosSmLr1ApsIoa(1065) erxT1E1RedundantIoa(1066) erxT3E3RedundantIoa(1067) erxCt3RedundantIoa(1068) erxOcxRedundantIoa(1069) erxCOcxRedundantIoa(1070) erxOc3Mm4ApsIoa(1071) erxOc3SmIr4ApsIoa(1072) erxOc3SmLr4ApsIoa(1073) erxOc48Ioa(1074) erxOc3Atm2Ge1Ioa(1075) erxOc3Atm2Pos2Ioa(1076) erxGe2Ioa(1077) erxFe8FxIoa(1078) erxGe8Ioa(1079) e320Srp100(2048) e320Sfm100(2049) es2Lm4(2050) es2Lm10Uplink(2051) e320SrpIoa(3072) es2Ge4S1Ioa(3073) es2Oc48Stm16PosS1Ioa(3074) es2ServiceS1Ioa(3075) es2Oc3Stm1x8AtmS1Ioa(3076) es2RedundancyS1Ioa(3077) es2Oc12Stm4x2PosS1Ioa(3078) es2Oc12Stm4x2AtmS1Ioa(3079) es2dash10GeS1Ioa(3080) es2Ge8S1Ioa(3081) es2dash10GePrS2Ioa(3082) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemModuleAdminStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemModuleOperStatus&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>unknown(0) notPresent(1) disabled(2) hardwareError(3) booting(4) initializing(5) online(6) standby(7) inactive(8) notResponding(9) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemModuleDisableReason&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p>none(0) unknown(1) assessing(2) admin(3) typeMismatch(4) fabricLimit(5) imageError(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemModuleDescr&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Module Operational Status Change. CurrentType=%parm[#1]% AdminStatus=%parm[#2]% OperStatus=%parm[#3]% DisableReason=%parm[#4]% Descr=%parm[#5]%</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemPowerStatusChangeGood</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemPowerStatusChange</event-label>
+      <descr>Reports a change in the status of a power element.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemPowerStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>notPresent(0) inactive(1) good(2) failed(3) sensorFailed(4) unknown(5)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemPowerStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemPowerStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemPowerStatusChange</event-label>
+      <descr>Reports a change in the status of a power element.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemPowerStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>notPresent(0) inactive(1) good(2) failed(3) sensorFailed(4) unknown(5)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Power Status Change. entPhysicalDescr=%parm[#1]% PowerStatus=%parm[#2]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChangeOk</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+      <descr>Reports a transition between the three states of the fan
+	subsystem.  When the fan subsystem transitions to the failed state
+	the Thermal Protection hold off time begins.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemFanStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>failed(0) ok(1) warning(2)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChangeFailed</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+      <descr>Reports a transition between the three states of the fan
+	subsystem.  When the fan subsystem transitions to the failed state
+	the Thermal Protection hold off time begins.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemFanStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>failed(0) ok(1) warning(2)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>2</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChangeWarning</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+      <descr>Reports a transition between the three states of the fan
+	subsystem.  When the fan subsystem transitions to the failed state
+	the Thermal Protection hold off time begins.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemFanStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>failed(0) ok(1) warning(2)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemFanStatusChange</event-label>
+      <descr>Reports a transition between the three states of the fan
+	subsystem.  When the fan subsystem transitions to the failed state
+	the Thermal Protection hold off time begins.&lt;table>
+	&lt;tr>&lt;td>&lt;b>entPhysicalDescr&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemFanStatus&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>failed(0) ok(1) warning(2)&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Fan Status Change. entPhysicalDescr=%parm[#1]% FanStatus=%parm[#2]%</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemFanStatusChange:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeNominal</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeFailed</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeTooLow</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeTooHigh</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeTooLowWarning</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>5</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChangeTooHighWarning</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempStatusChange</event-label>
+      <descr>Reports a change in the temperature status.  When the status
+	transitions to the tooHigh state the system enters Thermal
+	Protection mode.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>unknown(0) failed(1) tooLow(2) nominal(3) tooHigh(4) tooLowWarning(5) tooHighWarning(6) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Status Change. Status=%parm[#1]%</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChangeMonitoring</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>0</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChangeOff</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChangeInHoldOff</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChangeActHoldOffExpired</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>4</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChangeActTempTooHigh</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemTempProtectionStatusChange</event-label>
+      <descr>Notification about changes in the state of Thermal
+	Protection. This notification is sent when the tempProtectionStatus
+	changes. It is also sent when the holdOffTimeRemaining is 50% of
+	the holdOffTime.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionStatus&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>off(0) monitoring(1) inHoldOff(2) activatedHoldOffExpired(3) activatedTempTooHigh(4) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniSystemTempProtectionHoldOffTimeRemaining&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Temperature Protection Status Change. Status=%parm[#1]% ProtectionHoldOffTimeRemaining=%parm[#2]%</logmsg>
+      <severity>Indeterminate</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/juniper/traps/juniSystemTempProtectionStatusChange:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemReloadCommand</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemReloadCommand</event-label>
+      <descr>Notification indicating that a slot or the entire system is
+	about to restart due to a system console reload command. If the
+	reload is only on an individual slot then the following object is
+	included in the notification: juniSystemReloadSlotNumber</descr>
+      <logmsg dest="logndisplay">Juniper Event: Reload command issued.</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdRising</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemUtilizationThresholdRising</event-label>
+      <descr>Notification indicating that a system resource's utilization
+	threshold direction is 'rising'. See the DESCRIPTIONs for the
+	juniSystemUtilizationTable elements for details on what conditions
+	trigger a resource utilization notification.&lt;table>
+	&lt;tr>&lt;td>&lt;b>MaxCapacity&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>CurrentValue&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>ThresholdRising&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>ThresholdFalling&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>HoldDownTime&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: System Utilization Threshold rising. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>9</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdFalling</uei>
+      <event-label>Juniper-System-MIB defined trap event: juniSystemUtilizationThresholdFalling</event-label>
+      <descr>Notification indicating that a system resource's utilization
+	threshold direction is 'falling'. See the DESCRIPTIONs for the
+	juniSystemUtilizationTable elements for details on what conditions
+	trigger a resource utilization notification.&lt;table>
+	&lt;tr>&lt;td>&lt;b>MaxCapacity&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>CurrentValue&lt;/b>&lt;/td>&lt;td>%parm[#3]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>ThresholdRising&lt;/b>&lt;/td>&lt;td>%parm[#4]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>ThresholdFalling&lt;/b>&lt;/td>&lt;td>%parm[#5]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>HoldDownTime&lt;/b>&lt;/td>&lt;td>%parm[#6]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: System Utilization Threshold falling. Max=%parm[#2]% Current=%parm[#3]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniSystemUtilizationThresholdRising:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpFrequencyCalibrationStart</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpFrequencyCalibrationStart</event-label>
+      <descr>This trap will be generated at the start of frequency synchronization.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockFrequencyError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: NTP Frequency Calibration Start, Error %parm[#1]%s.</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpFrequencyCalibrationEnd</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpFrequencyCalibrationEnd</event-label>
+      <descr>This trap will be generated when frequency synchronization completes successfully.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockFrequencyError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: NTP Frequency Calibration End, Error %parm[#1]%s.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpFrequencyCalibrationStart:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpTimeSynUp</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpTimeSynUp</event-label>
+      <descr>This trap indicates that some kind of time synchronization
+	has started. This trap will be generated at the start of time
+	synchronization with the configured time servers irrespective of
+	whether time synchronization is done with all the configured time
+	servers or any one of them (there may be reachability or other
+	problems) when NTP is enabled on the router.</descr>
+      <logmsg dest="logndisplay">Juniper Event: Time Synchronisation Up.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeSynDown:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpTimeSynDown</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpTimeSynDown</event-label>
+      <descr>This trap will be generated when the NTP client is not able
+	to time synchronize with any of the configured time servers for any
+	reasons when NTP is enabled on the router.</descr>
+      <logmsg dest="logndisplay">Juniper Event: Time Synchronisation Down.</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpTimeServerSynUp</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpTimeServerSynUp</event-label>
+      <descr>This trap will be generated to report the time
+	synchronization status of each configured time server on the router
+	when it starts time synchronization with the NTP
+	client.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpPeerCfgIsPreferred&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>true(1) false(2) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Time Server Synchronisation Up.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniNtpTimeServerSynDown:%dpname%:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpTimeServerSynDown</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpTimeServerSynDown</event-label>
+      <descr>This trap will be generated to report the time
+	synchronization status of each configured time server on the router
+	when it stops time synchronization with the NTP client for any
+	reasons.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpPeerCfgIsPreferred&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>true(1) false(2) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Time Server Synchronisation Down.</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpFirstSystemClockSet</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpFirstSystemClockSet</event-label>
+      <descr>This trap will be generated to report when the system clock
+	offset error is set for the first time from the good time sample
+	taken, enabling the time synchronization.  This is usually the case
+	after a system reboot.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockOffsetError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>neverFrequencyCalibrated(0) frequencyCalibrated(1) setToServerTime(2) frequencyCalibrationIsGoingOn(3) synchronized(4) spikeDetected(5) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: First Time System Clock Set.</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.56.2</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniNtpClockOffSetLimitCrossed</uei>
+      <event-label>Juniper-System-Clock-MIB defined trap event: juniNtpClockOffSetLimitCrossed</event-label>
+      <descr>This trap will be generated whenever the system clock's
+	offset error is more than 15 minutes.  This is an indication that
+	something is not set properly, since an offset of 15 minutes is not
+	considered to be a normal offset error compared to the accuracy of
+	the time servers and system clock.  For example, it may indicate an
+	improper setting of the timezone.&lt;table>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockOffsetError&lt;/b>&lt;/td>&lt;td>%parm[#1]%&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>juniNtpSysClockState&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p>neverFrequencyCalibrated(0) frequencyCalibrated(1) setToServerTime(2) frequencyCalibrationIsGoingOn(3) synchronized(4) spikeDetected(5) &lt;/p>&lt;/td>&lt;/tr>
+	&lt;/table></descr>
+      <logmsg dest="logndisplay">Juniper Event: Clock Offset Limit Crossed by %parm[#1]%s.</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei:%dpname%:%nodeid%:%interface%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil</uei>
+      <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolHighAddrUtil</event-label>
+      <descr>&lt;p>Reports address pool utilization has reached the configured high
+utilization threshold.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniRouterName&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolName&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolSize&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolInUse&lt;/b>&lt;/td>&lt;td>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+        
+        juniAddressPoolUtilPct&lt;/b>&lt;/td>&lt;td>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+                        juniAddressPoolHighAddrUtil trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]% 
+                        juniAddressPoolInUse=%parm[#4]% 
+                        juniAddressPoolUtilPct=%parm[#5]%&lt;/p>
+                </logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolAbatedAddrUtil</uei>
+      <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolAbatedAddrUtil</event-label>
+      <descr>&lt;p>Reports address pool utilization has fallen to the configured abated
+threshold level.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniRouterName&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolName&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolSize&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolInUse&lt;/b>&lt;/td>&lt;td>
+        %parm[#4]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolUtilPct&lt;/b>&lt;/td>&lt;td>
+        %parm[#5]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+                        juniAddressPoolAbatedAddrUtil trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]% 
+                        juniAddressPoolInUse=%parm[#4]% 
+                        juniAddressPoolUtilPct=%parm[#5]%&lt;/p>
+                </logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/juniper/traps/juniAddressPoolHighAddrUtil:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.21.3</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/juniper/traps/juniAddressPoolNoAddresses</uei>
+      <event-label>Juniper-ADDRESS-POOL-MIB defined trap event: juniAddressPoolNoAddresses</event-label>
+      <descr>&lt;p>Reports address pool has exhausted its supply of addresses.  This trap
+is issued every time a request is made to allocate an address from a
+fully utilized pool.&lt;/p>&lt;table>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniRouterName&lt;/b>&lt;/td>&lt;td>
+        %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolName&lt;/b>&lt;/td>&lt;td>
+        %parm[#2]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+        &lt;tr>&lt;td>&lt;b>
+
+        juniAddressPoolSize&lt;/b>&lt;/td>&lt;td>
+        %parm[#3]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+                        juniAddressPoolNoAddresses trap received 
+                        juniRouterName=%parm[#1]% 
+                        juniAddressPoolName=%parm[#2]% 
+                        juniAddressPoolSize=%parm[#3]%&lt;/p>
+                </logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyColdSwitchoverNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyColdSwitchoverNotification</event-label>
+      <descr>&lt;p>This notification is generated in a dual SRP system when control transfers from one to SRP to the other in file system synchronization mode or when high availability is not operational.  This notification is sent by the newly active SRP immediately following the switchover in which configuration is preserved but volatile state is lost.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyLastResetReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		notKnown(2)
+		userInitiated(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyColdSwitchoverNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyLastResetReason=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="none"/>
+         <decode varbindvalue="2" varbinddecodedstring="notKnown"/>
+         <decode varbindvalue="3" varbinddecodedstring="userInitiated"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyWarmSwitchoverNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyWarmSwitchoverNotification</event-label>
+      <descr>&lt;p>This notification is generated in a dual SRP system when control transfers from one SRP to the other and high availability is operational.  This notification is sent by the newly active SRP immediately following the switchover in which configuration and volatile state are preserved.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyLastResetReason&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		none(1)
+		notKnown(2)
+		userInitiated(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyWarmSwitchoverNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyLastResetReason=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="none"/>
+         <decode varbindvalue="2" varbinddecodedstring="notKnown"/>
+         <decode varbindvalue="3" varbinddecodedstring="userInitiated"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateEnabledNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStateEnabledNotification</event-label>
+      <descr>&lt;p>A state change notification sent by active SRP whenever system enters 'active' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyStateEnabledNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStateDisabledNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStateDisabledNotification</event-label>
+      <descr>&lt;p>A state change notification sent by active SRP whenever system enters 'disabled' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyStateDisabledNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyStatePendingNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyStatePendingNotification</event-label>
+      <descr>&lt;p>A state change notification sent by active SRP whenever system enters 'pending' state.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyStatePendingNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%&lt;/p>
+	</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.4874.2.2.74</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/Juniper/traps/juniRedundancyModeNotification</uei>
+      <event-label>Juniper-REDUNDANCY-MIB defined trap event: juniRedundancyModeNotification</event-label>
+      <descr>&lt;p>A mode change notification sent by active SRP whenever redundancy mode of the system is changed from 'fileSystemSynchronization' to 'highAvailability'
+and vice versa.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyActiveSlot&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	juniRedundancyCfgRedundancyMode&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p>
+		fileSystemSynchronization(1)
+		highAvailability(2)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+	juniRedundancyModeNotification trap received
+	juniRedundancyActiveSlot=%parm[#1]%
+	juniRedundancyCfgRedundancyMode=%parm[#2]%&lt;/p>
+	</logmsg>
+      <severity>Minor</severity>
+      <varbindsdecode>
+         <parmid>parm[#2]</parmid>
+         <decode varbindvalue="1" varbinddecodedstring="fileSystemSynchronization"/>
+         <decode varbindvalue="2" varbinddecodedstring="highAvailability"/>
+      </varbindsdecode>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" alarm-type="3" auto-clean="false"/>
+   </event>
+</events>

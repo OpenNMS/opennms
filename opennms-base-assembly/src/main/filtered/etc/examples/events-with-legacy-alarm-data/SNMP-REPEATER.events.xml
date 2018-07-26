@@ -1,0 +1,329 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrHealth</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrHealth</event-label>
+      <descr>&lt;p>********* THIS OBJECT IS DEPRECATED **********
+
+In a system containing a single managed repeater,
+the rptrHealth notification conveys information
+related to the operational status of the repeater.
+It is sent either when the value of
+rptrOperStatus changes, or upon completion of a
+non-disruptive test.
+
+The rptrHealth notification must contain the
+rptrOperStatus object.  The agent may optionally
+include the rptrHealthText object in the varBind
+list.  See the rptrOperStatus and rptrHealthText
+objects for descriptions of the information that
+is sent.
+
+The agent must throttle the generation of
+consecutive rptrHealth traps so that there is at
+least a five-second gap between traps of this
+type.  When traps are throttled, they are dropped,
+not queued for sending at a future time.  (Note
+that 'generating' a trap means sending to all
+configured recipients.)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		ok(2)
+		rptrFailure(3)
+		groupFailure(4)
+		portFailure(5)
+		generalFailure(6)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrHealth trap received 
+			rptrOperStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrGroupChange</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrGroupChange</event-label>
+      <descr>&lt;p>********* THIS OBJECT IS DEPRECATED **********
+
+In a system containing a single managed repeater,
+this notification is sent when a change occurs in the
+group structure of the repeater.  This occurs only
+when a group is logically or physically removed
+from or added to a repeater.  The varBind list
+contains the identifier of the group that was
+removed or added.
+
+The agent must throttle the generation of
+consecutive rptrGroupChange traps for the same
+group so that there is at least a five-second gap
+between traps of this type.  When traps are
+throttled, they are dropped, not queued for
+sending at a future time.  (Note that 'generating'
+a trap means sending to all configured
+recipients.)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrGroupIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrGroupChange trap received 
+			rptrGroupIndex=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrResetEvent</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrResetEvent</event-label>
+      <descr>&lt;p>********* THIS OBJECT IS DEPRECATED **********
+
+In a system containing a single managed repeater-unit,
+the rptrResetEvent notification conveys information
+related to the operational status of the repeater.
+This trap is sent on completion of a repeater
+reset action.  A repeater reset action is defined
+as an a transition to the START state of Fig 9-2
+in section 9 [IEEE 802.3 Std], when triggered by a
+management command (e.g., an SNMP Set on the
+rptrReset object).
+
+The agent must throttle the generation of
+consecutive rptrResetEvent traps so that there is
+at least a five-second gap between traps of this
+type.  When traps are throttled, they are dropped,
+not queued for sending at a future time.  (Note
+that 'generating' a trap means sending to all
+configured recipients.)
+
+The rptrResetEvent trap is not sent when the agent
+restarts and sends an SNMP coldStart or warmStart
+trap.  However, it is recommended that a repeater
+agent send the rptrOperStatus object as an
+optional object with its coldStart and warmStart
+trap PDUs.
+
+The rptrOperStatus object must be included in the
+varbind list sent with this trap.  The agent may
+optionally include the rptrHealthText object as
+well.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		ok(2)
+		rptrFailure(3)
+		groupFailure(4)
+		portFailure(5)
+		generalFailure(6)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrResetEvent trap received 
+			rptrOperStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>1</vbvalue>
+            <vbvalue>3</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrInfoHealth</event-label>
+      <descr>&lt;p>In a system containing multiple managed repeaters,
+the rptrInfoHealth notification conveys information
+related to the operational status of a repeater.
+It is sent either when the value of rptrInfoOperStatus
+changes, or upon completion of a non-disruptive test.
+
+The agent must throttle the generation of
+consecutive rptrInfoHealth notifications for
+the same repeater so that there is at least
+a five-second gap between notifications of this type.
+When notifications are throttled, they are dropped,
+not queued for sending at a future time.  (Note
+that 'generating' a notification means sending
+to all configured recipients.)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrInfoOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		ok(2)
+		failure(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrInfoHealth trap received 
+			rptrInfoOperStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>4</mevalue>
+         </maskelement>
+         <varbind>
+            <vbnumber>1</vbnumber>
+            <vbvalue>2</vbvalue>
+         </varbind>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthOk</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrInfoHealth</event-label>
+      <descr>&lt;p>In a system containing multiple managed repeaters,
+the rptrInfoHealth notification conveys information
+related to the operational status of a repeater.
+It is sent either when the value of rptrInfoOperStatus
+changes, or upon completion of a non-disruptive test.
+
+The agent must throttle the generation of
+consecutive rptrInfoHealth notifications for
+the same repeater so that there is at least
+a five-second gap between notifications of this type.
+When notifications are throttled, they are dropped,
+not queued for sending at a future time.  (Note
+that 'generating' a notification means sending
+to all configured recipients.)&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrInfoOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		ok(2)
+		failure(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrInfoHealth trap received 
+			rptrInfoOperStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure:%dpname%:%nodeid%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.2.1.22</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/standard/rfc2108/traps/rptrInfoResetEvent</uei>
+      <event-label>SNMP-REPEATER-MIB defined trap event: rptrInfoResetEvent</event-label>
+      <descr>&lt;p>In a system containing multiple managed
+repeaters, the rptrInfoResetEvent notification
+conveys information related to the operational
+status of a repeater. This notification is sent
+on completion of a repeater reset action.  A
+repeater reset action is defined as a transition
+to the START state of Fig 9-2 in section 9 of
+[IEEE 802.3 Std], when triggered by a management
+command (e.g., an SNMP Set on the rptrInfoReset
+object).
+
+The agent must throttle the generation of
+consecutive rptrInfoResetEvent notifications for
+a single repeater so that there is at least
+a five-second gap between notifications of
+this type.  When notifications are throttled,
+they are dropped, not queued for sending at
+a future time.  (Note that 'generating' a
+notification means sending to all configured
+recipients.)
+
+The rptrInfoResetEvent is not sent when the
+agent restarts and sends an SNMP coldStart or
+warmStart trap.  However, it is recommended that
+a repeater agent send the rptrInfoOperStatus
+object as an optional object with its coldStart
+and warmStart trap PDUs.&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	rptrInfoOperStatus&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p>
+		other(1)
+		ok(2)
+		failure(3)
+	&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			rptrInfoResetEvent trap received 
+			rptrInfoOperStatus=%parm[#1]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="3" auto-clean="true"/>
+   </event>
+</events>

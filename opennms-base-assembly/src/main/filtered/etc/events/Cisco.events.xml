@@ -2610,8 +2610,10 @@
  connectivityError(6) initializationError(7)&lt;/p>
  &lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: Gateway has failed to communicate with Call Manager.&lt;/p></logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayFailed:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayFailed:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -2763,8 +2765,10 @@
  unknown(1) up(2) down(3)&lt;/p>
  &lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: Call Manager Skinny Gateway has changed state,&lt;/p></logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayLayer2Change:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/ccmGatewayLayer2Change:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%:%parm[#4]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -3440,8 +3444,10 @@
  &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;tr>&lt;td>&lt;b>
  ciscoDlswTConnOperRemoteTAddr&lt;/b>&lt;/td>&lt;td>%parm[#2]%&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: DLSW Transport Connection now connected.&lt;/p></logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/ciscoDlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/ciscoDlswTrapTConnDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -4158,7 +4164,9 @@
  &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: FRU Inserted.&lt;/p></logmsg>
       <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%" clear-key="uei.opennms.org/vendor/Cisco/traps/cefcFRURemoved:%dpname%:%nodeid%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/cefcFRURemoved:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -8413,8 +8421,10 @@
  fddimibPORTIndex&lt;/b>&lt;/td>&lt;td>%parm[#2]%
  &lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: STACK FDDI LER Alarm off.&lt;/p></logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/lerAlarmOn:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/lerAlarmOn:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -8609,8 +8619,10 @@ Up.&lt;/p></logmsg>
  off(1) on(2)&lt;/p>
  &lt;/td;>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>Cisco Event: STACK Chassis Alarm Off.&lt;/p></logmsg>
-      <severity>Normal</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/vendor/Cisco/traps/chassisAlarmOn:%dpname%:%nodeid%" auto-clean="true"/>
+      <severity>Cleared</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Cisco/traps/chassisAlarmOn:%dpname%:%nodeid%" auto-clean="true">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>
@@ -14367,7 +14379,9 @@ when the port comes out of blocking&lt;/p>&lt;table>
             This was for ifIndex: %parm[#1]%, ifDescr: %parm[#2]%.&lt;/p></descr>
       <logmsg dest="logndisplay">Cisco Link Up Trap: %parm[#2]%, ifIndex: %parm[#1]%.</logmsg>
       <severity>Cleared</severity>
-      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" clear-key="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%"/>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/cisco/traps/SNMP_Link_Down:%dpname%:%nodeid%:%interface%:%parm[#1]%">
+        <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
    </event>
    <event>
       <mask>

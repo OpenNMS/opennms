@@ -1,0 +1,537 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001302</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpCardInserted</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpCardInserted</event-label>
+      <descr>&lt;p>A card has been inserted into the chassis&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpCardInserted trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]% 
+			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001303</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpCardRemoved</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpCardRemoved</event-label>
+      <descr>&lt;p>A card has been removed from the chassis&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpCardRemoved trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]% 
+			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="3" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001305</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpBlownFuse</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpBlownFuse</event-label>
+      <descr>&lt;p>Blown Fuse Alarm is active on module&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpBlownFuse trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]% 
+			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001308</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlmClear</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpRmtAlmClear</event-label>
+      <descr>&lt;p>Remote Input Alarm clear&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpRmtAlmClear trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001309</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpRmtAlm</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpRmtAlm</event-label>
+      <descr>&lt;p>Remote Input Alarm active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpRmtAlm trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001310</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpExt1AlmClear</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpExt1AlmClear</event-label>
+      <descr>&lt;p>External Input #1 Alarm clear&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpExt1AlmClear trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001311</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpExt1Alm</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpExt1Alm</event-label>
+      <descr>&lt;p>External Input #1 Alarm active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpExt1Alm trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001312</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpExt2AlmClear</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpExt2AlmClear</event-label>
+      <descr>&lt;p>External Input #2 Alarm clear&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpExt2AlmClear trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001313</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpExt2Alm</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpExt2Alm</event-label>
+      <descr>&lt;p>External Input #2 Alarm active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpExt2Alm trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001314</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpBusApwrAlmClear</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpBusApwrAlmClear</event-label>
+      <descr>&lt;p>Bus A Power Failure Alarm clear&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpBusApwrAlmClear trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001315</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpBusApowerAlm</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpBusApowerAlm</event-label>
+      <descr>&lt;p>Bus A Power Failure Alarm active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpBusApowerAlm trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001316</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpBusBpwrAlmClear</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpBusBpwrAlmClear</event-label>
+      <descr>&lt;p>Bus B Power Failure Alarm clear&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpBusBpwrAlmClear trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm:%dpname%:%nodeid%:%interface%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001317</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpBusBpowerAlm</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpBusBpowerAlm</event-label>
+      <descr>&lt;p>Bus B Power Failure Alarm active&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpBusBpowerAlm trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]%&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001318</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpInService</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpInService</event-label>
+      <descr>&lt;p>A card has entered the In-Service state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpInService trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]% 
+			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="2" clear-key="uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService:%dpname%:%nodeid%:%interface%:%parm[#3]%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.664.5.13</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1001319</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/adtran/traps/adCtrpOutOfService</uei>
+      <event-label>ADTRAN-GENCHASSISTRAP-MIB defined trap event: adCtrpOutOfService</event-label>
+      <descr>&lt;p>A card has entered the Out-Of-Service state&lt;/p>&lt;table>
+	&lt;tr>&lt;td>&lt;b>
+
+	adTrapInformSeqNum&lt;/b>&lt;/td>&lt;td>
+	%parm[#1]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	sysName&lt;/b>&lt;/td>&lt;td>
+	%parm[#2]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>
+	&lt;tr>&lt;td>&lt;b>
+
+	adGenSlotInfoIndex&lt;/b>&lt;/td>&lt;td>
+	%parm[#3]%;&lt;/td>&lt;td>&lt;p;>&lt;/p>&lt;/td;>&lt;/tr>&lt;/table></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			adCtrpOutOfService trap received 
+			adTrapInformSeqNum=%parm[#1]% 
+			sysName=%parm[#2]% 
+			adGenSlotInfoIndex=%parm[#3]%&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%dpname%:%nodeid%:%interface%:%parm[#3]%" alarm-type="1" auto-clean="true"/>
+   </event>
+</events>

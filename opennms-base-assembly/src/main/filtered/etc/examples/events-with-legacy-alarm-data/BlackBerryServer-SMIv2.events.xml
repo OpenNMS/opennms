@@ -1,0 +1,1009 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>1</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besSRPConnectEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besSRPConnectEvent</event-label>
+      <descr>&lt;p>SRPConnect state.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besSRPConnectEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent:%nodeid%:%dpname%" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>2</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besSRPDisconnectEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined (interpolated) trap event: besSRPDisconnectEvent</event-label>
+      <descr>&lt;p>SRPConnect state. The BES MIB does not define this
+trap, but the Maintenance Guide for BES 4.0 describes it as
+indicating that the SRP connection is down.
+	&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besSRPDisconnectEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="true"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besHungThreadEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besHungThreadEvent</event-label>
+      <descr>&lt;p>Event related to detection of hung threads 
+in Exchange BES.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besHungThreadEvent trap received&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>5</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMailServerDownEvent</event-label>
+      <descr>&lt;p>Event is generated when more than one user (or one user 
+if there is only one) gets more than one error connecting 
+to a particular mail server, and those errors are not 
+Access Control related.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailServerDownEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailServerUpEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined (interpolated) trap event: besMailServerUpEvent</event-label>
+      <descr>&lt;p>Event is generated when more than one user (or one user 
+if there is only one) gets more than one error connecting 
+to a particular mail server, and those errors are not 
+Access Control related. This particular trap is not defined in
+the BES MIB, but is described in the Maintenance Guide for BES
+4.0 as indicating that the mail server has been detected as being
+back up.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailServerUpEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDownEvent:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>7</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMDStoBESConnectionEvent</event-label>
+      <descr>&lt;p>MDS to BES connection state has changed.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoBESConnectionEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>8</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionUpEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined (interpolated) trap event: besMDStoBESConnectionUpEvent</event-label>
+      <descr>&lt;p>MDS to BES connection state has changed.
+This particular trap is not defined in the BES MIB,
+but is described in the Maintenance Guide for BES 4.0
+as indicating that the connection is back up.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoBESConnectionUpEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>11</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDSStartEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMDSStartEvent</event-label>
+      <descr>&lt;p>MDS has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDSStartEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDSStopEvent:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>12</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDSStopEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined (interpolated) trap event: besMDSStopEvent</event-label>
+      <descr>&lt;p>MDS has stopped. The BES MIB does not define
+this trap, but the Maintenance Guide for BES 4.0 describes
+it as indicating that the MDS has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDSStopEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>13</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoDBConnectionEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMDStoDBConnectionEvent</event-label>
+      <descr>&lt;p>MDS to database connection state has changed.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoDBConnectionEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>14</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoDBDisconnectionEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined (interpolated) trap event: besMDStoDBDisconnectionEvent</event-label>
+      <descr>&lt;p>MDS to database connection state has changed. The
+BES MIB does not define this trap, but the Maintenace Guide
+for BES 4.0 describes it as indicating that the MDS has become
+disconnected from the DB.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoDBDisconnectionEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.9</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>21</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besCriticalEvent</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besCriticalEvent</event-label>
+      <descr>&lt;p>Critical event has happened. These are the events normally
+logged with 1xxxx and 5xxxx event IDs.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besCriticalEvent trap received&lt;/p>
+		</logmsg>
+      <severity>Major</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <!-- Traps described below here are a bit saner and do not require interpolation -->
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3001</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besSRPConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besSRPConnectionEstablished</event-label>
+      <descr>&lt;p>Obsolete: Mail agent to SRP Connection established.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besSRPConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3002</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besSRPConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besSRPConnectionDropped</event-label>
+      <descr>&lt;p>Obsolete: Mail agent to SRP Connection dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besSRPConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3005</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailServerUp</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMailServerUp</event-label>
+      <descr>&lt;p>Connection to mail server is restored.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailServerUp trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMailServerDown:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3006</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailServerDown</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMailServerDown</event-label>
+      <descr>&lt;p>Connection to mail server appears to be dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailServerDown trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3007</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMDStoBESConnectionEstablished</event-label>
+      <descr>&lt;p>MDS to BES connection established.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoBESConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3008</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMDStoBESConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMDStoBESConnectionDropped</event-label>
+      <descr>&lt;p>MDS to BES connection dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMDStoBESConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3011</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/mdsStarted</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: mdsStarted</event-label>
+      <descr>&lt;p>MDS server has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mdsStarted trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/mdsStopped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3012</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/mdsStopped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: mdsStopped</event-label>
+      <descr>&lt;p>MDS server has stopped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mdsStopped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3013</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/mdsDBConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: mdsDBConnectionEstablished</event-label>
+      <descr>&lt;p>MDS server has established connection to the Database.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mdsDBConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3014</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/mdsDBConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: mdsDBConnectionDropped</event-label>
+      <descr>&lt;p>MDS server has dropped the connection to the database.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			mdsDBConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3015</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailAgentStarted</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMailAgentStarted</event-label>
+      <descr>&lt;p>Mail agent has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailAgentStarted trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/besMailAgentStopped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3016</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besMailAgentStopped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besMailAgentStopped</event-label>
+      <descr>&lt;p>Mail agent has stopped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besMailAgentStopped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3017</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/besFailedUsers</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: besFailedUsers</event-label>
+      <descr>&lt;p>Some users failed to initialize properly on the BES.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			besFailedUsers trap received&lt;/p>
+		</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3101</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispSRPConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispSRPConnectionEstablished</event-label>
+      <descr>&lt;p>Dispatcher to SRP Connection established.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispSRPConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3102</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispSRPConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispSRPConnectionDropped</event-label>
+      <descr>&lt;p>Dispatcher to SRP Connection dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispSRPConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3103</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispStarted</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispStarted</event-label>
+      <descr>&lt;p>Dispatcher server has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispStarted trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispStopped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3104</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispStopped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispStopped</event-label>
+      <descr>&lt;p>Dispatcher server has stopped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispStopped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3105</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispDBConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispDBConnectionEstablished</event-label>
+      <descr>&lt;p>Dispatcher to database connection established.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispDBConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.50.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3106</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/dispDBConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: dispDBConnectionDropped</event-label>
+      <descr>&lt;p>Dispatcher to database connection dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			dispDBConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.55.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3201</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/routSRPConnectionEstablished</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: routSRPConnectionEstablished</event-label>
+      <descr>&lt;p>Router to SRP Connection established.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			routSRPConnectionEstablished trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.55.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3202</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/routSRPConnectionDropped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: routSRPConnectionDropped</event-label>
+      <descr>&lt;p>Router to SRP Connection dropped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			routSRPConnectionDropped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.55.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3203</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/routStarted</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: routStarted</event-label>
+      <descr>&lt;p>Router server has started.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			routStarted trap received&lt;/p>
+		</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="2" clear-key="uei.opennms.org/vendor/RIM/BES/routStopped:%nodeid%:%dpname%" auto-clean="false"/>
+   </event>
+   <event>
+      <mask>
+         <maskelement>
+            <mename>id</mename>
+            <mevalue>.1.3.6.1.4.1.3530.5.55.10</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>generic</mename>
+            <mevalue>6</mevalue>
+         </maskelement>
+         <maskelement>
+            <mename>specific</mename>
+            <mevalue>3204</mevalue>
+         </maskelement>
+      </mask>
+      <uei>uei.opennms.org/vendor/RIM/BES/routStopped</uei>
+      <event-label>BLACKBERRYSERVERMIB-SMIV2 defined trap event: routStopped</event-label>
+      <descr>&lt;p>Router server has stopped.&lt;/p>
+	&lt;p>
+	Trap Varbinds (parameters):&lt;br/>
+	%parm[all]%
+	&lt;/p></descr>
+      <logmsg dest="logndisplay">&lt;p>
+			routStopped trap received&lt;/p>
+		</logmsg>
+      <severity>Minor</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%:%dpname%" alarm-type="1" auto-clean="false"/>
+   </event>
+</events>
