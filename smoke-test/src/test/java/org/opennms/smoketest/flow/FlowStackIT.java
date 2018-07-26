@@ -28,7 +28,6 @@
 
 package org.opennms.smoketest.flow;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,7 +36,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -55,7 +53,6 @@ import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -96,7 +93,7 @@ public class FlowStackIT {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().es5();
             // Enable flow adapter
             builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/telemetryd-configuration.xml"), "etc/telemetryd-configuration.xml");
-
+            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
@@ -125,9 +122,6 @@ public class FlowStackIT {
 
         // Proxy the REST service
         restClient = new RestClient(opennmsWebAddress);
-
-        // Configure OpenNMS
-        setupOnmsContainer(opennmsSshAddress);
 
         // No flows should be present
         assertEquals(Long.valueOf(0L), restClient.getFlowCount(0L, System.currentTimeMillis()));
@@ -173,28 +167,6 @@ public class FlowStackIT {
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
             serverSocket.send(sendPacket);
-        }
-    }
-
-    // Sets up the OpenNMS Container (e.g. configure the elastic flow repository bundle)
-    private static void setupOnmsContainer(InetSocketAddress opennmsSshAddress) throws Exception {
-        try (final SshClient sshClient = new SshClient(opennmsSshAddress, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-
-            // Update feature configuration to point url to elastic container
-            pipe.println("config:edit org.opennms.features.flows.persistence.elastic");
-            pipe.println("config:property-set elasticUrl http://elasticsearch:9200");
-            pipe.println("config:update");
-
-            pipe.println("feature:list");
-            pipe.println("log:set INFO");
-            pipe.println("logout");
-
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
-            }
         }
     }
 

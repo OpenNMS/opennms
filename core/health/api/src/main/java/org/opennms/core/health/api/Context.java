@@ -26,16 +26,22 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.sentinel.core.shell;
+package org.opennms.core.health.api;
 
-import org.apache.karaf.shell.api.action.Command;
-import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.distributed.core.shell.AbstractPingCommand;
+/**
+ * A Context object to store all parameters required by the {@link HealthCheckService}
+ * to calculate the overall {@link Health}.
+ *
+ * @author mvrueden
+ */
+public class Context {
+    private long timeout;
 
-@Command(scope = "sentinel", name = "ping", description="Tests connectivity with the controller.")
-@Service
-public class SentinelPingCommand extends AbstractPingCommand {
+    public void setTimeout(long timeout) {
+        this.timeout = timeout;
+    }
+
+    public long getTimeout() {
+        return timeout;
+    }
 }
-
-
-

@@ -1215,6 +1215,12 @@
         <bundle start-level="100">mvn:org.opennms.features.vaadin-components/bundle-refresher/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-health" description="OpenNMS :: Health" version="${project.version}">
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
+    </feature>
+
     <!-- TODO MVR this is distributed only and should probably go somewhere else -->
     <feature name="opennms-persistence" description="OpenNMS :: Persistence" version="${project.version}">
         <feature>opennms-model</feature>
@@ -1243,6 +1249,7 @@
 
     <feature name="opennms-flows" description="OpenNMS :: Features :: Flows :: Feature Definition" version="${project.version}">
         <details>Feature definition to start all required bundles related to *flow-support.</details>
+        <feature>opennms-health</feature>
         <feature>opennms-jest</feature>
         <feature>quartz</feature>
         <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>

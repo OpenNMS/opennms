@@ -31,8 +31,24 @@
     </build>
     <dependencies>
         <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>osgi.core</artifactId>
+            <version>${osgiVersion}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.scv</groupId>
             <artifactId>org.opennms.features.scv.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>core-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
