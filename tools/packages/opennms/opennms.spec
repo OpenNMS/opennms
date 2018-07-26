@@ -200,6 +200,18 @@ The JNLP application that provides the Remote Poller.
 %{extrainfo2}
 
 
+%package webapp-hawtio
+Summary:	Hawtio webapp
+Group:		Applications/System
+Requires:	%{name}-core = %{version}-%{release}
+
+%description webapp-hawtio
+The Hawtio web console.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package ncs
 Summary:	Network Component Services
 Group:		Applications/System
@@ -719,6 +731,7 @@ find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{i
 find %{buildroot}%{jettydir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
@@ -729,11 +742,13 @@ find %{buildroot}%{jettydir} ! -type d | \
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir} -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -798,6 +813,11 @@ rm -rf %{buildroot}
 %defattr(644 root root 755)
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %{jettydir}/opennms-remoting
+
+%files webapp-hawtio
+%defattr(644 root root 755)
+%config %{jettydir}/hawtio/WEB-INF/*.xml
+%{jettydir}/hawtio
 
 %files plugins
 
