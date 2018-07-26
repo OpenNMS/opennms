@@ -18,11 +18,7 @@
   <packaging>pom</packaging>
   <modules>
     <module>core</module>
-    <module>dao-api</module>
-    <module>dao-impl</module>
-    <module>dao-distributed</module>
-    <module>dao-healthcheck</module>
-    <module>dao-test</module>
+    <module>dao</module>
     <module>datasource</module>
   </modules>
 </project>
