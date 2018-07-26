@@ -64,4 +64,16 @@
       <includes><include>org.opennms.assemblies:org.opennms.assemblies.http-remoting:war:${project.version}</include></includes>
     </dependencySet>
   </dependencySets>
+  <fileSets>
+    <!-- Copy Hawtio to jetty-webapps -->
+    <fileSet>
+      <directory>${project.build.directory}/hawtio-webapp/</directory>
+      <filtered>false</filtered>
+      <outputDirectory>jetty-webapps/hawtio/</outputDirectory>
+      <excludes>
+        <exclude>**/*log4j*.jar</exclude>
+        <exclude>**/*slf4j*.jar</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
 </component>
