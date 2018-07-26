@@ -29,12 +29,22 @@
 package org.opennms.features.timeformat.api;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 
 public interface TimeformatService {
+
+    // TODO: use the reference to CentralizedDateFormat once PR https://github.com/OpenNMS/opennms/pull/2070 is merged
+    final static String SESSION_PROPERTY_TIMEZONE_ID = "org.opennms.ui.timezoneid";
 
     String format(Instant instant);
 
     @Deprecated // please try to use the new Java Date API when possible: format(Instant instant)
     String format(Date date);
+
+    String format(Instant instant, ZoneId zoneId);
+
+    @Deprecated // please try to use the new Java Date API when possible: format(Instant instant)
+    String format(Date date, ZoneId zoneId);
+
 }

@@ -3,6 +3,7 @@
     <reference id="resourceDao" interface="org.opennms.netmgt.dao.api.ResourceDao" availability="mandatory"/>
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" availability="mandatory"/>
     <!--
     <reference id="graphDao" interface="org.opennms.netmgt.dao.api.GraphDao" availability="mandatory"/>
     -->
@@ -13,6 +14,7 @@
         <property name="resourceDao" ref="resourceDao"/>
         <property name="nodeDao" ref="nodeDao"/>
         <property name="transactionOperations" ref="transactionOperations"/>
+        <property name="timeformatService" ref="timeformatService"/>
         <property name="dashboardSuitable" value="true"/>
 
         <property name="requiredParameters">

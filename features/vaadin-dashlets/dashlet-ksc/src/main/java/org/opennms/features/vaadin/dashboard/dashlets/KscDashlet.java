@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.StringUtils;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.features.vaadin.components.graph.GraphContainer;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
@@ -76,13 +77,16 @@ public class KscDashlet extends AbstractDashlet {
     private DashletComponent m_dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
 
+    private final TimeformatService timeformatService;
+
     /**
      * Constructor for instantiating new objects.
      *
      * @param name        the name of the dashlet
      * @param dashletSpec the {@link DashletSpec} to be used
      */
-    public KscDashlet(String name, DashletSpec dashletSpec, NodeDao nodeDao, ResourceDao resourceDao, TransactionOperations transactionOperations) {
+    public KscDashlet(String name, DashletSpec dashletSpec, NodeDao nodeDao, ResourceDao resourceDao, TransactionOperations transactionOperations,
+                      final TimeformatService timeformatService) {
         super(name, dashletSpec);
         /**
          * Setting the member fields
@@ -90,6 +94,7 @@ public class KscDashlet extends AbstractDashlet {
         m_nodeDao = nodeDao;
         m_resourceDao = resourceDao;
         m_transactionOperations = transactionOperations;
+        this.timeformatService = timeformatService;
     }
 
     @Override
@@ -206,11 +211,10 @@ public class KscDashlet extends AbstractDashlet {
                                 }
 
                                 labelTitle.addStyleName("text");
-
-                                Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
+                                Label labelFrom = new Label("From: " + timeformatService.format(beginTime.getTime()));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
+                                Label labelTo = new Label("To: " + timeformatService.format(endTime.getTime()));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -342,10 +346,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + StringUtils.toStringEfficiently(beginTime.getTime()));
+                        Label labelFrom = new Label("From: " + timeformatService.format(beginTime.getTime()));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + StringUtils.toStringEfficiently(endTime.getTime()));
+                        Label labelTo = new Label("To: " + timeformatService.format(endTime.getTime()));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));

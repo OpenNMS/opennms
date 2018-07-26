@@ -29,6 +29,7 @@
 package org.opennms.features.timeformat.impl;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -38,14 +39,25 @@ public class DefaultTimeformatService implements TimeformatService {
 
     @Override
     public String format(Instant instant) {
-        return DateTimeFormatter.ISO_DATE_TIME.format(instant); // TODO: replace with centralized class
+        return format(instant, ZoneId.systemDefault());
     }
 
     @Override
     public String format(Date date) {
-        if(date != null){
-            return format(date.toInstant());
+        return format(date, ZoneId.systemDefault());
+    }
+
+    @Override
+    public String format(Instant instant, ZoneId zoneId) {
+        // TODO: replace with centralized class
+        return  DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.systemDefault()).format(instant);
+    }
+
+    @Override
+    public String format(Date date, ZoneId zoneId) {
+        if(date == null){
+            return null;
         }
-        return null;
+        return format(date.toInstant(), zoneId);
     }
 }
