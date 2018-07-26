@@ -80,7 +80,8 @@ public class RadiusAuthenticationProviderIT {
     @Test
     public void verifyAuthenticatorIsNotReused() {
         final RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider("localhost", SHARED_SECRET);
-        provider.setAuthTypeClass(new MSCHAPv2Authenticator());
+        provider.setAuthTypeClass(MSCHAPv2Authenticator.class); // The authenticator does not matter,
+                                                                // the problem should occurs with all, except null
 
         // Verify that authenticating with an existing user works
         final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(USER, PASSWORD);

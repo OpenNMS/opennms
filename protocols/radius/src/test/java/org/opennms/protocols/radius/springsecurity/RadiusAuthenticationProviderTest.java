@@ -56,9 +56,7 @@ public class RadiusAuthenticationProviderTest {
 	@Ignore("Need to have a RADIUS server running on localhost")
 	public void testRetrieveUserDefault() throws IOException {
 		RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider(m_radiusServer, m_sharedSecret);
-		RadiusAuthenticator authTypeClass = null;
-
-		provider.setAuthTypeClass(authTypeClass);
+		provider.setAuthTypeClass(null);
 		provider.setRolesAttribute("Unknown-VSAttribute(5813:1)");
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(m_principal, m_credentials);
@@ -69,9 +67,7 @@ public class RadiusAuthenticationProviderTest {
 	@Ignore("Need to have a RADIUS server running on localhost")
 	public void testRetrieveUserPap() throws IOException {
 		RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider(m_radiusServer, m_sharedSecret);
-		RadiusAuthenticator authTypeClass = new PAPAuthenticator();
-
-		provider.setAuthTypeClass(authTypeClass);
+		provider.setAuthTypeClass(PAPAuthenticator.class);
 		provider.setRolesAttribute("Unknown-VSAttribute(5813:1)");
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(m_principal, m_credentials);
@@ -82,9 +78,7 @@ public class RadiusAuthenticationProviderTest {
 	@Ignore("Need to have a RADIUS server running on localhost")
 	public void testRetrieveUserChap() throws IOException {
 		RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider(m_radiusServer, m_sharedSecret);
-		RadiusAuthenticator authTypeClass = new CHAPAuthenticator();
-
-		provider.setAuthTypeClass(authTypeClass);
+		provider.setAuthTypeClass(CHAPAuthenticator.class);
 		provider.setRolesAttribute("Unknown-VSAttribute(5813:1)");
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(m_principal, m_credentials);
@@ -139,9 +133,7 @@ public class RadiusAuthenticationProviderTest {
 
 	public void doTestRetrieveUserMultipleTimes(RadiusAuthenticator authenticator) {
 		RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider(m_radiusServer, m_sharedSecret);
-		RadiusAuthenticator authTypeClass = authenticator;
-
-		provider.setAuthTypeClass(authTypeClass);
+		provider.setAuthTypeClass(authenticator.getClass());
 		provider.setRolesAttribute("Unknown-VSAttribute(5813:1)");
 
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(m_principal, m_credentials);
