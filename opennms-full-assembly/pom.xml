@@ -258,6 +258,25 @@
               </artifactItems>
             </configuration>
           </execution>
+          <!-- Unpack hawtio -->
+          <execution>
+            <id>unpack-hawtio</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/hawtio-webapp/</outputDirectory>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>io.hawt</groupId>
+                  <artifactId>hawtio-default</artifactId>
+                  <version>${hawtioVersion}</version>
+                  <type>war</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -750,6 +769,12 @@
       <version>${project.version}</version>
       <type>tar.gz</type>
       <classifier>etc</classifier>
+    </dependency>
+    <dependency>
+      <groupId>io.hawt</groupId>
+      <artifactId>hawtio-default</artifactId>
+      <version>${hawtioVersion}</version>
+      <type>war</type>
     </dependency>
 
     <!-- Apache Karaf features.xml artifacts -->
