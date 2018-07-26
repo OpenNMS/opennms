@@ -31,9 +31,11 @@ package org.opennms.features.kafka.producer.collection;
 import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.equalTo;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -117,6 +119,7 @@ public class KafkaPersisterIT {
                 .thenReturn(producerConfig);
         kafkaPersisterFactory.setConfigAdmin(configAdmin);
         kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
+        kafkaPersisterFactory.setTopicName("test-metrics");
         kafkaPersisterFactory.init();
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
         RrdRepository repository = new RrdRepository();
@@ -139,6 +142,9 @@ public class KafkaPersisterIT {
         persister.visitCollectionSet(collectionSet);
         
         await().atMost(1, TimeUnit.MINUTES).pollInterval(15, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSet(), not(nullValue()));
+        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNode().getNodeId(), equalTo(node.getId().longValue()));
+        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNumericCount(), equalTo(2));
+        assertThat(kafkaConsumer.getCollectionSet().getResource(0).getNumeric(1).getValue(), equalTo(1050.0));
 
     }
 

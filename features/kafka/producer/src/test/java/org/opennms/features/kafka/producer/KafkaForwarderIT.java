@@ -127,7 +127,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String EVENT_TOPIC_NAME = "events";
     private static final String ALARM_TOPIC_NAME = "test-alarms";
     private static final String NODE_TOPIC_NAME = "test-nodes";
-    private static final String COLLECTION = "collection";
+    private static final String METRIC_TOPIC_NAME = "test-metrics";
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -373,7 +373,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, COLLECTION));
+            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME));
 
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(1000);
@@ -393,7 +393,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                                 alarms.add(alarm);
                                 alarmsByReductionKey.put(record.key(), alarm);
                                 break;
-                            case COLLECTION :
+                            case METRIC_TOPIC_NAME :
                                 collectionSet = CollectionSetProtos.CollectionSet.parseFrom(record.value());
                                 break;
                         }

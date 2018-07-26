@@ -41,6 +41,8 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
 public class KafkaPersister implements Persister {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
@@ -49,7 +51,7 @@ public class KafkaPersister implements Persister {
 
     private KafkaProducer<String, byte[]> producer;
     
-    private static final String COLLECTION_TOPIC_NAME = "collection";
+    private String topicName = "metrics";
 
     /** {@inheritDoc} */
     @Override
@@ -59,7 +61,7 @@ public class KafkaPersister implements Persister {
                 .buildCollectionSetProtos(collectionSet);
         // Derive key, it will be nodeId for all resources except for response time, it would be IpAddress
         final String key = deriveKeyFromCollectionSet(collectionSetProto);
-        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(COLLECTION_TOPIC_NAME, key,
+        final ProducerRecord<String, byte[]> record = new ProducerRecord<>(topicName, key,
                 collectionSetProto.toByteArray());
         producer.send(record, (recordMetadata, e) -> {
             if (e != null) {
@@ -88,6 +90,12 @@ public class KafkaPersister implements Persister {
             } 
         }
         return key;
+    }
+
+    public void setTopicName(String topicName) {
+        if (!Strings.isNullOrEmpty(topicName)) {
+            this.topicName = topicName;
+        }
     }
 
     public void setProducer(KafkaProducer<String, byte[]> producer) {

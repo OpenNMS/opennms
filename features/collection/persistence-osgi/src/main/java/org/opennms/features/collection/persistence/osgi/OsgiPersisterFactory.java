@@ -35,8 +35,12 @@ import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.opennms.netmgt.rrd.RrdRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class OsgiPersisterFactory implements PersisterFactory {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OsgiPersisterFactory.class);
 
     private final ServiceLookup serviceLookup;
 
@@ -58,8 +62,10 @@ public class OsgiPersisterFactory implements PersisterFactory {
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository) {
         final PersisterFactory delegate = getDelegate();
+        // atleast one of the persister factory should be on osgi registry, else it will use Null Persister.
         if (delegate == null) {
-            return null;
+            LOG.info("Unable to find any persister factory from osgi registry, use NullPersister");
+            return new NullPersister();
         }
         return delegate.createPersister(params, repository);
     }
@@ -70,6 +76,7 @@ public class OsgiPersisterFactory implements PersisterFactory {
         final PersisterFactory delegate = getDelegate();
         // atleast one of the persister factory should be on osgi registry, else it will use Null Persister.
         if (delegate == null) {
+            LOG.info("Unable to find any persister factory from osgi registry, use NullPersister");
             return new NullPersister();
         }
         return delegate.createPersister(params, repository, dontPersistCounters, forceStoreByGroup, dontReorderAttributes);

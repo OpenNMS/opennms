@@ -28,9 +28,6 @@
 
 package org.opennms.netmgt.collection.persistence.rrd;
 
-import org.opennms.core.soa.lookup.ServiceLookup;
-import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -52,13 +49,11 @@ public class RrdPersisterFactory implements PersisterFactory {
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository,
             boolean dontPersistCounters, boolean forceStoreByGroup, boolean dontReorderAttributes) {
-        Persister persister = null;
         if (ResourceTypeUtils.isStoreByGroup() || forceStoreByGroup) {
-            persister = createGroupPersister(params, repository, dontPersistCounters, dontReorderAttributes);
+            return createGroupPersister(params, repository, dontPersistCounters, dontReorderAttributes);
         } else {
-            persister = createOneToOnePersister(params, repository, dontPersistCounters, dontReorderAttributes);
+            return createOneToOnePersister(params, repository, dontPersistCounters, dontReorderAttributes);
         }
-        return persister;
     }
 
     public Persister createGroupPersister(ServiceParameters params, RrdRepository repository,
@@ -66,11 +61,6 @@ public class RrdPersisterFactory implements PersisterFactory {
         GroupPersister persister = new GroupPersister(params, repository, m_rrdStrategy, m_resourceStorageDao);
         persister.setIgnorePersist(dontPersistCounters);
         persister.setDontReorderAttributes(dontReorderAttributes);
-        // load kafka persister if it is enabled 
-        Persister kafkaPersister = loadKafkaPersister(params, repository);
-        if (kafkaPersister != null) {
-            persister.setKafkaPersister(kafkaPersister);
-        }
         return persister;
     }
 
@@ -79,11 +69,6 @@ public class RrdPersisterFactory implements PersisterFactory {
         OneToOnePersister persister = new OneToOnePersister(params, repository, m_rrdStrategy, m_resourceStorageDao);
         persister.setIgnorePersist(dontPersistCounters);
         persister.setDontReorderAttributes(dontReorderAttributes);
-        // load kafka persister if it is enabled 
-        Persister kafkaPersister = loadKafkaPersister(params, repository);
-        if (kafkaPersister != null) {
-            persister.setKafkaPersister(kafkaPersister);
-        }
         return persister;
     }
 
@@ -101,18 +86,6 @@ public class RrdPersisterFactory implements PersisterFactory {
 
     public void setResourceStorageDao(ResourceStorageDao resourceStorageDao) {
         m_resourceStorageDao = resourceStorageDao;
-    }
-
-    private Persister loadKafkaPersister(ServiceParameters params, RrdRepository repository) {
-        Boolean enabled = new Boolean(System.getProperty("org.opennms.timeseries.kafka.persister", "false"));
-        Persister persister = null;
-        if (enabled) {
-            final ServiceLookup serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE).blocking()
-                    .build();
-            PersisterFactory persisterFactory = serviceLookup.lookup(PersisterFactory.class, "(strategy=kafka)");
-            persister = persisterFactory.createPersister(params, repository);
-        }
-        return persister;
     }
 }
 

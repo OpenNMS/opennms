@@ -31,7 +31,6 @@ package org.opennms.features.kafka.producer.collection;
 import java.util.Dictionary;
 import java.util.Hashtable;
 
-import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.osgi.framework.BundleActivator;
@@ -42,21 +41,27 @@ import org.slf4j.LoggerFactory;
 import org.springframework.transaction.support.TransactionOperations;
 
 public class KafkaPersisterActivator implements BundleActivator {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
-    public static final String PERSISTER = "collection.persister";
+    public static final String FORWARD_METRICS = "forward.metrics";
+    public static final String PRODUCER_CONFIG = "org.opennms.features.kafka.producer";
+    private static final String METRIC_TOPIC = "metricTopic";
 
     @Override
     public void start(BundleContext context) throws Exception {
         ConfigurationAdmin configAdmin = null;
-        Boolean isCollectionPersisterEnabled = false;
+        Boolean forwardMetrics = false;
+        String metricTopic = null;
         try {
             configAdmin = context.getService(context.getServiceReference(ConfigurationAdmin.class));
             if (configAdmin != null) {
-                Dictionary<String, Object> properties = configAdmin.getConfiguration(OpennmsKafkaProducer.KAFKA_CLIENT_PID).getProperties();
-                if (properties != null && properties.get(PERSISTER) != null) {
-                    if (properties.get(PERSISTER) instanceof String) {
-                        isCollectionPersisterEnabled = Boolean.parseBoolean((String) properties.get(PERSISTER));
+                Dictionary<String, Object> properties = configAdmin.getConfiguration(PRODUCER_CONFIG).getProperties();
+                if (properties != null && properties.get(FORWARD_METRICS) != null) {
+                    if (properties.get(FORWARD_METRICS) instanceof String) {
+                        forwardMetrics = Boolean.parseBoolean((String) properties.get(FORWARD_METRICS));
+                    }
+                    if (properties.get(METRIC_TOPIC) instanceof String) {
+                        metricTopic = (String) properties.get(METRIC_TOPIC);
                     }
                 }
             }
@@ -64,18 +69,20 @@ public class KafkaPersisterActivator implements BundleActivator {
             LOG.error(" Exception while loading configuration", e);
         }
 
-        if (isCollectionPersisterEnabled) {
+        if (forwardMetrics) {
             try {
                 NodeDao nodeDao = context.getService(context.getServiceReference(NodeDao.class));
                 TransactionOperations transactionOperations = context
                         .getService(context.getServiceReference(TransactionOperations.class));
-                
+
                 CollectionSetMapper collectionSetMapper = new CollectionSetMapper(nodeDao, transactionOperations);
                 KafkaPersisterFactory kafkaPersisterFactory = new KafkaPersisterFactory();
                 kafkaPersisterFactory.setCollectionSetMapper(collectionSetMapper);
                 kafkaPersisterFactory.setConfigAdmin(configAdmin);
                 kafkaPersisterFactory.init();
+                kafkaPersisterFactory.setTopicName(metricTopic);
                 Dictionary<String, String> props = new Hashtable<String, String>();
+                // needed to register to onms registry.
                 props.put("strategy", "kafka");
                 props.put("registration.export", "true");
                 context.registerService(PersisterFactory.class, kafkaPersisterFactory, props);
@@ -89,7 +96,7 @@ public class KafkaPersisterActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-         // no unregister service on bundle context, nothing to do
+        // no unregister service on bundle context, nothing to do
     }
 
 }

@@ -52,14 +52,14 @@ import org.springframework.transaction.support.TransactionOperations;
 import com.google.common.base.Strings;
 
 public class CollectionSetMapper {
-    
+
     private static final Logger LOG = LoggerFactory.getLogger(CollectionSetMapper.class);
 
     @Autowired
     private NodeDao nodeDao;
-    
+
     private final TransactionOperations transactionOperations;
-    
+
     public CollectionSetMapper(NodeDao nodeDao, TransactionOperations transactionOperations) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.transactionOperations = Objects.requireNonNull(transactionOperations);
@@ -175,10 +175,11 @@ public class CollectionSetMapper {
         String nodeCriteria = null;
         if (resource.getParent() != null) {
             String[] resourcePathArray = resource.getParent().elements();
-            if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0]) && resourcePathArray.length == 3) {
+            if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
+                    && resourcePathArray.length == 3) {
                 // parent denotes nodeCriteria, form fs:fid
                 nodeCriteria = resourcePathArray[1] + ":" + resourcePathArray[2];
-            } else if (checkNumeric(resourcePathArray[0])){
+            } else if (checkNumeric(resourcePathArray[0])) {
                 // parent denotes nodeId
                 nodeCriteria = resourcePathArray[0];
             }
@@ -188,7 +189,7 @@ public class CollectionSetMapper {
 
     private CollectionSetProtos.ResponseTimeResource.Builder buildResponseTimeResource(CollectionResource resource) {
         boolean validIp = false;
-        //Check if resource parent is an IpAddress.
+        // Check if resource parent is an IpAddress.
         if (resource.getParent() != null && resource.getParent().elements().length == 1) {
             String[] resourcePathArray = resource.getParent().elements();
             validIp = checkForValidIpAddress(resourcePathArray[0]);
@@ -246,7 +247,7 @@ public class CollectionSetMapper {
                     }
                 }
             } catch (Exception e) {
-               LOG.error("error while trying to match node from {}", nodeCriteria);
+                LOG.error("error while trying to match node from {}", nodeCriteria);
             }
             return null;
         });

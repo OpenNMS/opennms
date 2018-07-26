@@ -34,6 +34,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.opennms.features.kafka.producer.OpennmsKafkaProducer;
@@ -52,6 +53,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     private KafkaProducer<String, byte[]> producer;
     private ConfigurationAdmin configAdmin;
+    private String topicName;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
@@ -64,6 +66,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         KafkaPersister persister = new KafkaPersister();
         persister.setCollectionSetMapper(collectionSetMapper);
         persister.setProducer(producer);
+        persister.setTopicName(topicName);
         return persister;
     }
 
@@ -80,13 +83,12 @@ public class KafkaPersisterFactory implements PersisterFactory {
             }
         }
         // Overwrite the serializers
-        producerConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
-        producerConfig.put("value.serializer", ByteArraySerializer.class.getCanonicalName());
+        producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getCanonicalName());
+        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getCanonicalName());
 
         final ClassLoader currentClassLoader = Thread.currentThread().getContextClassLoader();
         try {
-            // Class-loader hack for accessing the
-            // org.apache.kafka.common.serialization.*
+            // Class-loader hack for accessing the org.apache.kafka.common.serialization.*
             Thread.currentThread().setContextClassLoader(null);
             producer = new KafkaProducer<>(producerConfig);
         } finally {
@@ -109,6 +111,10 @@ public class KafkaPersisterFactory implements PersisterFactory {
 
     public void setCollectionSetMapper(CollectionSetMapper collectionSetMapper) {
         this.collectionSetMapper = collectionSetMapper;
+    }
+
+    public void setTopicName(String topicName) {
+        this.topicName = topicName;
     }
 
 }
