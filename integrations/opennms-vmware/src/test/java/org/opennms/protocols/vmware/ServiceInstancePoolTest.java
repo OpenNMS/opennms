@@ -28,19 +28,21 @@
 
 package org.opennms.protocols.vmware;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
+
+import javax.net.ssl.TrustManager;
+
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.vmware.vim25.ManagedObjectReference;
 import com.vmware.vim25.UserSession;
 import com.vmware.vim25.mo.ServerConnection;
 import com.vmware.vim25.mo.ServiceInstance;
 import com.vmware.vim25.mo.SessionManager;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-
-import javax.net.ssl.TrustManager;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
 
 public class ServiceInstancePoolTest {
     private ServiceInstancePool serviceInstancePool;
@@ -184,7 +186,7 @@ public class ServiceInstancePoolTest {
         s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
         Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
 
-        Thread.sleep(250);
+        Thread.sleep(350);
 
         // N N L N
 
@@ -229,7 +231,7 @@ public class ServiceInstancePoolTest {
         Assert.assertTrue(((DummyServiceInstance) s3).valid);
         Assert.assertFalse(((DummyServiceInstance) s4).valid);
 
-        Thread.sleep(550);
+        Thread.sleep(650);
 
         Assert.assertEquals(1, serviceInstancePool.lockedEntryCount());
         Assert.assertEquals(0, serviceInstancePool.unlockedEntryCount());
