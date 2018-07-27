@@ -28,42 +28,17 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.drools.core.ClockType;
-import org.drools.core.time.SessionPseudoClock;
-import org.kie.api.KieBase;
-import org.kie.api.KieBaseConfiguration;
-import org.kie.api.KieServices;
-import org.kie.api.builder.KieBuilder;
-import org.kie.api.builder.KieFileSystem;
-import org.kie.api.builder.KieRepository;
-import org.kie.api.builder.Message;
-import org.kie.api.conf.EventProcessingOption;
-import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.kie.api.runtime.KieSessionConfiguration;
-import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.FactHandle;
-import org.kie.internal.io.ResourceFactory;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -82,7 +57,7 @@ import com.google.common.collect.Sets;
  *
  * @author jwhite
  */
-public class DroolsAlarmContext implements AlarmLifecycleListener {
+public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     @Autowired
@@ -91,106 +66,29 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
     @Autowired
     private AlarmTicketerService alarmTicketerService;
 
-    private boolean usePseudoClock = false;
-
-    private boolean useManualTick = false;
-
-    private KieSession kieSession;
-
-    private Timer timer;
-
-    private SessionPseudoClock clock;
-
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
 
-    private final Lock lock = new ReentrantLock();
+    public DroolsAlarmContext() {
+        super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
+        setOnNewKiewSessionCallback(kieSession -> {
+            kieSession.setGlobal("alarmService", alarmService);
+            kieSession.insert(alarmTicketerService);
 
-    private final ThreadLocal<Boolean> firing = new ThreadLocal<>();
-
-    public void start() {
-        final KieServices ks = KieServices.Factory.get();
-        final KieRepository kr = ks.getRepository();
-        final KieFileSystem kfs = ks.newKieFileSystem();
-
-        final List<File> rulesFiles;
-        try {
-            rulesFiles = getRulesFiles();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        LOG.info("Using rules files: {}", rulesFiles);
-        for (File file : rulesFiles) {
-            kfs.write(ResourceFactory.newFileResource(file));
-        }
-
-        // Validate
-        final KieBuilder kb = ks.newKieBuilder(kfs);
-        kb.buildAll();
-        if (kb.getResults().hasMessages(Message.Level.ERROR)) {
-            throw new RuntimeException("Build Errors:\n" + kb.getResults().toString());
-        }
-
-        final KieContainer kContainer = ks.newKieContainer(kr.getDefaultReleaseId());
-
-        final KieBaseConfiguration kbaseConfig = ks.newKieBaseConfiguration();
-        kbaseConfig.setOption(EventProcessingOption.STREAM);
-
-        final KieBase kbase = kContainer.newKieBase(kbaseConfig);
-        final KieSessionConfiguration kieSessionConfig = KieServices.Factory.get().newKieSessionConfiguration();
-        if (usePseudoClock) {
-            kieSessionConfig.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
-        }
-
-        kieSession = kbase.newKieSession(kieSessionConfig, null);
-        kieSession.setGlobal("alarmService", alarmService);
-
-        if (usePseudoClock) {
-            this.clock = kieSession.getSessionClock();
-        } else {
-            this.clock = null;
-        }
-
-        alarmsById.clear();
-
-        kieSession.insert(alarmTicketerService);
-
-        if (!useManualTick) {
-            timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                @Override
-                public void run() {
-                    firing.set(true);
-                    lock.lock();
-                    try {
-                        LOG.debug("Firing rules.");
-                        kieSession.fireAllRules();
-                    } catch (Exception e) {
-                        LOG.error("Error occurred while firing rules.", e);
-                    } finally {
-                        firing.set(false);
-                        lock.unlock();
-                    }
+            // Rebuild the alarm id -> fact handle map
+            alarmsById.clear();
+            for (FactHandle fact : kieSession.getFactHandles()) {
+                final Object objForFact = kieSession.getObject(fact);
+                if (objForFact instanceof OnmsAlarm) {
+                    final OnmsAlarm alarmInSession = (OnmsAlarm)objForFact;
+                    alarmsById.put(alarmInSession.getId(), new AlarmAndFact(alarmInSession, fact));
                 }
-            }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
-        }
-    }
-
-    protected List<File> getRulesFiles() throws IOException {
-        final Path droolsRulesRoot = Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d");
-        if (!droolsRulesRoot.toFile().isDirectory()) {
-            throw new IllegalStateException("Expected to find Drools rules for alarmd in '" + droolsRulesRoot
-                    + "' but the path is not a directory! Aborting.");
-        }
-        return Files.find(droolsRulesRoot, 3, (path,attrs) -> attrs.isRegularFile()
-                && path.toString().endsWith(".drl"))
-                .map(Path::toFile)
-                .sorted(Comparator.naturalOrder())
-                .collect(Collectors.toList());
+            }
+        });
     }
 
     @Override
     public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
-        if (kieSession == null) {
+        if (!isStarted()) {
             LOG.debug("Ignoring alarm snapshot. Drools session is stopped.");
             return;
         }
@@ -224,7 +122,7 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
 
     @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        if (kieSession == null) {
+        if (!isStarted()) {
             LOG.debug("Ignoring new/updated alarm. Drools session is stopped.");
             return;
         }
@@ -237,10 +135,11 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
     }
 
     private void handleNewOrUpdatedAlarmNoLock(OnmsAlarm alarm) {
+        final KieSession kieSession = getKieSession();
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
             LOG.debug("Inserting alarm into session: {}", alarm);
-            final FactHandle fact = kieSession.insert(alarm);
+            final FactHandle fact = getKieSession().insert(alarm);
             alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
         } else {
             // Updating the fact doesn't always give us to expected results so we resort to deleting it
@@ -256,7 +155,7 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
 
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
-        if (kieSession == null) {
+        if (!isStarted()) {
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
@@ -272,53 +171,8 @@ public class DroolsAlarmContext implements AlarmLifecycleListener {
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
             LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
-            kieSession.delete(alarmAndFact.getFact());
+            getKieSession().delete(alarmAndFact.getFact());
         }
-    }
-
-    public void tick() {
-        firing.set(true);
-        lock.lock();
-        try {
-            kieSession.fireAllRules();
-        } finally {
-            lock.unlock();
-            firing.set(false);
-        }
-    }
-
-    private void lockIfNotFiring() {
-        if (Boolean.TRUE.equals(firing.get())) {
-            lock.lock();
-        }
-    }
-
-    private void unlockIfNotFiring() {
-        if (Boolean.TRUE.equals(firing.get())) {
-            lock.unlock();
-        }
-    }
-
-    public void stop() {
-        if (timer != null) {
-            timer.cancel();
-        }
-        if (kieSession != null) {
-            kieSession.halt();
-            kieSession = null;
-        }
-    }
-
-    public SessionPseudoClock getClock() {
-        return clock;
-    }
-
-    public void setUsePseudoClock(boolean usePseudoClock) {
-        this.usePseudoClock = usePseudoClock;
-    }
-
-    public void setUseManualTick(boolean useManualTick) {
-        this.useManualTick = useManualTick;
     }
 
     public void setAlarmService(AlarmService alarmService) {
