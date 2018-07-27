@@ -9,7 +9,8 @@
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/horizon_logo.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/horizon_logo_small.png'" />
+          <!-- TODO MVR was renamed from horizon_logo to o-green-trans, maybe should not have done that? -->
+        H23 <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" />
       </a>
     </div>
 
