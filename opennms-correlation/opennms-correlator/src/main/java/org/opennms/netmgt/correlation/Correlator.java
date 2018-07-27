@@ -83,9 +83,7 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		@Override
 		public void onEvent(final Event e) {
 		    if (e.getUei().equals(EventConstants.RELOAD_DAEMON_CONFIG_UEI)) {
-		        m_eventIpcManager.removeEventListener(this);
 		        handleReloadEvent(e);
-		        registerEventListeners();
 		        return;
 		    }
 		    m_engine.correlate(e);
@@ -116,7 +114,9 @@ public class Correlator extends AbstractServiceDaemon implements CorrelationEngi
 		                return;
 		            }
 		            if (parm.getValue().getContent().contains(getName())) {
+		                m_eventIpcManager.removeEventListener(this);
 		                m_engine.reloadConfig();
+		                registerEventListeners();
 		                return;
 		            }
 		        }
