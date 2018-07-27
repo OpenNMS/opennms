@@ -30,34 +30,34 @@ package org.opennms.features.timeformat.impl;
 
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
 
 public class DefaultTimeformatService implements TimeformatService {
 
+    private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
+
     @Override
     public String format(Instant instant) {
-        return format(instant, ZoneId.systemDefault());
+        return format.format(instant);
     }
 
     @Override
     public String format(Date date) {
-        return format(date, ZoneId.systemDefault());
+        return format.format(date);
     }
 
     @Override
     public String format(Instant instant, ZoneId zoneId) {
-        // TODO: replace with centralized class
-        return  DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.systemDefault()).format(instant);
+        // TODO: add zoneid once PR https://github.com/OpenNMS/opennms/pull/2070 is merged
+        return  format.format(instant);
     }
 
     @Override
     public String format(Date date, ZoneId zoneId) {
-        if(date == null){
-            return null;
-        }
-        return format(date.toInstant(), zoneId);
+        // TODO: add zoneid once PR https://github.com/OpenNMS/opennms/pull/2070 is merged
+        return format.format(date);
     }
 }
