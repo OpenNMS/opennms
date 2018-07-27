@@ -143,7 +143,7 @@ end
          WHERE alarmid = ${_alarmid}
       </statement>
     </action>
-*/
+
 rule "escalation"
   when
     $alarm : OnmsAlarm((alarmType == OnmsAlarm.PROBLEM_TYPE || alarmType == OnmsAlarm.PROBLEM_WITHOUT_RESOLUTION_TYPE) &&
@@ -156,6 +156,7 @@ rule "escalation"
     Date now = new Date(drools.getWorkingMemory().getSessionClock().getCurrentTime());
     alarmService.escalateAlarm($alarm, now);
 end
+*/
 
 /*
    <automation name="cleanUp" interval="60000" active="true"
