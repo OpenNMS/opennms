@@ -28,6 +28,7 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,6 @@ import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
-import org.opennms.core.utils.StringUtils;
 import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
@@ -45,11 +45,13 @@ import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
 import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
+import org.opennms.features.topology.plugins.browsers.TimeColumnGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
+import org.opennms.features.vaadin.dashboard.model.TimeformatHelper;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -108,6 +110,8 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
     private final TimeformatService timeformatService;
 
+    private ZoneId userTimezoneId;
+
     /**
      * Constructor for instantiating new objects.
      *
@@ -127,6 +131,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
         this.timeformatService = timeformatService;
+        this.userTimezoneId = TimeformatHelper.extractUserTimeZoneId().orElse(null);
     }
 
     @Override
@@ -235,6 +240,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
                     m_alarmTable.addGeneratedColumn("severity", new SeverityGenerator());
                     m_alarmTable.addGeneratedColumn("id", new AlarmIdColumnLinkGenerator(m_alarmDao, "id"));
+                    m_alarmTable.addGeneratedColumn("lastEventTime", new TimeColumnGenerator(userTimezoneId));
                     m_alarmTable.setVisibleColumns("id", "severity", "nodeLabel", "counter", "lastEventTime", "logMsg");
                     m_alarmTable.setColumnHeaders("ID", "Severity", "Node", "Count", "Last Event Time", "Log Message");
 
@@ -360,7 +366,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + timeformatService.format(onmsAlarm.getLastEventTime()) + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + timeformatService.format(onmsAlarm.getLastEventTime(), userTimezoneId) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
@@ -397,13 +403,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
-        lastEvent.setValue(timeformatService.format(onmsAlarm.getLastEventTime()));
+        lastEvent.setValue(timeformatService.format(onmsAlarm.getLastEventTime(), userTimezoneId));
 
         Label firstEvent = new Label();
         firstEvent.setSizeUndefined();
         firstEvent.addStyleName("alert-details-font");
         firstEvent.setCaption("First event");
-        firstEvent.setValue(timeformatService.format(onmsAlarm.getFirstEventTime()));
+        firstEvent.setValue(timeformatService.format(onmsAlarm.getLastEventTime(), userTimezoneId));
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);

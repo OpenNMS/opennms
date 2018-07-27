@@ -26,38 +26,20 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.timeformat.impl;
+package org.opennms.features.vaadin.dashboard.model;
 
-import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Date;
+import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
-import org.opennms.features.timeformat.api.TimeformatService;
 
-public class DefaultTimeformatService implements TimeformatService {
+import com.vaadin.server.VaadinSession;
 
-    private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
-
-    @Override
-    public String format(Instant instant) {
-        return format.format(instant);
-    }
-
-    @Override
-    @Deprecated // Please use format(Instant instant) where possible
-    public String format(Date date) {
-        return format.format(date);
-    }
-
-    @Override
-    public String format(Instant instant, ZoneId zoneId) {
-        return  format.format(instant, zoneId);
-    }
-
-    @Override
-    @Deprecated // Please use format(Instant instant) where possible
-    public String format(Date date, ZoneId zoneId) {
-        return format.format(date, zoneId);
+public final class TimeformatHelper {
+    public static Optional<ZoneId> extractUserTimeZoneId(){
+        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
+            return Optional.ofNullable((ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID));
+        }
+        return Optional.empty();
     }
 }

@@ -26,38 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.timeformat.impl;
+package org.opennms.features.topology.plugins.browsers;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
-import org.opennms.features.timeformat.api.TimeformatService;
 
-public class DefaultTimeformatService implements TimeformatService {
+import com.vaadin.data.Property;
+import com.vaadin.ui.Table;
 
-    private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
+public class TimeColumnGenerator  implements Table.ColumnGenerator {
 
-    @Override
-    public String format(Instant instant) {
-        return format.format(instant);
+    private CentralizedDateTimeFormat timeformat;
+    private ZoneId userTimeZoneId;
+
+    public TimeColumnGenerator(ZoneId userTimeZoneId) {
+        this.timeformat = new CentralizedDateTimeFormat();
+        this.userTimeZoneId = userTimeZoneId;
     }
 
     @Override
-    @Deprecated // Please use format(Instant instant) where possible
-    public String format(Date date) {
-        return format.format(date);
-    }
-
-    @Override
-    public String format(Instant instant, ZoneId zoneId) {
-        return  format.format(instant, zoneId);
-    }
-
-    @Override
-    @Deprecated // Please use format(Instant instant) where possible
-    public String format(Date date, ZoneId zoneId) {
-        return format.format(date, zoneId);
+    public Object generateCell(Table source, Object itemId, Object columnId) {
+        Property property = source.getContainerProperty(itemId, columnId);
+        if (property == null || property.getValue() == null) {
+            return null;
+        }
+        String formattedValue;
+        if(property.getType().equals(Instant.class)){
+            formattedValue = timeformat.format((Instant) property.getValue(), userTimeZoneId);
+        } else if(property.getType().equals(Date.class)){
+            formattedValue = timeformat.format((Date) property.getValue(), userTimeZoneId);
+        } else {
+            formattedValue = property.toString();
+        }
+        return formattedValue;
     }
 }
