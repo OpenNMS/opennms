@@ -50,7 +50,7 @@ public class Percentile implements Filter {
     @FilterParam(key="outputColumn", required=true, displayName="Output", description="Output column.")
     private String m_outputColumn;
 
-    @FilterParam(key="quantile", value="0.95", displayName="Quantile", description="Quantile level. Must be > 0 and <= 100")
+    @FilterParam(key="quantile", value="0.95", displayName="Quantile", description="Quantile level. Must be > 0 and <= 1.")
     private double m_quantile;
 
     protected Percentile() { }
