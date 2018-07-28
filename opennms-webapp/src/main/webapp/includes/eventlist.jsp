@@ -52,6 +52,7 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@taglib uri="/WEB-INF/taglib.tld" prefix="onms" %>
 
 <%
     //required parameter: node
@@ -189,7 +190,7 @@
              </nobr>
            </td>
        <% } %>
-       <td class="divider"><fmt:formatDate value="${event.time}" type="date" dateStyle="short"/>&nbsp;<fmt:formatDate value="${event.time}" type="time" pattern="HH:mm:ss"/></td>
+       <td class="divider"><onms:datetime date="${event.time}"/></td>
        <td class="divider bright"><%= event.getSeverity().getLabel() %></td>
        <td class="divider"><%=WebSecurityUtils.sanitizeString(event.getLogMessage(),true)%></td>
      </tr>

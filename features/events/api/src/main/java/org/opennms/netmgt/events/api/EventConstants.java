@@ -345,11 +345,6 @@ public abstract class EventConstants {
     public static final String NOTIFICATION_WITHOUT_USERS = "uei.opennms.org/internal/notificationWithoutUsers";
 
     /**
-     * Demand poll service event ui.
-     */
-	public static final String DEMAND_POLL_SERVICE_EVENT_UEI = "uei.opennms.org/internal/demandPollService";
-
-    /**
      * An event to signal that a user has changed asset information via the web
      * UI.
      */
@@ -531,12 +526,6 @@ public abstract class EventConstants {
      */
     public static final String PARM_CRITICAL_PATH_NOTICE_SUPRESSED = "noticeSupressed";
     
-    /**
-     * This parameter is set to indicate the id of the demandPoll object to store the results
-     * of a demandPoll in.
-     */
-    public static final String PARM_DEMAND_POLL_ID = "demandPollId";
-
     /**
      * The nodeSysName from the node table when sent as an event parm.
      */
@@ -934,23 +923,6 @@ public abstract class EventConstants {
      * Used for indication the second endpoint to a map link.
      */
     public static final String PARM_ENDPOINT2 = "endPoint2";
-
-    //
-    // for Alarmd
-    //
-
-    // Sent when an alarm is created
-    public static final String ALARM_CREATED_UEI   = "uei.opennms.org/alarms/alarmCreated";
-    // Sent when an alarm is escalated, either by a user action or an automation
-    public static final String ALARM_ESCALATED_UEI   = "uei.opennms.org/alarms/alarmEscalated";
-    // Sent when an alarm is cleared, either by a user action or an automation
-    public static final String ALARM_CLEARED_UEI = "uei.opennms.org/alarms/alarmCleared";
-    // Sent when an alarm is un-cleared, either by a user action or an automation
-    public static final String ALARM_UNCLEARED_UEI = "uei.opennms.org/alarms/alarmUncleared";
-    // Sent when an alarm is updated with a reduce event
-    public static final String ALARM_UPDATED_WITH_REDUCED_EVENT_UEI = "uei.opennms.org/alarms/alarmUpdatedWithReducedEvent";
-    // Sent when an alarm is deleted
-    public static final String ALARM_DELETED_EVENT_UEI = "uei.opennms.org/alarms/alarmDeleted";
 
     //
     // for Bsmd

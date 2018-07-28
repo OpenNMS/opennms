@@ -28,12 +28,14 @@
 
 package org.opennms.web.rest.support;
 
+import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.BOOLEAN;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.FLOAT;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.INTEGER;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.IP_ADDRESS;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.LONG;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.STRING;
 import static org.opennms.web.rest.support.SearchProperty.SearchPropertyType.TIMESTAMP;
+import static org.opennms.web.rest.support.SearchProperty.TRUE_OR_FALSE_VALUES;
 
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -92,6 +94,7 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsAlarm.class, "firstAutomationTime", "First Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "firstEventTime", "First Event Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "ifIndex", "SNMP Interface Index", INTEGER),
+		new SearchProperty(OnmsAlarm.class, null, "isSituation", null, "Is Situation", BOOLEAN, false, false, TRUE_OR_FALSE_VALUES),
 		new SearchPropertyBuilder().entityClass(OnmsAlarm.class).id("ipAddr").name("IP Address").type(IP_ADDRESS).iplike(true).build(),
 		new SearchProperty(OnmsAlarm.class, "lastAutomationTime", "Last Automation Time", TIMESTAMP),
 		new SearchProperty(OnmsAlarm.class, "lastEventTime", "Last Event Time", TIMESTAMP),
@@ -418,7 +421,8 @@ public abstract class SearchProperties {
 			namePrefix, 
 			p.name,
 			p.type,
-			orderBy,
+			// Don't apply DEFAULT_ORDER_BY to properties that are explicitly ORDER_BY==false.
+			p.orderBy && orderBy,
 			// IPLIKE queries are only valid on root aliases
 			// so always reset this value to 'false' when adding
 			// prefixes

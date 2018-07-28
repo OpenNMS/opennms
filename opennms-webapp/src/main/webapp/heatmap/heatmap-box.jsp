@@ -127,10 +127,6 @@
     }
 </style>
 
-<jsp:include page="/assets/load-assets.jsp" flush="false">
-    <jsp:param name="asset" value="jquery-ui-js" />
-</jsp:include>
-
 <div id="heatmap-box" class="panel panel-default">
     <div class="panel-heading">
         <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>

@@ -1,0 +1,10 @@
+syntax = "proto2";
+option java_package = "org.opennms.core.ipc.rpc.kafka.model";
+option java_outer_classname = "RpcMessageProtos";
+
+message RpcMessage {
+required string rpc_id = 1;
+required bytes  rpc_content = 2;
+optional string system_id = 3;
+optional uint64 expiration_time = 4;
+}

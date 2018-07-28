@@ -65,7 +65,7 @@ public class HostAdapter {
 
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
-        bsonWriter.writeInt64(this.ifIndex);
+        bsonWriter.writeInt64("ifIndex", this.ifIndex);
         bsonWriter.writeStartArray("mac_address");
         for (final Mac mac : this.mac_address) {
             mac.writeBson(bsonWriter);

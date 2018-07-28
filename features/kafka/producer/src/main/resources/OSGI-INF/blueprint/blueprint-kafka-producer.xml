@@ -17,22 +17,27 @@
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
       <cm:property name="nodeRefreshTimeoutMs" value="300000"/> <!-- 5 minutes -->
-      <cm:property name="alarmSyncIntervalMs" value="300000"/> <!-- 5 minutes -->
+      <cm:property name="alarmSync" value="true"/>
       <cm:property name="eventFilter" value=""/>
       <cm:property name="alarmFilter" value=""/>
+      <cm:property name="nodeIdToCriteriaMaxCacheSize" value="10000"/>
     </cm:default-properties>
   </cm:property-placeholder>
 
   <reference id="configAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" />
   <reference id="eventConfDao" interface="org.opennms.netmgt.config.api.EventConfDao" />
   <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
-  <reference id="alarmLifecycleSubscriptionService" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleSubscriptionService" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
   <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" />
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" />
+  <reference id="hwEntityDao" interface="org.opennms.netmgt.dao.api.HwEntityDao" />
 
   <bean id="protobufMapper" class="org.opennms.features.kafka.producer.ProtobufMapper">
     <argument ref="eventConfDao"/>
+    <argument ref="hwEntityDao"/>
+    <argument ref="transactionOperations"/>
+    <argument ref="nodeDao"/>
+    <argument value="${nodeIdToCriteriaMaxCacheSize}"/>
   </bean>
 
   <bean id="nodeCache" class="org.opennms.features.kafka.producer.NodeCache">
@@ -47,7 +52,6 @@
     <argument ref="nodeCache"/>
     <argument ref="configAdmin"/>
     <argument ref="eventSubscriptionService"/>
-    <argument ref="alarmLifecycleSubscriptionService"/>
 
     <property name="eventTopic" value="${eventTopic}"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
@@ -56,17 +60,25 @@
     <property name="alarmFilter" value="${alarmFilter}"/>
   </bean>
 
-  <service ref="alarmDataSync" interface="org.opennms.features.kafka.producer.datasync.AlarmDataStore" />
+  <service ref="kafkaProducer" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+    <service-properties>
+      <entry key="registration.export" value="true"/>
+    </service-properties>
+  </service>
 
   <bean id="alarmDataSync" class="org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync"
 		init-method="init" destroy-method="destroy">
     <argument ref="configAdmin"/>
     <argument ref="kafkaProducer"/>
-    <argument ref="alarmDao" />
     <argument ref="protobufMapper" />
-    <argument ref="transactionOperations"/>
     <property name="alarmTopic" value="${alarmTopic}"/>
-    <property name="alarmSyncIntervalMs" value="${alarmSyncIntervalMs}"/>
+    <property name="alarmSync" value="${alarmSync}"/>
   </bean>
+
+  <bean factory-ref="kafkaProducer" factory-method="setDataSync">
+    <argument ref="alarmDataSync"/>
+  </bean>
+
+  <service ref="alarmDataSync" interface="org.opennms.features.kafka.producer.datasync.AlarmDataStore" />
 
 </blueprint>

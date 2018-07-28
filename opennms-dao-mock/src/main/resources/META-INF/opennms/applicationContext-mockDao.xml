@@ -63,9 +63,6 @@
     <bean id="categoryDao" class="org.opennms.netmgt.dao.mock.MockCategoryDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.CategoryDao" ref="categoryDao" />
 
-    <bean id="demandPollDao" class="org.opennms.netmgt.dao.mock.MockDemandPollDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.DemandPollDao" ref="demandPollDao" />
-
     <bean id="distPollerDao" class="org.opennms.netmgt.dao.mock.MockDistPollerDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.DistPollerDao" ref="distPollerDao" />
 
@@ -232,5 +229,13 @@
     </bean>
 
     <bean id="timeKeeper" class="org.opennms.netmgt.collection.support.DefaultTimeKeeper" />
+
+    <bean id="alarmEntityNotifier" class="org.opennms.netmgt.dao.support.AlarmEntityNotifierImpl"/>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier" ref="alarmEntityNotifier" />
+
+    <onmsgi:list id="alarmEntityListeners" interface="org.opennms.netmgt.dao.api.AlarmEntityListener">
+        <onmsgi:listener ref="alarmEntityNotifier" bind-method="onListenerRegistered" unbind-method="onListenerUnregistered" />
+    </onmsgi:list>
 
 </beans>

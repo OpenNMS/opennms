@@ -2,6 +2,7 @@
 <databaseChangeLog
   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
 
   <changeSet author="smith" id="23.0.0-alarm-situations">
@@ -30,5 +31,72 @@
           referencedTableName="alarms" referencedColumnNames="alarmid"/>
 
   </changeSet>
-  
+
+  <changeSet author="smith" id="23.0.0-ent_alias_inventory">
+	<createTable tableName="hwentityalias">
+		<column name="id" type="integer">
+			<constraints primaryKey="true" nullable="false" />
+		</column>
+		<column name="hwentityid" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="index" type="integer">
+			<constraints nullable="false" />
+		</column>
+		<column name="oid" type="text">
+			<constraints nullable="false" />
+		</column>
+	</createTable>
+
+	<ext:addAutoIncrement tableName="hwentityalias"
+		columnName="id" sequenceName="opennmsnxtid" />
+	<addForeignKeyConstraint
+		constraintName="fk_hwentity_hwentityalias" onDelete="CASCADE"
+		baseTableName="hwentityalias" baseColumnNames="hwentityid"
+		referencedTableName="hwentity" referencedColumnNames="id" />
+	<createIndex tableName="hwentityalias"
+		indexName="hwentityalias_unique_idx" unique="true">
+		<column name="hwentityid" />
+		<column name="index" />
+	</createIndex>
+
+	<rollback>
+		<dropTable tableName="hwentityalias" />
+	</rollback>
+  </changeSet>
+
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-table">
+    <dropTable tableName="pollresults"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-pollresults-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'pollresultnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="pollresultnxtid" />
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-table">
+    <dropTable tableName="demandpolls"></dropTable>
+  </changeSet>
+  <changeSet author="mvrueden" id="23.0.0-remove-demandpoll-requence">
+    <preConditions onFail="MARK_RAN">
+        <sqlCheck expectedResult="1">
+            SELECT COUNT(relname) AS SEQUENCE_NAME FROM pg_class, pg_namespace
+            WHERE relkind='S' AND pg_class.relnamespace = pg_namespace.oid AND relname ILIKE 'demandpollnxtid'
+        </sqlCheck>
+    </preConditions>
+    <dropSequence sequenceName="demandpollnxtid" />
+  </changeSet>
+
+ <changeSet author="smith" id="23.0.0-situations-reverted-to-alarms">
+   <!--  Dropping the Situation subtype. -->
+   <dropColumn columnName="discriminator" tableName="alarms"/>
+   <!--  Renaming member to 'relatedAlarms' in OnmsAlarm type. -->
+   <renameColumn newColumnName="related_alarm_id"
+           oldColumnName="alarms_alarmid"
+            tableName="alarm_situations"/>
+ </changeSet>
+ 
 </databaseChangeLog>

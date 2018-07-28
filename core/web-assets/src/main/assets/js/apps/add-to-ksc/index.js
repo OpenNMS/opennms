@@ -144,7 +144,7 @@ angular.module('onms-ksc', [
   $scope.hasFlows = false;
   $scope.flowGraphUrl = '';
   $scope.getFlowInfo = function(nodeId, ifIndex , start, end) {
-    if (nodeId == 0 || ifIndex == 0) {
+    if (nodeId === 0 || ifIndex === 0) {
       return;
     }
     flowsRestFactory.getFlowGraphUrl(nodeId, ifIndex, start, end)

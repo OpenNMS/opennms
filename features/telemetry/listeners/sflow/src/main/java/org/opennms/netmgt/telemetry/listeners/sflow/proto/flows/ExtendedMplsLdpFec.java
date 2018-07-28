@@ -56,6 +56,8 @@ public class ExtendedMplsLdpFec implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeInt64(this.mplsFecAddrPrefixLength);
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeInt64("mplsFecAddrPrefixLength", this.mplsFecAddrPrefixLength);
+        bsonWriter.writeEndDocument();
     }
 }

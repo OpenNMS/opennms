@@ -200,6 +200,18 @@ The JNLP application that provides the Remote Poller.
 %{extrainfo2}
 
 
+%package webapp-hawtio
+Summary:	Hawtio webapp
+Group:		Applications/System
+Requires:	%{name}-core = %{version}-%{release}
+
+%description webapp-hawtio
+The Hawtio web console.
+
+%{extrainfo}
+%{extrainfo2}
+
+
 %package ncs
 Summary:	Network Component Services
 Group:		Applications/System
@@ -719,6 +731,7 @@ find %{buildroot}%{instprefix}/etc %{buildroot}%{instprefix}/lib %{buildroot}%{i
 find %{buildroot}%{jettydir} ! -type d | \
 	sed -e "s,^%{buildroot},," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	grep -v '/opennms/source/' | \
 	grep -v '/WEB-INF/[^/]*\.xml$' | \
 	grep -v '/WEB-INF/[^/]*\.properties$' | \
@@ -729,11 +742,13 @@ find %{buildroot}%{jettydir} ! -type d | \
 find %{buildroot}%{jettydir}/*/WEB-INF/*.xml | \
 	sed -e "s,^%{buildroot},%config ," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	grep -v '/WEB-INF/ncs' | \
 	sort >> %{_tmppath}/files.jetty
 find %{buildroot}%{jettydir} -type d | \
 	sed -e "s,^%{buildroot},%dir ," | \
 	grep -v '/opennms-remoting' | \
+	grep -v '/hawtio' | \
 	sort >> %{_tmppath}/files.jetty
 
 cd -
@@ -798,6 +813,11 @@ rm -rf %{buildroot}
 %defattr(644 root root 755)
 %config %{jettydir}/opennms-remoting/WEB-INF/*.xml
 %{jettydir}/opennms-remoting
+
+%files webapp-hawtio
+%defattr(644 root root 755)
+%config %{jettydir}/hawtio/WEB-INF/*.xml
+%{jettydir}/hawtio
 
 %files plugins
 
@@ -908,22 +928,31 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$SHARE_INST" ] && SHARE_INST="%{sharedir}"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
-printf -- "- making symlink for $ROOT_INST/docs... "
-if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
-	echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST" ]; then
+	printf -- "- making symlink for $ROOT_INST/docs... "
+	if [ -e "$ROOT_INST/docs" ] && [ ! -L "$ROOT_INST/docs" ]; then
+		echo "failed: $ROOT_INST/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		install -d -m 755 "$ROOT_INST"
+		rm -rf "$ROOT_INST/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
+		echo "done"
+	fi
 else
-	rm -rf "$ROOT_INST/docs"
-	ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/docs"
-	echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/docs... %{name}-core is not installed\n"
 fi
 
-printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
-if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
-  echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}" ]; then
+	printf -- "- making symlink for $ROOT_INST/jetty-webapps/%{servletdir}/docs... "
+	if [ -e "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ] && [ ! -L "$ROOT_INST/jetty-webapps/%{servletdir}/docs" ]; then
+		echo "failed: $ROOT_INST/jetty-webapps/%{servletdir}/docs is a real directory, but it should be a symlink to %{_docdir}/%{name}-%{version}."
+	else
+		rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
+		echo "done"
+	fi
 else
-  rm -rf "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  ln -sf "%{_docdir}/%{name}-%{version}" "$ROOT_INST/jetty-webapps/%{servletdir}/docs"
-  echo "done"
+	printf -- "- skipping symlink to $ROOT_INST/jetty-webapps/%{servletdir}/docs... %{name}-webapp-jetty not installed\n"
 fi
 
 %postun -p /bin/bash docs
@@ -935,7 +964,7 @@ LOG_INST="$RPM_INSTALL_PREFIX2"
 [ -z "$LOG_INST"   ] && LOG_INST="%{logdir}"
 
 if [ "$1" = 0 ]; then
-	if [ -L "$ROOT_INST/docs" ]; then
+	if [ -e "$ROOT_INST" ] && [ -L "$ROOT_INST/docs" ]; then
 		rm -f "$ROOT_INST/docs"
 	fi
 fi

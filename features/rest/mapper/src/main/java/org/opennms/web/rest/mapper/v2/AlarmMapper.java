@@ -43,7 +43,6 @@ import org.mapstruct.Mappings;
 import org.opennms.netmgt.model.AckType;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEventParameter;
-import org.opennms.netmgt.model.Situation;
 import org.opennms.netmgt.model.TroubleTicketState;
 import org.opennms.web.rest.model.v2.AlarmDTO;
 import org.opennms.web.rest.model.v2.AlarmSummaryDTO;
@@ -89,8 +88,10 @@ public abstract class AlarmMapper {
         if (alarm.getTTicketId() != null && !alarm.getTTicketId().isEmpty() && ticketUrlTemplate != null) {
             alarmDTO.setTroubleTicketLink(getTicketUrl(alarm.getTTicketId()));
         }
-        if (alarm instanceof Situation) {
-            alarmDTO.setRelatedAlarms(((Situation)alarm).getAlarms().stream()
+        // If there are no related alarms, we do not add them to the DTO and
+        // the field will not be serialized.
+        if (alarm.isSituation()) {
+            alarmDTO.setRelatedAlarms(alarm.getRelatedAlarms().stream()
                                       .map(a -> alarmToAlarmSummaryDTO(a))
                                       .sorted(Comparator.comparing(AlarmSummaryDTO::getId))
                                       .collect(Collectors.toList()));

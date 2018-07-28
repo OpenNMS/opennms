@@ -35,14 +35,14 @@ public class CdpLinkNode implements Comparable<CdpLinkNode>{
     private String  m_cdpLocalPort;
     private String  m_cdpLocalPortUrl;
 
-    private String m_cdpCacheAddressType;
-    private String m_cdpCacheAddress;
-    private String m_cdpCacheVersion;
-    private String m_cdpCacheDeviceId;
+    private String m_cdpCacheDevice;
     private String m_cdpCacheDeviceUrl;
+
     private String m_cdpCacheDevicePort;
     private String m_cdpCacheDevicePortUrl;
-    private String m_cdpCacheDevicePlatform;
+
+    private String m_cdpCachePlatform;
+    
     private String m_cdpCreateTime;
     private String m_cdpLastPollTime;
     
@@ -63,36 +63,13 @@ public class CdpLinkNode implements Comparable<CdpLinkNode>{
         m_cdpLocalPortUrl = cdplocalPortUrl;
     }
 
-    public String getCdpCacheAddressType() {
-        return m_cdpCacheAddressType;
+
+    public String getCdpCacheDevice() {
+        return m_cdpCacheDevice;
     }
 
-    public void setCdpCacheAddressType(String cdpCacheAddressType) {
-        m_cdpCacheAddressType = cdpCacheAddressType;
-    }
-
-    public String getCdpCacheAddress() {
-        return m_cdpCacheAddress;
-    }
-
-    public void setCdpCacheAddress(String cdpCacheAddress) {
-        m_cdpCacheAddress = cdpCacheAddress;
-    }
-
-    public String getCdpCacheVersion() {
-        return m_cdpCacheVersion;
-    }
-
-    public void setCdpCacheVersion(String cdpCacheVersion) {
-        m_cdpCacheVersion = cdpCacheVersion;
-    }
-
-    public String getCdpCacheDeviceId() {
-        return m_cdpCacheDeviceId;
-    }
-
-    public void setCdpCacheDeviceId(String cdpCacheDeviceId) {
-        m_cdpCacheDeviceId = cdpCacheDeviceId;
+    public void setCdpCacheDevice(String cdpCacheDevice) {
+        m_cdpCacheDevice = cdpCacheDevice;
     }
 
     public String getCdpCacheDeviceUrl() {
@@ -119,12 +96,12 @@ public class CdpLinkNode implements Comparable<CdpLinkNode>{
         m_cdpCacheDevicePortUrl = cdpCacheDevicePortUrl;
     }
 
-    public String getCdpCacheDevicePlatform() {
-        return m_cdpCacheDevicePlatform;
+    public String getCdpCachePlatform() {
+        return m_cdpCachePlatform;
     }
 
-    public void setCdpCacheDevicePlatform(String cdpCacheDevicePlatform) {
-        m_cdpCacheDevicePlatform = cdpCacheDevicePlatform;
+    public void setCdpCachePlatform(String cdpCachePlatform) {
+        m_cdpCachePlatform = cdpCachePlatform;
     }
 
     public String getCdpCreateTime() {
