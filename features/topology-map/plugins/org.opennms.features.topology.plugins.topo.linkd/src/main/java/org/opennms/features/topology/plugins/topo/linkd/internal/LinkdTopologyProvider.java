@@ -1043,6 +1043,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 source = portToVertexMap.get(bp);        
             }
             for (String mac : macToVertexMap.keySet()) { 
+                target = macToVertexMap.get(mac);
                 targetInterfaces = m_macToOnmsIpMap.get(mac);
                 LinkdEdge edge = connectVertices(sourcebp, source, target, BRIDGE_EDGE_NAMESPACE);
                 edge.setTooltipText(getEdgeTooltipText(sourcebp,source,target, targetInterfaces,m_nodeToOnmsSnmpMap,mac));
