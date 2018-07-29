@@ -85,7 +85,8 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockSinkConsumerManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
-        "classpath:/META-INF/opennms/applicationContext-syslogDaemon.xml"
+        "classpath:/META-INF/opennms/applicationContext-syslogDaemon.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false,tempDbClass=MockDatabase.class)

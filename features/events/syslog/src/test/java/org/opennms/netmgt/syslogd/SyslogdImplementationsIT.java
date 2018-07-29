@@ -79,7 +79,8 @@ import com.codahale.metrics.MetricRegistry;
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/mockMessageDispatcherFactory.xml",
-        "classpath:/applicationContext-syslogImplementations.xml"
+        "classpath:/applicationContext-syslogImplementations.xml",
+        "classpath:/META-INF/opennms/mockSinkConsumerManager.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties = { "io.netty.leakDetectionLevel=PARANOID" })
 @JUnitTemporaryDatabase
