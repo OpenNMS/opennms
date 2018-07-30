@@ -29,7 +29,7 @@
 --%>
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="org.opennms.web.springframework.security.AclUtils"%>
-
+<%@taglib uri="onms-taglib" prefix="onms" %>
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false">
@@ -71,7 +71,7 @@
           Node: <strong><a href="element/node.jsp?node=${nodeId}">{{ nodeLabel }}</a></strong>
         </h4>
         <p>
-          Last modified by {{ master['lastModifiedBy'] }} at {{ master['lastModifiedDate'] | date }}
+          Last modified by {{ master['lastModifiedBy'] }} at {{ master['lastModifiedDate'] | date : "<onms:datetimeformat type="AngularJS"/>" }}
         </p>
 
         <form name="assetForm" novalidate>

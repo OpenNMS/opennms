@@ -9,7 +9,6 @@
     <short-name>OpenNMS Default Taglib</short-name>
     <uri>onms-taglib</uri>
 
-
     <tag>
         <name>datetime</name>
         <tag-class>org.opennms.web.tags.DateTimeTag</tag-class>
@@ -25,6 +24,18 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.util.Date</type>
+        </attribute>
+    </tag>
+
+    <tag>
+        <name>datetimeformat</name>
+        <tag-class>org.opennms.web.tags.DateTimeFormatTag</tag-class>
+        <body-content>empty</body-content>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <type>org.opennms.web.tags.FormatType</type>
         </attribute>
     </tag>
 
