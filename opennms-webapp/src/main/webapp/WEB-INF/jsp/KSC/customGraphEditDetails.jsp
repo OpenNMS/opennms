@@ -169,7 +169,7 @@
                   <option value="${option.key}" ${timespanSelected}>${option.value.replaceAll("_", " ")}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="form-group">
@@ -188,7 +188,7 @@
                   <option value="${prefabGraph.name}" ${prefabSelected}>${prefabGraph.name}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="form-group">
@@ -207,7 +207,7 @@
                   <option value="${index}" ${indexSelected}>${index}</option>
                 </c:forEach>
               </select>
-              <span class="help-block">This selects the relative start and stop times for the report</span>
+              <span class="form-text text-muted">This selects the relative start and stop times for the report</span>
             </div>
           </div>
           <div class="btn-group">

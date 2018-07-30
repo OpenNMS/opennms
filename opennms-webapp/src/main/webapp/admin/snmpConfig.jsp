@@ -358,7 +358,7 @@ if (request.getAttribute("success") != null) {
               <select id="version" name="version" class="form-control" onChange="onVersionChange()">
                 <%=getOptions(version, "v2c", "v1", "v2c", "v3")%>
               </select>
-              <p class="help-block"><b>Default: </b>v2c</p>
+              <p class="form-text text-muted"><b>Default: </b>v2c</p>
             </div>
           </div>
 
@@ -396,7 +396,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="timeout" name="timeout" class="form-control" value="<%=timeout%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_TIMEOUT %> ms</p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_TIMEOUT %> ms</p>
             </div>
           </div>
 
@@ -406,7 +406,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="retryCount" name="retryCount" class="form-control" value="<%=retryCount%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_RETRIES %></p>
             </div>
           </div>
 
@@ -416,7 +416,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="port" name="port" class="form-control" value="<%=port%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PORT %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PORT %></p>
             </div>
           </div>
 
@@ -435,7 +435,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="maxRequestSize" name="maxRequestSize" class="form-control" value="<%=maxRequestSize%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REQUEST_SIZE %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REQUEST_SIZE %></p>
             </div>
           </div>
 
@@ -445,7 +445,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="maxVarsPerPdu" name="maxVarsPerPdu" class="form-control" value="<%=maxVarsPerPdu%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_VARS_PER_PDU %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_VARS_PER_PDU %></p>
             </div>
           </div>
 
@@ -455,7 +455,7 @@ if (request.getAttribute("success") != null) {
             </label>
             <div class="col-sm-9">
               <input id="maxRepetitions" name="maxRepetitions" class="form-control" value="<%=maxRepetitions%>">
-              <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
+              <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
             </div>
           </div>
       </div> <!-- card-body -->
@@ -475,7 +475,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input id="readCommunityString" class="form-control" name="readCommunityString" value="<%=readCommunityString%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_READ_COMMUNITY %></p>
           </div>
         </div>
 
@@ -485,7 +485,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input id="writeCommunityString" class="form-control" name="writeCommunityString" value="<%=writeCommunityString%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
           </div>
         </div>
       </div> <!-- card-body -->
@@ -505,7 +505,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input id="securityName" class="form-control" name="securityName" value="<%=securityName%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_SECURITY_NAME %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_SECURITY_NAME %></p>
           </div>
         </div>
 
@@ -523,7 +523,7 @@ if (request.getAttribute("success") != null) {
               <option value="3"
                 <%="3".equals(securityLevel) ? "selected" : ""%>>authPriv</option>
             </select>
-            <p class="help-block"><b>Default: </b> noAuthNoPriv|authNoPriv|authPriv</p>
+            <p class="form-text text-muted"><b>Default: </b> noAuthNoPriv|authNoPriv|authPriv</p>
           </div>
         </div>
 
@@ -533,7 +533,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input id="authPassPhrase" class="form-control" name="authPassPhrase" value="<%=authPassPhrase%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PASS_PHRASE %></p>
           </div>
         </div>
 
@@ -545,7 +545,7 @@ if (request.getAttribute("success") != null) {
 			<select id="authProtocol" name="authProtocol" class="form-control">
 			  <%=getOptions(authProtocol, "", "", "MD5", "SHA")%>
 			</select>
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_AUTH_PROTOCOL %></p>
           </div>
         </div>
 
@@ -555,7 +555,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input id="privPassPhrase" class="form-control" name="privPassPhrase" value="<%=privPassPhrase%>">
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PASS_PHRASE %></p>
           </div>
         </div>
 
@@ -567,7 +567,7 @@ if (request.getAttribute("success") != null) {
             <select id="privProtocol" name="privProtocol" class="form-control">
               <%=getOptions(privProtocol, "", "", "DES", "AES", "AES192", "AES256")%>
             </select>
-            <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %></p>
+            <p class="form-text text-muted"><b>Default: </b><%=SnmpConfiguration.DEFAULT_PRIV_PROTOCOL %></p>
           </div>
         </div>
 
@@ -624,7 +624,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input type="checkbox" id="sendEventOption" name="sendEventOption" checked="checked"/>
-            <p class="help-block"><b>Default: </b>enabled</p>
+            <p class="form-text text-muted"><b>Default: </b>enabled</p>
           </div>
         </div>
 
@@ -634,7 +634,7 @@ if (request.getAttribute("success") != null) {
           </label>
           <div class="col-sm-9">
             <input type="checkbox" id="saveLocallyOption" name="saveLocallyOption"/>
-            <p class="help-block"><b>Default: </b>disabled</p>
+            <p class="form-text text-muted"><b>Default: </b>disabled</p>
           </div>
         </div>
 

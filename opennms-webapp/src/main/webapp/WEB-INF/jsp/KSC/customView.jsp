@@ -182,7 +182,7 @@
                     <option value="${option.key}" ${selected}>${option.value.replaceAll("_", " ")}</option>
                   </c:forEach>
                 </select>
-                <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
+                <span class="form-text text-muted">Press update button to reflect option changes to ALL graphs</span>
               </div>
             </div>
           </c:if>
@@ -204,7 +204,7 @@
                     <option value="${option.key}" ${selected}>${option.value}</option>
                   </c:forEach>
                 </select>
-                <span class="help-block">Press update button to reflect option changes to ALL graphs</span>
+                <span class="form-text text-muted">Press update button to reflect option changes to ALL graphs</span>
               </div>
             </div>
           </c:if>

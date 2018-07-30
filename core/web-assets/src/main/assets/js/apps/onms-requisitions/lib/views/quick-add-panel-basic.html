@@ -9,7 +9,7 @@
 <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.ipAddress.$invalid }">
   <label class="col-form-label" for="ipAddress">IP Address</label>
   <input class="form-control" type="text" id="ipAddress" name="ipAddress" placeholder="A valid IPv4 or IPv6 address" ng-model="node.ipAddress" required valid-ip-address></input>
-  <p ng-show="intfForm.ipAddress.$invalid" class="help-block">A valid IPv4 or IPv6 address is required</p>
+  <p ng-show="intfForm.ipAddress.$invalid" class="form-text text-muted">A valid IPv4 or IPv6 address is required</p>
 </div>
 <div class="form-group" ng-class="{ 'has-error' : quickAddNodeForm.nodeLabel.$invalid }">
   <label class="col-form-label" for="nodeLabel">Node Label</label>

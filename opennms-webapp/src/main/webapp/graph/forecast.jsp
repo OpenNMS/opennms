@@ -131,7 +131,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            ng-options="t.name for t in forecastingTemplates track by t.id"
 		                            ng-change="onForecastingTemplateChange()">
 		                    </select>
-		                    <span class="help-block">Choose from one of the available forecasting templates, or configure your own options.</span>
+		                    <span class="form-text text-muted">Choose from one of the available forecasting templates, or configure your own options.</span>
 		                </div>
 		            </div>
 
@@ -149,7 +149,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Training Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart">
-		                                    <span class="help-block">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
+		                                    <span class="form-text text-muted">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
 		                                </div>
 		                            </div>
 
@@ -157,7 +157,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Graph Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart">
-		                                    <span class="help-block">Samples from this number of days ago will be shown on the graph.</span>
+		                                    <span class="form-text text-muted">Samples from this number of days ago will be shown on the graph.</span>
 		                                </div>
 		                            </div>
 
@@ -165,7 +165,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Forecasts</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts">
-		                                    <span class="help-block">Number of seasons to forecast.</span>
+		                                    <span class="form-text text-muted">Number of seasons to forecast.</span>
 		                                </div>
 		                            </div>
 		                        </div>
@@ -174,7 +174,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Season</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season">
-		                                    <span class="help-block">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
+		                                    <span class="form-text text-muted">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
 		                                </div>
 		                            </div>
 
@@ -182,7 +182,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Trend Order</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder">
-		                                    <span class="help-block">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
+		                                    <span class="form-text text-muted">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
 		                                </div>
 		                            </div>
 
@@ -190,7 +190,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Confidence Level</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel">
-		                                    <span class="help-block">Level used to calculate the upper and lower confidence bounds.</span>
+		                                    <span class="form-text text-muted">Level used to calculate the upper and lower confidence bounds.</span>
 		                                </div>
 		                            </div>
 		
@@ -198,7 +198,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                                <label class="col-sm-3 col-form-label">Outlier Threshold</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold">
-		                                    <span class="help-block">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>
+		                                    <span class="form-text text-muted">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>
 		                                </div>
 		                            </div>
 		                        </div>

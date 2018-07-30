@@ -3,7 +3,7 @@
 <div class="form-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
   <label class="col-form-label">{{ parameter.key }}</label>
   <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
-  <p ng-show="paramForm.paramValue.$invalid" class="help-block">Parameter value is required.</p>
+  <p ng-show="paramForm.paramValue.$invalid" class="form-text text-muted">Parameter value is required.</p>
 </div>
 
 </div>
