@@ -134,21 +134,21 @@ public class EventdConfiguration implements Serializable {
      * Defaults to 2 x the number of available processors.
      */
     @XmlAttribute(name = "sink-threads", required=false)
-    private int m_threads=0;
+    private Integer m_threads;
     
     /**
      * Maximum number of messages to keep in memory while waiting
      to be dispatched.
      */
 	@XmlAttribute(name="sink-queue-size", required=false)
-    private int m_queueSize = 10000;
+    private Integer m_queueSize;
 
     /**
      * Messages are aggregated in batches before being dispatched.
      * When the batch reaches this size, it will be dispatched.
      */
 	@XmlAttribute(name="sink-batch-size", required=false)
-    private int m_batchSize = 1000;
+    private Integer m_batchSize;
 
     /**
      * Messages are aggregated in batches before being dispatched.
@@ -156,7 +156,7 @@ public class EventdConfiguration implements Serializable {
      * it will be dispatched, regardless of the current size.
      */
 	@XmlAttribute(name="sink-batch-interval", required=false)
-    private int m_batchInterval = 500;
+    private Integer m_batchInterval;
 
     public EventdConfiguration() {
     }
@@ -194,7 +194,7 @@ public class EventdConfiguration implements Serializable {
     }
     
     public Integer getNumThreads() {
-    	return m_threads;
+    	return m_threads == null ? 0 : m_threads;
     }
 
     public void setNumThreads(final Integer numThreads) {
@@ -250,7 +250,7 @@ public class EventdConfiguration implements Serializable {
     }
     
     public int getQueueSize() {
-        return m_queueSize;
+        return m_queueSize == null ? 10000 : m_queueSize;
     }
 
     public void setQueueSize(int _queueSize) {
@@ -258,7 +258,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public int getBatchSize() {
-        return m_batchSize;
+        return m_batchSize == null ? 1000: m_batchSize;
     }
 
     public void setBatchSize(int _batchSize) {
@@ -266,7 +266,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public int getBatchInterval() {
-        return m_batchInterval;
+        return m_batchInterval == null ? 500 : m_batchInterval;
     }
 
     public void setBatchInterval(int _batchInterval) {
