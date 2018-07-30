@@ -100,7 +100,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
 <ul class="list-inline">
   <% if (ifIndex > 0 ) { %>
-  	<li>
+  	<li class="list-inline-item">
       <a href="<%=eventUrl2%>">View Events by ifIndex</a>
   	</li>
   <% } %>
@@ -116,13 +116,13 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <c:param name="reports" value="all"/>
       <c:param name="resourceId" value="<%=resourceId.toString()%>"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${graphLink}"/>">SNMP Interface Data Graphs</a>
     </li>
    <% 
     }
     if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
     </li>
   <% } %>       

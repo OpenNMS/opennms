@@ -314,42 +314,42 @@ function confirmAssetEdit() {
     <c:url var="eventLink" value="event/list">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${eventLink}"/>">View Events</a>
     </li>
 
     <c:url var="alarmLink" value="alarm/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${alarmLink}"/>">View Alarms</a>
     </li>
     
     <c:url var="outageLink" value="outage/list.htm">
       <c:param name="filter" value="node=${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${outageLink}"/>">View Outages</a>
     </li>
     
     <c:url var="assetLink" value="asset/modify.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${assetLink}"/>" onclick="return confirmAssetEdit()">Asset Info</a>
     </li>
 
     <c:url var="hardwareLink" value="hardware/list.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${hardwareLink}"/>">Hardware Info</a>
     </li>
 
     <c:url var="intfAvailabilityLink" value="element/availability.jsp">
       <c:param name="node" value="${model.id}"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${intfAvailabilityLink}"/>">Availability</a>
     </li>
 
@@ -357,13 +357,13 @@ function confirmAssetEdit() {
       <c:url var="siteLink" value="siteStatusView.htm">
         <c:param name="statusSite" value="${model.statusSite}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${siteLink}"/>">Site Status</a>
       </li>
     </c:if>
 
     <c:forEach items="${model.links}" var="link">
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${link.url}"/>">${link.text}</a>
       </li>
     </c:forEach>
@@ -375,7 +375,7 @@ function confirmAssetEdit() {
       <c:param name="node" value="${model.id}"/>
       <c:param name="reports" value="all"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${resourceGraphsUrl}"/>">Resource Graphs</a>
     </li>
     
@@ -383,14 +383,14 @@ function confirmAssetEdit() {
       <c:url var="rescanLink" value="element/rescan.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${rescanLink}"/>">Rescan</a>
       </li>
       
       <c:url var="adminLink" value="admin/nodemanagement/index.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${adminLink}"/>">Admin</a>
       </li>
 
@@ -399,7 +399,7 @@ function confirmAssetEdit() {
           <c:param name="node" value="${model.id}"/>
           <c:param name="ipaddr" value="${model.snmpPrimaryIntf.ipAddress}"/>
         </c:url>
-        <li>
+        <li class="list-inline-item">
           <a href="<c:out value="${updateSnmpLink}"/>">Update SNMP</a>
         </li>
       </c:if>
@@ -409,13 +409,13 @@ function confirmAssetEdit() {
 	<c:param name="addNew" value="true"/>
 	<c:param name="nodeID" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${createOutage}"/>">Schedule Outage</a>
       </li>
     </c:if>
     
     <c:forEach items="${navEntries}" var="entry">
-      <li>
+      <li class="list-inline-item">
       	<c:out value="${entry}" escapeXml="false" />
       </li>
     </c:forEach>
@@ -500,7 +500,7 @@ function confirmAssetEdit() {
     </div>
     <div class="card-body">
       <ul class="list-unstyled">
-        <li>
+        <li class="list-inline-item">
           ${model.criticalPath}
         </li>
       </ul> 
@@ -620,14 +620,14 @@ function confirmAssetEdit() {
         <c:url var="rancidLink" value="inventory/rancid.htm">
           <c:param name="node" value="${model.id}"/>
         </c:url>
-        <li>
+        <li class="list-inline-item">
           <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
         </li>
       </c:if>
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>
-      <li>
+      <li class="list-inline-item">
         <a href="<c:out value="${detailLink}"/>">View Node Link Detailed Info</a>
       </li>
     </ul>

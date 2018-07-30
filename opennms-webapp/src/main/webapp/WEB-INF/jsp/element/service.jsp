@@ -147,11 +147,11 @@ function doDelete() {
 
         
       <ul class="list-inline">
-         <li><a href="${eventUrl}">View Events</a></li>
+         <li class="list-inline-item"><a href="${eventUrl}">View Events</a></li>
          
  	
        <sec:authorize url="admin/deleteService">
-         <li><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
+         <li class="list-inline-item"><a href="admin/deleteService" onClick="return doDelete()">Delete</a></li>
        </sec:authorize>
 
 	

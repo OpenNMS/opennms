@@ -151,22 +151,22 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
 <ul class="list-inline">
   <% if (! ipAddr.equals("0.0.0.0")) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${eventUrl1}"/>">View Events by IP Address</a>
     </li>
   <% } %>
   <% if (ifIndex > 0 ) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${eventUrl2}"/>">View Events by ifIndex</a>
     </li>
   <% } %>
   <% if( telnetIp != null ) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="telnet://<%=telnetIp%>">Telnet</a>
     </li>
   <% } %>
   <% if( httpIp != null ) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="http://<%=httpIp%>">HTTP</a>
     </li>
   <% } %>
@@ -186,23 +186,23 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
       <c:param name="reports" value="all"/>
       <c:param name="resourceId" value="<%=ipaddrResourceId.toString()%>"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${ipaddrGraphLink}"/>">Response Time Graphs</a>
     </li>
     <c:url var="snmpintfGraphLink" value="graph/results.htm">
       <c:param name="reports" value="all"/>
       <c:param name="resourceId" value="<%=snmpintfResourceId.toString()%>"/>
     </c:url>
-    <li>
+    <li class="list-inline-item">
       <a href="<c:out value="${snmpintfGraphLink}"/>">SNMP Interface Data Graphs</a>
     </li>
   <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-    <li>
+    <li class="list-inline-item">
       <a href="admin/deleteInterface" onClick="return doDelete()">Delete</a>
     </li>
   <% } %>
   <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-    <li>
+    <li class="list-inline-item">
       <c:url var="rescanUrl" value="element/rescan.jsp">
         <c:param name="node" value="<%=String.valueOf(nodeId)%>"/>
         <c:param name="ipaddr" value="<%=ipAddr%>"/>
@@ -211,7 +211,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     </li>
   <% } %>
   <% if (request.isUserInRole( Authentication.ROLE_ADMIN )) { %>
-    <li>
+    <li class="list-inline-item">
       <c:url var="schedOutageUrl" value="admin/sched-outages/editoutage.jsp">
         <c:param name="newName" value="<%=ipAddr%>"/>
         <c:param name="addNew" value="true"/>
