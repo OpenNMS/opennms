@@ -164,9 +164,9 @@ action="admin/notification/destinationWizard" >
 <input type="hidden" name="sourcePage" value="chooseTargets.jsp"/>
 <input type="hidden" name="nextPage"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Choose the users and groups to send the notice to.</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Choose the users and groups to send the notice to.</h3>
   </div>
   <table class="table table-condensed table-borderless">
         <tr>
@@ -270,7 +270,7 @@ action="admin/notification/destinationWizard" >
           </td>
         </tr>
   </table>
-  <div class="panel-footer">
+  <div class="card-footer">
     <a href="javascript:next()">Next &#155;&#155;&#155;</a>
   </div>
 </div> <!-- panel -->

@@ -121,9 +121,9 @@
     <jsp:param name="breadcrumb" value='<%="Alarm " + alarm.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Alarm <%=alarm.getId()%></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Alarm <%=alarm.getId()%></h3>
   </div>
 
 <table class="table table-condensed severity">
@@ -230,28 +230,28 @@
 </table>
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Log&nbsp;Message</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Log&nbsp;Message</h3>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getLogMsg(), true)%>
   </div>
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Description</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Description</h3>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%>
   </div>
 </div>
 
 <% if (acks != null && acks.size() > 0) {%>
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Acknowledgements</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Acknowledgements</h3>
   </div>
 <table class="table table-condensed severity">
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
@@ -272,11 +272,11 @@
 
 <div class="row">
 <div class="col-md-6">
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Sticky&nbsp;Memo</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Sticky&nbsp;Memo</h3>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
 				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
@@ -310,11 +310,11 @@
 </div>
 
 <div class="col-md-6">
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Journal&nbsp;Memo</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Journal&nbsp;Memo</h3>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <textarea style="width:100%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
@@ -350,11 +350,11 @@
 
 </div>
 
-<div class="panel panel-default severity">
-  <div class="panel-heading">
-    <h3 class="panel-title">Operator&nbsp;Instructions</h3>
+<div class="card severity">
+  <div class="card-header">
+    <h3 class="card-title">Operator&nbsp;Instructions</h3>
   </div>
-  <div class="panel-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
+  <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <%if (alarm.getOperInstruct() == null) {%>
             No instructions available.
             <% } else {%>

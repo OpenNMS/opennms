@@ -46,11 +46,11 @@
 <c:choose>
 
   <c:when test="${model.errors.errorCount > 0}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><spring:message code="error"/></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><spring:message code="error"/></h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <ul class="error">
           <c:forEach var="err" items="${model.errors.allErrors}">
             <li><spring:message message="${err}"/></li>
@@ -62,9 +62,9 @@
   
   <c:otherwise>
     <c:set var="monitor" value="${model.locationMonitors[0]}"/>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -115,9 +115,9 @@
       </table>
     </div>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
       </div>
       <table class="table table-condensed">
         <c:forEach items="${monitor.additionalDetails}" var="detail">
@@ -142,11 +142,11 @@
         }
       </script>
       
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Manage Remote Poller</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Manage Remote Poller</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
             <input type="hidden" name="monitorId" value="${monitor.id}"/>
           </form>

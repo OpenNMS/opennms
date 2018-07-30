@@ -52,9 +52,9 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit expression threshold</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Edit expression threshold</h3>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -115,21 +115,21 @@
                 <td><input type="text" name="rearmedUEI" class="form-control" size="60" value="${expression.rearmedUEI.orElse(null)}"/></td>
         	</tr>
       </table>
-      <div class="panel-footer">
+      <div class="card-footer">
         <input type="submit" name="submitAction" class="btn btn-default" value="${saveButtonTitle}"/>
         <input type="submit" name="submitAction" class="btn btn-default" value="${cancelButtonTitle}"/>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
   
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Resource Filters</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Resource Filters</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-sm-4">
             <table class="table table-condensed">
@@ -188,7 +188,7 @@
             </table>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -197,11 +197,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Help</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Help</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         <b>Description</b>: An optional description for the threshold expression, to help identify what is their purpose.<br/>
         <b>Type</b>:<br/>
@@ -227,7 +227,7 @@
         &nbsp;&nbsp;<b>operator=OR</b>: if the resource match any of them, the threshold will be processed.<br/>
         &nbsp;&nbsp;<b>operator=AND</b>: the resource must match all the filters.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

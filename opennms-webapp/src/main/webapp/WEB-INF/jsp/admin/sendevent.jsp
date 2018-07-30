@@ -169,11 +169,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Send Event to OpenNMS</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Send Event to OpenNMS</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="input.uei" class="col-sm-2 control-label">Event</label>
           <div class="col-sm-10">
@@ -253,10 +253,10 @@
             <input type="reset" class="btn btn-default"/>
           </div>
         </div>
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
+      </div> <!-- card-body -->
+      <div class="card-footer">
         <a href="javascript:next()">Send Event &#155;&#155;&#155;</a>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -76,11 +76,11 @@
   <%=Util.makeHiddenTags(request)%>
   <input type="hidden" name="sourcePage" value="groupIntervals.jsp"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Choose the interval to wait between contacting each member in the groups.</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Choose the interval to wait between contacting each member in the groups.</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-md-6">
         <table class="table table-condensed table-borderless">
@@ -100,10 +100,10 @@
         </table>
       </div> <!-- column -->
     </div> <!-- row -->
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
+  </div> <!-- card-body -->
+  <div class="card-footer">
     <a HREF="javascript:document.groupIntervals.submit()">Next &#155;&#155;&#155;</a>
-  </div> <!-- panel-footer -->
+  </div> <!-- card-footer -->
 </div> <!-- panel -->
 
 </form>

@@ -77,9 +77,9 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">OpenNMS Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">OpenNMS Configuration</h3>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -130,9 +130,9 @@
     </div> <!-- panel -->
   </div> <!-- column -->
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">System Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">System Configuration</h3>
       </div>
       <table class="table table-condensed">
         <tr>

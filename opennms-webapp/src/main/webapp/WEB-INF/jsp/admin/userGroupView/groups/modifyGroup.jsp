@@ -295,11 +295,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Assignments</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Assignments</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>Assign and unassign users to the group using the select lists below. Also, change the ordering of the selected users by highlighting a user in the "Currently in Group" list and click the "Move Up" and "Move Down" buttons. The ordering of the users in the group will affect the order that the users are notified if this group is used in a notification.</p>
         <div class="row">
           <div class="col-md-6">
@@ -369,16 +369,16 @@
 	            </table>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
       
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Duty Schedules</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Duty Schedules</h3>
       </div>
       <table class="table table-condensed table-striped table-bordered">
             <tr>

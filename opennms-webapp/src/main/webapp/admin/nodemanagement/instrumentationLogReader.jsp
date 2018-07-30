@@ -119,11 +119,11 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Instrumentation Log Statistics</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Instrumentation Log Statistics</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Start time: ${collector.startTime == null ? "N/A" : collector.startTime}
         </p>
@@ -147,18 +147,18 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
         the <em>log4j2.xml</em> configuration file.
         </p>
         </c:if>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Filtering</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Filtering</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">
           <input type="text" class="form-control" name="searchString" size="15" value="<%=searchString==null?"":WebSecurityUtils.sanitizeString(searchString)%>"/>
           <button type="submit" class="btn btn-default">Submit</button>
@@ -167,7 +167,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
           <input type="hidden" name="searchString" value=""/>
           <button type="submit" class="btn btn-default">Reset</button>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

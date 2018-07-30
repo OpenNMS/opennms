@@ -159,13 +159,13 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose the piece of the path that you want to edit from below. When
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Choose the piece of the path that you want to edit from below. When
           all editing is complete click the <i>Finish</i> button. No changes will
           be permanent until the <i>Finish</i> button has been clicked.</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="input_name" class="control-label col-sm-2">Name:</label>
           <div class="col-sm-10">
@@ -232,11 +232,11 @@
       </table>
            </div> <!-- column -->
          </div> <!-- form-group -->
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
+      </div> <!-- card-body -->
+      <div class="card-footer">
         <input type="submit" class="btn btn-default" value="Finish"/>
         <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      </div> <!-- panel-footer -->
+      </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -188,11 +188,11 @@
     
 <form method="post" name="manageAll" action="admin/manageNode" onsubmit="return applyChanges();">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Manage and Unmanage Interfaces and Services</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <!--
     <p>
       The two tables below represent each managed and unmanged interface,
@@ -270,7 +270,7 @@
       <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
       <input type="reset" class="btn btn-default" />
     </div>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

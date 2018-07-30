@@ -75,9 +75,9 @@
 
 </script>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
 			<c:out value="${role.name}" />
 		</h3>
 	</div>
@@ -116,9 +116,9 @@
 	<input type="hidden" name="month" value="<fmt:formatDate value='${calendar.nextMonth}' type='date' pattern='MM-yyyy'/>"/>
 </form>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Role Schedule</h3>
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">Role Schedule</h3>
 	</div>
 
 	<table class="table table-condensed table-bordered severity">

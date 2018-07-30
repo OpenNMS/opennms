@@ -75,22 +75,22 @@
 
 <c:choose>
   <c:when test="${fn:length(resultSets) <= 0}">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">No graphs defined</h3>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">No graphs defined</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <p>There are no graphs defined for this report.</p>
     </div>
   </div>
   </c:when>
 
   <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Custom View: ${title}</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Custom View: ${title}</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form class="form-horizontal" name="view_form" method="get" action="<%= baseHref %>KSC/formProcView.htm">
           <input type="hidden" name="<%=FormProcViewController.Parameters.type%>" value="${reportType}" >
           <input type="hidden" name="<%=FormProcViewController.Parameters.action%>" value="none">
@@ -219,7 +219,7 @@
             </c:if>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </c:otherwise>
 </c:choose>

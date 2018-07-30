@@ -67,11 +67,11 @@ function toggle(box, field)
 
 <form role="form" name="report" class="form-inline" action="admin/support/systemReport.htm" method="post" class="normal">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>Choose which plugins to enable:</p>
     <c:forEach items="${report.plugins}" var="plugin">
      <input type="checkbox" name="plugins" value="${plugin.name}" checked /> <c:out value="${plugin.name}" />: <c:out value="${plugin.description}" /> <br />
@@ -79,11 +79,11 @@ function toggle(box, field)
   </div>
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Report Type</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Report Type</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>Choose which report to use:</p>
     <p>
     <select name="formatter" class="form-control">
@@ -101,8 +101,8 @@ function toggle(box, field)
     </select>
     Output: <input type="text" name="output" class="form-control" />
     </p>
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
+  </div> <!-- card-body -->
+  <div class="card-footer">
     <input type="hidden" name="operation" value="run" />
     <input type="submit" class="btn btn-default" />
   </div>

@@ -42,9 +42,9 @@
 
 <jsp:include page="/includes/surveillance-key.jsp" flush="false" />
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Surveillance View: ${webTable.title}</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Surveillance View: ${webTable.title}</h3>
   </div>
 
   <table class="table table-condensed table-bordered severity">

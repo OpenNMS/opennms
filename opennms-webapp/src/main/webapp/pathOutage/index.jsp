@@ -57,9 +57,9 @@
 	<p>The default critical path is service ICMP on interface <%= dcpipString %>.</p>
 <% } %>
 
-<div class="panel panel-default fix-subpixel">
-	<div class="panel-heading">
-		<h3 class="panel-title">All Path Outages</h3>
+<div class="card fix-subpixel">
+	<div class="card-header">
+		<h3 class="card-title">All Path Outages</h3>
 	</div>
 	<table class="table table-condensed severity">
 		<thead class="dark">

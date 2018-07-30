@@ -67,9 +67,9 @@
   <jsp:param name="breadcrumb" value="About" />
 </jsp:include>
 
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Version Details</h3>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Version Details</h3>
     </div>
 <table class="table table-condensed">
   <tr>
@@ -138,11 +138,11 @@
 </table>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">License and Copyright</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">License and Copyright</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
   <p>
     <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
     trademark, and Horizon&trade;, Meridian&trade;, and Compass&trade; are
@@ -190,11 +190,11 @@
   </div>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">OSI Certified Open Source Software</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">OSI Certified Open Source Software</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
 
 <a target="_new" href="http://www.opensource.org/"><img src="images/osi-certified.png" style="float: left;" alt="OSI Certified"/></a>
 <p>This software is OSI Certified Open Source Software.<br/>
@@ -205,11 +205,11 @@
 </div>
 </div>
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">Supporting Applications and Frameworks</h3>
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">Supporting Applications and Frameworks</h3>
 	</div>
-	<div class="panel-body">
+	<div class="card-body">
 		<div class="col-md-3">
 			<p align="center">
 				Powered By Jetty<br />

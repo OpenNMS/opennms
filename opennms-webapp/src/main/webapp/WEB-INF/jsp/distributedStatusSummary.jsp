@@ -56,9 +56,9 @@
 
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><c:out value="${webTable.title}" /></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title"><c:out value="${webTable.title}" /></h3>
   </div>
   <table class="table table-condensed table-bordered severity">
     <tr>

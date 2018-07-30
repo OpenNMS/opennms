@@ -82,11 +82,11 @@
 
 <c:choose>
   <c:when test="${fn:length(prefabGraphs) == 0}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">No graph options available</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">No graph options available</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           No graph options are available.
           This resource might not have any data that can be graphed with
@@ -99,9 +99,9 @@
     </div>
   </c:when>
   <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Sample graph</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Sample graph</h3>
       </div>
       <table class="table">
         <tr>
@@ -140,11 +140,11 @@
         </tr>
       </table>
     </div>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose graph options</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Choose graph options</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form class="form-horizontal" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">
           <input type="hidden" name="<%=FormProcGraphController.Parameters.action%>" value="none" />
           <div class="form-group">

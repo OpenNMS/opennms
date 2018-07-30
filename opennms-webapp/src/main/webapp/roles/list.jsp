@@ -88,9 +88,9 @@
 	<input type="hidden" name="role" />
 </form>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Roles</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Roles</h3>
   </div>
 
   <table class="table table-condensed severity">

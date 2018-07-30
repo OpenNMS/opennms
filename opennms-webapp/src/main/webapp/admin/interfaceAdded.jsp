@@ -44,11 +44,11 @@
   <jsp:param name="breadcrumb" value="Interface Added" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Finished Adding Interface</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Finished Adding Interface</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       It may take some time for the interface to be scanned and categories updated.
     </p>

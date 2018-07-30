@@ -66,16 +66,16 @@
 
 <div class="row">
   <div class="col-sm-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card">
+      <div class="card-header">
         <%if ("redo".equals(request.getParameter("action"))) { %>
-          <h3 class="panel-title">The group <%=request.getParameter("groupName")%> already exists.
+          <h3 class="card-title">The group <%=request.getParameter("groupName")%> already exists.
             Please type in a different group ID.</h3>
         <%} else { %>
-          <h3 class="panel-title">Please enter a group ID below.</h3>
+          <h3 class="card-title">Please enter a group ID below.</h3>
         <%}%>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form role="form" class="form-horizontal" id="newGroupForm" method="post" name="newGroupForm" onsubmit="return validateFormInput();">
           <input type="hidden" name="operation" />
 
@@ -96,7 +96,7 @@
           <button type="submit" class="btn btn-default">OK</button>
           <button type="button" class="btn btn-default" onclick="cancelGroup()">Cancel</button>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

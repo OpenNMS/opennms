@@ -49,11 +49,11 @@
 	<jsp:param name="breadcrumb" value="Edit Entry" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit Schedule Entry</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Edit Schedule Entry</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p class="lead">${error}</p>
     <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="saveEntryForm">
       <input type="hidden" name="operation" value="saveEntry"/>
@@ -119,7 +119,7 @@
       <button type="submit" class="btn btn-default" name="save">Save</button>
       <button type="submit" class="btn btn-default" name="cancel">Cancel</button>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

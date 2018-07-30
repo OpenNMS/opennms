@@ -103,9 +103,9 @@
     Outage[] outages = OutageModel.getCurrentOutagesForNode(nodeId);
 %>
 
-<div id="availability-box" class="panel panel-default">
-<div class="panel-heading">
-<h3 class="panel-title">Availability</h3>
+<div id="availability-box" class="card">
+<div class="card-header">
+<h3 class="card-title">Availability</h3>
 </div>
 <table class="table table-condensed severity">
   <tr class="CellStatus">

@@ -67,11 +67,11 @@
   <div class="row">
 
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Customized Reports</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Customized Reports</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>Choose the custom report title to view or modify from the list below. There are {{ reports.length }} custom reports to select from.</p>
           <div class="table-responsive">
             <div class="input-group">
@@ -101,7 +101,7 @@
             boundary-links="true"
             ng-show="filteredReports.length > kscPageSize"></ul>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
           <form name="kscForm">
           <div class="btn-group btn-group-justified" role="group">
             <div class="btn-group" role="group">
@@ -127,11 +127,11 @@
           </form>
         </div>
       </div> 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Node &amp; Domain Interface Reports</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Node &amp; Domain Interface Reports</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>Select resource for desired performance report</p>
           <div class="table-responsive">
             <div class="input-group">
@@ -165,11 +165,11 @@
     </div> 
 
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Descriptions</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Descriptions</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
             <b>Customized Reports</b>
             <c:choose>

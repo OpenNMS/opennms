@@ -164,9 +164,9 @@
 
 	<div class="col-md-10">
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
-    <div class="panel panel-default text-center" id="panel-resource${resultSet.index}">
-      <div class="panel-heading">
-        <h3 class="panel-title">
+    <div class="card text-center" id="card-resource${resultSet.index}">
+      <div class="card-header">
+        <h3 class="card-title">
             ${resultSet.resource.parent.resourceType.label}:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
@@ -198,8 +198,8 @@
                 </c:choose>
             </c:if>
         </h3>
-     </div> <!-- panel-heading -->
-     <div class="panel-body">
+     </div> <!-- card-header -->
+     <div class="card-body">
         <div growl></div>
         <!-- NRTG Starter script 'window'+resourceId+report -->
         <script type="text/javascript">
@@ -273,7 +273,7 @@
                 </p>
             </c:otherwise>
         </c:choose>
-    </div> <!-- panel-body -->
+    </div> <!-- card-body -->
     </div> <!-- panel -->
     </c:forEach>
 

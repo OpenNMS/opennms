@@ -87,11 +87,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Current Label</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Current Label</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=currentLabel.getLabel()%></a> (<%=typeMap.get(currentLabel.getSource())%>)
         </p>
@@ -100,11 +100,11 @@
   </div> <!-- column -->
 
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose a New Label</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Choose a New Label</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           You can either specify a name or allow the system to automatically
           select the name.
@@ -139,7 +139,7 @@
           </div>
 
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -46,11 +46,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel">
-            <div class="panel-heading">
-                <h3 class="panel-title">Cron Expression</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Cron Expression</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a></p>
                 <form:form commandName="triggerDetails" cssClass="form-horizontal">
                     <div class="form-group">

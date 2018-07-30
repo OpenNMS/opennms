@@ -103,7 +103,7 @@
   <input type="hidden" name="groupName"/>
   <input type="hidden" name="newName"/>
 
-  <div class="panel panel-default">
+  <div class="card">
     <table class="table table-condensed table-bordered">
          <tr>
           <th>Delete</th>

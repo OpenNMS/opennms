@@ -43,9 +43,9 @@
 
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Applications</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Applications</h3>
       </div>
       <table class="table table-condensed">
         <tr>

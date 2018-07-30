@@ -33,16 +33,16 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <!-- bsm/summary-box.htm -->
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
       <a href="#">Business Services with Pending Problems</a>
     </h3>
   </div>
   <c:choose>
     <c:when test="${empty services}">
-      <div class="panel-body">
-        <p class="noBottomMargin">
+      <div class="card-body">
+        <p class="mb-0">
           There are no pending problems.
         </p>
       </div>
@@ -64,7 +64,7 @@
         </c:forEach>
       </table>
       <c:if test="${more}">
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
           Not all Business Services with Pending Problems are shown.
         </div>
       </c:if>

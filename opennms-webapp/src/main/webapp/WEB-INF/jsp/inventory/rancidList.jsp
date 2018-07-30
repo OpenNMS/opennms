@@ -49,9 +49,9 @@
 <div class="row">
     <div class="col-md-12">
         <h2> Node: ${model.id} </h2>
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">RWS status</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">RWS status</h3>
             </div>
 
             <table class="table table-condensed table-bordered">
@@ -61,9 +61,9 @@
             </table>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Associated Elements</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Associated Elements</h3>
             </div>
 
             <table class="table table-condensed table-bordered">

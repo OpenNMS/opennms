@@ -58,11 +58,11 @@
 
       <%-- Panel 1 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Choose the current resource</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Choose the current resource</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="level == 0">
             You are currently at the top-level resources.
             Select a child resource.
@@ -86,11 +86,11 @@
 
       <%-- Panel 2 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">View child resources</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">View child resources</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="resources.length == 0">
             No child resources found on this resource.
           </p>
@@ -132,11 +132,11 @@
 
       <%-- Panel 3 --%>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">View the parent resource</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">View the parent resource</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p ng-show="level == 0">
             This resource has no parent.  You are looking at the top-level resources.
           </p>
@@ -157,11 +157,11 @@
 
     <div class="col-md-6">
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Descriptions</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Descriptions</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
             The menu on the left lets you choose a specific resource that you want
             to use in a graph.

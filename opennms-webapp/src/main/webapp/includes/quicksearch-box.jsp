@@ -42,11 +42,11 @@
   pageContext.setAttribute("serviceNameMap", new TreeMap<String,Integer>(NetworkElementFactory.getInstance(getServletContext()).getServiceNameToIdMap()).entrySet());
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Quick Search</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Quick Search</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <form class="form-inline" action="element/nodeList.htm" method="get">
       <label for="nodeId">Node ID:</label><br/>
       <input type="hidden" name="listInterfaces" value="false"/>

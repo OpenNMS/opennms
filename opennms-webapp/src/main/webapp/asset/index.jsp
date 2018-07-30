@@ -74,11 +74,11 @@
   <div class="col-md-6">
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Search Asset Information</h3>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Search Asset Information</h3>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <div class="row">
               <div class="col-md-6 col-xs-6">
                 <ul class="list-unstyled">
@@ -100,17 +100,17 @@
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Assets with Asset Numbers</h3>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Assets with Asset Numbers</h3>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
             <% for( int i=0; i < middle; i++ ) {%>
               <%  Asset asset = (Asset)assetsList.get(i); %>
@@ -123,18 +123,18 @@
               <li><%=asset.getAssetNumber()%>: <a href="asset/modify.jsp?node=<%=asset.getNodeId()%>"><%=NetworkElementFactory.getInstance(getServletContext()).getNodeLabel(asset.getNodeId())%></a></li>
             <% } %>
             </ul>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div>
     </div>
   </div>
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Assets Inventory</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Assets Inventory</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>The OpenNMS system provides a means for you to easily track and share 
             important information about capital assets in your organization.  This 
             data, when coupled with the information about your network that the 
@@ -159,7 +159,7 @@
             asset numbers, simply click on the <b>List all nodes with asset information</b> 
             link.
         </p>
-       </div> <!-- panel-body -->
+       </div> <!-- card-body -->
      </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

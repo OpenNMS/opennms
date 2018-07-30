@@ -54,11 +54,11 @@
 
 <div class="row">
   <div class="col-md-6">
-      <div class="panel panel-default">
-      <div class="panel-heading">
-      	<h3 class="panel-title">Event Queries</h3>
+      <div class="card">
+      <div class="card-header">
+      	<h3 class="card-title">Event Queries</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
         <form action="event/detail.jsp" method="get" role="form" class="form-inline pull-right">
           <div class="form-group">
@@ -75,11 +75,11 @@
       </div>
     </div>
 
-    <div class="panel panel-default">
-    <div class="panel-heading">
-    	<h3 class="panel-title">Event Filter Favorites</h3>
+    <div class="card">
+    <div class="card-header">
+    	<h3 class="card-title">Event Filter Favorites</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
     <onms:alert/>
         <c:choose>
             <c:when test="${!empty favorites}">
@@ -118,11 +118,11 @@
   </div>
 
   <div class="col-md-6">
-	<div class="panel panel-default">
-	<div class="panel-heading">
-      <h3 class="panel-title">Outstanding and acknowledged events</h3>
+	<div class="card">
+	<div class="card-header">
+      <h3 class="card-title">Outstanding and acknowledged events</h3>
  	</div>
- 	<div class="panel-body">
+ 	<div class="card-body">
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by
         selecting the event in the <em>Ack</em> check box and clicking the <em>Acknowledge
         Selected Events</em> at the bottom of the page.  Acknowledging an event gives

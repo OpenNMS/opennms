@@ -161,9 +161,9 @@ $(document).ready(function() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Choose the event UEI that will trigger this notification.</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Choose the event UEI that will trigger this notification.</h3>
       </div>
       <table class="table table-condensed">
         <tr>

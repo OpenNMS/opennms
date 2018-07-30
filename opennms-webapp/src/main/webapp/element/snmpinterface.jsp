@@ -136,9 +136,9 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
 	<div class="col-md-6">
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">General</h3>
       </div>
       <!-- general info box -->
       <table class="table table-condensed">
@@ -191,9 +191,9 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     </div>
 
     <!-- SNMP box, if info available -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">SNMP Attributes</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">SNMP Attributes</h3>
       </div>
     	<table class="table table-condensed">
         <tr>

@@ -59,11 +59,11 @@
 }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Please enter a new password and confirm</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Please enter a new password and confirm</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <form role="form" class="form-horizontal" method="post" name="goForm">
       <div class="form-group">
         <label for="pass1" class="col-sm-2 control-label">Password</label>
@@ -90,7 +90,7 @@
       Note: Be sure to click "Finish" at the bottom of the user page to save
       changes.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" >

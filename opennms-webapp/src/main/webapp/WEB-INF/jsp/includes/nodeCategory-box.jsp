@@ -35,9 +35,9 @@
 %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<div id="category-box" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">
+<div id="category-box" class="card">
+    <div class="card-header">
+        <h3 class="card-title">
             Surveillance Category Memberships
             <c:if test="${isAdmin == 'true'}">
                 (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)

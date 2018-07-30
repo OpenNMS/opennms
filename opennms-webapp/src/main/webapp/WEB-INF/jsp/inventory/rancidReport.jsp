@@ -46,9 +46,9 @@
 <div class="row">
     <div class="col-md-6">
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Generate reports</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Generate reports</h3>
             </div>
 
             <table class="table table-condensed table-bordered">
@@ -56,11 +56,11 @@
 
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Inventory</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Inventory</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form id="inventoryReport" class="form-horizontal" method="post" name="inventoryReport">
                     <div class="form-group">
                         <div class="col-md-12">
@@ -111,11 +111,11 @@
     </div>
 
     <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading" >
-                <h3 class="panel-title">Descriptions</h3>
+        <div class="card">
+            <div class="card-header" >
+                <h3 class="card-title">Descriptions</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <p><b>Date</b> provide a date at which you want to get report.
                     If you leave it blank the report data is today.
                 </p>

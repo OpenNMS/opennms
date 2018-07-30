@@ -46,9 +46,9 @@
 
 <div class="row">
     <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report in progress</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Report in progress</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>
@@ -73,11 +73,11 @@
     </div>
 
     <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Descriptions</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Descriptions</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <p>
                     OpenNMS is processing the report in background because it can take a while.
                     An email with the report attached will be send to the specified user when finished.

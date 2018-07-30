@@ -46,11 +46,11 @@
     });
 </script>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Documentation</h3>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Documentation</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <span id="online-documentation" style="display:none;">
             <table class="table">
                 <tr>

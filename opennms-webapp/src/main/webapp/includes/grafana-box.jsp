@@ -111,12 +111,12 @@
     }
 %>
 
-<div id="grafana-box" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Grafana Dashboards</h3>
+<div id="grafana-box" class="card">
+    <div class="card-header">
+        <h3 class="card-title">Grafana Dashboards</h3>
     </div>
 
-    <div id="dashboardlist" class="panel-body">
+    <div id="dashboardlist" class="card-body">
         <%
             if (responseString != null) {
         %>

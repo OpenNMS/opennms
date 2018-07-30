@@ -570,13 +570,13 @@ Bootstrap Theme Specific Stylesheet
 //.panel {
 //  border-radius: 0;
 //}
-//.panel-heading {
+//.card-header {
 //  border-top-left-radius: 0;
 //  border-top-right-radius: 0;
 //  background-color: $color_opennms !important;
 //  border-color: $color_opennms !important;
 //  background-position: center center;
-//  padding: $panel-heading-padding;
+//  padding: $card-header-padding;
 //}
 //
 //.panel-title {
@@ -602,7 +602,7 @@ Bootstrap Theme Specific Stylesheet
 //.panel-primary {
 //  border-color: $color_opennms_dark;
 //}
-//.panel-primary > .panel-heading {
+//.panel-primary > .card-header {
 //  color: #fff;
 //  background-color: $color_opennms_dark;
 //  border-color: $color_opennms_dark;
@@ -610,7 +610,7 @@ Bootstrap Theme Specific Stylesheet
 //.panel-success {
 //  border-color: $color_success_darker;
 //}
-//.panel-success > .panel-heading {
+//.panel-success > .card-header {
 //  color: #fff;
 //  background-color: $color_success_darker;
 //  border-color: $color_success_darker;
@@ -618,7 +618,7 @@ Bootstrap Theme Specific Stylesheet
 //.panel-warning {
 //  border-color: #FFBF00;
 //}
-//.panel-warning > .panel-heading {
+//.panel-warning > .card-header {
 //  color: #fff;
 //  background-color: #FFBF00;
 //  border-color: #FFBF00;
@@ -626,7 +626,7 @@ Bootstrap Theme Specific Stylesheet
 //.panel-info {
 //  border-color: #5BDBC7;
 //}
-//.panel-info > .panel-heading {
+//.panel-info > .card-header {
 //  color: #fff;
 //  background-color: #5BDBC7;
 //  border-color: #5BDBC7;
@@ -634,7 +634,7 @@ Bootstrap Theme Specific Stylesheet
 //.panel-danger {
 //  border-color: #F45C31;
 //}
-//.panel-danger > .panel-heading {
+//.panel-danger > .card-header {
 //  color: #fff;
 //  background-color: #F45C31;
 //  border-color: #F45C31;

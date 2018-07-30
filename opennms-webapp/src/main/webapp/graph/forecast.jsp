@@ -98,11 +98,11 @@ window.forecastError = "One or more dependencies required for forecasting "
 	    {{error}}
 	  </div>
 
-      <div class="panel panel-default" ng-hide="error">
-      <div class="panel-heading text-center">
-          <h3 class="panel-title">Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
-      </div> <!-- panel-heading -->
-      <div class="panel-body">
+      <div class="card" ng-hide="error">
+      <div class="card-header text-center">
+          <h3 class="card-title">Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
+      </div> <!-- card-header -->
+      <div class="card-body">
 		<div class="row-fluid">
 			<div class="col-md-7">
 		        <div data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>
@@ -215,7 +215,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		        </form>
 		    </div>
 		  </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
       </div> <!-- panel -->
     </div> <!-- col-md-12 -->
 </div> <!-- row -->

@@ -89,9 +89,9 @@
   <jsp:param name="breadcrumb" value='<%="Notice " + notice.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-<h3 class="panel-title">Notice <%=notice.getId()%> 
+<div class="card">
+  <div class="card-header">
+<h3 class="card-title">Notice <%=notice.getId()%>
   <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
     from <a href="event/detail.jsp?id=<%=notice.getEventId()%>">Event <%=notice.getEventId()%></a>
   <% } %>
@@ -201,30 +201,30 @@
 </div>
 
 <% if (notice.getNumericMessage() != null && !"".equals(notice.getNumericMessage().trim())) { %>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Numeric Message</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Numeric Message</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <%=notice.getNumericMessage()%>
   </div>
 </div>
 <% } %>
 
 <% if (notice.getTextMessage() != null && !"".equals(notice.getTextMessage().trim())) { %>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Text Message</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Text Message</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <pre><%=notice.getTextMessage()%></pre>
   </div>
 </div>
 <% } %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Users Notified</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Users Notified</h3>
   </div>
   <table class="table table-condensed severity">
     <tr>

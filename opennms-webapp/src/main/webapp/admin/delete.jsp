@@ -137,11 +137,11 @@
   }
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Delete Nodes</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Delete Nodes</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated
 	   interfaces, services, outages, events and notifications), check the "Delete?" box beside the node's ID and
            select "Delete Nodes". You may check more than one.
@@ -205,7 +205,7 @@
           <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
           <input type="reset" class="btn btn-default">
       </div>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

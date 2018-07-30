@@ -42,9 +42,9 @@
     <jsp:param name="breadcrumb" value="Threshold Groups" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Threshold Configuration</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Threshold Configuration</h3>
   </div>
     <form method="post" name="allGroups">
       <table class="table table-condensed table-striped table-hover">

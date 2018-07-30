@@ -59,11 +59,11 @@
 
   <div class="row" ng-show="hasResources">
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Resources</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Resources</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <div class="radio">
             <label>
               <input type="radio" name="reportTarget" value="graph/results.htm" ng-model="endUrl"/>
@@ -109,11 +109,11 @@
       </div>
     </div>
     <div class="col-md-6">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">Network Performance Data</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Network Performance Data</h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <p>
           The <strong>Standard Performance Reports</strong> provide a stock way to
           easily visualize the critical SNMP data collected from managed nodes

@@ -116,11 +116,11 @@ function doAddIncludeUrl() {
 
 <div class="row">
   <div class="col-md-12">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Add a URL containing a list of IP addresses to include</h3>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Add a URL containing a list of IP addresses to include</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <form role="form" class="form-horizontal">
         <div class="form-group">
           <label for="url" class="col-sm-2 control-label">URL:</label>
@@ -168,7 +168,7 @@ function doAddIncludeUrl() {
           </div>
         </div>
       </form>
-    </div> <!-- panel-body -->
+    </div> <!-- card-body -->
   </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

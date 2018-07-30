@@ -110,7 +110,7 @@
   <div class="row" ng-show="hasResources">
     <div class="col-md-12">
       <uib-accordion close-others="false">
-        <div ng-click="isCollapsed[type] = !isCollapsed[type]" uib-accordion-group is-open="true" class="panel-default" ng-repeat="(type, group) in filteredResources" ng-show="group.length > 0">
+        <div ng-click="isCollapsed[type] = !isCollapsed[type]" uib-accordion-group is-open="true" class="card-default" ng-repeat="(type, group) in filteredResources" ng-show="group.length > 0">
           <uib-accordion-heading>
             {{ type }} <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': isCollapsed[type], 'glyphicon-chevron-right': !isCollapsed[type]}"></i>
           </uib-accordion-heading>

@@ -61,11 +61,11 @@
 
 <div class="row">
   <div class="col-md-4">
-    <div class="panel panel-default">
-       <div class="panel-heading">
-        <h3 class="panel-title">Please enter the old and new passwords and confirm.</h3>
+    <div class="card">
+       <div class="card-header">
+        <h3 class="card-title">Please enter the old and new passwords and confirm.</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">
@@ -84,7 +84,7 @@
           <button type="submit" class="btn btn-default">Submit</button>
           <a href="account/selfService/index.jsp" class="btn btn-default">Cancel</a>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

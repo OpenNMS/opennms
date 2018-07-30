@@ -91,9 +91,9 @@
     <p>Event not found in database.</p>
 <% } else { %>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Event <%=event.getId()%></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Event <%=event.getId()%></h3>
       </div>
 
       <table class="table table-condensed severity">
@@ -201,29 +201,29 @@
       </table>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Log&nbsp;Message</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <h3 class="card-title">Log&nbsp;Message</h3>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
       </div>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Description</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <h3 class="card-title">Description</h3>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
       </div>
     </div>
 
-    <div class="panel panel-default severity">
-      <div class="panel-heading">
-        <h3 class="panel-title">Operator&nbsp;Instructions</h3>
+    <div class="card severity">
+      <div class="card-header">
+        <h3 class="card-title">Operator&nbsp;Instructions</h3>
       </div>
-      <div class="panel-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
+      <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <% if (event.getOperatorInstruction()==null) { %>
           No instructions available.
         <% } else { %>

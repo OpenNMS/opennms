@@ -124,7 +124,7 @@
   </a>
 </p>
 
-   <div class="panel panel-default">
+   <div class="card">
      <table class="table table-condensed table-bordered">
         <thead>
           <tr>

@@ -120,9 +120,9 @@
 
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">View On-Call Role</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">View On-Call Role</h3>
   </div>
   <table class="table table-condensed">
     <tr>
@@ -164,9 +164,9 @@
   <button type="submit" class="btn btn-default">Done</button>
 </form>
 
-<div class="panel panel-default top-buffer">
-  <div class="panel-heading">
-    <h3 class="panel-title">On-Call Role Schedule</h3>
+<div class="card top-buffer">
+  <div class="card-header">
+    <h3 class="card-title">On-Call Role Schedule</h3>
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
@@ -217,7 +217,7 @@
 				  </tr>
 				</c:forEach>
 			</table>
-</div> <!-- panel-title -->
+</div> <!-- card-title -->
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
   <button type="submit" class="btn btn-default">Done</button>

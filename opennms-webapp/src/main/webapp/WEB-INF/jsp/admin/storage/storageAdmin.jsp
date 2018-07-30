@@ -156,9 +156,9 @@
 <div class="row">
   <div class="col-md-6">
     <!-- general info box -->
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">General (Status: ${model.status_general})</h3>
         </div>
         <table class="table table-condensed">
 		<tr>
@@ -176,9 +176,9 @@
 	</table>
       </div> <!-- panel -->
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-	  <h3 class="panel-title">Software Images Stored</h3>
+      <div class="card">
+        <div class="card-header">
+	  <h3 class="card-title">Software Images Stored</h3>
         </div>
 	<table class="table table-condensed">
 	<tr>
@@ -200,9 +200,9 @@
 	</table>
       </div> <!-- panel -->
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-	  <h3 class="panel-title">Manage Images Stored</h3>
+      <div class="card">
+        <div class="card-header">
+	  <h3 class="card-title">Manage Images Stored</h3>
         </div>
 	<table class="table table-condensed">
 	<c:choose>		
@@ -247,11 +247,11 @@
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Descriptions</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.
         </p>
           <p><b>(Delete) Bucket Item</b>: Delete the specified image file from <em>bucket</em>.</p>
@@ -264,7 +264,7 @@
 
          <p><b>Delete Bucket</b>:  Delete <em>bucket</em> with all image files.
           </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

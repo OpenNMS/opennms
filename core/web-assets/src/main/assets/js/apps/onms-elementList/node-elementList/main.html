@@ -185,9 +185,9 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 	<br/>
 	-->
 
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<div class="panel-title">
+	<div class="card">
+		<div class="card-header">
+			<div class="card-title">
 				<!-- Match the line-height of the location selector -->
 				<span ng-if="showInterfaces" style="line-height: 28px;">Nodes and their interfaces</span>
 				<span ng-if="!showInterfaces" style="line-height: 28px;">Nodes</span>
@@ -218,9 +218,9 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					<option ng-repeat="location in getSearchPropertyValues('location.locationName')" value="{{location.id}}" selected>{{location.name}}</option>
 				</select>
 			</div>
-		</div> <!-- panel-heading -->
+		</div> <!-- card-header -->
 
-		<div class="panel-body">
+		<div class="card-body">
 			<div ng-if="items.length === 0" class="NLnode">
 				None found.
 			</div>
@@ -442,14 +442,14 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 					<!-- Second half of the nodes -->
 				</div>
 			</div>
-		</div> <!-- panel-body -->
+		</div> <!-- card-body -->
 
-		<div class="panel-footer">
+		<div class="card-footer">
 			{{items.length}} Node{{items.length === 1 ? '' : 's'}}<span ng-if="showInterfaces">, {{interfaces.length}} Interface{{interfaces.length === 1 ? '' : 's'}}</span>
 			<!-- NMS-9003: Move this control to the top -->
 			<a href="" ng-if="!showInterfaces" ng-click="toggleShowInterfaces()">Show interfaces</a>
 			<a href="" ng-if="showInterfaces" ng-click="toggleShowInterfaces()">Hide interfaces</a>
-		</div> <!-- panel-footer -->
+		</div> <!-- card-footer -->
 
 	</div> <!-- panel -->
 

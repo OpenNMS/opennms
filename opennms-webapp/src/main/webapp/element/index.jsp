@@ -64,11 +64,11 @@
 
 <div class="row">
   <div class="col-lg-6 col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search for Nodes</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Search for Nodes</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-sm-4 col-xs-6">
             <ul class="list-unstyled">
@@ -216,14 +216,14 @@
             </div> <!-- row -->
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search Asset Information</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Search Asset Information</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-3">
             <ul class="list-unstyled">
@@ -273,16 +273,16 @@
             </div> <!-- row -->
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-lg-6 col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Search Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Search Options</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
           <p>Searching by name is a case-insensitive, inclusive search. For example,
             searching on <em>serv</em> would find any of <em>serv</em>, <em>Service</em>, 
             <em>Reserved</em>, <em>NTSERV</em>, <em>UserVortex</em>, etc. The underscore
@@ -336,7 +336,7 @@
           <p>Also note that you can quickly search for all nodes which have asset
             information assigned by clicking the <em>List all nodes with asset info</em> link.
           </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -39,11 +39,11 @@
   <jsp:param name="breadcrumb" value="Distributed Status" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Distributed Status Summary Error: ${error.shortDescr} </h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Distributed Status Summary Error: ${error.shortDescr} </h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       ${error.longDescr}
     </p>

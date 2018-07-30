@@ -80,11 +80,11 @@
         <form name="assetForm" novalidate>
           <div class="row" ng-repeat="row in config.rows">
             <div ng-class="col.class" ng-repeat="col in row.columns">
-              <div class="panel panel-default" ng-repeat="panel in col.panels">
-                <div class="panel-heading">
-                  <h3 class="panel-title">{{ panel.title }}</h3>
+              <div class="card" ng-repeat="card in col.panels">
+                <div class="card-header">
+                  <h3 class="card-title">{{ panel.title }}</h3>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
                     <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
                       <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>

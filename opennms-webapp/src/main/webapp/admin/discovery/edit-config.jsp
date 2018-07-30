@@ -186,9 +186,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General Settings</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">General Settings</h3>
       </div>
       <div class="list-group">
         <div class="list-group-item">
@@ -260,9 +260,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <div class="row">
   <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Specific Addresses</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Specific Addresses</h3>
       </div>
       <%if(currConfig.getSpecifics().size()>0){
             Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
@@ -288,11 +288,11 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      <%} // end for%>
 				     </table>
       <% } else { // end if currConfig.getSpecificsCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No specifics found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
+      <div class="card-footer">
         <button type="button" class="btn btn-default" onclick="addSpecific();">Add New</button>
       </div>
     </div> <!-- panel -->
@@ -301,9 +301,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <div class="row">
   <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Include URLs</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Include URLs</h3>
       </div>
 			    <%if(currConfig.getIncludeUrls().size()>0){
 			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
@@ -329,11 +329,11 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				      <%} // end for%>
 				     </table>
       <% } else { // end if currConfig.getIncludeUrlCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No include URLs found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
+      <div class="card-footer">
         <button type="button" class="btn btn-default" onclick="addIncludeUrl();">Add New</button>
       </div>
     </div> <!-- panel -->
@@ -342,9 +342,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <div class="row">
   <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Include Ranges</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Include Ranges</h3>
       </div>
 				    <%if(currConfig.getIncludeRanges().size()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
@@ -374,11 +374,11 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					      <%} // end for%>
 					     </table>
       <% } else { // end if currConfig.getIncludeRange()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No include ranges found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
+      <div class="card-footer">
         <button type="button" class="btn btn-default" onclick="addIncludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
@@ -387,9 +387,9 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 <div class="row">
   <div class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Exclude Ranges</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Exclude Ranges</h3>
       </div>
 			    <%if(currConfig.getExcludeRanges().size()>0){
 				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
@@ -412,11 +412,11 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 
 				     </table>
       <% } else { // end if currConfig.getExcludeRangeCount()>0 %>
-      <div class="panel-body">
+      <div class="card-body">
         <strong>No exclude ranges found.</strong>
       </div>
       <% } %>
-      <div class="panel-footer">
+      <div class="card-footer">
         <button type="button" class="btn btn-default" onclick="addExcludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->

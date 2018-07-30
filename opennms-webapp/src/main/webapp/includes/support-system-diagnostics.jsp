@@ -28,11 +28,11 @@
  *******************************************************************************/
 --%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">System Diagnostics</h3>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">System Diagnostics</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table">
             <tr>
                 <td style="border-top: none;"><a href="admin/support/systemReport.htm" class="btn btn-default" role="button" style="width: 100%">Generate System Report</a></td>

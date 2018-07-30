@@ -92,9 +92,9 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
               'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
       </div>
           <table class="table table-condensed">

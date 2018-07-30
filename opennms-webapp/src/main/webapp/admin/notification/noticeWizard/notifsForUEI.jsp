@@ -104,9 +104,9 @@
 	<input type="hidden" name="uei" value="<%=uei%>"/>
 </form>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Existing Notifications for UEI <%=uei%></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Existing Notifications for UEI <%=uei%></h3>
   </div>
       <table class="table table-condensed">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>

@@ -49,11 +49,11 @@
             <c:when test="${!results.needsLogin}">
                 <!-- we have a login session, show support details -->
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Commercial Support</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Commercial Support</h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
 
                         <c:if test="${not empty results.message}">
                             <div class="something">
@@ -144,11 +144,11 @@
 
             <c:otherwise>
                 <!-- no account session found, ask for login -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Commercial Support</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Commercial Support</h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
 
                         <p>
                             Enter your OpenNMS Group commercial support login to open a support ticket or view your open

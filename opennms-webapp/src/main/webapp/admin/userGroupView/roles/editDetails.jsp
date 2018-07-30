@@ -64,11 +64,11 @@
 
 </script>
 
-<div class="panel pane-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit On-Call Role</h3>
+<div class="card pane-default">
+  <div class="card-header">
+    <h3 class="card-title">Edit On-Call Role</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
       <input type="hidden" name="operation" value="saveDetails"/>
       <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
@@ -137,7 +137,7 @@
       <button type="submit" class="btn btn-default" name="save">Save</button>
       <button type="submit" class="btn btn-default" name="cancel">Cancel</button>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

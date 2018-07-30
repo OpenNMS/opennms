@@ -258,11 +258,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Modify User: <%=userid%></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Modify User: <%=userid%></h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <h3>User Password</h3>
         <div class="col-sm-10 col-sm-offset-2">
           <button type="button" class="btn btn-default" onClick="resetPassword()">Reset Password</button>
@@ -450,16 +450,16 @@
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">User Properties</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">User Properties</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           This panel allows you to modify information for each user, including
           their name, notification information, and duty schedules.
@@ -504,7 +504,7 @@
         <p>
          To save your configuration, click on <b>[Finish]</b>.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
@@ -516,9 +516,9 @@ Collection<String> dutySchedules = user.getDutySchedules();
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Duty Schedule</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Duty Schedule</h3>
       </div>
       <table class="table table-condensed table-striped table-bordered">
         <thead>

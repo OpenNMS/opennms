@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit application ${fn:escapeXml(model.application.name)}</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Edit application ${fn:escapeXml(model.application.name)}</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.sortedMemberServices)} services
         </p>
@@ -83,7 +83,7 @@
           </div>
         </form>
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

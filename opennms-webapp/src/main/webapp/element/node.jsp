@@ -442,9 +442,9 @@ function confirmAssetEdit() {
   
   <!-- Asset box, if info available --> 
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Asset Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Asset Information</h3>
     </div>
     <table class="table table-condensed">
       <tr>
@@ -462,9 +462,9 @@ function confirmAssetEdit() {
 
   <!-- SNMP box, if info available -->
   <c:if test="${! empty model.node.sysObjectId}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">SNMP Attributes</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">SNMP Attributes</h3>
     </div>
     
     <table class="table table-condensed">
@@ -494,11 +494,11 @@ function confirmAssetEdit() {
 
   <!-- Critical Path info, if info available -->
   <c:if test="${model.criticalPath != model.noCriticalPath}">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">Path Outage - Critical Path</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Path Outage - Critical Path</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <ul class="list-unstyled">
         <li>
           ${model.criticalPath}
@@ -515,18 +515,18 @@ function confirmAssetEdit() {
     </jsp:include>
   </c:if>
 
-  <div id="onms-interfaces" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Node Interfaces</h3>
+  <div id="onms-interfaces" class="card">
+    <div class="card-header">
+        <h3 class="card-title">Node Interfaces</h3>
     </div>
     <onms-interfaces node="${model.id}"/>
   </div>
 
   <!-- LLDP box, if info available --> 
   <c:if test="${! empty model.lldp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">LLDP Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">LLDP Information</h3>
     </div>
     <table class="table table-condensed">
       <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
@@ -538,9 +538,9 @@ function confirmAssetEdit() {
 
   <!-- CDP box, if info available --> 
   <c:if test="${! empty model.cdp }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">CDP Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">CDP Information</h3>
     </div>
     <table class="table table-condensed">
       <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
@@ -553,9 +553,9 @@ function confirmAssetEdit() {
 
   <!-- OSPF box, if info available -->
   <c:if test="${! empty model.ospf }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">OSPF Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">OSPF Information</h3>
     </div>
     <table class="table table-condensed">
       <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
@@ -567,9 +567,9 @@ function confirmAssetEdit() {
 
   <!-- IS-IS box, if info available -->
   <c:if test="${! empty model.isis }">
-    <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">IS-IS Information</h3>
+    <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">IS-IS Information</h3>
     </div>
     <table class="table table-condensed">
       <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
@@ -581,9 +581,9 @@ function confirmAssetEdit() {
 
   <!-- Bridge box if available -->
   <c:if test="${! empty model.bridges}">
-    <div class="panel panel-default">
-   	<div class="panel-heading">
-   	  <h3 class="panel-title">Bridge Information</h3>
+    <div class="card">
+   	<div class="card-header">
+   	  <h3 class="card-title">Bridge Information</h3>
    	</div>
 	<table class="table table-condensed">
 	<c:forEach items="${model.bridges}" var="bridge">
@@ -610,11 +610,11 @@ function confirmAssetEdit() {
 <div class="col-md-6">
   
   <!-- general info box -->
-  <div class="panel panel-default">
-    <div class="panel-heading">
-  	<h3 class="panel-title">General (Status: ${model.status})</h3>
+  <div class="card">
+    <div class="card-header">
+  	<h3 class="card-title">General (Status: ${model.status})</h3>
     </div>
-  <div class="panel-body">
+  <div class="card-body">
     <ul class="list-unstyled">
       <c:if test="${model.showRancid}">
         <c:url var="rancidLink" value="inventory/rancid.htm">

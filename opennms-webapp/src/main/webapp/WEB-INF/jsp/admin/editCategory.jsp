@@ -99,11 +99,11 @@ function toggleReqNodes() {
 }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Edit Surveillance Category ${model.category.name}</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Edit Surveillance Category ${model.category.name}</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     Category '${model.category.name}' has ${fn:length(model.sortedMemberNodes)} nodes
     </p>
@@ -142,7 +142,7 @@ function toggleReqNodes() {
         <label for="toggleCheckbox">Check this box to enable requisitioned nodes (changes <strong>will</strong> be lost on next synchronization)</label>
       </div>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <script type="text/javascript">

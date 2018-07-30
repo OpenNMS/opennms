@@ -39,11 +39,11 @@
   <jsp:param name="headTitle" value="Error" />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><spring:message code="error"/></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title"><spring:message code="error"/></h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <ul class="error">
       <c:forEach var="err" items="${errors.allErrors}">
         <li><spring:message message="${err}"/></li>

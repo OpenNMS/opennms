@@ -103,21 +103,21 @@
   <%=Util.makeHiddenTags(request)%>
   <input type="hidden" name="sourcePage" value="chooseCommands.jsp"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Choose the commands to use for each user and group. More than one
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Choose the commands to use for each user and group. More than one
     command can be chosen for each (except for email addresses). Also
     choose the desired behavior for automatic notification on "UP" events.</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <div class="row">
       <div class="col-md-4">
         <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
       </div>
     </div>
     <input type="reset" class="btn btn-default"/>
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
+  </div> <!-- card-body -->
+  <div class="card-footer">
     <a href="javascript:next()">Next &#155;&#155;&#155;</a>
   </div>
 </div> <!-- panel -->

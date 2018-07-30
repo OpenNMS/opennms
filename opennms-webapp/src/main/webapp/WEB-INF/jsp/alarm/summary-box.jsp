@@ -46,14 +46,14 @@
 
 <!-- alarm/summary-box.htm -->
 <c:url var="headingLink" value="alarm/list.htm"/>
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
-      <div class="panel-body">
-        <p class="noBottomMargin">
+      <div class="card-body">
+        <p class="mb-0">
           There are no pending problems.
         </p>
       </div>
@@ -72,7 +72,7 @@
         </c:forEach>
       </table>
       <c:if test="${moreCount > 0}">
-        <div class="panel-footer text-right">
+        <div class="card-footer text-right">
           <c:url var="moreLink" value="alarm/list.htm"/>
           <a href="${moreLink}">All pending problems...</a>
         </div>

@@ -46,11 +46,11 @@
 
 <div class="row" >
     <div class="col-md-12">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report Error</h3>
+        <div class="card bg-success">
+            <div class="card-header">
+                <h3 class="card-title">Report Error</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form role="form">
                     <c:forEach var="message" items="${flowRequestContext.messageContext.allMessages}">
                         <div class="alert alert-danger" role="alert">${message.text}</div>

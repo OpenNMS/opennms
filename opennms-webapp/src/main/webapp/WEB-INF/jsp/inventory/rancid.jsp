@@ -48,9 +48,9 @@
 <div class="row">
     <div class="col-md-6">
         <!-- general info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">General (Status: ${model.status_general})</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>
@@ -68,9 +68,9 @@
             </table>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Rancid Info</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Rancid Info</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>
@@ -95,9 +95,9 @@
 
     <div class="col-md-6">
         <!-- Inventory info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Inventory Elements</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Inventory Elements</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>
@@ -125,9 +125,9 @@
         </div>
 
         <!-- Software image box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Software Images Stored</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Software Images Stored</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>

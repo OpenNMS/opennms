@@ -45,11 +45,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-success">
-            <div class="panel-heading">
-                <h3 class="panel-title">Report Delivery Options</h3>
+        <div class="card bg-success">
+            <div class="card-header">
+                <h3 class="card-title">Report Delivery Options</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form commandName="deliveryOptions" cssClass="form-horizontal">
                     <div class="form-group">
                         <div class="col-md-2">

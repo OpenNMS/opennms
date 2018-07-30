@@ -47,9 +47,9 @@
 <div class="row">
   <div class="col-md-6">
     <!-- general info box -->
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">General (Status: ${model.status_general})</h3>
       </div>
       <table class="table table-condensed">
 		<tr>
@@ -67,9 +67,9 @@
       </table>
     </div> <!-- panel -->
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Rancid Info</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Rancid Info</h3>
       </div>
       <table class="table table-condensed">
 	<c:choose>
@@ -217,9 +217,9 @@
 
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Clogin Info</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Clogin Info</h3>
       </div>
 	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
 		 <input type="hidden" name="groupName" value="${model.groupname}"> 
@@ -271,9 +271,9 @@
     </div> <!-- panel -->
 	 </c:when>
 	 <c:otherwise>
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Clogin Info (Requisitioned Node)</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Clogin Info (Requisitioned Node)</h3>
       </div>
       <table class="table table-condensed">
 			<tr>
@@ -310,9 +310,9 @@
 	 </c:otherwise>
 	 </c:choose>
 
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Select Group</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Select Group</h3>
       </div>
       <table class="table table-condensed">
 	<tr>
@@ -326,11 +326,11 @@
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Descriptions</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p> 
             Set to <em>true</em> the opennms.rancidIntegrationUseOnlyRancidAdapter property in <em>opennms.properties</em> 
             if you want use only the RancidAdapter to provision nodes to Rancid.
@@ -354,7 +354,7 @@
               Click on the asset page or edit the requisition to modify asset information for the node.
               You must re-synchronize the requisition to modify the Clogin information in Rancid.
           </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

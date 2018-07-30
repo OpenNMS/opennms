@@ -81,11 +81,11 @@
   }
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage SNMP Data Collection per Interface</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Manage SNMP Data Collection per Interface</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
       In the datacollection-config.xml file, for each different collection
       scheme there is a parameter called <code>snmpStorageFlag</code>.  If
@@ -133,7 +133,7 @@
         </div>
             <% } /*end if */ %>
     </div> <!-- row -->
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

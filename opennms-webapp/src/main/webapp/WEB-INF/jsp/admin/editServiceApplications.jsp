@@ -49,11 +49,11 @@
 
 <div class="row">
   <div class="col-md-8">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Edit applications on ${fn:escapeXml(model.service.serviceName)}</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Edit applications on ${fn:escapeXml(model.service.serviceName)}</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
         Service <a href="<c:url value='element/service.jsp?ifserviceid=${model.service.id}'/>">${fn:escapeXml(model.service.serviceName)}</a>
         on interface <a href="<c:url value='element/interface.jsp?ipinterfaceid=${model.service.ipInterface.id}'/>">${model.service.ipAddressAsString}</a>
@@ -82,7 +82,7 @@
             </select>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -46,11 +46,11 @@
     int colClass = 12 / columns;
 %>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Trend</h3>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Trend</h3>
     </div>
-    <div class="alert-box panel-body">
+    <div class="alert-box card-body">
         <div class="row gutter-10">
             <c:forEach var="trendDefinition" items="${trendDefinitions}">
                 <div class="col-xs-<%= colClass %>">

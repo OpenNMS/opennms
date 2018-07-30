@@ -46,11 +46,11 @@
 
 <div class="row">
     <div class="col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Run Online Report</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Run Online Report</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form:form modelAttribute="parameters" cssClass="form-horizontal" role="form">
                     <%-- // string parameters --%>
                     <c:forEach items="${parameters.stringParms}" var="stringParm" varStatus="stringParmRow">

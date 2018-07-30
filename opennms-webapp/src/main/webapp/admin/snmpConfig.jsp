@@ -268,11 +268,11 @@ if (request.getAttribute("success") != null) {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">SNMP Config Lookup</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">SNMP Config Lookup</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form role="form" class="form-horizontal" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
           <div class="form-group">
             <label for="lookup_ipAddress" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
@@ -297,16 +297,16 @@ if (request.getAttribute("success") != null) {
             </div>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Descriptions</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Descriptions</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
 		<p>
 			<b>SNMP Config Lookup:</b> You can look up the actual SNMP
 			configuration for a specific IP and location. To do so enter the IP Address 
@@ -329,7 +329,7 @@ if (request.getAttribute("success") != null) {
 			name changed, it may be necessary to update the SNMP information on
 			the interface page for that device (by selecting the "Update SNMP"
 			link) for these changes to take effect.</p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- col-md-6 -->
 </div> <!--  row -->
@@ -339,11 +339,11 @@ if (request.getAttribute("success") != null) {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Updating SNMP Configuration</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Updating SNMP Configuration</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
           <div class="form-group">
             <div class="col-sm-12">
               <h3>General Parameters</h3>
@@ -458,17 +458,17 @@ if (request.getAttribute("success") != null) {
               <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_MAX_REPETITIONS %></p>
             </div>
           </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <!-- v1/v2c parameters -->
   <div class="col-md-6 hidden snmp-v1 snmp-v2c">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">v1/v2c specific parameters</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">v1/v2c specific parameters</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="readCommunityString" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The default 'read' community string for SNMP queries.">
           Read Community String:
@@ -488,17 +488,17 @@ if (request.getAttribute("success") != null) {
             <p class="help-block"><b>Default: </b><%=SnmpConfiguration.DEFAULT_WRITE_COMMUNITY %></p>
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <!--  v3 parameters -->
   <div class="col-md-6 hidden snmp-v3">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">v3 specific parameters</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">v3 specific parameters</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="securityName" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="A security name for SNMP v3 authentication.">
           Security Name:
@@ -606,18 +606,18 @@ if (request.getAttribute("success") != null) {
             <input id="enterpriseId" class="form-control" name="enterpriseId" value="<%=enterpriseId%>">
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!--  row -->
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel">
-      <div class="panel-heading">
-        <h3 class="panel-title">Save Options</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Save Options</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="sendEventOption" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. Be aware that collectd must be activated to process the event!">
           Send Event
@@ -644,7 +644,7 @@ if (request.getAttribute("success") != null) {
             <button type="button" class="btn btn-default" name="cancelButton" onClick="cancel();">Cancel</button>
           </div>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

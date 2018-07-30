@@ -84,11 +84,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Define the Critical Path</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Define the Critical Path</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="cripIn">Critical Path IP Address</label>
           <input id="cripIn" type="text" class="form-control" name="criticalIp" value = '<%= (criticalIp != null ? criticalIp : "") %>' maxlength="55" />
@@ -100,18 +100,18 @@
               <option value="ICMP">ICMP</option>
           </select>
         </div>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Build the rule that determines which nodes will be subject to this critical path.</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Build the rule that determines which nodes will be subject to this critical path.</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you
                to separate the four octets (fields) of a TCP/IP address into specific
                searches.  An asterisk (*) in place of any octet matches any value for that
@@ -148,8 +148,8 @@
            <div class="form-group">
              <input type="reset" class="btn btn-default" value="Reset"/>
            </div>
-      </div> <!-- panel-body -->
-      <div class="panel-footer">
+      </div> <!-- card-body -->
+      <div class="card-footer">
         <a href="javascript:next()">Validate rule results &#155;&#155;&#155;</a>
       </div>
     </div> <!-- panel -->

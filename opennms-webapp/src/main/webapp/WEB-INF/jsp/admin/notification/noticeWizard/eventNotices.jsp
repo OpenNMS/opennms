@@ -87,9 +87,9 @@
 <input type="hidden" name="notice" value=""/>
 <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_NOTICES%>"/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Add a notification to an event or edit an existing event notification</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Add a notification to an event or edit an existing event notification</h3>
   </div>
   <table class="table table-condensed">
     <tr>

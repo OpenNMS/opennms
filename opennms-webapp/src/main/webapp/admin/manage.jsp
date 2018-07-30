@@ -163,11 +163,11 @@
   }
 %>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Manage and Unmanage Interfaces and Services</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Manage and Unmanage Interfaces and Services</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
           <p>The two tables below represent each managed and unmanged node, interface, and service combination. The 'Status' column indicates if the interface or
           service is managed or not, with checked rows meaning the interface or service is managed, and unchecked meaning not managed. Each different interface
           has a dark grey row and no service column, and each service on that interface is listed below on light grey rows.</p>
@@ -222,7 +222,7 @@
     <button type="button" class="btn btn-default" onClick="checkAll()">Select All</button>
     <button type="button" class="btn btn-default" onClick="uncheckAll()"> Unselect All</button>
     <button type="reset" class="btn btn-default">Reset</button>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </form>

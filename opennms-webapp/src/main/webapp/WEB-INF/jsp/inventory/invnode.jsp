@@ -52,9 +52,9 @@
 <div class="row">
     <div class="col-md-6">
         <!-- general info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">General (Status: ${model.status_general})</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">General (Status: ${model.status_general})</h3>
             </div>
             <table class="table table-condensed table-bordered">
                 <tr>
@@ -72,9 +72,9 @@
             </table>
 	    </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Rancid info</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Rancid info</h3>
             </div>
 
             <table class="table table-condensed table-bordered">
@@ -101,9 +101,9 @@
             </table>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Configuration info</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Configuration info</h3>
             </div>
 
 
@@ -122,11 +122,11 @@
     </div>
     <div class="col-md-6">
         <!-- general info box -->
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Inventory Items</h3>
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Inventory Items</h3>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <c:forEach items="${model.inventory}" var="invel" varStatus="status">
                     <h3>Item ${status.count}</h3>
                     <table class="table table-condensed table-bordered">

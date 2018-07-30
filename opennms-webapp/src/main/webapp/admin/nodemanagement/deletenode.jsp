@@ -107,11 +107,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Node: <%=node_db.getLabel()%></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Node: <%=node_db.getLabel()%></h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form method="post" name="deleteNode" action="admin/deleteSelNodes" onSubmit="return applyChanges();">
           <div class="form-group">
             <div class="checkbox">
@@ -134,16 +134,16 @@
             <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>" class="btn btn-default">Cancel</a>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
   
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Node: <%=node_db.getLabel()%></h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Node: <%=node_db.getLabel()%></h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>
           To permanently delete a node (and all associated interfaces, services,
           outages, events and notifications), check the "Node" box and select "Delete".
@@ -164,7 +164,7 @@
           be discovered again. To prevent this, either remove the IP address from the
           discovery range or unmanage the device instead of deleting it.
         </p>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

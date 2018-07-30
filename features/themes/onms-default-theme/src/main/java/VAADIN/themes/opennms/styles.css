@@ -5511,13 +5511,13 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
   clear: both;
 }
 
-.panel-heading {
+.card-header {
   padding: 6px;
   border-bottom: 1px solid transparent;
   border-top-right-radius: -1;
   border-top-left-radius: -1;
 }
-.panel-heading > .dropdown .dropdown-toggle {
+.card-header > .dropdown .dropdown-toggle {
   color: inherit;
 }
 
@@ -5561,7 +5561,7 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
   border-bottom-left-radius: -1;
 }
 
-.panel-heading + .list-group .list-group-item:first-child {
+.card-header + .list-group .list-group-item:first-child {
   border-top-width: 0;
 }
 
@@ -5721,11 +5721,11 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-group .panel + .panel {
   margin-top: 5px;
 }
-.panel-group .panel-heading {
+.panel-group .card-header {
   border-bottom: 0;
 }
-.panel-group .panel-heading + .panel-collapse > .panel-body,
-.panel-group .panel-heading + .panel-collapse > .list-group {
+.panel-group .card-header + .panel-collapse > .panel-body,
+.panel-group .card-header + .panel-collapse > .list-group {
   border-top: 1px solid #dddddd;
 }
 .panel-group .panel-footer {
@@ -5738,15 +5738,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-default {
   border-color: #dddddd;
 }
-.panel-default > .panel-heading {
+.panel-default > .card-header {
   color: #333333;
   background-color: whitesmoke;
   border-color: #dddddd;
 }
-.panel-default > .panel-heading + .panel-collapse > .panel-body {
+.panel-default > .card-header + .panel-collapse > .panel-body {
   border-top-color: #dddddd;
 }
-.panel-default > .panel-heading .badge {
+.panel-default > .card-header .badge {
   color: whitesmoke;
   background-color: #333333;
 }
@@ -5757,15 +5757,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-primary {
   border-color: #337ab7;
 }
-.panel-primary > .panel-heading {
+.panel-primary > .card-header {
   color: white;
   background-color: #337ab7;
   border-color: #337ab7;
 }
-.panel-primary > .panel-heading + .panel-collapse > .panel-body {
+.panel-primary > .card-header + .panel-collapse > .panel-body {
   border-top-color: #337ab7;
 }
-.panel-primary > .panel-heading .badge {
+.panel-primary > .card-header .badge {
   color: #337ab7;
   background-color: white;
 }
@@ -5776,15 +5776,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-success {
   border-color: #d6e9c6;
 }
-.panel-success > .panel-heading {
+.panel-success > .card-header {
   color: #3c763d;
   background-color: #dff0d8;
   border-color: #d6e9c6;
 }
-.panel-success > .panel-heading + .panel-collapse > .panel-body {
+.panel-success > .card-header + .panel-collapse > .panel-body {
   border-top-color: #d6e9c6;
 }
-.panel-success > .panel-heading .badge {
+.panel-success > .card-header .badge {
   color: #dff0d8;
   background-color: #3c763d;
 }
@@ -5795,15 +5795,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-info {
   border-color: #bce8f1;
 }
-.panel-info > .panel-heading {
+.panel-info > .card-header {
   color: #31708f;
   background-color: #d9edf7;
   border-color: #bce8f1;
 }
-.panel-info > .panel-heading + .panel-collapse > .panel-body {
+.panel-info > .card-header + .panel-collapse > .panel-body {
   border-top-color: #bce8f1;
 }
-.panel-info > .panel-heading .badge {
+.panel-info > .card-header .badge {
   color: #d9edf7;
   background-color: #31708f;
 }
@@ -5814,15 +5814,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-warning {
   border-color: #faebcc;
 }
-.panel-warning > .panel-heading {
+.panel-warning > .card-header {
   color: #8a6d3b;
   background-color: #fcf8e3;
   border-color: #faebcc;
 }
-.panel-warning > .panel-heading + .panel-collapse > .panel-body {
+.panel-warning > .card-header + .panel-collapse > .panel-body {
   border-top-color: #faebcc;
 }
-.panel-warning > .panel-heading .badge {
+.panel-warning > .card-header .badge {
   color: #fcf8e3;
   background-color: #8a6d3b;
 }
@@ -5833,15 +5833,15 @@ a.list-group-item-danger.active, a.list-group-item-danger.active:hover, a.list-g
 .panel-danger {
   border-color: #ebccd1;
 }
-.panel-danger > .panel-heading {
+.panel-danger > .card-header {
   color: #a94442;
   background-color: #f2dede;
   border-color: #ebccd1;
 }
-.panel-danger > .panel-heading + .panel-collapse > .panel-body {
+.panel-danger > .card-header + .panel-collapse > .panel-body {
   border-top-color: #ebccd1;
 }
-.panel-danger > .panel-heading .badge {
+.panel-danger > .card-header .badge {
   color: #f2dede;
   background-color: #a94442;
 }
@@ -7550,7 +7550,7 @@ a.list-group-item.active:focus {
   border-radius: 0;
 }
 
-.panel-heading {
+.card-header {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   background-color: #4c9d29 !important;
@@ -7581,7 +7581,7 @@ a.list-group-item.active:focus {
   border-color: #366903;
 }
 
-.panel-primary > .panel-heading {
+.panel-primary > .card-header {
   color: #fff;
   background-color: #366903;
   border-color: #366903;
@@ -7591,7 +7591,7 @@ a.list-group-item.active:focus {
   border-color: #608f46;
 }
 
-.panel-success > .panel-heading {
+.panel-success > .card-header {
   color: #fff;
   background-color: #608f46;
   border-color: #608f46;
@@ -7601,7 +7601,7 @@ a.list-group-item.active:focus {
   border-color: #FFBF00;
 }
 
-.panel-warning > .panel-heading {
+.panel-warning > .card-header {
   color: #fff;
   background-color: #FFBF00;
   border-color: #FFBF00;
@@ -7611,7 +7611,7 @@ a.list-group-item.active:focus {
   border-color: #5BDBC7;
 }
 
-.panel-info > .panel-heading {
+.panel-info > .card-header {
   color: #fff;
   background-color: #5BDBC7;
   border-color: #5BDBC7;
@@ -7621,7 +7621,7 @@ a.list-group-item.active:focus {
   border-color: #F45C31;
 }
 
-.panel-danger > .panel-heading {
+.panel-danger > .card-header {
   color: #fff;
   background-color: #F45C31;
   border-color: #F45C31;

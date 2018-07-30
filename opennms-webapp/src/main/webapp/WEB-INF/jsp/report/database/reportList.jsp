@@ -64,9 +64,9 @@
                 </div>
                 <div class="row">
                     <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title"><c:out value="${mapEntry.key.displayName}"/></h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title"><c:out value="${mapEntry.key.displayName}"/></h3>
                         </div>
                         <table class="table table-condensed">
                             <thead>

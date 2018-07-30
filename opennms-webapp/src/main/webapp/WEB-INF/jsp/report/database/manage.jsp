@@ -57,11 +57,11 @@
     <div class="col-md-12">
         <c:choose>
             <c:when test="${empty pagedListHolder.pageList}">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Database Report List</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Database Report List</h3>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <p>None found.</p>
                     </div>
                 </div>

@@ -111,8 +111,8 @@
 
 <!--  BRIDGE Links -->
 
-<div class="panel panel-default">
-	<div class="panel-heading"><h3 class="panel-title">
+<div class="card">
+	<div class="card-header"><h3 class="card-title">
 <% if (bridgelinks.isEmpty()) { %>
 		No Bridge Forwarding Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
@@ -179,9 +179,9 @@
 
 <!-- LLDP Links -->
 
-<div class="panel panel-default">
+<div class="card">
 
-<div class="panel-heading"><h3 class="panel-title">
+<div class="card-header"><h3 class="card-title">
 <%  if (lldpLinks.isEmpty()) { %>
 No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
@@ -232,8 +232,8 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 
 <!-- CDP Links -->
 
-<div class="panel panel-default">
-<div class="panel-heading"><h3 class="panel-title">
+<div class="card">
+<div class="card-header"><h3 class="card-title">
 <% if (cdpLinks.isEmpty()) { %>
 No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
@@ -280,8 +280,8 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
 
 <!-- OSPF Links -->
 
-<div class="panel panel-default">
-<div class="panel-heading"><h3 class="panel-title">
+<div class="card">
+<div class="card-header"><h3 class="card-title">
 <%   if (ospfLinks.isEmpty()) { %>
 No OSPF Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
@@ -332,9 +332,9 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
 
 <!-- ISIS Links -->
 
-<div class="panel panel-default">
-	<div class="panel-heading">
-		<h3 class="panel-title">
+<div class="card">
+	<div class="card-header">
+		<h3 class="card-title">
 <%   if (isisLinks.isEmpty()) { %>
 No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>

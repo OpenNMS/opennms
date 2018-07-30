@@ -115,7 +115,7 @@
       </jsp:include>
     <% } %>
 
-<div class="panel panel-default">
+<div class="card">
     <table class="table table-bordered table-condensed">
       <tr>
         <th><%=this.makeSortLink(request, parms, SortStyle.ID,                SortStyle.REVERSE_ID,                "id",                        "ID" )%></th>

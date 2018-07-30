@@ -77,9 +77,9 @@
 </script>
 
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">
     <% if (showNodes != null && showNodes.equals("on")) { %>
         Check the nodes below to ensure that the rule has given the expected results.
         If it hasn't click the 'Rebuild' link below the table. If the results look good
@@ -90,7 +90,7 @@
     <% } %>
     </h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
       Current Rule: <%=newRule%>
       <br/>critical path IP address = <%=criticalIp%>
       <br/>critical path service = <%=criticalSvc%>
@@ -126,11 +126,11 @@
              for nodes matching the rule: <%= newRule %></p>
         <% } %>
       </form>
-  </div> <!-- panel-body -->
-  <div class="panel-footer">
+  </div> <!-- card-body -->
+  <div class="card-footer">
     <a HREF="javascript:rebuild()">&#139;&#139;&#139; Rebuild</a>&nbsp;&nbsp;&nbsp;
     <a HREF="javascript:next()">Finish &#155;&#155;&#155;</a>
-  </div> <!-- panel-footer -->
+  </div> <!-- card-footer -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

@@ -80,9 +80,9 @@
      <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_RULE%>"/>
      <input type="hidden" name="nextPage" value=""/>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title"><% String mode = request.getParameter("mode");
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title"><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
               <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
 		      rule syntax. Please correct the rule to continue.</font>

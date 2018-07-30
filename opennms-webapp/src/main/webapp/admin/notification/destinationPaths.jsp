@@ -107,22 +107,22 @@
 
 <div class="row">
   <div class="col-md-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Create a new Destination Path</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Create a new Destination Path</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <input type="submit" class="btn btn-default" value="New Path"/>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Modify/Delete an existing Destination Path.</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Modify/Delete an existing Destination Path.</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <select NAME="paths" class="form-control">
           <% Map<String, Path> pathsMap = new TreeMap<String, Path>(DestinationPathFactory.getInstance().getPaths());
              for (String key : pathsMap.keySet()) {
@@ -131,7 +131,7 @@
           <% } %>
         </select>
       </div>
-      <div class="panel-footer">
+      <div class="card-footer">
         <input type="button" class="btn btn-default" value="Edit" onclick="editPath()"/>
         <input type="button" class="btn btn-default" value="Delete" onclick="deletePath()"/>
       </div>

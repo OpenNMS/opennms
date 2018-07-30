@@ -58,9 +58,9 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Details for Group: <%=group.getName()%></h2>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Details for Group: <%=group.getName()%></h2>
       </div>
       <table class="table table-condensed">
         <tr>
@@ -92,9 +92,9 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h2 class="panel-title">Duty Schedules</h2>
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Duty Schedules</h2>
       </div>
       <table class="table table-condensed table-striped table-bordered">
         <thead>

@@ -28,11 +28,11 @@
  *******************************************************************************/
 --%>
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">Get in Contact</h3>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Get in Contact</h3>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         <table class="table">
             <tr>
                 <td style="border-top: none;"><a href="https://www.opennms.com/support/" target="_blank" class="btn btn-default" role="button" style="width: 100%">Commercial Support</a></td>

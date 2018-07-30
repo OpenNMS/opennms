@@ -55,11 +55,11 @@ function validateId() {
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Outage Menu</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Outage Menu</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-6 col-xs-6">
             <ul class="list-unstyled">
@@ -77,16 +77,16 @@ function validateId() {
             </form>
           </div> <!-- column -->
         </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Outages and Service Level Availability</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Outages and Service Level Availability</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>Outages are tracked by OpenNMS by polling services that have been provisioned. If the service does not respond to the poll, a service outage is created and service availability levels are impacted. Service outages create notifications.</p>
       </div>
     </div>

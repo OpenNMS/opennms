@@ -39,10 +39,10 @@
 	<jsp:param name="breadcrumb" value="History" />
 </jsp:include>
 
-<div class="panel panel-default">
+<div class="card">
 
-  <div class="panel-heading">
-    <h3 class="panel-title">Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</h3>
+  <div class="card-header">
+    <h3 class="card-title">Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</h3>
   </div>
 
   <c:if test="${!empty historyModel.errors}">
@@ -53,7 +53,7 @@
     </ul>
   </c:if>
 
-  <div class="panel-body">
+  <div class="card-body">
     <br/>
     <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form-horizontal">
       <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.locationName}"/>
@@ -206,7 +206,7 @@
       </script>
     </c:if>
 
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 
 </div> <!-- panel -->
 

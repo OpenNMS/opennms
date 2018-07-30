@@ -64,11 +64,11 @@ function toggleDiv(divName) {
 }
 </script>
 
-<div class="panel panel-default">
-<div class="panel-heading">
-  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
+<div class="card">
+<div class="card-header">
+  <h3 class="card-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
 </div>
-<div class="panel-body">
+<div class="card-body">
 
 <p>
   The OpenNMS web UI has encountered an error that it does
@@ -155,34 +155,34 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   <strong><a href="javascript:toggleDiv('errorDetails')">here</a></strong>.
 </p>
 
-</div> <!-- panel-body -->
+</div> <!-- card-body -->
 </div> <!-- panel -->
 
 <div id="errorDetails" style="display: none;">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Error Details</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Error Details</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     Please include the information below when reporting problems.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Exception Trace</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Exception Trace</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Request Details</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Request Details</h3>
   </div>
   <table class="table table-condensed table-bordered">
     <tr>
@@ -228,9 +228,9 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">System Details</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">System Details</h3>
   </div>
   <table class="table table-condensed table-bordered">
     <tr>
@@ -260,11 +260,11 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Options for Reporting This Problem</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Options for Reporting This Problem</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <p>
     There are two options for reporting this problem outside your own organization.
     </p>
@@ -292,23 +292,23 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     or support ticket, click
     <strong><a href="javascript:toggleDiv('plainTextErrorDetails');">here</a></strong>.
     </p>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </div> <!-- errorDetails -->
 
 <div id="plainTextErrorDetails" style="display: none;">
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Plain Text Error Details</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Plain Text Error Details</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 
 
 <%= errorDetails %>
     </textarea>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 </div> <!-- plainTextErrorDetails -->

@@ -43,11 +43,11 @@
 
 <div class="row">
   <div class="col-md-6">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Notification queries</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Notification queries</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <div class="col-md-4 col-xs-6">
             <ul class="list-unstyled">
@@ -85,18 +85,18 @@
            </div> <!-- row -->
           </div> <!-- column -->
        </div> <!-- row -->
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 
   <div class="col-md-6">
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Outstanding and Acknowledged Notices</h3>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Outstanding and Acknowledged Notices</h3>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <p>When important events are detected by OpenNMS, users may 
               receive a <em>notice</em>, a descriptive message sent automatically
               to a pager, an email address, or both. In order to
@@ -121,18 +121,18 @@
               Note that this is particularly useful if you are using a numeric 
               paging service and receive the numeric notice identifier as part of the page.
             </p>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->
 
     <div class="row">
       <div class="col-md-12">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            <h3 class="panel-title">Notification Escalation</h3>
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Notification Escalation</h3>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <p>Once a notice is sent, it is considered <em>outstanding</em> until 
                 someone <em>acknowledge</em>s receipt of the notice via the OpenNMS
                 Notification interface.&nbsp; If the event that 
@@ -148,7 +148,7 @@
                 where all members of that group will be notified at once with no 
                 15 minute escalation interval.
             </p>
-          </div> <!-- panel-body -->
+          </div> <!-- card-body -->
         </div> <!-- panel -->
       </div> <!-- column -->
     </div> <!-- row -->

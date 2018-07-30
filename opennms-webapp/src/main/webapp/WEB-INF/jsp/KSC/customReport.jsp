@@ -89,11 +89,11 @@
   }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Customized Report Configuration</h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Customized Report Configuration</h3>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <form class="form-horizontal" name="customize_form" method="get" action="<%= baseHref %>KSC/formProcReport.htm">
       <input type="hidden" name="<%=FormProcReportController.Parameters.action%>" value="none"/>
       <input type="hidden" name="<%=FormProcReportController.Parameters.graph_index%>" value="-1"/>

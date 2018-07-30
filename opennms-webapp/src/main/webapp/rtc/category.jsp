@@ -148,7 +148,7 @@
 
 <br/><br/>
 
-    <div class="panel panel-default fix-subpixel">
+    <div class="card fix-subpixel">
       <table class="table table-condensed severity">
         <thead>
         <tr>

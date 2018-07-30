@@ -138,11 +138,11 @@ function doAddIncludeRange(){
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Add Include Range to Discovery</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Add Include Range to Discovery</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <p>Add a range of IP addresses to include in discovery.<br/>
         Begin and End IP addresses are required.<br/>
         <br/>
@@ -202,7 +202,7 @@ function doAddIncludeRange(){
             </div>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

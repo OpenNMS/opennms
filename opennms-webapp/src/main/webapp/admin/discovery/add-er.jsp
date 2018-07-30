@@ -81,11 +81,11 @@ function doAddExcludeRange(){
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Add Range to Exclude from Discovery</h3>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Add Range to Exclude from Discovery</h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <form role="form" class="form-horizontal">
           <div class="form-group">
             <label for="begin" class="control-label col-sm-2">Begin IP Address:</label>
@@ -106,7 +106,7 @@ function doAddExcludeRange(){
             </div>
           </div>
         </form>
-      </div> <!-- panel-body -->
+      </div> <!-- card-body -->
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->

@@ -61,9 +61,9 @@
   <jsp:param name="breadcrumb" value='<%="Outage " + outage.getId()%>' />
 </jsp:include>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Outage <%=outage.getId()%></h3>
+<div class="card">
+  <div class="card-header">
+    <h3 class="card-title">Outage <%=outage.getId()%></h3>
   </div>
 
   <table class="table table-condensed severity">

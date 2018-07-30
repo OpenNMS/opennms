@@ -71,16 +71,16 @@
   }
 </script>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card">
+  <div class="card-header">
     <%if ("redo".equals(request.getParameter("action"))) { %>
-      <h3 class="panel-title">The user <%=request.getParameter("userID")%> already exists.
+      <h3 class="card-title">The user <%=request.getParameter("userID")%> already exists.
         Please type in a different user ID.</h3>
     <%} else { %>
-      <h3 class="panel-title">Please enter a user ID and password below</h3>
+      <h3 class="card-title">Please enter a user ID and password below</h3>
     <%}%>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <form class="form-horizontal" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
       <div class="form-group">
         <label for="userID" class="col-sm-2 control-label">User ID:</label>
@@ -109,7 +109,7 @@
         </div>
       </div>
     </form>
-  </div> <!-- panel-body -->
+  </div> <!-- card-body -->
 </div> <!-- panel -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

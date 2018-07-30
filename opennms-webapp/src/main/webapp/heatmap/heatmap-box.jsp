@@ -127,9 +127,9 @@
     }
 </style>
 
-<div id="heatmap-box" class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
+<div id="heatmap-box" class="card">
+    <div class="card-header">
+        <h3 class="card-title"><a href="heatmap/index.jsp?mode=<%=Util.encode(mode)%>&amp;heatmap=<%=Util.encode(heatmap)%>&amp;foreignSource=<%=foreignSource==null?"":Util.encode(foreignSource)%>&amp;category=<%=category==null?"":Util.encode(category)%>&amp;monitoredService=<%=monitoredService==null?"":Util.encode(monitoredService)%>"><%=WebSecurityUtils.sanitizeString(title)%>
         </a></h3>
     </div>
 
@@ -273,7 +273,7 @@
             });
         });
     </script>
-    <div class="panel-footer">
+    <div class="card-footer">
         <div class="row">
             <div class="col-sm-7 col-md-7" style="padding-right: 0 !important">
                 <span class="text-nowrap">
