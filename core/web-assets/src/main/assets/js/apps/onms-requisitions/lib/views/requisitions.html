@@ -86,12 +86,12 @@
             <td>{{ requisition.nodesInDatabase }}</td>
             <td>
               <span class="pull-right">
-                <button type="button" class="btn btn-secondary btn-xs"
+                <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
                         ng-click="edit(requisition.foreignSource)">
                   <span class="glyphicon glyphicon-pencil"></span>
                 </button>
-                <button type="button" class="btn btn-secondary btn-xs"
+                <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                         ng-disabled="timingStatus.isRunning"
                         ng-click="synchronize(requisition)">
@@ -99,7 +99,7 @@
                 </button>
 
                 <div class="btn-group" uib-dropdown dropdown-append-to-body>
-                  <button id="btn-append-to-to-body" uib-tooltip="More actions for requisition {{requisition.foreignSource}}" type="button" class="btn btn-secondary btn-xs" uib-dropdown-toggle>
+                  <button id="btn-append-to-to-body" uib-tooltip="More actions for requisition {{requisition.foreignSource}}" type="button" class="btn btn-secondary btn-sm" uib-dropdown-toggle>
                     <span class="fa fa-ellipsis-h"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">

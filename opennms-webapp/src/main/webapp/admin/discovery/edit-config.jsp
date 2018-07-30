@@ -283,7 +283,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getForeignSource().isPresent() ? specs[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getLocation().isPresent() ? specs[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -324,7 +324,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getLocation().isPresent() ? urls[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -369,7 +369,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 						  <td><%=irange[i].getRetries().isPresent() ? "" + irange[i].getRetries().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getForeignSource().isPresent() ? irange[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getLocation().isPresent() ? irange[i].getLocation().get() : "<i>Use Default</i>" %></td>
-						  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteIR(<%=i%>);">Delete</button></td>
+						  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
 					     </table>
@@ -406,7 +406,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					 <tr class="text-center">
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-sm btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 

@@ -238,22 +238,22 @@
                     <div>
 	                    <div class="graph-aux-controls" style="padding-bottom: 5px" data-resource-id="${resultSet.resource.id}" data-graph-name="${graph.name}">
                             <a style="padding-right: 3px" title="Add ${graph.title} to KSC Report">
-                                <button type="button" class="btn btn-secondary btn-xs" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
+                                <button type="button" class="btn btn-secondary btn-sm" ng-click="open('${resultSet.resource.id}','${resultSet.resource.label}','${graph.name}','${graph.title}')">
                                     <i class="fa fa-plus" aria-hidden="true"></i>
                                 </button>
                             </a>
 		                    <c:if test="${fn:length(resultSet.graphs) > 1}">
-		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-secondary btn-xs"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
+		                        <a href="${specificGraphUrl}" style="padding-right: 3px" title="Open ${graph.title}"><button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-binoculars" aria-hidden="true"></i></span></button></a>
 		                    </c:if>
-                                    <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-secondary btn-xs"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
+                                    <a href="javascript:popUp('${forecastGraphUrl}')" style="padding-right: 3px" title="Forecast ${graph.title}"><button type="button" class="btn btn-secondary btn-sm"><i class="fa fa-line-chart" aria-hidden="true"></i></span></button></a>
 		                    <c:if test="${fn:contains(resultSet.resource.resourceType.label, 'SNMP') || fn:contains(resultSet.resource.resourceType.label, 'TCA') }">
 		                        <c:if test="${fn:contains(resultSet.resource.label,'(*)') != true}">
-		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-secondary btn-xs" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
+		                            <a href="javascript:popUp('${nrtgGraphUrl}')" title="Start NRT-Graphing for ${graph.title}"><button type="button" class="btn btn-secondary btn-sm" aria-label="Start NRT-Graphing for ${graph.title}"><span class="glyphicon glyphicon-flash" aria-hidden="true"></span></button></a>
 		                        </c:if>
 		                    </c:if>
                               <div style="display: inline" ng-if="flowsEnabled">
                                 <a ng-href="{{flowGraphUrl}}" target="_blank" style="padding-right: 3px" title="{{ hasFlows ? 'Open flow graphs' : 'No flows were found in current time range'}}">
-                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-secondary btn-xs">
+                                <span> <button type="button" ng-disabled="!hasFlows" class="btn btn-secondary btn-sm">
                                   <i class="fa fa-exchange" aria-hidden="true"></i>
                                   </button>
                                 </span>
