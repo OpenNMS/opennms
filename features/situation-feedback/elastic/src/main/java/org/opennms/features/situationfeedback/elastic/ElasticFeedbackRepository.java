@@ -74,7 +74,11 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
     @Override
     public void persist(Collection<AlarmFeedback> feedback) throws FeedbackException {
         ensureInitialized();
-        LOG.debug("Persiting {} feedbacks.", feedback.size());
+        if (LOG.isDebugEnabled()) {
+            for (AlarmFeedback fb : feedback) {
+                LOG.debug("Persiting {} feedback.", fb);
+            }
+        }
 
         List<FeedbackDocument> feedbackDocuments = feedback.stream().map(FeedbackDocument::from).collect(Collectors.toList());
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {

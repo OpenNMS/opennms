@@ -126,7 +126,7 @@ public class FeedbackDocument {
 
     public static FeedbackDocument from(AlarmFeedback feedback) {
         FeedbackDocument doc = new FeedbackDocument();
-        doc.setTimestamp(feedback.getTimestamp() != 0 ? feedback.getTimestamp() : System.currentTimeMillis());
+        doc.setTimestamp(System.currentTimeMillis());
         doc.setAlarmKey(feedback.getAlarmKey());
         doc.setFeedbackType(feedback.getFeedbackType().toString());
         doc.setReason(feedback.getReason());
