@@ -30,6 +30,7 @@ package org.opennms.web.admin.users;
 
 import java.io.IOException;
 import java.text.ChoiceFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -94,6 +95,8 @@ public class UpdateUserServlet extends HttpServlet {
             String timeZoneId = request.getParameter("timeZoneId");
             if (timeZoneId != null && !timeZoneId.trim().equals("")) {
                 newUser.setTimeZoneId(timeZoneId);
+            } else {
+                newUser.setTimeZoneId((ZoneId) null);
             }
 
             String email = request.getParameter(ContactType.email.toString());
