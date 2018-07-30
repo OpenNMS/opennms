@@ -397,6 +397,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.collection</groupId>
+      <artifactId>org.opennms.features.collection.persistence.osgi</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>snmp-dependencies</artifactId>
       <type>pom</type>
