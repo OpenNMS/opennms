@@ -1,0 +1,37 @@
+===== RRDtool
+
+In most _Open Source_ applications, link:http://oss.oetiker.ch/rrdtool[RRDtool] is often used and is the de-facto open standard for _Time Series Data_.
+The basic installation of _OpenNMS_ comes with _JRobin_ but it is simple to switch the system to use _RRDtool_ to persist _Time Series Data_.
+This section describes how to install _RRDtool_, the _jrrd2_ _OpenNMS Java Interface_ and how to configure _OpenNMS_ to use it.
+_RRDtool_ can be installed from the official package repositories provided by _RHEL_ based _Linux_ distributions.
+
+TIP: _OpenNMS_ expects the _RRDtool_ binary in `/usr/bin/rrdtool`.
+
+[source, shell]
+----
+yum install rrdtool
+----
+
+====== jrrd2
+
+To get access from the _OpenNMS Java Virtual Machine_ you have to install _jrrd2_ as an interface.
+You can install it from the _OpenNMS_ package repository with:
+
+[source, shell]
+----
+yum install jrrd2
+----
+
+NOTE: With OpenNMS 17.0.0 it is preferred to use _jrrd2_ instead of _jrrd_.
+      The _jrrd2_ module is improved for performance by adding multithreading capabilities.
+
+
+====== Configuration Override
+To configure _OpenNMS_ to use _RRDtool_ instead of _JRobin_ configure the following properties in `rrd-configuration.properties`.
+
+[source]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so
+----
