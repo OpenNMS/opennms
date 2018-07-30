@@ -103,7 +103,7 @@
         </div>
         <div class="card-footer">
           <form name="kscForm">
-          <div class="btn-group btn-group-justified" role="group">
+          <div class="btn-group btn-group d-flex" role="group">
             <div class="btn-group" role="group">
               <button type="button" class="btn btn-secondary" ng-click="viewReport()">View</button>
             </div> 
