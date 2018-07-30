@@ -26,7 +26,7 @@
         <div class="input-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
           <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
           <span class="input-group-btn">
-            <button type="button" class="btn btn-default" ng-click="removeParameter($index)">
+            <button type="button" class="btn btn-secondary" ng-click="removeParameter($index)">
               <span class="glyphicon glyphicon-trash"></span>
             </button>
           </span>
@@ -38,9 +38,9 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" id="add-detector-parameter" ng-click="addParameter()" ng-disabled="detectorForm.clazz.$invalid || getAvailableParameters().length == 0">Add Parameter</button>
+  <button type="button" class="btn btn-secondary" id="add-detector-parameter" ng-click="addParameter()" ng-disabled="detectorForm.clazz.$invalid || getAvailableParameters().length == 0">Add Parameter</button>
   <button type="button" class="btn btn-primary" id="save-detector" ng-click="save()" ng-disabled="detectorForm.$invalid">Save</button>
-  <button type="button" class="btn btn-default" id="cancel-detector" ng-click="cancel()">Cancel</button>
+  <button type="button" class="btn btn-secondary" id="cancel-detector" ng-click="cancel()">Cancel</button>
 </div>
 
 </div>

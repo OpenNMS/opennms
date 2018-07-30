@@ -179,8 +179,8 @@
 
                     <div class="form-group">
                         <div class="col-md-2">
-                            <input class="btn btn-default" type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
-                            <input class="btn btn-default" type="submit" id="cancel" name="_eventId_cancel" value="Cancel"/>&#160;
+                            <input class="btn btn-secondary" type="submit" id="proceed" name="_eventId_proceed" value="Proceed" />&#160;
+                            <input class="btn btn-secondary" type="submit" id="cancel" name="_eventId_cancel" value="Cancel"/>&#160;
                         </div>
                     </div>
 

@@ -96,7 +96,7 @@
                     </select>
                   </div>
                   <input type="hidden" name="column" value="category" />
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->

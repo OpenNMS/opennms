@@ -81,7 +81,7 @@
                                     <p class="form-control-static"><c:out value="${results.username}"/></p>
                                 </div>
                                 <div class="col-md-8">
-                                    <input id="sign-out" class="btn btn-default pull-right" value="Sign Out"
+                                    <input id="sign-out" class="btn btn-secondary pull-right" value="Sign Out"
                                            onClick="document.forms['signout'].submit();"/>
                                 </div>
                             </div>
@@ -116,8 +116,8 @@
                                         </label>
                                     </div>
                                     <div class="pull-right">
-                                        <input class="btn btn-default" type="reset" value="Clear"/>
-                                        <input class="btn btn-default" type="submit" value="Create Ticket"/>
+                                        <input class="btn btn-secondary" type="reset" value="Clear"/>
+                                        <input class="btn btn-secondary" type="submit" value="Create Ticket"/>
                                     </div>
                                 </div>
                             </div>
@@ -170,8 +170,8 @@
                                        placeholder="Password">
                             </div>
                             <div class="form-group">
-                                <button type="reset" class="btn btn-default">Clear</button>
-                                <button type="submit" class="btn btn-default">Log in</button>
+                                <button type="reset" class="btn btn-secondary">Clear</button>
+                                <button type="submit" class="btn btn-secondary">Log in</button>
                                 <input type="hidden" name="operation" value="login"/>
                             </div>
                         </form>

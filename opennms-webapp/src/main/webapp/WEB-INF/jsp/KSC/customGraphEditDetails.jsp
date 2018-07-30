@@ -211,10 +211,10 @@
             </div>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-default" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
-            <button type="button" class="btn btn-default" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
-            <button type="button" class="btn btn-default" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
-            <button type="button" class="btn btn-default" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelGraph()" alt="Cancel this graph configuration">Cancel edits to this graph</button>
+            <button type="button" class="btn btn-secondary" onclick="updateGraph()" alt="Update changes to sample graph">Refresh sample view</button>
+            <button type="button" class="btn btn-secondary" onclick="chooseResource()" alt="Choose a different resource to graph">Choose different resource</button>
+            <button type="button" class="btn btn-secondary" onclick="saveGraph()" alt="Done with this graph configuration">Done with edits to this graph</button>
           </div>
         </form>
       </div>

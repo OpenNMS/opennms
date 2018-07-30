@@ -287,6 +287,6 @@
 
 	<br/>
 
-	<button class="btn btn-default" type="submit">Search</button>
+	<button class="btn btn-secondary" type="submit">Search</button>
 
 </form>

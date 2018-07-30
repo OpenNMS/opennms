@@ -110,8 +110,8 @@
             <tr>
               <td class="col-md-1">
                 <div class="btn-group-vertical" role="group">
-                  <button class="btn btn-default" onclick="modifyGraph(${graphNum})">Modify</button>
-                  <button class="btn btn-default" onclick="deleteGraph(${graphNum})">Delete</button>
+                  <button class="btn btn-secondary" onclick="modifyGraph(${graphNum})">Modify</button>
+                  <button class="btn btn-secondary" onclick="deleteGraph(${graphNum})">Delete</button>
                 </div>
               </td>
               <td align="right" class="col-md-3">
@@ -244,9 +244,9 @@
               </div>
             </div>
             <div class="btn-group">
-              <button type="button" class="btn btn-default" onclick="addNewGraph()" alt="Add a new graph to the report">Add New Graph</button>
-              <button type="button" class="btn btn-default" onclick="saveReport()" alt="Save the Report to File">Save Report</button>
-              <button type="button" class="btn btn-default" onclick="cancelReport()" alt="Cancel the report configuration">Cancel</button>
+              <button type="button" class="btn btn-secondary" onclick="addNewGraph()" alt="Add a new graph to the report">Add New Graph</button>
+              <button type="button" class="btn btn-secondary" onclick="saveReport()" alt="Save the Report to File">Save Report</button>
+              <button type="button" class="btn btn-secondary" onclick="cancelReport()" alt="Cancel the report configuration">Cancel</button>
             </div>
           </td>
         </tr>

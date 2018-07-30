@@ -51,6 +51,6 @@
 			<option value="7">Last month</option>
 		</select>
 		&nbsp;
-		<input class="btn btn-default" type="submit" value="Search" />
+		<input class="btn btn-secondary" type="submit" value="Search" />
 	</div>
 </form>

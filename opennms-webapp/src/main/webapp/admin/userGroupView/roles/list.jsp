@@ -149,7 +149,7 @@
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="newForm">
   <input name="operation" type="hidden" value="new"/>
-  <button type="submit" class="btn btn-default">Add New On-Call Role</button>
+  <button type="submit" class="btn btn-secondary">Add New On-Call Role</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

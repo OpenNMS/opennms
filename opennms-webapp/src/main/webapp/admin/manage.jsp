@@ -174,11 +174,11 @@
           <p>Managing or Unmanaging an interface will automatically mark each service on that interface as managed or unmanaged accordingly. A service cannot be
           managed if its interface is not managed.</p>
 
-    <button type="button" class="btn btn-default" onClick="applyChanges()">Apply Changes</button>
-    <button type="button" class="btn btn-default" onClick="cancel()">Cancel</button>
-    <button type="button" class="btn btn-default" onClick="checkAll()">Select All</button>
-    <button type="button" class="btn btn-default" onClick="uncheckAll()"> Unselect All</button>
-    <button type="reset" class="btn btn-default">Reset</button>
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
 
     <div class="row top-buffer">
       <% if (nodes.size() > 0) { %>
@@ -217,11 +217,11 @@
 
     <div class="top-buffer"></div>
 
-    <button type="button" class="btn btn-default" onClick="applyChanges()">Apply Changes</button>
-    <button type="button" class="btn btn-default" onClick="cancel()">Cancel</button>
-    <button type="button" class="btn btn-default" onClick="checkAll()">Select All</button>
-    <button type="button" class="btn btn-default" onClick="uncheckAll()"> Unselect All</button>
-    <button type="reset" class="btn btn-default">Reset</button>
+    <button type="button" class="btn btn-secondary" onClick="applyChanges()">Apply Changes</button>
+    <button type="button" class="btn btn-secondary" onClick="cancel()">Cancel</button>
+    <button type="button" class="btn btn-secondary" onClick="checkAll()">Select All</button>
+    <button type="button" class="btn btn-secondary" onClick="uncheckAll()"> Unselect All</button>
+    <button type="reset" class="btn btn-secondary">Reset</button>
   </div> <!-- card-body -->
 </div> <!-- panel -->
 

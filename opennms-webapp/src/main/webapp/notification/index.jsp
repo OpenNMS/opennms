@@ -66,7 +66,7 @@
                    <label for="byuser_user">User:</label>
                    <input type="text" class="form-control" id="byuser_user" name="user"/>
                  </div>
-                 <button type="submit" class="btn btn-default">Check notices</button>
+                 <button type="submit" class="btn btn-secondary">Check notices</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->
@@ -79,7 +79,7 @@
                    <label for="bynotice_notice">Notice:</label>
                    <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
                  </div>
-                 <button type="submit" class="btn btn-default">Get details</button>
+                 <button type="submit" class="btn btn-secondary">Get details</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->

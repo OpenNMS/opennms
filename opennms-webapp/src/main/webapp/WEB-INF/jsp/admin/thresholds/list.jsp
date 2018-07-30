@@ -71,5 +71,5 @@ function doReload() {
     }
 }
 </script>
-<button type="button" class="btn btn-default" onclick="doReload()">Request a reload threshold packages configuration</button>
+<button type="button" class="btn btn-secondary" onclick="doReload()">Request a reload threshold packages configuration</button>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

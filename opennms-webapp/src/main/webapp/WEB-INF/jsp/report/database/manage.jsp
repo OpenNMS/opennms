@@ -125,7 +125,7 @@
                         </div>
                     </c:if>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                    <input class="btn btn-default" type="submit" value="delete checked reports"/>
+                    <input class="btn btn-secondary" type="submit" value="delete checked reports"/>
                     <% } %>
 
                 </form:form>

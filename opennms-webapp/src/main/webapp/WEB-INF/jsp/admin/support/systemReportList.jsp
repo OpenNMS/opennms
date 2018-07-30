@@ -104,7 +104,7 @@ function toggle(box, field)
   </div> <!-- card-body -->
   <div class="card-footer">
     <input type="hidden" name="operation" value="run" />
-    <input type="submit" class="btn btn-default" />
+    <input type="submit" class="btn btn-secondary" />
   </div>
 </div> <!-- panel -->
 

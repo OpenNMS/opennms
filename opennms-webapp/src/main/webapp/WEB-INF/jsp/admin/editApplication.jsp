@@ -69,8 +69,8 @@
           </div>
 
           <div class="form-group col-md-2 text-center">
-            <input type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;"/>
-            <input type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove"/>
+            <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
+            <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
           </div>
 
           <div class="form-group col-md-5">

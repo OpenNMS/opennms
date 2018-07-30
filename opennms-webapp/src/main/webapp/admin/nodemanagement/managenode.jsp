@@ -225,11 +225,11 @@
     <input type="hidden" name="node" value="<%= nodeId %>"/>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-default" value="Apply Changes"/>
-      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
-      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
-      <input type="reset" class="btn btn-default" />
+      <input type="submit" class="btn btn-secondary" value="Apply Changes"/>
+      <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-secondary" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-secondary" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-secondary" />
     </div>
 
     <div class="row">
@@ -264,11 +264,11 @@
     </div>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-default" value="Apply Changes"/>
-      <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
-      <input type="button" class="btn btn-default" value="Select All" onclick="checkAll()"/>
-      <input type="button" class="btn btn-default" value="Unselect All" onclick="uncheckAll()"/>
-      <input type="reset" class="btn btn-default" />
+      <input type="submit" class="btn btn-secondary" value="Apply Changes"/>
+      <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
+      <input type="button" class="btn btn-secondary" value="Select All" onclick="checkAll()"/>
+      <input type="button" class="btn btn-secondary" value="Unselect All" onclick="uncheckAll()"/>
+      <input type="reset" class="btn btn-secondary" />
     </div>
   </div> <!-- card-body -->
 </div> <!-- panel -->

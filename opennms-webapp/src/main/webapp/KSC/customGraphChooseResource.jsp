@@ -79,7 +79,7 @@
               <li ng-repeat="(key,graph) in selectedResource.rrdGraphAttributes" name="graph.{{ key }}">{{ key }}</li>
             </ul>
             <br/>
-            <button class="btn btn-default" type="button" ng-click="chooseResource()">Choose this resource</button>
+            <button class="btn btn-secondary" type="button" ng-click="chooseResource()">Choose this resource</button>
           </div>
         </div>
       </div>
@@ -124,8 +124,8 @@
         </div>
         <div class="pabel-footer">
           <div class="btn-group" role="group"ng-show=" resources.length > 0 && level < 2">
-            <button type="button" class="btn btn-default" ng-click="viewResource()">View Child Resource</button>
-            <button type="button" class="btn btn-default" ng-click="chooseResource()">Choose Child Resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="viewResource()">View Child Resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="chooseResource()">Choose Child Resource</button>
           </div> 
         </div>
       </div>
@@ -145,10 +145,10 @@
               This resource has no parent.  You can use the "View top-level resources"
               button to see all top-level resources.
             </p>
-            <button type="button" class="btn btn-default" ng-click="goBack()">View top-level resources</button>
+            <button type="button" class="btn btn-secondary" ng-click="goBack()">View top-level resources</button>
           </div>
           <div ng-show="level == 2">
-            <button type="button" class="btn btn-default" ng-click="goBack()">View the parent resource</button>
+            <button type="button" class="btn btn-secondary" ng-click="goBack()">View the parent resource</button>
           </div> 
         </div>
       </div>

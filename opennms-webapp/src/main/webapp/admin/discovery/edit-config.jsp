@@ -180,7 +180,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 <input type="hidden" id="erbegin" name="erbegin" value=""/>
 <input type="hidden" id="erend" name="erend" value=""/>
 
-<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
+<button type="submit" class="btn btn-secondary">Save and Restart Discovery</button>
 
 <p/>
 
@@ -283,7 +283,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					  <td><%=specs[i].getRetries().isPresent() ? "" + specs[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getForeignSource().isPresent() ? specs[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=specs[i].getLocation().isPresent() ? specs[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteSpecific(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -293,7 +293,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-default" onclick="addSpecific();">Add New</button>
+        <button type="button" class="btn btn-secondary" onclick="addSpecific();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -324,7 +324,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					  <td><%=urls[i].getRetries().isPresent() ? "" + urls[i].getRetries().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getForeignSource().isPresent() ? urls[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 					  <td><%=urls[i].getLocation().isPresent() ? urls[i].getLocation().get() : "<i>Use Default</i>" %></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteIncludeUrl(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 				     </table>
@@ -334,7 +334,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-default" onclick="addIncludeUrl();">Add New</button>
+        <button type="button" class="btn btn-secondary" onclick="addIncludeUrl();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -369,7 +369,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 						  <td><%=irange[i].getRetries().isPresent() ? "" + irange[i].getRetries().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getForeignSource().isPresent() ? irange[i].getForeignSource().get() : "<i>Use Default</i>" %></td>
 						  <td><%=irange[i].getLocation().isPresent() ? irange[i].getLocation().get() : "<i>Use Default</i>" %></td>
-						  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteIR(<%=i%>);">Delete</button></td>
+						  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteIR(<%=i%>);">Delete</button></td>
 						</tr>
 					      <%} // end for%>
 					     </table>
@@ -379,7 +379,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-default" onclick="addIncludeRange();">Add New</button>
+        <button type="button" class="btn btn-secondary" onclick="addIncludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -406,7 +406,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 					 <tr class="text-center">
 					  <td><%=irange[i].getBegin()%></td>
 					  <td><%=irange[i].getEnd()%></td>
-					  <td width="1%"><button type="button" class="btn btn-xs btn-default" onclick="deleteER(<%=i%>);">Delete</button></td>
+					  <td width="1%"><button type="button" class="btn btn-xs btn-secondary" onclick="deleteER(<%=i%>);">Delete</button></td>
 					</tr>
 				      <%} // end for%>
 
@@ -417,13 +417,13 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       </div>
       <% } %>
       <div class="card-footer">
-        <button type="button" class="btn btn-default" onclick="addExcludeRange();">Add New</button>
+        <button type="button" class="btn btn-secondary" onclick="addExcludeRange();">Add New</button>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
 </div> <!-- row -->
 
-<button type="submit" class="btn btn-default">Save and Restart Discovery</button>
+<button type="submit" class="btn btn-secondary">Save and Restart Discovery</button>
 
 </form>
 

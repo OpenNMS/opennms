@@ -81,8 +81,8 @@
             <label class="col-form-label" for="input_pass2">Confirm New Password:</label>
             <input type="password" class="form-control" name="pass2">
           </div>
-          <button type="submit" class="btn btn-default">Submit</button>
-          <a href="account/selfService/index.jsp" class="btn btn-default">Cancel</a>
+          <button type="submit" class="btn btn-secondary">Submit</button>
+          <a href="account/selfService/index.jsp" class="btn btn-secondary">Cancel</a>
         </form>
       </div> <!-- card-body -->
     </div> <!-- panel -->

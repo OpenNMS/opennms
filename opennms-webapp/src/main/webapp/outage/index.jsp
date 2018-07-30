@@ -73,7 +73,7 @@ function validateId() {
                 <label for="input_id">Outage ID:</label>
                 <input type="text" class="form-control" id="input_id" name="id" />
               </div>
-              <button type="submit" class="btn btn-default">Get details</button>
+              <button type="submit" class="btn btn-secondary">Get details</button>
             </form>
           </div> <!-- column -->
         </div> <!-- row -->

@@ -134,8 +134,8 @@
           <br/>
 
           <div class="form-group">
-            <input type="submit" class="btn btn-default" value="Change Label" />
-            <input type="reset" class="btn btn-default" />
+            <input type="submit" class="btn btn-secondary" value="Change Label" />
+            <input type="reset" class="btn btn-secondary" />
           </div>
 
         </form>

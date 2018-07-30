@@ -64,7 +64,7 @@
           <div class="form-group">
             <label for="byeventid_id">Event ID:</label>
             <input type="text" class="form-control" name="id" id="byeventid_id"/>
-            <button type="submit" class="btn btn-default">Get details</button>
+            <button type="submit" class="btn btn-secondary">Get details</button>
           </div>                
         </form>
 

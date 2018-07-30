@@ -329,6 +329,6 @@
 	</div>
 
 	<div class="form-group col-sm-12">
-		<button class="btn btn-default" type="submit">Search</button>
+		<button class="btn btn-secondary" type="submit">Search</button>
 	</div>
 </form>

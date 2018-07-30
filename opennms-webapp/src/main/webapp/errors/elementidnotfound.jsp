@@ -66,7 +66,7 @@
         <input type="text" class="form-control" id="input_text" name="<%=einfe.getDetailParam()%>"/>
       </div>
     </div>
-    <button type="submit" class="btn btn-default">Search</button>
+    <button type="submit" class="btn btn-secondary">Search</button>
   </form>
   <% } %>
   

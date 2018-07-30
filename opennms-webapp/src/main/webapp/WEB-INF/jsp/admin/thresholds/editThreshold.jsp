@@ -116,8 +116,8 @@
         	</tr>
       </table>
       <div class="card-footer">
-        <input type="submit" name="submitAction" class="btn btn-default" value="${saveButtonTitle}"/>
-        <input type="submit" name="submitAction" class="btn btn-default" value="${cancelButtonTitle}"/>
+        <input type="submit" name="submitAction" class="btn btn-secondary" value="${saveButtonTitle}"/>
+        <input type="submit" name="submitAction" class="btn btn-secondary" value="${cancelButtonTitle}"/>
       </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -166,15 +166,15 @@
                       <c:when test="${i.count==filterSelected}">
                         <td><input type="text" name="updateFilterField" class="form-control" size="60" value="${fn:escapeXml(filter.field)}"/></td>
                         <td><input type="text" name="updateFilterRegexp" class="form-control" size="60" value="${fn:escapeXml(filter.content.orElse(null))}"/></td>
-                        <td><input type="submit" name="submitAction" class="btn btn-default" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>          
+                        <td><input type="submit" name="submitAction" class="btn btn-secondary" value="${updateButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/></td>
                       </c:when>
                       <c:otherwise>
                         <td><input type="text" disabled="disabled" class="form-control" size="60" value="${fn:escapeXml(filter.field)}"/></td>
                         <td><input type="text" disabled="disabled" class="form-control" size="60" value="${fn:escapeXml(filter.content.orElse(null))}"/></td>
-                        <td><input type="submit" name="submitAction" class="btn btn-default" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
-                            <input type="submit" name="submitAction" class="btn btn-default" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                        <td><input type="submit" name="submitAction" class="btn btn-secondary" value="${editButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${deleteButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${moveUpButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
+                            <input type="submit" name="submitAction" class="btn btn-secondary" value="${moveDownButtonTitle}" onClick="document.frm.filterSelected.value='${i.count}'"/>
                             </td>
                       </c:otherwise>
                     </c:choose>
@@ -183,7 +183,7 @@
                 <tr>
                     <td><input type="text" name="filterField" class="form-control" size="60"/></td>
                     <td><input type="text" name="filterRegexp" class="form-control" size="60"/></td>
-                    <td><input type="submit" name="submitAction" class="btn btn-default" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
+                    <td><input type="submit" name="submitAction" class="btn btn-secondary" value="${addFilterButtonTitle}" onClick="setFilterAction('add')"/></td>
                 </tr>
             </table>
           </div> <!-- column -->

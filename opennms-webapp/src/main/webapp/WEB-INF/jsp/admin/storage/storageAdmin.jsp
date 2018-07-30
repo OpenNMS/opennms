@@ -233,7 +233,7 @@
 	<tr>
 		<th>
 			<form id="createBucketForm" method="post" name="createBucketForm" onsubmit="return createBucket();">
-				<input name="createStatus" class="btn btn-default" id="doCreate" type="submit" value="Create"/>
+				<input name="createStatus" class="btn btn-secondary" id="doCreate" type="submit" value="Create"/>
 				<input type="hidden" name="bucket" value="${model.id}"/>
 			</form>
 		</th>

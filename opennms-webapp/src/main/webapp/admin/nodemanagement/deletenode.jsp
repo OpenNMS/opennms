@@ -130,8 +130,8 @@
           </div>
 
           <div class="form-group">
-            <input type="submit" class="btn btn-default" value="Delete">
-            <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>" class="btn btn-default">Cancel</a>
+            <input type="submit" class="btn btn-secondary" value="Delete">
+            <a href="admin/nodemanagement/index.jsp?node=<%=nodeId%>" class="btn btn-secondary">Cancel</a>
           </div>
         </form>
       </div> <!-- card-body -->

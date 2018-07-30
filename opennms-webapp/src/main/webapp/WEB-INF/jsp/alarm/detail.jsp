@@ -281,8 +281,8 @@
 				<textarea style="width:100%" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
                 <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-default" type="submit" value="Save" />
-                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
+                <form:input class="btn btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
                 </div>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
@@ -319,8 +319,8 @@
                 <textarea style="width:100%" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
                 <div class="btn-group btn-group-sm">
-                <form:input class="btn btn-default" type="submit" value="Save" />
-                <form:input class="btn btn-default" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
+                <form:input class="btn btn-secondary" type="submit" value="Save" />
+                <form:input class="btn btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
                 </div>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
@@ -372,7 +372,7 @@
                     <input type="hidden" name="actionCode" value="<%=action%>" />
                     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                     <input type="hidden" name="redirect" value="<%= "detail.htm" + "?" + request.getQueryString()%>" />
-                    <input class="form-control btn btn-default" type="submit" value="<%=ackButtonName%>" />
+                    <input class="form-control btn btn-secondary" type="submit" value="<%=ackButtonName%>" />
                 </form>
 
         <%if (showEscalate || showClear) {%>
@@ -388,7 +388,7 @@
                         <option value="<%=clearAction%>">Clear this alarm</option>
                         <% }%>
                     </select>
-                    <input class="form-control btn btn-default" type="submit" value="Go"/>
+                    <input class="form-control btn btn-secondary" type="submit" value="Go"/>
                 </form>
 
         <% } // showEscalate || showClear %>
@@ -401,7 +401,7 @@
 <form class="form-inline" method="post" action="alarm/ticket/create.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
+    <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
     <%-- Remedy Specific TroubleTicket - Start --%>
     <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
       <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
@@ -429,13 +429,13 @@
 <form class="form-inline" method="post" action="alarm/ticket/update.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
+    <form:input class="form-control btn btn-secondary" type="submit" value="Update Ticket" disabled="<%=(alarm.getTTicketState() == null || alarm.getTTicketId() == null) %>"/>
 </form>
 
 <form class="form-inline" method="post" action="alarm/ticket/close.htm">
     <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
     <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
-    <form:input class="form-control btn btn-default" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
+    <form:input class="form-control btn btn-secondary" type="submit" value="Close Ticket" disabled="<%=((alarm.getTTicketState() == null) || ((alarm.getTTicketState() != TroubleTicketState.OPEN) && (alarm.getTTicketState() != TroubleTicketState.CLOSE_FAILED))) ? true : false %>" />
 </form>
 
 </div>

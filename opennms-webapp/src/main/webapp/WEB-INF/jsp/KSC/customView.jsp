@@ -210,12 +210,12 @@
           </c:if>
           <!-- Button bar -->
           <div class="btn-group">
-            <button class="btn btn-default" type="button" onclick="exitReport()">Exit Report Viewer</button>
+            <button class="btn btn-secondary" type="button" onclick="exitReport()">Exit Report Viewer</button>
             <c:if test="${!empty timeSpan || !empty graphType}">
-              <button class="btn btn-default" type="button" onclick="updateReport()">Update Report View</button>
+              <button class="btn btn-secondary" type="button" onclick="updateReport()">Update Report View</button>
             </c:if>
             <c:if test="${showCustomizeButton}">
-              <button class="btn btn-default" type="button" onclick="customizeReport()">Customize This Report</button>
+              <button class="btn btn-secondary" type="button" onclick="customizeReport()">Customize This Report</button>
             </c:if>
           </div>
         </form>

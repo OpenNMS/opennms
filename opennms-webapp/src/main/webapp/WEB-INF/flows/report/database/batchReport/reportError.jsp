@@ -56,7 +56,7 @@
                         <div class="alert alert-danger" role="alert">${message.text}</div>
                     </c:forEach>
                     <%--An error has occurred and it has not been possible to run or schedule your report.--%>
-                    <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                    <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
                 </form:form>
             </div>
 

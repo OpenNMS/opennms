@@ -314,22 +314,22 @@
                   <label class="col-form-label">Available Users</label>
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <div class="btn-group-vertical" align="center">
-                    <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
-                    <button type="button" class="btn btn-default" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
+                    <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
+                    <button type="button" class="btn btn-secondary" id="users.doAdd" onClick="javascript:addUsers()">&nbsp;&#155;&#155;&nbsp;</button>
                   </div>
                 </td>
                 <td align="center">
                   <label class="col-form-label">Currently in Group</label>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <div class="btn-group-vertical" align="center">
-                    <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
-                    <button type="button" class="btn btn-default" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
+                    <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
+                    <button type="button" class="btn btn-secondary" id="users.doRemove" onClick="javascript:removeUsers()">&nbsp;&#139;&#139;&nbsp;</button>
                   </div>
                 </td>
                 <td>
                   <div class="btn-group-vertical">
-                    <button type="button" class="btn btn-default" onClick="javascript:move(-1)">Move Up</button>
-                    <button type="button" class="btn btn-default" onClick="javascript:move(1)">Move Down</button>
+                    <button type="button" class="btn btn-secondary" onClick="javascript:move(-1)">Move Up</button>
+                    <button type="button" class="btn btn-secondary" onClick="javascript:move(1)">Move Down</button>
                   </div>
                 </td>
               </tr>
@@ -347,22 +347,22 @@
 	                  <label class="col-form-label">Available Categories</label>
 	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
                     <div class="btn-group-vertical" align="center">
-  	                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
-  	                  <button type="button" class="btn btn-default" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
+  	                  <button type="button" class="btn btn-secondary" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
+  	                  <button type="button" class="btn btn-secondary" id="categories.doAdd" onClick="javascript:addCategories()">&nbsp;&#155;&#155;&nbsp;</button>
                     </div>
 	                </td>
 	                <td align="center">
 	                  <label class="col-form-label">Currently in Group</label>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
                     <div class="btn-group-vertical" align="center">
-  	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
-  	                  <button type="button" class="btn btn-default" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
+  	                  <button type="button" class="btn btn-secondary" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>
+  	                  <button type="button" class="btn btn-secondary" id="categories.doRemove" onClick="javascript:removeCategories()">&nbsp;&#139;&#139;&nbsp;</button>
                     </div>
 	                </td>
 	                <td>
                     <div class="btn-group-vertical">
-  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(-1)">Move Up</button>
-  	                  <button type="button" class="btn btn-default" onClick="javascript:moveCat(1)">Move Down</button>
+  	                  <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(-1)">Move Up</button>
+  	                  <button type="button" class="btn btn-secondary" onClick="javascript:moveCat(1)">Move Down</button>
                     </div>
 	                </td>
 	              </tr>
@@ -427,8 +427,8 @@
       <div class="form-group top-buffer">
         <div class="col-sm-12">
           <input type="hidden" name="dutySchedules" value="<%=group.getDutySchedules().size()%>"/>
-          <button id="addSchedule" class="btn btn-default" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
-          <select name="numSchedules" class="btn btn-default">
+          <button id="addSchedule" class="btn btn-secondary" name="addSchedule" onclick="addGroupDutySchedules()">Add This Many Schedules</button>
+          <select name="numSchedules" class="btn btn-secondary">
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3" selected="selected">3</option>
@@ -442,7 +442,7 @@
 
       <div class="form-group">
         <div class="col-sm-12">
-          <button type="button" name="addSchedule" class="btn btn-default" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
+          <button type="button" name="addSchedule" class="btn btn-secondary" onclick="removeGroupDutySchedules()">Remove Checked Schedules</button>
         </div>
       </div>
     </div> <!-- panel -->
@@ -451,8 +451,8 @@
 
 <div class="row">
   <div class="col-md-12">
-    <button type="button" class="btn btn-default" name="finish" onclick="saveGroup()">Finish</button>
-    <button type="button" class="btn btn-default" name="cancel" onclick="cancelGroup()">Cancel</button>
+    <button type="button" class="btn btn-secondary" name="finish" onclick="saveGroup()">Finish</button>
+    <button type="button" class="btn btn-secondary" name="cancel" onclick="cancelGroup()">Cancel</button>
   </div> <!-- column -->
 </div> <!-- row -->
 

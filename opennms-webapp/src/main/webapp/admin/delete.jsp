@@ -157,11 +157,11 @@
         </P>
 
         <div class="form-group">
-          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
-          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
-          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset" class="btn btn-default">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
         </div>
       
       <div class="row form-group">
@@ -199,11 +199,11 @@
       </div> <!-- row -->
 
       <div class="form-group">
-          <input type="button" class="btn btn-default" value="Delete Nodes" onClick="applyChanges()">
-          <input type="button" class="btn btn-default" value="Cancel" onClick="cancel()">
-          <input type="button" class="btn btn-default" value="Select All" onClick="checkAll()">
-          <input type="button" class="btn btn-default" value="Unselect All" onClick="uncheckAll()">
-          <input type="reset" class="btn btn-default">
+          <input type="button" class="btn btn-secondary" value="Delete Nodes" onClick="applyChanges()">
+          <input type="button" class="btn btn-secondary" value="Cancel" onClick="cancel()">
+          <input type="button" class="btn btn-secondary" value="Select All" onClick="checkAll()">
+          <input type="button" class="btn btn-secondary" value="Unselect All" onClick="uncheckAll()">
+          <input type="reset" class="btn btn-secondary">
       </div>
   </div> <!-- card-body -->
 </div> <!-- panel -->

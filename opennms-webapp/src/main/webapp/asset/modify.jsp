@@ -103,7 +103,7 @@
                         <p class="input-group" ng-if="field.type=='date'">
                           <input type="text" class="form-control" uib-datepicker-popup="{{ dateFormat }}" is-open="field.open" ng-model="asset[field.model]" placeholder="Specify date using this format: {{ dateFormat }}" />
                           <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
+                            <button type="button" class="btn btn-secondary" ng-click="field.open=true"><i class="glyphicon glyphicon-calendar"></i></button>
                           </span>
                         </p>
                         <%-- List/Select fields --%>
@@ -120,10 +120,10 @@
           <div class="row">
             <div class="col-md-6">
               <div class="btn-group">
-                <button type="button" class="btn btn-default" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">Save Asset Record&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-secondary" ng-click="save()" id="save-asset" ng-disabled="assetForm.$invalid">Save Asset Record&nbsp;&nbsp;&nbsp;
                   <span class="glyphicon glyphicon-save"><span>
                 </button>
-                <button type="button" class="btn btn-default" ng-click="reset()" id="reset-asset">Reset&nbsp;&nbsp;&nbsp;
+                <button type="button" class="btn btn-secondary" ng-click="reset()" id="reset-asset">Reset&nbsp;&nbsp;&nbsp;
                   <span class="glyphicon glyphicon-refresh"><span>
                 </button>
               </div>

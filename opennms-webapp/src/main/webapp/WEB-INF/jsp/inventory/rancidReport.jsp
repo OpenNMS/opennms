@@ -102,7 +102,7 @@
 
                     <div class="form-group">
                         <div class="col-md-12">
-                            <input class="btn btn-default" id="run" type="button" value="run" onClick="runInventory()">
+                            <input class="btn btn-secondary" id="run" type="button" value="run" onClick="runInventory()">
                         </div>
                     </div>
                 </form>

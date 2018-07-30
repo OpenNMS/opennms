@@ -182,7 +182,7 @@
               <label for="on" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%> />On</label>
               <label for="off" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%> />Off</label>
               &nbsp;
-              <button type="submit" class="btn btn-default">Update</button>
+              <button type="submit" class="btn btn-secondary">Update</button>
         </form>
       </div> <!-- card-footer -->
     </div> <!-- panel -->

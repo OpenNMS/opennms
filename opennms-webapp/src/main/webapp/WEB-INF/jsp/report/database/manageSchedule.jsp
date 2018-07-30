@@ -150,7 +150,7 @@
                         </div>
                     </c:if>
                     <% if (!request.isUserInRole(Authentication.ROLE_READONLY)) { %>
-                    <input type="submit" class="btn btn-default" value="unschedule selected jobs"/>
+                    <input type="submit" class="btn btn-secondary" value="unschedule selected jobs"/>
                     <% } %>
 
                 </form:form>

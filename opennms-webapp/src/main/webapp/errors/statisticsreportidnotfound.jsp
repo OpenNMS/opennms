@@ -66,7 +66,7 @@
       <input type="text" class="form-control" name="id"/>
     </div>
   </div>
-  <button type="submit" class="btn btn-default">Search</button>
+  <button type="submit" class="btn btn-secondary">Search</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

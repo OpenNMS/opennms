@@ -105,21 +105,21 @@
           <form name="kscForm">
           <div class="btn-group btn-group-justified" role="group">
             <div class="btn-group" role="group">
-              <button type="button" class="btn btn-default" ng-click="viewReport()">View</button>
+              <button type="button" class="btn btn-secondary" ng-click="viewReport()">View</button>
             </div> 
             <c:choose>
               <c:when test="${isReadOnly == false}">
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="customizeReport()">Customize</button>
+                <button type="button" class="btn btn-secondary" ng-click="customizeReport()">Customize</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReport()">Create New</button>
+                <button type="button" class="btn btn-secondary" ng-click="createReport()">Create New</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="createReportFromExisting()">Create from Existing</button>
+                <button type="button" class="btn btn-secondary" ng-click="createReportFromExisting()">Create from Existing</button>
               </div> 
               <div class="btn-group" role="group">
-                <button type="button" class="btn btn-default" ng-click="deleteReport()">Delete</button>
+                <button type="button" class="btn btn-secondary" ng-click="deleteReport()">Delete</button>
               </div> 
               </c:when>
             </c:choose>
@@ -205,7 +205,7 @@
       </div>
       <c:choose>
         <c:when test="${isReadOnly == false}">
-        <button class="btn btn-default" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
+        <button class="btn btn-secondary" type="button" ng-click="reloadConfig()">Request a Reload of KSC Reports Configuration</button>
         </c:when>
       </c:choose>
     </div>

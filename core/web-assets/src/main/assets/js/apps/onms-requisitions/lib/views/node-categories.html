@@ -3,7 +3,7 @@
 <div class="row">
   <div class="col-md-9 col-md-offset-3">
     <div class="input-group pull-right">
-      <button type="button" class="btn btn-default btn-sm" id="add-category" ng-click="addCategory()">
+      <button type="button" class="btn btn-secondary btn-sm" id="add-category" ng-click="addCategory()">
         <span class="glyphicon glyphicon-plus-sign"/> Add Category
       </button>
     </div>
@@ -22,7 +22,7 @@
              uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue | orderBy:'toString()'"
              required valid-category="category"></input>
       <span class="input-group-btn">
-        <button type="button" class="btn btn-default" ng-click="removeCategory($index)">
+        <button type="button" class="btn btn-secondary" ng-click="removeCategory($index)">
           <span class="glyphicon glyphicon-remove"></span>
         </button>
       </span>

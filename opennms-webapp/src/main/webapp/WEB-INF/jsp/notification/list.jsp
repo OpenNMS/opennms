@@ -334,9 +334,9 @@
       <p><%=notices.length%> notices &nbsp;
 
         <% if( parms.ackType == AcknowledgeType.UNACKNOWLEDGED && (request.isUserInRole( Authentication.ROLE_ADMIN ) || !request.isUserInRole( Authentication.ROLE_READONLY ))) { %>
-            <button type="reset" class="btn btn-default">Reset</button>
-            <button type="button" onClick="checkAllCheckboxes()" class="btn btn-default">Select All</button>
-            <button type="button" onClick="submitAcknowledge()" class="btn btn-default">Acknowledge Notices</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+            <button type="button" onClick="checkAllCheckboxes()" class="btn btn-secondary">Select All</button>
+            <button type="button" onClick="submitAcknowledge()" class="btn btn-secondary">Acknowledge Notices</button>
         <% } %>
         
 	</p>

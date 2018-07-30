@@ -92,7 +92,7 @@
       <td>
         <form role="form" class="form-inline" action="admin/categories.htm">
           <input type="textfield" class="form-control" size="40" name="newCategoryName"/>
-          <input type="submit" class="btn btn-default" value="Add New Category"/>
+          <input type="submit" class="btn btn-secondary" value="Add New Category"/>
         </form>
     </tr>
   </table>

@@ -43,7 +43,7 @@
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
       <strong>OpenNMS Compass for Android</strong>&nbsp;
       <a href="market://details?id=com.opennms.compass">
-        <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Install</button>
+        <button type="button" class="btn btn-secondary"><span class="glyphicon glyphicon-phone" aria-hidden="true"></span> Install</button>
       </a>
     </div>
   </c:when>

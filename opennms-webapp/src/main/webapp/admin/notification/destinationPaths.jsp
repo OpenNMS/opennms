@@ -112,7 +112,7 @@
         <h3 class="card-title">Create a new Destination Path</h3>
       </div>
       <div class="card-body">
-        <input type="submit" class="btn btn-default" value="New Path"/>
+        <input type="submit" class="btn btn-secondary" value="New Path"/>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->
@@ -132,8 +132,8 @@
         </select>
       </div>
       <div class="card-footer">
-        <input type="button" class="btn btn-default" value="Edit" onclick="editPath()"/>
-        <input type="button" class="btn btn-default" value="Delete" onclick="deletePath()"/>
+        <input type="button" class="btn btn-secondary" value="Edit" onclick="editPath()"/>
+        <input type="button" class="btn btn-secondary" value="Delete" onclick="deletePath()"/>
       </div>
     </div> <!-- panel -->
   </div> <!-- column -->

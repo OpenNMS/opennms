@@ -68,7 +68,7 @@
               <div class="form-group">
                 <input type="textfield" class="form-control" name="newApplicationName" size="40"/>
               </div>
-              <button type="submit" class="btn btn-default">Add New Application</button>
+              <button type="submit" class="btn btn-secondary">Add New Application</button>
             </form>
         </tr>
       </table>

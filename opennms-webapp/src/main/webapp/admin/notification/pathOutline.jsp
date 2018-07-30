@@ -209,12 +209,12 @@
                   <%=buildTargetList(i, newPath, "escalate"+i)%>
                 </td>
                 <td width="5%" valign="top">
-                    <input type="button" class="btn btn-default" value="Edit" onclick="edit_path(<%=i-1%>)"/>
+                    <input type="button" class="btn btn-secondary" value="Edit" onclick="edit_path(<%=i-1%>)"/>
                     <br/>
                     &nbsp;
                     <br/>
                     <%if (i > 0) { %>
-                      <input type="button" class="btn btn-default" value="Remove" onclick="remove_path(<%=i-1%>)"/>
+                      <input type="button" class="btn btn-secondary" value="Remove" onclick="remove_path(<%=i-1%>)"/>
                     <% } else { %>
                       &nbsp;
                     <% } %>
@@ -225,7 +225,7 @@
         </tr>
         <tr>
           <td>
-            <input type="button" class="btn btn-default" value="Add Escalation" onclick="add_path(<%=i%>)"/>
+            <input type="button" class="btn btn-secondary" value="Add Escalation" onclick="add_path(<%=i%>)"/>
           </td>
         </tr>
         <% } %>
@@ -234,8 +234,8 @@
          </div> <!-- form-group -->
       </div> <!-- card-body -->
       <div class="card-footer">
-        <input type="submit" class="btn btn-default" value="Finish"/>
-        <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()"/>
+        <input type="submit" class="btn btn-secondary" value="Finish"/>
+        <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()"/>
       </div> <!-- card-footer -->
     </div> <!-- panel -->
   </div> <!-- column -->

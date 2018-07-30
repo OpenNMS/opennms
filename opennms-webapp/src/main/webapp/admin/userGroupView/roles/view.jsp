@@ -157,11 +157,11 @@
 <form action="<c:url value='${reqUrl}'/>" method="post" name="editForm">
   <input type="hidden" name="operation" value="editDetails"/>
   <input type="hidden" name="role" value="${fn:escapeXml(role.name)}"/>
-  <button type="submit" class="btn btn-default">Value Details</button>
+  <button type="submit" class="btn btn-secondary">Value Details</button>
 </form>
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-  <button type="submit" class="btn btn-default">Done</button>
+  <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
 <div class="card top-buffer">
@@ -220,7 +220,7 @@
 </div> <!-- card-title -->
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
-  <button type="submit" class="btn btn-default">Done</button>
+  <button type="submit" class="btn btn-secondary">Done</button>
 </form>
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false" />

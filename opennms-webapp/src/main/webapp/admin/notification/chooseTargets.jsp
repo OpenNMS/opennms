@@ -248,7 +248,7 @@ action="admin/notification/destinationWizard" >
            </td>
            <td>&nbsp;</td>
            <td width="25%" valign="top" align="left">
-            <input type="button" class="btn btn-default" value="Add Address" onclick="javascript:addAddress()"/>
+            <input type="button" class="btn btn-secondary" value="Add Address" onclick="javascript:addAddress()"/>
             <br/>&nbsp;<br/>
             <select class="form-control" name="emails" size="7" multiple>
              <%
@@ -260,13 +260,13 @@ action="admin/notification/destinationWizard" >
             %>
             </select>
             <br/>
-            <input type="button" class="btn btn-default" value="Remove Address" onclick="javascript:removeAddress()"/>
+            <input type="button" class="btn btn-secondary" value="Remove Address" onclick="javascript:removeAddress()"/>
             </td>
             
         </tr>
         <tr>
           <td colspan="2">
-            <input type="reset" class="btn btn-default"/>
+            <input type="reset" class="btn btn-secondary"/>
           </td>
         </tr>
   </table>

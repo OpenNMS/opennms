@@ -757,7 +757,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newNodeSelect" name="newNodeSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageNodeRadio"/> Add with path outage dependency
-								<input type="submit" class="btn btn-default" value="Add" name="addNodeButton"/>
+								<input type="submit" class="btn btn-secondary" value="Add" name="addNodeButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -803,7 +803,7 @@ function updateOutageTypeDisplay(selectElement) {
 							<div class="ui-widget">
 								<select id="newInterfaceSelect" name="newInterfaceSelect" style="display: none"></select>
 								<input type="radio"  value="addPathOutageDependency" name="addPathOutageInterfaceRadio"/> Add with path outage dependency
-								<input type="submit" class="btn btn-default" value="Add" name="addInterfaceButton"/>
+								<input type="submit" class="btn btn-secondary" value="Add" name="addInterfaceButton"/>
 							</div>
 						</form>
 						<p style="font-weight: bold; margin: 10px 0px 2px 0px;">Current selection:</p>
@@ -859,7 +859,7 @@ function updateOutageTypeDisplay(selectElement) {
 						</script>
 						<form onsubmit="return verifyAddAll();" id="matchAnyForm" action="admin/sched-outages/editoutage.jsp" method="post">
 							<input type="hidden" name="formSubmission" value="true" />
-							<input type="submit" class="btn btn-default" name="matchAny" value="Select all nodes and interfaces" />
+							<input type="submit" class="btn btn-secondary" name="matchAny" value="Select all nodes and interfaces" />
 						</form>
 					</td>
 				</tr>
@@ -996,7 +996,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 				<tr>
 					<td>
-						<input type="submit" class="btn btn-default" value="Add Outage" name="addOutage" />
+						<input type="submit" class="btn btn-secondary" value="Add Outage" name="addOutage" />
 					</td>
 				</tr>
 				<% if (theOutage.getTimes().size() == 0) { %>
@@ -1077,8 +1077,8 @@ function updateOutageTypeDisplay(selectElement) {
 						&& theOutage.getType() != null
 						&& (hasMatchAny || (theOutage.getInterfaces().size() > 0) || (theOutage.getNodes().size() > 0))
 						) {
-			%><input type="submit" class="btn btn-default" value="Save" name="saveButton" /><% } %>
-			<input type="submit" class="btn btn-default" value="Cancel" name="cancelButton" />
+			%><input type="submit" class="btn btn-secondary" value="Save" name="saveButton" /><% } %>
+			<input type="submit" class="btn btn-secondary" value="Cancel" name="cancelButton" />
                     </div> <!-- column -->
                   </div> <!-- row -->
 </form>

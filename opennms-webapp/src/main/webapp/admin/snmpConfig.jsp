@@ -293,7 +293,7 @@ if (request.getAttribute("success") != null) {
           </div>
           <div class="form-group">
             <div class="col-sm-9 col-sm-offset-2">
-              <button type="submit" class="btn btn-default" name="getConfig">Look up</button>
+              <button type="submit" class="btn btn-secondary" name="getConfig">Look up</button>
             </div>
           </div>
         </form>
@@ -640,8 +640,8 @@ if (request.getAttribute("success") != null) {
 
         <div class="form-group">
           <div class="col-sm-9 col-sm-offset-3">
-            <button type="submit" class="btn btn-default" name="saveConfig">Save Config</button>
-            <button type="button" class="btn btn-default" name="cancelButton" onClick="cancel();">Cancel</button>
+            <button type="submit" class="btn btn-secondary" name="saveConfig">Save Config</button>
+            <button type="button" class="btn btn-secondary" name="cancelButton" onClick="cancel();">Cancel</button>
           </div>
         </div>
       </div> <!-- card-body -->

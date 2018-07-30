@@ -115,7 +115,7 @@
         <%=buildCommands(newPath, WebSecurityUtils.safeParseInt(request.getParameter("targetIndex")))%>
       </div>
     </div>
-    <input type="reset" class="btn btn-default"/>
+    <input type="reset" class="btn btn-secondary"/>
   </div> <!-- card-body -->
   <div class="card-footer">
     <a href="javascript:next()">Next &#155;&#155;&#155;</a>

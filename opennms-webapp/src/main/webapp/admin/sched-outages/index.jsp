@@ -114,7 +114,7 @@
     <form role="form" class="form-inline" action="admin/sched-outages/editoutage.jsp" method="post" >
       <input type="hidden" name="addNew" value="true" />
       <input type="text" class="form-control" value="New Name" size="40" name="newName" />
-      <input type="submit" class="btn btn-default" name="newOutage" value="Add new outage" />
+      <input type="submit" class="btn btn-secondary" name="newOutage" value="Add new outage" />
     </form>
   </div> <!-- column -->
 </div> <!-- row -->

@@ -197,8 +197,8 @@ function doAddIncludeRange(){
         </div>
           <div class="form-group">
             <div class="col-sm-12">
-              <button type="button" class="btn btn-default" name="addIncludeRange" id="addIncludeRange" onclick="doAddIncludeRange();">Add</button>
-              <button type="button" class="btn btn-default" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
+              <button type="button" class="btn btn-secondary" name="addIncludeRange" id="addIncludeRange" onclick="doAddIncludeRange();">Add</button>
+              <button type="button" class="btn btn-secondary" name="cancel" id="cancel" onclick="window.close();opener.document.focus();">Cancel</button>
             </div>
           </div>
         </form>

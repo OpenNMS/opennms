@@ -10,7 +10,7 @@
       </span>
       <input class="form-control" type="text" name="categoryName" placeholder="Category Name" ng-model="category.name" typeahead-min-length="0" typeahead-editable="true" uib-typeahead="category for category in getAvailableCategories() | filter:$viewValue" required></input>
       <span class="input-group-btn">
-        <button class="btn btn-default" type="button" ng-click="removeCategory($index)">
+        <button class="btn btn-secondary" type="button" ng-click="removeCategory($index)">
           <span class="glyphicon glyphicon-trash"></span>
         </button>
       </span>

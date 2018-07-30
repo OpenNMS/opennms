@@ -98,8 +98,8 @@
             </div>
 
             <div class="form-group">
-              <input type="submit" class="btn btn-default" value="Add">
-              <input type="button" class="btn btn-default" value="Cancel" onclick="cancel()">
+              <input type="submit" class="btn btn-secondary" value="Add">
+              <input type="button" class="btn btn-secondary" value="Cancel" onclick="cancel()">
             </div>
         </form>
       </div> <!-- card-body -->

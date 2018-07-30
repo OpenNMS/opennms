@@ -175,9 +175,9 @@
                     </c:if>
                     <div class="form-group">
                         <div class="col-md-2">
-                            <input type="submit" class="btn btn-default" name="run" value="run report" id="run"/>
+                            <input type="submit" class="btn btn-secondary" name="run" value="run report" id="run"/>
                             <c:if test="${errorMessage != null}">
-                                <input type="submit" class="btn btn-default" name="cancel" value="cancel" id="cancel">
+                                <input type="submit" class="btn btn-secondary" name="cancel" value="cancel" id="cancel">
                             </c:if>
                         </div>
                     </div>

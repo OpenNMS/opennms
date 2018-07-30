@@ -150,18 +150,18 @@
           <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">
             <input type="hidden" name="monitorId" value="${monitor.id}"/>
           </form>
-          <button class="btn btn-default" type="button" onClick="confirmDelete();">Delete</button>
+          <button class="btn btn-secondary" type="button" onClick="confirmDelete();">Delete</button>
           <c:choose>
             <c:when test="${monitor.status != 'PAUSED'}">
               <form action="admin/distributed/locationMonitorPause.htm" method="post">
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
-                <button class="btn btn-default" type="submit">Pause</button>
+                <button class="btn btn-secondary" type="submit">Pause</button>
               </form>
             </c:when>
             <c:otherwise>
               <form action="admin/distributed/locationMonitorResume.htm" method="post">
                 <input type="hidden" name="monitorId" value="${monitor.id}"/>
-                <button class="btn btn-default" type="submit">Resume</button>
+                <button class="btn btn-secondary" type="submit">Resume</button>
               </form>
             </c:otherwise>
           </c:choose>

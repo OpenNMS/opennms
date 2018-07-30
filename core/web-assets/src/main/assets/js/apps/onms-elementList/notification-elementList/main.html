@@ -37,7 +37,7 @@
 						<select class="form-control" ng-model="clause.value" ng-if="clauseValues.length !== 0" ng-options="value.id as value.name for value in clauseValues"/>
 						</div>
 						<br/><br/>
-						<button class="btn btn-default" type="submit">Submit</button>
+						<button class="btn btn-secondary" type="submit">Submit</button>
 					</form>
 				</div>
 			</div>
@@ -89,9 +89,9 @@
 			&nbsp;
 		</span>
 		<div class="btn-group" style="margin:3px">
-			<button type="button" class="btn btn-default {{getSearchClause(ackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(unackClause, ackClause)">Acknowledged</button>
-			<button type="button" class="btn btn-default {{getSearchClause(unackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(ackClause, unackClause)">Unacknowledged</button>
-			<button type="button" class="btn btn-default {{(!getSearchClause(ackClause) &amp;&amp; !getSearchClause(unackClause)) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(ackClause), getSearchClause(unackClause)])">All</button>
+			<button type="button" class="btn btn-secondary {{getSearchClause(ackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(unackClause, ackClause)">Acknowledged</button>
+			<button type="button" class="btn btn-secondary {{getSearchClause(unackClause) != null ? 'active' : ''}}" ng-click="replaceSearchClause(ackClause, unackClause)">Unacknowledged</button>
+			<button type="button" class="btn btn-secondary {{(!getSearchClause(ackClause) &amp;&amp; !getSearchClause(unackClause)) ? 'active' : ''}}" ng-click="removeSearchClauses([getSearchClause(ackClause), getSearchClause(unackClause)])">All</button>
 		</div>
 		<span ng-hide="query.searchClauses.length == 0 || !searchPropertiesLoaded">
 			<span ng-repeat="clause in query.searchClauses" ng-if="!clauseEquals(clause, ackClause) &amp;&amp; !clauseEquals(clause, unackClause)">
@@ -112,36 +112,36 @@
 	<div>
 		<div class="btn-toolbar">
 			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(0)">
 					<i class="fa fa-backward"></i>&nbsp;&nbsp;First
 				</a>
 			</div>
 			<div class="btn-group">
-				<a class="btn btn-default {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
+				<a class="btn btn-secondary {{(query.offset-query.limit) &lt; 0 ? 'disabled' : ''}}" ng-click="setOffset(query.offset-query.limit)">
 					<i class="fa fa-play fa-flip-horizontal"></i>&nbsp;&nbsp;Previous
 				</a>
 			</div>
 
 			<div class="btn-group">
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(3*query.limit))" ng-hide="(query.offset-(3*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-(2*query.limit))" ng-hide="(query.offset-(2*query.limit)) &lt; 0" style="width:5em;">
 					{{(query.offset/query.limit) - 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset-query.limit)" ng-hide="(query.offset-query.limit) &lt; 0" style="width:5em;">
 					{{query.offset/query.limit}}
 				</a>
-				<a class="btn btn-default active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
+				<a class="btn btn-secondary active" ng-show="query.maxOffset &gt; 0" style="width:5em;">
 					{{(query.offset/query.limit) + 1}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+query.limit)" ng-hide="(query.offset+query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 2}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(2*query.limit))" ng-hide="query.offset+(2*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 3}}
 				</a>
-				<a class="btn btn-default" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
+				<a class="btn btn-secondary" ng-click="setOffset(query.offset+(3*query.limit))" ng-hide="query.offset+(3*query.limit) &gt; query.maxOffset" style="width:5em;">
 					{{(query.offset/query.limit) + 4}}
 				</a>
 			</div>
@@ -155,13 +155,13 @@
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(query.offset + query.limit)">
 							Next&nbsp;&nbsp;<i class="fa fa-play"></i>
 						</a>
 					</div>
 
 					<div class="btn-group" style="margin-left:5px;">
-						<a class="btn btn-default {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
+						<a class="btn btn-secondary {{(query.offset+query.limit) &gt; query.maxOffset ? 'disabled' : ''}}" ng-click="setOffset(1000000000)">
 							Last&nbsp;&nbsp;<i class="fa fa-forward"></i>
 						</a>
 					</div>
@@ -295,9 +295,9 @@
 		</table>
 	</div>
 
-	<button type="button" ng-click="selectedNotifications = []" class="btn btn-default">Reset</button>
-	<button type="button" ng-click="selectAllNotifications()" class="btn btn-default">Select All</button>
-	<button type="button" ng-click="acknowledgeSelectedNotifications()" class="btn btn-default">Acknowledge Notices</button>
+	<button type="button" ng-click="selectedNotifications = []" class="btn btn-secondary">Reset</button>
+	<button type="button" ng-click="selectAllNotifications()" class="btn btn-secondary">Select All</button>
+	<button type="button" ng-click="acknowledgeSelectedNotifications()" class="btn btn-secondary">Acknowledge Notices</button>
 	<br/><br/>
 </div>
 </div>

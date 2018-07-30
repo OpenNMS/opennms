@@ -56,7 +56,7 @@
                         <span class="indent">Your report is being run.</span>
                     </p>
                     <span class="indent">
-                        <input type="submit" class="btn btn-default" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                        <input type="submit" class="btn btn-secondary" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
                     </span>
                 </form:form>
             </div>

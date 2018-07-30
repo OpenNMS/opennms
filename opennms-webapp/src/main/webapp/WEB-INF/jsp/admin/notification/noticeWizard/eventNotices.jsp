@@ -93,7 +93,7 @@
   </div>
   <table class="table table-condensed">
     <tr>
-      <td> <input type="button" class="btn btn-default" value="Add New Event Notification" onclick="javascript:newNotice()"/>
+      <td> <input type="button" class="btn btn-secondary" value="Add New Event Notification" onclick="javascript:newNotice()"/>
     </tr>
     <tr>
       <td valign="top">
@@ -116,10 +116,10 @@
           <c:forEach items="${notifications}" var="notification">
           <tr>
             <td>
-              <input type="button" class="btn btn-default" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Edit" onclick="javascript:editNotice('${notification.escapedName}')"/>
             </td>
             <td>
-              <input type="button" class="btn btn-default" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
+              <input type="button" class="btn btn-secondary" value="Delete"  onclick="javascript:deleteNotice('${notification.escapedName}')"/>
             </td>
             <td>
             <c:choose>

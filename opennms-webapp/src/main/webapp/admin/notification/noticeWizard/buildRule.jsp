@@ -146,7 +146,7 @@
 		</tr>
         <tr>
           <td colspan="2">
-            <input type="reset" class="btn btn-default" value="Reset Address and Services"/>
+            <input type="reset" class="btn btn-secondary" value="Reset Address and Services"/>
           </td>
         </tr>
         <tr>

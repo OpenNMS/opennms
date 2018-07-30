@@ -14,11 +14,11 @@
       <div class="col-sm-9">
         <div class="input-group">
           <span class="input-group-btn">
-              <button ng-click="openFileDialogue()" class="btn btn-default" type="button">Choose</button>
+              <button ng-click="openFileDialogue()" class="btn btn-secondary" type="button">Choose</button>
           </span>
           <input ng-click="openFileDialogue()" type="text" id="importFile" class="form-control" placeholder='Choose a file...' ng-model="fileToUpload.name"/>
           <span class="input-group-btn">
-             <button class="btn btn-default" type="button" ng-click="resetInput()">Reset</button>
+             <button class="btn btn-secondary" type="button" ng-click="resetInput()">Reset</button>
           </span>
         </div>
       </div>
@@ -64,5 +64,5 @@
   <div style="display: inline" title="Please confirm deletion">
     <button type="button" class="btn btn-primary" ng-click="uploadFile()" ng-show="fileToUpload" title="Upload Rule">Upload</button>
   </div>
-  <button type="button" class="btn btn-default" ng-click="$dismiss('cancelled by user')" >Cancel</button>
+  <button type="button" class="btn btn-secondary" ng-click="$dismiss('cancelled by user')" >Cancel</button>
 </div>

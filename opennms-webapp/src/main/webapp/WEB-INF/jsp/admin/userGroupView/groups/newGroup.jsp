@@ -93,8 +93,8 @@
             </div>
           </div>
 
-          <button type="submit" class="btn btn-default">OK</button>
-          <button type="button" class="btn btn-default" onclick="cancelGroup()">Cancel</button>
+          <button type="submit" class="btn btn-secondary">OK</button>
+          <button type="button" class="btn btn-secondary" onclick="cancelGroup()">Cancel</button>
         </form>
       </div> <!-- card-body -->
     </div> <!-- panel -->

@@ -122,8 +122,8 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="updateInput" id="updateButton" class="btn btn-default" type="submit" value="Update"/>
-			<input name="deleteInput" id="deleteButton" class="btn btn-default" type="button" value="Delete" onclick="validateFormDelete()"/>
+			<input name="updateInput" id="updateButton" class="btn btn-secondary" type="submit" value="Update"/>
+			<input name="deleteInput" id="deleteButton" class="btn btn-secondary" type="button" value="Delete" onclick="validateFormDelete()"/>
 </form>
 		</th>
 		</tr>
@@ -168,7 +168,7 @@
 		<tr>
 		<th></th>
 		<th>
-			<input name="createInput" id="createButton" class="btn btn-default" type="submit" value="Create"/>
+			<input name="createInput" id="createButton" class="btn btn-secondary" type="submit" value="Create"/>
 </form>
 		</th>
 		</tr>
@@ -201,7 +201,7 @@
 			 <c:if test="${!empty model.status}">			
 			<em>${model.status}</em>
 	<form id="newUserForm2" method="post" name="newUserForm2" onsubmit="return validateFormInputStatus();">	
-	<input name="newStatus" class="btn btn-default" id="doOKStatus" type="submit" value="Switch"/>
+	<input name="newStatus" class="btn btn-secondary" id="doOKStatus" type="submit" value="Switch"/>
 	<input type="hidden" name="statusName" value="${model.status}"/>
 	<input type="hidden" name="groupName" value="${model.groupname}"/>
 	<input type="hidden" name="deviceName" value="${model.id}"/>
@@ -261,9 +261,9 @@
 		
 			 <tr>
 			 	<th></th>
-			 	<th><input id="doCancel" type="button" class="btn btn-default" value="Cancel" onclick="cancelUser()"/>
-			 		<input id="doOK" type="submit" class="btn btn-default" value="OK"/>
-			 		<input id="doDelete" type="button" class="btn btn-default" value="Delete" onclick="deleteCloginInfo()"/>
+			 	<th><input id="doCancel" type="button" class="btn btn-secondary" value="Cancel" onclick="cancelUser()"/>
+			 		<input id="doOK" type="submit" class="btn btn-secondary" value="OK"/>
+			 		<input id="doDelete" type="button" class="btn btn-secondary" value="Delete" onclick="deleteCloginInfo()"/>
 			 	</th>
 			 </tr>	
 		 </table>

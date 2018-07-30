@@ -265,7 +265,7 @@
       <div class="card-body">
         <h3>User Password</h3>
         <div class="col-sm-10 col-sm-offset-2">
-          <button type="button" class="btn btn-default" onClick="resetPassword()">Reset Password</button>
+          <button type="button" class="btn btn-secondary" onClick="resetPassword()">Reset Password</button>
         </div>
 
         <h3>User Information</h3>
@@ -356,12 +356,12 @@
           <div class="col-sm-5">
               <label class="col-form-label">Available Roles</label>
               <%=createSelectList("availableRoles", availableRoles)%><br/>
-              <button type="button" class="btn btn-default" id="roles.doAdd" onClick="javascript:addRoles()">&nbsp;&#155;&#155;&nbsp; Add</button>
+              <button type="button" class="btn btn-secondary" id="roles.doAdd" onClick="javascript:addRoles()">&nbsp;&#155;&#155;&nbsp; Add</button>
           </div>
           <div class="col-sm-5">
               <label class="col-form-label">Currently in User</label>
               <%=createSelectList("configuredRoles", configuredRoles)%><br/>
-              <button type="button" class="btn btn-default" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
+              <button type="button" class="btn btn-secondary" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
           </div>
         </div>
 
@@ -573,8 +573,8 @@ Collection<String> dutySchedules = user.getDutySchedules();
 
        <div class="form-group top-buffer">
          <div class="col-sm-12">
-           <button id="addSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="addDutySchedules()">Add This Many Schedules</button>
-           <select name="numSchedules" class="btn btn-default" value="3">
+           <button id="addSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="addDutySchedules()">Add This Many Schedules</button>
+           <select name="numSchedules" class="btn btn-secondary" value="3">
                  <option value="1">1</option>
                  <option value="2">2</option>
                  <option value="3">3</option>
@@ -588,7 +588,7 @@ Collection<String> dutySchedules = user.getDutySchedules();
 
        <div class="form-group">
          <div class="col-sm-12">
-           <button id="removeSchedulesButton" type="button" class="btn btn-default" name="addSchedule" onclick="removeDutySchedules()">Remove Checked Schedules</button>
+           <button id="removeSchedulesButton" type="button" class="btn btn-secondary" name="addSchedule" onclick="removeDutySchedules()">Remove Checked Schedules</button>
          </div>
        </div>
    </div> <!-- panel -->
@@ -597,8 +597,8 @@ Collection<String> dutySchedules = user.getDutySchedules();
 
 <div class="row">
   <div class="col-md-12">
-    <button id="saveUserButton" type="submit" class="btn btn-default" name="finish" onclick="saveUser()">Finish</button>
-    <button id="cancelButton" type="button" class="btn btn-default" name="cancel" onclick="cancelUser()">Cancel</button>
+    <button id="saveUserButton" type="submit" class="btn btn-secondary" name="finish" onclick="saveUser()">Finish</button>
+    <button id="cancelButton" type="button" class="btn btn-secondary" name="cancel" onclick="cancelUser()">Cancel</button>
   </div> <!-- column -->
 </div> <!-- row -->
 

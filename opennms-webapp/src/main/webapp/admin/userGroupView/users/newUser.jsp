@@ -103,8 +103,8 @@
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
           <div class="btn-group" role="group">
-            <button type="submit" class="btn btn-default">OK</button>
-            <button type="button" class="btn btn-default" onclick="cancelUser()">Cancel</button>
+            <button type="submit" class="btn btn-secondary">OK</button>
+            <button type="button" class="btn btn-secondary" onclick="cancelUser()">Cancel</button>
           </div>
         </div>
       </div>

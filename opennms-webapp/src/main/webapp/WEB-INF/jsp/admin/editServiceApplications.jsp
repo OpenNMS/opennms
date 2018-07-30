@@ -70,8 +70,8 @@
             </select>
           </div> <!-- column -->
           <div class="col-md-2">
-            <input type="submit" name="action" class="btn btn-default" value="Add &#155;&#155;"/>
-            <input type="submit" name="action" class="btn btn-default" value="&#139;&#139; Remove"/>
+            <input type="submit" name="action" class="btn btn-secondary" value="Add &#155;&#155;"/>
+            <input type="submit" name="action" class="btn btn-secondary" value="&#139;&#139; Remove"/>
           </div> <!-- column -->
           <div class="col-md-5">
             <label>Applications on service</label>

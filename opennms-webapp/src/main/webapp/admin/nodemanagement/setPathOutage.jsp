@@ -153,15 +153,15 @@ LABEL
 </p>
 
 <p>
-<input type="submit" class="btn btn-default" name="task" value="Submit"/>
+<input type="submit" class="btn btn-secondary" name="task" value="Submit"/>
 &nbsp;
-<input type="button" class="btn btn-default" name="task" value="Cancel" onClick="cancel()"/>
+<input type="button" class="btn btn-secondary" name="task" value="Cancel" onClick="cancel()"/>
 </p>
 
 <h3>Delete critical path for this node</h3>
 
 <p>
-<input type="button" class="btn btn-default" name="task" value="Delete" onClick="deletePathOutage()"/>
+<input type="button" class="btn btn-secondary" name="task" value="Delete" onClick="deletePathOutage()"/>
 </p>
 
 </form>

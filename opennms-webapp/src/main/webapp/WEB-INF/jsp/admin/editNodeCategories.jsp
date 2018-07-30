@@ -78,8 +78,8 @@ function toggleFormEnablement() {
           </div>
           <div class="col-md-2 text-center">
              <div class="btn-group-vertical" role="group">
-                <button id="addButton" type="submit" class="btn btn-default" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >Add &#155;&#155;</button>
-                <button id="removeButton" type="submit" class="btn btn-default" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >&#139;&#139; Remove</button>
+                <button id="addButton" type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >Add &#155;&#155;</button>
+                <button id="removeButton" type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove" <c:if test="${! empty model.node.foreignSource}">disabled="true"</c:if> >&#139;&#139; Remove</button>
              </div>
           </div>
           <div class="col-md-5">

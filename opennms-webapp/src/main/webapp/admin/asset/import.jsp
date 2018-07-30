@@ -65,7 +65,7 @@
  <% } %>
 
  <div class="form-group">
-  <input type="submit" class="btn btn-default" value="Import"/>
+  <input type="submit" class="btn btn-secondary" value="Import"/>
  </div>
 </form>
 

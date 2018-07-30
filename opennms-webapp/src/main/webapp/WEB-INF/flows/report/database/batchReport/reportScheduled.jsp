@@ -56,7 +56,7 @@
                         Your report has been scheduled.
                     </span></p>
                     <span class="indent">
-                        <input class="btn btn-default" type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
+                        <input class="btn btn-secondary" type="submit" id="proceed" name="_eventId_proceed" value="Finished" />&#160;
                     </span>
                             </form:form>
             </div>

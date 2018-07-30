@@ -81,8 +81,8 @@
 
       <div class="form-group">
         <div class="col-sm-offset-2 col-sm-10">
-          <button type="button" class="btn btn-default" onclick="verifyGoForm()">OK</button>
-          <button type="button" class="btn btn-default" onclick="window.close()">Cancel</button>
+          <button type="button" class="btn btn-secondary" onclick="verifyGoForm()">OK</button>
+          <button type="button" class="btn btn-secondary" onclick="window.close()">Cancel</button>
         </div>
       </div>
     </form>

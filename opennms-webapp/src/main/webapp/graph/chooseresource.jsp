@@ -98,10 +98,10 @@
           </span>
         </div>
         <div class="btn-group">
-          <button type="button" class="btn btn-default" ng-click="checkAll(true)">Select All <span class="glyphicon glyphicon-check"/></button>
-          <button type="button" class="btn btn-default" ng-click="checkAll(false)">Clear All <span class="glyphicon glyphicon-remove"/></button>
-          <button type="button" class="btn btn-default" ng-click="graphSelected()">Graph Selection <span class="glyphicon glyphicon-th-large"/></button>
-          <button type="button" class="btn btn-default" ng-click="graphAll()">Graph All <span class="glyphicon glyphicon-th"/></button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(true)">Select All <span class="glyphicon glyphicon-check"/></button>
+          <button type="button" class="btn btn-secondary" ng-click="checkAll(false)">Clear All <span class="glyphicon glyphicon-remove"/></button>
+          <button type="button" class="btn btn-secondary" ng-click="graphSelected()">Graph Selection <span class="glyphicon glyphicon-th-large"/></button>
+          <button type="button" class="btn btn-secondary" ng-click="graphAll()">Graph All <span class="glyphicon glyphicon-th"/></button>
         </div>
       </form>
     </div>

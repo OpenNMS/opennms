@@ -66,7 +66,7 @@
           <div class="form-group">
             <label for="byalarmid_id">Alarm ID:</label>
             <input type="text" class="form-control" name="id" id="byalarmid_id"/>
-            <button type="submit" class="btn btn-default">Get details</button>
+            <button type="submit" class="btn btn-secondary">Get details</button>
           </div>                
         </form>
         <ul class="list-unstyled">

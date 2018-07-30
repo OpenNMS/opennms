@@ -50,10 +50,10 @@
 <c:if test="${isAdmin}">
   <div class="btn-group" role="group">
   <form action="admin/distributed/locationMonitorPauseAll.htm" method="post" style="display:inline;">
-    <button class="btn btn-default" type="submit">Pause All</button>
+    <button class="btn btn-secondary" type="submit">Pause All</button>
   </form>
   <form action="admin/distributed/locationMonitorResumeAll.htm" method="post" style="display:inline;">
-    <button class="btn btn-default" type="submit">Resume All</button>
+    <button class="btn btn-secondary" type="submit">Resume All</button>
   </form>
   </div>
 </c:if>

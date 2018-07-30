@@ -134,8 +134,8 @@
         </div>
       </div>
 
-      <button type="submit" class="btn btn-default" name="save">Save</button>
-      <button type="submit" class="btn btn-default" name="cancel">Cancel</button>
+      <button type="submit" class="btn btn-secondary" name="save">Save</button>
+      <button type="submit" class="btn btn-secondary" name="cancel">Cancel</button>
     </form>
   </div> <!-- card-body -->
 </div> <!-- panel -->

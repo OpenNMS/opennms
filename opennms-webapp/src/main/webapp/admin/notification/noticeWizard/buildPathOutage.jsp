@@ -146,7 +146,7 @@
            </div>
 
            <div class="form-group">
-             <input type="reset" class="btn btn-default" value="Reset"/>
+             <input type="reset" class="btn btn-secondary" value="Reset"/>
            </div>
       </div> <!-- card-body -->
       <div class="card-footer">

@@ -1,6 +1,6 @@
 <div class="card-body">
     <div class="navbar-form navbar-right">
-        <button id="action.refresh" class="btn btn-sm btn-default" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
+        <button id="action.refresh" class="btn btn-sm btn-secondary" ng-click="refresh()" title="Refresh list"><i class="fa fa-refresh"></i></button>
     </div>
     <div ng-show="groups.length == 0">No groups defined.</div>
     <pagination model="query" ng-show="groups.length > 0" position="bottom" on-change="refresh">

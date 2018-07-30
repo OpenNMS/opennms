@@ -86,7 +86,7 @@
                     <label for="byname_nodename">Name containing:</label>
                     <input type="text" class="form-control" id="byname_nodename" name="nodename" />
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -100,7 +100,7 @@
                     <label for="byip_iplike">TCP/IP Address like:</label>
                     <input type="text" class="form-control" id="byip_iplike" name="iplike" value="" placeholder="*.*.*.* or *:*:*:*:*:*:*:*:*" />
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -124,7 +124,7 @@
                    </select>
                    <label for="bymib2_mib2ParmValue" class="hidden-xs">:</label>
                    <input type="text" class="form-control" name="mib2ParmValue" />
-                   <button type="submit" class="btn btn-default">Search</button>
+                   <button type="submit" class="btn btn-secondary">Search</button>
                  </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -146,7 +146,7 @@
                   </select>
                   <label for="byif_snmpParmValue" class="hidden-xs">:</label>
                   <input type="text" class="form-control" name="snmpParmValue" />
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -164,7 +164,7 @@
                       <% } %>
                     </select>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -182,7 +182,7 @@
                         <% } %>
                       </select>
                     </div>
-                    <button type="submit" class="btn btn-default">Search</button>
+                    <button type="submit" class="btn btn-secondary">Search</button>
                   </form>
                 </div> <!-- column -->
               </div> <!-- row -->
@@ -196,7 +196,7 @@
                     <label for="bymac_maclike">MAC Address like:</label>
                     <input class="form-control" type="text" name="maclike" />
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -210,7 +210,7 @@
                     <label for="byfs_foreignSource">Foreign Source name like:</label>
                     <input type="text" class="form-control" name="foreignSource"/>
                   </div>
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -245,7 +245,7 @@
                     </select>
                   </div>
 
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->
@@ -267,7 +267,7 @@
                     <input type="text" class="form-control" id="byfield_value" name="searchvalue" />
                   </div>
 
-                  <button type="submit" class="btn btn-default">Search</button>
+                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
               </div> <!-- column -->
             </div> <!-- row -->

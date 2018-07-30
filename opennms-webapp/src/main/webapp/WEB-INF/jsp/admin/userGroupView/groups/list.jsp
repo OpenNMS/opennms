@@ -130,10 +130,10 @@
           <td width="5%" class="text-center">
             <c:choose>
               <c:when test='${group.name != "Admin"}'>
-                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
+                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="renameGroup('${group.name}')">Rename</button>
               </c:when>
               <c:otherwise>
-                <button id="${group.name}.doRename" type="button" class="btn btn-default" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
+                <button id="${group.name}.doRename" type="button" class="btn btn-secondary" name="rename" onclick="alert('Sorry, the Admin group cannot be renamed.')">Rename</button>
               </c:otherwise>
             </c:choose>
           </td>
