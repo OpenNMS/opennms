@@ -453,7 +453,7 @@
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
-
+    <h3>Date/Time Preferences</h3>
     <div class="form-group">
           <label for="timeZoneId" class="col-sm-2 control-label">Time Zone:</label>
           <div class="col-sm-10">
