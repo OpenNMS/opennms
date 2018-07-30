@@ -38,7 +38,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.tinyradius.util.RadiusServer;
 
-import net.jradius.client.auth.MSCHAPv2Authenticator;
+import net.jradius.client.auth.CHAPAuthenticator;
 
 public class RadiusAuthenticationProviderIT {
 
@@ -79,9 +79,9 @@ public class RadiusAuthenticationProviderIT {
     // See NMS-10212
     @Test
     public void verifyAuthenticatorIsNotReused() {
-        final RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider("localhost", SHARED_SECRET);
-        provider.setAuthTypeClass(MSCHAPv2Authenticator.class); // The authenticator does not matter,
-                                                                // the problem should occurs with all, except null
+        final RadiusAuthenticationProvider provider = new RadiusAuthenticationProvider("127.0.0.1", SHARED_SECRET);
+        provider.setAuthTypeClass(CHAPAuthenticator.class); // The authenticator does not matter,
+                                                            // the problem should occurs with all, except null
 
         // Verify that authenticating with an existing user works
         final UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(USER, PASSWORD);
