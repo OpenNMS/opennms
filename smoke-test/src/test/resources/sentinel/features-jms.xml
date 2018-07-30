@@ -5,11 +5,6 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
 >
-    <!-- Install bootstrap feature to start all required features automatically -->
-    <feature name="autostart-bootstrap-modules" version="${project.version}" start-level="100" install="auto">
-        <feature>scv</feature>
-        <feature>opennms-spring-extender</feature>
-    </feature>
 
     <!-- Install bootstrap feature to start all flow related features automatically -->
     <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
@@ -26,11 +21,7 @@
         <config name="org.opennms.features.flows.persistence.elastic">
             elasticUrl = http://elasticsearch:9200
         </config>
-        <feature>sentinel-core</feature>
-        <feature>sentinel-persistence</feature>
         <feature>sentinel-jms</feature>
-        <feature>opennms-core-ipc-sink-camel-server</feature>
-        <feature>sentinel-telemetry</feature>
         <feature>sentinel-flows</feature>
     </feature>
 </features>

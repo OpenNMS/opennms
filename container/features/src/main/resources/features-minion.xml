@@ -8,10 +8,8 @@
     <!-- OpenNMS Features -->
     <repository>mvn:${project.groupId}/${project.artifactId}/${project.version}/xml/features</repository>
 
-    <!-- TODO: This is already defined somewhere else -->
-    <!-- TODO MVR this is no longer features.minion/core-api but features.distributed/core-api and probbly should be defined somewhere else -->
     <feature name="minion-core-api" description="OpenNMS :: Distributed :: Core :: API" version="${project.version}">
-      <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
+      <feature>opennms-distributed-core-api</feature>
     </feature>
 
     <feature name="opennms-dao-minion" description="OpenNMS :: DAO :: Minion" version="${project.version}">
