@@ -213,7 +213,7 @@ Use $window.location.href = "/element/node.jsp?node=" + items[0].id;
 
 				<!-- TODO: Move this control into the filter panel? -->
 				<!-- TODO: Change onchange into a $scope operation -->
-				<select class="form-control input-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
+				<select class="form-control form-control-sm pull-right" style="width:auto;" id="monitoringLocation" onchange="javascript:location.href = location.protocol + '//' + location.host + location.pathname + '?monitoringLocation=' + this.options[this.selectedIndex].value;">
 					<option value="" selected>All locations</option>
 					<option ng-repeat="location in getSearchPropertyValues('location.locationName')" value="{{location.id}}" selected>{{location.name}}</option>
 				</select>

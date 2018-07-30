@@ -79,7 +79,7 @@
         <div class="form-content">
           <div class="form-group">
             <label for="input_j_username" class="sr-only">Username</label>
-            <input type="text" class="form-control input-underline input-lg" id="input_j_username" name="j_username"
+            <input type="text" class="form-control input-underline form-control-lg" id="input_j_username" name="j_username"
             <%-- This is deprecated and requires a custom AuthenticationFailureHandler to function properly --%>
                    <c:if test="${not empty param.login_error}">value='<c:out value="${SPRING_SECURITY_LAST_USERNAME}"/>'</c:if>
                    placeholder="Username" autofocus="autofocus" autocomplete="username" required />
@@ -87,7 +87,7 @@
 
           <div class="form-group">
             <label for="j_password" class="sr-only">Password</label>
-            <input type="password" class="form-control input-underline input-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
+            <input type="password" class="form-control input-underline form-control-lg" id="input_j_password" name="j_password" placeholder="Password" autocomplete="current-password" required>
           </div>
 
           <c:if test="${not empty param.login_error}">
