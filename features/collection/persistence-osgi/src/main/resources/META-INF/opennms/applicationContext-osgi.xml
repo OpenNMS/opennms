@@ -13,8 +13,7 @@
           <!-- Block and wait for an implementation -->
           <constructor-arg index="0" value="true"/>
       </bean>
- 
-	  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory">
+      <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="osgiPersisterFactory">
 		<onmsgi:service-properties>
           <entry>
             <key><value>strategy</value></key>
