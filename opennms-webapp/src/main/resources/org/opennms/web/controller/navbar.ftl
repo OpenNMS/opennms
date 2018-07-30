@@ -1,23 +1,18 @@
 <#assign currentDate = .now>
-<nav class="navbar navbar-inverse navbar-fixed-top" id="header" role="navigation">
+<nav class="navbar navbar-expand-md navbar-dark bg-dark" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="${baseHref}index.jsp">
-          <!-- TODO MVR was renamed from horizon_logo to o-green-trans, maybe should not have done that? -->
-        H23 <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" />
-      </a>
-    </div>
+    <a class="navbar-brand" href="${baseHref}index.jsp">
+        <!-- TODO MVR was renamed from horizon_logo to o-green-trans, maybe should not have done that? -->
+        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" /> H23
+    </a>
+    <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 
     <#if request.remoteUser?has_content >
-      <div id="headerinfo" style="display: none" class="nav navbar-nav navbar-right navbar-info">
-        ${formattedTime}
-        <span class="fa-stack" style="text-shadow:none">
+      <div id="headerinfo" style="position: absolute; top: 0; right: 0" class="text-muted mr-4">
+          ${formattedTime}
+          <span class="fa-stack" style="text-shadow:none">
         <#if noticeStatus = 'Unknown'>
             <!-- Gray circle with bell inside -->
             <i class="fa fa-circle fa-stack-2x text-muted"></i>
@@ -35,89 +30,86 @@
             <i class="fa fa-circle-thin fa-stack-2x"></i>
             <i class="fa fa-bell fa-stack-1x"></i>
         </#if>
-        </span>
+          </span>
       </div>
     </#if>
 
     <div style="margin-right: 15px" id="navbar" class="navbar-collapse collapse">
-		<ul class="nav navbar-nav navbar-right">
+        <ul class="navbar-nav ml-auto">
 		<#if request.remoteUser?has_content >
 		  <#list model.entryList as entry>
-		    <#assign item=entry.getKey()>
-		    <#assign display=entry.getValue()>
+              <#assign item=entry.getKey()>
+              <#assign display=entry.getValue()>
 
-            <#if shouldDisplay(item, display) >
-		      <#if item.entries?has_content >
-		        <#-- has sub-entries, draw menu drop-downs -->
-		        <li class="dropdown">
+              <#if shouldDisplay(item, display) >
+                  <#if item.entries?has_content >
+                  <#-- has sub-entries, draw menu drop-downs -->
+		        <li class="nav-item dropdown">
 		          <#if item.url?has_content && item.url != "#">
-		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
-		          <#else>
-		            <a href="#" name="nav-${item.name}-top" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name} <span class="caret"></span></a>
-		          </#if>
-		          <ul class="dropdown-menu" role="menu">
+		            <a href="${baseHref}${item.url}" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
+                  <#else>
+		            <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
+                  </#if>
+                    <div class="dropdown-menu dropdown-menu-right" role="menu">
 		            <#list item.entries as subItem>
 		              <#if shouldDisplay(subItem) >
-		              <li>
-		                <#if subItem.url?has_content >
-		                  <a name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
-		                <#else>
-		                  <a name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
-		                </#if>
-		              </li>
-		              </#if>
-		            </#list>
-		          </ul>
-		        </li>
-		      <#else>
-		        <#if item.url?has_content >
-		          <li><a name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
-		        <#else>
-		          <a name="nav-${item.name}-top" href="#">${item.name}</a>
-		        </#if>
-		      </#if>
-		    </#if>
-		  </#list>
-		  <li class="dropdown">
-            <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                          <#if subItem.url?has_content >
+		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="${baseHref}${subItem.url}">${subItem.name}</a>
+                          <#else>
+		                  <a class="dropdown-item" name="nav-${item.name}-${subItem.name}" href="#">${subItem.name}</a>
+                          </#if>
+                      </#if>
+                    </#list>
+                    </div>
+                </li>
+                  <#else>
+                      <#if item.url?has_content >
+		          <li class="nav-item"><a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">${item.name}</a></li>
+                      <#else>
+		          <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
+                      </#if>
+                  </#if>
+              </#if>
+          </#list>
+            <li class="nav-item dropdown">
+                <a name="nav-admin-top" href="${baseHref}account/selfService/index.jsp" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
               <#if request.remoteUser?has_content >
-                <span class="glyphicon glyphicon-user"></span>
-                ${request.remoteUser}
+                  <span class="fa fa-user"></span>
+                  ${request.remoteUser}
               <#else>
                 &hellip;
               </#if>
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu" role="menu">
-              <li><a name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification${noticeStatus}">${noticeStatus}</b></a></li>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a class="dropdown-item" name="nav-admin-notice-status" href="#" style="white-space: nowrap">Notices: <b id="notification${noticeStatus}">${noticeStatus}</b></a>
               <#if isAdmin >
-                <li><a name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a></li>
+                <a class="dropdown-item" name="nav-admin-admin" href="${baseHref}admin/index.jsp" style="white-space: nowrap">Configure OpenNMS</a>
               </#if>
               <#if isAdmin || isProvision >
-                <li><a name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a></li>
+                <a class="dropdown-item" name="nav-admin-quick-add" href="${baseHref}admin/ng-requisitions/quick-add-node.jsp#/" style="white-space: nowrap">Quick-Add Node</a>
               </#if>
               <#if isAdmin >
-                <li><a name="nav-admin-support" href="${baseHref}support/index.htm">Support</a></li>
+                <a class="dropdown-item" name="nav-admin-support" href="${baseHref}support/index.htm">Support</a>
               </#if>
               <#if request.remoteUser?has_content >
-                <li><a name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
-                <li><a name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">Log Out</a></li>
+                <a class="dropdown-item" name="nav-admin-self-service" href="${baseHref}account/selfService/index.jsp">Change Password</a>
+                <a class="dropdown-item" name="nav-admin-logout" href="${baseHref}j_spring_security_logout" style="white-space: nowrap">Log Out</a>
               </#if>
-              <li><a name="nav-admin-help" href="${baseHref}help/index.jsp" style="white-space: nowrap">Help</a></li>
-              <li><a name="nav-admin-about" href="${baseHref}about/index.jsp" style="white-space: nowrap">About</a></li>
-            </ul>
-          </li>
-		</#if>
-		</ul>
+                    <a class="dropdown-item" name="nav-admin-help" href="${baseHref}help/index.jsp" style="white-space: nowrap">Help</a>
+                    <a class="dropdown-item" name="nav-admin-about" href="${baseHref}about/index.jsp" style="white-space: nowrap">About</a>
+                </div>
+            </li>
+        </#if>
+        </ul>
     </div>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
 <script type='text/javascript'>
-if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
-  // Hide the header
-  $("#header").hide();
-  // Remove any padding from the body
-  $("body.fixed-nav").attr('style', 'padding-top: 0px !important');
-}
+    if (window.location != window.parent.location && window.name.indexOf("-with-header") == -1) {
+        // Hide the header
+        $("#header").hide();
+        // Remove any padding from the body
+        $("body.fixed-nav").attr('style', 'padding-top: 0px !important');
+    }
 </script>
