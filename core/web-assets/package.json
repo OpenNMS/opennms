@@ -81,8 +81,7 @@
         "angular-ui-router": "^1.0.3",
         "backshift": "https://github.com/opennms/backshift.git#1.2.3",
         "bootbox": "4.4.0",
-        "bootstrap": "^3.3.7",
-        "bootstrap-sass": "^3.3.7",
+        "bootstrap": "4.1.3",
         "bower": "^1.8.2",
         "c3": "0.4.18",
         "d3": "3.5.17",
@@ -104,6 +103,7 @@
         "jquery.flot.tooltip": "https://github.com/krzysu/flot.tooltip.git#0.8.5",
         "leaflet": "1.0.2",
         "leaflet.markercluster": "1.0.0",
+        "popper.js": "^1.14.3",
         "underscore": "1.8.3"
     },
     "peerDependencies": {

@@ -18,7 +18,8 @@ Bootstrap Theme Specific Stylesheet
  *  15.0 - Miscellaneous and Workarounds
  */
 
-@import "~bootstrap-sass/assets/stylesheets/bootstrap/_variables.scss";
+@import "~bootstrap/scss/_functions.scss";
+@import "~bootstrap/scss/_variables.scss";
 @import "properties.scss";
 @import "severities.scss";
 
@@ -917,6 +918,6 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 
 /** TODO MVR NEW STYLES **/
 #content {
-  margin-top: $navbar-logo-height + $navbar-padding-vertical;
+  margin-top: 45px;
   padding-top: 15px;
 }
