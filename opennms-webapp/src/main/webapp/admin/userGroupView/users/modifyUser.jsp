@@ -338,35 +338,35 @@
         %>
 
 	<div class="form-group">
-          <label for="fullName" class="col-sm-2 control-label">Full Name:</label>
+          <label for="fullName" class="col-sm-2 col-form-label">Full Name:</label>
           <div class="col-sm-10">
             <input id="fullName" type="text" class="form-control" size="35" name="fullName" value="<%= (fullName == null? "" : fullName) %>" />
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="userComments" class="col-sm-2 control-label">Comments:</label>
+          <label for="userComments" class="col-sm-2 col-form-label">Comments:</label>
           <div class="col-sm-10">
             <textarea class="form-control" rows="5" id="userComments" name="userComments"><%= (comments == null? "" : comments) %></textarea>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="securityRoles" class="col-sm-2 control-label">Security Roles:</label>
+          <label for="securityRoles" class="col-sm-2 col-form-label">Security Roles:</label>
           <div class="col-sm-5">
-              <label class="control-label">Available Roles</label>
+              <label class="col-form-label">Available Roles</label>
               <%=createSelectList("availableRoles", availableRoles)%><br/>
               <button type="button" class="btn btn-default" id="roles.doAdd" onClick="javascript:addRoles()">&nbsp;&#155;&#155;&nbsp; Add</button>
           </div>
           <div class="col-sm-5">
-              <label class="control-label">Currently in User</label>
+              <label class="col-form-label">Currently in User</label>
               <%=createSelectList("configuredRoles", configuredRoles)%><br/>
               <button type="button" class="btn btn-default" id="roles.doRemove" onClick="javascript:removeRoles()">&nbsp;&#139;&#139;&nbsp; Remove</button>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="tuiPin" class="col-sm-2 control-label">Telephone PIN:</label>
+          <label for="tuiPin" class="col-sm-2 col-form-label">Telephone PIN:</label>
           <div class="col-sm-10">
             <input class="form-control" id="tuiPin" type="text" name="tuiPin" value="<%= (tuiPin == null? "" : tuiPin) %>" />
           </div>
@@ -375,77 +375,77 @@
         <h3>Notification Information</h3>
 
 	<div class="form-group">
-          <label for="email" class="col-sm-2 control-label">Email:</label>
+          <label for="email" class="col-sm-2 col-form-label">Email:</label>
           <div class="col-sm-10">
             <input class="form-control" id="email" type="text" name="email" value='<%= (email == null ? "":email) %>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="pemail" class="col-sm-2 control-label">Pager Email:</label>
+          <label for="pemail" class="col-sm-2 col-form-label">Pager Email:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="pemail" name="pemail" value='<%=(pagerEmail == null ? "":pagerEmail)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="xmppAddress" class="col-sm-2 control-label">XMPP Address:</label>
+          <label for="xmppAddress" class="col-sm-2 col-form-label">XMPP Address:</label>
           <div class="col-sm-10">
             <input class="form-control" id="xmppAddress" type="text" name="xmppAddress" value='<%=(xmppAddress == null ? "":xmppAddress)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="microblog" class="col-sm-2 control-label">Microblog Username:</label>
+          <label for="microblog" class="col-sm-2 col-form-label">Microblog Username:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="microblog" name="microblog" value='<%=(microblog == null ? "":microblog)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="numericalService" class="col-sm-2 control-label">Numeric Service:</label>
+          <label for="numericalService" class="col-sm-2 col-form-label">Numeric Service:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="numericalService" name="numericalService" value='<%=(numericPage == null ? "":numericPage) %>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="numericalPin" class="col-sm-2 control-label">Numeric PIN:</label>
+          <label for="numericalPin" class="col-sm-2 col-form-label">Numeric PIN:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="numericalPin" name="numericalPin" value='<%= (numericPin == null ? "":numericPin)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="textService" class="col-sm-2 control-label">Text Service:</label>
+          <label for="textService" class="col-sm-2 col-form-label">Text Service:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="textService" name="textService" value='<%= (textPage == null ? "":textPage)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="textPin" class="col-sm-2 control-label">Text PIN:</label>
+          <label for="textPin" class="col-sm-2 col-form-label">Text PIN:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="textPin" name="textPin" value='<%=(textPin == null ? "":textPin)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="workPhone" class="col-sm-2 control-label">Work Phone:</label>
+          <label for="workPhone" class="col-sm-2 col-form-label">Work Phone:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="workPhone" name="workPhone" value='<%=(workPhone == null ? "":workPhone)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="mobilePhone" class="col-sm-2 control-label">Mobile Phone:</label>
+          <label for="mobilePhone" class="col-sm-2 col-form-label">Mobile Phone:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="mobilePhone" name="mobilePhone" value='<%=(mobilePhone == null ? "":mobilePhone)%>'/>
           </div>
         </div>
 
 	<div class="form-group">
-          <label for="homePhone" class="col-sm-2 control-label">Home Phone:</label>
+          <label for="homePhone" class="col-sm-2 col-form-label">Home Phone:</label>
           <div class="col-sm-10">
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>

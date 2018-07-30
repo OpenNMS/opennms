@@ -275,7 +275,7 @@ if (request.getAttribute("success") != null) {
       <div class="card-body">
         <form role="form" class="form-horizontal" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
           <div class="form-group">
-            <label for="lookup_ipAddress" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
+            <label for="lookup_ipAddress" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the IP Address for which you want to lookup the SNMP configuration. Either IPv4 or IPv6 format is allowed.">
             IP Address
             </label>
             <div class="col-sm-9">
@@ -283,7 +283,7 @@ if (request.getAttribute("success") != null) {
             </div>
           </div>
           <div class="form-group">
-            <label for="lookup_location" class="control-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
+            <label for="lookup_location" class="col-form-label col-sm-3" data-toggle="tooltip" data-placement="right" title="Specify the location for which you want to lookup the SNMP configuration.">
             Location
             </label>
             <div class="col-sm-9">
@@ -351,7 +351,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="version" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the same time.">
+            <label for="version" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the SNMP version you want to use. You are not allowed to set v1/v2c and v3 parameters at the same time.">
             Version:
             </label>
             <div class="col-sm-9">
@@ -363,7 +363,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="firstIPAddress" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the IP Address you want to define as the first IP address. Even if you just want to add a specific IP address enter that one here. Either IPv4 or IPv6 format is allowed.">
+            <label for="firstIPAddress" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the IP Address you want to define as the first IP address. Even if you just want to add a specific IP address enter that one here. Either IPv4 or IPv6 format is allowed.">
               First IP Address:
             </label>
             <div class="col-sm-9">
@@ -372,7 +372,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="lastIPAddress" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="If you want to define a range of IP addresses, specify the last IP address. If you just want to add a specific IP address to your SNMP configuration leave this field empty. Either IPv4 or IPv6 format is allowed.">
+            <label for="lastIPAddress" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="If you want to define a range of IP addresses, specify the last IP address. If you just want to add a specific IP address to your SNMP configuration leave this field empty. Either IPv4 or IPv6 format is allowed.">
             Last IP Address:
             </label>
             <div class="col-sm-9">
@@ -381,7 +381,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="location" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
+            <label for="location" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="Specify the location at which SNMP Config needs to be updated">
             Location:
             </label>
             <div class="col-sm-9">
@@ -391,7 +391,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="timeout" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
+            <label for="timeout" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The amount of time, in milliseconds, that OpenNMS will wait for a response from the agent.">
             Timeout:
             </label>
             <div class="col-sm-9">
@@ -401,7 +401,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="retryCount" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The number of retries that will be made to connect to the SNMP agent if the initial attempt fails.">
+            <label for="retryCount" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The number of retries that will be made to connect to the SNMP agent if the initial attempt fails.">
             Retries:
             </label>
             <div class="col-sm-9">
@@ -411,7 +411,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="port" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
+            <label for="port" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
             Port:
             </label>
             <div class="col-sm-9">
@@ -421,7 +421,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="proxyHost" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
+            <label for="proxyHost" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This overrides the default port.">
             Proxy Host:
             </label>
             <div class="col-sm-9">
@@ -430,7 +430,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="maxRequestSize" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum size of outgoing SNMP requests. It must be at least 484.">
+            <label for="maxRequestSize" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum size of outgoing SNMP requests. It must be at least 484.">
             Max Request Size:
             </label>
             <div class="col-sm-9">
@@ -440,7 +440,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="maxVarsPerPdu" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum number of variables per SNMP request.">
+            <label for="maxVarsPerPdu" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum number of variables per SNMP request.">
             Max Vars Per Pdu:
             </label>
             <div class="col-sm-9">
@@ -450,7 +450,7 @@ if (request.getAttribute("success") != null) {
           </div>
 
           <div class="form-group">
-            <label for="maxRepetitions" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The maximum number of instances which the agent may return for any variables beyond those specified by the non-repeaters field. Applies only to v2c and v3.">
+            <label for="maxRepetitions" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The maximum number of instances which the agent may return for any variables beyond those specified by the non-repeaters field. Applies only to v2c and v3.">
             Max Repetitions:
             </label>
             <div class="col-sm-9">
@@ -470,7 +470,7 @@ if (request.getAttribute("success") != null) {
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="readCommunityString" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The default 'read' community string for SNMP queries.">
+          <label for="readCommunityString" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The default 'read' community string for SNMP queries.">
           Read Community String:
           </label>
           <div class="col-sm-9">
@@ -480,7 +480,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="writeCommunityString" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The default 'write' community string for SNMP queries. Note that this is for future development - OpenNMS does not perform SNMP 'sets' at the moment.">
+          <label for="writeCommunityString" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The default 'write' community string for SNMP queries. Note that this is for future development - OpenNMS does not perform SNMP 'sets' at the moment.">
           Write Community String:
           </label>
           <div class="col-sm-9">
@@ -500,7 +500,7 @@ if (request.getAttribute("success") != null) {
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="securityName" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="A security name for SNMP v3 authentication.">
+          <label for="securityName" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="A security name for SNMP v3 authentication.">
           Security Name:
           </label>
           <div class="col-sm-9">
@@ -510,7 +510,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="securityLevel" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows: 1) if no authentication passphrase is set noAuthNoPriv is determined 2) if authentication passphrase is set but a privacy passphrase is not authNoPriv is determined 3) if authentication and privacy passphrase is set authPriv is determined">
+          <label for="securityLevel" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The security level for SNMP v3 authentication. If you leave it empty the security level is determined automatically as follows: 1) if no authentication passphrase is set noAuthNoPriv is determined 2) if authentication passphrase is set but a privacy passphrase is not authNoPriv is determined 3) if authentication and privacy passphrase is set authPriv is determined">
           Security Level:
           </label>
           <div class="col-sm-9">
@@ -528,7 +528,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="authPassPhrase" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The passphrase to use for SNMP v3 authentication.">
+          <label for="authPassPhrase" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The passphrase to use for SNMP v3 authentication.">
           Auth Passphrase:
           </label>
           <div class="col-sm-9">
@@ -538,7 +538,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="authProtocol" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The authentication protocol for SNMP v3.">
+          <label for="authProtocol" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The authentication protocol for SNMP v3.">
           Auth Protocol:
           </label>
           <div class="col-sm-9">
@@ -550,7 +550,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="privPassPhrase" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="A privacy pass phrase used to encrypt the contents of SNMP v3 PDUs.">
+          <label for="privPassPhrase" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="A privacy pass phrase used to encrypt the contents of SNMP v3 PDUs.">
           Privacy Passphrase:
           </label>
           <div class="col-sm-9">
@@ -560,7 +560,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="privProtocol" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The privacy protocol used to encrypt the contents of SNMP v3 PDUs.">
+          <label for="privProtocol" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The privacy protocol used to encrypt the contents of SNMP v3 PDUs.">
           Privacy Protocol:
           </label>
           <div class="col-sm-9">
@@ -572,7 +572,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="engineId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The engine id of the target agent.">
+          <label for="engineId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The engine id of the target agent.">
           Engine Id:
           </label>
           <div class="col-sm-9">
@@ -581,7 +581,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="contextEngineId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="The name of the context to obtain data from the target agent.">
+          <label for="contextEngineId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="The name of the context to obtain data from the target agent.">
           Context Engine Id:
           </label>
           <div class="col-sm-9">
@@ -590,7 +590,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="contextName" class="col-sm-3 control-label">
+          <label for="contextName" class="col-sm-3 col-form-label">
           Context Name:
           </label>
           <div class="col-sm-9">
@@ -599,7 +599,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="enterpriseId" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="An enterprise id for SNMP v3 collection.">
+          <label for="enterpriseId" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="An enterprise id for SNMP v3 collection.">
           Enterprise Id:
           </label>
           <div class="col-sm-9">
@@ -619,7 +619,7 @@ if (request.getAttribute("success") != null) {
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="sendEventOption" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. Be aware that collectd must be activated to process the event!">
+          <label for="sendEventOption" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="By default the snmp configuration is published to the system by sending an event. This is useful if you have multiple OpenNMS instances running and want to notify all of them about the changes. If you do not which to send the event, unmark the checkbox. Be aware that collectd must be activated to process the event!">
           Send Event
           </label>
           <div class="col-sm-9">
@@ -629,7 +629,7 @@ if (request.getAttribute("success") != null) {
         </div>
 
         <div class="form-group">
-          <label for="saveLocallyOption" class="col-sm-3 control-label" data-toggle="tooltip" data-placement="right" title="This option saves the changes directly in snmp-config.xml and does not send an event. The difference to the 'Send Event' option is that Collectd is not needed. If Collectd is not running select this option.">
+          <label for="saveLocallyOption" class="col-sm-3 col-form-label" data-toggle="tooltip" data-placement="right" title="This option saves the changes directly in snmp-config.xml and does not send an event. The difference to the 'Send Event' option is that Collectd is not needed. If Collectd is not running select this option.">
           Send Locally
           </label>
           <div class="col-sm-9">

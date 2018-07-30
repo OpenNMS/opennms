@@ -66,14 +66,14 @@
   <div class="card-body">
     <form role="form" class="form-horizontal" method="post" name="goForm">
       <div class="form-group">
-        <label for="pass1" class="col-sm-2 control-label">Password</label>
+        <label for="pass1" class="col-sm-2 col-form-label">Password</label>
         <div class="col-sm-10">
           <input type="password" class="form-control" id="pass1" name="pass1">
         </div>
       </div>
   
       <div class="form-group">
-        <label for="pass2" class="col-sm-2 control-label">Confirm Password</label>
+        <label for="pass2" class="col-sm-2 col-form-label">Confirm Password</label>
         <div class="col-sm-10">
           <input type="password" class="form-control" id="pass2" name="pass2">
         </div>

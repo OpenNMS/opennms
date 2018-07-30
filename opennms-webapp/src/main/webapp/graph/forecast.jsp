@@ -146,7 +146,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                    <div class="tab-content">
 		                        <div role="tabpanel" class="tab-pane active" id="time">
 		                            <div class="form-group" ng-class="{'has-error': form.trainingStart.$invalid}">
-		                                <label class="col-sm-3 control-label">Training Start</label>
+		                                <label class="col-sm-3 col-form-label">Training Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="0" ng-required="true" class="form-control" name="trainingStart" ng-model="forecastingOptions.trainingStart">
 		                                    <span class="help-block">Samples from this number of days ago will be used to train the model, but won't be shown on the graph.</span>
@@ -154,7 +154,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            </div>
 
 		                            <div class="form-group" ng-class="{'has-error': form.graphStart.$invalid}">
-		                                <label class="col-sm-3 control-label">Graph Start</label>
+		                                <label class="col-sm-3 col-form-label">Graph Start</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="graphStart" ng-model="forecastingOptions.graphStart">
 		                                    <span class="help-block">Samples from this number of days ago will be shown on the graph.</span>
@@ -162,7 +162,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            </div>
 
 		                            <div class="form-group" ng-class="{'has-error': form.forecasts.$invalid}">
-		                                <label class="col-sm-3 control-label">Forecasts</label>
+		                                <label class="col-sm-3 col-form-label">Forecasts</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="forecasts" ng-model="forecastingOptions.forecasts">
 		                                    <span class="help-block">Number of seasons to forecast.</span>
@@ -171,7 +171,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                        </div>
 		                        <div role="tabpanel" class="tab-pane" id="stat">
 		                            <div class="form-group" ng-class="{'has-error': form.season.$invalid}">
-		                                <label class="col-sm-3 control-label">Season</label>
+		                                <label class="col-sm-3 col-form-label">Season</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero ng-required="true" class="form-control" name="season" ng-model="forecastingOptions.season">
 		                                    <span class="help-block">Seasonality in days of the sample data. The training set must contain at least two seasons worth of data.</span>
@@ -179,7 +179,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            </div>
 
 		                            <div class="form-group" ng-class="{'has-error': form.trendOrder.$invalid}">
-		                                <label class="col-sm-3 control-label">Trend Order</label>
+		                                <label class="col-sm-3 col-form-label">Trend Order</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" integer min="1" ng-required="true" class="form-control" name="trendOrder" ng-model="forecastingOptions.trendOrder">
 		                                    <span class="help-block">Order of the polynomial used to estimate the trend. Set to this 1 for a line or higher for a curve.</span>
@@ -187,7 +187,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            </div>
 
 		                            <div class="form-group" ng-class="{'has-error': form.confidenceLevel.$invalid}">
-		                                <label class="col-sm-3 control-label">Confidence Level</label>
+		                                <label class="col-sm-3 col-form-label">Confidence Level</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="confidenceLevel" ng-model="forecastingOptions.confidenceLevel">
 		                                    <span class="help-block">Level used to calculate the upper and lower confidence bounds.</span>
@@ -195,7 +195,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 		                            </div>
 		
 		                            <div class="form-group" ng-class="{'has-error': form.outlierThreshold.$invalid}">
-		                                <label class="col-sm-3 control-label">Outlier Threshold</label>
+		                                <label class="col-sm-3 col-form-label">Outlier Threshold</label>
 		                                <div class="col-sm-9">
 		                                    <input type="number" greater-than-zero max="1" ng-required="true" class="form-control" name="outlierThreshold" ng-model="forecastingOptions.outlierThreshold">
 		                                    <span class="help-block">Percentile used to eliminate outliers. Outliers and missing values are automatically interpolated.</span>

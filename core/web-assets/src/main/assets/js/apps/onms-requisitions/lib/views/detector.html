@@ -7,12 +7,12 @@
 <div class="modal-body">
   <form name="detectorForm">
     <div class="form-group" ng-class="{ 'has-error' : detectorForm.name.$invalid }">
-      <label class="control-label" for="name">Name</label>
+      <label class="col-form-label" for="name">Name</label>
       <input class="form-control" type="text" id="name" name="name" placeholder="Detector Name" ng-model="detector.name" required></input>
       <p ng-show="detectorForm.name.$invalid" class="help-block">A non empty name is required.</p>
     </div>
     <div class="form-group" ng-class="{ 'has-error' : detectorForm.clazz.$invalid }">
-      <label class="control-label" for="clazz">Class</label>
+      <label class="col-form-label" for="clazz">Class</label>
       <input class="form-control" type="text" id="clazz" name="clazz" placeholder="Implementation Class (choose one from the list)" ng-model="detector.class" typeahead-min-length="0" typeahead-editable="false" typeahead-on-select="updateAvailableParameters($item)" uib-typeahead="detector.class as detector.name for detector in availableDetectors | filter:$viewValue" required></input>
       <p ng-show="detectorForm.clazz.$invalid" class="help-block">A valid class name is required.</p>
     </div>
@@ -22,7 +22,7 @@
         <p ng-show="paramForm.paramName.$invalid" class="help-block">Parameter name is required.</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
-        <label ng-if="parameter.key" class="control-label">{{parameter.key}}</label>
+        <label ng-if="parameter.key" class="col-form-label">{{parameter.key}}</label>
         <div class="input-group" ng-class="{ 'has-error' : paramForm.paramValue.$invalid }">
           <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
           <span class="input-group-btn">

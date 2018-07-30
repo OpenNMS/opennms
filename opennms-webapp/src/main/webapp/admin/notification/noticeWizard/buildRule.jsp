@@ -128,7 +128,7 @@
                			   For example highlighting both HTTP and FTP will match TCP/IP addresses that support HTTP <b>OR</b> FTP.
              			</p>
                 <div class="form-group">
-                  <label for="input_services" class="control-label">Services:</label>
+                  <label for="input_services" class="col-form-label">Services:</label>
                   <select class="form-control" size="10" multiple id="input_services" name="services"><%=buildServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->
@@ -137,7 +137,7 @@
               			   multiple items ANDs them--for example, highlighting HTTP and FTP will match events (NOT on HTTP) AND (NOT on FTP).
               			</p>
                 <div class="form-group">
-                  <label for="input_notServices" class="control-label">"NOT" Services:</label>
+                  <label for="input_notServices" class="col-form-label">"NOT" Services:</label>
                   <select class="form-control" size="10" multiple name="notServices"><%=buildNotServiceOptions(newRule)%></select>
                 </div>
               </div> <!-- column -->

@@ -311,7 +311,7 @@
               </tr>
               <tr>
                 <td align="center">
-                  <label class="control-label">Available Users</label>
+                  <label class="col-form-label">Available Users</label>
                   <%=createSelectList("availableUsers", availableUsers)%><br/>
                   <div class="btn-group-vertical" align="center">
                     <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailable()">Select All</button>
@@ -319,7 +319,7 @@
                   </div>
                 </td>
                 <td align="center">
-                  <label class="control-label">Currently in Group</label>
+                  <label class="col-form-label">Currently in Group</label>
                   <%=createSelectList("selectedUsers", selectedUsers)%><br/>
                   <div class="btn-group-vertical" align="center">
                     <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelected()">Select All</button>
@@ -344,7 +344,7 @@
 	              </tr>
 	              <tr>
 	                <td align="center">
-	                  <label class="control-label">Available Categories</label>
+	                  <label class="col-form-label">Available Categories</label>
 	                  <%=createSelectList("availableCategories", categoryListNotInGroup)%><br/>
                     <div class="btn-group-vertical" align="center">
   	                  <button type="button" class="btn btn-default" name="availableAll" onClick="javascript:selectAllAvailableCategories()">Select All</button>
@@ -352,7 +352,7 @@
                     </div>
 	                </td>
 	                <td align="center">
-	                  <label class="control-label">Currently in Group</label>
+	                  <label class="col-form-label">Currently in Group</label>
 	                  <%=createSelectList("selectedCategories", categoryListInGroup)%><br/>
                     <div class="btn-group-vertical" align="center">
   	                  <button type="button" class="btn btn-default" name="selectedAll" onClick="javascript:selectAllSelectedCategories()">Select All</button>

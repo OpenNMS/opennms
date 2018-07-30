@@ -169,14 +169,14 @@ $(document).ready(function() {
         <tr>
           <td valign="top" align="left">
             <div class="form-group">
-              <label for="uei" class="control-label">Events</label>
+              <label for="uei" class="col-form-label">Events</label>
               <input id="uei-list-filter" name="uei-list-filter" type="text" class="form-control" size="96" value="" placeholder="Filter displayed events..." />
               <select id="uei" name="uei" class="form-control" size="20" >
               ${model.eventSelect}
               </select>
             </div>
             <div class="form-group">
-              <label for="regexp" class="control-label">Regular Expression Field</label>
+              <label for="regexp" class="col-form-label">Regular Expression Field</label>
               <input id="regexp" name="regexp" type="text" class="form-control" size="96" value="${model.noticeUei}" />
             </div>
           </td>

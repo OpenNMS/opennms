@@ -162,7 +162,7 @@
 			</select>
 		</div>
 		<div class="form-group col-sm-4">
-			<label class="control-label" for="sortby">Sort By:</label> <select
+			<label class="col-form-label" for="sortby">Sort By:</label> <select
 				class="form-control" name="sortby">
 				<option value="id">Event ID (Descending)</option>
 				<option value="rev_id">Event ID (Ascending)</option>

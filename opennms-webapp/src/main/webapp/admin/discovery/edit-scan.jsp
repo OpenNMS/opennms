@@ -194,15 +194,15 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <div class="list-group">
         <div class="list-group-item">
         <div class="col-xs-12 input-group">
-          <label for="retries" class="control-label">Timeout (milliseconds):</label>
+          <label for="retries" class="col-form-label">Timeout (milliseconds):</label>
           <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
         </div> <!-- input-group -->
         <div class="col-xs-12 input-group">
-          <label for="retries" class="control-label">Retries:</label>
+          <label for="retries" class="col-form-label">Retries:</label>
           <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
         </div> <!-- input-group -->
         <div class="col-xs-12 input-group">
-          <label for="foreignsource" class="control-label">Foreign Source:</label>
+          <label for="foreignsource" class="col-form-label">Foreign Source:</label>
           <select id="foreignsource" class="form-control" name="foreignsource">
             <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
             <% for (String key : foreignsources.keySet()) { %>
@@ -211,7 +211,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
           </select>
         </div> <!-- input-group -->
         <div class="col-xs-12 input-group">
-          <label for="location" class="control-label">Location:</label>
+          <label for="location" class="col-form-label">Location:</label>
           <select id="location" class="form-control" name="location">
             <% for (String key : locations.keySet()) { %>
               <option value="<%=key%>" <%if(key.equals(currConfig.getLocation().orElse(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID))) out.print("selected");%>><%=locations.get(key)%></option>
@@ -223,7 +223,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
         <div class="list-group-item">
         <h4 class="list-group-item-heading">Advanced configuration</h4>
         <div class="col-xs-12 input-group">
-          <label for="chunksize" class="control-label">Task chunk size:</label>
+          <label for="chunksize" class="col-form-label">Task chunk size:</label>
           <input type="text" class="form-control" id="chunksize" name="chunksize" value="<%=currConfig.getChunkSize().orElse(DiscoveryConfigFactory.DEFAULT_CHUNK_SIZE)%>"/>
         </div> <!-- input-group -->
         </div>

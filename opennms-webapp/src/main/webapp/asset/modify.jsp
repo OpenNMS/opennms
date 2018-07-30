@@ -87,7 +87,7 @@
                 <div class="card-body">
                   <div class="form-horizontal" ng-repeat="field in panel.fields">
                     <div class="form-group" ng-class="{ 'has-error': assetForm[field.model].$invalid && !assetForm[field.model].$pristine, 'has-warning': assetForm[field.model].$dirty }">
-                      <label class="control-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
+                      <label class="col-form-label col-md-3" for="{{ field.model }}" uib-tooltip="{{ field.tooltip  }}">{{ field.label }}</label>
                       <div class="col-md-9">
                         <%-- Static/ReadOnly fields --%>
                         <p class="form-control-static" ng-if="field.type=='static'">{{ asset[field.model] }}</p>

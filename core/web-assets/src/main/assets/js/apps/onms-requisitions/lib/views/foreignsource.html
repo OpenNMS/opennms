@@ -43,13 +43,13 @@
   </div>
   <div class="col-md-6">
     <div class="form-group">
-      <label class="control-label">Last Modified</label>
+      <label class="col-form-label">Last Modified</label>
       <span class="form-control">{{ foreignSourceDef['date-stamp'] | date:'dd-MM-yy hh:mm:ss' }}</span>
     </div>
   </div>
   <div class="col-md-6">
     <div class="form-group" ng-class="{ 'has-error' : fsForm.scanInterval.$invalid }">
-      <label class="control-label" for="scanInterval">Scan Interval</label>
+      <label class="col-form-label" for="scanInterval">Scan Interval</label>
       <input class="form-control" type="text" id="scanInterval" name="scanInterval" placeholder="Scan Interval" ng-model="foreignSourceDef['scan-interval']" required></input>
       <div ng-show="fsForm.scanInterval.$invalid" class="help-block">Scan Interval is required.</div>
     </div>

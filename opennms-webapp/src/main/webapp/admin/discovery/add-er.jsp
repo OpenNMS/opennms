@@ -88,13 +88,13 @@ function doAddExcludeRange(){
       <div class="card-body">
         <form role="form" class="form-horizontal">
           <div class="form-group">
-            <label for="begin" class="control-label col-sm-2">Begin IP Address:</label>
+            <label for="begin" class="col-form-label col-sm-2">Begin IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="begin" name="begin" value=''/>
             </div>
           </div>
           <div class="form-group">
-            <label for="end" class="control-label col-sm-2">End IP Address:</label>
+            <label for="end" class="col-form-label col-sm-2">End IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="end" name="end" value=''/>
             </div>

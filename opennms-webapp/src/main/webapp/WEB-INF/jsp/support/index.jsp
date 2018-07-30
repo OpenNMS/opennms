@@ -75,7 +75,7 @@
                         <form role="form" class="form-horizontal" method="post" action="support/index.htm">
                             <div class="form-group">
                                 <div class="col-md-2">
-                                    <label for="sign-out" class="control-label">Username:</label>
+                                    <label for="sign-out" class="col-form-label">Username:</label>
                                 </div>
                                 <div class="col-md-2">
                                     <p class="form-control-static"><c:out value="${results.username}"/></p>
@@ -87,7 +87,7 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-2">
-                                    <label class="control-label">Queue:</label>
+                                    <label class="col-form-label">Queue:</label>
                                 </div>
                                 <div class="col-md-2">
                                     <p class="form-control-static"><c:out value="${results.queue}"/></p>
@@ -95,14 +95,14 @@
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <label for="subject" class="control-label">Subject:</label>
+                                    <label for="subject" class="col-form-label">Subject:</label>
                                     <input id="subject" class="form-control" type="text" name="subject"
                                            value="${sessionScope.errorReportSubject}"/>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
-                                    <label for="details" class="control-label">Details:</label>
+                                    <label for="details" class="col-form-label">Details:</label>
                                     <textarea id="details" class="form-control" name="text"
                                               rows="15">${sessionScope.errorReportDetails}</textarea>
                                 </div>
@@ -160,12 +160,12 @@
                         </p>
                         <form role="form" method="post" action="support/index.htm">
                             <div class="form-group">
-                                <label for="username" class="control-label">Username:</label>
+                                <label for="username" class="col-form-label">Username:</label>
                                 <input type="text" name="username" class="form-control" id="username"
                                        placeholder="Username">
                             </div>
                             <div class="form-group">
-                                <label for="password" class="control-label">Password:</label>
+                                <label for="password" class="col-form-label">Password:</label>
                                 <input type="password" name="password" class="form-control" id="password"
                                        placeholder="Password">
                             </div>

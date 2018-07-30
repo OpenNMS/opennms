@@ -8,7 +8,7 @@
         <div class="form-group">
             <div class="form-group"
                  ng-class="{ 'has-error' : exportGroupForm.requestedFileName.$invalid }">
-                <label class="control-label" for="export.requestedFileName">File Name</label>
+                <label class="col-form-label" for="export.requestedFileName">File Name</label>
                 <input class="form-control" type="text" id="export.requestedFileName" name="requestedFileName"
                        value="{{group.id}}_rules.csv" ng-model="export.requestedFileName"
                        ng-pattern="/^[a-zA-Z1-9_ .-]{1,}$/"

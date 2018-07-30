@@ -177,7 +177,7 @@
                     status = NotifdConfigFactory.getPrettyStatus();
                 } catch (Throwable e) { /*if factory can't be initialized, status is already 'Unknown'*/ }
             %>
-              <label class="control-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
+              <label class="col-form-label">Notification Status:<%if (status.equals("Unknown")) {%> Unknown<% }%></label>
               &nbsp;
               <label for="on" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="on" value="on" <%=("On".equals(status) ? "checked" : "")%> />On</label>
               <label for="off" class="radio-inline"><input style="margin-top:0px;" type="radio" name="status" id="off" value="off" <%=("Off".equals(status) ? "checked" : "")%> />Off</label>

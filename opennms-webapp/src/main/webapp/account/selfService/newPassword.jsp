@@ -70,15 +70,15 @@
           <input type="hidden" name="currentPassword" value="">
           <input type="hidden" name="newPassword" value="">
           <div class="form-group <% if ("redo".equals(request.getParameter("action"))) { %>has-error<% } %>">
-            <label class="control-label" for="input_oldpass">Current Password:</label>
+            <label class="col-form-label" for="input_oldpass">Current Password:</label>
             <input type="password" class="form-control" id="input_oldpass" name="oldpass">
           </div>
           <div class="form-group">
-            <label class="control-label" for="input_pass1">New Password:</label>
+            <label class="col-form-label" for="input_pass1">New Password:</label>
             <input type="password" class="form-control" name="pass1">
           </div>
           <div class="form-group">
-            <label class="control-label" for="input_pass2">Confirm New Password:</label>
+            <label class="col-form-label" for="input_pass2">Confirm New Password:</label>
             <input type="password" class="form-control" name="pass2">
           </div>
           <button type="submit" class="btn btn-default">Submit</button>

@@ -58,7 +58,7 @@
     <form name="chooseForm" action="distributedStatusHistory.htm" role="form" class="form-horizontal">
       <input type="hidden" name="previousLocation" value="${historyModel.chosenLocation.locationName}"/>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="location">Location</label>
+        <label class="col-md-2 col-form-label" for="location">Location</label>
         <div class="col-md-4">
           <select class="form-control" name="location" id="location" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.locations}" var="location">
@@ -75,7 +75,7 @@
         </div>
     	</div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="monitorId">Remote Poller</label>
+        <label class="col-md-2 col-form-label" for="monitorId">Remote Poller</label>
         <div class="col-md-4">
           <c:choose>
             <c:when test="${empty historyModel.monitors}">
@@ -103,7 +103,7 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="application">Application</label>
+        <label class="col-md-2 col-form-label" for="application">Application</label>
         <div class="col-md-4">
           <select class="form-control" name="application" id="application" onChange="document.chooseForm.submit();">
             <c:forEach items="${historyModel.applications}" var="application">
@@ -120,7 +120,7 @@
         </div>
     	</div>
       <div class="form-group">
-        <label class="col-md-2 control-label" for="timeSpan">Time Span</label>
+        <label class="col-md-2 col-form-label" for="timeSpan">Time Span</label>
         <div class="col-md-4">
       	  <select class="form-control" name="timeSpan" id="timeSpan" onChange="document.chooseForm.submit();">
       	    <c:forEach items="${historyModel.periods}" var="period">

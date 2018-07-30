@@ -83,19 +83,19 @@
   <div class="card-body">
     <form class="form-horizontal" role="form" id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
       <div class="form-group">
-        <label for="userID" class="col-sm-2 control-label">User ID:</label>
+        <label for="userID" class="col-sm-2 col-form-label">User ID:</label>
         <div class="col-sm-10">
           <input id="userID" type="text" name="userID" class="form-control">
         </div>
       </div>
       <div class="form-group">
-        <label for="pass1" class="col-sm-2 control-label">Password:</label>
+        <label for="pass1" class="col-sm-2 col-form-label">Password:</label>
         <div class="col-sm-10">
           <input id="pass1" type="password" name="pass1" class="form-control">
         </div>
       </div>
       <div class="form-group">
-        <label for="pass2" class="col-sm-2 control-label">Confirm Password:</label>
+        <label for="pass2" class="col-sm-2 col-form-label">Confirm Password:</label>
         <div class="col-sm-10">
           <input id="pass2" type="password" name="pass2" class="form-control">
         </div>

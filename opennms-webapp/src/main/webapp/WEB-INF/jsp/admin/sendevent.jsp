@@ -175,7 +175,7 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="input.uei" class="col-sm-2 control-label">Event</label>
+          <label for="input.uei" class="col-sm-2 col-form-label">Event</label>
           <div class="col-sm-10">
             <select name="uei" class="form-control" id="input.uei" >
               <option value="">--Select One--</option>
@@ -184,37 +184,37 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="uuid" class="col-sm-2 control-label">UUID</label>
+          <label for="uuid" class="col-sm-2 col-form-label">UUID</label>
           <div class="col-sm-10">
             <input id="uuid" name="uuid" class="form-control" type="text" value="" />
           </div>
         </div>
         <div class="form-group">
-          <label for="nodeSelect" class="col-sm-2 control-label">Node ID:</label>
+          <label for="nodeSelect" class="col-sm-2 col-form-label">Node ID:</label>
           <div class="col-sm-10">
             <select id="nodeSelect" name="nodeSelect" class="form-control" style="display: none"></select>
           </div>
         </div>
         <div class="form-group">
-          <label for="hostname" class="col-sm-2 control-label">Source Hostname:</label>
+          <label for="hostname" class="col-sm-2 col-form-label">Source Hostname:</label>
           <div class="col-sm-10">
             <input id="hostname" name="hostname" class="form-control" type="text" value="<%=hostName%>" />
           </div>
         </div>
         <div class="form-group">
-          <label for="interfaceSelect" class="col-sm-2 control-label">Interface:</label>
+          <label for="interfaceSelect" class="col-sm-2 col-form-label">Interface:</label>
           <div class="col-sm-10">
             <select id="interfaceSelect" name="interfaceSelect" class="form-control" style="display: none"></select>
           </div>
         </div>
         <div class="form-group">
-          <label for="service" class="col-sm-2 control-label">Service:</label>
+          <label for="service" class="col-sm-2 col-form-label">Service:</label>
           <div class="col-sm-10">
             <input id="service" name="service" class="form-control" type="text" value="" />
           </div>
         </div>
         <div class="form-group">
-          <label for="service" class="col-sm-2 control-label">Parameters:</label>
+          <label for="service" class="col-sm-2 col-form-label">Parameters:</label>
           <div class="col-sm-10">
             <div id="parmlist"></div>
             <br/>
@@ -222,13 +222,13 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="description" class="col-sm-2 control-label">Description:</label>
+          <label for="description" class="col-sm-2 col-form-label">Description:</label>
           <div class="col-sm-10">
             <textarea id="description" name="description" class="form-control" rows="5" style="resize: none;"></textarea>
           </div>
         </div>
         <div class="form-group">
-          <label for="input_severity" class="col-sm-2 control-label">Severity:</label>
+          <label for="input_severity" class="col-sm-2 col-form-label">Severity:</label>
           <div class="col-sm-10">
                 <select name="severity" id="input_severity" class="form-control">
                   <option value="">--Select One--</option>
@@ -243,7 +243,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="operinstruct" class="col-sm-2 control-label">Operator Instructions:</label>
+          <label for="operinstruct" class="col-sm-2 col-form-label">Operator Instructions:</label>
           <div class="col-sm-10">
             <textarea id="operinstruct" name="operinstruct" class="form-control" rows="5" style="resize: none;"></textarea>
           </div>

@@ -24,33 +24,33 @@
         <p ng-show="error.entity" class="help-block">{{error.entity}}</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : ruleForm.name.$invalid || error.name }">
-        <label class="control-label" for="rule.name">Application Name</label>
+        <label class="col-form-label" for="rule.name">Application Name</label>
         <input class="form-control" type="text" id="rule.name" name="name" placeholder="HTTP" ng-model="classification.name" required/>
         <p ng-show="ruleForm.name.$invalid" class="help-block">The name is required.</p>
         <p ng-show="error.name" class="help-block">{{error.name}}</p>
       </div>
       <div class="form-group col-md-8" style="padding-left: 0" ng-class="{ 'has-error' : ruleForm.srcAddress.$invalid || error.srcAddress}">
-        <label class="control-label" for="rule.srcAddress">Source IP Address</label>
+        <label class="col-form-label" for="rule.srcAddress">Source IP Address</label>
         <input class="form-control" type="text" id="rule.srcAddress" name="srcAddress" placeholder="127.0.0.1" ng-model="classification.srcAddress"/>
         <p ng-show="error.srcAddress" class="help-block">{{error.srcAddress}}</p>
       </div>
       <div class="form-group col-md-4" style="padding-right: 0" ng-class="{ 'has-error' : ruleForm.srcPort.$invalid || error.srcPort }">
-        <label class="control-label" for="rule.srcPort">Source Port</label>
+        <label class="col-form-label" for="rule.srcPort">Source Port</label>
         <input class="form-control" type="text" id="rule.srcPort" name="srcPort" placeholder="80,8080" ng-model="classification.srcPort"/>
         <p class="help-block">{{error.srcPort}}</p>
       </div>
       <div class="form-group col-md-8" style="padding-left: 0" ng-class="{ 'has-error' : ruleForm.dstAddress.$invalid || error.dstAddress}">
-        <label class="control-label" for="rule.dstAddress">Destination IP Address</label>
+        <label class="col-form-label" for="rule.dstAddress">Destination IP Address</label>
         <input class="form-control" type="text" id="rule.dstAddress" name="dstAddress" placeholder="127.0.0.1" ng-model="classification.dstAddress"/>
         <p ng-show="error.dstAddress" class="help-block">{{error.dstAddress}}</p>
       </div>
       <div class="form-group col-md-4" style="padding-right: 0" ng-class="{ 'has-error' : ruleForm.dstPort.$invalid || error.dstPort }">
-        <label class="control-label" for="rule.dstPort">Destination Port</label>
+        <label class="col-form-label" for="rule.dstPort">Destination Port</label>
         <input class="form-control" type="text" id="rule.dstPort" name="dstPort" placeholder="80,8080" ng-model="classification.dstPort"/>
         <p class="help-block">{{error.dstPort}}</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : ruleForm.exporterFilter.$invalid || error.exporterFilter }">
-        <label class="control-label" for="rule.exporterFilter">Exporter Filter</label>
+        <label class="col-form-label" for="rule.exporterFilter">Exporter Filter</label>
         <button class="btn-link"
                 style="padding-left: 0px;"
                 uib-popover-html="'<div>The rule is only applied if the exporter of the flow matches the defined <a href=https://wiki.opennms.org/wiki/Filters target=_blank>filter</a>.</div>'"
@@ -59,7 +59,7 @@
         <p ng-show="error.exporterFilter" class="help-block">{{error.exporterFilter}}</p>
       </div>
       <div class="form-group" ng-class="{ 'has-error' : ruleForm.protocol.$invalid || error.protocol }">
-        <label class="control-label" for="rule.protocol">IP Protocol</label>
+        <label class="col-form-label" for="rule.protocol">IP Protocol</label>
         <input class="form-control" type="text"
                id="rule.protocol"
                name="protocol"

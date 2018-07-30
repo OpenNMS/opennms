@@ -167,7 +167,7 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="input_name" class="control-label col-sm-2">Name:</label>
+          <label for="input_name" class="col-form-label col-sm-2">Name:</label>
           <div class="col-sm-10">
             <% if (newPath.getName()==null) { %>
               <input type="text" class="form-control" name="name" value=""/>
@@ -177,7 +177,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="input_initialDelay" class="control-label col-sm-2">Initial Delay:</label>
+          <label for="input_initialDelay" class="col-form-label col-sm-2">Initial Delay:</label>
           <div class="col-sm-10">
             <%=buildDelaySelect(intervals, "initialDelay", newPath.getInitialDelay().orElse("0s"))%>
           </div>

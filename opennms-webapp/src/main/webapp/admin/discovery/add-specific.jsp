@@ -130,25 +130,25 @@ function doAddSpecific(){
     <div class="card-body">
       <form role="form" class="form-horizontal">
         <div class="form-group">
-          <label for="ipaddress" class="col-sm-2 control-label">IP Address:</label>
+          <label for="ipaddress" class="col-sm-2 col-form-label">IP Address:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="ipaddress" name="ipaddress"/>
           </div>
         </div>
         <div class="form-group">
-          <label for="timeout" class="col-sm-2 control-label">Timeout (milliseconds):</label>
+          <label for="timeout" class="col-sm-2 col-form-label">Timeout (milliseconds):</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
           </div>
         </div>
         <div class="form-group">
-          <label for="retries" class="col-sm-2 control-label">Retries:</label>
+          <label for="retries" class="col-sm-2 col-form-label">Retries:</label>
           <div class="col-sm-10">
             <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
           </div>
         </div>
         <div class="form-group">
-          <label for="foreignsource" class="col-sm-2 control-label">Foreign Source:</label>
+          <label for="foreignsource" class="col-sm-2 col-form-label">Foreign Source:</label>
           <div class="col-sm-10">
             <select id="foreignsource" class="form-control" name="foreignsource">
               <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
@@ -159,7 +159,7 @@ function doAddSpecific(){
           </div>
         </div>
         <div class="form-group">
-          <label for="location" class="col-sm-2 control-label">Location:</label>
+          <label for="location" class="col-sm-2 col-form-label">Location:</label>
           <div class="col-sm-10">
             <select id="location" class="form-control" name="location">
               <% for (String key : locations.keySet()) { %>

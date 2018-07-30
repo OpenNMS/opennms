@@ -80,14 +80,14 @@
           <input type="hidden" name="operation" />
 
           <div class="form-group">
-            <label for="groupName" class="col-sm-2 control-label">Group Name:</label>
+            <label for="groupName" class="col-sm-2 col-form-label">Group Name:</label>
             <div class="col-sm-10">
               <input class="form-control" id="groupName" type="text" name="groupName"/>
             </div>
           </div>
 
           <div class="form-group">
-            <label for="groupComment" class="col-sm-2 control-label">Comment:</label>
+            <label for="groupComment" class="col-sm-2 col-form-label">Comment:</label>
             <div class="col-sm-10">
               <input class="form-control" id="groupComment" type="text" name="groupComment"/>
             </div>

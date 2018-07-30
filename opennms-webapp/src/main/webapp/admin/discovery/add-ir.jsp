@@ -151,31 +151,31 @@ function doAddIncludeRange(){
         </p>
         <form role="form" class="form-horizontal">
           <div class="form-group">
-            <label for="base" class="control-label col-sm-2">Begin IP Address:</label>
+            <label for="base" class="col-form-label col-sm-2">Begin IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="base" name="base"  value=''/>
             </div>
           </div>
           <div class="form-group">
-            <label for="end" class="control-label col-sm-2">End IP Address:</label>
+            <label for="end" class="col-form-label col-sm-2">End IP Address:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="end" name="end" value=''/>
             </div>
           </div>
           <div class="form-group">
-            <label for="timeout" class="control-label col-sm-2">Timeout (milliseconds):</label>
+            <label for="timeout" class="col-form-label col-sm-2">Timeout (milliseconds):</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="timeout" name="timeout" value="<%=currConfig.getTimeout().orElse(DiscoveryConfigFactory.DEFAULT_TIMEOUT)%>"/>
             </div>
           </div>
           <div class="form-group">
-            <label for="retries" class="control-label col-sm-2">Retries:</label>
+            <label for="retries" class="col-form-label col-sm-2">Retries:</label>
             <div class="col-sm-10">
               <input type="text" class="form-control" id="retries" name="retries" value="<%=currConfig.getRetries().orElse(DiscoveryConfigFactory.DEFAULT_RETRIES)%>"/>
             </div>
           </div>
         <div class="form-group">
-          <label for="foreignsource" class="control-label col-sm-2">Foreign Source:</label>
+          <label for="foreignsource" class="col-form-label col-sm-2">Foreign Source:</label>
           <div class="col-sm-10">
             <select id="foreignsource" class="form-control" name="foreignsource">
               <option value="" <%if (!currConfig.getForeignSource().isPresent()) out.print("selected");%>>None selected</option>
@@ -186,7 +186,7 @@ function doAddIncludeRange(){
           </div>
         </div>
         <div class="form-group">
-          <label for="location" class="control-label col-sm-2">Location:</label>
+          <label for="location" class="col-form-label col-sm-2">Location:</label>
           <div class="col-sm-10">
             <select id="location" class="form-control" name="location">
               <% for (String key : locations.keySet()) { %>
