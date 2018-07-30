@@ -28,6 +28,8 @@
 
 package org.opennms.protocols.vmware;
 
+import static com.jayway.awaitility.Awaitility.await;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -174,24 +176,9 @@ public class ServiceInstancePoolTest {
         s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
         Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
 
-        Thread.sleep(200);
-
-        serviceInstancePool.release(s3);
-        s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
-        Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
-
-        Thread.sleep(200);
-
-        serviceInstancePool.release(s3);
-        s3 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
-        Assert.assertEquals("host3.test.de/username3/password3/3/valid", s3.toString());
-
-        Thread.sleep(350);
-
         // N N L N
 
-        Assert.assertEquals(1, serviceInstancePool.lockedEntryCount());
-        Assert.assertEquals(0, serviceInstancePool.unlockedEntryCount());
+        await().until(() -> serviceInstancePool.lockedEntryCount() == 1 && serviceInstancePool.unlockedEntryCount() == 0);
 
         ServiceInstance s4 = serviceInstancePool.retain("host3.test.de", "username3", "password3");
         Assert.assertEquals("host3.test.de/username3/password3/4/valid", s4.toString());
@@ -231,10 +218,7 @@ public class ServiceInstancePoolTest {
         Assert.assertTrue(((DummyServiceInstance) s3).valid);
         Assert.assertFalse(((DummyServiceInstance) s4).valid);
 
-        Thread.sleep(650);
-
-        Assert.assertEquals(1, serviceInstancePool.lockedEntryCount());
-        Assert.assertEquals(0, serviceInstancePool.unlockedEntryCount());
+        await().until(() -> serviceInstancePool.lockedEntryCount() == 1 && serviceInstancePool.unlockedEntryCount() == 0);
 
         Assert.assertNotNull(s1);
         Assert.assertNotNull(s2);
