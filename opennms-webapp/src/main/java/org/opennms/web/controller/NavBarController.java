@@ -32,11 +32,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -54,6 +55,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 import org.springframework.web.servlet.view.AbstractView;
 
+import freemarker.cache.ClassTemplateLoader;
+import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.ext.beans.StringModel;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
@@ -79,21 +84,28 @@ public class NavBarController extends AbstractController implements Initializing
     @Override
     public void afterPropertiesSet() throws IOException {
         Assert.state(m_navBarItems != null, "navBarItems property has not been set");
-
-        // Initialize the Freemarker engine and fetch our template
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
-        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        cfg.setClassForTemplateLoading(NavBarController.class, "");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-        Template template = cfg.getTemplate("navbar.ftl");
-
-        m_view = new FreemarkerView(template);
-        dateTimeFormat = new CentralizedDateTimeFormat();
     }
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+        // TODO MVR revert this later on, this is just for debug purposes to have navbar.ftl in $opennms_home/etc to
+        // make it easier to customize it :)
+        final FileTemplateLoader ftl1 = new FileTemplateLoader(Paths.get(System.getProperty("opennms.home"), "etc").toFile());
+        final ClassTemplateLoader tl1 = new ClassTemplateLoader(NavBarController.class, "navbar.ftl");
+        final MultiTemplateLoader mtl = new MultiTemplateLoader(new TemplateLoader[]{ftl1, tl1});
+
+        // Initialize the Freemarker engine and fetch our template
+        final Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
+        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        cfg.setClassForTemplateLoading(NavBarController.class, "");
+        cfg.setTemplateLoader(mtl);
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
+        Template template = cfg.getTemplate("navbar.ftl");
+
+        m_view = new FreemarkerView(template);
+        dateTimeFormat = new CentralizedDateTimeFormat();
+
         return new ModelAndView(m_view, createModel(request));
     }
 
