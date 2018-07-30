@@ -30,9 +30,11 @@ package org.opennms.web.tags;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
 
+import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
@@ -55,7 +57,7 @@ public class DateTimeTag extends SimpleTagSupport {
     @Override
     public void doTag() throws IOException {
         // Output an empty string for null values. I believe fmt:formatDate does the same
-        String output = Optional.ofNullable(new CentralizedDateTimeFormat().format(instant)).orElse("");
+        String output = Optional.ofNullable(new CentralizedDateTimeFormat().format(instant, getZoneId())).orElse("");
         getJspContext().getOut().write(output);
     }
 
@@ -68,5 +70,13 @@ public class DateTimeTag extends SimpleTagSupport {
         if (date != null) {
             this.instant = date.toInstant();
         }
+    }
+
+    private ZoneId getZoneId(){
+        ZoneId timeZoneId = (ZoneId) this.getJspContext().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID, PageContext.SESSION_SCOPE);
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
+        return timeZoneId;
     }
 }

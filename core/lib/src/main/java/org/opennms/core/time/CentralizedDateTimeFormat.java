@@ -49,6 +49,7 @@ import org.slf4j.LoggerFactory;
 public class CentralizedDateTimeFormat {
 
     public final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
+    public final static String SESSION_PROPERTY_TIMEZONE_ID = "org.opennms.ui.timezoneid";
 
     public static final Logger LOG = LoggerFactory.getLogger(CentralizedDateTimeFormat.class);
 
@@ -65,7 +66,7 @@ public class CentralizedDateTimeFormat {
             formatter = getDefaultFormatter();
         } else {
             try {
-                formatter = DateTimeFormatter.ofPattern(format).withZone(ZoneId.systemDefault());
+                formatter = DateTimeFormatter.ofPattern(format);
             } catch (IllegalArgumentException e) {
                 LOG.warn(String.format("Can not use System Property %s=%s as dateformat, will fall back to default." +
                                 " Please see also java.time.format.DateTimeFormatter for the correct syntax",
@@ -90,22 +91,33 @@ public class CentralizedDateTimeFormat {
                 .optionalStart()
                 .appendLiteral(':')
                 .appendValue(SECOND_OF_MINUTE, 2)
-                .appendOffsetId().toFormatter()
-                .withZone(ZoneId.systemDefault());
+                .appendOffsetId().toFormatter();
     }
 
     public String format(Instant instant) {
+        return format(instant, ZoneId.systemDefault());
+    }
+
+    public String format(Instant instant, ZoneId timeZoneId) {
         if(instant == null){
             return null;
         }
-        return formatter.format(instant);
+        if(timeZoneId == null){
+            timeZoneId = ZoneId.systemDefault();
+        }
+        return formatter.withZone(timeZoneId).format(instant);
     }
 
     @Deprecated // please use format(Instant) instead
     public String format(Date date) {
+        return format(date, ZoneId.systemDefault());
+    }
+
+    @Deprecated // please use format(Instant) instead
+    public String format(Date date, ZoneId timeZoneId) {
         if (date == null) {
             return null;
         }
-        return format(date.toInstant());
+        return format(date.toInstant(), timeZoneId);
     }
 }
