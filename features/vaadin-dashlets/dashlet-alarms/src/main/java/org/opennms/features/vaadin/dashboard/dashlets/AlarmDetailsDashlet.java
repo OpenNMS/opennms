@@ -28,26 +28,22 @@
 
 package org.opennms.features.vaadin.dashboard.dashlets;
 
-import com.google.common.collect.Lists;
-import com.vaadin.server.Page;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.core.utils.StringUtils;
+import org.opennms.features.timeformat.api.TimeformatService;
+import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmDaoContainer;
 import org.opennms.features.topology.plugins.browsers.AlarmIdColumnLinkGenerator;
 import org.opennms.features.topology.plugins.browsers.AlarmTable;
 import org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator;
-import org.opennms.features.topology.api.browsers.OnmsVaadinContainer;
 import org.opennms.features.topology.plugins.browsers.SeverityGenerator;
 import org.opennms.features.vaadin.dashboard.config.ui.editors.CriteriaBuilderHelper;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
@@ -66,10 +62,16 @@ import org.opennms.osgi.EventProxy;
 import org.opennms.osgi.VaadinApplicationContextImpl;
 import org.springframework.transaction.support.TransactionOperations;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import com.google.common.collect.Lists;
+import com.vaadin.server.Page;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class represents a Alert Dashlet with some details.
@@ -104,6 +106,8 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
     private final TransactionOperations m_transactionTemplate;
 
+    private final TimeformatService timeformatService;
+
     /**
      * Constructor for instantiating new objects.
      *
@@ -111,7 +115,8 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
      * @param alarmDao    the {@link AlarmDao} to be used
      * @param nodeDao     the {@link NodeDao} to be used
      */
-    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository, TransactionOperations transactionTemplate) {
+    public AlarmDetailsDashlet(String name, DashletSpec dashletSpec, AlarmDao alarmDao, NodeDao nodeDao, AlarmRepository alarmRepository
+            , TransactionOperations transactionTemplate, TimeformatService timeformatService) {
         super(name, dashletSpec);
 
         /**
@@ -121,6 +126,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
+        this.timeformatService = timeformatService;
     }
 
     @Override
@@ -354,7 +360,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getSeverity().getLabel() + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + (onmsNode != null ? onmsNode.getLabel() : "-") + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + onmsAlarm.getCounter() + "</nobr></td>");
-                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()) + "</nobr></td>");
+                sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'><nobr>" + timeformatService.format(onmsAlarm.getLastEventTime()) + "</nobr></td>");
                 sb.append("<td class='alert-details-dashlet onms-cell divider onms' valign='middle' rowspan='1'>" + onmsAlarm.getLogMsg().replaceAll("\\<.*?>", "") + "</td>");
                 sb.append("</td></tr>");
             }
@@ -391,13 +397,13 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         lastEvent.setSizeUndefined();
         lastEvent.addStyleName("alert-details-font");
         lastEvent.setCaption("Last event");
-        lastEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getLastEventTime()));
+        lastEvent.setValue(timeformatService.format(onmsAlarm.getLastEventTime()));
 
         Label firstEvent = new Label();
         firstEvent.setSizeUndefined();
         firstEvent.addStyleName("alert-details-font");
         firstEvent.setCaption("First event");
-        firstEvent.setValue(StringUtils.toStringEfficiently(onmsAlarm.getFirstEventTime()));
+        firstEvent.setValue(timeformatService.format(onmsAlarm.getFirstEventTime()));
 
         verticalLayout1.addComponent(firstEvent);
         verticalLayout1.addComponent(lastEvent);
