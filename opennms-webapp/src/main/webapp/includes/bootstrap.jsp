@@ -220,12 +220,22 @@
   </c:otherwise>
 </c:choose>
 <c:if test="${((param.nonavbar != 'true') && (!empty pageContext.request.remoteUser)) && param.nobreadcrumbs != 'true'}">
+  <nav aria-label="breadcrumb">
   <ol class="breadcrumb">
-    <li><a href="<%= baseHref %>index.jsp">Home</a></li>
-    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}">
+    <li class="breadcrumb-item"><a href="<%= baseHref %>index.jsp">Home</a></li>
+    <c:forEach var="breadcrumb" items="${paramValues.breadcrumb}" varStatus="loop">
       <c:if test="${breadcrumb != ''}">
-        <li><c:out value="${breadcrumb}" escapeXml="false"/></li>
+          <c:choose>
+            <c:when test="${loop.last}">
+              <li class="breadcrumb-item active"><c:out value="${breadcrumb}" escapeXml="false"/></li>
+            </c:when>
+            <c:otherwise>
+              <li class="breadcrumb-item"><c:out value="${breadcrumb}" escapeXml="false"/></li>
+            </c:otherwise>
+          </c:choose>
+
       </c:if>
     </c:forEach>
   </ol>
+  </nav>
 </c:if>
