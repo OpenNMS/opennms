@@ -118,16 +118,34 @@ public class NewSuspectScan implements Scan {
     private ScanProgress createScanProgress() {
         return new ScanProgress() {
             private boolean m_aborted = false;
+            private int m_failedTasks = 0;
+
             @Override
             public void abort(final String message) {
                 m_aborted = true;
                 LOG.info(message);
             }
 
+            public void failTask(final String provisionTask, final String message) {
+                m_failedTasks += 1;
+                LOG.info("Provisioning task {} failed: {}", provisionTask, message);
+            }
+
             @Override
             public boolean isAborted() {
                 return m_aborted;
-            }};
+            }
+
+            @Override
+            public int getFailedTasksCount() {
+                return m_failedTasks;
+            }
+
+            @Override
+            public boolean hasFailedTasks() {
+                return (m_failedTasks > 0);
+            }
+        };
     }
 
     /**

@@ -437,8 +437,12 @@ public abstract class EventConstants {
 
     /** Constant <code>PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
     public static final String PROVISION_SCAN_COMPLETE_UEI="uei.opennms.org/internal/provisiond/nodeScanCompleted";
+    /** Constant <code>PROVISION_SCAN_PARTIALLY_COMPLETED_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
+    public static final String PROVISION_SCAN_PARTIALLY_COMPLETED_UEI="uei.opennms.org/internal/provisiond/nodeScanPartiallyCompleted";
     /** Constant <code>PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nod"{trunked}</code> */
     public static final String PROVISION_SCAN_ABORTED_UEI="uei.opennms.org/internal/provisiond/nodeScanAborted";
+    /** Constant <code>PROVISION_TASK_FAILED_UEI="uei.opennms.org/internal/provisiond/pro"{trunked}</code> */
+    public static final String PROVISION_TASK_FAILED_UEI="uei.opennms.org/internal/provisiond/provisionTaskFailed";
     
     /** Constant <code>PARM_FAILURE_MESSAGE="failureMessage"</code> */
     public static final String PARM_FAILURE_MESSAGE = "failureMessage";
@@ -451,6 +455,11 @@ public abstract class EventConstants {
 
     public static final String PARM_IMPORT_RESCAN_EXISTING = "importRescanExisting";
     
+    /** Constant <code>PARM_PROVISION_TASK="provisionTask"</code> */
+    public static final String PARM_PROVISION_TASK = "provisionTask";
+    /** Constant <code>PARM_PROVISION_FAILED_TASK_COUNT="provisionFailedTaskCount"</code> */
+    public static final String PARM_PROVISION_FAILED_TASK_COUNT = "provisionFailedTaskCount";
+
     /** Constant <code>PARM_ALARM_ID="alarmId"</code> */
     public static final String PARM_ALARM_ID = "alarmId";
     /** Constant <code>PARM_ALARM_UEI="alarmUei"</code> */

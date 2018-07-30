@@ -112,6 +112,8 @@ public class ForceRescanScan implements Scan {
     private ScanProgress createScanProgress() {
         return new ScanProgress() {
             private boolean m_aborted = false;
+            private int m_failedTasks = 0;
+
             @Override
             public void abort(final String message) {
                 m_aborted = true;
@@ -119,9 +121,26 @@ public class ForceRescanScan implements Scan {
             }
 
             @Override
+            public void failTask(final String provisionTask, final String message) {
+                m_failedTasks++;
+                LOG.info("Provisioning task {} failed: {}", provisionTask, message);
+            }
+
+            @Override
             public boolean isAborted() {
                 return m_aborted;
-            }};
+            }
+
+            @Override
+            public int getFailedTasksCount() {
+                return m_failedTasks;
+            }
+
+            @Override
+            public boolean hasFailedTasks() {
+                return (m_failedTasks > 0);
+            }
+        };
     }
 
     /**

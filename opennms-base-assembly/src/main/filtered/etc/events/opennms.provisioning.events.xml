@@ -21,6 +21,21 @@
             completed.&lt;/p>
         </logmsg>
       <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="2" clear-key="uei.opennms.org/internal/provisiond/nodeScanPartiallyCompleted:%nodeid%" auto-clean="false"/>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/provisiond/nodeScanPartiallyCompleted</uei>
+      <event-label>OpenNMS-defined Provisiond Event: nodeScanPartiallyCompleted</event-label>
+      <descr>A message from the Provisiond NodeScan lifecycle that a NodeScan has completed with failed tasks:
+            &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            completed with %parm[provisionFailedTaskCount]% failed task(s).&lt;/p>
+            Typically the result of a request of an import request or a scheduled/user forced rescan.</descr>
+      <logmsg dest="logndisplay">
+            &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
+            completed with %parm[provisionFailedTaskCount]% failed task(s).&lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%nodeid%" alarm-type="1" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/internal/provisiond/nodeScanAborted</uei>
@@ -31,6 +46,15 @@
       <logmsg dest="logndisplay">
             &lt;p>The Node with Id: %nodeid%; ForeignSource: %parm[foreignSource]%; ForeignId:%parm[foreignId]% has
             aborted.&lt;/p>
+        </logmsg>
+      <severity>Warning</severity>
+   </event>
+   <event>
+      <uei>uei.opennms.org/internal/provisiond/provisionTaskFailed</uei>
+      <event-label>OpenNMS-defined Provisiond Event: provisionTaskFailed</event-label>
+      <descr>Provisioning task %parm[provisionTask]% failed for host %host% with the following condition: %parm[reason]%.&lt;p></descr>
+      <logmsg dest="logndisplay">
+            &lt;p>Provisioning task %parm[provisionTask]% failed.&lt;/p>
         </logmsg>
       <severity>Warning</severity>
    </event>

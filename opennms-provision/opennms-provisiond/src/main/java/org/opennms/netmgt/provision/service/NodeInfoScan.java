@@ -123,6 +123,10 @@ final class NodeInfoScan implements RunInBatch {
         m_scanProgress.abort(reason);
     }
 
+    private void failTask(String provisionTask, String reason) {
+        m_scanProgress.failTask(provisionTask, reason);
+    }
+
     private OnmsNode getNode() {
         return m_node;
     }
@@ -151,7 +155,7 @@ final class NodeInfoScan implements RunInBatch {
                     .get();
                 systemGroup.updateSnmpDataForNode(getNode());
             } catch (ExecutionException e) {
-                abort("Aborting node scan : Agent failed while scanning the system table: " + e.getMessage());
+                failTask("collectNodeInfo", "Agent failed while scanning the system table: " + e.getMessage());
             }
 
             List<NodePolicy> nodePolicies = getProvisionService().getNodePoliciesForForeignSource(getEffectiveForeignSource());
@@ -204,5 +208,13 @@ final class NodeInfoScan implements RunInBatch {
 
     private boolean isAborted() {
         return m_scanProgress.isAborted();
+    }
+
+    private int getFailedTasksCount() {
+        return m_scanProgress.getFailedTasksCount();
+    }
+
+    private boolean hasFailedTasks() {
+        return m_scanProgress.hasFailedTasks();
     }
 }

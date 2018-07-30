@@ -42,10 +42,33 @@ public interface ScanProgress {
      * @param message a {@link java.lang.String} object.
      */
     public void abort(String message);
+
     /**
      * <p>isAborted</p>
      *
      * @return a boolean.
      */
     public boolean isAborted();
+
+    /**
+     * <p>failTask</p>
+     *
+     * @param provisionTask a {@link java.lang.String} object.
+     * @param message a {@link java.lang.String} object.
+     */
+    public void failTask(String provisionTask, String message);
+
+    /**
+     * <p>getFailedTasksCount</p>
+     *
+     * @return an int.
+     */
+    public int getFailedTasksCount();
+
+    /**
+     * <p>hasFailedTasks</p>
+     *
+     * @return a boolean.
+     */
+    public boolean hasFailedTasks();
 }
