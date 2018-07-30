@@ -108,8 +108,9 @@
     </div>
   </div>
 
-  <div class="" style="color: white; position: absolute; bottom: 0px; right: 0px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
-    <a href="https://github.com/OpenNMS/opennms.git" title="Fork us on Github"><i class="fa fa-github"></i></a>
+  <div class="" style="position: absolute; bottom: 0px; right: 0px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
+    <a href="https://docs.opennms.org" class="text-light" title="Show documentation"><i class="fa fa-book" aria-hidden="true"></i></a>
+    <a href="https://github.com/OpenNMS/opennms.git" class="text-light" title="Fork us on Github"><i class="fa fa-github" aria-hidden="true"></i></a>
   </div>
 </div>
 
