@@ -183,7 +183,7 @@
     <div class="row top-buffer">
       <% if (nodes.size() > 0) { %>
 	<div class="col-md-6">
-          <table class="table table-condensed table-striped table-hover">
+          <table class="table table-sm table-striped table-hover">
             <tr>
               <th width="5%">Status</th>
               <th width="10%">Node Label</th>
@@ -200,7 +200,7 @@
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
 	<div class="col-md-6">
-          <table class="table table-condensed table-striped table-hover">
+          <table class="table table-sm table-striped table-hover">
             <tr>
               <th width="5%">Status</th>
               <th width="10%">Node Label</th>

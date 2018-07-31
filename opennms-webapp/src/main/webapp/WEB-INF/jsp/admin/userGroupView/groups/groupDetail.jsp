@@ -62,7 +62,7 @@
       <div class="card-header">
         <h2 class="card-title">Details for Group: <%=group.getName()%></h2>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Comments:</th>
           <td width="75%">
@@ -96,7 +96,7 @@
       <div class="card-header">
         <h2 class="card-title">Duty Schedules</h2>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <table class="table table-sm table-striped table-bordered">
         <thead>
           <tr>
           <th>Mo</th>

@@ -119,7 +119,7 @@
   </div> <!-- column -->
 </div> <!-- row -->
 
-<table id="outages" class="table table-condensed severity top-buffer">
+<table id="outages" class="table table-sm severity top-buffer">
 	<tr>
 		<th colspan="4">&nbsp;</th>
 		<th colspan="4">Affects...</th>

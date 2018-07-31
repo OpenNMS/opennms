@@ -235,7 +235,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
         <h3 class="card-title">General</h3>
       </div>
       <!-- general info box -->
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Node</th>
           <td><a href="element/node.jsp?node=<%=intf_db.getNodeId()%>"><%=node.getLabel()%></a></td>

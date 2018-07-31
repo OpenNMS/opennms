@@ -131,7 +131,7 @@
       throws ServletException
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<table class=\"table table-condensed table-borderless\">");
+        buffer.append("<table class=\"table table-sm table-borderless\">");
         
         Target targets[] = null;
         

@@ -520,7 +520,7 @@ Collection<String> dutySchedules = user.getDutySchedules();
       <div class="card-header">
         <h3 class="card-title">Duty Schedule</h3>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <table class="table table-sm table-striped table-bordered">
         <thead>
           <tr>
           <th>&nbsp;</th>

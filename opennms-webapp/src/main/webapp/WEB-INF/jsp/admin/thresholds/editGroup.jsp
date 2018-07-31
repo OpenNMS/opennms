@@ -73,7 +73,7 @@
       <div class="card-header">
         <h3 class="card-title">Basic Thresholds</h3>
       </div>
-      <table class="table table-condensed table-striped edit-group-basic-thresholds">
+      <table class="table table-sm table-striped edit-group-basic-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>
@@ -118,7 +118,7 @@
       <div class="card-header">
         <h3 class="card-title">Expression-based Thresholds</h3>
       </div>
-      <table class="table table-condensed table-striped edit-group-expression-based-thresholds">
+      <table class="table table-sm table-striped edit-group-expression-based-thresholds">
         <tr>
             <th>Type</th>
             <th>Description</th>

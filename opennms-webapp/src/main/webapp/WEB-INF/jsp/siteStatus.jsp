@@ -44,7 +44,7 @@
   <div class="card-header">
     <h3 class="card-title">Site status for nodes in site '${view.columnValue}'</h3>
   </div>
-  <table class="table table-condensed table-bordered severity">
+  <table class="table table-sm table-bordered severity">
     <thead>
       <tr>
         <th>Device Type</th>

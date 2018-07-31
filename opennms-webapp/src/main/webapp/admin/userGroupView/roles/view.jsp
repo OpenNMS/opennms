@@ -124,7 +124,7 @@
   <div class="card-header">
     <h3 class="card-title">View On-Call Role</h3>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm">
     <tr>
       <th>Name</th>
         <td><c:out value="${role.name}"/></td>

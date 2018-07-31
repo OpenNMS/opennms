@@ -64,7 +64,7 @@
   <h3 class="card-title"><a href="<c:out value="${outageLink}"/>">Recent&nbsp;Outages</a></h3>
 </div>
 
-<table class="table table-condensed">
+<table class="table table-sm">
 
 <% if(outages.length == 0) { %>
   <tr>

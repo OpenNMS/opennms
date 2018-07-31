@@ -171,7 +171,7 @@
 <div class="card-header">
 <h3 class="card-title"><%=header%></h3>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 
 <%
    String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge");

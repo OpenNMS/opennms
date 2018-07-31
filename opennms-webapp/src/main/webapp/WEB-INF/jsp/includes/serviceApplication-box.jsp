@@ -47,7 +47,7 @@
 </h3>
 </div>
 
-<table class="table table-condensed">
+<table class="table table-sm">
   <c:if test="${empty applications}">
     <tr>
       <td>This service is not a member of any applications</td>

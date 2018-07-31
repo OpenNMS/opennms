@@ -80,7 +80,7 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="reportFilter"></input>
             </div>
-            <table class="table table-condensed table-hover" name="reports">
+            <table class="table table-sm table-hover" name="reports">
               <thead>
                 <tr>
                   <th>Reports</th>
@@ -140,7 +140,7 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
             </div>
-            <table class="table table-condensed" name="resources">
+            <table class="table table-sm" name="resources">
               <thead>
                 <tr>
                   <th>Resources</th>

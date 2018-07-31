@@ -97,7 +97,7 @@
           <c:if test="${!empty report}">
             <input type="hidden" name="<%=FormProcViewController.Parameters.report%>" value="${report}">
           </c:if>
-          <table id="graph-results" class="table table-condensed" align="center">
+          <table id="graph-results" class="table table-sm" align="center">
             <c:set var="graphNum" value="0"/>
             <c:set var="showFootnote1" value="false"/>
             <%-- Loop over each row in the table --%>
@@ -109,7 +109,7 @@
                   <c:if test="${graphNum < fn:length(resultSets)}">
                     <c:set var="resultSet" value="${resultSets[graphNum]}"/>
                     <td align="center">
-                      <table class="table table-condensed">
+                      <table class="table table-sm">
                         <tr>
                           <th>
                             ${resultSet.title} <br/>

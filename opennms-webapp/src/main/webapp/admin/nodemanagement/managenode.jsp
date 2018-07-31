@@ -235,7 +235,7 @@
     <div class="row">
     <% if (interfaces.size() > 0) { %>
       <div class="col-md-6">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th class="text-center" width="5%">Managed</th>
             <th class="text-center" width="10%">Interface</th>
@@ -250,7 +250,7 @@
     <%-- See if there is a second column to draw --%>
     <% if (midInterfaceIndex < interfaces.size()) { %>
       <div class="col-md-6">
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th class="text-center" width="5%">Managed</th>
             <th class="text-center" width="10%">Interface</th>

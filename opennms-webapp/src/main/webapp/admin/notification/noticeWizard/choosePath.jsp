@@ -129,7 +129,7 @@
       <div class="card-header">
         <h3 class="card-title">Choose the destination path and enter the information to send via the notification</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <td width="10%" valign="top" align="left">
             <label>Name:</label>
@@ -198,7 +198,7 @@
             <label>Special Values:</label>
           </td>
           <td valign="top" align="left">
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
                 <td colspan="3">Can be used in both the text message and email subject:</td>
               </tr>

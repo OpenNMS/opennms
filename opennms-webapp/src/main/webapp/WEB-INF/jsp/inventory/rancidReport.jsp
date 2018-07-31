@@ -51,7 +51,7 @@
                 <h3 class="card-title">Generate reports</h3>
             </div>
 
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
             </table>
 
         </div>

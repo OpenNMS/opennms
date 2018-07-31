@@ -107,7 +107,7 @@
 <div class="card-header">
 <h3 class="card-title">Availability</h3>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
   <tr class="CellStatus">
     <td class="Cleared nobright" colspan="2"><%=ipAddr%></td>
     <td class="Cleared nobright"><img src="#" data-imgsrc="<%=timelineHeaderUrl%>"></td>

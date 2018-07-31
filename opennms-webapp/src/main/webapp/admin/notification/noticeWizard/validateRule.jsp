@@ -97,7 +97,7 @@
         <h3 class="card-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
               'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
       </div>
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <td width="10%">Current Rule:
               </td>
@@ -114,7 +114,7 @@
         <%=Util.makeHiddenTags(request)%>
         <input type="hidden" name="userAction" value=""/>
         <input type="hidden" name="sourcePage" value="<%=NotificationWizardServlet.SOURCE_PAGE_VALIDATE%>"/>
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th>
               Interfaces

@@ -56,7 +56,7 @@
       <div class="card-header">
         <h3 class="card-title">Edit threshold</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
         	<th>Type</th>
         	<th>Datasource</th>
@@ -103,7 +103,7 @@
                 <td><input type="text" class="form-control" name="trigger" size="10" value="${threshold.trigger}"/></td>
         	</tr>
       </table>
-      <table class="table table-condensed">
+      <table class="table table-sm">
              <tr>
                     <th>Description</th>
                     <th>Triggered UEI</th>
@@ -132,7 +132,7 @@
       <div class="card-body">
         <div class="row">
           <div class="col-sm-4">
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
                 <th>Filter Operator</th>
               </tr>
@@ -158,7 +158,7 @@
         </div> <!-- row -->
         <div class="row">
           <div class="col-md-12">
-            <table class="table table-condensed">
+            <table class="table table-sm">
             <tr><th>Field Name</th><th>Regular Expression</th><th>Actions</th></tr>
               <c:forEach items="${threshold.resourceFilters}" var="filter" varStatus="i">
                 <tr name="filter.${i.count}">

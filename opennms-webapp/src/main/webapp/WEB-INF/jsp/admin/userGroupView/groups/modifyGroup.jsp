@@ -380,7 +380,7 @@
       <div class="card-header">
         <h3 class="card-title">Duty Schedules</h3>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <table class="table table-sm table-striped table-bordered">
             <tr>
               <th>&nbsp;</th>
               <th>Delete</th>

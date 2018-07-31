@@ -106,7 +106,7 @@
         <div class="row">
           <div class="col-md-6">
             <% if (showNodes != null && showNodes.equals("on")) { %>
-              <table class="table table-condensed table-striped">
+              <table class="table table-sm table-striped">
                 <tr>
                   <th>
                     Node ID

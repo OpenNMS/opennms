@@ -91,14 +91,14 @@
   <div class="card-header">
     <h3 class="card-title">Add a notification to an event or edit an existing event notification</h3>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm">
     <tr>
       <td> <input type="button" class="btn btn-secondary" value="Add New Event Notification" onclick="javascript:newNotice()"/>
     </tr>
     <tr>
       <td valign="top">
         <h4>Event Notifications</h4>
-        <table class="table table-condensed table-striped">
+        <table class="table table-sm table-striped">
           <tr>
             <th colspan="3">
               Actions

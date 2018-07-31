@@ -98,7 +98,7 @@
 </h3>
   </div>
 
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
   <tr class="severity-<%=eventSeverity.toLowerCase()%>">
     <th class="col-md-1">Notification&nbsp;Time</th>
     <td class="col-md-2"><onms:datetime date="<%=notice.getTimeSent()%>" /></td>
@@ -226,7 +226,7 @@
   <div class="card-header">
     <h3 class="card-title">Users Notified</h3>
   </div>
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
     <tr>
       <th class="col-md-3">Sent To</th>
       <th class="col-md-3">Sent At</th>

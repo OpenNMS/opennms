@@ -83,7 +83,7 @@
   <div class="card-body">
     <div class="row">
       <div class="col-md-6">
-        <table class="table table-condensed table-borderless">
+        <table class="table table-sm table-borderless">
           <tr>
             <td valign="top" align="left">
             <%=intervalTable(newPath,
@@ -113,7 +113,7 @@
 <%!
     public String intervalTable(Path path, String[] groups, int index, String[] intervals)
     {
-        StringBuffer buffer = new StringBuffer("<table class=\"table table-condensed table-borderless\">");
+        StringBuffer buffer = new StringBuffer("<table class=\"table table-sm table-borderless\">");
         
         for (int i = 0; i < groups.length; i++)
         {

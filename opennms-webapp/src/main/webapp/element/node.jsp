@@ -423,7 +423,7 @@ function confirmAssetEdit() {
 
 
 <c:if test="${! empty schedOutages}">
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
     <tr class="severity-Critical">
       <td align="left" class="bright">
         <b>This node is currently affected by the following scheduled outages: </b> ${schedOutages}
@@ -446,7 +446,7 @@ function confirmAssetEdit() {
     <div class="card-header">
       <h3 class="card-title">Asset Information</h3>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr>
         <th>Description</th>
         <td>${model.asset.description}</td>
@@ -467,7 +467,7 @@ function confirmAssetEdit() {
       <h3 class="card-title">SNMP Attributes</h3>
     </div>
     
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr>
         <th>Name</th>
         <td>${model.sysName}</td>
@@ -528,7 +528,7 @@ function confirmAssetEdit() {
     <div class="card-header">
       <h3 class="card-title">LLDP Information</h3>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
       <tr><th width="50%">sysname</th><td width="50%">${model.lldp.lldpSysName}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.lldp.lldpLastPollTime}</td></tr>
@@ -542,7 +542,7 @@ function confirmAssetEdit() {
     <div class="card-header">
       <h3 class="card-title">CDP Information</h3>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
       <tr><th width="50%">global run</th><td width="50%">${model.cdp.cdpGlobalRun}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.cdp.cdpLastPollTime}</td></tr>
@@ -557,7 +557,7 @@ function confirmAssetEdit() {
     <div class="card-header">
       <h3 class="card-title">OSPF Information</h3>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
       <tr><th width="50%">Status</th><td width="50%">${model.ospf.ospfAdminStat} version:${model.ospf.ospfVersionNumber}</td></tr>
       <tr><th>last poll time</th><td>${model.ospf.ospfLastPollTime}</td></tr>
@@ -571,7 +571,7 @@ function confirmAssetEdit() {
     <div class="card-header">
       <h3 class="card-title">IS-IS Information</h3>
     </div>
-    <table class="table table-condensed">
+    <table class="table table-sm">
       <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
       <tr><th width="50%">Admin State</th><td width="50%">${model.isis.isisSysAdminState}</td></tr>
       <tr><th width="50%">last poll time</th><td width="50%">${model.isis.isisLastPollTime}</td></tr>
@@ -585,7 +585,7 @@ function confirmAssetEdit() {
    	<div class="card-header">
    	  <h3 class="card-title">Bridge Information</h3>
    	</div>
-	<table class="table table-condensed">
+	<table class="table table-sm">
 	<c:forEach items="${model.bridges}" var="bridge">
    	<tr>
    	<th width="50%"><c:if test="${! empty bridge.vlanname}">Vlan ${bridge.vlanname}</c:if>

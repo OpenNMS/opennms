@@ -58,7 +58,7 @@
     <div class="card-header">
         <h3 class="card-title">Path Outage Node List</h3>
     </div>
-    <table class="table table-condensed severity">
+    <table class="table table-sm severity">
           <thead class="dark">
           <tr>
           <th>Critical Path</th>

@@ -73,7 +73,7 @@
         <h3 class="card-title">Assets</h3>
       </div>
     <% if( assets.length > 0 ) { %>
-        <table class="table table-condensed table-bordered">
+        <table class="table table-sm table-bordered">
           <tr>
             <th>Matching Text</td>
             <th>Asset Link</td>

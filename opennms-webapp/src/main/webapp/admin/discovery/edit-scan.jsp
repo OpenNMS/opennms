@@ -241,7 +241,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
       <%if(currConfig.getSpecifics().size()>0){
             Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
       %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-bordered table-sm">
 				      <tr>
 					<th class="col-xs-4">IP&nbsp;Address</th>
 					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
@@ -282,7 +282,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    <%if(currConfig.getIncludeUrls().size()>0){
 			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
 			    %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-bordered table-sm">
 				      <tr>
 					<th class="col-xs-4">URL</th>
 					<th class="col-xs-2">Timeout&nbsp;(milliseconds)</th>
@@ -323,7 +323,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 				    <%if(currConfig.getIncludeRanges().size()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
 				    %>
-					    <table class="table table-bordered table-condensed">
+					    <table class="table table-bordered table-sm">
 					      <tr>
 						<th class="col-xs-2">Begin&nbsp;Address</th>
 						<th class="col-xs-2">End&nbsp;Address</th>
@@ -368,7 +368,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
 			    <%if(currConfig.getExcludeRanges().size()>0){
 				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);
 			    %>
-				    <table class="table table-bordered table-condensed">
+				    <table class="table table-bordered table-sm">
 				      <tr>
 					<th class="col-xs-6">Begin</th>
 					<th class="col-xs-6">End</th>

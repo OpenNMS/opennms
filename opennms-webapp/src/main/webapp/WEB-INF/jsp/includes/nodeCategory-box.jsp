@@ -45,7 +45,7 @@
         </h3>
     </div>
     <div style="max-height: 15em; overflow-x: auto">
-        <table class="table table-condensed" style="margin-bottom: 0px">
+        <table class="table table-sm" style="margin-bottom: 0px">
             <c:if test="${empty categories}">
                 <tr>
                     <td>This node is not a member of any categories.</td>

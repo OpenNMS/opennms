@@ -352,7 +352,7 @@
 
     <% String acknowledgeEvent = System.getProperty("opennms.eventlist.acknowledge"); %>
 
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
         <thead>
         <tr>
           <% if( "true".equals(acknowledgeEvent) ) { %>

@@ -74,7 +74,7 @@
       <div class="card-header">
         <h2 class="card-title">Details for User: <%=user.getUserId()%></h2>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>
             Full Name:
@@ -110,7 +110,7 @@
       <div class="card-header">
         <h2 class="card-title">Notification Information</h2>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
                    <tr>
                      <th>
                        Email:
@@ -211,7 +211,7 @@
       <div class="card-header">
         <h2 class="card-title">Duty Schedules:</h2>
       </div>
-      <table class="table table-condensed table-striped table-bordered">
+      <table class="table table-sm table-striped table-bordered">
         <thead>
           <tr>
           <th>Mo</th>

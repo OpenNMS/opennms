@@ -174,7 +174,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
 
 <div class="row">
   <div class="col-md-12">
-    <table class="table table-condensed table-striped">
+    <table class="table table-sm table-striped">
       <tr>
       <th>Service</th>
       <c:choose>

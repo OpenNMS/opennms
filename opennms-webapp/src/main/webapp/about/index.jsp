@@ -71,7 +71,7 @@
     <div class="card-header">
       <h3 class="card-title">Version Details</h3>
     </div>
-<table class="table table-condensed">
+<table class="table table-sm">
   <tr>
     <th>Version:</th>
     <td><a href="http://docs.opennms.org/opennms/releases/<%=Vault.getProperty("version.display")%>/releasenotes/releasenotes.html" target="_blank" title="Release Notes"><%=Vault.getProperty("version.display")%></a></td>

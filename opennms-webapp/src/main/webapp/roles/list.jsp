@@ -93,7 +93,7 @@
     <h3 class="card-title">Roles</h3>
   </div>
 
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
          <tr>
           <th class="col-md-2">Name</th>
           <th class="col-md-2">Supervisor</th>

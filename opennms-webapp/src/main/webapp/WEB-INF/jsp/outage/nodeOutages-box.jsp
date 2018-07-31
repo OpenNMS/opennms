@@ -57,7 +57,7 @@
 <div class="card-header">
 <h3 class="card-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
 </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 <% if(outages.length == 0) { %>
   <tr>
     <td>There have been no outages on this node in the last 24 hours.</td>

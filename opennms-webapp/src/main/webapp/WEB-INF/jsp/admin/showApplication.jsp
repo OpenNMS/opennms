@@ -58,7 +58,7 @@
         <a href="admin/applications.htm?edit=edit&applicationid=${model.application.id}">Edit application</a>
         </p>
 
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th>Node</th>
             <th>Interface</th>

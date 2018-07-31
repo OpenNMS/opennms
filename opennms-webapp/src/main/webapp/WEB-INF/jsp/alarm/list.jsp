@@ -453,7 +453,7 @@
           <%=Util.makeHiddenTags(req)%>
       <% } %>
 
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
 				<thead>
 					<tr>
                         <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>

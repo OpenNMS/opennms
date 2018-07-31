@@ -72,7 +72,7 @@
                     <element:pagedList pagedListHolder="${pagedListHolder}" pagedLink="${pagedLink}" />
 
                     <div class="spacer"><!--  --></div>
-                    <table class="table table-condensed table-bordered table-striped table-hover">
+                    <table class="table table-sm table-bordered table-striped table-hover">
                         <thead>
                         <tr>
                             <th>title</th>

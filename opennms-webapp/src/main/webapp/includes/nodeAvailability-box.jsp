@@ -99,7 +99,7 @@
   <div class="card-header">
     <h3 class="card-title">Availability</h3>
   </div>
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
     <tr>
 <%
   if (overallRtcValue < 0) {

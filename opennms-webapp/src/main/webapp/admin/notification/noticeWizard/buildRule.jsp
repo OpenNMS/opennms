@@ -91,7 +91,7 @@
            <% } %>
     </h3>
   </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <td valign="top" align="left">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you

@@ -103,7 +103,7 @@
           <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
         </div>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <c:if test="${fn:length(resultSets) > 0}">
           <c:forEach var="graphNum" begin="0" end="${fn:length(resultSets) - 1}">
             <c:set var="resultSet" value="${resultSets[graphNum]}"/>

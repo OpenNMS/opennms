@@ -52,7 +52,7 @@
             <div class="card-header">
                 <h3 class="card-title">General (Status: ${model.status_general})</h3>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <th>Node</th>
                     <td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -72,7 +72,7 @@
             <div class="card-header">
                 <h3 class="card-title">Rancid Info</h3>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <th>Device Name</th>
                     <td>${model.id}</td>
@@ -99,7 +99,7 @@
             <div class="card-header">
                 <h3 class="card-title">Inventory Elements</h3>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <th>Group</th>
                     <th>Total Revisions</th>
@@ -129,7 +129,7 @@
             <div class="card-header">
                 <h3 class="card-title">Software Images Stored</h3>
             </div>
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <th>Name</th>
                     <th>Size</th>

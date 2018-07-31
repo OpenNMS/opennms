@@ -165,7 +165,7 @@ $(document).ready(function() {
       <div class="card-header">
         <h3 class="card-title">Choose the event UEI that will trigger this notification.</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <td valign="top" align="left">
             <div class="form-group">

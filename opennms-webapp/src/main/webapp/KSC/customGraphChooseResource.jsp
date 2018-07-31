@@ -101,7 +101,7 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-condensed table-hover ">
+            <table class="table table-sm table-hover ">
               <thead>
                 <tr>
                   <th>Resources</th>

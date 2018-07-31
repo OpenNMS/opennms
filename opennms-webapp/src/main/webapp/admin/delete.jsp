@@ -167,7 +167,7 @@
       <div class="row form-group">
    <% if (nodes.size() > 0) { %>
 	<div class="col-md-6" id="contentleft">
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <th class="text-center" width="5%">Delete?</th>
               <th class="text-center" width="5%">Data?</th>
@@ -183,7 +183,7 @@
       <!--see if there is a second column to draw-->
       <% if (midNodeIndex < nodes.size()) { %>
 	<div class="col-md-6" id="contentright">
-          <table class="table table-condensed">
+          <table class="table table-sm">
             <tr>
               <th class="text-center" width="5%">Delete?</th>
               <th class="text-center" width="5%">Data?</th>

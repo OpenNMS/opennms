@@ -54,7 +54,7 @@
                 <h3 class="card-title">RWS status</h3>
             </div>
 
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <td>${model.RWSStatus}</td>
                 </tr>
@@ -66,7 +66,7 @@
                 <h3 class="card-title">Associated Elements</h3>
             </div>
 
-            <table class="table table-condensed table-bordered">
+            <table class="table table-sm table-bordered">
                 <tr>
                     <th>Group</th>
                     <th>Version</th>

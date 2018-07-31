@@ -51,7 +51,7 @@
       <div class="card-header">
         <h3 class="card-title">General (Status: ${model.status_general})</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 		<tr>
 			<th>Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -71,7 +71,7 @@
       <div class="card-header">
         <h3 class="card-title">Rancid Info</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 	<c:choose>
     <c:when test="${model.permitModifyClogin}">
 		<c:choose>
@@ -224,7 +224,7 @@
 	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
 		 <input type="hidden" name="groupName" value="${model.groupname}"> 
 		 <input type="hidden" name="deviceName" value="${model.id}"> 
-		<table class="table table-condensed">
+		<table class="table table-sm">
 			<tr>
 			    <th><label id="userIDLabel" for="userID">Username:</label></th>
 			    <td><input id="userID" type="text" class="form-control" name="userID" value="${model.cloginuser}"/></td>
@@ -275,7 +275,7 @@
       <div class="card-header">
         <h3 class="card-title">Clogin Info (Requisitioned Node)</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 			<tr>
 			 	<th>Requisition: </th>
 			 	<td>${model.foreignSource}
@@ -314,7 +314,7 @@
       <div class="card-header">
         <h3 class="card-title">Select Group</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
 	<tr>
 	<th>Group</th>
 	</tr>

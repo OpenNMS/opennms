@@ -149,7 +149,7 @@
 <br/><br/>
 
     <div class="card fix-subpixel">
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
         <thead>
         <tr>
           <th>Nodes</th>

@@ -110,7 +110,7 @@
     <div class="row">
        <% if (nodes.size() > 0) { %>
        <div class="col-md-6">
-              <table class="table table-condensed table-bordered">
+              <table class="table table-sm table-bordered">
                 <tr class="text-center">
                   <th>Node ID</th>
                   <th>Node Label</th>
@@ -123,7 +123,7 @@
           <!--see if there is a second column to draw-->
           <% if (midNodeIndex < nodes.size()) { %>
         <div class="col-md-6">
-              <table class="table table-condensed table-bordered">
+              <table class="table table-sm table-bordered">
                 <tr class="text-center">
                   <th>Node ID</th>
                   <th>Node Label</th>

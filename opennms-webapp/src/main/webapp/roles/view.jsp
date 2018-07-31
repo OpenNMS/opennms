@@ -82,7 +82,7 @@
 		</h3>
 	</div>
 
-	<table class="table table-condensed severity">
+	<table class="table table-sm severity">
 		<tr>
 			<th class="col-md-1">Name</th>
 			<td class="col-md-5"><c:out value="${role.name}" /></td>
@@ -121,7 +121,7 @@
 		<h3 class="card-title">Role Schedule</h3>
 	</div>
 
-	<table class="table table-condensed table-bordered severity">
+	<table class="table table-sm table-bordered severity">
 			<caption class="text-center">
 				<button class="btn btn-secondary" onclick="prevMonth()">&laquo;</button>
 				&nbsp;

@@ -81,7 +81,7 @@
       <div class="card-header">
         <h3 class="card-title">OpenNMS Configuration</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>OpenNMS Version:</th>
           <td><%=Vault.getProperty("version.display")%></td>
@@ -134,7 +134,7 @@
       <div class="card-header">
         <h3 class="card-title">System Configuration</h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th>Server&nbsp;Time:</th>
           <td><onms:datetime instant="${Instant.now()}"/></td>

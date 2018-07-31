@@ -61,7 +61,7 @@
 	<div class="card-header">
 		<h3 class="card-title">All Path Outages</h3>
 	</div>
-	<table class="table table-condensed severity">
+	<table class="table table-sm severity">
 		<thead class="dark">
 			<tr>
 				<th>Critical Path Node</th>

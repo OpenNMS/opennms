@@ -125,7 +125,7 @@
 </p>
 
    <div class="card">
-     <table class="table table-condensed table-bordered">
+     <table class="table table-sm table-bordered">
         <thead>
           <tr>
           <th width="5%">Delete</th>

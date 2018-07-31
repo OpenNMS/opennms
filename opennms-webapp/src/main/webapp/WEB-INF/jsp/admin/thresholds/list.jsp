@@ -47,7 +47,7 @@
     <h3 class="card-title">Threshold Configuration</h3>
   </div>
     <form method="post" name="allGroups">
-      <table class="table table-condensed table-striped table-hover">
+      <table class="table table-sm table-striped table-hover">
         <tr>
                 <th>Name</th>
                 <th>RRD Repository</th>

@@ -120,7 +120,7 @@
 <% } %>
  </h3></div>
 		<!-- Link box -->
-	<table class="table table-condensed">
+	<table class="table table-sm">
 	
 	<thead>
 		<tr>
@@ -189,7 +189,7 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 <% } %>
 </h3></div>
 		<!-- Link box -->
-<table class="table table-condensed">
+<table class="table table-sm">
 		
 	<thead>
 		<tr>
@@ -240,7 +240,7 @@ No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
 ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
-<table class="table table-condensed">		
+<table class="table table-sm">
 	<thead>
 	<tr>
 		<th width="30%">Local Port</th> 
@@ -288,7 +288,7 @@ No OSPF Links found on ${nodeLabel} by Enhanced Linkd
 ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
 <% } %>
 </h3></div>
-<table class="table table-condensed">
+<table class="table table-sm">
 		
 	<thead>
 	<tr>
@@ -342,7 +342,7 @@ ${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by E
 <% } %>
 </h3></div>
 		<!-- Link box -->
-<table class="table table-condensed">
+<table class="table table-sm">
 
 <thead>
 	<tr>

@@ -93,7 +93,7 @@
     <h3 class="card-title"><%= titleName %></h3>
   </div>
 
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
 <%
 	for (Iterator<String> i = categoryData.keySet().iterator(); i.hasNext(); ) {
 	    String sectionName = i.next();

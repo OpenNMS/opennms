@@ -171,7 +171,7 @@ function doDelete() {
             <div class="card-header">
               <h3 class="card-title">General</h3>
             </div>
-            <table class="table table-condensed">
+            <table class="table table-sm">
               <tr>
                 <c:url var="nodeLink" value="element/node.jsp">
                   <c:param name="node" value="${service.ipInterface.node.id}"/>
@@ -206,7 +206,7 @@ function doDelete() {
               <div class="card-header">
                 <h3 class="card-title">Service Parameters</h3>
               </div>
-              <table class="table table-condensed">
+              <table class="table table-sm">
               <c:forEach var="entry" items="${parameters}">
                 <tr>
                   <th nowrap>${entry.key}</th>

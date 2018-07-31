@@ -68,7 +68,7 @@
                         <div class="card-header">
                             <h3 class="card-title"><c:out value="${mapEntry.key.displayName}"/></h3>
                         </div>
-                        <table class="table table-condensed">
+                        <table class="table table-sm">
                             <thead>
                             <tr>
                                 <th>Name</th>

@@ -744,7 +744,7 @@ function updateOutageTypeDisplay(selectElement) {
 <h3>Editing Outage: <%=theOutage.getName()%></h3>
 
 		<label>Nodes and Interfaces:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr>
 					<th valign="top">Node Labels</th>
 					<th valign="top">Interfaces</th>
@@ -875,7 +875,7 @@ function updateOutageTypeDisplay(selectElement) {
           <div class="row">
             <div class="col-md-6">
 		<label>Outage Type:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr>
 					<td>
 						<% if (theOutage.getType() != null) { %>
@@ -895,7 +895,7 @@ function updateOutageTypeDisplay(selectElement) {
 				</tr>
 			</table>
 		<label>Time:</label>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<%
 				List<org.opennms.netmgt.config.poller.outages.Time> outageTimes = theOutage.getTimes();
 					for (int i = 0; i < outageTimes.size(); i++) {
@@ -933,7 +933,7 @@ function updateOutageTypeDisplay(selectElement) {
 					}
 				%>
 			</table>
-			<table class="table table-condensed table-borderless">
+			<table class="table table-sm table-borderless">
 				<tr id="chooseDay" style="display: none">
 					<td>
 						<span id="chooseDayOfMonth" style="display: none">

@@ -160,7 +160,7 @@
         <div class="card-header">
           <h3 class="card-title">General (Status: ${model.status_general})</h3>
         </div>
-        <table class="table table-condensed">
+        <table class="table table-sm">
 		<tr>
 			<th>Node</th>
 	  		<td><a href="element/node.jsp?node=${model.db_id}">${model.id}</a></td>
@@ -180,7 +180,7 @@
         <div class="card-header">
 	  <h3 class="card-title">Software Images Stored</h3>
         </div>
-	<table class="table table-condensed">
+	<table class="table table-sm">
 	<tr>
 		<th>Name</th>
 		<th>Size</th>
@@ -204,7 +204,7 @@
         <div class="card-header">
 	  <h3 class="card-title">Manage Images Stored</h3>
         </div>
-	<table class="table table-condensed">
+	<table class="table table-sm">
 	<c:choose>		
 	<c:when test="${model.bucketexist}">
 	<tr>

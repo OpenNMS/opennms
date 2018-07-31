@@ -60,7 +60,7 @@
   <div class="card-header">
     <h3 class="card-title"><c:out value="${webTable.title}" /></h3>
   </div>
-  <table class="table table-condensed table-bordered severity">
+  <table class="table table-sm table-bordered severity">
     <tr>
       <c:forEach items="${webTable.columnHeaders}" var="headerCell">
         <th class="<c:out value='${headerCell.styleClass}'/>">

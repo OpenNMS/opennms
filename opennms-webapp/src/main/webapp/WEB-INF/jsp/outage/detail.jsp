@@ -66,7 +66,7 @@
     <h3 class="card-title">Outage <%=outage.getId()%></h3>
   </div>
 
-  <table class="table table-condensed severity">
+  <table class="table table-sm severity">
         <tr>
           <th class="col-md-1">Node</th>
           <td class="col-md-3">

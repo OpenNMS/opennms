@@ -62,7 +62,7 @@
 <div class="card-header">
   <h3 class="card-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
 </div>
-<table class="table table-condensed">
+<table class="table table-sm">
 
 <% if (outages.length == 0) { %>
   <td colspan="3">There have been no outages on this service in the last 24 hours.</td>

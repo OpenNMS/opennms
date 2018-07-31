@@ -96,7 +96,7 @@
         <h3 class="card-title">Event <%=event.getId()%></h3>
       </div>
 
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
         <tr class="severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
           <th class="col-md-1">Severity</th>
           <td class="col-md-3 bright"><%= event.getSeverity().getLabel() %></td>

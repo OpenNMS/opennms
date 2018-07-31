@@ -58,7 +58,7 @@
         <a href="admin/categories.htm?edit&categoryid=${model.category.id}">Edit category</a>
         </p>
 
-        <table class="table table-condensed">
+        <table class="table table-sm">
           <tr>
             <th>Node</th>
           </tr>

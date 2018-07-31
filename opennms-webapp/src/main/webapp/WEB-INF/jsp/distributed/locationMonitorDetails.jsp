@@ -66,7 +66,7 @@
       <div class="card-header">
         <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <tr>
           <th><spring:message code="distributed.area"/></th>
           <td>${monitor.area}</td>
@@ -119,7 +119,7 @@
       <div class="card-header">
         <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
       </div>
-      <table class="table table-condensed">
+      <table class="table table-sm">
         <c:forEach items="${monitor.additionalDetails}" var="detail">
           <tr>
             <th>

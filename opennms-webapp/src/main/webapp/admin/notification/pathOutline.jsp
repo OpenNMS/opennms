@@ -184,14 +184,14 @@
         </div>
         <div class="form-group">
           <div class="col-sm-10 col-sm-offset-2">
-      <table class="table table-condensed table-borderless">
+      <table class="table table-sm table-borderless">
         <% for (int i = 0; i < targetLinks.size(); i++) { %>
          <tr>
            <td>
             <% if (i!=0) { %>
             <hr>
             <% } %>
-            <table class="table table-condensed table-borderless">
+            <table class="table table-sm table-borderless">
               <tr>
                 <td width="10%">
                   <b>

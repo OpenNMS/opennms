@@ -104,7 +104,7 @@
   <input type="hidden" name="newName"/>
 
   <div class="card">
-    <table class="table table-condensed table-bordered">
+    <table class="table table-sm table-bordered">
          <tr>
           <th>Delete</th>
           <th>Modify</th>

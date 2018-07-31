@@ -48,7 +48,7 @@
       </div>
     </c:when>
     <c:otherwise>
-      <table class="table table-condensed severity">
+      <table class="table table-sm severity">
         <c:forEach var="service" items="${services}">
           <c:url var="bsTopoLink" value="topology">
             <c:param name="focus-vertices" value="${service.id}"/>

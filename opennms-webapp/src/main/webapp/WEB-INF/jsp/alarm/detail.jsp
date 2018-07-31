@@ -126,7 +126,7 @@
     <h3 class="card-title">Alarm <%=alarm.getId()%></h3>
   </div>
 
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th class="col-md-1">Severity</th>
         <td class="col-md3 bright"><%=alarm.getSeverity().getLabel()%></td>
@@ -253,7 +253,7 @@
   <div class="card-header">
     <h3 class="card-title">Acknowledgements</h3>
   </div>
-<table class="table table-condensed severity">
+<table class="table table-sm severity">
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
         <th>Acknowledged&nbsp;By</th>
         <th>Acknowledged&nbsp;Type</th>

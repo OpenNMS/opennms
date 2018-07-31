@@ -85,7 +85,7 @@
               </span>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
-            <table class="table table-striped table-condensed table-hover">
+            <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
                   <th>Resources</th>

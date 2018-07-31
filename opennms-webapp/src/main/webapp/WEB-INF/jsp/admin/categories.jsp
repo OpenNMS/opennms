@@ -73,7 +73,7 @@
   <div class="card-header">
     <h3 class="card-title">Surveillance Categories</h3>
   </div>
-  <table class="table table-condensed">
+  <table class="table table-sm">
     <tr>
       <th>Delete</th>
       <th>Edit</th>
