@@ -1,0 +1,28 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-cassandra-windows]]
+===== Microsoft Windows
+
+This section describes how to install the latest _Cassandra 3.0.x_ release on a _Microsoft Windows Server_ based systems for _Newts_.
+The first step is to download the graphical installer and register _Cassandra_ as a _Windows Service_ so it can be manged through the _Service Manager_.
+
+NOTE: This description was built on _Windows Server 2012_.
+
+NOTE: Cassandra 3.x requires Java 8+. See <<gi-install-oracle-java-windows,installing Java on Windows>> for instructions.
+
+.Download the _DataStax_ graphical installer for _Cassandra_ from _PowerShell_ or a Browser
+[source]
+----
+cd C:\Users\Administrator\Downloads
+Invoke-WebRequest https://downloads.datastax.com/community/datastax-community-64bit_3.0.6.msi -Outfile datastax-community-64bit_3.0.6.msi
+----
+
+Run the Windows Installer file from _PowerShell_ or through _Windows Explorer_ and follow the setup wizard to install.
+During the installation, accept the options to automatically start the services.
+By default the _DataStax Server_, _OpsCenter Server_ and the _OpsCenter Agent_ will be automatically installed and started.
+
+NOTE: The _DataStax OpsCenter Server_ is only required to be installed once per _Cassandra Cluster_.
+
+IMPORTANT: If you install the _DataStax OpsCenter_ make sure you have _Chrome_ or _Firefox_ installed.
