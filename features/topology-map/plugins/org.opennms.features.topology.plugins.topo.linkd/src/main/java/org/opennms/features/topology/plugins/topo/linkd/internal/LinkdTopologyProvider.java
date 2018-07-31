@@ -29,10 +29,8 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.net.InetAddress;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,7 +51,6 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Defaults;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.SimpleConnector;
-import org.opennms.features.topology.api.topo.SimpleLeafVertex;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
@@ -72,7 +69,6 @@ import org.opennms.netmgt.dao.api.TopologyDao;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.CdpLink.CiscoNetworkProtocolType;
-import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.BridgeMacLink;
 import org.opennms.netmgt.model.FilterManager;
 import org.opennms.netmgt.model.IpNetToMedia;
@@ -136,7 +132,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final Timer m_loadCdpLinksTimer;
     private final Timer m_loadIsisLinksTimer;
     private final Timer m_loadBridgeLinksTimer;
-    private final Timer m_loadNoLinksTimer;
+    private final Timer m_loadVerticesTimer;
+    private final Timer m_loadEdgesTimer;
 
     public static final String TOPOLOGY_NAMESPACE_LINKD = "nodes";
     public final static String LLDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::LLDP";
@@ -145,34 +142,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     public final static String BRIDGE_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::BRIDGE";
     public final static String CDP_EDGE_NAMESPACE = TOPOLOGY_NAMESPACE_LINKD + "::CDP";
 
-    protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
-    protected static final String HTML_TOOLTIP_TAG_END  = "</p>";
-
-    protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
-
     static final String getDefaultEdgeId(int sourceId,int targetId) {
         return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
     }
 
-    static {
-        m_nodeStatusMap = new EnumMap<>(OnmsNode.NodeType.class);
-        m_nodeStatusMap.put(OnmsNode.NodeType.ACTIVE, "Active");
-        m_nodeStatusMap.put(OnmsNode.NodeType.UNKNOWN, "Unknown");
-        m_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
-    }
-
+    protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
+    protected static final String HTML_TOOLTIP_TAG_END  = "</p>";
+    
     private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
-
-
-    public static String getIconName(String nodeSysObjectId) {
-        if (nodeSysObjectId == null) {
-            return "linkd.system";
-        }
-        if (nodeSysObjectId.startsWith(".")) {
-            return "linkd.system.snmp" + nodeSysObjectId;
-        }
-        return "linkd.system.snmp." + nodeSysObjectId;
-    }
 
     public static OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
         if(source.getId() != null && StringUtils.isNumeric(source.getId()) && ifIndex != null 
@@ -185,28 +162,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return null;
     }
 
-    public static AbstractVertex createLinkdVertex(OnmsNode sourceNode, OnmsIpInterface primary) {
-        AbstractVertex vertex = new SimpleLeafVertex(TOPOLOGY_NAMESPACE_LINKD, sourceNode.getId().toString(), 0, 0);
-        vertex.setIconKey(getIconName(sourceNode.getSysObjectId()));
-        vertex.setLabel(sourceNode.getLabel());
-        if (primary != null) {
-            vertex.setIpAddress(InetAddressUtils.str(primary.getIpAddress()));
-        } else {
-            vertex.setIpAddress("no ip address");
-        }
-        boolean isManaged = false;
-        if (primary != null) {
-            isManaged = primary.isManaged();
-        }
-        vertex.setNodeID(sourceNode.getId());
-        vertex.setTooltipText(getNodeTooltipDefaultText(vertex.getIpAddress(),
-                                                                sourceNode.getLabel(),
-                                                                isManaged,
-                                                                sourceNode.getSysLocation(),
-                                                                sourceNode.getType())
-        );
-        return vertex;
-    }
 
     public static String getEdgeTooltipText(BridgePort sourcelink,
             Vertex source, Vertex target,
@@ -370,37 +325,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         return tooltipText.toString();
     }
 
-    public static String getNodeTooltipDefaultText(String ip, String label, boolean isManaged, String location,NodeType nodeType) {
-        final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(label);
-        tooltipText.append(": ");
-        if (ip != null) {
-            tooltipText.append("(");
-            tooltipText.append(ip);
-            tooltipText.append(")");
-        }
-        tooltipText.append("(");
-        tooltipText.append(m_nodeStatusMap.get(nodeType));
-        if (ip != null) {
-            if (isManaged) {
-                tooltipText.append( "/Managed");
-            } else {
-                tooltipText.append( "/Unmanaged");
-            }
-        }
-        tooltipText.append(")");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        
-        if (location != null && location.length() > 0) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(location);
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-        }
-        return tooltipText.toString();
-
-    }
-
     public LinkdTopologyProvider(MetricRegistry registry) {
         super(TOPOLOGY_NAMESPACE_LINKD);
         Objects.requireNonNull(registry);
@@ -414,7 +338,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_loadCdpLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "cdp"));
         m_loadIsisLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "isis"));
         m_loadBridgeLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "bridge"));
-        m_loadNoLinksTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "links", "none"));
+        m_loadVerticesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "vertices", "none"));
+        m_loadEdgesTimer = registry.timer(MetricRegistry.name("enlinkd", "load", "edges", "none"));
     }
 
 
@@ -489,134 +414,22 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         
         return edge;
     }
-
-    private void loadCompleteTopology() {
-        Timer.Context context = m_loadNodesTimer.time();
-        LOG.info("Loading nodes");
-        try {
-            for (OnmsNode node: m_nodeDao.findAll()) {
-                m_nodeMap.put(node.getId(), node);
-            }
-            LOG.info("Nodes loaded");
-        } catch (Exception e){
-            LOG.error("Loading nodes failed: {}",e.getMessage(),e);
-        } finally {
-            context.stop();
+    
+    private void loadVertices() {
+        for (Entry<Integer, OnmsNode> entry: m_nodeMap.entrySet()) {
+            Integer nodeId = entry.getKey();
+            OnmsNode node = entry.getValue();
+            OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(nodeId);
+            addVertices(LinkdVertex.createLinkdVertex(node,primary));
         }
+    }
+    
+    private void loadEdges() {
 
-        context = m_loadIpInterfacesTimer.time();
-        LOG.info("Loading Ip Interface");
-        try {
-            Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
-            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
-                if (!m_nodeToOnmsIpMap.containsKey(ip.getNode().getId())) {
-                    m_nodeToOnmsIpMap.put(ip.getNode().getId(), new ArrayList<OnmsIpInterface>());
-                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
-                }
-                m_nodeToOnmsIpMap.get(ip.getNode().getId()).add(ip);
-                if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
-                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
-                }
-
-                if (duplicatedips.contains(ip.getIpAddress())) {
-                    LOG.debug("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
-                    continue;
-                }
-                if (m_ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
-                    LOG.debug("Loading ip Interface, found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
-                    duplicatedips.add(ip.getIpAddress());
-                    continue;
-                }
-                m_ipToOnmsIpMap.put(ip.getIpAddress(), ip);
-            }
-            for (InetAddress duplicated: duplicatedips) {
-                m_ipToOnmsIpMap.remove(duplicated);
-            }
-            LOG.info("Ip Interface loaded");
-        } catch (Exception e){
-            LOG.error("Loading Ip Interface failed: {}", e.getMessage(), e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadNoLinksTimer.time();
-        try {
-            LOG.info("Adding nodes ");
-            for (Entry<Integer, OnmsNode> entry: m_nodeMap.entrySet()) {
-                Integer nodeId = entry.getKey();
-                OnmsNode node = entry.getValue();
-                OnmsIpInterface primary = m_nodeToOnmsIpPrimaryMap.get(nodeId);
-                addVertices(createLinkdVertex(node,primary));
-            }
-            LOG.info("Nodes added");
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadSnmpInterfacesTimer.time();
-        LOG.info("Loading Snmp Interface");
-        try {
-            for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
-                // Index the SNMP interfaces by node id
-                final int nodeId = snmp.getNode().getId();
-                List<OnmsSnmpInterface> snmpinterfaces = m_nodeToOnmsSnmpMap.get(nodeId);
-                if (snmpinterfaces == null) {
-                    snmpinterfaces = new ArrayList<>();
-                    m_nodeToOnmsSnmpMap.put(nodeId, snmpinterfaces);
-                }
-                snmpinterfaces.add(snmp);
-            }
-            LOG.info("Snmp Interface loaded");
-        } catch (Exception e){
-            LOG.error("Loading Snmp Interface failed: {}",e.getMessage(),e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadIpNetToMediaTimer.time();
-        LOG.info("Loading ipNetToMedia");
-        try {
-            Set<String> duplicatednodemac = new HashSet<String>();
-            Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
-            for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
-                if (duplicatednodemac.contains(ipnettomedia.getPhysAddress())) {
-                    LOG.debug("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
-                    continue;
-                }
-                OnmsIpInterface ip = m_ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
-                if (ip == null) {
-                    LOG.debug("load ip net media: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
-                    continue;
-                }
-                if (mactonodemap.containsKey(ipnettomedia.getPhysAddress())) {
-                    if (mactonodemap.get(ipnettomedia.getPhysAddress()).intValue() != ip.getNode().getId().intValue()) {
-                        LOG.debug("load ip net media: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
-                        duplicatednodemac.add(ipnettomedia.getPhysAddress());
-                        continue;
-                    }
-                }
-
-                if (!m_macToOnmsIpMap.containsKey(ipnettomedia.getPhysAddress())) {
-                    m_macToOnmsIpMap.put(ipnettomedia.getPhysAddress(), new ArrayList<OnmsIpInterface>());
-                    mactonodemap.put(ipnettomedia.getPhysAddress(), ip.getNode().getId());
-                }
-                m_macToOnmsIpMap.get(ipnettomedia.getPhysAddress()).add(ip);
-            }
-            for (String dupmac: duplicatednodemac) {
-                m_macToOnmsIpMap.remove(dupmac);
-            }
-            LOG.info("IpNetToMedia loaded");
-        } catch (Exception e){
-            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
-        } finally {
-            context.stop();
-        }
-
-        context = m_loadLldpLinksTimer.time();
-        LOG.info("Loading LldpLink");
+        Timer.Context context = m_loadLldpLinksTimer.time();
         try{
             getLldpLinks();
-            LOG.info("LldpLink loaded");
+            LOG.info("loadEdges: LldpLink loaded");
         } catch (Exception e){
             LOG.error("Loading LldpLink failed: {}",e.getMessage(),e);
         } finally {
@@ -624,10 +437,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         context = m_loadOspfLinksTimer.time();
-        LOG.info("Loading OspfLink");
         try{
             getOspfLinks();
-            LOG.info("OspfLink loaded");
+            LOG.info("loadEdges: OspfLink loaded");
         } catch (Exception e){
             LOG.error("Loading OspfLink failed: {}",e.getMessage(),e);
         } finally {
@@ -635,10 +447,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         context = m_loadCdpLinksTimer.time();
-        LOG.info("Loading CdpLink");
         try{
             getCdpLinks();
-            LOG.info("CdpLink loaded");
+            LOG.info("loadEdges: CdpLink loaded");
         } catch (Exception e){
             LOG.error("Loading CdpLink failed: {}",e.getMessage(),e);
         } finally {
@@ -646,10 +457,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         context = m_loadIsisLinksTimer.time();
-        LOG.info("Loading IsIsLink");
         try{
             getIsIsLinks();
-            LOG.info("IsIsLink loaded");
+            LOG.info("loadEdges: IsIsLink loaded");
         } catch (Exception e){
             LOG.error("Exception getting IsIs link: "+e.getMessage(),e);
         } finally {
@@ -657,19 +467,14 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         }
 
         context = m_loadBridgeLinksTimer.time();
-        LOG.info("Loading BridgeLink");
         try{
             getBridgeLinks();
-            LOG.info("BridgeLink loaded");
+            LOG.info("loadEdges: BridgeLink loaded");
         } catch (Exception e){
             LOG.error("Loading BridgeLink failed: {}",e.getMessage(),e);
         } finally {
             context.stop();
         }
-
-        LOG.debug("Found {} groups", getGroups().size());
-        LOG.debug("Found {} vertices", getVerticesWithoutGroups().size());
-        LOG.debug("Found {} edges", getEdges().size());
     }
 
 
@@ -751,8 +556,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            Vertex source = getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            Vertex target = getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.setSupportLLDP(true);
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.setSupportLLDP(true);
             combinedLinkDetails.add(new LinkdLldpDetail(this, Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
@@ -780,8 +587,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                     LOG.info("loadtopology: found ospf mutual link: '{}' and '{}' ", sourceLink,targetLink);
                     parsed.add(sourceLink.getId());
                     parsed.add(targetLink.getId());
-                    Vertex source = getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-                    Vertex target = getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+                    LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+                    source.setSupportOSPF(true);
+                    LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+                    target.setSupportOSPF(true);
                     LinkdOspfDetail linkDetail = new LinkdOspfDetail(
                             Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                             source, sourceLink, target, targetLink);
@@ -851,8 +660,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            Vertex source = getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            Vertex target = getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.setSupportCDP(true);
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.setSupportCDP(true);
             combinedLinkDetails.add(new LinkdCdpDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
 
@@ -908,8 +719,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            Vertex source = getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            Vertex target = getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.setSupportISIS(true);
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.setSupportISIS(true);
             combinedLinkDetails.add(new LinkdIsIsDetail(Math.min(sourceLink.getId(), targetLink.getId()) + "|" + Math.max(sourceLink.getId(), targetLink.getId()),
                                                        source, sourceLink, target, targetLink));
         }
@@ -939,7 +752,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private void parseSegment(SharedSegment segment) throws BridgeTopologyException {
         Map<BridgePort,Vertex> portToVertexMap = new HashMap<BridgePort, Vertex>();
         for (BridgePort bp : segment.getBridgePortsOnSegment()) {
-            portToVertexMap.put(bp,getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString()));
+            LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, bp.getNodeId().toString());
+            vertex.setSupportBridge(true);
+            portToVertexMap.put(bp,vertex);
         }
         
         Map<String,Vertex> macToVertexMap = new HashMap<String, Vertex>();
@@ -948,7 +763,9 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             if (m_macToOnmsIpMap.containsKey(mac) && m_macToOnmsIpMap.get(mac).size() > 0) {
                List<OnmsIpInterface> targetInterfaces = m_macToOnmsIpMap.get(mac);
                OnmsIpInterface targetIp = targetInterfaces.get(0);
-               macToVertexMap.put(mac,getVertex(TOPOLOGY_NAMESPACE_LINKD, targetIp.getNode().getNodeId()));
+               LinkdVertex vertex = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetIp.getNode().getNodeId());
+               vertex.setSupportBridge(true);
+               macToVertexMap.put(mac,vertex);
             } else {
                 macswithoutip.add(mac);
             }
@@ -982,7 +799,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             BridgePort sourcebp = null;
             for (BridgePort bp: portToVertexMap.keySet()) {
                 sourcebp = bp;
-                source = portToVertexMap.get(bp);        
+                source = portToVertexMap.get(bp);      
             }
             for (String mac : macToVertexMap.keySet()) { 
                 target = macToVertexMap.get(mac);
@@ -1188,26 +1005,150 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 });
     }
 
-    @Override
     @Transactional
-    public void refresh() {
-        final Timer.Context context = m_loadFullTimer.time();
-        m_nodeMap = new HashMap<Integer, OnmsNode>();
-        m_nodeToOnmsIpMap = new HashMap<Integer,  List<OnmsIpInterface>>();
-        m_nodeToOnmsSnmpMap = new HashMap<Integer, List<OnmsSnmpInterface>>();
-        m_nodeToOnmsIpPrimaryMap = new HashMap<Integer, OnmsIpInterface>();
-        m_macToOnmsIpMap = new HashMap<String, List<OnmsIpInterface>>();
-        m_ipToOnmsIpMap = new HashMap<InetAddress,  OnmsIpInterface>();
-        
+    private void doRefresh() {        
+        Timer.Context vcontext = m_loadNodesTimer.time();
         try {
-            resetContainer();
-            loadCompleteTopology();
+            for (OnmsNode node: m_nodeDao.findAll()) {
+                m_nodeMap.put(node.getId(), node);
+            }
+            LOG.info("refresh: Onms nodes loaded");
         } catch (Exception e){
-            LOG.error("Exception reset Container: "+e.getMessage(),e);
+            LOG.error("Loading Onms nodes failed: {}",e.getMessage(),e);
         } finally {
-            context.stop();
+            vcontext.stop();
+        }
+
+        vcontext = m_loadIpInterfacesTimer.time();
+        try {
+            Set<InetAddress> duplicatedips = new HashSet<InetAddress>();
+            for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
+                if (!m_nodeToOnmsIpMap.containsKey(ip.getNode().getId())) {
+                    m_nodeToOnmsIpMap.put(ip.getNode().getId(), new ArrayList<OnmsIpInterface>());
+                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
+                }
+                m_nodeToOnmsIpMap.get(ip.getNode().getId()).add(ip);
+                if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
+                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
+                }
+
+                if (duplicatedips.contains(ip.getIpAddress())) {
+                    LOG.debug("refresh: found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    continue;
+                }
+                if (m_ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
+                    LOG.debug("refresh: found duplicated ip {}, skipping ", InetAddressUtils.str(ip.getIpAddress()));
+                    duplicatedips.add(ip.getIpAddress());
+                    continue;
+                }
+                m_ipToOnmsIpMap.put(ip.getIpAddress(), ip);
+            }
+            for (InetAddress duplicated: duplicatedips) {
+                m_ipToOnmsIpMap.remove(duplicated);
+            }
+            LOG.info("refresh: Ip Interface loaded");
+        } catch (Exception e){
+            LOG.error("Loading Ip Interface failed: {}", e.getMessage(), e);
+        } finally {
+            vcontext.stop();
+        }
+
+        vcontext = m_loadSnmpInterfacesTimer.time();
+        try {
+            for (OnmsSnmpInterface snmp: m_snmpInterfaceDao.findAll()) {
+                // Index the SNMP interfaces by node id
+                final int nodeId = snmp.getNode().getId();
+                List<OnmsSnmpInterface> snmpinterfaces = m_nodeToOnmsSnmpMap.get(nodeId);
+                if (snmpinterfaces == null) {
+                    snmpinterfaces = new ArrayList<>();
+                    m_nodeToOnmsSnmpMap.put(nodeId, snmpinterfaces);
+                }
+                snmpinterfaces.add(snmp);
+            }
+            LOG.info("refresh: Snmp Interface loaded");
+        } catch (Exception e){
+            LOG.error("Loading Snmp Interface failed: {}",e.getMessage(),e);
+        } finally {
+            vcontext.stop();
+        }
+
+        vcontext = m_loadIpNetToMediaTimer.time();
+        try {
+            Set<String> duplicatednodemac = new HashSet<String>();
+            Map<String, Integer> mactonodemap = new HashMap<String, Integer>();
+            for (IpNetToMedia ipnettomedia: m_ipNetToMediaDao.findAll()) {
+                if (duplicatednodemac.contains(ipnettomedia.getPhysAddress())) {
+                    LOG.debug("refresh: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    continue;
+                }
+                OnmsIpInterface ip = m_ipToOnmsIpMap.get(ipnettomedia.getNetAddress());
+                if (ip == null) {
+                    LOG.debug("refresh: no nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                    continue;
+                }
+                if (mactonodemap.containsKey(ipnettomedia.getPhysAddress())) {
+                    if (mactonodemap.get(ipnettomedia.getPhysAddress()).intValue() != ip.getNode().getId().intValue()) {
+                        LOG.debug("refresh:: different nodeid found for ip: {} mac: {}. Skipping...",InetAddressUtils.str(ipnettomedia.getNetAddress()), ipnettomedia.getPhysAddress());
+                        duplicatednodemac.add(ipnettomedia.getPhysAddress());
+                        continue;
+                    }
+                }
+
+                if (!m_macToOnmsIpMap.containsKey(ipnettomedia.getPhysAddress())) {
+                    m_macToOnmsIpMap.put(ipnettomedia.getPhysAddress(), new ArrayList<OnmsIpInterface>());
+                    mactonodemap.put(ipnettomedia.getPhysAddress(), ip.getNode().getId());
+                }
+                m_macToOnmsIpMap.get(ipnettomedia.getPhysAddress()).add(ip);
+            }
+            for (String dupmac: duplicatednodemac) {
+                m_macToOnmsIpMap.remove(dupmac);
+            }
+            LOG.info("refresh: IpNetToMedia loaded");
+        } catch (Exception e){
+            LOG.error("Loading ipNetToMedia failed: {}",e.getMessage(),e);
+        } finally {
+            vcontext.stop();
+        }
+
+        vcontext = m_loadVerticesTimer.time();
+        try {
+            loadVertices();
+            LOG.info("refresh: Loaded Vertices");
+        } catch (Exception e){
+            LOG.error("Exception Loading Vertices: {}",e.getMessage(),e);
+        } finally {
+            vcontext.stop();
+        }
+        
+        vcontext = m_loadEdgesTimer.time();
+        try {
+            loadEdges();
+            LOG.info("refresh: Loaded Edges");
+        } catch (Exception e){
+            LOG.error("Exception Loading Edges: {}",e.getMessage(),e);
+        } finally {
+            vcontext.stop();
         }
     }
 
-
+    @Override
+    public void refresh() {
+        final Timer.Context context = m_loadFullTimer.time();
+        try {
+            resetContainer();
+            m_nodeMap = new HashMap<Integer, OnmsNode>();
+            m_nodeToOnmsIpMap = new HashMap<Integer,  List<OnmsIpInterface>>();
+            m_nodeToOnmsSnmpMap = new HashMap<Integer, List<OnmsSnmpInterface>>();
+            m_nodeToOnmsIpPrimaryMap = new HashMap<Integer, OnmsIpInterface>();
+            m_macToOnmsIpMap = new HashMap<String, List<OnmsIpInterface>>();
+            m_ipToOnmsIpMap = new HashMap<InetAddress,  OnmsIpInterface>();
+            doRefresh();
+        } finally {
+            context.stop();
+        }
+        
+        LOG.info("refresh: Found {} groups", getGroups().size());
+        LOG.info("refresh: Found {} vertices", getVerticesWithoutGroups().size());
+        LOG.info("refresh: Found {} edges", getEdges().size());
+    }
 }
