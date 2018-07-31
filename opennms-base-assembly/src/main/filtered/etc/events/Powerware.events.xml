@@ -257,10 +257,8 @@ to 'sleep' and immediately cut power to the load.&lt;/p>&lt;table>
 			powerRestored trap received 
 			mtrapargsString=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/upsOnBattery:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -9872,10 +9870,8 @@ The third argument is the phase number.&lt;/p>&lt;table>
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDULowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDULowLoad:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="true"/>
    </event>
    <event>
       <mask>
@@ -9969,10 +9965,8 @@ The third argument is the phase number.&lt;/p>&lt;table>
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUNearOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10066,10 +10060,8 @@ The third argument is the phase number.&lt;/p>&lt;table>
 			rPDULoadStatusPhaseNumber=%parm[#3]% 
 			mtrapargsString=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUOverload:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10150,10 +10142,8 @@ The second argument is the device name.&lt;/p>&lt;table>
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUPowerSupply1Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUPowerSupply1Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -10234,10 +10224,8 @@ The second argument is the device name.&lt;/p>&lt;table>
 			rPDUIdentName=%parm[#2]% 
 			mtrapargsString=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUPowerSupply2Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/powerware/traps/rPDUPowerSupply2Fail:%dpname%:%nodeid%:%interface%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

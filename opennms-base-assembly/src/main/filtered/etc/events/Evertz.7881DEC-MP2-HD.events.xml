@@ -21,10 +21,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoPresentFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoPresentTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoPresentTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -73,10 +71,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureBlackFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureBlackTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureBlackTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -125,10 +121,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultpictureFreezeFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureFreezeTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultpictureFreezeTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -177,10 +171,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1ServiceMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -229,10 +221,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2ServiceMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -281,10 +271,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1PIDMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -333,10 +321,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2PIDMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -435,10 +421,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3ServiceMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -487,10 +471,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4ServiceMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4ServiceMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -539,10 +521,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3PIDMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -591,10 +571,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4PIDMissingFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4PIDMissingTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -643,10 +621,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -695,10 +671,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faulttsInputMissingInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsInputMissingInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -747,10 +721,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -799,10 +771,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faulttsSyncByteMissingInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faulttsSyncByteMissingInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -851,10 +821,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup1False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -903,10 +871,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioGroup2False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup2True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioGroup2True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -955,10 +921,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1007,10 +971,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1059,10 +1021,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1111,10 +1071,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1163,10 +1121,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1215,10 +1171,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1267,10 +1221,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1319,10 +1271,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8OverFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8OverTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1371,10 +1321,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh1SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh1SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1423,10 +1371,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh2SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh2SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1475,10 +1421,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh3SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh3SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1527,10 +1471,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh4SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh4SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1579,10 +1521,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh5SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh5SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1631,10 +1571,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh6SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh6SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1683,10 +1621,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh7SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh7SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1735,10 +1671,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudioCh8SilenceFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudioCh8SilenceTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1787,10 +1721,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal12False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal12True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal12True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1839,10 +1771,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1PhaseReversal34False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal34True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1PhaseReversal34True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1891,10 +1821,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal12False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal12True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal12True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1943,10 +1871,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2PhaseReversal34False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal34True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2PhaseReversal34True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1995,10 +1921,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono12False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono12True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono12True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2047,10 +1971,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp1AudioMono34False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono34True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp1AudioMono34True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2099,10 +2021,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono12False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono12True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono12True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2151,10 +2071,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultselGrp2AudioMono34False trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono34True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultselGrp2AudioMono34True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2203,10 +2121,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultgenlockPresentFalse trap received
             decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultgenlockPresentTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultgenlockPresentTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2303,10 +2219,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultinputGenlockStdMismatchFalse trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputGenlockStdMismatchTrue:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputGenlockStdMismatchTrue:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2356,10 +2270,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2410,10 +2322,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultinputBitErrorInputIP1False trap received
             decmp2hdInstance=%parm[#1]% inputBitErrorID=%parm[#2]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultinputBitErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2463,10 +2373,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2515,10 +2423,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultvideoTimestampErrorInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultvideoTimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2567,10 +2473,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2619,10 +2523,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio1TimestampErrorInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio1TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2671,10 +2573,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2723,10 +2623,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio2TimestampErrorInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio2TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2775,10 +2673,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2827,10 +2723,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio3TimestampErrorInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio3TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2879,10 +2773,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2931,10 +2823,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultaudio4TimestampErrorInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultaudio4TimestampErrorInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2983,10 +2873,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputASI1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputASI1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3035,10 +2923,8 @@
       <logmsg dest="logndisplay">%nodelabel%: Evertz DECMP2HD7881 Event: faultscte35DataPresentInputIP1False trap
             received decmp2hdInstance=%parm[#1]%
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/traps/evertz/decmp2hd7881/faultscte35DataPresentInputIP1True:%dpname%:%nodeid%:%interface%" auto-clean="false"/>
    </event>
    <event>
       <mask>

@@ -189,10 +189,8 @@ c. Multiple interfaces are associated with this VRF, and the
 			mplsL3VpnIfConfRowStatus=%parm[#1]% 
 			mplsL3VpnVrfOperStatus=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsL3vpnStdMib/traps/mplsL3VpnVrfDown:%dpname%:%nodeid%:%interface%:%parm[name-#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -505,10 +503,8 @@ mplsXCOperStatus objects MUST be the identical.&lt;/p>&lt;table>
 			mplsXCOperStatus=%parm[#1]% 
 			mplsXCOperStatus=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/ietf/mplsLsrStdMib/traps/mplsXCDown:%dpname%:%nodeid%:%parm[name-#1.14:]%:%parm[name-#2.14:]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

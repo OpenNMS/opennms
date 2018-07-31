@@ -65,10 +65,8 @@
             &lt;p>This event indicates the model-importer process has completed successfully from resource:
             %parm[importResource]%&lt;/p>
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" auto-clean="true">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/importer/importFailed:%parm[importResource]%" auto-clean="true"/>
    </event>
    <event>
       <uei>uei.opennms.org/internal/importer/importFailed</uei>

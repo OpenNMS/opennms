@@ -62,10 +62,8 @@
             &lt;p>The daemon: %parm[daemonName]% configuration changes have successfully been
             applied.&lt;/p>
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/reloadDaemonConfigFailed:%dpname%:%parm[daemonName]%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/internal/thresholdConfigChange</uei>

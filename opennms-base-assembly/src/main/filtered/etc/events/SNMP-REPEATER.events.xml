@@ -264,10 +264,8 @@ to all configured recipients.)&lt;/p>&lt;table>
 			rptrInfoHealth trap received 
 			rptrInfoOperStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure:%dpname%:%nodeid%" auto-clean="true">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/standard/rfc2108/traps/rptrInfoHealthFailure:%dpname%:%nodeid%" auto-clean="true"/>
    </event>
    <event>
       <mask>

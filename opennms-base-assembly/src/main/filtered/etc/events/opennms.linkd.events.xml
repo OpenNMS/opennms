@@ -58,9 +58,7 @@
       <logmsg dest="donotpersist">
             node: %nodeid% with ifindex: %ifindex% is up
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/topology/linkDown:%nodeid%:%ifindex%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/internal/topology/linkDown:%nodeid%:%ifindex%" auto-clean="false"/>
    </event>
 </events>

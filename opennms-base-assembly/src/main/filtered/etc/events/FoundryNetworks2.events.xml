@@ -401,10 +401,8 @@ status changed from failure to normal for a stacking system.&lt;/p>&lt;table>
 	snChasPwrSupplyIndex=%parm[#2]%
 	snAgGblTrapMessage=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasPwrSupplyFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasPwrSupplyFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -483,10 +481,8 @@ changed from failure to normal for a stacking system&lt;/p>&lt;table>
 	snChasFanIndex=%parm[#2]%
 	snChasFanDescription=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasFanFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapStackingChasFanFailed:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -856,7 +852,7 @@ string. &lt;/p>&lt;table>
 	snAgentBrdModuleStatus=%parm[#3]%
 	snAgGblTrapMessage=%parm[#4]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <varbindsdecode>
          <parmid>parm[#3]</parmid>
          <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
@@ -868,9 +864,7 @@ string. &lt;/p>&lt;table>
          <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
          <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapModuleStatusChanged/goingDown:%dpname%:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1454,10 +1448,8 @@ has changed to up.&lt;/p>&lt;table>
 	ifIndex=%parm[#1]%
 	snAgGblTrapMessage=%parm[#2]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1588,7 +1580,7 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p>&lt;tabl
 	dot3OamLoopbackStatus=%parm[#2]%
 	snAgGblTrapMessage=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <varbindsdecode>
          <parmid>parm[#2]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="noLoopback"/>
@@ -1598,9 +1590,7 @@ loopback mode. The link is not useful for data transfer any more.&lt;/p>&lt;tabl
          <decode varbindvalue="5" varbinddecodedstring="localLoopback"/>
          <decode varbindvalue="6" varbinddecodedstring="unknown"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLinkOAMLoopbackEntered:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2664,10 +2654,8 @@ For eg.  Fabric Monitoring Link Up : SFM &lt;num>/FE &lt;num>/Link &lt;num>, LP 
 	snTrapSFMLinkUp trap received
 	snAgGblTrapMessage=%parm[#1]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMLinkDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2815,7 +2803,7 @@ of the Switch Fabric Module (SFM). For example,
 	snAgentBrdModuleStatus=%parm[#2]%
 	snAgGblTrapMessage=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <varbindsdecode>
          <parmid>parm[#2]</parmid>
          <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
@@ -2827,9 +2815,7 @@ of the Switch Fabric Module (SFM). For example,
          <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
          <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3328,7 +3314,7 @@ of the Switch Fabric Module (SFM). For example,
 	snAgentBrdModuleStatus=%parm[#2]%
 	snAgGblTrapMessage=%parm[#3]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <varbindsdecode>
          <parmid>parm[#2]</parmid>
          <decode varbindvalue="0" varbinddecodedstring="moduleEmpty"/>
@@ -3340,9 +3326,7 @@ of the Switch Fabric Module (SFM). For example,
          <decode varbindvalue="10" varbinddecodedstring="moduleRunning"/>
          <decode varbindvalue="11" varbinddecodedstring="moduleBlocked"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapLPFabricStatusChange/goingDown:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4129,10 +4113,8 @@ associated ports, then ifIndex will have maximum value 0x7ffffff.&lt;/p>&lt;tabl
 	snAgGblTrapMessage=%parm[#1]%
 	ifIndex=%parm[#2]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringError:%dpname%:%nodeid%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapOpticalMonitoringError:%dpname%:%nodeid%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4162,10 +4144,8 @@ For e.g.  Fabric Monitoring : Device SFM &lt;num>/FE &lt;num> is OK to access.&l
 	snTrapSFMAccessOK trap received
 	snAgGblTrapMessage=%parm[#1]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMAccessError:%dpname%:%nodeid%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapSFMAccessError:%dpname%:%nodeid%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4285,9 +4265,7 @@ module completed.&lt;/p>&lt;table>
 	snAgentBrdIndex=%parm[#1]%
 	snAgGblTrapMessage=%parm[#2]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapAutoUpgradeStart:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/foundry/traps/snTrapAutoUpgradeStart:%dpname%:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
 </events>

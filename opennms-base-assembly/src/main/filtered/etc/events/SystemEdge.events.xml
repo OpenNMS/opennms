@@ -554,10 +554,8 @@ from True to false.&lt;/p>&lt;table>
 			monIndex=%parm[#7]% 
 			monFlags=%parm[#8]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" alarm-type="2" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/monitorTrap:%dpname%:%nodeid%:%interface%:%parm[#7]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -756,10 +754,8 @@ specifies  that processStart Traps should be pay.&lt;/p>&lt;table>
 			pmonRegExpr=%parm[#8]% 
 			pmonCurrentPID=%parm[#9]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/processStopTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -961,10 +957,8 @@ to False, this Trap is sent.&lt;/p>&lt;table>
 			pmonRegExpr=%parm[#8]% 
 			pmonCurrentPID=%parm[#9]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/SystemEdge/traps/processThresholdTrap:%dpname%:%nodeid%:%interface%:%parm[#1]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>

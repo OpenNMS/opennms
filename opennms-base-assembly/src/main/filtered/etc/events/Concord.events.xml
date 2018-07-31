@@ -885,7 +885,7 @@ the corresponding alarm no longer exist.&lt;/p>&lt;table>
 	nhServerIPv6=%parm[#26]%
 	nhElementIPv6=%parm[#27]%&lt;/p>
 	</logmsg>
-      <severity>Cleared</severity>
+      <severity>Normal</severity>
       <varbindsdecode>
          <parmid>parm[#13]</parmid>
          <decode varbindvalue="1" varbinddecodedstring="normal"/>
@@ -894,9 +894,7 @@ the corresponding alarm no longer exist.&lt;/p>&lt;table>
          <decode varbindvalue="4" varbinddecodedstring="major"/>
          <decode varbindvalue="5" varbinddecodedstring="critical"/>
       </varbindsdecode>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/Concord/traps/nhLiveAlarm:%nodeid%:%dpname%:%parm[#2]%:%parm[#24]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

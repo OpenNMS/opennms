@@ -40,10 +40,8 @@
       <event-label>MSDP-MIB defined trap event: msdpEstablished</event-label>
       <descr>&lt;p>The MSDP Established event is generated when the MSDP FSM enters the ESTABLISHED state.&lt;/p>&lt;table> &lt;tr>&lt;td>&lt;b> msdpPeerFsmEstablishedTransitions&lt;/b>&lt;/td>&lt;td> %parm[#1]%;&lt;/td>&lt;td>&lt;p>&lt;/p>&lt;/td>&lt;/tr>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p> msdpEstablished trap received msdpPeerFsmEstablishedTransitions=%parm[#1]%&lt;/p> </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/mib2opennms/msdpBackwardTransition:%nodeid%:%interface%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/mib2opennms/msdpBackwardTransition:%nodeid%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

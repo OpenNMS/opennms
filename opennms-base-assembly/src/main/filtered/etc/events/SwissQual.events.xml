@@ -314,10 +314,8 @@
 			nqaaJobType=%parm[#6]% 
 			nqaaTestType=%parm[#7]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/swissqual/traps/nqAgentAlarm:%dpname%:%nodeid%:%interface%:%parm[#4]%:%parm[#5]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>

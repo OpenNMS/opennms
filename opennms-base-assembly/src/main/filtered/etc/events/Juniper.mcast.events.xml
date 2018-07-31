@@ -59,10 +59,8 @@ value on the port.&lt;/p>&lt;table>
 			juniMRoutePortBwReceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -124,9 +122,7 @@ value on the port.&lt;/p>&lt;table>
 			juniMRoutePortPriorityBwReceded trap received 
 			juniMRouteIfLocIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/juniper/juniperMRouterMib/traps/juniMRoutePortPriorityBwExceded:%nodeid%:%dpname%:%interface%:%parm[#1]%" auto-clean="false"/>
    </event>
 </events>

@@ -1337,9 +1337,7 @@ of the change.&lt;/p>&lt;table>
 			ggsnAlarmSeverity=%parm[#7]% 
 			ggsnAlarmDescription=%parm[#8]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="ggsnAlarms:%dpname%:%nodeid%:%parm[#1]" auto-clean="false"/>
    </event>
 </events>

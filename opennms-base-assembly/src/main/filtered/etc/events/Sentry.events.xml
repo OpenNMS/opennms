@@ -58,10 +58,8 @@ outlets on the tower.&lt;/p>&lt;table>
 			towerID=%parm[#2]% 
 			towerName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data reduction-key="uei.opennms.org/vendor/ServerTech/traps/towerStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="uei.opennms.org/vendor/ServerTech/traps/towerStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%:%parm[#3]%" alarm-type="2" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -370,10 +368,8 @@ load traps are suppressed for outlets on the input feed.&lt;/p>&lt;table>
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -438,10 +434,8 @@ load traps are suppressed for outlets on the input feed.&lt;/p>&lt;table>
 			infeedID=%parm[#2]% 
 			infeedName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -905,10 +899,8 @@ stops being repeated.&lt;/p>&lt;table>
 			infeedLoadValue=%parm[#5]% 
 			infeedLoadHighThresh=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -981,10 +973,8 @@ stops being repeated.&lt;/p>&lt;table>
 			infeedLoadValue=%parm[#5]% 
 			infeedLoadHighThresh=%parm[#6]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/infeedLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1564,10 +1554,8 @@ are suppressed for the outlet.&lt;/p>&lt;table>
 			outletName=%parm[#3]% 
 			outletStatus=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1634,10 +1622,8 @@ are suppressed for the outlet.&lt;/p>&lt;table>
 			outletName=%parm[#3]% 
 			outletStatus=%parm[#4]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2318,10 +2304,8 @@ stops being repeated.&lt;/p>&lt;table>
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -2395,10 +2379,8 @@ stops being repeated.&lt;/p>&lt;table>
 			outletID=%parm[#2]% 
 			outletName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/outletLoadEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3060,10 +3042,8 @@ monitor.&lt;/p>&lt;table>
 			envMonID=%parm[#2]% 
 			envMonName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3237,10 +3217,8 @@ envMonWaterSensorStatus, and then stops being repeated.&lt;/p>&lt;table>
 			envMonID=%parm[#2]% 
 			envMonWaterSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonWaterSensorEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonWaterSensorEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3479,10 +3457,8 @@ repeated.&lt;/p>&lt;table>
 			envMonID=%parm[#2]% 
 			envMonADCName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonADCEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/envMonADCEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -3980,10 +3956,8 @@ temperature/humudity sensor.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4044,10 +4018,8 @@ temperature/humudity sensor.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorStatusEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4310,10 +4282,8 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -4394,10 +4364,8 @@ tempHumidSensorTempStatus, and then stops being repeated.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorTempEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5045,10 +5013,8 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5122,10 +5088,8 @@ tempHumidSensorHumidStatus, and then stops being repeated.&lt;/p>&lt;table>
 			tempHumidSensorID=%parm[#2]% 
 			tempHumidSensorName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/tempHumidSensorHumidEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -5705,10 +5669,8 @@ contactClosureStatus, and then stops being repeated.&lt;/p>&lt;table>
 			contactClosureID=%parm[#2]% 
 			contactClosureName=%parm[#3]% 
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/contactClosureEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendor/ServerTech/traps/contactClosureEvent-Error:%dpname%:%nodeid%:%interface%:%parm[#2]%i:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>

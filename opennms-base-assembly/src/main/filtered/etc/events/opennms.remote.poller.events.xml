@@ -25,10 +25,8 @@
             %service% outage identified on interface %interface% from the remote poller %parm[locationMonitorId]%
             in location %parm[location]% has cleared.
         </logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/remote/nodes/nodeLostService:%dpname%:%nodeid%:%interface%:%service%" auto-clean="false"/>
    </event>
    <event>
       <uei>uei.opennms.org/remote/successfulScanReport</uei>

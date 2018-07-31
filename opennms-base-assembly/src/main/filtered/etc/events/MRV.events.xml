@@ -232,10 +232,8 @@ power supply unit changes it's state from notActive to active&lt;/p>&lt;table>
 			powerSupplyUp trap received 
 			nbsDevPSIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -401,10 +399,8 @@ power supply unit changes it's state from notActive to active&lt;/p>&lt;table>
 			powerSupplyUp trap received 
 			oaLdDevPSIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/powerSupplyDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -463,10 +459,8 @@ Fan unit changes it's state from notActive or fail to active&lt;/p>&lt;table>
 			fanUp trap received 
 			oaLdDevFANIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/fanDown:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/fanDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -525,10 +519,8 @@ a card is inserted into the chassis&lt;/p>&lt;table>
 			configChangeIn trap received 
 			oaLdCardIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/configChangeOut:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/configChangeOut:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -570,10 +562,8 @@ a transponder card changes it's Access receive indication&lt;/p>&lt;table>
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptAccRx=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderAccessRx:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderAccessRx:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -654,10 +644,8 @@ a transponder card changes it's WDM receive indication&lt;/p>&lt;table>
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardOptDwdmRx=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderWdmRx:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderWdmRx:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -770,10 +758,8 @@ a transponder card changes it's LoopBack state&lt;/p>&lt;table>
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardLoopBack=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -813,10 +799,8 @@ a transponder card changes it's LoopBack state&lt;/p>&lt;table>
 			oaLdCardIndex=%parm[#1]% 
 			oaLdCardLoopBack=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/transponderCardLoopBack:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -841,10 +825,8 @@ from Secondary to Primary&lt;/p>&lt;table>&lt;/table></descr>
       <logmsg dest="logndisplay">&lt;p>
 			switchPrimary trap received&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/switchSecondary:%nodeid%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/switchSecondary:%nodeid%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -907,10 +889,8 @@ on redundant card the Primary fiber Receive status is changed&lt;/p>&lt;table>
 			oaLdRedOptSlotNumber=%parm[#1]% 
 			oaLdRedOptPrimaryRx=%parm[#2]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/redundantCardSecondaryRx:%nodeid%:%parm[#1]%">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/redundantCardSecondaryRx:%nodeid%:%parm[#1]%"/>
    </event>
    <event>
       <mask>
@@ -995,10 +975,8 @@ the link status of a port at the card is changed&lt;/p>&lt;table>
 			oaLdCardPortsPortNumber=%parm[#2]% 
 			oaLdCardPortsLink=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/cardPortsLink:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/cardPortsLink:%nodeid%:%parm[#1]%:%parm[#2]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1116,10 +1094,8 @@ VDSL Link changes it's state to UP.&lt;/p>&lt;table>
 			vdslPortLinkUp trap received 
 			ifIndex=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/vdslPortLinkDown:%nodeid%:%parm[#1]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/vdslPortLinkDown:%nodeid%:%parm[#1]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1230,10 +1206,8 @@ to specific sub-trunk.&lt;/p>&lt;table>
 			oaVoicePortIndex=%parm[#2]% 
 			oaVoiceSubTrunkIndex=%parm[#3]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/oaVoiceBrokenRtpConnection:%nodeid%:%parm[#1]%:%parm[#2]%:%parm[#3]%" auto-clean="false"/>
    </event>
    <event>
       <mask>
@@ -1300,10 +1274,8 @@ not present.&lt;/p>&lt;table>
 			oaATerTxUserDataStatusAlarm trap received 
 			oaATerTxUserDataStatus=%parm[#1]%&lt;/p>
 		</logmsg>
-      <severity>Cleared</severity>
-      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm:%nodeid%" auto-clean="false">
-        <update-field field-name="severity" update-on-reduction="true"/>
-      </alarm-data>
+      <severity>Normal</severity>
+      <alarm-data alarm-type="2" reduction-key="uei.opennms.org/vendors/MRV/oaATerTxUserDataStatusAlarm:%nodeid%" auto-clean="false"/>
    </event>
    <event>
       <mask>
