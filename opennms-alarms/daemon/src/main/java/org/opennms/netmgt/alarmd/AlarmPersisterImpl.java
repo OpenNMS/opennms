@@ -180,6 +180,10 @@ public class AlarmPersisterImpl implements AlarmPersister {
         Integer resolution_type = Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE);
         if (!Objects.equals(event.getAlarmData().getAlarmType(), resolution_type)) {
             alarm.setCounter(alarm.getCounter() + 1);
+            
+            if (alarm.getSeverity().equals(OnmsSeverity.CLEARED)) {
+                alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+            }
         } else {
             alarm.setSeverity(OnmsSeverity.CLEARED);
         }
