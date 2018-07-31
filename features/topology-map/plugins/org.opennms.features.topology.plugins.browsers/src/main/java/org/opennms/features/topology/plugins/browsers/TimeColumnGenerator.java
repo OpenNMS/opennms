@@ -33,17 +33,18 @@ import java.time.ZoneId;
 import java.util.Date;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
+import org.opennms.features.timeformat.api.TimeformatService;
 
 import com.vaadin.data.Property;
 import com.vaadin.ui.Table;
 
 public class TimeColumnGenerator  implements Table.ColumnGenerator {
 
-    private CentralizedDateTimeFormat timeformat;
+    private TimeformatService timeformat;
     private ZoneId userTimeZoneId;
 
-    public TimeColumnGenerator(ZoneId userTimeZoneId) {
-        this.timeformat = new CentralizedDateTimeFormat();
+    public TimeColumnGenerator(TimeformatService timeformatService, ZoneId userTimeZoneId) {
+        this.timeformat = timeformatService;
         this.userTimeZoneId = userTimeZoneId;
     }
 

@@ -240,7 +240,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
 
                     m_alarmTable.addGeneratedColumn("severity", new SeverityGenerator());
                     m_alarmTable.addGeneratedColumn("id", new AlarmIdColumnLinkGenerator(m_alarmDao, "id"));
-                    m_alarmTable.addGeneratedColumn("lastEventTime", new TimeColumnGenerator(userTimezoneId));
+                    m_alarmTable.addGeneratedColumn("lastEventTime", new TimeColumnGenerator(timeformatService, userTimezoneId));
                     m_alarmTable.setVisibleColumns("id", "severity", "nodeLabel", "counter", "lastEventTime", "logMsg");
                     m_alarmTable.setColumnHeaders("ID", "Severity", "Node", "Count", "Last Event Time", "Log Message");
 
