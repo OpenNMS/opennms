@@ -1,0 +1,66 @@
+
+==== Install RRDTool on RHEL
+
+CAUTION: Following this guide does not cover data migration from _JRobin_ to _RRDTool_.
+
+CAUTION: To install _jrrd2_ enable the OpenNMS YUM repository ensure the repositories are enabled.
+         You can enable them with `yum-config-manager --enable opennms-repo-stable-common,opennms-repo-stable-rhel7`.
+
+NOTE: A more current version of _RRDTool_ is in the _OpenNMS_ YUM repository.
+      The provided versions can be shown with `yum info rrdtool`.
+      This guide uses the _RRDTool_ provided in the _OpenNMS_ repository.
+      When using the _CentOS_ provided _RRDTool_ package verify the path to the _rrdtool_ binary file.
+
+:!sectnums:
+
+==== Step 1: Install RRDTool and the jrrd2 interface
+
+.Installation on RHEL
+[source, shell]
+----
+yum -y install rrdtool jrrd2
+----
+
+==== Step 2: Configure {opennms-product-name} to use RRDTool
+
+[source, shell]
+----
+cat << EOF | sudo tee /opt/opennms/etc/opennms.properties.d/timeseries.properties
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy
+org.opennms.rrd.interfaceJar=/usr/share/java/jrrd2.jar
+opennms.library.jrrd2=/usr/lib64/libjrrd2.so
+org.opennms.web.graphs.engine=rrdtool # optional, unset if you want to keep Backshift as default
+EOF
+----
+
+TIP: The visualization with the graph engine is optional.
+     You can still use the default graphing engine `backshift` by not setting the `org.opennms.web.graphs.engine` property and use the system default.
+
+==== Step 3: Restart {opennms-product-name} and verify setup
+
+[source, shell]
+----
+find /opt/opennms/share/rrd -iname "*.rrd"
+----
+
+With the first data collection, _RRDTool_ files with extension _.rrd_ will be created.
+The _JRobin_ files with extension _.jrb_ are not used anymore and are not deleted automatically.
+
+:sectnums:
+
+==== Reference
+
+The following configuration files have references to the _RRDTool_ binary and may be changed if you have a customized _RRDTool_ setup.
+
+.References to the RRDtool binary
+[options="header, autowidth"]
+|===
+| Configuration file                | Property
+| `opennms.properties`              | `rrd.binary=/usr/bin/rrdtool`
+| `response-adhoc-graph.properties` | `command.prefix=/usr/bin/rrdtool`
+| `response-graph.properties`       | `command.prefix=/usr/bin/rrdtool` +
+                                      `info.command=/usr/bin/rrdtool`
+| `snmp-adhoc-graph.properties`     | `command.prefix=/usr/bin/rrdtool`
+| `snmp-graph.properties`           | `command.prefix=/usr/bin/rrdtool` +
+                                      `command=/usr/bin/rrdtool info`
+|===

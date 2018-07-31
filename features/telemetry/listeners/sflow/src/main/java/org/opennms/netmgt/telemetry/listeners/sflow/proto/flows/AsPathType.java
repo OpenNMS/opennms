@@ -77,7 +77,6 @@ public class AsPathType {
 
     public void writeBson(final BsonWriter bsonWriter) {
         bsonWriter.writeStartDocument();
-        bsonWriter.writeName("type");
         this.type.writeBson(bsonWriter);
 
         switch (this.type) {

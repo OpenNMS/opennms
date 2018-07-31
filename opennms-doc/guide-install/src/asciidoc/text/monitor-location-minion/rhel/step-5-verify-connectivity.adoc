@@ -1,0 +1,19 @@
+
+==== Step 5: Verifying Connectivity
+
+.Connect to Karaf Shell of the Minion
+[source]
+----
+ssh -p 8201 admin@localhost
+----
+
+.Verify connectivity with the _{opennms-product-name}_
+[source]
+----
+admin@minion()> minion:ping
+Connecting to ReST...
+OK
+Connecting to Broker...
+OK
+admin@minion()>
+----

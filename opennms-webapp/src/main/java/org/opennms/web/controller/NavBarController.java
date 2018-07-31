@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.api.OnmsHeaderProvider;
@@ -68,6 +70,7 @@ import freemarker.template.TemplateModelException;
 public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
     private List<NavBarEntry> m_navBarItems;
     private FreemarkerView m_view;
+    private CentralizedDateTimeFormat dateTimeFormat;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -85,6 +88,7 @@ public class NavBarController extends AbstractController implements Initializing
         Template template = cfg.getTemplate("navbar.ftl");
 
         m_view = new FreemarkerView(template);
+        dateTimeFormat = new CentralizedDateTimeFormat();
     }
 
     /** {@inheritDoc} */
@@ -109,6 +113,7 @@ public class NavBarController extends AbstractController implements Initializing
                 org.opennms.web.api.Util.calculateUrlBase(request));
         model.put("isProvision", request.isUserInRole(Authentication.ROLE_PROVISION));
         model.put("isAdmin", request.isUserInRole(Authentication.ROLE_ADMIN));
+        model.put("formattedTime", this.dateTimeFormat.format(Instant.now()));
 
         String noticeStatus = "Unknown";
         try {

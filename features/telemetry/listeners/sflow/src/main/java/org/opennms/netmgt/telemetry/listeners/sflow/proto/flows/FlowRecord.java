@@ -44,7 +44,7 @@ import com.google.common.collect.ImmutableMap;
 // };
 
 public class FlowRecord extends Record<FlowData> {
-    private static Map<DataFormat, Opaque.Parser<FlowData>> flowDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<FlowData>>builder()
+    protected static Map<DataFormat, Opaque.Parser<FlowData>> flowDataFormats = ImmutableMap.<DataFormat, Opaque.Parser<FlowData>>builder()
             .put(DataFormat.from(0, 1), SampledHeader::new)
             .put(DataFormat.from(0, 2), SampledEthernet::new)
             .put(DataFormat.from(0, 3), SampledIpv4::new)

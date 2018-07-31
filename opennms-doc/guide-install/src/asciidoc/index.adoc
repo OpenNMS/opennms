@@ -4,7 +4,7 @@
 :lang: en
 :icons: font
 :toc: left
-:toclevels: 3
+:toclevels: 2
 :numbered:
 
 [[gi]]
@@ -14,42 +14,105 @@
 :revdate: {last-update-label} {docdatetime}
 :version-label!:
 
-// Installation Guide for {opennms-product-name}
-include::text/opennms/introduction.adoc[]
-include::text/opennms/compatibility.adoc[]
-include::text/opennms/repository.adoc[]
-include::text/opennms/rhel.adoc[]
-include::text/opennms/debian.adoc[]
-include::text/opennms/windows.adoc[]
+include::text/java-environment.adoc[]
 
-// Installation Guide for Java environment
-include::text/java/introduction.adoc[]
-include::text/java/rhel.adoc[]
-include::text/java/debian.adoc[]
-include::text/java/windows-server.adoc[]
-include::text/java/environment.adoc[]
+// Basic Setup OpenNMS
+include::text/basic-setup-opennms/setting-up-opennms.adoc[]
 
-// Installation Guide for RRDtool
-include::text/rrdtool/installation.adoc[]
+// Basic Setup OpenNMS - RHEL
+include::text/basic-setup-opennms/rhel/installing-on-rhel.adoc[]
 
-// Installation Guide for Time Series Database Newts
-include::text/newts/introduction.adoc[]
-include::text/newts/cassandra-rhel.adoc[]
-include::text/newts/cassandra-debian.adoc[]
-include::text/newts/cassandra-windows.adoc[]
-include::text/newts/configure-opennms.adoc[]
+// No section numbers for step-by-step guide
+:!sectnums:
 
-// Installation Guide for R
-include::text/r/introduction.adoc[]
-include::text/r/rhel.adoc[]
-include::text/r/debian.adoc[]
+include::text/basic-setup-opennms/rhel/step-1-install-opennms.adoc[]
+include::text/basic-setup-opennms/rhel/step-2-postgresql.adoc[]
+include::text/basic-setup-opennms/rhel/step-3-initialize-opennms.adoc[]
+include::text/basic-setup-opennms/rhel/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
 
-ifndef::opennms-prime[]
-// Installation Guide for Minion
-include::text/minion/introduction.adoc[]
-include::text/minion/install.adoc[]
-include::text/minion/configure-opennms.adoc[]
-include::text/minion/configure-minion.adoc[]
-include::text/minion/advanced-configuration.adoc[]
-include::text/minion/troubleshooting.adoc[]
-endif::opennms-prime[]
+// Enable section numbers
+:sectnums:
+
+// Basic Setup OpenNMS - Debian
+include::text/basic-setup-opennms/debian/installing-on-debian.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/basic-setup-opennms/debian/step-1-install-opennms.adoc[]
+include::text/basic-setup-opennms/debian/step-2-postgresql.adoc[]
+include::text/basic-setup-opennms/debian/step-3-initialize-opennms.adoc[]
+include::text/basic-setup-opennms/debian/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Basic Setup OpenNMS - Windows
+include::text/basic-setup-opennms/windows/installing-on-windows.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/basic-setup-opennms/windows/step-1-postgresql.adoc[]
+include::text/basic-setup-opennms/windows/step-2-graphical-installer.adoc[]
+include::text/basic-setup-opennms/windows/step-3-configure-postgres-opennms.adoc[]
+include::text/basic-setup-opennms/windows/step-4-change-admin-password.adoc[]
+include::text/_general/nextsteps.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Basic Setup Minion
+include::text/monitor-location-minion/setting-up-minion.adoc[]
+
+// Basic Setup Minion - RHEL
+include::text/monitor-location-minion/rhel/installing-on-rhel.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/monitor-location-minion/rhel/step-1-setup-opennms.adoc[]
+include::text/monitor-location-minion/rhel/step-2-install-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-3-starting-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-4-configure-minion.adoc[]
+include::text/monitor-location-minion/rhel/step-5-verify-connectivity.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Basic Setup Minion - Debian
+include::text/monitor-location-minion/debian/installing-on-debian.adoc[]
+
+// No section numbers for step-by-step guide
+:!sectnums:
+
+include::text/monitor-location-minion/debian/step-1-setup-opennms.adoc[]
+include::text/monitor-location-minion/debian/step-2-install-minion.adoc[]
+include::text/monitor-location-minion/debian/step-3-starting-minion.adoc[]
+include::text/monitor-location-minion/debian/step-4-configure-minion.adoc[]
+include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
+
+// Enable section numbers
+:sectnums:
+
+// Alternate ways of doing it
+include::text/install-opennms-versions.adoc[]
+include::text/minion-config-file.adoc[]
+include::text/run-in-non-root.adoc[]
+
+// Add more features
+include::text/r-statistical-computing.adoc[]
+
+// Use other time series technology from default
+include::text/time-series-storage/introduction.adoc[]
+include::text/time-series-storage/rrdtool/rrdtool.adoc[]
+include::text/time-series-storage/rrdtool/rhel.adoc[]
+include::text/time-series-storage/rrdtool/debian.adoc[]
+
+include::text/time-series-storage/newts/introduction.adoc[]
+include::text/time-series-storage/newts/rhel.adoc[]
+include::text/time-series-storage/newts/debian.adoc[]
+include::text/time-series-storage/newts/windows.adoc[]
+include::text/time-series-storage/newts/configure-opennms.adoc[]

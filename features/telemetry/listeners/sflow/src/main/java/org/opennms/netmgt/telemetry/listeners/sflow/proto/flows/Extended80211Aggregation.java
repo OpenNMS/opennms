@@ -57,12 +57,14 @@ public class Extended80211Aggregation implements FlowData {
 
     @Override
     public void writeBson(final BsonWriter bsonWriter) {
-        bsonWriter.writeStartArray();
+        bsonWriter.writeStartDocument();
+        bsonWriter.writeStartArray("pdus");
 
         for (final Pdu pdu : this.pdus) {
             pdu.writeBson(bsonWriter);
         }
 
         bsonWriter.writeEndArray();
+        bsonWriter.writeEndDocument();
     }
 }

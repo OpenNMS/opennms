@@ -16,6 +16,7 @@
     <module>camel</module>
     <module>common</module>
     <module>jms-impl</module>
+    <module>kafka</module>
     <module>mock-impl</module>
     <module>shell-commands</module>
     <module>utils</module>

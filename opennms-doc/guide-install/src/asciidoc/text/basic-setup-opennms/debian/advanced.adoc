@@ -1,0 +1,8 @@
+
+=== Advanced Installation Options for Debian
+
+include::advanced/javasdk.adoc[]
+
+==== Time-Series Database Engine
+include::advanced/rrdtool.adoc[]
+include::advanced/newts.adoc[]

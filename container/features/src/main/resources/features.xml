@@ -685,6 +685,12 @@
       <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.aws-sqs-impl/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-core-ipc-rpc-kafka" description="OpenNMS :: Core :: IPC :: RPC :: Kafka Impl." version="${project.version}">
+      <feature>opennms-kafka</feature>
+      <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.kafka/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-core-ipc-rpc-commands" description="OpenNMS :: Core :: IPC :: RPC :: Shell Commands" version="${project.version}">
       <feature>dropwizard-metrics</feature>
       <feature>guava</feature>
@@ -1155,6 +1161,7 @@
     <feature name="opennms-kafka-producer" description="OpenNMS :: Kafka :: Producer" version="${project.version}">
       <feature version="${guavaVersion}">guava</feature>
       <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
+      <feature>opennms-collection-api</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
       <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>

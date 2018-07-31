@@ -1,0 +1,20 @@
+
+[[gi-install-minion-config-file]]
+== Setup Minion with a config file
+
+Beside manually configuring a _Minion_ instance via the _Karaf CLI_ it is possibleto modify and deploy its configuration file through configuration management tools.
+The configuration file is located in `${MINION_HOME}/etc/org.opennms.minion.controller.cfg`.
+All configurations set in _Karaf CLI_ will be persisted in this configuration file which can also be populated through configuration management tools.
+
+.Configuration file for Minion
+[source]
+----
+id = 00000000-0000-0000-0000-deadbeef0001
+location = MINION
+broker-url = tcp://myopennms.example.org:61616
+http-url = http://myopennms.example.org:8980/opennms
+----
+
+The _Minion_ needs to be restarted when this configuration file is changed.
+
+TIP: In case the credentials needs to be set through the _CLI_ with configuration management tools or scripts, the `${MINION_HOME}/bin/client` command can be used which allows to execute _Karaf_ commands through the Linux shell.

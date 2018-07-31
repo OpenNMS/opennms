@@ -1,0 +1,17 @@
+
+=== Installing on Windows
+
+The installer for _Microsoft Windows_ does not handle _PostgreSQL_ and _Java_ dependencies as on _Linux_ operating systems.
+
+IMPORTANT: Ensure you have installed _Oracle Java Development Kit 8 (JDK)_ which is available on the link:http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle] page.
+
+The following steps will be described:
+
+. Install _PostgreSQL_ on _Microsoft Windows_
+. Install _{opennms-product-name}_ with GUI installer
+. Initialize _PostgreSQL_ database and configure access
+. Log in to the Web User Interface and change default admin password
+
+It is required to have local administration permission to install _{opennms-product-name}_.
+
+TIP: To edit _OpenNMS_ configuration files on _Microsoft Windows_ the tool link:https://notepad-plus-plus.org/[Notepad++] can deal with the formatting of _.property_ and _.xml_ files.
