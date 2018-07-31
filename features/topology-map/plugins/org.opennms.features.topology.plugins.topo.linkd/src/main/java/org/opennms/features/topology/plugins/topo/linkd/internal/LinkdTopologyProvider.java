@@ -147,15 +147,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     protected static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     protected static final String HTML_TOOLTIP_TAG_END  = "</p>";
-    /**
-     * Always print at least one digit after the decimal point,
-     * and at most three digits after the decimal point.
-     */
-    protected static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
-    /**
-     * Print no digits after the decimal point (heh, nor a decimal point).
-     */
-    protected static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
 
     protected static final EnumMap<OnmsNode.NodeType, String> m_nodeStatusMap;
 
@@ -172,55 +163,6 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
     private SelectionAware selectionAwareDelegate = new LinkdSelectionAware();
 
-    /**
-     * Method used to convert an integer bits-per-second value to a more
-     * readable vale using commonly recognized abbreviation for network
-     * interface speeds. Feel free to expand it as necessary to accommodate
-     * different values.
-     *
-     * @param ifSpeed
-     *            The bits-per-second value to be converted into a string
-     *            description
-     * @return A string representation of the speed (&quot;100 Mbps&quot; for
-     *         example)
-     */
-    public static String getHumanReadableIfSpeed(long ifSpeed) {
-        DecimalFormat formatter;
-        double displaySpeed;
-        String units;
-
-        if (ifSpeed >= 1000000000L) {
-            if ((ifSpeed % 1000000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000000000.0;
-            units = "Gbps";
-        } else if (ifSpeed >= 1000000L) {
-            if ((ifSpeed % 1000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000000.0;
-            units = "Mbps";
-        } else if (ifSpeed >= 1000L) {
-            if ((ifSpeed % 1000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
-            } else {
-                formatter = s_oneDigitAfterDecimal;
-            }
-            displaySpeed = ((double) ifSpeed) / 1000.0;
-            units = "kbps";
-        } else {
-            formatter = s_noDigitsAfterDecimal;
-            displaySpeed = (double) ifSpeed;
-            units = "bps";
-        }
-
-        return formatter.format(displaySpeed) + " " + units;
-    }
 
     public static String getIconName(String nodeSysObjectId) {
         if (nodeSysObjectId == null) {
@@ -305,7 +247,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if ( sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
@@ -359,7 +301,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
@@ -415,13 +357,13 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         if ( targetInterface != null) {
             if (targetInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
+                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         } else if (sourceInterface != null) {
             if (sourceInterface.getIfSpeed() != null) {
                 tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
+                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
             }
         }
