@@ -42,10 +42,9 @@ import org.bson.BsonDocument;
 import org.bson.BsonValue;
 import org.bson.RawBsonDocument;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.collection.api.CollectionSet;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.adapters.api.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.adapters.collection.AbstractScriptPersistingAdapter;
@@ -60,7 +59,7 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
 
     private InterfaceToNodeCache interfaceToNodeCache;
 
-    private NodeDao nodeDao;
+    private CollectionAgentFactory collectionAgentFactory;
 
     public SFlowTelemetryAdapter() {
 
@@ -91,22 +90,17 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
         }
 
         final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
-
-        final CollectionAgent agent;
-        if (nodeId.isPresent()) {
-            agent = createCollectionAgent(nodeId.get(), inetAddress, messageLog.getLocation());
-
-        } else {
+        if (!nodeId.isPresent()) {
             LOG.warn("Unable to find node and interface for agent address: {}", address);
             return Stream.empty();
         }
-
         final ScriptedCollectionSetBuilder builder = scriptedCollectionSetBuilders.get();
         if (builder == null) {
             LOG.error("Error compiling script '{}'. See logs for details.", this.getScript());
             return Stream.empty();
         }
 
+        final CollectionAgent agent = collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), inetAddress);
         return document.getArray("samples").stream()
                 .map(BsonValue::asDocument)
                 .flatMap(sampleDocument -> {
@@ -126,17 +120,11 @@ public class SFlowTelemetryAdapter extends AbstractScriptPersistingAdapter {
                 });
     }
 
-    private CollectionAgent createCollectionAgent(Integer nodeId, InetAddress inetAddress, String location) {
-        final OnmsNode onmsNode = nodeDao.get(nodeId);
-        final CollectionAgent collectionAgent = new DummyCollectionAgent(inetAddress, nodeId, onmsNode.getLabel(), onmsNode.getForeignSource(), onmsNode.getForeignId(), location);
-        return collectionAgent;
+    public void setCollectionAgentFactory(CollectionAgentFactory collectionAgentFactory) {
+        this.collectionAgentFactory = collectionAgentFactory;
     }
 
     public void setInterfaceToNodeCache(InterfaceToNodeCache interfaceToNodeCache) {
         this.interfaceToNodeCache = interfaceToNodeCache;
-    }
-
-    public void setNodeDao(NodeDao nodeDao) {
-        this.nodeDao = nodeDao;
     }
 }

@@ -9,10 +9,10 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
-
 	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5AdapterFactory">
@@ -65,6 +65,7 @@
 	<bean id="sflowTelemetryFactory" class="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="nodeDao" ref="nodeDao" />
 		<property name="filterDao" ref="filterDao" />
 	</bean>
