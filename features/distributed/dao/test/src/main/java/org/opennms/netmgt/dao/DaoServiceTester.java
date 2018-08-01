@@ -59,6 +59,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.google.common.io.ByteStreams;
@@ -84,6 +85,7 @@ public class DaoServiceTester {
             .withIgnoredClass(
                     SessionFactoryWrapper.class,
                     TransactionOperations.class,
+                    PlatformTransactionManager.class,
                     AlarmEntityNotifier.class // we skip testing this for now
             )
             .withTest(OnmsDao.class, dao -> dao.countAll())
