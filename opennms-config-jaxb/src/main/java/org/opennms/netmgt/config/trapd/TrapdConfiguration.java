@@ -327,6 +327,7 @@ public class TrapdConfiguration implements  Serializable {
      * 
      * @return the size of this collection
      */
+    @XmlTransient
     public int getSnmpv3UserCount(
     ) {
         return this._snmpv3UserList.size();
