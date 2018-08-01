@@ -55,10 +55,6 @@
     XssRequestWrapper req = new XssRequestWrapper(request);
 %>
 
-<!-- End of Content -->
-<div class="spacer"><!-- --></div>
-
-
 <c:choose>
     <c:when test="${param.quiet == 'true'}">
         <!-- Not displaying footer -->
@@ -67,7 +63,7 @@
     <c:otherwise>
         <!-- Footer -->
 
-        <footer id="footer">
+        <footer id="footer" class="card-footer">
             <p>
                 OpenNMS <a href="about/index.jsp">Copyright</a> &copy; 2002-2018
                 <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>

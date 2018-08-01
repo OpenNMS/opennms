@@ -719,14 +719,6 @@ Bootstrap Theme Specific Stylesheet
   margin-right: auto;
 }
 
-#footer {
-  clear: both;
-  text-align: center;
-  padding: 30px 2px 2px 2px;
-  margin-left: -15px;
-  margin-right: -15px;
-  background-color: $color_alto_approx;
-}
 //
 //.container, .container-fluid {
 //  padding-top: 20px;
@@ -919,4 +911,10 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 /** TODO MVR NEW STYLES **/
 #content {
   padding-top: 15px;
+}
+
+#footer {
+  text-align: center;
+  margin-left: -15px;
+  margin-right: -15px;
 }
