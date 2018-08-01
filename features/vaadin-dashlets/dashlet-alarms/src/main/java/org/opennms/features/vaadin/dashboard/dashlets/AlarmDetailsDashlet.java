@@ -51,7 +51,7 @@ import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.features.vaadin.dashboard.model.TimeformatHelper;
+import org.opennms.features.vaadin.dashboard.model.UserTimeZoneExtractor;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.AlarmRepository;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -131,7 +131,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
         this.timeformatService = timeformatService;
-        this.userTimezoneId = TimeformatHelper.extractUserTimeZoneId().orElse(null);
+        this.userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
     }
 
     @Override

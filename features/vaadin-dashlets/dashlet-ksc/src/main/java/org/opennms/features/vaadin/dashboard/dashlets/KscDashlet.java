@@ -40,7 +40,7 @@ import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.features.vaadin.dashboard.model.TimeformatHelper;
+import org.opennms.features.vaadin.dashboard.model.UserTimeZoneExtractor;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;
@@ -71,11 +71,11 @@ import com.vaadin.ui.VerticalLayout;
  * @author Christian Pape
  */
 public class KscDashlet extends AbstractDashlet {
-    private NodeDao m_nodeDao;
-    private ResourceDao m_resourceDao;
-    private TransactionOperations m_transactionOperations;
-    private DashletComponent m_wallboardComponent;
-    private DashletComponent m_dashboardComponent;
+    private NodeDao nodeDao;
+    private ResourceDao resourceDao;
+    private TransactionOperations transactionOperations;
+    private DashletComponent wallboardComponent;
+    private DashletComponent dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
 
     private final TimeformatService timeformatService;
@@ -93,17 +93,17 @@ public class KscDashlet extends AbstractDashlet {
         /**
          * Setting the member fields
          */
-        m_nodeDao = nodeDao;
-        m_resourceDao = resourceDao;
-        m_transactionOperations = transactionOperations;
+        this.nodeDao = nodeDao;
+        this.resourceDao = resourceDao;
+        this.transactionOperations = transactionOperations;
         this.timeformatService = timeformatService;
-        this.userTimezoneId = TimeformatHelper.extractUserTimeZoneId().orElse(null);
+        this.userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
     }
 
     @Override
     public DashletComponent getWallboardComponent() {
-        if (m_wallboardComponent == null) {
-            m_wallboardComponent = new AbstractDashletComponent() {
+        if (wallboardComponent == null) {
+            wallboardComponent = new AbstractDashletComponent() {
                 private GridLayout m_gridLayout = new GridLayout();
 
                 {
@@ -265,13 +265,13 @@ public class KscDashlet extends AbstractDashlet {
             };
         }
 
-        return m_wallboardComponent;
+        return wallboardComponent;
     }
 
     @Override
     public DashletComponent getDashboardComponent() {
-        if (m_dashboardComponent == null) {
-            m_dashboardComponent = new AbstractDashletComponent() {
+        if (dashboardComponent == null) {
+            dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
 
                 {
@@ -397,7 +397,7 @@ public class KscDashlet extends AbstractDashlet {
             };
         }
 
-        return m_dashboardComponent;
+        return dashboardComponent;
     }
 
     /**
@@ -406,7 +406,7 @@ public class KscDashlet extends AbstractDashlet {
      * @return a map with meta data, like resourceLabel, resourceTypeLabel
      */
     public Map<String, String> getDataForResourceId(final String nodeId, final String resourceIdString) {
-        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
+        return transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<>();
@@ -418,8 +418,8 @@ public class KscDashlet extends AbstractDashlet {
                     resource = determineResourceByResourceId(resourceId);
                     node = ResourceTypeUtils.getNodeFromResource(resource);
                 } else {
-                    node = m_nodeDao.get(nodeId);
-                    resource = m_resourceDao.getResourceForNode(node);
+                    node = nodeDao.get(nodeId);
+                    resource = resourceDao.getResourceForNode(node);
                 }
                 data.put("nodeId", node.getNodeId());
                 data.put("nodeLabel", node.getLabel());
@@ -437,7 +437,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     OnmsResource determineResourceByResourceId(ResourceId resourceId){
-        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
+        OnmsResource resource = resourceDao.getResourceById(resourceId);
         resource =(resource.getParent()== null) ? resource : resource.getParent();
         return resource;
     }
