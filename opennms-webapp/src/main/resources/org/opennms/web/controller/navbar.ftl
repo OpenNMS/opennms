@@ -3,7 +3,7 @@
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
         <!-- TODO MVR was renamed from horizon_logo to o-green-trans, maybe should not have done that? -->
-        <img id="logo" src="${baseHref}images/o-green-trans.svg" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" /> H23
+        <img id="logo" src="${baseHref}images/o-green-trans.png" alt="OpenNMS" onerror="this.src='${baseHref}images/o-green-trans.png'" />&nbsp;
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>
