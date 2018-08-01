@@ -918,3 +918,7 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
   margin-left: -15px;
   margin-right: -15px;
 }
+
+.card {
+  margin-bottom: $spacer * 1.5; // equivalent of mb-4
+}
