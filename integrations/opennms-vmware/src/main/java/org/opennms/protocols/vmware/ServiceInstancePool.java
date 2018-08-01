@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,8 +28,6 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.mo.ServiceInstance;
-
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -39,29 +37,33 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.opennms.core.utils.PropertiesUtils;
+
+import com.vmware.vim25.mo.ServiceInstance;
+
 public class ServiceInstancePool {
-    private final long houseKeepingInterval;
+    private final long HOUSEKEEPING_INTERVAL = PropertiesUtils.getProperty(
+            System.getProperties(),
+            "org.opennms.protocols.vmware.housekeepingInterval",
+            300000L
+    );
+
     private final Map<String, ServiceInstancePoolEntry> serviceInstancePoolEntries = new ConcurrentHashMap<>();
     private final Timer timer = new Timer("ServiceInstancePool-Timer", false);
 
-    public ServiceInstancePool(final long houseKeepingInterval) {
-        this.houseKeepingInterval = houseKeepingInterval;
+    public ServiceInstancePool() {
         this.timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 expire();
             }
-        }, this.houseKeepingInterval, this.houseKeepingInterval);
-    }
-
-    public ServiceInstancePool() {
-        this(300000);
+        }, this.HOUSEKEEPING_INTERVAL, this.HOUSEKEEPING_INTERVAL);
     }
 
     private synchronized void expire() {
         for (final Iterator<Map.Entry<String, ServiceInstancePoolEntry>> mapIterator = serviceInstancePoolEntries.entrySet().iterator(); mapIterator.hasNext(); ) {
             Map.Entry<String, ServiceInstancePoolEntry> mapEntry = mapIterator.next();
-            mapEntry.getValue().expire(this.houseKeepingInterval);
+            mapEntry.getValue().expire(this.HOUSEKEEPING_INTERVAL);
 
             if (mapEntry.getValue().isUnused()) {
                 mapIterator.remove();

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2013-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -28,14 +28,14 @@
 
 package org.opennms.protocols.vmware;
 
-import com.vmware.vim25.mo.ServiceInstance;
-
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import com.vmware.vim25.mo.ServiceInstance;
 
 public class ServiceInstancePoolEntry {
     private final String hostname;
@@ -130,5 +130,9 @@ public class ServiceInstancePoolEntry {
 
     public int unlockedEntryCount() {
         return this.unlocked.size();
+    }
+
+    protected Map<ServiceInstance, Long> getAccessTimestamp() {
+        return accessTimestamp;
     }
 }

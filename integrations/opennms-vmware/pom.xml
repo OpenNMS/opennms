@@ -3,30 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-integrations</artifactId>
-        <version>17.0.1-SNAPSHOT</version>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-integrations</artifactId>
+      <version>17.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>opennms-vmware</artifactId>
     <name>OpenNMS Integrations VMware Integration</name>
     <packaging>jar</packaging>
     <build>
-        <plugins>
-            <!--
-                    <plugin>
-                      <groupId>org.apache.felix</groupId>
-                      <artifactId>maven-bundle-plugin</artifactId>
-                      <extensions>true</extensions>
-                      <configuration>
-                        <instructions>
-                          <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-                          <Bundle-Version>${project.version}</Bundle-Version>
-                        </instructions>
-                      </configuration>
-                    </plugin>
-            -->
-        </plugins>
+      <plugins>
+<!--
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <extensions>true</extensions>
+          <configuration>
+            <instructions>
+              <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+              <Bundle-Version>${project.version}</Bundle-Version>
+            </instructions>
+          </configuration>
+        </plugin>
+-->
+      </plugins>
     </build>
     <dependencies>
         <dependency>
@@ -46,13 +46,13 @@
             <artifactId>opennms-config</artifactId>
             <scope>compile</scope>
         </dependency>
-        <!--
-                <dependency>
-                    <groupId>org.opennms</groupId>
-                    <artifactId>opennms-config-utils</artifactId>
-                    <scope>compile</scope>
-                </dependency>
-        -->
+<!--
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-config-utils</artifactId>
+            <scope>compile</scope>
+        </dependency>
+-->
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-model</artifactId>
@@ -140,12 +140,12 @@
             <artifactId>opennms-rrd-jrobin</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jrrd2-dependencies</artifactId>
-            <scope>test</scope>
-            <type>pom</type>
-        </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jrrd2-dependencies</artifactId>
+      <scope>test</scope>
+      <type>pom</type>
+    </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-rrdtool-api</artifactId>
@@ -161,12 +161,8 @@
 
     <repositories>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
             <id>opennms-repo</id>
             <name>OpenNMS Repository</name>
             <url>http://maven.opennms.org/content/groups/opennms.org-release</url>

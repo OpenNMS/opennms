@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -100,7 +100,8 @@ public class ServiceInstancePoolTest {
 
     @Before
     public void beforeTest() {
-        this.serviceInstancePool = new ServiceInstancePool(500) {
+        System.getProperties().setProperty("org.opennms.protocols.vmware.housekeepingInterval", "500");
+        this.serviceInstancePool = new ServiceInstancePool() {
             @Override
             protected ServiceInstance create(String hostname, String username, String password) throws MalformedURLException, RemoteException {
                 return new DummyServiceInstance(hostname, username, password);
@@ -139,7 +140,7 @@ public class ServiceInstancePoolTest {
         ServiceInstance s1 = serviceInstancePool.retain("host2.test.de", "username2", "password2");
         Assert.assertEquals("host2.test.de/username2/password2/1/valid", s1.toString());
 
-        // L N N N
+        // L N N N <- s1 s2 s3 s4: (L)ocked, (U)nlocked, (N)ot existing, (I)nvalid
 
         ((DummyServiceInstance) s1).valid = false;
 
@@ -225,9 +226,44 @@ public class ServiceInstancePoolTest {
         Assert.assertNotNull(s3);
         Assert.assertNotNull(s4);
 
-        Assert.assertTrue(((DummyServiceInstance) s1).valid);
-        Assert.assertFalse(((DummyServiceInstance) s2).valid);
-        Assert.assertFalse(((DummyServiceInstance) s3).valid);
-        Assert.assertFalse(((DummyServiceInstance) s4).valid);
+        Assert.assertEquals(true,((DummyServiceInstance) s1).valid);
+        Assert.assertEquals(false, ((DummyServiceInstance) s2).valid);
+        Assert.assertEquals(false, ((DummyServiceInstance) s3).valid);
+        Assert.assertEquals(false, ((DummyServiceInstance) s4).valid);
+    }
+
+    @Test
+    public void testLastAcces() throws MalformedURLException, RemoteException, InterruptedException {
+        final ServiceInstancePoolEntry serviceInstancePoolEntry = new ServiceInstancePoolEntry(this.serviceInstancePool, "hostname","username", "password");
+
+        long l1 = System.currentTimeMillis();
+
+        final ServiceInstance s1 = serviceInstancePoolEntry.retain();
+
+        Assert.assertEquals(1, serviceInstancePoolEntry.getAccessTimestamp().size());
+        Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s1) >= l1);
+
+        long l2 = System.currentTimeMillis();
+
+        final ServiceInstance s2 = serviceInstancePoolEntry.retain();
+
+        Assert.assertEquals(2, serviceInstancePoolEntry.getAccessTimestamp().size());
+        Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s2) >= l2);
+
+        serviceInstancePoolEntry.release(s2);
+
+        long l3 = System.currentTimeMillis();
+
+        final ServiceInstance s3 = serviceInstancePoolEntry.retain();
+
+        Assert.assertEquals(2, serviceInstancePoolEntry.getAccessTimestamp().size());
+        Assert.assertEquals(true, serviceInstancePoolEntry.getAccessTimestamp().get(s3) >= l3);
+
+        serviceInstancePoolEntry.release(s1);
+        ((DummyServiceInstance) s3).valid = false;
+
+        Thread.sleep(10);
+        serviceInstancePoolEntry.expire(1);
+        Assert.assertEquals(0, serviceInstancePoolEntry.getAccessTimestamp().size());
     }
 }
