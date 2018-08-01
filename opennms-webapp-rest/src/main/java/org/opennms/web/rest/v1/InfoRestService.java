@@ -29,15 +29,20 @@
 package org.opennms.web.rest.v1;
 
 import java.text.ParseException;
+import java.time.ZoneId;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 import org.opennms.web.rest.v1.config.TicketerConfig;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +54,7 @@ public class InfoRestService extends OnmsRestService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getInfo() throws ParseException {
+    public Response getInfo(@Context HttpServletRequest request) throws ParseException {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
 
         final InfoDTO info = new InfoDTO();
@@ -58,8 +63,17 @@ public class InfoRestService extends OnmsRestService {
         info.setPackageName(sysInfoUtils.getPackageName());
         info.setPackageDescription(sysInfoUtils.getPackageDescription());
         info.setTicketerConfig(getTicketerConfig());
-
+        info.setDatetimeformatConfig(getDateformatConfig(request));
         return Response.ok().entity(info).build();
+    }
+
+    private DatetimeformatConfig getDateformatConfig(HttpServletRequest request) {
+        DatetimeformatConfig config = new DatetimeformatConfig();
+        String userId = request.getRemoteUser();
+        CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
+        config.setZoneId(ZoneId.systemDefault()); // TODO
+       //  config.setDatetimeformat(format.Pattern); // TODO
+        return config;
     }
 
     private TicketerConfig getTicketerConfig() {
