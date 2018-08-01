@@ -193,8 +193,8 @@
       <bundle dependency="true">wrap:mvn:org.dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
 
-    <feature name="dropwizard-metrics" description="Dropwizard :: Metrics" version="3.1.2">
-      <bundle>mvn:io.dropwizard.metrics/metrics-core/3.1.2</bundle>
+    <feature name="dropwizard-metrics" description="Dropwizard :: Metrics" version="${dropwizardMetricsVersion}">
+      <bundle>mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
     </feature>
 
     <feature name="fop" description="Apache :: XML Graphics :: FOP" version="${fopVersion}">
@@ -1223,6 +1223,7 @@
     </feature>
 
     <feature name="opennms-health" description="OpenNMS :: Health" version="${project.version}">
+        <feature>dropwizard-metrics</feature>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.health/org.opennms.core.health.shell/${project.version}</bundle>
