@@ -80,7 +80,7 @@
     <form class="form-group" action="element/nodeList.htm" method="get">
       <label for="service" class=" col-form-label ">Providing service</label>
       <div class="input-group">
-        <select class="form-control" id="service" name="service">
+        <select class="custom-select" id="service" name="service">
           <c:forEach var="serviceNameId" items="${serviceNameMap}">
             <option value="${serviceNameId.value}">${serviceNameId.key}</option>
           </c:forEach>
