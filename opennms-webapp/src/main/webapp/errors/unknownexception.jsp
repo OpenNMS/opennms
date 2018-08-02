@@ -66,7 +66,7 @@ function toggleDiv(divName) {
 
 <div class="card">
 <div class="card-header">
-  <h3 class="card-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
+  <span>The OpenNMS Web User Interface Has Experienced an Error</span>
 </div>
 <div class="card-body">
 
@@ -162,7 +162,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Error Details</h3>
+    <span>Error Details</span>
   </div>
   <div class="card-body">
     <p>
@@ -173,7 +173,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Exception Trace</h3>
+    <span>Exception Trace</span>
   </div>
   <div class="card-body">
     <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
@@ -182,7 +182,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Request Details</h3>
+    <span>Request Details</span>
   </div>
   <table class="table table-sm table-bordered">
     <tr>
@@ -230,7 +230,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">System Details</h3>
+    <span>System Details</span>
   </div>
   <table class="table table-sm table-bordered">
     <tr>
@@ -262,7 +262,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Options for Reporting This Problem</h3>
+    <span>Options for Reporting This Problem</span>
   </div>
   <div class="card-body">
     <p>
@@ -301,7 +301,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Plain Text Error Details</h3>
+    <span>Plain Text Error Details</span>
   </div>
   <div class="card-body">
     <textarea id="plainTextArea" style="width: 100%; height: 300px;">Please take a few moments to include a description of what you were doing when you encountered this problem. Without knowing the context of the error, it's often difficult for the person looking at the problem to narrow the range of possible causes. Bug reports that do not include any information on the context in which the problem occurred will receive a lower priority and may even be closed as invalid. 

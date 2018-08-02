@@ -98,11 +98,11 @@
 <div class="card">
   <div class="card-header">
     <% if (ifIndex == -1) { %>
-    <h3 class="card-title">Finished Deleting Interface <%= ipAddr %></h3>
+    <span>Finished Deleting Interface <%= ipAddr %></span>
     <% } else if (!"0.0.0.0".equals(ipAddr) && ipAddr != null && ipAddr.length() !=0){ %>
-    <h3 class="card-title">Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></h3>
+    <span>Finished Deleting Interface <%= ipAddr %> with ifIndex <%= ifIndex %></span>
     <% } else { %>
-    <h3 class="card-title">Finished Deleting Interface with ifIndex <%= ifIndex %></h3>
+    <span>Finished Deleting Interface with ifIndex <%= ifIndex %></span>
     <% } %>
   </div>
   <div class="card-body">

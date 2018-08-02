@@ -45,7 +45,7 @@
   <c:when test="${webTable.errors.errorCount > 0}">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title"><spring:message code="error"/></h3>
+        <span><spring:message code="error"/></span>
       </div>
       <div class="card-body">
         <ul class="error">
@@ -60,7 +60,7 @@
   <c:otherwise>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">${webTable.title}</h3>
+        <span>${webTable.title}</span>
       </div>
       <table class="table table-sm table-bordered severity">
         <tr>

@@ -109,7 +109,7 @@
   <div class="col-md-2">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Create a new Destination Path</h3>
+        <span>Create a new Destination Path</span>
       </div>
       <div class="card-body">
         <input type="submit" class="btn btn-secondary" value="New Path"/>
@@ -120,7 +120,7 @@
   <div class="col-md-2">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Modify/Delete an existing Destination Path.</h3>
+        <span>Modify/Delete an existing Destination Path.</span>
       </div>
       <div class="card-body">
         <select NAME="paths" class="form-control">

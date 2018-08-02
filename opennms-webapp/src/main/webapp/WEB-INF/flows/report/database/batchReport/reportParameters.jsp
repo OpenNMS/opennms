@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Report Parameters</h3>
+                <span>Report Parameters</span>
             </div>
             <div class="card-body">
                 <form:form modelAttribute="parameters" role="form" cssClass="form-horizontal">

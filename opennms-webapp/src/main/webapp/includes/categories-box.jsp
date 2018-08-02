@@ -90,7 +90,7 @@
 
 <div class="card fix-subpixel">
   <div class="card-header">
-    <h3 class="card-title"><%= titleName %></h3>
+    <span><%= titleName %></span>
   </div>
 
 <table class="table table-sm severity">

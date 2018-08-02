@@ -61,7 +61,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Please enter a new password and confirm</h3>
+    <span>Please enter a new password and confirm</span>
   </div>
   <div class="card-body">
     <form role="form" class="form-horizontal" method="post" name="goForm">

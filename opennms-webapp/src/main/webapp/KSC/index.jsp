@@ -69,7 +69,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Customized Reports</h3>
+          <span>Customized Reports</span>
         </div>
         <div class="card-body">
           <p>Choose the custom report title to view or modify from the list below. There are {{ reports.length }} custom reports to select from.</p>
@@ -129,7 +129,7 @@
       </div> 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Node &amp; Domain Interface Reports</h3>
+          <span>Node &amp; Domain Interface Reports</span>
         </div>
         <div class="card-body">
           <p>Select resource for desired performance report</p>
@@ -167,7 +167,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Descriptions</h3>
+          <span>Descriptions</span>
         </div>
         <div class="card-body">
           <p>

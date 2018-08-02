@@ -48,7 +48,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Report in progress</h3>
+                <span>Report in progress</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>
@@ -75,7 +75,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Descriptions</h3>
+                <span>Descriptions</span>
             </div>
             <div class="card-body">
                 <p>

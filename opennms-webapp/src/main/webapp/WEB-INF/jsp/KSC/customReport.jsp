@@ -91,7 +91,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Customized Report Configuration</h3>
+    <span>Customized Report Configuration</span>
   </div>
   <div class="card-body">
     <form class="form-horizontal" name="customize_form" method="get" action="<%= baseHref %>KSC/formProcReport.htm">

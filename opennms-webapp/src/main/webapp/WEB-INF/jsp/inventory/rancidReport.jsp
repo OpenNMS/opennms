@@ -48,7 +48,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Generate reports</h3>
+                <span>Generate reports</span>
             </div>
 
             <table class="table table-sm table-bordered">
@@ -58,7 +58,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Inventory</h3>
+                <span>Inventory</span>
             </div>
             <div class="card-body">
                 <form id="inventoryReport" class="form-horizontal" method="post" name="inventoryReport">
@@ -113,7 +113,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header" >
-                <h3 class="card-title">Descriptions</h3>
+                <span>Descriptions</span>
             </div>
             <div class="card-body">
                 <p><b>Date</b> provide a date at which you want to get report.

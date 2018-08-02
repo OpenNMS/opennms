@@ -45,7 +45,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Applications</h3>
+        <span>Applications</span>
       </div>
       <table class="table table-sm">
         <tr>

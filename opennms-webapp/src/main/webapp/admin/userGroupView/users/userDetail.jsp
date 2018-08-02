@@ -72,7 +72,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Details for User: <%=user.getUserId()%></h2>
+        <span>Details for User: <%=user.getUserId()%></span>
       </div>
       <table class="table table-sm">
         <tr>
@@ -209,7 +209,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Duty Schedules:</h2>
+        <span>Duty Schedules:</span>
       </div>
       <table class="table table-sm table-striped table-bordered">
         <thead>

@@ -51,7 +51,7 @@
 
 <div id="status-overview-box" class="card fix-subpixel" style="display: none;">
     <div class="card-header">
-        <h3 class="card-title">Status Overview</h3>
+        <span>Status Overview</span>
     </div>
     <div class="card-body">
         <div id="chart-content" class="row row-centered">

@@ -93,7 +93,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Event <%=event.getId()%></h3>
+        <span>Event <%=event.getId()%></span>
       </div>
 
       <table class="table table-sm severity">
@@ -203,7 +203,7 @@
 
     <div class="card severity">
       <div class="card-header">
-        <h3 class="card-title">Log&nbsp;Message</h3>
+        <span>Log&nbsp;Message</span>
       </div>
       <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getLogMessage(), true)%>
@@ -212,7 +212,7 @@
 
     <div class="card severity">
       <div class="card-header">
-        <h3 class="card-title">Description</h3>
+        <span>Description</span>
       </div>
       <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <%=WebSecurityUtils.sanitizeString(event.getDescription(), true)%>
@@ -221,7 +221,7 @@
 
     <div class="card severity">
       <div class="card-header">
-        <h3 class="card-title">Operator&nbsp;Instructions</h3>
+        <span>Operator&nbsp;Instructions</span>
       </div>
       <div class="card-body severity-<%= event.getSeverity().getLabel().toLowerCase() %>">
         <% if (event.getOperatorInstruction()==null) { %>

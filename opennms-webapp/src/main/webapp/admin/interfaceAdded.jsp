@@ -46,7 +46,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Finished Adding Interface</h3>
+    <span>Finished Adding Interface</span>
   </div>
   <div class="card-body">
     <p>

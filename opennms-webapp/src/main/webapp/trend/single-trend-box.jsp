@@ -40,7 +40,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Trend</h3>
+        <span>Trend</span>
     </div>
     <div class="alert-box card-body">
         <jsp:include page="/trend/trend.htm" flush="false">

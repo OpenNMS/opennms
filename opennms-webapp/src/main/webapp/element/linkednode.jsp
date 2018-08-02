@@ -112,13 +112,13 @@
 <!--  BRIDGE Links -->
 
 <div class="card">
-	<div class="card-header"><h3 class="card-title">
+	<div class="card-header"><span>
 <% if (bridgelinks.isEmpty()) { %>
 		No Bridge Forwarding Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
         ${nodeLabel} Shared Segments found by Enhanced Linkd
 <% } %>
- </h3></div>
+ </span></div>
 		<!-- Link box -->
 	<table class="table table-sm">
 	
@@ -181,13 +181,13 @@
 
 <div class="card">
 
-<div class="card-header"><h3 class="card-title">
+<div class="card-header"><span>
 <%  if (lldpLinks.isEmpty()) { %>
 No LLDP Remote Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
 ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Links found by Enhanced Linkd
 <% } %>
-</h3></div>
+</span></div>
 		<!-- Link box -->
 <table class="table table-sm">
 		
@@ -233,13 +233,13 @@ ${nodeLabel} (ChassidId <%=lldpelem.getLldpChassisId() %>) LLDP Remote Table Lin
 <!-- CDP Links -->
 
 <div class="card">
-<div class="card-header"><h3 class="card-title">
+<div class="card-header"><span>
 <% if (cdpLinks.isEmpty()) { %>
 No CDP Cache Table Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
 ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Links found by Enhanced Linkd
 <% } %>
-</h3></div>
+</span></div>
 <table class="table table-sm">
 	<thead>
 	<tr>
@@ -281,13 +281,13 @@ ${nodeLabel} (Device Id <%=cdpelem.getCdpGlobalDeviceId() %>)CDP Cache Table Lin
 <!-- OSPF Links -->
 
 <div class="card">
-<div class="card-header"><h3 class="card-title">
+<div class="card-header"><span>
 <%   if (ospfLinks.isEmpty()) { %>
 No OSPF Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
 ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links found by Enhanced Linkd
 <% } %>
-</h3></div>
+</span></div>
 <table class="table table-sm">
 		
 	<thead>
@@ -334,13 +334,13 @@ ${nodeLabel} (Router id <%=ospfelem.getOspfRouterId() %>)OSPF Nbr Table Links fo
 
 <div class="card">
 	<div class="card-header">
-		<h3 class="card-title">
+		<span>
 <%   if (isisLinks.isEmpty()) { %>
 No IS-IS Adjacency Links found on ${nodeLabel} by Enhanced Linkd
 <% } else { %>
 ${nodeLabel} (id <%=isiselem.getIsisSysID() %>) IS-IS Adj Table Links found by Enhanced Linkd
 <% } %>
-</h3></div>
+</span></div>
 		<!-- Link box -->
 <table class="table table-sm">
 

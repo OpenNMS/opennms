@@ -55,7 +55,7 @@
 </c:url>
 <div class="card">
 <div class="card-header">
-<h3 class="card-title"><a href="${outageLink}">Recent&nbsp;Outages</a></h3>
+<span><a href="${outageLink}">Recent&nbsp;Outages</a></span>
 </div>
 <table class="table table-sm severity">
 <% if(outages.length == 0) { %>

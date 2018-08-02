@@ -169,7 +169,7 @@ function doDelete() {
             <!-- general info box -->
             <div class="card">
             <div class="card-header">
-              <h3 class="card-title">General</h3>
+              <span>General</span>
             </div>
             <table class="table table-sm">
               <tr>
@@ -204,7 +204,7 @@ function doDelete() {
             <c:if test="${parameters != null}">
               <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Service Parameters</h3>
+                <span>Service Parameters</span>
               </div>
               <table class="table table-sm">
               <c:forEach var="entry" items="${parameters}">
@@ -221,7 +221,7 @@ function doDelete() {
               <c:forEach var="entry" items="${xmlParams}">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title">${entry.key}</h3>
+                    <span>${entry.key}</span>
                   </div>
                   <div class="card-body" style="overflow-x:scroll;">${entry.value}</div>
                 </div>

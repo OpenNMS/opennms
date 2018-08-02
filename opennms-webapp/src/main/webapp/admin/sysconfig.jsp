@@ -79,7 +79,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">OpenNMS Configuration</h3>
+        <span>OpenNMS Configuration</span>
       </div>
       <table class="table table-sm">
         <tr>
@@ -132,7 +132,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">System Configuration</h3>
+        <span>System Configuration</span>
       </div>
       <table class="table table-sm">
         <tr>

@@ -45,7 +45,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Statistics Report: ${model.report.description}</h3>
+    <span>Statistics Report: ${model.report.description}</span>
   </div>
   <div class="card-body">
 

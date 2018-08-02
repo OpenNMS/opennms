@@ -77,7 +77,7 @@
   <c:when test="${fn:length(resultSets) <= 0}">
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">No graphs defined</h3>
+      <span>No graphs defined</span>
     </div>
     <div class="card-body">
       <p>There are no graphs defined for this report.</p>
@@ -88,7 +88,7 @@
   <c:otherwise>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Custom View: ${title}</h3>
+        <span>Custom View: ${title}</span>
       </div>
       <div class="card-body">
         <form class="form-horizontal" name="view_form" method="get" action="<%= baseHref %>KSC/formProcView.htm">

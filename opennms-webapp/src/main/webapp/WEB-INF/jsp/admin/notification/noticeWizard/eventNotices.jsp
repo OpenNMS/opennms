@@ -89,7 +89,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Add a notification to an event or edit an existing event notification</h3>
+    <span>Add a notification to an event or edit an existing event notification</span>
   </div>
   <table class="table table-sm">
     <tr>

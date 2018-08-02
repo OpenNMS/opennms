@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Run Online Report</h3>
+                <span>Run Online Report</span>
             </div>
             <div class="card-body">
                 <form:form modelAttribute="parameters" cssClass="form-horizontal" role="form">

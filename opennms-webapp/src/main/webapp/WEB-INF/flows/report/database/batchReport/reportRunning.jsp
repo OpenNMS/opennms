@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Report Running</h3>
+                <span>Report Running</span>
             </div>
             <div class="card-body">
                 <form:form cssClass="stdform">

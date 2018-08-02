@@ -91,11 +91,11 @@
 
 <div class="card">
   <div class="card-header">
-<h3 class="card-title">Notice <%=notice.getId()%>
+<span>Notice <%=notice.getId()%>
   <% if ( NoticeFactory.canDisplayEvent(notice.getEventId()) ) { %>
     from <a href="event/detail.jsp?id=<%=notice.getEventId()%>">Event <%=notice.getEventId()%></a>
   <% } %>
-</h3>
+</span>
   </div>
 
   <table class="table table-sm severity">
@@ -203,7 +203,7 @@
 <% if (notice.getNumericMessage() != null && !"".equals(notice.getNumericMessage().trim())) { %>
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Numeric Message</h3>
+    <span>Numeric Message</span>
   </div>
   <div class="card-body">
     <%=notice.getNumericMessage()%>
@@ -214,7 +214,7 @@
 <% if (notice.getTextMessage() != null && !"".equals(notice.getTextMessage().trim())) { %>
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Text Message</h3>
+    <span>Text Message</span>
   </div>
   <div class="card-body">
     <pre><%=notice.getTextMessage()%></pre>
@@ -224,7 +224,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Users Notified</h3>
+    <span>Users Notified</span>
   </div>
   <table class="table table-sm severity">
     <tr>

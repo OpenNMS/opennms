@@ -122,7 +122,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">View On-Call Role</h3>
+    <span>View On-Call Role</span>
   </div>
   <table class="table table-sm">
     <tr>
@@ -166,7 +166,7 @@
 
 <div class="card top-buffer">
   <div class="card-header">
-    <h3 class="card-title">On-Call Role Schedule</h3>
+    <span>On-Call Role Schedule</span>
   </div>
 				<form action="<c:url value='${reqUrl}'/>" method="post" name="prevMonthForm">
 					<input type="hidden" name="operation" value="view"/>
@@ -217,7 +217,7 @@
 				  </tr>
 				</c:forEach>
 			</table>
-</div> <!-- card-title -->
+</div>
 
 <form action="<c:url value='${reqUrl}'/>" method="post" name="doneForm">
   <button type="submit" class="btn btn-secondary">Done</button>

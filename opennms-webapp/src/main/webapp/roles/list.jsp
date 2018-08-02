@@ -90,7 +90,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Roles</h3>
+    <span>Roles</span>
   </div>
 
   <table class="table table-sm severity">

@@ -260,7 +260,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Modify User: <%=userid%></h3>
+        <span>Modify User: <%=userid%></span>
       </div>
       <div class="card-body">
         <h3>User Password</h3>
@@ -457,7 +457,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">User Properties</h3>
+        <span>User Properties</span>
       </div>
       <div class="card-body">
         <p>
@@ -518,7 +518,7 @@ Collection<String> dutySchedules = user.getDutySchedules();
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Duty Schedule</h3>
+        <span>Duty Schedule</span>
       </div>
       <table class="table table-sm table-striped table-bordered">
         <thead>

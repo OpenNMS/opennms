@@ -161,9 +161,9 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose the piece of the path that you want to edit from below. When
+        <span>Choose the piece of the path that you want to edit from below. When
           all editing is complete click the <i>Finish</i> button. No changes will
-          be permanent until the <i>Finish</i> button has been clicked.</h3>
+          be permanent until the <i>Finish</i> button has been clicked.</span>
       </div>
       <div class="card-body">
         <div class="form-group">

@@ -63,7 +63,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Outage <%=outage.getId()%></h3>
+    <span>Outage <%=outage.getId()%></span>
   </div>
 
   <table class="table table-sm severity">

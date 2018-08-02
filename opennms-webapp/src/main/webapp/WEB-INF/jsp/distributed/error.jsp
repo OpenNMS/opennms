@@ -41,7 +41,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><spring:message code="error"/></h3>
+    <span><spring:message code="error"/></span>
   </div>
   <div class="card-body">
     <ul class="error">

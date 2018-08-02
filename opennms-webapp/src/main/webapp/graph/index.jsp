@@ -61,7 +61,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Resources</h3>
+          <span>Resources</span>
         </div>
         <div class="card-body">
           <div class="radio">
@@ -111,7 +111,7 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Network Performance Data</h3>
+          <span>Network Performance Data</span>
         </div>
         <div class="card-body">
           <p>

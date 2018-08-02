@@ -50,7 +50,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Discovery Configuration Updated</h3>
+    <span>Discovery Configuration Updated</span>
   </div>
   <div class="card-body">
     <p>

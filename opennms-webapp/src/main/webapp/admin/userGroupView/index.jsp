@@ -47,7 +47,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Users and Groups</h3>
+        <span>Users and Groups</span>
       </div>
       <div class="card-body">
         <p>
@@ -71,7 +71,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Users</h3>
+        <span>Users</span>
       </div>
       <div class="card-body">
         <p>
@@ -82,7 +82,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Groups</h3>
+        <span>Groups</span>
       </div>
       <div class="card-body">
         <p>
@@ -93,7 +93,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Roles</h3>
+        <span>Roles</span>
       </div>
       <div class="card-body">
         <p>

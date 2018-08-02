@@ -30,7 +30,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">System Diagnostics</h3>
+        <span>System Diagnostics</span>
     </div>
     <div class="card-body">
         <table class="table">

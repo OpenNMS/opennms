@@ -59,7 +59,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-      	<h3 class="card-title">Alarm Queries</h3>
+      	<span>Alarm Queries</span>
       </div>
       <div class="card-body">
         <form action="alarm/detail.htm" method="get" role="form" class="form-inline pull-right">
@@ -79,7 +79,7 @@
     </div>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Alarm Filter Favorites</h3>
+        <span>Alarm Filter Favorites</span>
       </div>
       <div class="card-body">
 	      <onms:alert/>
@@ -124,7 +124,7 @@
 	<div class="col-md-6">
 		<div class="card">
 			<div class="card-header">
-				<h3 class="card-title">Outstanding and acknowledged alarms</h3>
+				<span>Outstanding and acknowledged alarms</span>
 			</div>
 			<div class="card-body">
 				<p>

@@ -48,7 +48,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Documentation</h3>
+        <span>Documentation</span>
     </div>
     <div class="card-body">
         <span id="online-documentation" style="display:none;">

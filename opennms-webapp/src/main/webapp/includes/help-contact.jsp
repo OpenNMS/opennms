@@ -30,7 +30,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Get in Contact</h3>
+        <span>Get in Contact</span>
     </div>
     <div class="card-body">
         <table class="table">

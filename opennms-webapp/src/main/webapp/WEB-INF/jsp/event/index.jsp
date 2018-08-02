@@ -56,7 +56,7 @@
   <div class="col-md-6">
       <div class="card">
       <div class="card-header">
-      	<h3 class="card-title">Event Queries</h3>
+      	<span>Event Queries</span>
       </div>
       <div class="card-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
@@ -77,7 +77,7 @@
 
     <div class="card">
     <div class="card-header">
-    	<h3 class="card-title">Event Filter Favorites</h3>
+    	<span>Event Filter Favorites</span>
     </div>
     <div class="card-body">
     <onms:alert/>
@@ -120,7 +120,7 @@
   <div class="col-md-6">
 	<div class="card">
 	<div class="card-header">
-      <h3 class="card-title">Outstanding and acknowledged events</h3>
+      <span>Outstanding and acknowledged events</span>
  	</div>
  	<div class="card-body">
       <p>Events can be <em>acknowledged</em>, or removed from the view of other users, by

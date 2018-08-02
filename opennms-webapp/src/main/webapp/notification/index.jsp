@@ -45,7 +45,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Notification queries</h3>
+        <span>Notification queries</span>
       </div>
       <div class="card-body">
         <div class="row">
@@ -94,7 +94,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Outstanding and Acknowledged Notices</h3>
+            <span>Outstanding and Acknowledged Notices</span>
           </div>
           <div class="card-body">
             <p>When important events are detected by OpenNMS, users may 
@@ -130,7 +130,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Notification Escalation</h3>
+            <span>Notification Escalation</span>
           </div>
           <div class="card-body">
             <p>Once a notice is sent, it is considered <em>outstanding</em> until 

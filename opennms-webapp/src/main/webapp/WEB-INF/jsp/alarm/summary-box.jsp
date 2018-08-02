@@ -48,7 +48,7 @@
 <c:url var="headingLink" value="alarm/list.htm"/>
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><a href="${headingLink}">Nodes with Pending Problems</a></h3>
+    <span><a href="${headingLink}">Nodes with Pending Problems</a></span>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">

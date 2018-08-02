@@ -38,7 +38,7 @@
 
 <div class="card fix-subpixel">
     <div class="card-header">
-        <h3 class="card-title">Regional Status</h3>
+        <span>Regional Status</span>
     </div>
     <div>
         <jsp:include page="includes/map.jsp">

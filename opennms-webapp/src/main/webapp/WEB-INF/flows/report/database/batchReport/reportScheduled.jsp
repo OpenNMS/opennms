@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Report Scheduled</h3>
+                <span>Report Scheduled</span>
             </div>
             <div class="boxWrapper">
                 <form:form cssClass="stdform">

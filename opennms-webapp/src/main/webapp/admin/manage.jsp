@@ -165,7 +165,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Manage and Unmanage Interfaces and Services</h3>
+    <span>Manage and Unmanage Interfaces and Services</span>
   </div>
   <div class="card-body">
           <p>The two tables below represent each managed and unmanged node, interface, and service combination. The 'Status' column indicates if the interface or

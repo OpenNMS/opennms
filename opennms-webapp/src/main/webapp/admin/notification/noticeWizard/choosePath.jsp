@@ -127,7 +127,7 @@
   <div class="col-md-7">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose the destination path and enter the information to send via the notification</h3>
+        <span>Choose the destination path and enter the information to send via the notification</span>
       </div>
       <table class="table table-sm">
         <tr>

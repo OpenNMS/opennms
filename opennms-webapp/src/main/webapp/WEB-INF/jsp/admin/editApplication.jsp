@@ -47,7 +47,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Edit application ${fn:escapeXml(model.application.name)}</h3>
+        <span>Edit application ${fn:escapeXml(model.application.name)}</span>
       </div>
       <div class="card-body">
         <p>

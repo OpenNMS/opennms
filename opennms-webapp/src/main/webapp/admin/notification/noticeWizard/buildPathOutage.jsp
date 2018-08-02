@@ -86,7 +86,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Define the Critical Path</h3>
+        <span>Define the Critical Path</span>
       </div>
       <div class="card-body">
         <div class="form-group">
@@ -109,7 +109,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Build the rule that determines which nodes will be subject to this critical path.</h3>
+        <span>Build the rule that determines which nodes will be subject to this critical path.</span>
       </div>
       <div class="card-body">
             <p>Filtering on TCP/IP address uses a very flexible format, allowing you

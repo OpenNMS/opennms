@@ -78,7 +78,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Choose the interval to wait between contacting each member in the groups.</h3>
+    <span>Choose the interval to wait between contacting each member in the groups.</span>
   </div>
   <div class="card-body">
     <div class="row">

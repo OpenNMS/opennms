@@ -30,7 +30,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Software Management</h3>
+        <span>Software Management</span>
     </div>
     <div class="card-body">
         <table class="table">

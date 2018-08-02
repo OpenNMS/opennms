@@ -46,7 +46,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Import and Export Assets</h3>
+        <span>Import and Export Assets</span>
       </div>
       <div class="card-body">
         <p>
@@ -62,7 +62,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Importing Asset Information</h3>
+        <span>Importing Asset Information</span>
       </div>
       <div class="card-body">
         <p>
@@ -74,7 +74,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Exporting Asset Information</h3>
+        <span>Exporting Asset Information</span>
       </div>
       <div class="card-body">
         <p>

@@ -106,7 +106,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Existing Notifications for UEI <%=uei%></h3>
+    <span>Existing Notifications for UEI <%=uei%></span>
   </div>
       <table class="table table-sm">
       	 <tr><th>Name</th><th>Description</th><th>Rule</th><th>Destination path</th><th>Varbinds</th><th>Actions</th></tr>

@@ -46,7 +46,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Statistics Report List</h3>
+    <span>Statistics Report List</span>
   </div>
   <div class="card-body">
 

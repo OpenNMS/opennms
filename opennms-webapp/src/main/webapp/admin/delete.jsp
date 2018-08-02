@@ -139,7 +139,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Delete Nodes</h3>
+    <span>Delete Nodes</span>
   </div>
   <div class="card-body">
 	<P>The nodes present in the system are listed below. To permanently delete a node (and all associated

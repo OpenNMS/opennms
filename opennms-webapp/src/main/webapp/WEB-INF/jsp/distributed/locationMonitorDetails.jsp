@@ -48,7 +48,7 @@
   <c:when test="${model.errors.errorCount > 0}">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title"><spring:message code="error"/></h3>
+        <span><spring:message code="error"/></span>
       </div>
       <div class="card-body">
         <ul class="error">
@@ -64,7 +64,7 @@
     <c:set var="monitor" value="${model.locationMonitors[0]}"/>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.title"/></h3>
+        <span><spring:message code="distributed.locationMonitorDetails.title"/></span>
       </div>
       <table class="table table-sm">
         <tr>
@@ -117,7 +117,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title"><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></h3>
+        <span><spring:message code="distributed.locationMonitorDetails.additionalTitle"/></span>
       </div>
       <table class="table table-sm">
         <c:forEach items="${monitor.additionalDetails}" var="detail">
@@ -144,7 +144,7 @@
       
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Manage Remote Poller</h3>
+          <span>Manage Remote Poller</span>
         </div>
         <div class="card-body">
           <form action="admin/distributed/locationMonitorDelete.htm" method="post" name="deleteForm">

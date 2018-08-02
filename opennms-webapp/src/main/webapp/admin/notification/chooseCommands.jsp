@@ -105,9 +105,9 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Choose the commands to use for each user and group. More than one
+    <span>Choose the commands to use for each user and group. More than one
     command can be chosen for each (except for email addresses). Also
-    choose the desired behavior for automatic notification on "UP" events.</h3>
+    choose the desired behavior for automatic notification on "UP" events.</span>
   </div>
   <div class="card-body">
     <div class="row">

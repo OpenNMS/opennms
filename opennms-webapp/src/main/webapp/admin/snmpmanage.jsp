@@ -83,7 +83,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Manage SNMP Data Collection per Interface</h3>
+    <span>Manage SNMP Data Collection per Interface</span>
   </div>
   <div class="card-body">
     <p>

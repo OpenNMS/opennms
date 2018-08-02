@@ -100,7 +100,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Admin Options</h3>
+        <span>Admin Options</span>
       </div>
       <div class="card-body">
   <% if (!isRequisitioned) { %>
@@ -152,7 +152,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Option Descriptions</h3>
+        <span>Option Descriptions</span>
       </div>
       <div class="card-body">
   <% if (!isRequisitioned) { %>

@@ -166,7 +166,7 @@ action="admin/notification/destinationWizard" >
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Choose the users and groups to send the notice to.</h3>
+    <span>Choose the users and groups to send the notice to.</span>
   </div>
   <table class="table table-sm table-borderless">
         <tr>

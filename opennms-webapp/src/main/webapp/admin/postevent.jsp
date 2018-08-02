@@ -146,7 +146,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Event Sent...</h3>
+    <span>Event Sent...</span>
   </div>
   <div class="card-body">
     <pre><c:out value="<%=eventXml%>" /></pre>

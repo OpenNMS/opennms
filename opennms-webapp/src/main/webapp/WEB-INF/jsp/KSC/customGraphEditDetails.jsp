@@ -84,7 +84,7 @@
   <c:when test="${fn:length(prefabGraphs) == 0}">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">No graph options available</h3>
+        <span>No graph options available</span>
       </div>
       <div class="card-body">
         <p>
@@ -101,7 +101,7 @@
   <c:otherwise>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Sample graph</h3>
+        <span>Sample graph</span>
       </div>
       <table class="table">
         <tr>
@@ -142,7 +142,7 @@
     </div>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose graph options</h3>
+        <span>Choose graph options</span>
       </div>
       <div class="card-body">
         <form class="form-horizontal" name="customize_graph" method="get" action="<%= baseHref %>KSC/formProcGraph.htm">

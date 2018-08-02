@@ -47,7 +47,7 @@
     <div class="col-md-12">
         <div class="card bg-success">
             <div class="card-header">
-                <h3 class="card-title">Report Delivery Options</h3>
+                <span>Report Delivery Options</span>
             </div>
             <div class="card-body">
                 <form:form commandName="deliveryOptions" cssClass="form-horizontal">

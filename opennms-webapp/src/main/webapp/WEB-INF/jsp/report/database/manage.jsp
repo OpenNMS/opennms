@@ -59,7 +59,7 @@
             <c:when test="${empty pagedListHolder.pageList}">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Database Report List</h3>
+                        <span>Database Report List</span>
                     </div>
                     <div class="card-body">
                         <p>None found.</p>

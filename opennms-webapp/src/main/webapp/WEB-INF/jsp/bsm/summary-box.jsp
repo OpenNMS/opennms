@@ -35,9 +35,7 @@
 <!-- bsm/summary-box.htm -->
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">
       <a href="#">Business Services with Pending Problems</a>
-    </h3>
   </div>
   <c:choose>
     <c:when test="${empty services}">

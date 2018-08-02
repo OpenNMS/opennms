@@ -60,7 +60,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><spring:message code="distributed.pollerStatus.title"/></h3>
+    <span><spring:message code="distributed.pollerStatus.title"/></span>
   </div>
   <table class="table table-sm table-bordered severity">
     <tr>

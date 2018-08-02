@@ -66,7 +66,7 @@
 
 <div class="card pane-default">
   <div class="card-header">
-    <h3 class="card-title">Edit On-Call Role</h3>
+    <span>Edit On-Call Role</span>
   </div>
   <div class="card-body">
     <form role="form" class="form-horizontal" action="<c:url value='${reqUrl}'/>" method="post" name="editForm">

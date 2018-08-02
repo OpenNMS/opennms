@@ -47,7 +47,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Discovery</h3>
+        <span>Discovery</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -61,7 +61,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Configuration</h3>
+        <span>Configuration</span>
       </div>
       <div class="card-body">
         <p>The place to configure the Discovery service.

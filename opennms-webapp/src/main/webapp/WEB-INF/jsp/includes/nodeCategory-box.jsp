@@ -37,12 +37,12 @@
 
 <div id="category-box" class="card">
     <div class="card-header">
-        <h3 class="card-title">
+        <span>
             Surveillance Category Memberships
             <c:if test="${isAdmin == 'true'}">
                 (<a href="<c:url value="admin/categories.htm?edit&amp;node=${param.node}"/>">Edit</a>)
             </c:if>
-        </h3>
+        </span>
     </div>
     <div style="max-height: 15em; overflow-x: auto">
         <table class="table table-sm" style="margin-bottom: 0px">

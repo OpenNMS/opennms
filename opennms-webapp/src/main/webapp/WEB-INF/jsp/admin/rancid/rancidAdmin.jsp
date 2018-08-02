@@ -49,7 +49,7 @@
     <!-- general info box -->
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">General (Status: ${model.status_general})</h3>
+        <span>General (Status: ${model.status_general})</span>
       </div>
       <table class="table table-sm">
 		<tr>
@@ -69,7 +69,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Rancid Info</h3>
+        <span>Rancid Info</span>
       </div>
       <table class="table table-sm">
 	<c:choose>
@@ -219,7 +219,7 @@
     <c:when test="${model.permitModifyClogin}">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Clogin Info</h3>
+        <span>Clogin Info</span>
       </div>
 	<form id="newUserForm" method="post" name="newUserForm" onsubmit="return validateFormInput();">
 		 <input type="hidden" name="groupName" value="${model.groupname}"> 
@@ -273,7 +273,7 @@
 	 <c:otherwise>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Clogin Info (Requisitioned Node)</h3>
+        <span>Clogin Info (Requisitioned Node)</span>
       </div>
       <table class="table table-sm">
 			<tr>
@@ -312,7 +312,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Select Group</h3>
+        <span>Select Group</span>
       </div>
       <table class="table table-sm">
 	<tr>
@@ -328,7 +328,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Descriptions</h3>
+        <span>Descriptions</span>
       </div>
       <div class="card-body">
         <p> 

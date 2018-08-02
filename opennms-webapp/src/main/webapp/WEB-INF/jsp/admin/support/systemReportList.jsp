@@ -69,7 +69,7 @@ function toggle(box, field)
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</h3>
+    <span>Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</span>
   </div>
   <div class="card-body">
     <p>Choose which plugins to enable:</p>
@@ -81,7 +81,7 @@ function toggle(box, field)
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Report Type</h3>
+    <span>Report Type</span>
   </div>
   <div class="card-body">
     <p>Choose which report to use:</p>

@@ -89,7 +89,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Current Label</h3>
+        <span>Current Label</span>
       </div>
       <div class="card-body">
         <p>
@@ -102,7 +102,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose a New Label</h3>
+        <span>Choose a New Label</span>
       </div>
       <div class="card-body">
         <p>

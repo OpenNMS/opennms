@@ -100,7 +100,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Finished Deleting <c:out value="<%=serviceName%>"/> Service on <c:out value="<%=ipAddr%>"/></h3>
+    <span>Finished Deleting <c:out value="<%=serviceName%>"/> Service on <c:out value="<%=ipAddr%>"/></span>
   </div>
   <div class="card-body">
     <p>

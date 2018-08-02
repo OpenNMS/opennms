@@ -7,7 +7,7 @@
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title"><a href="graph/index.jsp">Resource Graphs</a></h3>
+      <span><a href="graph/index.jsp">Resource Graphs</a></span>
     </div>
     <div class="card-body">
       <onms-search-nodes />
@@ -16,7 +16,7 @@
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title"><a href="KSC/index.jsp">KSC Reports</a></h3>
+      <span><a href="KSC/index.jsp">KSC Reports</a></span>
     </div>
     <div class="card-body">
       <onms-search-ksc />

@@ -188,7 +188,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">General Settings</h3>
+        <span>General Settings</span>
       </div>
       <div class="list-group">
         <div class="list-group-item">
@@ -262,7 +262,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   <div class="col-xs-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Specific Addresses</h3>
+        <span>Specific Addresses</span>
       </div>
       <%if(currConfig.getSpecifics().size()>0){
             Specific[] specs = currConfig.getSpecifics().toArray(new Specific[0]);
@@ -303,7 +303,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   <div class="col-xs-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Include URLs</h3>
+        <span>Include URLs</span>
       </div>
 			    <%if(currConfig.getIncludeUrls().size()>0){
 			        IncludeUrl[] urls = currConfig.getIncludeUrls().toArray(new IncludeUrl[0]);
@@ -344,7 +344,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   <div class="col-xs-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Include Ranges</h3>
+        <span>Include Ranges</span>
       </div>
 				    <%if(currConfig.getIncludeRanges().size()>0){
 					    IncludeRange[] irange = currConfig.getIncludeRanges().toArray(new IncludeRange[0]);
@@ -389,7 +389,7 @@ for (Requisition requisition : reqAccessService.getRequisitions()) {
   <div class="col-xs-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Exclude Ranges</h3>
+        <span>Exclude Ranges</span>
       </div>
 			    <%if(currConfig.getExcludeRanges().size()>0){
 				    ExcludeRange[] irange = currConfig.getExcludeRanges().toArray(new ExcludeRange[0]);

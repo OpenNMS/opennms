@@ -54,7 +54,7 @@
         <!-- general info box -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">General (Status: ${model.status_general})</h3>
+                <span>General (Status: ${model.status_general})</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>
@@ -74,7 +74,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Rancid info</h3>
+                <span>Rancid info</span>
             </div>
 
             <table class="table table-sm table-bordered">
@@ -103,7 +103,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Configuration info</h3>
+                <span>Configuration info</span>
             </div>
 
 
@@ -124,7 +124,7 @@
         <!-- general info box -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Inventory Items</h3>
+                <span>Inventory Items</span>
             </div>
             <div class="card-body">
                 <c:forEach items="${model.inventory}" var="invel" varStatus="status">

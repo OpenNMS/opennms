@@ -158,7 +158,7 @@
     <!-- general info box -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">General (Status: ${model.status_general})</h3>
+          <span>General (Status: ${model.status_general})</span>
         </div>
         <table class="table table-sm">
 		<tr>
@@ -178,7 +178,7 @@
 
       <div class="card">
         <div class="card-header">
-	  <h3 class="card-title">Software Images Stored</h3>
+	  <span>Software Images Stored</span>
         </div>
 	<table class="table table-sm">
 	<tr>
@@ -202,7 +202,7 @@
 
       <div class="card">
         <div class="card-header">
-	  <h3 class="card-title">Manage Images Stored</h3>
+	  <span>Manage Images Stored</span>
         </div>
 	<table class="table table-sm">
 	<c:choose>		
@@ -249,7 +249,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Descriptions</h3>
+        <span>Descriptions</span>
       </div>
       <div class="card-body">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.

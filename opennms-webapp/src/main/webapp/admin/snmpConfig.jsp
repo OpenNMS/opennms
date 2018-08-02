@@ -270,7 +270,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">SNMP Config Lookup</h3>
+        <span>SNMP Config Lookup</span>
       </div>
       <div class="card-body">
         <form role="form" class="form-horizontal" method="post" name="snmpConfigGetForm" action="admin/snmpConfig?action=get">
@@ -304,7 +304,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Descriptions</h3>
+        <span>Descriptions</span>
       </div>
       <div class="card-body">
 		<p>
@@ -341,7 +341,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Updating SNMP Configuration</h3>
+        <span>Updating SNMP Configuration</span>
       </div>
       <div class="card-body">
           <div class="form-group">
@@ -466,7 +466,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6 hidden snmp-v1 snmp-v2c">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">v1/v2c specific parameters</h3>
+        <span>v1/v2c specific parameters</span>
       </div>
       <div class="card-body">
         <div class="form-group">
@@ -496,7 +496,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6 hidden snmp-v3">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">v3 specific parameters</h3>
+        <span>v3 specific parameters</span>
       </div>
       <div class="card-body">
         <div class="form-group">
@@ -615,7 +615,7 @@ if (request.getAttribute("success") != null) {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Save Options</h3>
+        <span>Save Options</span>
       </div>
       <div class="card-body">
         <div class="form-group">

@@ -58,7 +58,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><c:out value="${webTable.title}" /></h3>
+    <span><c:out value="${webTable.title}" /></span>
   </div>
   <table class="table table-sm table-bordered severity">
     <tr>

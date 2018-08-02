@@ -121,7 +121,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
   <div class="col-md-4">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Instrumentation Log Statistics</h3>
+        <span>Instrumentation Log Statistics</span>
       </div>
       <div class="card-body">
         <p>
@@ -156,7 +156,7 @@ pageContext.setAttribute("searchString", searchString==null?"":Util.encode(searc
   <div class="col-md-4">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Filtering</h3>
+        <span>Filtering</span>
       </div>
       <div class="card-body">
         <form id="ILRfilter" action="admin/nodemanagement/instrumentationLogReader.jsp" method="get" style="display:inline">

@@ -71,7 +71,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Surveillance Categories</h3>
+    <span>Surveillance Categories</span>
   </div>
   <table class="table table-sm">
     <tr>

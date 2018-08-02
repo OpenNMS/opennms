@@ -51,7 +51,7 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Commercial Support</h3>
+                        <span>Commercial Support</span>
                     </div>
                     <div class="card-body">
 
@@ -146,7 +146,7 @@
                 <!-- no account session found, ask for login -->
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Commercial Support</h3>
+                        <span>Commercial Support</span>
                     </div>
                     <div class="card-body">
 

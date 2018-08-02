@@ -66,7 +66,7 @@
 
 <div class="card">
 	<div class="card-header">
-		<h3 class="card-title"><a href="notification/index.jsp">Notifications</a></h3>
+		<span><a href="notification/index.jsp">Notifications</a></span>
 	</div>
 	<div class="card-body">
 	<ul class="list-unstyled">

@@ -50,7 +50,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Discovery Scan Started</h3>
+    <span>Discovery Scan Started</span>
   </div>
   <div class="card-body">
     <p>

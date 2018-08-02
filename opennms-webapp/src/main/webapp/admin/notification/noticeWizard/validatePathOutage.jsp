@@ -79,7 +79,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">
+    <span>
     <% if (showNodes != null && showNodes.equals("on")) { %>
         Check the nodes below to ensure that the rule has given the expected results.
         If it hasn't click the 'Rebuild' link below the table. If the results look good
@@ -88,7 +88,7 @@
         The rule is valid. Click the 'Rebuild' link to change the rule or else continue
         by clicking the 'Finish' link.
     <% } %>
-    </h3>
+    </span>
   </div>
   <div class="card-body">
       Current Rule: <%=newRule%>

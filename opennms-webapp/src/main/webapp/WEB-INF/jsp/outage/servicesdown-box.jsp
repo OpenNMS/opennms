@@ -48,7 +48,7 @@
 <c:url var="headingLink" value="outage/list.htm"/>
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><a href="${headingLink}">Nodes with Outages</a></h3>
+    <span><a href="${headingLink}">Nodes with Outages</a></span>
   </div>
   <div class="card-body">
     <c:choose>

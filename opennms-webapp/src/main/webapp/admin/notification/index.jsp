@@ -44,7 +44,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Configure Notifications</h3>
+        <span>Configure Notifications</span>
       </div>
       <div class="card-body">
         <p>
@@ -63,7 +63,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Event Notifications</h3>
+        <span>Event Notifications</span>
       </div>
       <div class="card-body">
         <p>
@@ -76,7 +76,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Destination Paths</h3>
+        <span>Destination Paths</span>
       </div>
       <div class="card-body">
         <p>
@@ -91,7 +91,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Path Outages</h3>
+        <span>Path Outages</span>
       </div>
       <div class="card-body">
         <p>

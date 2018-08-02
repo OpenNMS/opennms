@@ -82,14 +82,14 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title"><% String mode = request.getParameter("mode");
+    <span><% String mode = request.getParameter("mode");
            if ("failed".equals(mode)) { %>
               <font color="FF0000">The rule as entered is invalid, possibly due to a malformed TCP/IP address or invalid
 		      rule syntax. Please correct the rule to continue.</font>
            <% } else { %>
               Build the rule that determines if a notification is sent for this event based on the interface and service information contained in the event.
            <% } %>
-    </h3>
+    </span>
   </div>
       <table class="table table-sm">
         <tr>

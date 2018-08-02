@@ -74,10 +74,10 @@
 <div class="card">
   <div class="card-header">
     <%if ("redo".equals(request.getParameter("action"))) { %>
-      <h3 class="card-title">The user <%=request.getParameter("userID")%> already exists.
-        Please type in a different user ID.</h3>
+      <span>The user <%=request.getParameter("userID")%> already exists.
+        Please type in a different user ID.</span>
     <%} else { %>
-      <h3 class="card-title">Please enter a user ID and password below</h3>
+      <span>Please enter a user ID and password below</span>
     <%}%>
   </div>
   <div class="card-body">

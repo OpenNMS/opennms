@@ -35,9 +35,7 @@
 <!-- application/summary-box.htm -->
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">
-      <a href="#">Applications with Pending Problems</a>
-    </h3>
+    <a href="#">Applications with Pending Problems</a>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">

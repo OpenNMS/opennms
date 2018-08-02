@@ -166,7 +166,7 @@
 	<c:forEach var="resultSet" items="${results.graphResultSets}">
     <div class="card text-center" id="card-resource${resultSet.index}">
       <div class="card-header">
-        <h3 class="card-title">
+        <span>
             ${resultSet.resource.parent.resourceType.label}:
             <c:choose>
                 <c:when test="${(!empty resultSet.resource.parent.link) && loggedIn}">
@@ -197,7 +197,7 @@
                     </c:otherwise>
                 </c:choose>
             </c:if>
-        </h3>
+        </span>
      </div> <!-- card-header -->
      <div class="card-body">
         <div growl></div>

@@ -56,7 +56,7 @@ function toggleFormEnablement() {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Edit surveillance categories on ${model.node.label}</h3>
+        <span>Edit surveillance categories on ${model.node.label}</span>
       </div>
       <div class="card-body">
         <p>
@@ -105,7 +105,7 @@ function toggleFormEnablement() {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Warning</h3>
+        <span>Warning</span>
       </div>
       <div class="card-body">
         <p>

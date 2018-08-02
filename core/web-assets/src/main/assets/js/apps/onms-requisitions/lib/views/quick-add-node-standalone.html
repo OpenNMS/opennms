@@ -15,19 +15,19 @@
     <form name="quickAddNodeForm">
     <fieldset ng-disabled="isSaving">
       <div class="card">
-        <div class="card-header"><h3 class="card-title">Basic Attributes (required)</h3></div>
+        <div class="card-header"><span>Basic Attributes (required)</span></div>
         <div class="card-body" ng-include="quickAddPanelBasicView"></div>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">SNMP Parameters (optional)</h3></div>
+        <div class="card-header"><span>SNMP Parameters (optional)</span></div>
         <div class="card-body" ng-include="quickAddPanelSnmpView"></div>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">Surveillance Category Memberships (optional)</h3></div>
+        <div class="card-header"><span>Surveillance Category Memberships (optional)</span></div>
         <div class="card-body" ng-include="quickAddPanelCategoriesView"></div>
       </div>
       <div class="card">
-        <div class="card-header"><h3 class="card-title">CLI Authentication Parameters (optional)</h3></div>
+        <div class="card-header"><span>CLI Authentication Parameters (optional)</span></div>
         <div class="card-body" ng-include="quickAddPanelCliView"></div>
       </div>
       <div class="form-group">
@@ -41,7 +41,7 @@
 
   <div class="col-md-6">
     <div class="card">
-      <div class="card-header"><h3 class="card-title">Node Quick-Add Help</h3></div>
+      <div class="card-header"><span>Node Quick-Add Help</span></div>
       <div class="card-body" ng-include="quickAddPanelHelpView"></div>
     </div>
   </div> <!-- column -->

@@ -92,7 +92,7 @@
   <div class="col-md-5">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Capability Rescan</h3>
+        <span>Capability Rescan</span>
       </div>
       <div class="card-body">
         <p>Are you sure you want to rescan the <nobr><%=nodeLabel%></nobr>
@@ -119,7 +119,7 @@
   <div class="col-md-7">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Rescan Node</h3>
+        <span>Rescan Node</span>
       </div>
       <div class="card-body">
         <p>

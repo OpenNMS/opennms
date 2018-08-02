@@ -76,7 +76,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Search Asset Information</h3>
+            <span>Search Asset Information</span>
           </div>
           <div class="card-body">
             <div class="row">
@@ -108,7 +108,7 @@
       <div class="col-md-12">
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Assets with Asset Numbers</h3>
+            <span>Assets with Asset Numbers</span>
           </div>
           <div class="card-body">
             <ul class="list-unstyled" style="width:48%; margin-right:2%; float:left;">
@@ -132,7 +132,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Assets Inventory</h3>
+        <span>Assets Inventory</span>
       </div>
       <div class="card-body">
         <p>The OpenNMS system provides a means for you to easily track and share 

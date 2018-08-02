@@ -80,7 +80,7 @@
   <div class="card-header">
 <c:choose>
   <c:when test="${command.listInterfaces}">
-    <h3 class="card-title">Nodes and their interfaces</h3>
+    <span>Nodes and their interfaces</span>
   </c:when>
 
   <c:otherwise>
@@ -109,7 +109,7 @@
         }
       %>
     </select>
-    <h3 class="card-title"><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></h3>
+    <span><span>Nodes</span><span style="padding-left: 32px;"><a href="javascript:toggleClassDisplay('NLdbid', '', 'inline');"><i class="fa fa-database fa-lg icon-black" title="Toggle database IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfs', '', 'inline');"><i class="fa fa-list-alt fa-lg icon-black" title="Toggle requisition names"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLfid', '', 'inline');"><i class="fa fa-qrcode fa-lg icon-black" title="Toggle foreign IDs"></i></a>&nbsp;&nbsp;<a href="javascript:toggleClassDisplay('NLloc', '', 'inline');"><i class="fa fa-map-marker fa-lg icon-black" title="Toggle locations"></i></a></span></span>
   </c:otherwise>
 </c:choose>
   </div> <!-- card-header -->

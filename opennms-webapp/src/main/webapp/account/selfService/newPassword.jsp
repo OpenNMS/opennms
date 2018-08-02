@@ -63,7 +63,7 @@
   <div class="col-md-4">
     <div class="card">
        <div class="card-header">
-        <h3 class="card-title">Please enter the old and new passwords and confirm.</h3>
+        <span>Please enter the old and new passwords and confirm.</span>
       </div>
       <div class="card-body">
         <form role="form" method="post" name="goForm" onSubmit="verifyGoForm()">

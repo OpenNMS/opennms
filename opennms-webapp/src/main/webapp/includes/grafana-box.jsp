@@ -113,7 +113,7 @@
 
 <div id="grafana-box" class="card">
     <div class="card-header">
-        <h3 class="card-title">Grafana Dashboards</h3>
+        <span>Grafana Dashboards</span>
     </div>
 
     <div id="dashboardlist" class="card-body">

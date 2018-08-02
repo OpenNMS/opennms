@@ -39,12 +39,12 @@
 <div id="application-box" class="card">
 
 <div class="card-header">
-<h3 class="card-title">
+<span>
   Application Memberships
   <c:if test="${isAdmin == 'true'}">
     (<a href="<c:url value='admin/applications.htm?edit&ifserviceid=${service.id}'/>">Edit</a>)
   </c:if>
-</h3>
+</span>
 </div>
 
 <table class="table table-sm">

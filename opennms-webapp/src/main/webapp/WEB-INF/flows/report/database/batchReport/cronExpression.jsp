@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Cron Expression</h3>
+                <span>Cron Expression</span>
             </div>
             <div class="card-body">
                 <p>We use Quartz Scheduler, for information on cron syntax used in Quartz Scheduler there is a great tutorial <a href="http://www.quartz-scheduler.org/documentation/quartz-1.x/tutorials/crontrigger" target="_blank">here</a></p>

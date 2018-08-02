@@ -67,7 +67,7 @@ pageContext.setAttribute("resourceId", resourceId);
     <div class="col-md-12 text-center">
       <div class="card text-center">
       <div class="card-header">
-        <h3 class="card-title">NRTG Graph for <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
+        <span>NRTG Graph for <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
       </div> <!-- card-header -->
       <div class="card-body">
         <div class="graph-container" data-graph-report="<c:out value="${report}"/>" data-graph-resource="<c:out value="${resourceId}"/>"></div>

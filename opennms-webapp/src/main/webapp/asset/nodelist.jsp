@@ -70,7 +70,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Assets</h3>
+        <span>Assets</span>
       </div>
     <% if( assets.length > 0 ) { %>
         <table class="table table-sm table-bordered">

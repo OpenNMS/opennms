@@ -444,7 +444,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.asset && (! empty model.asset.description || ! empty model.asset.comments)}">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Asset Information</h3>
+      <span>Asset Information</span>
     </div>
     <table class="table table-sm">
       <tr>
@@ -464,7 +464,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.node.sysObjectId}">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">SNMP Attributes</h3>
+      <span>SNMP Attributes</span>
     </div>
     
     <table class="table table-sm">
@@ -496,7 +496,7 @@ function confirmAssetEdit() {
   <c:if test="${model.criticalPath != model.noCriticalPath}">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Path Outage - Critical Path</h3>
+      <span>Path Outage - Critical Path</span>
     </div>
     <div class="card-body">
       <ul class="list-unstyled">
@@ -517,7 +517,7 @@ function confirmAssetEdit() {
 
   <div id="onms-interfaces" class="card">
     <div class="card-header">
-        <h3 class="card-title">Node Interfaces</h3>
+        <span>Node Interfaces</span>
     </div>
     <onms-interfaces node="${model.id}"/>
   </div>
@@ -526,7 +526,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.lldp }">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">LLDP Information</h3>
+      <span>LLDP Information</span>
     </div>
     <table class="table table-sm">
       <tr><th width="50%">chassis id</th><td width="50%">${model.lldp.lldpChassisId}</td></tr>
@@ -540,7 +540,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.cdp }">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">CDP Information</h3>
+      <span>CDP Information</span>
     </div>
     <table class="table table-sm">
       <tr><th width="50%">global device id</th><td width="50%">${model.cdp.cdpGlobalDeviceId}</td></tr>
@@ -555,7 +555,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.ospf }">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">OSPF Information</h3>
+      <span>OSPF Information</span>
     </div>
     <table class="table table-sm">
       <tr><th width="50%">Router Id</th><td width="50%">${model.ospf.ospfRouterId}</td></tr>
@@ -569,7 +569,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.isis }">
     <div class="card">
     <div class="card-header">
-      <h3 class="card-title">IS-IS Information</h3>
+      <span>IS-IS Information</span>
     </div>
     <table class="table table-sm">
       <tr><th width="50%">Sys ID</th><td width="50%">${model.isis.isisSysID}</td></tr>
@@ -583,7 +583,7 @@ function confirmAssetEdit() {
   <c:if test="${! empty model.bridges}">
     <div class="card">
    	<div class="card-header">
-   	  <h3 class="card-title">Bridge Information</h3>
+   	  <span>Bridge Information</span>
    	</div>
 	<table class="table table-sm">
 	<c:forEach items="${model.bridges}" var="bridge">
@@ -612,7 +612,7 @@ function confirmAssetEdit() {
   <!-- general info box -->
   <div class="card">
     <div class="card-header">
-  	<h3 class="card-title">General (Status: ${model.status})</h3>
+  	<span>General (Status: ${model.status})</span>
     </div>
   <div class="card-body">
     <ul class="list-unstyled">

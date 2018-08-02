@@ -66,7 +66,7 @@
                     <div class="col-md-12">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title"><c:out value="${mapEntry.key.displayName}"/></h3>
+                            <span><c:out value="${mapEntry.key.displayName}"/></span>
                         </div>
                         <table class="table table-sm">
                             <thead>

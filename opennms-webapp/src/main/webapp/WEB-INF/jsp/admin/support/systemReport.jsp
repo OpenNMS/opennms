@@ -43,7 +43,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Plugins</h3>
+    <span>Plugins</span>
   </div>
   <div class="card-body">
     <p>Choose which plugins to enable:</p>

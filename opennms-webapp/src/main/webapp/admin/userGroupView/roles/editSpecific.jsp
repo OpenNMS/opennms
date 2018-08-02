@@ -51,7 +51,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Edit Schedule Entry</h3>
+    <span>Edit Schedule Entry</span>
   </div>
   <div class="card-body">
     <p class="lead">${error}</p>

@@ -97,7 +97,7 @@
 
 <div id="availability-box" class="card">
   <div class="card-header">
-    <h3 class="card-title">Availability</h3>
+    <span>Availability</span>
   </div>
   <table class="table table-sm severity">
     <tr>

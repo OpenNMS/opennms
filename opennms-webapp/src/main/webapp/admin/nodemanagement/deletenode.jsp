@@ -109,7 +109,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Node: <%=node_db.getLabel()%></h3>
+        <span>Node: <%=node_db.getLabel()%></span>
       </div>
       <div class="card-body">
         <form method="post" name="deleteNode" action="admin/deleteSelNodes" onSubmit="return applyChanges();">
@@ -141,7 +141,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Node: <%=node_db.getLabel()%></h3>
+        <span>Node: <%=node_db.getLabel()%></span>
       </div>
       <div class="card-body">
         <p>

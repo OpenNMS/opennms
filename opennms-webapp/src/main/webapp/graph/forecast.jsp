@@ -100,7 +100,7 @@ window.forecastError = "One or more dependencies required for forecasting "
 
       <div class="card" ng-hide="error">
       <div class="card-header text-center">
-          <h3 class="card-title">Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </h3>
+          <span>Forecasting <c:out value="${report}"/> on <c:out value="${resourceId}"/> </span>
       </div> <!-- card-header -->
       <div class="card-body">
 		<div class="row-fluid">

@@ -118,7 +118,7 @@ function doAddIncludeUrl() {
   <div class="col-md-12">
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Add a URL containing a list of IP addresses to include</h3>
+      <span>Add a URL containing a list of IP addresses to include</span>
     </div>
     <div class="card-body">
       <form role="form" class="form-horizontal">

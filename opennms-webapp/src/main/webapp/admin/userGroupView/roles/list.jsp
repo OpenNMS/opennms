@@ -97,7 +97,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">On-Call Role Configuration</h3>
+    <span>On-Call Role Configuration</span>
   </div>
   <table class="table table-sm">
         <tr>

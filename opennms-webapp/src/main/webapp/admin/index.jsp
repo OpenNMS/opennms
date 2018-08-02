@@ -127,7 +127,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">OpenNMS System</h3>
+        <span>OpenNMS System</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -139,7 +139,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Provisioning</h3>
+        <span>Provisioning</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -157,7 +157,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Event Management</h3>
+        <span>Event Management</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -189,7 +189,7 @@
 
       <div class="card">
           <div class="card-header">
-              <h3 class="card-title">Flow Management</h3>
+              <span>Flow Management</span>
           </div>
           <div class="card-body">
               <ul class="list-unstyled">
@@ -200,7 +200,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Service Monitoring</h3>
+        <span>Service Monitoring</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -213,7 +213,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Performance Measurement</h3>
+        <span>Performance Measurement</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -226,7 +226,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Distributed Monitoring</h3>
+        <span>Distributed Monitoring</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -240,7 +240,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Additional Tools</h3>
+        <span>Additional Tools</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -255,7 +255,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Descriptions</h3>
+        <span>Descriptions</span>
       </div>
       <div class="card-body">
         <p>Detailed Documentation on all options can be found on <a title="The OpenNMS Project wiki" href="http://www.opennms.org" target="new">the OpenNMS wiki</a>.

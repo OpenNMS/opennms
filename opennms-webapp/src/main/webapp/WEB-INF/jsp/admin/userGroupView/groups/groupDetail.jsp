@@ -60,7 +60,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h2 class="card-title">Details for Group: <%=group.getName()%></h2>
+        <span>Details for Group: <%=group.getName()%></span>
       </div>
       <table class="table table-sm">
         <tr>

@@ -47,7 +47,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Surveillance Category: ${fn:escapeXml(model.category.name)}</h3>
+        <span>Surveillance Category: ${fn:escapeXml(model.category.name)}</span>
       </div>
       <div class="card-body">
         <p>

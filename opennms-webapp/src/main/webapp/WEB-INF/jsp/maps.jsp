@@ -39,7 +39,7 @@
 
 <div class="card">
     <div class="card-header">
-        <h3 class="card-title">Maps</h3>
+        <span>Maps</span>
     </div>
 
     <div class="card-body">

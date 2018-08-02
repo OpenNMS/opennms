@@ -39,7 +39,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">OpenNMS Dashboards</h3>
+    <span>OpenNMS Dashboards</span>
   </div>
   <div class="card-body">
     <ul class="list-unstyled">

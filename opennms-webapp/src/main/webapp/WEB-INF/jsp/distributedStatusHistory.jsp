@@ -42,7 +42,7 @@
 <div class="card">
 
   <div class="card-header">
-    <h3 class="card-title">Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</h3>
+    <span>Distributed Status History for ${historyModel.chosenApplication.name} from ${historyModel.chosenMonitor.name} over ${historyModel.chosenPeriod.name}</span>
   </div>
 
   <c:if test="${!empty historyModel.errors}">

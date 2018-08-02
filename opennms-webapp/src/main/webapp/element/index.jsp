@@ -66,7 +66,7 @@
   <div class="col-lg-6 col-md-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Search for Nodes</h3>
+        <span>Search for Nodes</span>
       </div>
       <div class="card-body">
         <div class="row">
@@ -221,7 +221,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Search Asset Information</h3>
+        <span>Search Asset Information</span>
       </div>
       <div class="card-body">
         <div class="row">
@@ -280,7 +280,7 @@
   <div class="col-lg-6 col-md-4">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Search Options</h3>
+        <span>Search Options</span>
       </div>
       <div class="card-body">
           <p>Searching by name is a case-insensitive, inclusive search. For example,

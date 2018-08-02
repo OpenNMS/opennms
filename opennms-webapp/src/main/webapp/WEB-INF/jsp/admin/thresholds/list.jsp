@@ -44,7 +44,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Threshold Configuration</h3>
+    <span>Threshold Configuration</span>
   </div>
     <form method="post" name="allGroups">
       <table class="table table-sm table-striped table-hover">

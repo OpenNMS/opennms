@@ -125,7 +125,7 @@ function doAddSpecific(){
   <div class="col-md-12">
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Add a specific IP address to discover</h3>
+      <span>Add a specific IP address to discover</span>
     </div>
     <div class="card-body">
       <form role="form" class="form-horizontal">

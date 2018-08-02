@@ -60,7 +60,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose SNMP Interfaces for Data Collection</h3>
+        <span>Choose SNMP Interfaces for Data Collection</span>
       </div>
       <div class="card-body">
         <p>

@@ -101,7 +101,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Update SNMP Information</h3>
+    <span>Update SNMP Information</span>
   </div>
   <div class="card-body">
     <p>

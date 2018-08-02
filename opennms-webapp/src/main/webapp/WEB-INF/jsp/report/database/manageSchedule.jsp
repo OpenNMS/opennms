@@ -59,7 +59,7 @@
             <c:when test="${empty pagedListHolder.pageList}">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Report Schedule List</h3>
+                        <span>Report Schedule List</span>
                     </div>
                     <div class="card-body">
                         <p>The database report schedule is empty.</p>

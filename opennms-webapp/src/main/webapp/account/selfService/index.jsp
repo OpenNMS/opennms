@@ -80,7 +80,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">User Account Self-Service</h3>
+        <span>User Account Self-Service</span>
       </div>
       <div class="card-body">
         <ul class="list-unstyled">
@@ -93,7 +93,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Account Self-Service Options</h3>
+        <span>Account Self-Service Options</span>
       </div>
       <div class="card-body">
         <p>

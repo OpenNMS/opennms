@@ -163,7 +163,7 @@ $(document).ready(function() {
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Choose the event UEI that will trigger this notification.</h3>
+        <span>Choose the event UEI that will trigger this notification.</span>
       </div>
       <table class="table table-sm">
         <tr>

@@ -46,7 +46,7 @@
     <div class="col-md-5">
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Database Reports</h3>
+                <span>Database Reports</span>
             </div>
             <div class="card-body">
                 <ul class="list-unstyled">
@@ -63,7 +63,7 @@
   <div class="col-md-7">
       <div class="card">
           <div class="card-header">
-            <h3 class="card-title">Descriptions</h3>
+            <span>Descriptions</span>
           </div>
           <div class="card-body">
               <p>These reports provide graphical or numeric

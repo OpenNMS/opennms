@@ -48,7 +48,7 @@
     <div class="col-md-12">
         <div class="card bg-success">
             <div class="card-header">
-                <h3 class="card-title">Report Error</h3>
+                <span>Report Error</span>
             </div>
             <div class="card-body">
                 <form:form role="form">

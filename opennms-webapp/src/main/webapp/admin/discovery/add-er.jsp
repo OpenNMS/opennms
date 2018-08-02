@@ -83,7 +83,7 @@ function doAddExcludeRange(){
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Add Range to Exclude from Discovery</h3>
+        <span>Add Range to Exclude from Discovery</span>
       </div>
       <div class="card-body">
         <form role="form" class="form-horizontal">

@@ -47,7 +47,7 @@
   <div class="col-md-5">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Reports</h3>
+            <span>Reports</span>
         </div>
         <div class="card-body" id="onms-search">
             <div class="row">
@@ -102,7 +102,7 @@
   <div class="col-md-7">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Descriptions</h3>
+            <span>Descriptions</span>
         </div>
         <div class="card-body">
             <p><b>Resource Graphs</b> provide an easy way to visualize the critical

@@ -45,7 +45,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Finished Deleting Nodes</h3>
+    <span>Finished Deleting Nodes</span>
   </div>
   <div class="card-body">
     <p>

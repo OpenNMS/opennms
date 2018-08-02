@@ -44,7 +44,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Surveillance View: ${webTable.title}</h3>
+    <span>Surveillance View: ${webTable.title}</span>
   </div>
 
   <table class="table table-sm table-bordered severity">

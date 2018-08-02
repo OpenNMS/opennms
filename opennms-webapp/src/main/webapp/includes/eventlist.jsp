@@ -169,7 +169,7 @@
 <div id="include-eventlist" class="card">
 
 <div class="card-header">
-<h3 class="card-title"><%=header%></h3>
+<span><%=header%></span>
 </div>
 <table class="table table-sm severity">
 

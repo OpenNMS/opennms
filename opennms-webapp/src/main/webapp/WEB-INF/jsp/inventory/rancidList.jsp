@@ -51,7 +51,7 @@
         <h2> Node: ${model.id} </h2>
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">RWS status</h3>
+                <span>RWS status</span>
             </div>
 
             <table class="table table-sm table-bordered">
@@ -63,7 +63,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Associated Elements</h3>
+                <span>Associated Elements</span>
             </div>
 
             <table class="table table-sm table-bordered">

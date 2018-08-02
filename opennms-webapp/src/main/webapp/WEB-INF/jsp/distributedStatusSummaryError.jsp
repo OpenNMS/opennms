@@ -41,7 +41,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Distributed Status Summary Error: ${error.shortDescr} </h3>
+    <span>Distributed Status Summary Error: ${error.shortDescr} </span>
   </div>
   <div class="card-body">
     <p>

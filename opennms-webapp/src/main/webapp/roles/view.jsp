@@ -77,9 +77,9 @@
 
 <div class="card">
 	<div class="card-header">
-		<h3 class="card-title">
+		<span>
 			<c:out value="${role.name}" />
-		</h3>
+		</span>
 	</div>
 
 	<table class="table table-sm severity">
@@ -118,7 +118,7 @@
 
 <div class="card">
 	<div class="card-header">
-		<h3 class="card-title">Role Schedule</h3>
+		<span>Role Schedule</span>
 	</div>
 
 	<table class="table table-sm table-bordered severity">

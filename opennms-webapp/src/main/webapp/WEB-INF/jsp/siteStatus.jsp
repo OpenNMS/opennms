@@ -42,7 +42,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Site status for nodes in site '${view.columnValue}'</h3>
+    <span>Site status for nodes in site '${view.columnValue}'</span>
   </div>
   <table class="table table-sm table-bordered severity">
     <thead>
@@ -72,7 +72,7 @@
   
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Site outages</h3>
+    <span>Site outages</span>
   </div>
   <div class="card-body">
     <c:url var="outagesLink" value="outage/list.htm">

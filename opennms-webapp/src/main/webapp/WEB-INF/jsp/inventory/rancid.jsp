@@ -50,7 +50,7 @@
         <!-- general info box -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">General (Status: ${model.status_general})</h3>
+                <span>General (Status: ${model.status_general})</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>
@@ -70,7 +70,7 @@
 
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Rancid Info</h3>
+                <span>Rancid Info</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>
@@ -97,7 +97,7 @@
         <!-- Inventory info box -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Inventory Elements</h3>
+                <span>Inventory Elements</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>
@@ -127,7 +127,7 @@
         <!-- Software image box -->
         <div class="card">
             <div class="card-header">
-                <h3 class="card-title">Software Images Stored</h3>
+                <span>Software Images Stored</span>
             </div>
             <table class="table table-sm table-bordered">
                 <tr>

@@ -60,7 +60,7 @@
 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Choose the current resource</h3>
+          <span>Choose the current resource</span>
         </div>
         <div class="card-body">
           <p ng-show="level == 0">
@@ -88,7 +88,7 @@
 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">View child resources</h3>
+          <span>View child resources</span>
         </div>
         <div class="card-body">
           <p ng-show="resources.length == 0">
@@ -134,7 +134,7 @@
 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">View the parent resource</h3>
+          <span>View the parent resource</span>
         </div>
         <div class="card-body">
           <p ng-show="level == 0">
@@ -159,7 +159,7 @@
 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Descriptions</h3>
+          <span>Descriptions</span>
         </div>
         <div class="card-body">
           <p>

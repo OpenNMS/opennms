@@ -69,10 +69,10 @@
     <div class="card">
       <div class="card-header">
         <%if ("redo".equals(request.getParameter("action"))) { %>
-          <h3 class="card-title">The group <%=request.getParameter("groupName")%> already exists.
-            Please type in a different group ID.</h3>
+          <span>The group <%=request.getParameter("groupName")%> already exists.
+            Please type in a different group ID.</span>
         <%} else { %>
-          <h3 class="card-title">Please enter a group ID below.</h3>
+          <span>Please enter a group ID below.</span>
         <%}%>
       </div>
       <div class="card-body">

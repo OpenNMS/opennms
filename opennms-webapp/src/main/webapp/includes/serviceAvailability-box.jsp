@@ -133,7 +133,7 @@
 
 <div id="availability-box" class="card">
 <div class="card-header">
-    <h3 class="card-title">Overall Availability</h3>
+    <span>Overall Availability</span>
 </div>
 <table class="table table-sm severity">
   <tr class="CellStatus">

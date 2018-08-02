@@ -62,7 +62,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Database Update Complete After Management Changes</h3>
+    <span>Database Update Complete After Management Changes</span>
   </div>
   <div class="card-body">
     <p>

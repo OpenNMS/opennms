@@ -69,7 +69,7 @@
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Version Details</h3>
+      <span>Version Details</span>
     </div>
 <table class="table table-sm">
   <tr>
@@ -140,7 +140,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">License and Copyright</h3>
+    <span>License and Copyright</span>
   </div>
   <div class="card-body">
   <p>
@@ -192,7 +192,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">OSI Certified Open Source Software</h3>
+    <span>OSI Certified Open Source Software</span>
   </div>
   <div class="card-body">
 
@@ -207,7 +207,7 @@
 
 <div class="card">
 	<div class="card-header">
-		<h3 class="card-title">Supporting Applications and Frameworks</h3>
+		<span>Supporting Applications and Frameworks</span>
 	</div>
 	<div class="card-body">
 		<div class="col-md-3">

@@ -123,7 +123,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Alarm <%=alarm.getId()%></h3>
+    <span>Alarm <%=alarm.getId()%></span>
   </div>
 
 <table class="table table-sm severity">
@@ -232,7 +232,7 @@
 
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Log&nbsp;Message</h3>
+    <span>Log&nbsp;Message</span>
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getLogMsg(), true)%>
@@ -241,7 +241,7 @@
 
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Description</h3>
+    <span>Description</span>
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
     <%=WebSecurityUtils.sanitizeString(alarm.getDescription(), true)%>
@@ -251,7 +251,7 @@
 <% if (acks != null && acks.size() > 0) {%>
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Acknowledgements</h3>
+    <span>Acknowledgements</span>
   </div>
 <table class="table table-sm severity">
     <tr class="severity-<%=alarm.getSeverity().getLabel().toLowerCase()%>">
@@ -274,7 +274,7 @@
 <div class="col-md-6">
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Sticky&nbsp;Memo</h3>
+    <span>Sticky&nbsp;Memo</span>
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
@@ -312,7 +312,7 @@
 <div class="col-md-6">
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Journal&nbsp;Memo</h3>
+    <span>Journal&nbsp;Memo</span>
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
@@ -352,7 +352,7 @@
 
 <div class="card severity">
   <div class="card-header">
-    <h3 class="card-title">Operator&nbsp;Instructions</h3>
+    <span>Operator&nbsp;Instructions</span>
   </div>
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <%if (alarm.getOperInstruct() == null) {%>

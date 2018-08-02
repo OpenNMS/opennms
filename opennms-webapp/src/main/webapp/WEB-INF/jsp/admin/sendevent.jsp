@@ -171,7 +171,7 @@
   <div class="col-md-6">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Send Event to OpenNMS</h3>
+        <span>Send Event to OpenNMS</span>
       </div>
       <div class="card-body">
         <div class="form-group">

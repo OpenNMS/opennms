@@ -140,7 +140,7 @@ function doAddIncludeRange(){
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Add Include Range to Discovery</h3>
+        <span>Add Include Range to Discovery</span>
       </div>
       <div class="card-body">
         <p>Add a range of IP addresses to include in discovery.<br/>

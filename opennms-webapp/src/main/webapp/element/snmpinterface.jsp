@@ -138,7 +138,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">General</h3>
+        <span>General</span>
       </div>
       <!-- general info box -->
       <table class="table table-sm">
@@ -193,7 +193,7 @@ if (request.isUserInRole( Authentication.ROLE_ADMIN )) {
     <!-- SNMP box, if info available -->
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">SNMP Attributes</h3>
+        <span>SNMP Attributes</span>
       </div>
     	<table class="table table-sm">
         <tr>

@@ -54,7 +54,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Edit threshold</h3>
+        <span>Edit threshold</span>
       </div>
       <table class="table table-sm">
         <tr>
@@ -127,7 +127,7 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Resource Filters</h3>
+        <span>Resource Filters</span>
       </div>
       <div class="card-body">
         <div class="row">
@@ -199,7 +199,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Help</h3>
+        <span>Help</span>
       </div>
       <div class="card-body">
 <p>

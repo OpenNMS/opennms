@@ -44,7 +44,7 @@
 
 <div class="card">
   <div class="card-header">
-    <h3 class="card-title">Quick Search</h3>
+    <span>Quick Search</span>
   </div>
   <div class="card-body">
     <form class="form-inline" action="element/nodeList.htm" method="get">

@@ -56,7 +56,7 @@
   
 <div class="card fix-subpixel">
     <div class="card-header">
-        <h3 class="card-title">Path Outage Node List</h3>
+        <span>Path Outage Node List</span>
     </div>
     <table class="table table-sm severity">
           <thead class="dark">

@@ -94,8 +94,8 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
-              'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</h3>
+        <span>Check the TCP/IP addresses below to ensure that the rule has given the expected results. If it hasn't click the
+              'Rebuild' link below the table. If the results look good continue by clicking the 'Next' link also below the table.</span>
       </div>
           <table class="table table-sm">
             <tr>
