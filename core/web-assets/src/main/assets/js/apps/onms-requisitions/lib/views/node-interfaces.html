@@ -1,10 +1,10 @@
 <div>
 
 <div class="row">
-  <div class="col-md-9 col-md-offset-3">
-    <div class="input-group pull-right">
+  <div class="col">
+    <div class="mt-4 pull-right">
       <button type="button" class="btn btn-secondary btn-sm" id="add-interface" ng-click="addInterface()">
-        <span class="glyphicon glyphicon-plus-sign"/> Add Interface
+        <span class="fa fa-plus"/> Add Interface
       </button>
     </div>
   </div>
@@ -33,14 +33,14 @@
           </div>
         </td>
         <td>
-          <span class="pull-right">
+          <div class="pull-right">
             <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Edit the interface" ng-click="editInterface($index)">
-              <span class="glyphicon glyphicon-pencil"/>
+              <span class="fa fa-pencil"/>
             </button>
             <button type="button" class="btn btn-secondary btn-sm" uib-tooltip="Remove the interface" ng-click="removeInterface($index)">
-              <span class="glyphicon glyphicon-trash"/>
+              <span class="fa fa-trash"/>
             </button>
-          </span>
+          </div>
         </td>
       </tr>
     </tbody>

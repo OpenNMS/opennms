@@ -3,9 +3,9 @@
 <!-- Author: Alejandro Galue <agalue@opennms.org> -->
 
 <ol class="breadcrumb">
-  <li><a href="/opennms/index.jsp">Home</a></li>
-  <li><a href="/opennms/admin/index.jsp">Admin</a></li>
-  <li>Provisioning Requisitions</li>
+  <li class="breadcrumb-item"><a href="/opennms/index.jsp">Home</a></li>
+  <li class="breadcrumb-item"><a href="/opennms/admin/index.jsp">Admin</a></li>
+  <li class="breadcrumb-item active">Provisioning Requisitions</li>
 </ol>
 
 <!-- Toolbar -->
@@ -16,25 +16,29 @@
   </div>
   <div class="col-md-6" ng-show="loaded">
     <form class="form-inline pull-right" role="search">
-      <div class="input-group">
-        <span class="input-group-addon"><span class="glyphicon glyphicon-search"/></span>
+      <div class="input-group ml-auto">
+        <div class="input-group-prepend">
+          <div class="input-group-text">
+            <i class="fa fa-search"></i>
+          </div>
+        </div>
         <input class="form-control" type="text" placeholder="Search/Filter Requisitions" ng-model="reqFilter" id="search-requisitions"></input>
       </div>
-      <div class="input-group">
+      <div class="ml-auto my-4">
         <button type="button" class="btn btn-secondary" ng-click="refreshData()" id="refresh-requisitions" ng-disabled="timingStatus.isRunning">
-          <span class="glyphicon glyphicon-refresh"/> Refresh
+          <span class="fa fa-refresh"/> Refresh
         </button>
         <button type="button" class="btn btn-secondary" ng-click="quickAddNode()" id="quick-add-node" ng-disabled="timingStatus.isRunning" ng-show="requisitionsData.requisitions.length > 0">
-          <span class="glyphicon glyphicon-upload"/> Quick Add Node
+          <span class="fa fa-upload"/> Quick Add Node
         </button>
         <button type="button" class="btn btn-secondary" ng-click="editDefaultForeignSource()" id="edit-default-foreign-source">
-          <span class="glyphicon glyphicon-edit"/> Edit Default FS
+          <span class="fa fa-edit"/> Edit Default FS
         </button>
         <button type="button" class="btn btn-secondary" ng-click="resetDefaultForeignSource()" id="reset-default-foreign-source" ng-disabled="timingStatus.isRunning">
-          <span class="glyphicon glyphicon-retweet"/> Reset Default
+          <span class="fa fa-retweet"/> Reset Default
         </button>
         <button type="button" class="btn btn-secondary" ng-click="add()" id="add-requisition" ng-disabled="timingStatus.isRunning">
-          <span class="glyphicon glyphicon-plus-sign"/> Add Requisition
+          <span class="fa fa-plus"/> Add Requisition
         </button>
       </div>
     </form>
@@ -89,13 +93,13 @@
                 <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Edit the {{requisition.foreignSource}} Requisition"
                         ng-click="edit(requisition.foreignSource)">
-                  <span class="glyphicon glyphicon-pencil"></span>
+                  <span class="fa fa-pencil"></span>
                 </button>
                 <button type="button" class="btn btn-secondary btn-sm"
                         uib-tooltip="Synchronize the {{requisition.foreignSource}} Requisition"
                         ng-disabled="timingStatus.isRunning"
                         ng-click="synchronize(requisition)">
-                  <span class="glyphicon glyphicon-transfer"></span>
+                  <span class="fa fa-exchange"></span>
                 </button>
 
                 <div class="btn-group" uib-dropdown dropdown-append-to-body>
@@ -103,28 +107,28 @@
                     <span class="fa fa-ellipsis-h"></span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-right" uib-dropdown-menu role="menu" aria-labelledby="btn-append-to-to-body">
-                    <li role="menuitem" ><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="refresh(requisition)">
-                      <span class="glyphicon glyphicon-refresh"/>&nbsp;&nbsp;Refresh deployed stats</a></li>
-                    <li role="menuitem"><a style="padding:1px" href=""
+                      <span class="fa fa-refresh"/>&nbsp;&nbsp;Refresh deployed stats</a></li>
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            id="editForeignSource-{{requisition.foreignSource}}"
                                            ng-click="editForeignSource(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-edit"/>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
-                    <li role="menuitem"><a style="padding:1px" href=""
+                      <span class="fa fa-edit"/>&nbsp;&nbsp;Edit detectors &amp; policies</a></li>
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="clone(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-random"/>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
+                      <span class="fa fa-random"/>&nbsp;&nbsp;Clone detectors &amp; policies</a></li>
                     <li class="divider"></li>
-                    <li role="menuitem"><a style="padding:1px" href=""
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="removeAllNodes(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-remove-circle"/>&nbsp;&nbsp;Remove all nodes</a></li>
-                    <li role="menuitem"><a style="padding:1px" href=""
+                      <span class="fa fa-remove"/>&nbsp;&nbsp;Remove all nodes</a></li>
+                    <li role="menuitem" class="dropdown-item"><a style="padding:1px" href=""
                                            ng-disabled="requisition.nodesInDatabase > 0"
                                            ng-disabled="timingStatus.isRunning"
                                            ng-click="delete(requisition.foreignSource)">
-                      <span class="glyphicon glyphicon-trash"/>&nbsp;&nbsp;Delete requisition</a></li>
+                      <span class="fa fa-trash"/>&nbsp;&nbsp;Delete requisition</a></li>
                   </ul>
                 </div>
               </span>

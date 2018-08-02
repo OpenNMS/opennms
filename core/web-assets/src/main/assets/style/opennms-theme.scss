@@ -922,3 +922,13 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 .card {
   margin-bottom: $spacer * 1.5; // equivalent of mb-4
 }
+
+// requisition ui uses bootbox for modals, however it is not yet bootstrap 4 compatible
+// (bootbox v5 will be, release is imminent), see https://github.com/makeusabrew/bootbox/issues/566
+// Until then use this hack
+.bootbox .modal-header h4 {
+  order: 0;
+}
+.bootbox .modal-header button {
+  order: 1;
+}

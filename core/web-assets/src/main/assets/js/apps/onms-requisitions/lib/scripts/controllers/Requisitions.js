@@ -383,14 +383,14 @@ require('../services/Synchronize');
           },
           reloadDeployed: {
             label: 'Reload Deployed Data',
-            className: 'btn-default',
+            className: 'btn-secondary',
             callback: function() {
               $scope.refreshDeployedStats();
             }
           },
           main: {
             label: 'Cancel',
-            className: 'btn-default'
+            className: 'btn-secondary'
           }
         }
       });

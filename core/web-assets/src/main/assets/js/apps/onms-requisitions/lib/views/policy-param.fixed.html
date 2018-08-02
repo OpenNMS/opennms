@@ -4,9 +4,9 @@
   <label class="col-form-label">{{ parameter.key }}</label>
   <div class="input-group">
     <input class="form-control" type="text" name="paramValue" placeholder="Parameter Value" ng-model="parameter.value" required></input>
-    <span class="input-group-btn">
+    <span class="input-group-append">
       <button type="button" class="btn btn-secondary" ng-click="removeParameter($index)">
-        <span class="glyphicon glyphicon-trash"></span>
+        <span class="fa fa-trash"></span>
       </button>
     </span>
   </div>
