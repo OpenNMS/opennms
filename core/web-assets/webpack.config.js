@@ -300,6 +300,16 @@ var config = {
               }
             },
             {
+                loader: 'postcss-loader',
+                options: {
+                    plugins: function () {
+                        return [
+                            require('autoprefixer')
+                        ];
+                    }
+                }
+            },
+            {
               loader: 'sass-loader'
             }
           ]
