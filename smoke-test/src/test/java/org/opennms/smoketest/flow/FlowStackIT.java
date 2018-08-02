@@ -71,9 +71,9 @@ public class FlowStackIT {
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
     public static int NETFLOW5_LISTENER_UDP_PORT = 50000;
-    private static int NETFLOW9_LISTENER_UDP_PORT = 50001;
-    private static int IPFIX_LISTENER_UDP_PORT = 50002;
-    private static int SFLOW_LISTENER_UDP_PORT = 50003;
+    public static int NETFLOW9_LISTENER_UDP_PORT = 50001;
+    public static int IPFIX_LISTENER_UDP_PORT = 50002;
+    public static int SFLOW_LISTENER_UDP_PORT = 50003;
 
     public static final String TEMPLATE_NAME = "netflow";
 

@@ -48,8 +48,7 @@ public class FlowStackKafkaIT extends AbstractFlowIT {
 
             // Enable Netflow 5 Listener
             builder.withMinionEnvironment()
-                    .addFile(getClass().getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot")
-                    .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
+                    .addFile(getClass().getResource("/featuresBoot.d/kafka.boot"), "etc/featuresBoot.d/kafka.boot");
     }
 
     @Override

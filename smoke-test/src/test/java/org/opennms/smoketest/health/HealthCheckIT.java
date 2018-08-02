@@ -110,7 +110,7 @@ public class HealthCheckIT {
     @Test
     public void verifySentinelHealth() {
         final InetSocketAddress sentinelShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        verifyHealthCheck(6, sentinelShellAddr);
+        verifyHealthCheck(9, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
         verifyMetrics(sentinelShellAddr);
     }
 
@@ -132,10 +132,16 @@ public class HealthCheckIT {
                         // Read stdout and verify
                         final String shellOutput = sshClient.getStdout();
                         final int count = StringUtils.countOccurrencesOf(shellOutput, "Success");
+                        final String overallStatus = getOverallStatus(shellOutput);
 
+                        // Log what was read, to help debugging issues
                         logger.info("log:display");
                         logger.info("{}", shellOutput);
-                        return count == expectedHealthCheckServices;
+                        logger.info("{} checks are successful and overall status is {}, expected >= {} and \"Everything is awesome\"", count, overallStatus, expectedHealthCheckServices);
+
+                        // We check if at least the number of expected health
+                        // checks succeeded and overall status is "AWESOME". This way we avoid updating this test each time a new health check is added
+                        return count >= expectedHealthCheckServices && overallStatus.contains("awesome");
                     } catch (Exception ex) {
                         logger.error("Error while trying to verify health:check: {}", ex.getMessage());
                         return false;
@@ -166,5 +172,13 @@ public class HealthCheckIT {
                         return 0;
                     }
                 }, greaterThanOrEqualTo(1));
+    }
+
+    private static String getOverallStatus(String input) {
+        // Returns the text starting from the success line, but also contains other content
+        final String tempStatus = input.substring(input.indexOf("=> "));
+        // Here we remove the leading => and also anything at the end of the status line
+        final String overallStatus = tempStatus.substring("=> ".length(), tempStatus.indexOf("\n")).trim();
+        return overallStatus;
     }
 }
