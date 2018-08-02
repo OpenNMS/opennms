@@ -32,23 +32,18 @@ import java.util.Objects;
 
 import org.opennms.core.soa.ServiceRegistry;
 
-public class SimpleServiceLookup implements ServiceLookup {
+public class ServiceRegistryLookup implements ServiceLookup<Class<?>, String> {
 
     private final ServiceRegistry registry;
 
-    public SimpleServiceLookup(ServiceRegistry registry) {
+    public ServiceRegistryLookup(ServiceRegistry registry) {
         this.registry = Objects.requireNonNull(registry);
     }
 
     @Override
-    public <T> T lookup(Class<T> serviceType) {
-        return lookup(serviceType, null);
-    }
-
-    @Override
-    public <T> T lookup(Class<T> serviceType, String filter) {
+    public <T> T lookup(Class<?> serviceType, String filter) {
         Objects.requireNonNull(serviceType);
-        final T service = this.registry.findProvider(serviceType, filter);
+        final T service = (T) this.registry.findProvider(serviceType, filter);
         return service;
     }
 }
