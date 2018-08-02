@@ -19,6 +19,7 @@
         <property name="distPollerDao" ref="distPollerDao"/>
         <property name="messageConsumerManager" ref="messageConsumerManager" />
         <property name="telemetryAdapterRegistry" ref="telemetryAdapterRegistry" />
+        <property name="bundleContext" ref="blueprintBundleContext" />
     </bean>
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="adapterManager">
         <service-properties>
