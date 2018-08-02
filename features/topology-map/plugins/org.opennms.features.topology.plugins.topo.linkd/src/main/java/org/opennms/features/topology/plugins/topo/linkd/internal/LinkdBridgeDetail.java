@@ -39,7 +39,7 @@ public class LinkdBridgeDetail extends LinkdEdgeDetail<BridgePort,BridgePort> {
     private final Integer m_targetifIndex;
 
     public LinkdBridgeDetail(Vertex source, BridgePort sourceBridgePort, Vertex target, BridgePort targetBridgePort) {
-        super(LinkdTopologyProvider.getDefaultEdgeId(sourceBridgePort.getNodeId(), targetBridgePort.getNodeId()), source, sourceBridgePort, target, targetBridgePort);
+        super(LinkdEdge.getDefaultEdgeId(sourceBridgePort.getNodeId(), targetBridgePort.getNodeId()), source, sourceBridgePort, target, targetBridgePort);
         m_sourceBridgePort = sourceBridgePort.getBridgePort();
         m_targetBridgePort = targetBridgePort.getBridgePort();
         m_sourceIfIndex = sourceBridgePort.getBridgePortIfIndex();

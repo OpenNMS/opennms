@@ -29,9 +29,12 @@
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
+import java.util.Set;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.SimpleLeafVertex;
+import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 
@@ -39,13 +42,6 @@ public class LinkdVertex extends SimpleLeafVertex {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
-
-    private static final String PROTOCOL_SEPARATOR = "::";
-    public final static String LLDP_EDGE_NAMESPACE = "LLDP";
-    public final static String OSPF_EDGE_NAMESPACE = "OSPF";
-    public final static String ISIS_EDGE_NAMESPACE = "ISIS";
-    public final static String BRIDGE_EDGE_NAMESPACE = "BRIDGE";
-    public final static String CDP_EDGE_NAMESPACE =  "CDP";
 
     private static final EnumMap<OnmsNode.NodeType, String> s_nodeStatusMap;
 
@@ -81,51 +77,11 @@ public class LinkdVertex extends SimpleLeafVertex {
     private String m_sysObjectId;
     private String m_isManaged;
 
-    private boolean m_supportCDP = false;
-    private boolean m_supportLLDP = false;
-    private boolean m_supportOSPF = false;
-    private boolean m_supportISIS = false;
-    private boolean m_supportBridge = false;
-
-
-    public boolean isSupportCDP() {
-        return m_supportCDP;
-    }
-
-    public void setSupportCDP(boolean supportCDP) {
-        m_supportCDP = supportCDP;
-    }
-
-    public boolean isSupportLLDP() {
-        return m_supportLLDP;
-    }
-
-    public void setSupportLLDP(boolean supportLLDP) {
-        m_supportLLDP = supportLLDP;
-    }
-
-    public boolean isSupportOSPF() {
-        return m_supportOSPF;
-    }
-
-    public void setSupportOSPF(boolean supportOSPF) {
-        m_supportOSPF = supportOSPF;
-    }
-
-    public boolean isSupportISIS() {
-        return m_supportISIS;
-    }
-
-    public void setSupportISIS(boolean supportISIS) {
-        m_supportISIS = supportISIS;
-    }
-
-    public boolean isSupportBridge() {
-        return m_supportBridge;
-    }
-
-    public void setSupportBridge(boolean supportBridge) {
-        m_supportBridge = supportBridge;
+    private Set<ProtocolSupported> m_protocolSupported = EnumSet.noneOf(ProtocolSupported.class);
+    
+    
+    public Set<ProtocolSupported> getProtocolSupported() {
+        return m_protocolSupported;
     }
 
     public String getSysObjectId() {
@@ -197,41 +153,9 @@ public class LinkdVertex extends SimpleLeafVertex {
                 tooltipText.append(HTML_TOOLTIP_TAG_END);
         }
         
-        boolean addseparator = false;
-        if (m_supportBridge || m_supportCDP || m_supportISIS || m_supportLLDP ||m_supportOSPF) {
+        if (m_protocolSupported.size() > 0) {
             tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-            if (m_supportBridge) {
-                addseparator = true;
-                tooltipText.append(BRIDGE_EDGE_NAMESPACE);
-            }
-            if (m_supportLLDP) {
-                if (addseparator) {
-                    tooltipText.append(PROTOCOL_SEPARATOR);
-                }
-                addseparator = true;
-                tooltipText.append(LLDP_EDGE_NAMESPACE);
-            }
-            if (m_supportCDP) {
-                if (addseparator) {
-                    tooltipText.append(PROTOCOL_SEPARATOR);
-                }
-                addseparator = true;
-                tooltipText.append(CDP_EDGE_NAMESPACE);
-            }
-            if (m_supportOSPF) {
-                if (addseparator) {
-                    tooltipText.append(PROTOCOL_SEPARATOR);
-                }
-                addseparator = true;
-                tooltipText.append(OSPF_EDGE_NAMESPACE);
-            }
-            if (m_supportISIS) {
-                if (addseparator) {
-                    tooltipText.append(PROTOCOL_SEPARATOR);
-                }
-                addseparator = true;
-                tooltipText.append(ISIS_EDGE_NAMESPACE);
-            }
+            tooltipText.append(m_protocolSupported.toString());
             tooltipText.append(HTML_TOOLTIP_TAG_END);
         }
         return tooltipText.toString();
