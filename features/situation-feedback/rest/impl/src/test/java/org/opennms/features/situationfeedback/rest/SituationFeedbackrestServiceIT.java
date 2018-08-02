@@ -52,6 +52,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionOperations;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -71,6 +72,9 @@ public class SituationFeedbackrestServiceIT {
 
     @Autowired
     private DistPollerDao distPollerDao;
+
+    @Autowired
+    private TransactionOperations transactionTemplate;
 
     private FeedbackRepository mockFeebackRepository = mock(FeedbackRepository.class);
 
@@ -113,7 +117,7 @@ public class SituationFeedbackrestServiceIT {
     @Test
     @Transactional
     public void testRemoveAlarmWithFeedback() {
-        SituationFeedbackRestServiceImpl sut = new SituationFeedbackRestServiceImpl(alarmDao, mockFeebackRepository);
+        SituationFeedbackRestServiceImpl sut = new SituationFeedbackRestServiceImpl(alarmDao, mockFeebackRepository, transactionTemplate);
         AlarmFeedback falsePositive = new AlarmFeedback(situation.getReductionKey(), "fingerprint", linkDownAlarmOnR1.getReductionKey(),
                                                         FeedbackType.FALSE_POSITVE, "not related", "user", System.currentTimeMillis());
         List<AlarmFeedback> feedback = Collections.singletonList(falsePositive);

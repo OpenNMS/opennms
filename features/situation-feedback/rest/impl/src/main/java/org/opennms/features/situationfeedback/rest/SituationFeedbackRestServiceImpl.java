@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+
 import javax.ws.rs.WebApplicationException;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
@@ -39,21 +40,30 @@ import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.model.OnmsAlarm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 
 public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestService {
+
+    private static final Logger Log = LoggerFactory.getLogger(SituationFeedbackRestServiceImpl.class);
 
     private final AlarmDao alarmDao;
 
     private final FeedbackRepository repository;
 
-    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, FeedbackRepository feedbackRepository) {
+    private final TransactionOperations transactionTemplate;
+
+    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
         this.repository = Objects.requireNonNull(feedbackRepository);
+        this.transactionTemplate = Objects.requireNonNull(transactionOperations);
     }
 
     @Override
     public Collection<AlarmFeedback> getFeedback(String situationKey) {
-        // TODO - filtering?? User/Fingerprint/
         try {
             return repository.getFeedback(situationKey);
         } catch (FeedbackException e) {
@@ -64,15 +74,20 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     }
 
     @Override
+    @Transactional
     public void setFeedback(List<AlarmFeedback> feedback) {
-        // Update Situation in case of false_neg and false_pos
-        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao));
-        feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao));
-        try {
-            repository.persist(feedback);
-        } catch (FeedbackException e) {
-            throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
-        }
+        runInTransaction(status -> {
+            // Update Situation in case of false_neg and false_pos
+            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao));
+            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao));
+            try {
+                repository.persist(feedback);
+                // } catch (FeedbackException e) {
+            } catch (Exception e) {
+                throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
+            }
+            return null;
+        });
     }
 
     protected static void removeCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
@@ -81,11 +96,15 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         if (situation == null || alarm == null) {
             return;
         }
+        Log.debug("removing alarm {} from situation {}.", alarm, situation);
         situation.getRelatedAlarms().remove(alarm);
+        // FIXME - session error:
         alarmDao.saveOrUpdate(situation);
+        Log.debug("removed alarm {} from situation {}.", alarm, situation);
         // TODO - require any logging?
 
         // FIXME - must update AlarmChangeNotifier
+
     }
 
     protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
@@ -96,6 +115,10 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         }
         situation.getRelatedAlarms().add(alarm);
         alarmDao.saveOrUpdate(situation);
+    }
+
+    private <T> T runInTransaction(TransactionCallback<T> callback) {
+        return transactionTemplate.execute(callback);
     }
 
 }
