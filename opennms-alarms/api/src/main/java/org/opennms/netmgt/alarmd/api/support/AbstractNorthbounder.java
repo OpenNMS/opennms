@@ -302,7 +302,7 @@ public abstract class AbstractNorthbounder implements Northbounder, Runnable, St
         String count = alarm.getCount() == null ? "1" : alarm.getCount().toString();
         mapping.put("count", count);
         if (dateFormat == null) {
-            dateFormat = "yyyy-MM-dd'T'HH:mm:ss:SSSXXX";
+            dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
         String firstOccurence = "";

@@ -70,7 +70,7 @@ public class SyslogNorthbounderConfig implements Serializable {
     private String m_messageFormat;
     
     /** The date format. */
-    @XmlElement(name = "date-format", required = false, defaultValue = "yyyy-MM-dd'T'HH:mm:ss:SSSXXX")
+    @XmlElement(name = "date-format", required = false, defaultValue = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
     private String m_dateFormat;
 
     /** The destinations. */

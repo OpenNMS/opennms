@@ -638,7 +638,7 @@ public class JmsNorthBounderTest {
     }
 
     private String convertDateToDefaultFormat(Date date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss:SSSXXX");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
         return simpleDateFormat.format(date);
 
     }
