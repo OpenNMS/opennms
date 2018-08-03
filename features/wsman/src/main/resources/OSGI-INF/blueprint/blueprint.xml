@@ -13,6 +13,10 @@
 		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManDetectorFactory" />
 	</service>
 
+	<service interface="org.opennms.netmgt.provision.ServiceDetectorFactory">
+		<bean class="org.opennms.netmgt.provision.detector.wsman.WsManWQLDetectorFactory" />
+	</service>
+
 	<bean id="wsmanCollector" class="org.opennms.netmgt.collectd.WsManCollector" />
 	<service ref="wsmanCollector" interface="org.opennms.netmgt.collection.api.ServiceCollector">
 		<service-properties>
