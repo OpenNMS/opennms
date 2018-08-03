@@ -16,6 +16,8 @@
       <cm:property name="eventTopic" value="events"/>
       <cm:property name="alarmTopic" value="alarms"/>
       <cm:property name="nodeTopic" value="nodes"/>
+      <cm:property name="metricTopic" value="metrics"/>
+      <cm:property name="forward.metrics" value="true"/>
       <cm:property name="nodeRefreshTimeoutMs" value="300000"/> <!-- 5 minutes -->
       <cm:property name="alarmSync" value="true"/>
       <cm:property name="eventFilter" value=""/>

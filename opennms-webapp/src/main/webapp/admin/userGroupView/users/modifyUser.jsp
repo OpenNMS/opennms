@@ -35,6 +35,7 @@
 %>
 <%@page import="java.util.*"%>
 <%@page import="java.text.*"%>
+<%@page import="java.time.ZoneId"%>
 <%@page import="org.opennms.netmgt.config.*"%>
 <%@page import="org.opennms.netmgt.config.users.*"%>
 <%@page import="org.opennms.web.api.Util"%>
@@ -284,6 +285,7 @@
         String fullName = null;
         String comments = null;
         String tuiPin = null;
+        ZoneId timeZoneId = null;
         List<String> availableRoles = new ArrayList<String>(Authentication.getAvailableRoles());
         Collections.sort(availableRoles);
         List<String> configuredRoles = new ArrayList<>();
@@ -327,6 +329,7 @@
             fullName = user.getFullName().orElse(null);
             comments = user.getUserComments().orElse(null);
             tuiPin = user.getTuiPin().orElse(null);
+            timeZoneId = user.getTimeZoneId().orElse(null);
 
             configuredRoles = user.getRoles();
             for (String role : configuredRoles) {
@@ -450,6 +453,29 @@
             <input class="form-control" type="text" id="homePhone" name="homePhone" value='<%=(homePhone == null ? "":homePhone)%>'/>
           </div>
         </div>
+    <h3>Date/Time Preferences</h3>
+    <div class="form-group">
+          <label for="timeZoneId" class="col-sm-2 control-label">Time Zone:</label>
+          <div class="col-sm-10">
+            <select class="form-control" id="timeZoneId" name="timeZoneId">
+<%
+              List<String> zones = new ArrayList<>();
+              zones.add("");
+              zones.addAll(ZoneId.getAvailableZoneIds());
+              Collections.sort(zones);
+              for(String element : zones){
+                out.append("<option");
+                if(timeZoneId!=null && element.equals(timeZoneId.getId())){
+                    out.append(" selected");
+                }
+                out.append(">");
+                out.append(element).append("</option>");
+              }
+%>
+            </select>
+          </div>
+    </div>
+
       </div> <!-- panel-body -->
     </div> <!-- panel -->
   </div> <!-- column -->

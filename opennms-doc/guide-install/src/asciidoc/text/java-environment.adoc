@@ -1,0 +1,42 @@
+
+== Java Environment
+
+To locate the _Java_ system files, applications typically use the `$JAVA_HOME` environment variable.
+The environment can be set for a specific user or globally for the whole system on boot time.
+
+.Example path to Java on RHEL, Debian and Microsoft Windows systems
+* RHEL: `/usr/java/jdk1.8.0_71`
+* Debian: `/usr/lib/jvm/java-8-oracle`
+* Microsoft Windows: `C:\Program Files\Java\jre1.8.0_71`
+
+[[gi-install-env-linux]]
+=== Set JAVA_HOME on Linux
+
+.Option 1: Set the Java environment for the current user
+[source, bash]
+----
+vi ~/.bash_profile
+export JAVA_HOME=/path/to/java
+----
+
+.Option 2: Set the Java environment for all users on boot time
+[source, bash]
+----
+vi /etc/profile
+export JAVA_HOME=/path/to/java
+----
+
+[[gi-install-env-windows]]
+=== Set JAVA_HOME on Microsoft Windows
+
+.Option 1: Set JAVA_HOME as user specific system variable
+[source]
+----
+setx "JAVA_HOME" "path\to\java"
+----
+
+.Option 2: Set JAVA_HOME as a System variable
+[source]
+----
+setx /M "JAVA_HOME" "path\to\java"
+----

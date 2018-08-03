@@ -1,0 +1,21 @@
+
+=== Newts
+
+link:http://newts.io/[Newts] is a time-series data store based on link:http://cassandra.apache.org/[Apache Cassandra].
+_Newts_ is a persistence strategy, that can be used as an alternative to link:http://www.opennms.org/wiki/JRobin[JRobin] or link:http://oss.oetiker.ch/rrdtool/[RRDtool].
+
+IMPORTANT: It is currently not supported to initialize the _Newts_ keyspace from _Microsoft Windows Server_ operating system.
+           _Microsoft Windows_ based _Cassandra_ server can be part of the cluster, but keyspace initialization is only possible using a _Linux-_based system.
+
+[[gi-setup-cassandra]]
+==== Setting up Cassandra
+
+WARNING: _Cassandra_ is only required when using _Newts_.
+         If your _{opennms-product-name}_ system is not using _Newts_, you can skip this section.
+
+It is recommended to install _Cassandra_ on a dedicated server, but is also possible to run a node on the _{opennms-product-name}_ server itself.
+This installation guide describes how to set up a single _Cassandra_ instance on the same system as _{opennms-product-name}_ for the purpose of evaluating and testing _Newts_.
+These steps are not suitable for a production _Cassandra Cluster_. If you already have a running cluster you can skip this section.
+
+For further information see link:https://wiki.apache.org/cassandra/GettingStarted[Cassandra Getting Started Guide].
+Before setting up a production cluster make sure to consult link:https://docs.datastax.com/en/cassandra/3.0/cassandra/planning/planPlanningAntiPatterns.html[Anti-patterns in Cassandra].

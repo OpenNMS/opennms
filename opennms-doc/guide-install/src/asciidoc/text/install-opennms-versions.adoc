@@ -1,0 +1,45 @@
+
+[[gi-install-opennms-repo-releases]]
+== Install other versions than stable
+
+Installation packages are available for different releases of _{opennms-product-name}_ or _Minion_.
+You will need to choose which release you would like to run and then configure your package repository to point to that release.
+Configuring a package repository will enable you to install and update the software by using standard Linux software update tools like _yum_ and _apt_.
+
+The following package repositories are available:
+
+.OpenNMS package repositories
+[options="header, autowidth"]
+|===
+| Release                   | Description
+| `stable`                  | Latest stable release. This version is recommended for all users.
+| `testing`                 | Release candidate for the next stable release.
+| `snapshot`                | Latest successful development build, the "nightly" build.
+| `branches/${BRANCH-NAME}` | Install from a specific branch name for testing a specific feature that is under development.
+                              Available branches can be found in https://yum.opennms.org/branches/ or https://debian.opennms.org/dists/branches/.
+|===
+
+To install a different release the repository files have to be installed and manually modified.
+
+In _Debian_ systems modify the repository file in `/etc/apt/sources.list.d/opennms.list`.
+
+[source, bash]
+----
+deb https://debian.opennms.org snapshot main<1>
+deb-src https://debian.opennms.org snapshot main<1>
+EOF
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+----
+<1> Change from `stable` to `snapshot`
+
+On _RHEL_ systems you can install a snapshot repository with:
+
+[source, shell]
+----
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-snapshot-rhel7.noarch.rpm
+----
+
+NOTE: For branches use `repofiles/opennms-repo-branches-${branch-name}-rhel7.noarch.rpm`.
+
+The installation procedure is the same as with the stable version.
