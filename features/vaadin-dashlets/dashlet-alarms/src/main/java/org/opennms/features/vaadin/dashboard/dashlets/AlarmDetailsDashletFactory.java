@@ -57,7 +57,7 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
 
     private final TransactionOperations m_transactionTemplate;
 
-    private final TimeformatService timeformatService;
+    private final TimeformatService m_timeformatService;
 
     /**
      * Constructor used for instantiating a new factory.
@@ -71,7 +71,7 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
         m_nodeDao = nodeDao;
         m_alarmRepository = alarmRepository;
         m_transactionTemplate = transactionTemplate;
-        this.timeformatService = timeformatService;
+        m_timeformatService = timeformatService;
     }
 
     /**
@@ -82,7 +82,7 @@ public class AlarmDetailsDashletFactory extends AbstractDashletFactory {
      */
     public Dashlet newDashletInstance(DashletSpec dashletSpec) {
         return new AlarmDetailsDashlet(getName(), dashletSpec, m_alarmDao, m_nodeDao, m_alarmRepository, m_transactionTemplate
-        , timeformatService);
+        , m_timeformatService);
     }
 
     /**

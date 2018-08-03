@@ -71,15 +71,15 @@ import com.vaadin.ui.VerticalLayout;
  * @author Christian Pape
  */
 public class KscDashlet extends AbstractDashlet {
-    private NodeDao nodeDao;
-    private ResourceDao resourceDao;
-    private TransactionOperations transactionOperations;
+    private NodeDao m_nodeDao;
+    private ResourceDao m_resourceDao;
+    private TransactionOperations m_transactionOperations;
     private DashletComponent wallboardComponent;
     private DashletComponent dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
 
-    private final TimeformatService timeformatService;
-    private final ZoneId userTimezoneId;
+    private final TimeformatService m_timeformatService;
+    private final ZoneId m_userTimezoneId;
 
     /**
      * Constructor for instantiating new objects.
@@ -93,11 +93,11 @@ public class KscDashlet extends AbstractDashlet {
         /**
          * Setting the member fields
          */
-        this.nodeDao = nodeDao;
-        this.resourceDao = resourceDao;
-        this.transactionOperations = transactionOperations;
-        this.timeformatService = timeformatService;
-        this.userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
+        m_nodeDao = nodeDao;
+        m_resourceDao = resourceDao;
+        m_transactionOperations = transactionOperations;
+        m_timeformatService = timeformatService;
+        m_userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
     }
 
     @Override
@@ -214,10 +214,10 @@ public class KscDashlet extends AbstractDashlet {
                                 }
 
                                 labelTitle.addStyleName("text");
-                                Label labelFrom = new Label("From: " + timeformatService.format(beginTime.getTime(), userTimezoneId));
+                                Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
                                 labelFrom.addStyleName("text");
 
-                                Label labelTo = new Label("To: " + timeformatService.format(endTime.getTime(), userTimezoneId));
+                                Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
                                 labelTo.addStyleName("text");
 
                                 Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -349,10 +349,10 @@ public class KscDashlet extends AbstractDashlet {
 
                         labelTitle.addStyleName("text");
 
-                        Label labelFrom = new Label("From: " + timeformatService.format(beginTime.getTime(), userTimezoneId));
+                        Label labelFrom = new Label("From: " + m_timeformatService.format(beginTime.getTime(), m_userTimezoneId));
                         labelFrom.addStyleName("text");
 
-                        Label labelTo = new Label("To: " + timeformatService.format(endTime.getTime(), userTimezoneId));
+                        Label labelTo = new Label("To: " + m_timeformatService.format(endTime.getTime(), m_userTimezoneId));
                         labelTo.addStyleName("text");
 
                         Label labelNodeLabel = new Label(data.get("nodeLabel"));
@@ -406,7 +406,7 @@ public class KscDashlet extends AbstractDashlet {
      * @return a map with meta data, like resourceLabel, resourceTypeLabel
      */
     public Map<String, String> getDataForResourceId(final String nodeId, final String resourceIdString) {
-        return transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
+        return m_transactionOperations.execute(new TransactionCallback<Map<String, String>>() {
             @Override
             public Map<String, String> doInTransaction(TransactionStatus transactionStatus) {
                 Map<String, String> data = new HashMap<>();
@@ -418,8 +418,8 @@ public class KscDashlet extends AbstractDashlet {
                     resource = determineResourceByResourceId(resourceId);
                     node = ResourceTypeUtils.getNodeFromResource(resource);
                 } else {
-                    node = nodeDao.get(nodeId);
-                    resource = resourceDao.getResourceForNode(node);
+                    node = m_nodeDao.get(nodeId);
+                    resource = m_resourceDao.getResourceForNode(node);
                 }
                 data.put("nodeId", node.getNodeId());
                 data.put("nodeLabel", node.getLabel());
@@ -437,7 +437,7 @@ public class KscDashlet extends AbstractDashlet {
     }
 
     OnmsResource determineResourceByResourceId(ResourceId resourceId){
-        OnmsResource resource = resourceDao.getResourceById(resourceId);
+        OnmsResource resource = m_resourceDao.getResourceById(resourceId);
         resource =(resource.getParent()== null) ? resource : resource.getParent();
         return resource;
     }
