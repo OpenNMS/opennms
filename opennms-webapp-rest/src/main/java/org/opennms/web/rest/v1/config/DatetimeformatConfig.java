@@ -31,15 +31,15 @@ package org.opennms.web.rest.v1.config;
 import java.time.ZoneId;
 
 public class DatetimeformatConfig {
-    private ZoneId zoneId;
+    private String zoneId;
     private String datetimeformat;
 
-    public ZoneId getZoneId() {
+    public String getZoneId() {
         return zoneId;
     }
 
     public void setZoneId(ZoneId zoneId) {
-        this.zoneId = zoneId;
+        this.zoneId = zoneId.getId();
     }
 
     public String getDatetimeformat() {

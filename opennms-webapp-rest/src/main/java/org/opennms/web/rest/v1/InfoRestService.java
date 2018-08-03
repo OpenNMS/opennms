@@ -40,10 +40,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.resource.Vault;
-import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 import org.opennms.web.rest.v1.config.TicketerConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,6 +52,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Path("info")
 @Transactional
 public class InfoRestService extends OnmsRestService {
+
+    @Autowired
+    TimeformatService timeformatService;
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -70,9 +74,8 @@ public class InfoRestService extends OnmsRestService {
     private DatetimeformatConfig getDateformatConfig(HttpServletRequest request) {
         DatetimeformatConfig config = new DatetimeformatConfig();
         String userId = request.getRemoteUser();
-        CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
         config.setZoneId(ZoneId.systemDefault()); // TODO
-       //  config.setDatetimeformat(format.Pattern); // TODO
+        config.setDatetimeformat("yyyy-MM-dd'T'HH:mm:ssxxx"); // TODO
         return config;
     }
 
