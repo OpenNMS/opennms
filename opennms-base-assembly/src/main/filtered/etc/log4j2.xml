@@ -185,6 +185,7 @@
         <KeyValuePair key="enlinkd"              value="DEBUG" />
         <KeyValuePair key="manager"              value="DEBUG" />
         <KeyValuePair key="map"                  value="DEBUG" />
+        <KeyValuePair key="minion"               value="DEBUG" />
         <KeyValuePair key="notifd"               value="DEBUG" />
         <KeyValuePair key="oss-qosd"             value="DEBUG" />
         <KeyValuePair key="oss-qosdrx"           value="DEBUG" />

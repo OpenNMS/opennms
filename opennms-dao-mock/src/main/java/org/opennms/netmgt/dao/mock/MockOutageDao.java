@@ -28,16 +28,16 @@
 
 package org.opennms.netmgt.dao.mock;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.outage.OutageSummary;
-
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implements OutageDao {
     private AtomicInteger m_id = new AtomicInteger(0);
@@ -77,6 +77,16 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
 
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Collection<OnmsOutage> matchingOutages(final ServiceSelector selector) {
+        throw new UnsupportedOperationException("Not yet implemented!");
+    }
+
+    @Override
+    public Collection<OnmsOutage> matchingLatestOutages(final ServiceSelector selector) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

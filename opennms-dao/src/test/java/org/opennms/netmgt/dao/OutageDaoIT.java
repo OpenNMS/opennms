@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.criterion.Restrictions;
@@ -127,9 +128,10 @@ public class OutageDaoIT implements InitializingBean {
         m_transTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             public void doInTransactionWithoutResult(TransactionStatus status) {
-                if (m_serviceTypeDao.findByName("ICMP") == null) {
-                    OnmsServiceType t = new OnmsServiceType("ICMP");
-                    m_serviceTypeDao.save(t);
+                for (final String service : Arrays.asList("ICMP", "Minion-Heartbeat", "Minion-RPC")) {
+                    if (m_serviceTypeDao.findByName(service) == null) {
+                        m_serviceTypeDao.save(new OnmsServiceType(service));
+                    }
                 }
             }
         });
@@ -282,6 +284,90 @@ public class OutageDaoIT implements InitializingBean {
         assertEquals(3, outages.size());
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void testMatchingLatestOutages() {
+        for (final OnmsNode node : m_nodeDao.findAll()) {
+            m_nodeDao.delete(node);
+        }
+        m_nodeDao.flush();
+
+        OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "minion");
+        m_nodeDao.save(node);
+
+        final OnmsServiceType minionHeartbeat = getServiceType("Minion-Heartbeat");
+        final OnmsServiceType minionRpc = getServiceType("Minion-RPC");
+        final OnmsServiceType icmp = getServiceType("ICMP");
+
+        final OnmsIpInterface iface = getIpInterface("172.16.1.1", node);
+        final OnmsIpInterface v6 = getIpInterface("::1", node);
+        final OnmsIpInterface bad = getIpInterface("172.16.1.2", node);
+
+        final OnmsMonitoredService nodeHeartbeatService = getMonitoredService(iface, minionHeartbeat);
+        final OnmsMonitoredService nodeRpcService = getMonitoredService(iface, minionRpc);
+        final OnmsMonitoredService icmpService = getMonitoredService(iface, icmp);
+
+        final OnmsMonitoredService v6IcmpService = getMonitoredService(v6, icmp);
+
+        final OnmsMonitoredService badHeartbeat = getMonitoredService(bad, minionHeartbeat);
+
+        final Date date1 = new Date(1);
+        final Date date2 = new Date(2);
+        final Date date3 = new Date(3);
+        final Date date4 = new Date(4);
+        final Date date5 = new Date(5);
+        final Date date6 = new Date(6);
+
+        OnmsOutage h1 = new OnmsOutage(date1, date1, nodeHeartbeatService);
+        OnmsOutage h2 = new OnmsOutage(date3, date3, nodeHeartbeatService);
+        OnmsOutage h3 = new OnmsOutage(date5, date5, nodeHeartbeatService);
+
+        OnmsOutage r1 = new OnmsOutage(date2, date2, nodeRpcService);
+        OnmsOutage r2 = new OnmsOutage(date4, date4, nodeRpcService);
+        OnmsOutage r3 = new OnmsOutage(date6, date6, nodeRpcService);
+
+        OnmsOutage i1 = new OnmsOutage(date1, date1, icmpService);
+
+        OnmsOutage b1 = new OnmsOutage(date1, date1, badHeartbeat);
+
+        OnmsOutage v1 = new OnmsOutage(date1, date1, v6IcmpService);
+
+        m_outageDao.save(h1);
+        m_outageDao.save(h2);
+        m_outageDao.save(h3);
+
+        m_outageDao.save(r1);
+        m_outageDao.save(r2);
+        m_outageDao.save(r3);
+
+        m_outageDao.save(i1);
+
+        m_outageDao.save(b1);
+
+        m_outageDao.save(v1);
+
+        m_outageDao.flush();
+
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(final TransactionStatus status) {
+                final List<String> services = Arrays.asList("Minion-Heartbeat", "Minion-RPC");
+                final ServiceSelector selector = new ServiceSelector("IPADDR != '172.16.1.2'", services);
+                Collection<OnmsOutage> outages = m_outageDao.matchingLatestOutages(selector);
+                System.err.println(outages);
+                assertEquals("we should have 2 outages", 2, outages.size());
+
+                final Iterator<OnmsOutage> it = outages.iterator();
+                final OnmsOutage h = it.next();
+                final OnmsOutage r = it.next();
+                assertEquals("it should return one heartbeat outage", "Minion-Heartbeat", h.getServiceType().getName());
+                assertEquals("it should return one RPC outage", "Minion-RPC", r.getServiceType().getName());
+                assertEquals("it should return the *last* heartbeat outage", date5, h.getIfLostService());
+                assertEquals("it should return the *last* RPC outage", date6, r.getIfLostService());
+            }
+        });
+    }
+
     private OnmsDistPoller getLocalHostDistPoller() {
         return m_distPollerDao.whoami();
     }
@@ -302,6 +388,7 @@ public class OutageDaoIT implements InitializingBean {
         OnmsOutage outage = new OnmsOutage(new Date(), monitoredService);
         outage.setServiceLostEvent(event);
         m_outageDao.save(outage);
+        m_outageDao.flush();
         return outage;
     }
 
@@ -316,6 +403,7 @@ public class OutageDaoIT implements InitializingBean {
         event.setEventLog("Y");
         event.setEventDisplay("Y");
         m_eventDao.save(event);
+        m_eventDao.flush();
         return event;
     }
 
@@ -331,6 +419,7 @@ public class OutageDaoIT implements InitializingBean {
             monitoredService = new OnmsMonitoredService(ipInterface, serviceType);
         }
         m_monitoredServiceDao.save(monitoredService);
+        m_monitoredServiceDao.flush();
         return monitoredService;
     }
 
@@ -344,8 +433,10 @@ public class OutageDaoIT implements InitializingBean {
         OnmsIpInterface ipInterface = m_ipInterfaceDao.findByNodeIdAndIpAddress(node.getId(), ipAddr);
         if (ipInterface == null) {
             ipInterface = new OnmsIpInterface(addr(ipAddr), node);
+            ipInterface.setIsManaged("M");
             m_ipInterfaceDao.save(ipInterface);
         }
+        m_ipInterfaceDao.flush();
         return ipInterface;
     }
 }
