@@ -79,26 +79,26 @@
             <span>Search Asset Information</span>
           </div>
           <div class="card-body">
-            <div class="row">
-              <div class="col-md-6 col-xs-6">
+            <div>
                 <ul class="list-unstyled">
-                  <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
+                <li><a href="asset/nodelist.jsp?column=_allNonEmpty">All nodes with asset info</a></li>
                 </ul>
-              </div> <!-- column -->
-              <div class="col-md-6 col-xs-6">
-                <form role="form" class="form-inline text-right" action="asset/nodelist.jsp" method="get">
-                  <div class="form-group">
-                    <label for="input_searchvalue">Assets in category:</label>
-                    <select class="form-control" id="input_searchvalue" name="searchvalue">
+            </div> <!-- row -->
+            <div>
+                <form role="form" class="form-group" action="asset/nodelist.jsp" method="get">
+                  <label for="input_searchvalue">Assets in category</label>
+                  <div class="input-group">
+                    <select class="form-control custom-select" id="input_searchvalue" name="searchvalue">
                       <% for( int i=0; i < Asset.CATEGORIES.length; i++ ) { %>
                         <option><%=Asset.CATEGORIES[i]%></option>
                       <% } %>
                     </select>
+                    <div class="input-group-append">
+                        <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    </div>
                   </div>
                   <input type="hidden" name="column" value="category" />
-                  <button type="submit" class="btn btn-secondary">Search</button>
                 </form>
-              </div> <!-- column -->
             </div> <!-- row -->
           </div> <!-- card-body -->
         </div> <!-- panel -->
