@@ -104,7 +104,7 @@
             org.opennms.netmgt.dao.api.ResourceStorageDao
             org.opennms.netmgt.rrd.RrdStrategy
    -->
-  <import resource="classpath*:/META-INF/opennms/applicationContext-${org.opennms.timeseries.strategy:rrd}.xml"/>
+  <import resource="classpath*:/META-INF/opennms/applicationContext-timeseries-${org.opennms.timeseries.strategy:rrd}.xml"/>
   <bean id="resourceDao" class="org.opennms.netmgt.dao.support.DefaultResourceDao">
     <property name="nodeDao" ref="nodeDao" />
     <property name="locationMonitorDao" ref="locationMonitorDao" />

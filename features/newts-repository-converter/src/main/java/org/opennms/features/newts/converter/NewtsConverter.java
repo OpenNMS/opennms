@@ -358,7 +358,7 @@ public class NewtsConverter implements AutoCloseable {
         try {
             this.context = new ClassPathXmlApplicationContext(new String[]{
                     "classpath:/META-INF/opennms/applicationContext-soa.xml",
-                    "classpath:/META-INF/opennms/applicationContext-newts.xml"
+                    "classpath:/META-INF/opennms/applicationContext-timeseries-newts.xml"
             });
 
             this.repository = context.getBean(SampleRepository.class);

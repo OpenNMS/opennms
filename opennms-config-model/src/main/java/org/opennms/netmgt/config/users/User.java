@@ -29,6 +29,7 @@
 package org.opennms.netmgt.config.users;
 
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -49,7 +50,7 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 @XmlRootElement(name = "user")
 @XmlAccessorType(XmlAccessType.NONE)
 @ValidateUsing("users.xsd")
-@XmlType(propOrder={"m_userId", "m_fullName", "m_userComments", "m_password", "contacts", "dutySchedules", "roles", "m_tuiPin"})
+@XmlType(propOrder={"m_userId", "m_fullName", "m_userComments", "m_password", "contacts", "dutySchedules", "roles", "m_tuiPin", "m_timeZoneId"})
 public class User implements Serializable {
     private static final long serialVersionUID = 2L;
 
@@ -77,6 +78,10 @@ public class User implements Serializable {
     @XmlElement(name = "tui-pin")
     @XmlJavaTypeAdapter(StringTrimAdapter.class)
     private String m_tuiPin;
+
+    @XmlElement(name = "time-zone-id")
+    @XmlJavaTypeAdapter(TimeZoneIdAdapter.class)
+    private ZoneId m_timeZoneId;
 
     public User() {
     }
@@ -194,11 +199,23 @@ public class User implements Serializable {
         m_tuiPin = tuiPin;
     }
 
+    public Optional<ZoneId> getTimeZoneId() {
+        return Optional.ofNullable(m_timeZoneId);
+    }
+
+    public void setTimeZoneId(final String timeZoneId) {
+        m_timeZoneId = ZoneId.of(timeZoneId);
+    }
+
+    public void setTimeZoneId(final ZoneId timeZoneId) {
+        m_timeZoneId = timeZoneId;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(m_userId, m_fullName, m_userComments,
                             m_password, m_contacts, m_dutySchedules,
-                            m_roles, m_tuiPin);
+                            m_roles, m_tuiPin, m_timeZoneId);
     }
 
     @Override
@@ -216,7 +233,8 @@ public class User implements Serializable {
                     && Objects.equals(temp.m_contacts, m_contacts)
                     && Objects.equals(temp.m_dutySchedules, m_dutySchedules)
                     && Objects.equals(temp.m_roles, m_roles)
-                    && Objects.equals(temp.m_tuiPin, m_tuiPin);
+                    && Objects.equals(temp.m_tuiPin, m_tuiPin)
+                    && Objects.equals(temp.m_timeZoneId, m_timeZoneId);
         }
         return false;
     }
@@ -227,7 +245,7 @@ public class User implements Serializable {
                 + ", userComments=" + m_userComments + ", password="
                 + m_password + ", contacts=" + m_contacts
                 + ", dutySchedules=" + m_dutySchedules + ", roles="
-                + m_roles + ", tuiPin=" + m_tuiPin + "]";
+                + m_roles + ", tuiPin=" + m_tuiPin + ", timeZoneId=" + m_timeZoneId +"]";
     }
 
 }

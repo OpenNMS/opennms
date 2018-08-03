@@ -6,7 +6,7 @@ Connect with _SSH_ to your remote _RHEL_ system where you need a _Minion_ to be 
 .Install the Yum repository
 [source, shell]
 ----
-yum -y https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
 rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
 ----
 
