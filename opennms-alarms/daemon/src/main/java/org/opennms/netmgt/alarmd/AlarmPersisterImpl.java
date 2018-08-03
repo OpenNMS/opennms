@@ -117,9 +117,9 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private OnmsAlarm addOrReduceEventAsAlarm(Event event) {
-        final OnmsEvent e = m_eventDao.get(event.getDbid());
-        if (e == null) {
+    private OnmsAlarm addOrReduceEventAsAlarm(Event event) throws IllegalStateException {
+        final OnmsEvent persistedEvent = m_eventDao.get(event.getDbid());
+        if (persistedEvent == null) {
             throw new IllegalStateException("Event with id " + event.getDbid() + " was deleted before we could retrieve it and create an alarm.");
         }
 
@@ -131,39 +131,39 @@ public class AlarmPersisterImpl implements AlarmPersister {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
             }
-            alarm = createNewAlarm(e, event);
+            alarm = createNewAlarm(persistedEvent, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, e));
+                extensions.forEach(ext -> ext.afterAlarmCreated(alarmCreated, event, persistedEvent));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks.", ex);
             }
 
             m_alarmDao.save(alarm);
-            m_eventDao.saveOrUpdate(e);
+            m_eventDao.saveOrUpdate(persistedEvent);
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             }
-            reduceEvent(e, alarm, event);
+            reduceEvent(persistedEvent, alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
             try {
                 final OnmsAlarm alarmCreated = alarm;
-                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, e));
+                extensions.forEach(ext -> ext.afterAlarmUpdated(alarmCreated, event, persistedEvent));
             } catch (Exception ex) {
                 LOG.error("An error occurred while invoking the extension callbacks.", ex);
             }
 
             m_alarmDao.update(alarm);
-            m_eventDao.update(e);
+            m_eventDao.update(persistedEvent);
 
             if (event.getAlarmData().isAutoClean()) {
-                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), e);
+                m_eventDao.deletePreviousEventsForAlarm(alarm.getId(), persistedEvent);
             }
 
             m_alarmEntityNotifier.didUpdateAlarmWithReducedEvent(alarm);
@@ -171,29 +171,31 @@ public class AlarmPersisterImpl implements AlarmPersister {
         return alarm;
     }
 
-    private void reduceEvent(OnmsEvent e, OnmsAlarm alarm, Event event) {
+    private void reduceEvent(OnmsEvent persistedEvent, OnmsAlarm alarm, Event event) {
         // Always set these
-        alarm.setLastEvent(e);
-        alarm.setLastEventTime(e.getEventTime());
+        alarm.setLastEvent(persistedEvent);
+        alarm.setLastEventTime(persistedEvent.getEventTime());
         
-        //only increment the alarm counter if the reducing event is a resolution
-        Integer resolution_type = Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE);
-        if (!Objects.equals(event.getAlarmData().getAlarmType(), resolution_type)) {
-            alarm.setCounter(alarm.getCounter() + 1);
+        if (!isResolutionEvent(event)) {
+            incrementCounter(alarm);
             
-            if (alarm.getSeverity().equals(OnmsSeverity.CLEARED)) {
-                alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+            if (isResolvedAlarm(alarm)) {
+                resetAlarmSeverity(persistedEvent, alarm);
             }
         } else {
-            alarm.setSeverity(OnmsSeverity.CLEARED);
+            
+            if (isResolvedAlarm(alarm)) {
+                incrementCounter(alarm);
+            } else {
+                alarm.setSeverity(OnmsSeverity.CLEARED);
+            }
         }
-        
         alarm.setAlarmType(event.getAlarmData().getAlarmType());
 
         if (!event.getAlarmData().hasUpdateFields()) {
 
             //We always set these even if there are not update fields specified
-            alarm.setLogMsg(e.getEventLogMsg());
+            alarm.setLogMsg(persistedEvent.getEventLogMsg());
         } else {
             for (UpdateField field : event.getAlarmData().getUpdateFieldList()) {
                 String fieldName = field.getFieldName();
@@ -202,24 +204,24 @@ public class AlarmPersisterImpl implements AlarmPersister {
                 if (fieldName.equalsIgnoreCase("LogMsg") && !field.isUpdateOnReduction()) {
                     continue;
                 } else {
-                    alarm.setLogMsg(e.getEventLogMsg());
+                    alarm.setLogMsg(persistedEvent.getEventLogMsg());
                 }
 
                 //Set these others
                 if (field.isUpdateOnReduction()) {
 
                     if (fieldName.toLowerCase().startsWith("distpoller")) {
-                        alarm.setDistPoller(e.getDistPoller());
+                        alarm.setDistPoller(persistedEvent.getDistPoller());
                     } else if (fieldName.toLowerCase().startsWith("ipaddr")) {
-                        alarm.setIpAddr(e.getIpAddr());
+                        alarm.setIpAddr(persistedEvent.getIpAddr());
                     } else if (fieldName.toLowerCase().startsWith("mouseover")) {
-                        alarm.setMouseOverText(e.getEventMouseOverText());
+                        alarm.setMouseOverText(persistedEvent.getEventMouseOverText());
                     } else if (fieldName.toLowerCase().startsWith("operinstruct")) {
-                        alarm.setOperInstruct(e.getEventOperInstruct());
+                        alarm.setOperInstruct(persistedEvent.getEventOperInstruct());
                     } else if (fieldName.equalsIgnoreCase("severity")) {
-                        alarm.setSeverity(OnmsSeverity.valueOf(e.getSeverityLabel()));
+                        resetAlarmSeverity(persistedEvent, alarm);
                     } else if (fieldName.toLowerCase().contains("descr")) {
-                        alarm.setDescription(e.getEventDescr());
+                        alarm.setDescription(persistedEvent.getEventDescr());
                     } else if (fieldName.toLowerCase().startsWith("acktime")) {
                         final String expandedAckTime = m_eventUtil.expandParms(field.getValueExpression(), event);
                         if ("null".equalsIgnoreCase(expandedAckTime) && alarm.isAcknowledged()) {
@@ -268,7 +270,23 @@ public class AlarmPersisterImpl implements AlarmPersister {
             }
         }
 
-        e.setAlarm(alarm);
+        persistedEvent.setAlarm(alarm);
+    }
+
+    private void resetAlarmSeverity(OnmsEvent persistedEvent, OnmsAlarm alarm) {
+        alarm.setSeverity(OnmsSeverity.valueOf(persistedEvent.getSeverityLabel()));
+    }
+
+    private void incrementCounter(OnmsAlarm alarm) {
+        alarm.setCounter(alarm.getCounter() + 1);
+    }
+
+    private boolean isResolvedAlarm(OnmsAlarm alarm) {
+        return alarm.getAlarmType() == OnmsAlarm.RESOLUTION_TYPE;
+    }
+
+    private boolean isResolutionEvent(Event event) {
+        return Objects.equals(event.getAlarmData().getAlarmType(), Integer.valueOf(OnmsAlarm.RESOLUTION_TYPE));
     }
 
     private OnmsAlarm createNewAlarm(OnmsEvent e, Event event) {
