@@ -28,6 +28,8 @@
 package org.opennms.features.situationfeedback.elastic;
 
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
+import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
+
 import com.google.gson.annotations.SerializedName;
 
 public class FeedbackDocument {
@@ -134,5 +136,10 @@ public class FeedbackDocument {
         doc.setSituationKey(feedback.getSituationKey());
         doc.setUser(feedback.getUser());
         return doc;
+    }
+
+    public static AlarmFeedback toAlarmFeedback(FeedbackDocument doc) {
+        return new AlarmFeedback(doc.situationKey, doc.situationFingerprint, doc.alarmKey, FeedbackType.getType(doc.feedbackType), doc.reason, doc.user,
+                                 doc.timestamp);
     }
 }

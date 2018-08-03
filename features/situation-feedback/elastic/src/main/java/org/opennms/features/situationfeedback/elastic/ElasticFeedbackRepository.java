@@ -131,11 +131,11 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         if (result == null) {
             throw new FeedbackException("Failed to get result");
         }
-        List<Hit<AlarmFeedback, Void>> feedback = result.getHits(AlarmFeedback.class);
+        List<Hit<FeedbackDocument, Void>> feedback = result.getHits(FeedbackDocument.class);
         if (feedback == null) {
             return Collections.emptyList();
         }
-        return feedback.stream().map(hit -> hit.source).collect(Collectors.toList());
+        return feedback.stream().map(hit -> hit.source).map(FeedbackDocument::toAlarmFeedback).collect(Collectors.toList());
     }
 
     private void ensureInitialized() {
