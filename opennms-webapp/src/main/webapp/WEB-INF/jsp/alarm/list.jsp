@@ -310,7 +310,7 @@
       <a class="btn btn-secondary" href="<%=this.makeLink(callback, parms, "long", favorite)%>" title="Detailed List of Alarms">Long Listing</a>
         </c:otherwise>
       </c:choose>
-      <a class="btn btn-secondary" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
+      <a class="btn btn-secondary text-white" onclick="$('#severityLegendModal').modal()">Severity Legend</a>
       
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
         <% if ( alarmCount > 0 ) { %>
@@ -330,7 +330,7 @@
         <% } %>
       <% } %>
 
-      <select class="form-control pull-right" onchange="location = this.value;">
+      <select class="form-control custom-select pull-right" onchange="location = this.value;">
           <option value="<%= makeLimitLink(callback, parms, favorite,  10) %>" ${(parms.getLimit() ==  10) ? 'selected' : ''}> 10</option>
           <option value="<%= makeLimitLink(callback, parms, favorite,  20) %>" ${(parms.getLimit() ==  20) ? 'selected' : ''}> 20</option>
           <option value="<%= makeLimitLink(callback, parms, favorite,  50) %>" ${(parms.getLimit() ==  50) ? 'selected' : ''}> 50</option>
@@ -339,7 +339,7 @@
       </select>
       
 <% if(soundEnabled){ %>
-      <select class="form-control pull-right" onchange="location = this.value;">
+      <select class="form-control custom-select pull-right" onchange="location = this.value;">
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"off") %>" <% out.write("off".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound off</option>
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarm" ) %>" <% out.write("newalarm".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on new alarm</option>
           <option value="<%= makeAlarmSoundLink(callback,  parms, favorite,"newalarmcount" ) %>" <% out.write("newalarmcount".equals(alarmSoundStatusStr) ? "selected" : ""); %>> Sound on alarm event count</option>
@@ -352,7 +352,7 @@
       </div>
       <!-- end menu -->
 
-<div class="hidden">
+<div class="form-group mt-2">
   <jsp:include page="/includes/alarm-querypanel.jsp" flush="false" />
 </div>
 
@@ -373,33 +373,31 @@
 <div class="row">
   <div class="col-sm-6 col-md-3">
   <div class="input-group">
-    <span class="input-group-addon">
+    <div class="input-group-prepend">
       <c:choose>
       <c:when test="${favorite == null}">
-      <a onclick="createFavorite()">
+      <button class="btn btn-secondary" onclick="createFavorite()">
         <!-- Star outline -->
         <i class="fa fa-lg fa-star-o"></i>
-      </a>
+      </button>
       </c:when>
       <c:otherwise>
-      <a onclick="deleteFavorite(${favorite.id})">
+      <button class="btn btn-secondary" onclick="deleteFavorite(${favorite.id})">
         <i class="fa fa-lg fa-star"></i>
-      </a>
+      </button>
       </c:otherwise>
       </c:choose>
-    </span>
+    </div>
     <!-- Use background-color:white to make it look less disabled -->
     <input type="text" class="form-control" style="background-color:white;" readonly placeholder="Unsaved filter" value="<c:out value="${favorite.name}"/>"/>
-    <div class="input-group-btn">
-      <div class="dropdown">
+    <div class="input-group-append">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-          <span class="caret"></span>
         </button>
         <!-- I put margin: 0px here because the margin gap was causing the menu to disappear before you could get the mouse on it -->
         <ul class="dropdown-menu dropdown-menu-right" style="margin: 0px;" role="menu">
           <c:forEach var="fave" items="${favorites}">
             <c:if test="${favorite.id != fave.id}">
-              <li>
+              <li class="dropdown-item">
                 <a onclick="changeFavorite(${fave.id}, '${fave.filter}')">
                   <c:out value="${fave.name}"/>
                 </a>
@@ -407,10 +405,9 @@
               <c:set var="showDivider" value="${true}"/>
             </c:if>
           </c:forEach>
-          <c:if test="${showDivider}"><li class="divider"/></c:if>
-          <li><a onclick="clearFilters()">Clear filters</a></li>
+          <c:if test="${showDivider}"><li class="dropdown-divider"/></c:if>
+          <li class="dropdown-item"><a onclick="clearFilters()">Clear filters</a></li>
         </ul>
-      </div>
     </div>
   </div>
   </div>
@@ -744,9 +741,9 @@
 			<hr />
 			 <p><%=alarms.length%> alarms &nbsp;
       <% if( req.isUserInRole( Authentication.ROLE_ADMIN ) || !req.isUserInRole( Authentication.ROLE_READONLY ) ) { %>
-          <input class="btn btn-secondary" TYPE="reset" />
-          <input class="btn btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
-          <select class="form-control" name="alarmAction">
+          <input class="btn btn-sm btn-secondary" TYPE="reset" />
+          <input class="btn btn-sm btn-secondary" TYPE="button" VALUE="Select All" onClick="checkAllCheckboxes()"/>
+          <select class="form-control custom-select input-sm" name="alarmAction">
           <% if(unAckFlash){ // allow alarms to be acked and unacked %>
               <option value="acknowledge">Acknowledge Alarms</option>
               <option value="unacknowledge">Unacknowledge Alarms</option>
@@ -760,7 +757,7 @@
               <option value="clear">Clear Alarms</option>
               <option value="escalate">Escalate Alarms</option>
           </select>
-          <input class="btn btn-secondary" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
+          <input class="btn btn-sm btn-secondary" type="button" value="Go" onClick="submitForm(document.alarm_action_form.alarmAction.value)" />
       <% } %>
         </p>
       </form>

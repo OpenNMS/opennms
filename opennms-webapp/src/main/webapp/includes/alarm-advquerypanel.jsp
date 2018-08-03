@@ -71,23 +71,23 @@
 <form action="alarm/query" method="get">
 
 	<div class="form-group col-sm-6">
-		<label for="msgsub">Alarm Text Contains:</label>
+		<label for="msgsub">Alarm Text Contains</label>
 		<input class="form-control" type="text" name="msgsub" />
 	</div>
 
 	<div class="form-group col-sm-6">
-		<label for="iplike">TCP/IP Address Like:</label>
+		<label for="iplike">TCP/IP Address Like</label>
 		<input class="form-control" type="text" name="iplike" value="" />
 	</div>
 
 	<div class="form-group col-sm-6">
-		<label for="nodenamelike">Node Label Contains:</label>
+		<label for="nodenamelike">Node Label Contains</label>
 		<input class="form-control" type="text" name="nodenamelike" />
 	</div>
 
 	<div class="form-group col-sm-6">
-		<label for="severity">Severity:</label>
-		<select class="form-control" name="severity">
+		<label for="severity">Severity</label>
+		<select class="form-control custom-select" name="severity">
 			<option selected="selected"><%=AlarmUtil.ANY_SEVERITIES_OPTION%></option>
 
 			<% for (OnmsSeverity severity : OnmsSeverity.values()) { %>
@@ -100,8 +100,8 @@
 
 	<!-- Use clear:left to make sure that this column breaks onto a new row -->
 	<div class="form-group col-sm-4" style="clear: left;">
-		<label for="service">Service:</label>
-		<select class="form-control" name="service">
+		<label for="service">Service</label>
+		<select class="form-control custom-select" name="service">
 			<option selected><%=AlarmUtil.ANY_SERVICES_OPTION%></option>
 
 			<% for (String name : serviceNameSet) { %>
@@ -111,8 +111,8 @@
 	</div>
 
 	<div class="form-group col-sm-4">
-		<label for="sortby">Sort By:</label>
-		<select class="form-control" name="sortby">
+		<label for="sortby">Sort By</label>
+		<select class="form-control custom-select" name="sortby">
 			<option value="id">Alarm ID (Descending)</option>
 			<option value="rev_id">Alarm ID (Ascending)</option>
 			<option value="severity">Severity (Descending)</option>
@@ -129,8 +129,8 @@
 	</div>
 
 	<div class="form-group col-sm-4">
-		<label for="limit">Number of Alarms Per Page:</label>
-		<select class="form-control" name="limit">
+		<label for="limit">Number of Alarms Per Page</label>
+		<select class="form-control custom-select" name="limit">
 			<option value="10">10 alarms</option>
 			<option value="20">20 alarms</option>
 			<option value="30">30 alarms</option>
@@ -151,7 +151,7 @@
 		<br />
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="afterfirsteventtimehour">
+				<select class="form-control custom-select" name="afterfirsteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -161,7 +161,7 @@
 				<input class="form-control" type="text" name="afterfirsteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-sm-2">
-				<select class="form-control" name="afterfirsteventtimeampm">
+				<select class="form-control custom-select" name="afterfirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -170,7 +170,7 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="afterfirsteventtimemonth">
+				<select class="form-control custom-select" name="afterfirsteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
@@ -196,7 +196,7 @@
 		<br />
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="beforefirsteventtimehour">
+				<select class="form-control custom-select" name="beforefirsteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -206,7 +206,7 @@
 				<input class="form-control" type="text" name="beforefirsteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-sm-2">
-				<select class="form-control" name="beforefirsteventtimeampm">
+				<select class="form-control custom-select" name="beforefirsteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -215,7 +215,7 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="beforefirsteventtimemonth">
+				<select class="form-control custom-select" name="beforefirsteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
@@ -245,7 +245,7 @@
 		<br />
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="afterlasteventtimehour">
+				<select class="form-control custom-select" name="afterlasteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -255,7 +255,7 @@
 				<input class="form-control" type="text" name="afterlasteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-sm-2">
-				<select class="form-control" name="afterlasteventtimeampm">
+				<select class="form-control custom-select" name="afterlasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -264,7 +264,7 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="afterlasteventtimemonth">
+				<select class="form-control custom-select" name="afterlasteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>
@@ -290,7 +290,7 @@
 		<br />
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="beforelasteventtimehour">
+				<select class="form-control custom-select" name="beforelasteventtimehour">
 					<c:forEach var="i" begin="1" end="12">
 						<form:option value="${i}" selected="${nowHour==i}">${i}</form:option>
 					</c:forEach>
@@ -300,7 +300,7 @@
 				<input class="form-control" type="text" name="beforelasteventtimeminute" maxlength="2" value="${formattedNowMinute}" />
 			</div>
 			<div class="col-sm-2">
-				<select class="form-control" name="beforelasteventtimeampm">
+				<select class="form-control custom-select" name="beforelasteventtimeampm">
 					<c:forEach var="dayTime" items="AM,Noon,PM,Midnight">
 						<form:option value="${dayTime == 'AM' || dayTime == 'Midnight' ? 'am' : 'pm'}" selected="${dayTime==amPmText}">${dayTime}</form:option>
 					</c:forEach>
@@ -309,7 +309,7 @@
 		</div>
 		<div class="row">
 			<div class="col-sm-2">
-				<select class="form-control" name="beforelasteventtimemonth">
+				<select class="form-control custom-select" name="beforelasteventtimemonth">
 					<c:forEach var="month" items="${months}" varStatus="status">
 						<form:option value="${status.index}" selected="${status.count == nowMonth}">${month}</form:option>
 					</c:forEach>

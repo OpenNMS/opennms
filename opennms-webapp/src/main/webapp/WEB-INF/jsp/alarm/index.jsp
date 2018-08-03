@@ -62,12 +62,16 @@
       	<span>Alarm Queries</span>
       </div>
       <div class="card-body">
-        <form action="alarm/detail.htm" method="get" role="form" class="form-inline pull-right">
+        <form action="alarm/detail.htm" method="get" role="form" class="pull-right">
           <div class="form-group">
-            <label for="byalarmid_id">Alarm ID:</label>
-            <input type="text" class="form-control" name="id" id="byalarmid_id"/>
-            <button type="submit" class="btn btn-secondary">Get details</button>
-          </div>                
+            <label for="byalarmid_id">Alarm ID</label>
+              <div class="input-group">
+                <input type="text" class="form-control" name="id" id="byalarmid_id"/>
+                <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                </div>
+              </div>
+          </div>
         </form>
         <ul class="list-unstyled">
           <li><a href="alarm/list.htm" title="Summary view of all outstanding alarms">All alarms (summary)</a></li>
