@@ -60,11 +60,15 @@
       </div>
       <div class="card-body">
         <%--<jsp:include page="/includes/event-querypanel.jsp" flush="false" />--%>
-        <form action="event/detail.jsp" method="get" role="form" class="form-inline pull-right">
+        <form action="event/detail.jsp" method="get" role="form" class="form pull-right">
           <div class="form-group">
-            <label for="byeventid_id">Event ID:</label>
-            <input type="text" class="form-control" name="id" id="byeventid_id"/>
-            <button type="submit" class="btn btn-secondary">Get details</button>
+            <label for="byeventid_id">Event ID</label>
+              <div class="input-group">
+                  <input type="text" class="form-control" name="id" id="byeventid_id"/>
+                  <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+              </div>
           </div>                
         </form>
 
