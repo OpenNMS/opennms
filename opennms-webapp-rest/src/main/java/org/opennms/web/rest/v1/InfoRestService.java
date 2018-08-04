@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.time.ZoneId;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -40,6 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.opennms.core.resource.Vault;
+import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.web.rest.v1.config.DatetimeformatConfig;
@@ -58,7 +60,7 @@ public class InfoRestService extends OnmsRestService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getInfo(@Context HttpServletRequest request) throws ParseException {
+    public Response getInfo(@Context HttpSession session) throws ParseException {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
 
         final InfoDTO info = new InfoDTO();
@@ -67,16 +69,23 @@ public class InfoRestService extends OnmsRestService {
         info.setPackageName(sysInfoUtils.getPackageName());
         info.setPackageDescription(sysInfoUtils.getPackageDescription());
         info.setTicketerConfig(getTicketerConfig());
-        info.setDatetimeformatConfig(getDateformatConfig(request));
+        info.setDatetimeformatConfig(getDateformatConfig(session));
         return Response.ok().entity(info).build();
     }
 
-    private DatetimeformatConfig getDateformatConfig(HttpServletRequest request) {
+    private DatetimeformatConfig getDateformatConfig(HttpSession session) {
         DatetimeformatConfig config = new DatetimeformatConfig();
-        String userId = request.getRemoteUser();
-        config.setZoneId(ZoneId.systemDefault()); // TODO
-        config.setDatetimeformat("yyyy-MM-dd'T'HH:mm:ssxxx"); // TODO
+        config.setZoneId(extractUserTimeZoneId(session));
+        config.setDatetimeformat(timeformatService.getFormatPattern());
         return config;
+    }
+
+    private ZoneId extractUserTimeZoneId(HttpSession session){
+        ZoneId zoneId = (ZoneId) session.getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        if(zoneId == null){
+            zoneId = ZoneId.systemDefault();
+        }
+        return zoneId;
     }
 
     private TicketerConfig getTicketerConfig() {
