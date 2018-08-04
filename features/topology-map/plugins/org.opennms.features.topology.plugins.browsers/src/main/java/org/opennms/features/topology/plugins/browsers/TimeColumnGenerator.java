@@ -31,21 +31,21 @@ package org.opennms.features.topology.plugins.browsers;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Table;
 
 public class TimeColumnGenerator  implements Table.ColumnGenerator {
 
-    private TimeformatService timeformat;
-    private ZoneId userTimeZoneId;
+    private TimeformatService timeformatService;
 
-    public TimeColumnGenerator(TimeformatService timeformatService, ZoneId userTimeZoneId) {
-        this.timeformat = timeformatService;
-        this.userTimeZoneId = userTimeZoneId;
+    public TimeColumnGenerator(TimeformatService timeformatService) {
+        this.timeformatService = timeformatService;
     }
 
     @Override
@@ -56,12 +56,24 @@ public class TimeColumnGenerator  implements Table.ColumnGenerator {
         }
         String formattedValue;
         if(property.getType().equals(Instant.class)){
-            formattedValue = timeformat.format((Instant) property.getValue(), userTimeZoneId);
+            formattedValue = timeformatService.format((Instant) property.getValue(), extractUserTimeZoneId());
         } else if(property.getType().equals(Date.class)){
-            formattedValue = timeformat.format((Date) property.getValue(), userTimeZoneId);
+            formattedValue = timeformatService.format((Date) property.getValue(), extractUserTimeZoneId());
         } else {
             formattedValue = property.toString();
         }
         return formattedValue;
+    }
+
+    // TODO: replace method with UserTimeZoneExtractor
+    private static ZoneId extractUserTimeZoneId(){
+        ZoneId zoneId = null;
+        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
+            zoneId = (ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        }
+        if(zoneId == null){
+            zoneId = ZoneId.systemDefault();
+        }
+        return zoneId;
     }
 }
