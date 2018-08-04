@@ -36,6 +36,14 @@ Then choose _Configure Event Notifications_.
 NOTE: The event notification configuration is stored in the `notifications.xml` file.
 Changes to this file are picked up on the fly with no need to restart or send an event.
 
+==== Configuring Email Notifications
+
+Settings for configuring a SMTP server can be found in the `javamail-configuration.properties` file.
+
+NOTE: Changes to this file require restarting the _{opennms-product-name}_ service.
+
+
+
 // TODO: Document event notification editor
 
 // TODO: Document path-outage feature
