@@ -56,7 +56,7 @@ import org.springframework.test.context.ContextConfiguration;
 import com.google.common.base.Throwables;
 
 /**
- * Verifies that the {@link org.opennms.netmgt.config.TrapdConfig} is reloaded regularily from OpenNMS
+ * Verifies that the {@link org.opennms.netmgt.config.TrapdConfig} is reloaded regularly from OpenNMS
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
