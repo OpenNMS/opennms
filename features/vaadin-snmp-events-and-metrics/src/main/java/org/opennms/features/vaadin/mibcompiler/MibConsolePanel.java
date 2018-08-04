@@ -28,11 +28,17 @@
 
 package org.opennms.features.vaadin.mibcompiler;
 
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
 
+import java.util.Optional;
+
+import org.opennms.core.time.CentralizedDateTimeFormat;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -67,11 +73,14 @@ public class MibConsolePanel extends Panel implements Logger {
     /** The log content. */
     private final VerticalLayout logContent;
 
+    private final TimeformatService timeformatService;
+
     /**
      * Instantiates a new MIB Console Panel.
      */
-    public MibConsolePanel() {
+    public MibConsolePanel(TimeformatService timeformatService) {
         super("MIB Console");
+        this.timeformatService = timeformatService;
         addStyleName("light");
 
         Button clearButton = new Button("Clear Log");
@@ -101,11 +110,19 @@ public class MibConsolePanel extends Panel implements Logger {
      * @param message the message
      */
     private void logMsg(String level, String message) {
-        String msg = new Date().toString() + level + message;
+        String msg = timeformatService.format(Instant.now(), extractUserTimeZoneId().orElse(null)) + level + message;
         Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();
         LOG.info(message);
+    }
+
+    private Optional<ZoneId> extractUserTimeZoneId(){
+        // TODO: replace with UserTimeZoneExtractor => need to sort out dependencies
+        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
+            return Optional.ofNullable((ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID));
+        }
+        return Optional.empty();
     }
 
     /**

@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -60,6 +61,8 @@ public class MibCompilerApplication extends UI {
 
     /** The MIB parser. */
     private MibParser mibParser;
+
+    private TimeformatService timeformatService;
 
     /**
      * Sets the OpenNMS Event Proxy.
@@ -97,6 +100,10 @@ public class MibCompilerApplication extends UI {
         this.dataCollectionDao = dataCollectionDao;
     }
 
+    public void setTimeformatService(TimeformatService timeformatService){
+        this.timeformatService = timeformatService;
+    }
+
     /* (non-Javadoc)
      * @see com.vaadin.Application#init()
      */
@@ -110,7 +117,7 @@ public class MibCompilerApplication extends UI {
             throw new RuntimeException("dataCollectionDao cannot be null.");
 
         final HorizontalSplitPanel mainPanel = new HorizontalSplitPanel();
-        final MibConsolePanel mibConsole = new MibConsolePanel();
+        final MibConsolePanel mibConsole = new MibConsolePanel(timeformatService);
         final MibCompilerPanel mibPanel = new MibCompilerPanel(dataCollectionDao, eventConfDao, eventProxy, mibParser, mibConsole);
 
         mainPanel.setSizeFull();
