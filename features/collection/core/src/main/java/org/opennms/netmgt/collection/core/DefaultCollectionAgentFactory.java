@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -26,17 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.collectd;
+package org.opennms.netmgt.collection.core;
 
-import org.opennms.netmgt.collection.core.AbstractCollectionAgentFactory;
+import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.springframework.transaction.PlatformTransactionManager;
 
-public class DefaultSnmpCollectionAgentFactory extends AbstractCollectionAgentFactory<SnmpCollectionAgent> {
+public class DefaultCollectionAgentFactory extends AbstractCollectionAgentFactory<CollectionAgent> {
 
     @Override
-    protected SnmpCollectionAgent createAgent(Integer ipInterfaceId, IpInterfaceDao ipInterfaceDao,
-                                              PlatformTransactionManager transMgr, String location) {
-        return DefaultSnmpCollectionAgent.create(ipInterfaceId, ipInterfaceDao, transMgr, location);
+    protected CollectionAgent createAgent(Integer ipInterfaceId, IpInterfaceDao ipInterfaceDao, PlatformTransactionManager transMgr, String location) {
+        return DefaultCollectionAgent.create(ipInterfaceId, ipInterfaceDao, transMgr, location);
     }
 }
