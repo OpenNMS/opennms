@@ -132,10 +132,11 @@ public class NorthbounderManager extends DefaultAlarmEntityListener {
                     LOG.warn("The daemonName parameter has no value, ignoring.");
                     return;
                 }
+                final String daemonName = parm.getValue().getContent();
 
                 List<Northbounder> nbis = getNorthboundInterfaces();
                 for (Northbounder nbi : nbis) {
-                    if (parm.getValue().getContent().contains(nbi.getName())) {
+                    if (daemonName.contains(nbi.getName())) {
                         LOG.debug("Handling reload event for NBI: {}", nbi.getName());
                         LOG.debug("Reloading NBI configuration for interface {} not yet implemented.", nbi.getName());
                         EventBuilder ebldr = null;

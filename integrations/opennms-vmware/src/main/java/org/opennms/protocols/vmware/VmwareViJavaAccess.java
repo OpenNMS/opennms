@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -131,6 +130,8 @@ public class VmwareViJavaAccess {
 
     private Map<HostSystem, String> m_hostSystemCimUrls = new HashMap<HostSystem, String>();
 
+    private static ServiceInstancePool m_serviceInstancePool = new ServiceInstancePool();
+
     /**
      * Constructor for creating a instance for a given server and credentials.
      *
@@ -202,7 +203,7 @@ public class VmwareViJavaAccess {
     public void connect() throws MalformedURLException, RemoteException {
         relax();
 
-        m_serviceInstance = new ServiceInstance(new URL("https://" + m_hostname + "/sdk"), m_username, m_password);
+        m_serviceInstance = m_serviceInstancePool.retain(m_hostname, m_username, m_password);
     }
 
     /**
@@ -233,19 +234,7 @@ public class VmwareViJavaAccess {
      * Disconnects from the server.
      */
     public void disconnect() {
-        if (m_serviceInstance == null) {
-            // not connected
-            return;
-        } else {
-            ServerConnection serverConnection = m_serviceInstance.getServerConnection();
-
-            if (serverConnection == null) {
-                // not connected
-                return;
-            } else {
-                m_serviceInstance.getServerConnection().logout();
-            }
-        }
+        m_serviceInstancePool.release(m_serviceInstance);
     }
 
     /**
