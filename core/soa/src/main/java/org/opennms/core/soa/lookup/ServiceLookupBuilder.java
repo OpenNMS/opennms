@@ -33,9 +33,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-import org.opennms.core.soa.ServiceRegistry;
-
-public class ServiceLookupBuilder {
+public class ServiceLookupBuilder<C, F> {
 
     public static final long GRACE_PERIOD_MS = Long.getLong("org.opennms.core.soa.lookup.gracePeriodMs", TimeUnit.MINUTES.toMillis(5));
 
@@ -43,36 +41,43 @@ public class ServiceLookupBuilder {
 
     public static final long LOOKUP_DELAY_MS = Long.getLong("org.opennms.core.soa.lookup.lookupDelayMs", TimeUnit.SECONDS.toMillis(5));
 
-    private final ServiceRegistry registry;
+    private final ServiceLookup<C, F> serviceProvider;
     private long gracePeriodInMs;
     private long sleepTimeInMs;
+    private long waitTimeMs;
     private Supplier<Long> upTimeSupplier;
 
-    public ServiceLookupBuilder(ServiceRegistry registry) {
-        this.registry = Objects.requireNonNull(registry);
+    public ServiceLookupBuilder(ServiceLookup<C, F> serviceProvider) {
+        this.serviceProvider = Objects.requireNonNull(serviceProvider);
     }
 
     public ServiceLookupBuilder blocking() {
-        return blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, () -> ManagementFactory.getRuntimeMXBean().getUptime());
+        return blocking(GRACE_PERIOD_MS, LOOKUP_DELAY_MS, GRACE_PERIOD_MS);
     }
 
-    public ServiceLookupBuilder blocking(long gracePeriodInMs, long sleepTimeInMs, Supplier<Long> upTimeSupplier) {
+    public ServiceLookupBuilder blocking(long gracePeriodInMs, long sleepTimeInMs, long waitTimeMs) {
+        return blocking(gracePeriodInMs, sleepTimeInMs, waitTimeMs, () -> ManagementFactory.getRuntimeMXBean().getUptime());
+    }
+
+    public ServiceLookupBuilder blocking(long gracePeriodInMs, long sleepTimeInMs, long waitTimeMs, Supplier<Long> upTimeSupplier) {
         Objects.requireNonNull(upTimeSupplier);
         this.gracePeriodInMs = gracePeriodInMs;
         this.sleepTimeInMs = sleepTimeInMs;
+        this.waitTimeMs = waitTimeMs;
         this.upTimeSupplier = Objects.requireNonNull(upTimeSupplier);
         return this;
     }
 
-    public ServiceLookup build() {
+    public ServiceLookup<C, F> build() {
         if (this.upTimeSupplier != null) {
-            BlockingServiceLookup lookup = new BlockingServiceLookup(this.registry);
+            BlockingServiceLookup lookup = new BlockingServiceLookup(serviceProvider);
             lookup.setGracePeriodInMs(gracePeriodInMs);
             lookup.setLookupDelayMs(sleepTimeInMs);
+            lookup.setWaitTimeMs(waitTimeMs);
             lookup.setUptimeSupplier(upTimeSupplier);
             return lookup;
         }
-        return new SimpleServiceLookup(this.registry);
+        return serviceProvider;
     }
 
 }
