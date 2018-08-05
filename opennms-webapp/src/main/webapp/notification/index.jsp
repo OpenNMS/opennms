@@ -61,12 +61,16 @@
            <%-- search by user --%>
            <div class="row">
              <div class="col-md-12">
-               <form role="form" class="form-inline pull-right" method="get" action="notification/browse">
+               <form role="form" class="form pull-right" method="get" action="notification/browse">
                  <div class="form-group">
-                   <label for="byuser_user">User:</label>
-                   <input type="text" class="form-control" id="byuser_user" name="user"/>
+                   <label for="byuser_user">User</label>
+                   <div class="input-group">
+                    <input type="text" class="form-control" id="byuser_user" name="user"/>
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    </div>
+                   </div>
                  </div>
-                 <button type="submit" class="btn btn-secondary">Check notices</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->
@@ -74,12 +78,16 @@
            <%-- search by notice --%>
            <div class="row top-buffer">
              <div class="col-md-12">
-               <form role="form" class="form-inline pull-right" method="get" action="notification/detail.jsp" >
+               <form role="form" class="form pull-right" method="get" action="notification/detail.jsp" >
                  <div class="form-group">
-                   <label for="bynotice_notice">Notice:</label>
-                   <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
+                   <label for="bynotice_notice">Notice</label>
+                   <div class="input-group">
+                    <input type="text" class="form-control" id="bynotice_notice" name="notice"/>
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                    </div>
+                   </div>
                  </div>
-                 <button type="submit" class="btn btn-secondary">Get details</button>
                </form>
              </div> <!-- column -->
            </div> <!-- row -->
