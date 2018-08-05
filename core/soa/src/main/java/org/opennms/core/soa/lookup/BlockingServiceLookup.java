@@ -66,8 +66,7 @@ public class BlockingServiceLookup<C, F> implements ServiceLookup<C, F> {
         // Wait until the system has finished starting up (uptime >= grace period)
         // while ensuring we've waited for at least WAIT_PERIOD_MS before aborting the search.
         final long waitUntil = System.currentTimeMillis() + this.waitTimeMs;
-        while (service == null
-                && uptimeSupplier.get() < this.gracePeriodInMs
+        while (uptimeSupplier.get() < this.gracePeriodInMs
                 || System.currentTimeMillis() < waitUntil) {
             try {
                 Thread.sleep(this.lookupDelayMs);
