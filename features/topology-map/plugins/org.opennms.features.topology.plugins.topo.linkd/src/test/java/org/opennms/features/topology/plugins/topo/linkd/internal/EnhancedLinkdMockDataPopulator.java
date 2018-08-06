@@ -618,38 +618,38 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
         EasyMock.replay(mockVertex);
         AbstractEdge[] edgeidsforvertex1 = {
-                new LinkdEdge("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
+                LinkdEdge.create("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
         };
         AbstractEdge[] edgeidsforvertex2 = {
-                new LinkdEdge("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
+                LinkdEdge.create("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
         };
         AbstractEdge[] edgeidsforvertex3 = {
-                new LinkdEdge("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex4 = {
-                new LinkdEdge("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex5 = {
-                new LinkdEdge("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex6 = {
-                new LinkdEdge("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex7 = {
-                new LinkdEdge("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex8 = {
-                new LinkdEdge("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
-                new LinkdEdge("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP)
+                LinkdEdge.create("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
         OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")), edgeidsforvertex2);

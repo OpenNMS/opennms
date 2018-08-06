@@ -28,230 +28,113 @@
 
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang.StringUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.topo.AbstractEdge;
+import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
-import org.opennms.netmgt.model.topology.BridgePort;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
-    static final String getDefaultEdgeId(int sourceId,int targetId) {
-        return Math.min(sourceId, targetId) + "|" + Math.max(sourceId, targetId);
-    }
-
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
+    
+    public static LinkdEdge create(String id, Vertex sourceV, Vertex targetV, ProtocolSupported discoveredBy) {
+        return new LinkdEdge(id, sourceV, targetV,discoveredBy);
+    }
 
-    private static OnmsSnmpInterface getByNodeIdAndIfIndex(Integer ifIndex, Vertex source, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
-        if(source.getId() != null && StringUtils.isNumeric(source.getId()) && ifIndex != null 
-                && snmpmap.containsKey(Integer.parseInt(source.getId()))) {
-            for (OnmsSnmpInterface snmpiface: snmpmap.get(Integer.parseInt(source.getId()))) {
-                if (ifIndex.intValue() == snmpiface.getIfIndex().intValue())
-                    return snmpiface;
+    public static LinkdEdge create(String id,
+            AbstractVertex sourceV, AbstractVertex targetV,  
+            OnmsSnmpInterface sourceinterface, OnmsSnmpInterface targetInterface,
+            String sourceAddr, String targetAddr,
+            ProtocolSupported discoveredBy) {
+        
+        SimpleConnector source = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceV.getId()+"-"+id+"-connector", sourceV);
+        SimpleConnector target = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetV.getId()+"-"+id+"-connector", targetV);
+
+        LinkdEdge edge = new LinkdEdge(id, source, target,discoveredBy);
+        try {
+            edge.setSourceNodeid(Integer.parseInt(sourceV.getId()));
+        } catch (NumberFormatException e) {
+            
+        }
+        try {
+            edge.setTargetNodeid(Integer.parseInt(targetV.getId()));
+        } catch (NumberFormatException e) {
+            
+        }
+        edge.setSourceLabel(sourceV.getLabel());
+        edge.setTargetLabel(targetV.getLabel());
+        
+        if (sourceinterface != null) {
+            edge.setSourceIfIndex(sourceinterface.getIfIndex());
+            edge.setSourceIfName(sourceinterface.getIfName());
+            if (sourceinterface.getIfSpeed() != null) {
+                edge.setSpeed(InetAddressUtils.getHumanReadableIfSpeed(sourceinterface.getIfSpeed()));
             }
         }
-        return null;
-    }
-
-
-    public static String getEdgeTooltipText(BridgePort sourcelink,
-            Vertex source, Vertex target,
-            List<OnmsIpInterface> targetInterfaces,
-            Map<Integer, List<OnmsSnmpInterface>> snmpmap, String mac) {
-        final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Bridge Layer2");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(sourcelink.getBridgePortIfIndex(), target,snmpmap);
-        
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(source.getLabel());
-        if (sourceInterface != null) {
-            tooltipText.append("(");
-            tooltipText.append(sourceInterface.getIfName());
-            tooltipText.append(")");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(target.getLabel());
-        tooltipText.append("(");
-        tooltipText.append(mac);
-        tooltipText.append(")");
-        tooltipText.append("(");
-        if (targetInterfaces.size() == 1) {
-            tooltipText.append(InetAddressUtils.str(targetInterfaces.get(0).getIpAddress()));
-        } else if (targetInterfaces.size() > 1) {
-            tooltipText.append("Multiple ip Addresses ");
-        } else {
-            tooltipText.append("No ip Address found");
-        }
-        tooltipText.append(")");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);        
-
-        if ( sourceInterface != null) {
-            if (sourceInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        }
-
-
-        return tooltipText.toString();
-    }
-
-    public static String getEdgeTooltipText(String mac, Vertex target, List<OnmsIpInterface> ipifaces) {
-        final StringBuilder tooltipText = new StringBuilder();
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Bridge Layer2");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(target.getLabel());
-        tooltipText.append("(");
-        tooltipText.append(mac);
-        tooltipText.append(")");
-        tooltipText.append("(");
-        if (ipifaces.size() == 1) {
-            tooltipText.append(InetAddressUtils.str(ipifaces.get(0).getIpAddress()));
-        } else if (ipifaces.size() > 1) {
-            tooltipText.append("Multiple ip Addresses ");
-        } else {
-            tooltipText.append("No ip Address found");
-        }
-        tooltipText.append(")");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);        
-        
-        return tooltipText.toString();
-    }
-
-
-    public static String getEdgeTooltipText(BridgePort port, Vertex target, Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
-        final StringBuilder tooltipText = new StringBuilder();
-        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(port.getBridgePortIfIndex(), target,snmpmap);
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append("Bridge Layer2");
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(target.getLabel());
         if (targetInterface != null) {
-            tooltipText.append("(");
-            tooltipText.append(targetInterface.getIfName());
-            tooltipText.append(")");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        if ( targetInterface != null) {
-            if (targetInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
+            edge.setTargetIfIndex(targetInterface.getIfIndex());
+            edge.setTargetIfName(targetInterface.getIfName());
+            if (edge.getSpeed() == null && targetInterface.getIfSpeed() != null) {
+                edge.setSpeed(InetAddressUtils.getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
             }
+
         }
         
-        return tooltipText.toString();
-    }
+        edge.setSourceAddr(sourceAddr);
+        edge.setTargetAddr(targetAddr);
 
-    public static String getEdgeTooltipText(LinkdEdgeDetail<?,?> linkDetail,Map<Integer,List<OnmsSnmpInterface>> snmpmap) {
-
-        final StringBuilder tooltipText = new StringBuilder();
-        Vertex source = linkDetail.getSource();
-        Vertex target = linkDetail.getTarget();
-        OnmsSnmpInterface sourceInterface = getByNodeIdAndIfIndex(linkDetail.getSourceIfIndex(), source,snmpmap);
-        OnmsSnmpInterface targetInterface = getByNodeIdAndIfIndex(linkDetail.getTargetIfIndex(), target,snmpmap);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(linkDetail.getType());
-        String layerText = " Layer 2";
-        if (sourceInterface != null && targetInterface != null) {
-            final List<OnmsIpInterface> sourceNonLoopback = sourceInterface.getIpInterfaces().stream().filter(iface -> {
-                return !iface.getNetMask().isLoopbackAddress();
-            }).collect(Collectors.toList());
-            final List<OnmsIpInterface> targetNonLoopback = targetInterface.getIpInterfaces().stream().filter(iface -> {
-                return !iface.getNetMask().isLoopbackAddress();
-            }).collect(Collectors.toList());
-
-            if (!sourceNonLoopback.isEmpty() && !targetNonLoopback.isEmpty()) {
-                // if both the source and target have non-loopback IP interfaces, assume this is a layer3 edge
-                layerText = " Layer3/Layer2";
-            }
-        }
-        tooltipText.append(layerText);
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append( source.getLabel());
-        if (sourceInterface != null ) {
-            tooltipText.append("(");
-            tooltipText.append(sourceInterface.getIfName());
-            tooltipText.append(")");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-        
-        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-        tooltipText.append(target.getLabel());
-        if (targetInterface != null) {
-            tooltipText.append("(");
-            tooltipText.append(targetInterface.getIfName());
-            tooltipText.append(")");
-        }
-        tooltipText.append(HTML_TOOLTIP_TAG_END);
-
-        if ( targetInterface != null) {
-            if (targetInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(targetInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        } else if (sourceInterface != null) {
-            if (sourceInterface.getIfSpeed() != null) {
-                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
-                tooltipText.append(InetAddressUtils.getHumanReadableIfSpeed(sourceInterface.getIfSpeed()));
-                tooltipText.append(HTML_TOOLTIP_TAG_END);
-            }
-        }
-        return tooltipText.toString();
+        return edge;
     }
 
     private Integer m_sourceNodeid;
     private Integer m_targetNodeid;
 
-    private String m_sourceEndPoint;
-    private String m_targetEndPoint;
+    private String m_sourceLabel;
+    private String m_targetLabel;
+
+    private String m_sourceIfName;
+    private String m_targetIfName;
+
+    private String m_sourceAddr;
+    private String m_targetAddr;
+
+    private String m_speed;
     
+    private Integer m_sourceIfIndex;
+    private Integer m_targetIfIndex;
+
     private final ProtocolSupported m_discoveredBy;
     
-    public LinkdEdge(String id, Vertex source, Vertex target, ProtocolSupported discoveredBy) {
+    private LinkdEdge(String id, Vertex source, Vertex target, ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_discoveredBy = discoveredBy;
     }
 
-    public LinkdEdge(String id, SimpleConnector source,
+    private LinkdEdge(String id, SimpleConnector source,
             SimpleConnector target, ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_discoveredBy = discoveredBy;
     }
 
     // Constructor to make cloneable easier for sub classes
-    protected LinkdEdge(LinkdEdge edgeToClone) {
+    private LinkdEdge(LinkdEdge edgeToClone) {
             this(edgeToClone.getId(), edgeToClone.getSource().clone(), edgeToClone.getTarget().clone(),edgeToClone.getDiscoveredBy());
+            setSourceLabel(edgeToClone.getSourceLabel());
             setSourceNodeid(edgeToClone.getSourceNodeid());
+            setSourceIfIndex(edgeToClone.getSourceIfIndex());
+            setSourceIfName(edgeToClone.getSourceIfName());
+            setSourceAddr(edgeToClone.getSourceAddr());
+            setTargetLabel(edgeToClone.getTargetLabel());
             setTargetNodeid(edgeToClone.getTargetNodeid());
-            setSourceEndPoint(edgeToClone.getSourceEndPoint());
-            setTargetEndPoint(edgeToClone.getTargetEndPoint());
+            setTargetIfIndex(edgeToClone.getTargetIfIndex());
+            setTargetIfName(edgeToClone.getTargetIfName());
+            setTargetAddr(edgeToClone.getTargetAddr());
+            setSpeed(edgeToClone.getSpeed());
             setLabel(edgeToClone.getLabel());
             setStyleName(edgeToClone.getStyleName());
             setTooltipText(edgeToClone.getTooltipText());
@@ -260,6 +143,131 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     @Override
     public LinkdEdge clone() {
             return new LinkdEdge(this);
+    }
+
+    @Override
+    public String  getTooltipText() {       
+        final StringBuilder tooltipText = new StringBuilder();
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append("discovery by: ");
+        tooltipText.append(m_discoveredBy.toString());
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+    
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(m_sourceLabel);
+        if (m_sourceIfName != null ) {
+            tooltipText.append("(");
+            tooltipText.append(m_sourceIfName);
+            tooltipText.append(")");
+        }
+        if (m_sourceAddr != null ) {
+            tooltipText.append("(");
+            tooltipText.append(m_sourceAddr);
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+        
+        tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+        tooltipText.append(m_targetLabel);
+        if (m_targetIfName != null) {
+            tooltipText.append("(");
+            tooltipText.append(m_targetIfName);
+            tooltipText.append(")");
+        }
+        if (m_targetAddr != null ) {
+            tooltipText.append("(");
+            tooltipText.append(m_targetAddr);
+            tooltipText.append(")");
+        }
+        tooltipText.append(HTML_TOOLTIP_TAG_END);
+    
+        if ( m_speed != null) {
+                tooltipText.append(HTML_TOOLTIP_TAG_OPEN);
+                tooltipText.append(m_speed);
+                tooltipText.append(HTML_TOOLTIP_TAG_END);
+        }
+        return tooltipText.toString();
+    }
+
+    public String getSourceAddr() {
+        return m_sourceAddr;
+    }
+
+    public void setSourceAddr(String sourceAddr) {
+        m_sourceAddr = sourceAddr;
+    }
+
+    public String getTargetAddr() {
+        return m_targetAddr;
+    }
+
+    public void setTargetAddr(String targetIpAddr) {
+        m_targetAddr = targetIpAddr;
+    }
+
+    public String getSourceLabel() {
+        return m_sourceLabel;
+    }
+
+
+    public void setSourceLabel(String sourceLabel) {
+        m_sourceLabel = sourceLabel;
+    }
+
+
+    public String getTargetLabel() {
+        return m_targetLabel;
+    }
+
+
+    public void setTargetLabel(String targetLabel) {
+        m_targetLabel = targetLabel;
+    }
+
+
+    public String getSourceIfName() {
+        return m_sourceIfName;
+    }
+
+
+    public void setSourceIfName(String sourceIfName) {
+        m_sourceIfName = sourceIfName;
+    }
+
+
+    public String getTargetIfName() {
+        return m_targetIfName;
+    }
+
+
+    public void setTargetIfName(String targetIfName) {
+        m_targetIfName = targetIfName;
+    }
+
+
+    public String getSpeed() {
+        return m_speed;
+    }
+
+    public void setSpeed(String speed) {
+        m_speed = speed;
+    }
+
+
+    public Integer getSourceIfIndex() {
+        return m_sourceIfIndex;
+    }
+
+    public void setSourceIfIndex(Integer sourceIfIndex) {
+        m_sourceIfIndex = sourceIfIndex;
+    }
+
+    public Integer getTargetIfIndex() {
+        return m_targetIfIndex;
+    }
+
+    public void setTargetIfIndex(Integer targetIfIndex) {
+        m_targetIfIndex = targetIfIndex;
     }
 
     public ProtocolSupported getDiscoveredBy() {
@@ -281,34 +289,5 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     public void setTargetNodeid(Integer targetNodeid) {
         m_targetNodeid = targetNodeid;
     }
-
-    public String getSourceEndPoint() {
-        return m_sourceEndPoint;
-    }
-
-    public void setSourceEndPoint(String sourceEndPoint) {
-        m_sourceEndPoint = sourceEndPoint;
-    }
-
-    public String getTargetEndPoint() {
-        return m_targetEndPoint;
-    }
-
-    public void setTargetEndPoint(String targetEndPoint) {
-        m_targetEndPoint = targetEndPoint;
-    }
-
-    public boolean containsVertexEndPoint(String vertexRef, String endpointRef) {
-        if (vertexRef == null)
-            return false;
-        if (endpointRef == null)
-            return false;
-        if (getSource() != null && getSourceEndPoint() != null 
-                && getSource().getVertex().getId().equals(vertexRef) && getSourceEndPoint().equals(endpointRef))
-            return true;
-        if (getTarget() != null && getTargetEndPoint() != null 
-                && getTarget().getVertex().getId().equals(vertexRef) && getTargetEndPoint().equals(endpointRef))
-            return true;
-        return false;
-    }
+    
 }

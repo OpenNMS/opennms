@@ -97,14 +97,14 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        LinkdVertex vertex1 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode1(), null);
-        LinkdVertex vertex2 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode2(), null);
-        LinkdVertex vertex3 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode3(), null);
-        LinkdVertex vertex4 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode4(), null);
-        LinkdVertex vertex5 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode5(), null);
-        LinkdVertex vertex6 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode6(), null);
-        LinkdVertex vertex7 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode7(), null);
-        LinkdVertex vertex8 = LinkdVertex.createLinkdVertex(m_databasePopulator.getNode8(), null);
+        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode1(), null);
+        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode2(), null);
+        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode3(), null);
+        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode4(), null);
+        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode5(), null);
+        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode6(), null);
+        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode7(), null);
+        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode8(), null);
         Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
         Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));

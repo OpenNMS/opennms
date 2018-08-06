@@ -105,14 +105,14 @@ EDGES:        for (EdgeRef edgeRef : edges) {
                         continue;
                     int alarmnodeid = alarm.getNode().getId().intValue();
                     if ( edge.getSourceNodeid() != null && edge.getSourceNodeid().intValue() == alarmnodeid
-                            && edge.getSourceEndPoint() != null
-                            && edge.getSourceEndPoint().equals(String.valueOf(alarm.getIfIndex()))) {
+                            && edge.getSourceIfIndex() != null
+                            && edge.getSourceIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }
                     if ( edge.getTargetNodeid() != null && edge.getTargetNodeid().intValue() == alarmnodeid
-                            && edge.getTargetEndPoint() != null
-                            && edge.getTargetEndPoint().equals(String.valueOf(alarm.getIfIndex()))) {
+                            && edge.getTargetIfIndex() != null
+                            && edge.getTargetIfIndex().intValue() == alarm.getIfIndex().intValue()) {
                         retVal.put(edgeRef, new LinkdEdgeStatus(alarm));
                         continue EDGES;
                     }                

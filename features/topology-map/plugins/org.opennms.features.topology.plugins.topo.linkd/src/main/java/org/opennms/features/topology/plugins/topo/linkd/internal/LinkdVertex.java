@@ -52,7 +52,7 @@ public class LinkdVertex extends SimpleLeafVertex {
         s_nodeStatusMap.put(OnmsNode.NodeType.DELETED, "Deleted");
     }
 
-    public static LinkdVertex createLinkdVertex(OnmsNode node, OnmsIpInterface primary) {
+    public static LinkdVertex create(OnmsNode node, OnmsIpInterface primary) {
         LinkdVertex vertex = new LinkdVertex(node);
         vertex.setNodeID(node.getId());
         vertex.setLabel(node.getLabel());
