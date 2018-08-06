@@ -1,6 +1,63 @@
 [releasenotes-15]
 === OpenNMS 15
 
+[releasenotes-changelog-15.0.2]
+==== Release 15.0.2
+
+===== Breaking Changes
+
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
+Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
+
+.Before
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+ <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+   <!-- ... -->
+   <beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>
+   <!-- ... -->
+ </beans:bean>
+</beans:beans>
+----
+
+.After
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+<beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+  <!-- ... -->
+  <beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/>
+  <!-- ... -->
+</beans:bean>
+</beans:beans>
+----
+
+Supported values for `authTypeClass` are:
+
+* net.jradius.client.auth.TunnelAuthenticator
+* net.jradius.client.auth.PAPAuthenticator
+* net.jradius.client.auth.EAPMSCHAPv2Authenticator
+* net.jradius.client.auth.MSCHAPv2Authenticator
+* net.jradius.client.auth.EAPMD5Authenticator
+* net.jradius.client.auth.CHAPAuthenticator
+* net.jradius.client.auth.MSCHAPv1Authenticator
+* net.jradius.client.auth.RadiusAuthenticator
+* net.jradius.client.auth.EAPAuthenticator
+
+If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
+
 [releasenotes-changelog-15.0.1]
 ==== Release 15.0.1
 
