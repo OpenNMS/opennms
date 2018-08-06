@@ -29,8 +29,8 @@
 package org.opennms.core.soa.lookup;
 
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -126,7 +126,7 @@ public class BlockingServiceLookupTest {
 
         // Wait for the future to complete
         long took = future.get((initialDelay + lookupDelay) * 2, TimeUnit.MILLISECONDS);
-        assertThat(took, allOf(greaterThan(initialDelay), lessThan(initialDelay + lookupDelay * 2)));
+        assertThat(took, allOf(greaterThanOrEqualTo(initialDelay), lessThanOrEqualTo(initialDelay + lookupDelay * 2)));
 
     }
 }
