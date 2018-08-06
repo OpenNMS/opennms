@@ -54,17 +54,13 @@ config:property-set http-url http://127.0.0.1:8980/opennms <3>
 config:property-set broker-url failover:tcp://127.0.0.1:61616 <4>
 config:update
 ----
-<1> Not used at the moment
-<2> Must be unique overall _Sentinel_ and _Minion_ containers.
-<3> url which points to {opennms-product-name}
-<4> url which points to the {opennms-product-name} Active MQ Broker (for now this is always required)
+<1> Not used at the moment, but must be provided
+<2> Not used at the moment, may be omitted
+<3> url which points to {opennms-product-name} (required)
+<4> url which points to the {opennms-product-name} Active MQ Broker (only required if using feature `sentinel-jms`, otherwise may be omitted)
 
-NOTE:   TODO MVR provide a full list of supported properties, but for now
-        everything located in `opennms/features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml`
-        may be used for reference
-
-NOTE:   Basically the same properties as for the _Minion Controller_ are supported, but must be placed in a different file name.
-        `org.opennms.sentinel.controller.cfg` vs `org.opennms.minion.controller.cfg`.
+NOTE:   Basically the same properties as for the _Minion Controller_ are supported, but must be placed in config file
+        `org.opennms.sentinel.controller.cfg` instead of `org.opennms.minion.controller.cfg`.
 
 ==== Configure Connectivity
 
@@ -79,14 +75,22 @@ When Using _Sentinel_ with _Kafka_ the same rules for using _Kafka with Minions_
 
 ====== Kafka Configuration
 
-Each _Minion_ works as a Producer.
-See TODO for more details on how to configure the _Minion_.
+Each _Minion_ works as a Producer and must be configured beforehead.
+Please refer to section <<ga-minion-kafka-producer-configuration, Minion Kafka Producer Configuration>> on how to configure _Minion_ as a _Kafka Producer_.
 
 Each _Sentinel_ works as a Consumer and can be configured in the file `${SENTINEL_HOME}/etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
 Either manually or via the `config:edit org.opennms.core.ipc.sink.kafka.consumer` statement.
 For supported properties, see link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[here]
 
-NOTE:   TODO MVR Add documentation on how to define the SINK_INITIAL_SLEEP_TIME as it must be a system property at the moment
+By default each _Kafka Consumer_ starts consuming messages immediately after the feature has been started.
+It is possible to set a property `org.opennms.core.ipc.sink.initialSleepTime` to define an initial sleep time in ms before any messages are consumed.
+In order to set this up, please add an entry to the end of the file `${SENTINEL_HOME}/etc/system.properties`:
+
+[source]
+----
+# Initial delay of 5 seconds before consuming of messages is started in milliseconds
+org.opennms.core.ipc.sink.initialSleepTime=5000
+----
 
 ==== Available features
 
@@ -125,6 +129,52 @@ In order to do so, in most cases it is sufficient to copy a `features.xml` file 
 This can be done even if the container is running.
 
 The chapter _Configure Flow Procession_ contains an example on how to automatically start them with _Sentinel_
+
+
+==== Auto Start
+
+In some cases it might not be sufficient to auto-deploy/configure the container with a `features.xml` file.
+If more flexibility is required it is suggested to modify/copy `*.cfg` and `*.properties` files directly to the `${SENTINEL_HOME}/etc` directory.
+To automatically start features with the container, the file `${SENTINEL_HOME}/etc/org.apache.karaf.features.cfg` must be updated:
+
+[source]
+----
+# ...
+featuresBoot = \
+      (aries-blueprint, \
+      deployer), \
+      instance/4.1.5, \
+      package/4.1.5, \
+      log/4.1.5, \
+      scv/23.0.0-SNAPSHOT, \
+      ssh/4.1.5, \
+      framework/4.1.5, \
+      system/4.1.5, \
+      eventadmin/4.1.5, \
+      feature/4.1.5, \
+      shell/4.1.5, \
+      management/4.1.5, \
+      service/4.1.5, \
+      system/4.1.5, \
+      eventadmin/4.1.5, \
+      feature/4.1.5, \
+      shell/4.1.5, \
+      management/4.1.5, \
+      service/4.1.5, \
+      jaas/4.1.5, \
+      shell-compat/4.1.5, \
+      diagnostic/4.1.5, \
+      wrap, \
+      bundle/4.1.5, \
+      config/4.1.5, \
+      kar/4.1.5, \
+      sentinel-jms, \ <1>
+      sentinel-flows <2>
+
+# ....
+----
+<1> Install and Start JMS communication feature
+<2> Install and Start Sentinel Flows feature
 
 ==== Health Check / Troubleshooting
 

@@ -3,13 +3,11 @@
 .Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
 [source, shell]
 ----
-echo 'deb https://debian.opennms.org branches/features-sentinel main \
+echo 'deb https://debian.opennms.org stable main \
       deb-src https://debian.opennms.org branches/features-sentinel main' > /etc/apt/sources.list.d/opennms.list
 wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
 apt update
 ----
-
-NOTE:   _Sentinel_ is still under development, therefore the repository is named `branches/features-sentinel` but will be `stable` later on.
 
 .Install the Sentinel package
 [source, bash]
