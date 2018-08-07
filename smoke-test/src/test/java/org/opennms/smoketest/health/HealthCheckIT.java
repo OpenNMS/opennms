@@ -103,7 +103,7 @@ public class HealthCheckIT {
     @Test
     public void verifyMinionHealth() {
         final InetSocketAddress minionShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 8201);
-        verifyHealthCheck(3, minionShellAddr);
+        verifyHealthCheck(4, minionShellAddr);
         verifyMetrics(minionShellAddr);
     }
 

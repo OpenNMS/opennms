@@ -33,6 +33,7 @@ import java.util.Dictionary;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -43,6 +44,8 @@ import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.listeners.api.Listener;
 import org.opennms.netmgt.telemetry.listeners.api.TelemetryMessage;
 import org.opennms.netmgt.telemetry.utils.ListenerFactory;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +67,9 @@ public class ListenerManager implements ManagedServiceFactory {
 
     private Map<String, Listener> listenersByPid = new LinkedHashMap<>();
     private Map<String, AsyncDispatcher<TelemetryMessage>> dispatchersByPid = new LinkedHashMap<>();
+    private Map<String, ServiceRegistration<HealthCheck>> healthChecksById = new LinkedHashMap<>();
+
+    private BundleContext bundleContext;
 
     @Override
     public String getName() {
@@ -87,6 +93,12 @@ public class ListenerManager implements ManagedServiceFactory {
         final MapBasedProtocolDef protocolDef = new MapBasedProtocolDef(parameters);
         final MapBasedListenerDef listenerDef = new MapBasedListenerDef(parameters);
 
+        // Register health check
+        final ListenerHealthCheck healthCheck = new ListenerHealthCheck(listenerDef);
+        final ServiceRegistration<HealthCheck> serviceRegistration = bundleContext.registerService(HealthCheck.class, healthCheck, null);
+        healthChecksById.put(pid, serviceRegistration);
+
+        // Create Module
         final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
         sinkModule.setDistPollerDao(distPollerDao);
         final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
@@ -96,7 +108,13 @@ public class ListenerManager implements ManagedServiceFactory {
             listener.start();
             listenersByPid.put(pid, listener);
             dispatchersByPid.put(pid, dispatcher);
+
+            // At this point the listener should be up and running,
+            // so we mark the underlying health check as success
+            healthCheck.markSucess();
         } catch (Exception e) {
+            // In case of error, we mark the health check as failure as well
+            healthCheck.markError(e);
             LOG.error("Failed to build listener.", e);
             try {
                 dispatcher.close();
@@ -110,6 +128,7 @@ public class ListenerManager implements ManagedServiceFactory {
 
     @Override
     public void deleted(String pid) {
+        healthChecksById.get(pid).unregister();
         final Listener listener = listenersByPid.remove(pid);
         if (listener != null) {
             LOG.info("Stopping listener for pid: {}", pid);
@@ -156,4 +175,7 @@ public class ListenerManager implements ManagedServiceFactory {
         this.distPollerDao = distPollerDao;
     }
 
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
 }
