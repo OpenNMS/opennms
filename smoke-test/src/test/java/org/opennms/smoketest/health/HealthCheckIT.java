@@ -149,7 +149,7 @@ public class HealthCheckIT {
                 .until(() -> {
                     try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
                         final PrintStream pipe = sshClient.openShell();
-                        pipe.println("health:metrics-list");
+                        pipe.println("health:metrics-display");
                         pipe.println("logout");
 
                         await().atMost(15, SECONDS).until(sshClient.isShellClosedCallable());

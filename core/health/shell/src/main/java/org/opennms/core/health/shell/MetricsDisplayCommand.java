@@ -76,6 +76,7 @@ public class MetricsDisplayCommand implements Action {
             }
 
             // Print a header
+            System.out.println("Metric set:");
             System.out.printf("%s%s\n", namedMetricSet.getName(),
                     namedMetricSet.hasDescription() ? String.format(" (%s)",namedMetricSet.getDescription()) : "");
             // Add the metrics to a new registry and use the console reporter to display the results

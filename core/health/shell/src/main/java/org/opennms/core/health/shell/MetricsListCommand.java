@@ -51,11 +51,10 @@ public class MetricsListCommand implements Action {
             return null;
         }
 
+        System.out.println("Name\tDescription");
         for (NamedMetricSet namedMetricSet : metricSets) {
-            System.out.printf("Metric set: %s\n", namedMetricSet.getName());
-            if (namedMetricSet.hasDescription()) {
-                System.out.printf("\t%s\n", namedMetricSet.getDescription());
-            }
+            System.out.printf("%s\t%s\n", namedMetricSet.getName(),
+                    namedMetricSet.hasDescription() ? namedMetricSet.getDescription() : "(No description)");
         }
         System.out.println();
 
