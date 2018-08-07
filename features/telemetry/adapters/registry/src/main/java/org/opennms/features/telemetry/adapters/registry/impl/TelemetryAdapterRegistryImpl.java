@@ -28,16 +28,16 @@
 
 package org.opennms.features.telemetry.adapters.registry.impl;
 
-import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 
+import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.telemetry.adapters.api.Adapter;
+import org.opennms.netmgt.telemetry.adapters.api.AdapterFactory;
 import org.opennms.netmgt.telemetry.config.api.Protocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,20 +52,32 @@ import org.springframework.context.ApplicationContext;
  * @author chandrag
  * @author jwhite
  */
-public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
+public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry, ServiceLookup<String, Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryAdapterRegistry.class);
 
     private static final ServiceLoader<AdapterFactory> s_adapterFactoryLoader = ServiceLoader.load(AdapterFactory.class);
 
-    private static final String TYPE = "type";
+    protected static final String TYPE = "type";
 
     private final Map<String, AdapterFactoryRegistration> m_adapterFactoryByClassName = new HashMap<>();
+    private final ServiceLookup<String, Void> delegate;
 
     @Autowired
     private ApplicationContext applicationContext;
 
     public TelemetryAdapterRegistryImpl() {
+        this(ServiceLookupBuilder.GRACE_PERIOD_MS, ServiceLookupBuilder.WAIT_PERIOD_MS, ServiceLookupBuilder.LOOKUP_DELAY_MS);
+    }
+
+    public TelemetryAdapterRegistryImpl(long gracePeriodMs, long waitPeriodMs, long lookupDelayMs) {
+        this.delegate = new ServiceLookupBuilder(new ServiceLookup<String, Void>() {
+            @Override
+            public <T> T lookup(String criteria, Void filter) {
+                return (T) m_adapterFactoryByClassName.get(criteria);
+            }
+        }).blocking(gracePeriodMs, lookupDelayMs, waitPeriodMs).build();
+
         // Register all of the factories exposed via the service loader
         for (AdapterFactory adapterFactory : s_adapterFactoryLoader) {
             final String className = adapterFactory.getAdapterClass().getCanonicalName();
@@ -103,36 +115,19 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
 
     @Override
     public Adapter getAdapter(String className, Protocol protocol, Map<String, String> properties) {
-        AdapterFactoryRegistration registration = m_adapterFactoryByClassName.get(className);
-
-        final long waitUntil = System.currentTimeMillis() + ServiceLookupBuilder.WAIT_PERIOD_MS;
-        // If the adapter is not currently available, wait until the JVM has been up for at least GRACE_PERIOD_MS
-        // (absolute) and ensure we've waited for at least WAIT_PERIOD_MS (relative) before aborting
-        // the lookup
-        while ((registration == null)
-                && ManagementFactory.getRuntimeMXBean().getUptime() < ServiceLookupBuilder.GRACE_PERIOD_MS
-                && System.currentTimeMillis() < waitUntil) {
-            try {
-                Thread.sleep(ServiceLookupBuilder.LOOKUP_DELAY_MS);
-            } catch (InterruptedException e) {
-                LOG.error("Interrupted while waiting for adapter factory to become available in the service registry. Aborting.");
-                return null;
-            }
-            registration = m_adapterFactoryByClassName.get(className);
-        }
-
-        Adapter adapter = null;
+        final AdapterFactoryRegistration registration = delegate.lookup(className, null);
         if (registration != null) {
-            adapter = registration.getAdapterFactory().createAdapter(protocol, properties);
+            final Adapter adapter = registration.getAdapterFactory().createAdapter(protocol, properties);
             if (registration.shouldAutowire()) {
                 // Autowire!
                 final AutowireCapableBeanFactory beanFactory = applicationContext.getAutowireCapableBeanFactory();
                 beanFactory.autowireBean(adapter);
                 beanFactory.initializeBean(adapter, "adapter");
             }
+            return adapter;
         }
 
-        return adapter;
+        return null;
     }
 
     private static String getClassName(Map<?, ?> properties) {
@@ -141,6 +136,11 @@ public class TelemetryAdapterRegistryImpl implements TelemetryAdapterRegistry {
             return (String) type;
         }
         return null;
+    }
+
+    @Override
+    public <T> T lookup(String criteria, Void filter) {
+        return delegate.lookup(criteria, filter);
     }
 
     private static class AdapterFactoryRegistration {
