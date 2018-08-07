@@ -31,6 +31,7 @@ package org.opennms.smoketest.health;
 import static com.jayway.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
 import java.io.PrintStream;
 import java.net.InetSocketAddress;
@@ -94,17 +95,23 @@ public class HealthCheckIT {
 
     @Test
     public void verifyOpenNMSHealth() {
-        verifyHealthCheck(2, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101));
+        final InetSocketAddress opennmsShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.OPENNMS, 8101);
+        verifyHealthCheck(2, opennmsShellAddr);
+        verifyMetrics(opennmsShellAddr);
     }
 
     @Test
     public void verifyMinionHealth() {
-        verifyHealthCheck(3, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 8201));
+        final InetSocketAddress minionShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, 8201);
+        verifyHealthCheck(3, minionShellAddr);
+        verifyMetrics(minionShellAddr);
     }
 
     @Test
     public void verifySentinelHealth() {
-        verifyHealthCheck(6, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
+        final InetSocketAddress sentinelShellAddr = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
+        verifyHealthCheck(6, sentinelShellAddr);
+        verifyMetrics(sentinelShellAddr);
     }
 
     private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {
@@ -134,5 +141,30 @@ public class HealthCheckIT {
                         return false;
                     }
                 });
+    }
+
+    private void verifyMetrics(final InetSocketAddress sshAddress) {
+        await().atMost(2, MINUTES)
+                .pollInterval(5, SECONDS)
+                .until(() -> {
+                    try (final SshClient sshClient = new SshClient(sshAddress, "admin", "admin")) {
+                        final PrintStream pipe = sshClient.openShell();
+                        pipe.println("health:metrics-list");
+                        pipe.println("logout");
+
+                        await().atMost(15, SECONDS).until(sshClient.isShellClosedCallable());
+
+                        // Read stdout and verify
+                        final String shellOutput = sshClient.getStdout();
+                        final int count = StringUtils.countOccurrencesOf(shellOutput, "Metric set:");
+
+                        logger.info("log:display");
+                        logger.info("{}", shellOutput);
+                        return count;
+                    } catch (Exception ex) {
+                        logger.error("Error while trying to verify health:check: {}", ex.getMessage());
+                        return 0;
+                    }
+                }, greaterThanOrEqualTo(1));
     }
 }
