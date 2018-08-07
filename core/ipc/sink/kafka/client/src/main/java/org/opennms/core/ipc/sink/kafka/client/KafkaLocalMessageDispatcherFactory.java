@@ -32,17 +32,17 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.codahale.metrics.JmxReporter;
 
 /**
  * Dispatches the messages directly the consumers.
  *
  * @author ranger
  */
-public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
+public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean, DisposableBean {
 
     @Autowired
     private KafkaMessageConsumerManager messageConsumerManager;
@@ -52,10 +52,22 @@ public class KafkaLocalMessageDispatcherFactory extends AbstractMessageDispatche
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
-                .inDomain(KafkaLocalMessageDispatcherFactory.class.getPackage().getName())
-                .build();
-        reporter.start();
+    public String getMetricDomain() {
+        return KafkaLocalMessageDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        onInit();
+    }
+
+    @Override
+    public void destroy() {
+        onDestroy();
     }
 }

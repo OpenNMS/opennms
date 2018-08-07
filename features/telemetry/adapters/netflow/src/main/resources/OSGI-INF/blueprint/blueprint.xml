@@ -78,6 +78,12 @@
 
 	<!-- Metrics -->
 	<bean id="flowAdapterMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<service ref="flowAdapterMetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="Flow" />
+			<entry key="description" value="Consolidated metrics for all telemetry adapters processing flows" />
+		</service-properties>
+	</service>
 	<bean id="flowAdapterMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
 		<argument ref="flowAdapterMetricRegistry"/>
 	</bean>

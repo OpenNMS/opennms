@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.api.SyncDispatcher;
+import org.osgi.framework.BundleContext;
 
 public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractMessageDispatcherFactory<Void> {
     private final AtomicInteger numMessageDispatched = new AtomicInteger(0);
@@ -54,6 +55,16 @@ public class ThreadLockingDispatcherFactory<U extends Message> extends AbstractM
     @Override
     public <S extends Message, T extends Message> void dispatch(SinkModule<S, T> module, Void metadata, T message) {
         throw new IllegalStateException();
+    }
+
+    @Override
+    public String getMetricDomain() {
+        return ThreadLockingDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
     }
 
     @SuppressWarnings("unchecked")
