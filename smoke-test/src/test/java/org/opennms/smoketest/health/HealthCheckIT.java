@@ -104,7 +104,7 @@ public class HealthCheckIT {
 
     @Test
     public void verifySentinelHealth() {
-        verifyHealthCheck(5, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
+        verifyHealthCheck(6, testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301));
     }
 
     private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {

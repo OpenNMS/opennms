@@ -32,6 +32,7 @@ import java.util.Dictionary;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.opennms.core.health.api.HealthCheck;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -43,6 +44,8 @@ import org.opennms.netmgt.telemetry.distributed.common.MapBasedListenerDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedProtocolDef;
 import org.opennms.netmgt.telemetry.distributed.common.MapUtils;
 import org.opennms.netmgt.telemetry.ipc.TelemetrySinkModule;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.cm.ManagedServiceFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,10 +68,13 @@ public class AdapterManager implements ManagedServiceFactory {
     private DistPollerDao distPollerDao;
 
     private Map<String, TelemetryMessageConsumer> consumersById = new LinkedHashMap<>();
+    private Map<String, ServiceRegistration<HealthCheck>> healthChecksById = new LinkedHashMap<>();
 
     private TelemetryAdapterRegistry telemetryAdapterRegistry;
 
     private MessageConsumerManager messageConsumerManager;
+
+    private BundleContext bundleContext;
 
     @Override
     public String getName() {
@@ -92,22 +98,35 @@ public class AdapterManager implements ManagedServiceFactory {
         final Protocol protocolDef = new MapBasedProtocolDef(parameters);
         final Adapter adapterDef = new MapBasedAdapterDef(parameters);
 
-        final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
-        sinkModule.setDistPollerDao(distPollerDao);
+        // Register health check
+        final AdapterHealthCheck healthCheck = new AdapterHealthCheck(adapterDef);
+        final ServiceRegistration<HealthCheck> serviceRegistration = bundleContext.registerService(HealthCheck.class, healthCheck, null);
+        healthChecksById.put(pid, serviceRegistration);
 
         try {
+            // Create the Module
+            final TelemetrySinkModule sinkModule = new TelemetrySinkModule(protocolDef);
+            sinkModule.setDistPollerDao(distPollerDao);
+
+            // Create the consumer
             final TelemetryMessageConsumer consumer = new TelemetryMessageConsumer(protocolDef, Lists.newArrayList(adapterDef), sinkModule);
             consumer.setAdapterRegistry(telemetryAdapterRegistry);
             consumer.init();
             messageConsumerManager.registerConsumer(consumer);
             consumersById.put(pid, consumer);
+
+            // At this point the consumer should be up and running, so we mark the underlying health check as success
+            healthCheck.setSuccess();
         } catch (Exception e) {
+            // In case of error, we mark the health check as failure as well
+            healthCheck.setError(e);
             LOG.error("Failed to create {}", TelemetryMessageConsumer.class, e);
         }
     }
 
     @Override
     public void deleted(String pid) {
+        healthChecksById.get(pid).unregister();
         final TelemetryMessageConsumer existingConsumer = consumersById.remove(pid);
         if (existingConsumer != null) {
             try {
@@ -144,5 +163,9 @@ public class AdapterManager implements ManagedServiceFactory {
 
     public void setMessageConsumerManager(MessageConsumerManager messageConsumerManager) {
         this.messageConsumerManager = messageConsumerManager;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }
