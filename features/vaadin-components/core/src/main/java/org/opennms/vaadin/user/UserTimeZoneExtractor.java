@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.vaadin.dashboard.model;
+package org.opennms.vaadin.user;
 
 import java.time.ZoneId;
 import java.util.Optional;

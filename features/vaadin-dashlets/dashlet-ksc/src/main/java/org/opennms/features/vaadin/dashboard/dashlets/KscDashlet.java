@@ -40,7 +40,7 @@ import org.opennms.features.vaadin.dashboard.model.AbstractDashlet;
 import org.opennms.features.vaadin.dashboard.model.AbstractDashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletComponent;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.features.vaadin.dashboard.model.UserTimeZoneExtractor;
+import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
 import org.opennms.netmgt.config.kscReports.Graph;
 import org.opennms.netmgt.config.kscReports.Report;

@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
+import org.opennms.vaadin.user.UserTimeZoneExtractor;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.VaadinSession;
@@ -65,15 +66,7 @@ public class TimeColumnGenerator  implements Table.ColumnGenerator {
         return formattedValue;
     }
 
-    // TODO: replace method with UserTimeZoneExtractor
     private static ZoneId extractUserTimeZoneId(){
-        ZoneId zoneId = null;
-        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
-            zoneId = (ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
-        }
-        if(zoneId == null){
-            zoneId = ZoneId.systemDefault();
-        }
-        return zoneId;
+        return UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
     }
 }
