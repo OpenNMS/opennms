@@ -60,7 +60,7 @@ public class InfoRestService extends OnmsRestService {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getInfo(@Context HttpSession session) throws ParseException {
+    public Response getInfo(@Context HttpServletRequest httpServletRequest) throws ParseException {
         final SystemInfoUtils sysInfoUtils = new SystemInfoUtils();
 
         final InfoDTO info = new InfoDTO();
@@ -69,7 +69,7 @@ public class InfoRestService extends OnmsRestService {
         info.setPackageName(sysInfoUtils.getPackageName());
         info.setPackageDescription(sysInfoUtils.getPackageDescription());
         info.setTicketerConfig(getTicketerConfig());
-        info.setDatetimeformatConfig(getDateformatConfig(session));
+        info.setDatetimeformatConfig(getDateformatConfig(httpServletRequest.getSession(false)));
         return Response.ok().entity(info).build();
     }
 
@@ -81,7 +81,10 @@ public class InfoRestService extends OnmsRestService {
     }
 
     private ZoneId extractUserTimeZoneId(HttpSession session){
-        ZoneId zoneId = (ZoneId) session.getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        ZoneId zoneId = null;
+        if(session != null){
+            zoneId = (ZoneId) session.getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
+        }
         if(zoneId == null){
             zoneId = ZoneId.systemDefault();
         }
