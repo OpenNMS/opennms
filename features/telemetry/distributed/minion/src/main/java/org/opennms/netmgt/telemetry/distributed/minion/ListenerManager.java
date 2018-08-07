@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.distributed.minion;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class ListenerManager implements ManagedServiceFactory {
     }
 
     public void destroy() {
-        listenersByPid.keySet().forEach(pid -> deleted(pid));
+        new ArrayList<>(listenersByPid.keySet()).forEach(pid -> deleted(pid));
         LOG.info("ListenerManager stopped.");
     }
 

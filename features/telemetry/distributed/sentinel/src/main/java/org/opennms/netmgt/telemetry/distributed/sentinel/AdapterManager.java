@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.telemetry.distributed.sentinel;
 
+import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -149,7 +150,7 @@ public class AdapterManager implements ManagedServiceFactory {
     }
 
     public void destroy() {
-        consumersById.keySet().forEach(pid -> deleted(pid));
+        new ArrayList<>(consumersById.keySet()).forEach(pid -> deleted(pid));
         LOG.info("{} stopped.", getClass().getSimpleName());
     }
 
