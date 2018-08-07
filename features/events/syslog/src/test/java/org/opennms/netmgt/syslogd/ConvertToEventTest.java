@@ -36,15 +36,14 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.DatagramPacket;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -56,9 +55,12 @@ import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
+import org.opennms.netmgt.syslogd.api.SyslogMessageDTO;
+import org.opennms.netmgt.syslogd.api.SyslogMessageLogDTO;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Test the performance of Syslogd's {@link ConvertToEvent} processor.
@@ -68,6 +70,9 @@ import org.slf4j.LoggerFactory;
 public class ConvertToEventTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConvertToEventTest.class);
+
+    @Autowired
+    private SyslogdConfig syslogdConfig;
 
     /**
      * Test method which calls the ConvertToEvent constructor.
@@ -372,5 +377,30 @@ public class ConvertToEventTest {
         assertEquals(0, middleByteTrimmed.position());
         assertEquals(3, middleByteTrimmed.limit());
         assertEquals(3, middleByteTrimmed.remaining());
+    }
+
+    /**
+     * Test to make sure that a syslog message with no host provided uses the source
+     * address of the message log and that the node is is correctly populated.
+     */
+    @Test
+    public void testNoHostNameProvided()
+    {
+        // TODO: Copied from above
+        final String syslogMessage = "<14> Mar 29 2004 09:57:04: %PIX-5-304001: 192.168.0.2 Accessed URL 212.227.109.224:/scriptlib/ClientStdScripts.js";
+
+        // TODO: Mock the cache that will respond with a cache hit
+        // for the node ID corresponding to the host name that
+        // should be populated
+
+        // TODO: This is duplicated from above...
+        SyslogConfigBean radixConfig = new SyslogConfigBean();
+        radixConfig.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
+        radixConfig.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+        Event event = parseSyslog("test", radixConfig, syslogMessage);
+
+        // TODO: Assert the node id was populated
+        // TODO: Fix this so it doesn't resolve to the hostname string
+        //assertEquals(InetAddressUtils.ONE_TWENTY_SEVEN.toString(),event.getHost());
     }
 }
