@@ -69,11 +69,16 @@ public class HealthCheckIT {
                     .es6()
                     .sentinel();
 
+            // Start a Listener to ensure that a HealthCheck is actually exposed for it as well
+            builder.withMinionEnvironment()
+                    .addFile(HealthCheckIT.class.getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
+
             // Install some features to have health:check process something,
             // as by default sentinel does not start any bundles
             builder.withSentinelEnvironment()
                     .addFile(HealthCheckIT.class.getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
 
+            // Configure elastic endpoint correctly, otherwise health:check will fail (timeout)
             builder.withOpenNMSEnvironment()
                     .addFile(HealthCheckIT.class.getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);

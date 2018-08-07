@@ -28,43 +28,16 @@
 
 package org.opennms.netmgt.telemetry.distributed.sentinel;
 
-import org.opennms.core.health.api.HealthCheck;
-import org.opennms.core.health.api.Response;
-import org.opennms.core.health.api.Status;
+import org.opennms.core.health.api.SimpleHealthCheck;
 import org.opennms.netmgt.telemetry.config.api.Adapter;
 
-public class AdapterHealthCheck implements HealthCheck {
-
-    private final String adapterName;
-    private final String adapterType;
-    private Response response = new Response(Status.Starting);
-
+public class AdapterHealthCheck extends SimpleHealthCheck {
 
     public AdapterHealthCheck(Adapter adapterDef) {
         this(adapterDef.getName(), adapterDef.getClassName());
     }
 
-    private AdapterHealthCheck(String adapterName, String adapterType) {
-        this.adapterName = adapterName;
-        this.adapterType = adapterType;
+    private AdapterHealthCheck(final String adapterName, final String adapterType) {
+        super(() -> "Verifying Adapter " + adapterName + " (" + adapterType + ")");
     }
-
-    @Override
-    public String getDescription() {
-        return "Verifying Adapter " + adapterName + " (" + adapterType + ")";
-    }
-
-    @Override
-    public Response perform() throws Exception {
-        return response;
-    }
-
-    public void setSuccess() {
-        response = new Response(Status.Success);
-    }
-
-    public void setError(Exception e) {
-        response = new Response(e);
-    }
-
 }

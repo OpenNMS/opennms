@@ -26,16 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.distributed.minion;
+package org.opennms.core.health.api;
 
-import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
+import java.util.Objects;
+import java.util.function.Supplier;
 
-public class ListenerHealthCheck extends SimpleHealthCheck {
+/**
+ * A very simple {@link HealthCheck} implementation, which may be used
+ * if the health is okay, if a certain command ran sucessfully, e.g. instantiating an object, or similar.
+ *
+ * @author mvrueden
+ */
+public class SimpleHealthCheck implements HealthCheck {
 
-    public ListenerHealthCheck(ListenerDefinition listenerDefinition) {
-        super(() -> "Verifying Listener " + listenerDefinition.getName() + " (" + listenerDefinition.getClassName() + ")");
+    private final Supplier<String> descriptionSupplier;
+    private Response response = new Response(Status.Starting);
+
+    public SimpleHealthCheck(Supplier<String> descriptionSupplier) {
+        this.descriptionSupplier = Objects.requireNonNull(descriptionSupplier);
+    }
+
+    @Override
+    public String getDescription() {
+        return descriptionSupplier.get();
+    }
+
+    @Override
+    public Response perform() throws Exception {
+        return response;
+    }
+
+    public void markSucess() {
+        response = new Response(Status.Success);
+    }
+
+    public void markError(Exception e) {
+        response = new Response(e);
     }
 }
-
-
