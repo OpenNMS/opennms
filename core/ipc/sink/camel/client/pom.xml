@@ -41,6 +41,11 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.sink.camel</groupId>
       <artifactId>org.opennms.core.ipc.sink.camel.common</artifactId>
       <version>${project.version}</version>

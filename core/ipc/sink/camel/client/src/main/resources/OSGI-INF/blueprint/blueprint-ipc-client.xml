@@ -27,7 +27,9 @@
     <reference id="queuingservice" interface="org.apache.camel.Component" filter="(alias=opennms.broker)" />
 
     <bean id="camelRemoteMessageDispatcherFactory" class="org.opennms.core.ipc.sink.camel.client.CamelRemoteMessageDispatcherFactory"
-      init-method="registerJmxReporter" destroy-method="unregisterJmxReporter" />
+          init-method="init" destroy-method="destroy">
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+    </bean>
     <service ref="camelRemoteMessageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
 
     <camelContext id="sinkClient" xmlns="http://camel.apache.org/schema/blueprint">
