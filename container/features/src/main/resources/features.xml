@@ -969,6 +969,7 @@
       <feature version="${cxfVersion}">cxf-ws-addr</feature>
 
       <feature>opennms-collection-api</feature>
+      <feature>opennms-poller-monitors-core</feature>
       <feature>opennms-provisioning-api</feature>
       <feature>opennms-dao-api</feature>
 
