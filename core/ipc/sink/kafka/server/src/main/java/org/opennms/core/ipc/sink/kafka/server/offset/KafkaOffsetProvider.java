@@ -71,6 +71,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.protocol.types.Schema;
 import org.apache.kafka.common.protocol.types.Struct;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
 import org.opennms.core.ipc.sink.kafka.server.Utils;
 import org.opennms.core.ipc.sink.kafka.server.config.KafkaConfigProvider;
@@ -323,6 +324,10 @@ public class KafkaOffsetProvider {
 
     public void start() {
         kafkaConfig.clear();
+        kafkaConfig.put("enable.auto.commit", "false");
+        kafkaConfig.put("auto.offset.reset", "latest");
+        kafkaConfig.put("key.deserializer", ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
         kafkaConfig.putAll(configProvider.getProperties());
         consumerRunner = Utils.runWithNullContextClassLoader(() -> new KafkaOffsetConsumerRunner());
         reporter = JmxReporter.forRegistry(kafkaOffsetMetrics).inDomain("org.opennms.core.ipc.sink.kafka").build();

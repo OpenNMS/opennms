@@ -34,7 +34,6 @@ import java.util.Enumeration;
 import java.util.Objects;
 import java.util.Properties;
 
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
 import org.osgi.service.cm.ConfigurationAdmin;
 
@@ -53,10 +52,6 @@ public class OsgiKafkaConfigProvider implements KafkaConfigProvider {
     public synchronized Properties getProperties() {
         final Properties kafkaConfig = new Properties();
         kafkaConfig.put("group.id", groupId);
-        kafkaConfig.put("enable.auto.commit", "false");
-        kafkaConfig.put("auto.offset.reset", "latest");
-        kafkaConfig.put("key.deserializer", ByteArrayDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
 
         // Retrieve all of the properties from org.opennms.core.ipc.sink.kafka.consumer.cfg
         try {
