@@ -1,0 +1,19 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-oracle-java-windows]]
+==== Oracle Java SE Development Kit 8
+
+This section describes how to install _Oracle Java SE Development Kit 8_ on a system running the _Microsoft Windows Server 2012_ operating system.
+
+.Download the Microsoft Windows Java SE Development Kit 8 installer with PowerShell or a browser
+[source]
+----
+cd C:\Users\Administrator\Downloads
+Invoke-WebRequest http://javadl.sun.com/webapps/download/AutoDL?BundleId=107944 -Outfile java8-installer.exe
+----
+
+Start the `java8-installer.exe` from the command line or with _Windows Explorer_ from the Administrator's _Download_ folder.
+
+NOTE: The setup requires administrative privileges.

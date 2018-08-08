@@ -101,6 +101,7 @@
           </simpleType>
         </element>
 
+        <element maxOccurs="1" minOccurs="0" name="time-zone-id" />
       </sequence>
     </complexType>
   </element>
