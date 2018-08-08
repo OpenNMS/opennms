@@ -28,17 +28,28 @@
 
 package org.opennms.netmgt.alarmd.drools;
 
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import org.drools.core.ClockType;
+import org.drools.core.time.SessionPseudoClock;
+import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
+import org.kie.api.KieServices;
+import org.kie.api.conf.EventProcessingOption;
+import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.KieSessionConfiguration;
+import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.FactHandle;
-import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.alarmd.Alarmd;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
@@ -57,7 +68,7 @@ import com.google.common.collect.Sets;
  *
  * @author jwhite
  */
-public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLifecycleListener {
+public class DroolsAlarmContext implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(DroolsAlarmContext.class);
 
     @Autowired
@@ -66,29 +77,71 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     @Autowired
     private AlarmTicketerService alarmTicketerService;
 
+    private boolean usePseudoClock = false;
+
+    private boolean useManualTick = false;
+
+    private KieSession kieSession;
+
+    private Timer timer;
+
+    private SessionPseudoClock clock;
+
     private final Map<Integer, AlarmAndFact> alarmsById = new HashMap<>();
 
-    public DroolsAlarmContext() {
-        super(Paths.get(ConfigFileConstants.getHome(), "etc", "alarmd", "drools-rules.d").toFile(), Alarmd.NAME, "DroolsAlarmContext");
-        setOnNewKiewSessionCallback(kieSession -> {
-            kieSession.setGlobal("alarmService", alarmService);
-            kieSession.insert(alarmTicketerService);
+    private final Lock lock = new ReentrantLock();
 
-            // Rebuild the alarm id -> fact handle map
-            alarmsById.clear();
-            for (FactHandle fact : kieSession.getFactHandles()) {
-                final Object objForFact = kieSession.getObject(fact);
-                if (objForFact instanceof OnmsAlarm) {
-                    final OnmsAlarm alarmInSession = (OnmsAlarm)objForFact;
-                    alarmsById.put(alarmInSession.getId(), new AlarmAndFact(alarmInSession, fact));
+    private final ThreadLocal<Boolean> firing = new ThreadLocal<>();
+
+    public void start() {
+        final KieServices ks = KieServices.Factory.get();
+        final KieContainer kcont = ks.newKieClasspathContainer(getClass().getClassLoader());
+        final KieBaseConfiguration kbaseConfig = ks.newKieBaseConfiguration();
+        kbaseConfig.setOption(EventProcessingOption.STREAM);
+        final KieBase kbase = kcont.newKieBase("alarmKBase", kbaseConfig);
+
+        final KieSessionConfiguration kieSessionConfig = KieServices.Factory.get().newKieSessionConfiguration();
+        if (usePseudoClock) {
+            kieSessionConfig.setOption(ClockTypeOption.get(ClockType.PSEUDO_CLOCK.getId()));
+        }
+
+        kieSession = kbase.newKieSession(kieSessionConfig, null);
+        kieSession.setGlobal("alarmService", alarmService);
+
+        if (usePseudoClock) {
+            this.clock = kieSession.getSessionClock();
+        } else {
+            this.clock = null;
+        }
+
+        alarmsById.clear();
+
+        kieSession.insert(alarmTicketerService);
+
+        if (!useManualTick) {
+            timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                @Override
+                public void run() {
+                    firing.set(true);
+                    lock.lock();
+                    try {
+                        LOG.debug("Firing rules.");
+                        kieSession.fireAllRules();
+                    } catch (Exception e) {
+                        LOG.error("Error occurred while firing rules.", e);
+                    } finally {
+                        firing.set(false);
+                        lock.unlock();
+                    }
                 }
-            }
-        });
+            }, TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(1));
+        }
     }
 
     @Override
     public void handleAlarmSnapshot(List<OnmsAlarm> alarms) {
-        if (!isStarted()) {
+        if (kieSession == null) {
             LOG.debug("Ignoring alarm snapshot. Drools session is stopped.");
             return;
         }
@@ -122,7 +175,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     @Override
     public void handleNewOrUpdatedAlarm(OnmsAlarm alarm) {
-        if (!isStarted()) {
+        if (kieSession == null) {
             LOG.debug("Ignoring new/updated alarm. Drools session is stopped.");
             return;
         }
@@ -135,11 +188,10 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
     }
 
     private void handleNewOrUpdatedAlarmNoLock(OnmsAlarm alarm) {
-        final KieSession kieSession = getKieSession();
         final AlarmAndFact alarmAndFact = alarmsById.get(alarm.getId());
         if (alarmAndFact == null) {
             LOG.debug("Inserting alarm into session: {}", alarm);
-            final FactHandle fact = getKieSession().insert(alarm);
+            final FactHandle fact = kieSession.insert(alarm);
             alarmsById.put(alarm.getId(), new AlarmAndFact(alarm, fact));
         } else {
             // Updating the fact doesn't always give us to expected results so we resort to deleting it
@@ -155,7 +207,7 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
-        if (!isStarted()) {
+        if (kieSession == null) {
             LOG.debug("Ignoring deleted alarm. Drools session is stopped.");
             return;
         }
@@ -171,8 +223,53 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
         final AlarmAndFact alarmAndFact = alarmsById.remove(alarmId);
         if (alarmAndFact != null) {
             LOG.debug("Deleting alarm from session: {}", alarmAndFact.getAlarm());
-            getKieSession().delete(alarmAndFact.getFact());
+            kieSession.delete(alarmAndFact.getFact());
         }
+    }
+
+    public void tick() {
+        firing.set(true);
+        lock.lock();
+        try {
+            kieSession.fireAllRules();
+        } finally {
+            lock.unlock();
+            firing.set(false);
+        }
+    }
+
+    private void lockIfNotFiring() {
+        if (Boolean.TRUE.equals(firing.get())) {
+            lock.lock();
+        }
+    }
+
+    private void unlockIfNotFiring() {
+        if (Boolean.TRUE.equals(firing.get())) {
+            lock.unlock();
+        }
+    }
+
+    public void stop() {
+        if (timer != null) {
+            timer.cancel();
+        }
+        if (kieSession != null) {
+            kieSession.halt();
+            kieSession = null;
+        }
+    }
+
+    public SessionPseudoClock getClock() {
+        return clock;
+    }
+
+    public void setUsePseudoClock(boolean usePseudoClock) {
+        this.usePseudoClock = usePseudoClock;
+    }
+
+    public void setUseManualTick(boolean useManualTick) {
+        this.useManualTick = useManualTick;
     }
 
     public void setAlarmService(AlarmService alarmService) {

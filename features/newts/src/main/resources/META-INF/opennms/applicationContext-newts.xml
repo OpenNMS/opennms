@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+  <context:annotation-config />
+
+  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer" />
+
+  <bean id="newts.max_batch_size" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.max_batch_size:16}" />
+  </bean>
+
+  <bean id="newts.ring_buffer_size" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ring_buffer_size:8192}" />
+  </bean>
+
+  <bean id="newts.writer_threads" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
+  </bean>
+
+  <bean id="cassandra.keyspace" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.keyspace:newts}" />
+  </bean>
+
+  <bean id="cassandra.hostname" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.hostname:localhost}" />
+  </bean>
+
+  <bean id="cassandra.port" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.port:9042}" />
+  </bean>
+
+  <bean id="cassandra.ssl" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ssl:false}" />
+  </bean>
+
+  <bean id="cassandra.compression" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.compression:NONE}" />
+  </bean>
+
+  <bean id="cassandra.username" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.username:cassandra}" />
+  </bean>
+
+  <bean id="cassandra.password" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.password:cassandra}" />
+  </bean>
+
+  <bean id="samples.cassandra.time-to-live" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31540000}" />
+  </bean>
+
+<!--
+   The cassandraIndexer bean fails to load with the following exception when using
+   this definition:
+      No qualifying bean of type [int] found for dependency: expected at least 1 bean which qualifies as autowire candidate for this dependency. Dependency annotations: {@javax.inject.Named(value=search.cassandra.time-to-live)}
+   
+   So instead, we resort to the static value bellow:
+
+  <bean id="search.cassandra.time-to-live" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.ttl:31536000}" />
+  </bean>
+-->
+
+  <util:constant id="search.cassandra.time-to-live" static-field="org.opennms.netmgt.newts.support.NewtsUtils.TTL" />
+
+  <util:constant id="cassandraIndexingOptions" static-field="org.opennms.netmgt.newts.support.NewtsUtils.INDEXING_OPTIONS" />
+
+  <bean id="sampleProcessor.maxThreads" class="java.lang.Integer">
+        <!-- This options should always match the number of writer threads. See NMS-8439. -->
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
+  </bean>
+
+  <bean id="search.resourceMetadata.maxCacheEntries" class="java.lang.Long">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.max_entries:8192}" />
+  </bean>
+
+  <bean id="redis.hostname" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.redis_hostname:localhost}" />
+  </bean>
+
+  <bean id="redis.port" class="java.lang.Integer">
+        <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.cache.redis_port:6379}" />
+  </bean>
+
+  <util:constant id="defaultContext" static-field="org.opennms.newts.api.Context.DEFAULT_CONTEXT" />
+
+  <bean id="contextConfigurations" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod" value="org.opennms.netmgt.newts.support.ContextConfigurationFactory.getContextConfigurations"/>
+  </bean>
+
+  <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" primary="true" />
+
+  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+      <constructor-arg ref="metricRegistry"/>
+  </bean>
+
+  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+      <constructor-arg value="org.opennms.newts"/>
+  </bean>
+
+  <bean id="metricRegistryJmxReporter"
+        factory-bean="metricRegistryDomainedJmxReporterBuilder"
+        factory-method="build"
+        init-method="start"
+        destroy-method="stop" />
+
+  <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
+
+  <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl" depends-on="cassandra.port" />
+
+  <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" />
+
+  <bean id="resourceMetadataCache" class="${org.opennms.newts.config.cache.strategy:org.opennms.netmgt.newts.support.GuavaSearchableResourceMetadataCache}" />
+
+  <bean id="cachePrimer" class="org.opennms.netmgt.newts.support.CachePrimer"/>
+
+  <bean id="cassandraIndexer" class="org.opennms.newts.cassandra.search.CassandraIndexer" depends-on="search.cassandra.time-to-live,search.resourceMetadata.maxCacheEntries" />
+
+  <bean id="cassandraIndexerSampleProcessor" class="org.opennms.newts.cassandra.search.CassandraIndexerSampleProcessor" />
+
+  <bean id="sampleProcessors" class="com.google.common.collect.Sets" factory-method="newHashSet" >
+    <constructor-arg index="0" ref="cassandraIndexerSampleProcessor" />
+  </bean>
+
+  <bean id="sampleProcessorService" class="org.opennms.netmgt.newts.support.SimpleSampleProcessorService" >
+    <constructor-arg index="0" ref="sampleProcessors" />
+  </bean>
+
+  <bean id="cassandraSampleRepository" class="org.opennms.newts.persistence.cassandra.CassandraSampleRepository" depends-on="samples.cassandra.time-to-live" />
+
+  <bean id="newtsWriter" class="org.opennms.netmgt.newts.NewtsWriter" />
+
+  <bean id="resourceStorageDao" primary="true" class="org.opennms.netmgt.dao.support.NewtsResourceStorageDao" />
+
+  <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+  <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.newts.NewtsPersisterFactory" />
+
+  <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
+  <!-- Some beans still require an RrdStrategy -->
+  <bean id="rrdStrategy" primary="true" class="org.opennms.netmgt.rrd.NullRrdStrategy" />
+
+  <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
+
+</beans>

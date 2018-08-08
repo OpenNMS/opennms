@@ -1,0 +1,33 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion-configure-opennms]]
+=== Configuring OpenNMS
+
+_Minions_ communicate with _{opennms-product-name}_ via _ReST_ endpoints and via an _ActiveMQ_ broker.
+Some configuration is required to setup and secure these communication channels.
+
+==== Authentication and Authorization
+
+The `minion` role includes the minimal amount of permissions required for a _Minion_ to operate.
+
+This guide will assume you have created a user called `minion`, with a password of `minion` that has been associated to the _ROLE_MINION_ role.
+
+==== Configure ActiveMQ
+
+_{opennms-product-name}_ embeds an _ActiveMQ_ broker which, by default, cannot be accessed remotely via the network.
+In order to make the _ActiveMQ_ broker accessible remotely, you must edit `$OPENNMS_HOME/etc/opennms-activemq.xml` and
+uncomment the `transportConnector` with the `tcp://0.0.0.0:61616` URI.
+
+[source, xml]
+----
+<!-- Uncomment this line to allow external TCP connections -->
+<!--
+  WARNING: Access to port 61616 should be firewalled to prevent unauthorized injection
+  of data into OpenNMS when this port is open.
+-->
+<transportConnector name="openwire" uri="tcp://0.0.0.0:61616?useJmx=false&amp;maximumConnections=1000&amp;wireformat.maxFrameSize=104857600"/>
+----
+
+If you wish to restrict _ActiveMQ_ connections to only one particular external IP address, you can change `0.0.0.0` to the prefered IP address.

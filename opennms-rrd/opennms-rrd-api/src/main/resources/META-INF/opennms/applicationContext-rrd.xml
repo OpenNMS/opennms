@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+       http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
+       ">
+
+    <context:annotation-config />
+
+    <!-- Extension point for RRD strategies that may require additional beans -->
+    <import resource="classpath*:/META-INF/opennms/applicationContext-rrd-ext.xml"/>
+
+    <bean id="rrdConfigurationPropertiesDefaults" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <!-- General configuration -->
+                <prop key="org.opennms.rrd.strategyClass">#{ T(org.opennms.core.utils.TimeSeries).DEFAULT_RRD_STRATEGY_CLASS }</prop>
+                <prop key="org.opennms.rrd.usequeue">true</prop>
+                <prop key="org.opennms.rrd.usetcp">false</prop>
+                <prop key="org.opennms.rrd.fileExtension" />
+
+                <!-- Queuing properties -->
+                <prop key="org.opennms.rrd.queuing.queueSize">50000</prop>
+                <prop key="org.opennms.rrd.queuing.writethreads">2</prop>
+                <prop key="org.opennms.rrd.queuing.queuecreates">false</prop>
+                <prop key="org.opennms.rrd.queuing.prioritizeSignificantUpdates">false</prop>
+                <prop key="org.opennms.rrd.queuing.inSigHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.sigHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.queueHighWaterMark">0</prop>
+                <prop key="org.opennms.rrd.queuing.modulus">10000</prop>
+                <prop key="org.opennms.rrd.queuing.category">queued</prop>
+                <prop key="org.opennms.rrd.queuing.maxInsigUpdateSeconds">0</prop>
+                <prop key="org.opennms.rrd.queuing.writethread.sleepTime">50</prop>
+                <prop key="org.opennms.rrd.queuing.writethread.exitDelay">60000</prop>
+
+                <!-- JRobinRrdStrategy-specific properties -->
+                <prop key="org.jrobin.core.RrdBackendFactory">FILE</prop>
+
+                <!-- TcpRrdStrategy-specific properties, blank by default to disable this output -->
+                <prop key="org.opennms.rrd.tcp.host" />
+                <prop key="org.opennms.rrd.tcp.port">0</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="rrdConfigurationProperties" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="propertiesArray">
+            <list>
+                <ref bean="rrdConfigurationPropertiesDefaults" />
+                <!-- Use the rrd-configuration.properties as a source of configuration parameters for this context -->
+                <bean class="org.opennms.netmgt.rrd.RrdConfig" factory-method="getProperties" />
+            </list>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+        <!-- 
+          We need to ignore unresolvable placeholders since if multiple PropertyPlaceholderConfigurer
+          preprocessors are in use in a single context (such as inside unit tests), Spring will encounter
+          the issue documented here:
+
+          https://jira.springsource.org/browse/SPR-6428
+
+          TODO: Fix this behavior after upgrading to Spring 3.1.
+        -->
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+        <property name="properties">
+            <ref bean="rrdConfigurationProperties" />
+        </property>
+    </bean>
+
+    <bean id="rrdFileExtension" class="java.lang.String">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.fileExtension}" />
+    </bean>
+
+    <bean id="useQueue" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usequeue}" />
+    </bean>
+
+    <bean id="useTcp" class="java.lang.Boolean">
+        <constructor-arg type="java.lang.String" value="${org.opennms.rrd.usetcp}" />
+    </bean>
+
+    <bean id="basicRrdStrategy" class="${org.opennms.rrd.strategyClass}" lazy-init="true">
+        <!-- Pass the rrdConfigurationProperties to the delegate strategy -->
+        <property name="configurationProperties" ref="rrdConfigurationProperties" />
+    </bean>
+
+    <!-- This is the default RrdStrategy -->
+    <bean id="queuingRrdStrategy" class="org.opennms.netmgt.rrd.QueuingRrdStrategy" lazy-init="true">
+        <!-- This strategy doesn't support org.opennms.rrd.queuing.queueSize yet -->
+        <!-- <property name="queueSize" value="${org.opennms.rrd.queuing.queueSize}" /> -->
+        <property name="writeThreads" value="${org.opennms.rrd.queuing.writethreads}" />
+        <property name="queueCreates" value="${org.opennms.rrd.queuing.queuecreates}" />
+        <property name="prioritizeSignificantUpdates" value="${org.opennms.rrd.queuing.prioritizeSignificantUpdates}" />
+        <property name="inSigHighWaterMark" value="${org.opennms.rrd.queuing.inSigHighWaterMark}" />
+        <property name="sigHighWaterMark" value="${org.opennms.rrd.queuing.sigHighWaterMark}" />
+        <property name="queueHighWaterMark" value="${org.opennms.rrd.queuing.queueHighWaterMark}" />
+        <property name="modulus" value="${org.opennms.rrd.queuing.modulus}" />
+        <property name="category" value="${org.opennms.rrd.queuing.category}" />
+        <property name="maxInsigUpdateSeconds" value="${org.opennms.rrd.queuing.maxInsigUpdateSeconds}" />
+        <property name="writeThreadSleepTime" value="${org.opennms.rrd.queuing.writethread.sleepTime}" />
+        <property name="writeThreadExitDelay" value="${org.opennms.rrd.queuing.writethread.exitDelay}" />
+        <!-- Delegate for queueing strategy -->
+        <constructor-arg>
+            <ref bean="basicRrdStrategy" />
+        </constructor-arg>
+    </bean>
+
+    <!-- Only pull in the TCP strategy related beans when needed. -->
+    <bean class="org.opennms.netmgt.rrd.ConditionalTcpStrategyContext"/>
+
+    <bean id="rrdStrategyFactory" class="org.opennms.netmgt.rrd.RrdStrategyFactory" />
+
+    <bean id="rrdStrategy" primary="true" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject" ref="rrdStrategyFactory"/>
+        <property name="targetMethod" value="getStrategy"/>
+    </bean>
+
+    <onmsgi:service ref="rrdStrategy" interface="org.opennms.netmgt.rrd.RrdStrategy" />
+
+    <bean id="resourceStorageDao" class="org.opennms.netmgt.dao.support.FilesystemResourceStorageDao">
+        <property name="rrdDirectory" value="${rrd.base.dir}" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.ResourceStorageDao" ref="resourceStorageDao" />
+
+    <bean id="persisterFactory" class="org.opennms.netmgt.collection.persistence.rrd.RrdPersisterFactory">
+        <property name="rrdStrategy" ref="rrdStrategy" />
+        <property name="resourceStorageDao" ref="resourceStorageDao" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.collection.api.PersisterFactory" ref="persisterFactory" />
+
+</beans>

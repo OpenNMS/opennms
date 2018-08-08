@@ -1,0 +1,60 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-minion-configure]]
+=== Configuring Minion
+
+This section describes how to configure _Minion_ once it has been installed and started.
+
+Once the _Minion_ service is started and the _Karaf_ shell is accessible, you can configure the _Minion_ to point it at your _{opennms-product-name}_ instance.
+
+NOTE: By default the _Minion_ is configured to communicate with _{opennms-product-name}_ via `localhost`.
+
+.Configure the _Minion's_ location and endpoint URLs for communication with _OpenNMS_
+[source]
+----
+[root@localhost /root]# $ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.minion.controller
+admin@minion()> config:property-set http-url http://opennms-fqdn:8980/opennms
+admin@minion()> config:property-set broker-url failover:tcp://opennms-fqdn:61616
+admin@minion()> config:property-set location Office-Pittsboro
+admin@minion()> config:update
+----
+
+TIP: Include the `failover:` portion of the broker URL to allow the _Minion_ to re-establish connectivity on failure.
+     For a reference on the different URL formats, see http://activemq.apache.org/uri-protocols.html[ActiveMQ URI Protocols].
+
+.Configure the credentials to use when communicating with _OpenNMS_
+[source]
+----
+admin@minion()> scv:set opennms.http minion minion
+admin@minion()> scv:set opennms.broker minion minion
+----
+
+Another way to configure credentials is to use the `scvcli` utility in your _Minion_ `bin` directory.
+
+.Example of configuring credentials with the command line utility `scvcli` on a RPM-based installation
+[source]
+----
+[root@localhost /root]# $ cd /opt/minion
+[root@localhost /opt/minion]# $ ./bin/scvcli set opennms.http minion minion
+[root@localhost /opt/minion]# $ ./bin/scvcli set opennms.broker minion minion
+----
+
+.Example of configuring credentials with the command line utility `scvcli` on a Debian-based installation
+[source]
+----
+[root@localhost /root]# $ cd /usr/share/minion
+[root@localhost /usr/share/minion]# $ ./bin/scvcli set opennms.http minion minion
+[root@localhost /usr/share/minion]# $ ./bin/scvcli set opennms.broker minion minion
+----
+
+.Restart the _Minion_ after updating the credentials
+[source]
+----
+[root@localhost /root]# $ systemctl restart minion
+----
+
+NOTE: The credentials are configured separately since they are encrypted on disk.

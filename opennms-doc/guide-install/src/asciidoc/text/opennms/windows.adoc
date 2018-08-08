@@ -1,0 +1,112 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-opennms-windows]]
+=== Microsoft Windows
+
+IMPORTANT: This guide does not apply to OpenNMS Meridian, which can be installed only on Red Hat Enterprise Linux or CentOS systems.
+
+_OpenNMS_ is mostly developed on Unix/Linux based systems, nevertheless it is possible to install the platform on _Microsoft Windows_ operating systems.
+To install the application a graphical installer is provided and can be used to install _OpenNMS_ on _Microsoft Windows_.
+This section describes how to install the _OpenNMS_ platform on _Microsoft Windows 2012 Server_.
+
+NOTE: The standalone installer for _Microsoft Windows_ is only available for the most recent stable version of _OpenNMS_.
+
+IMPORTANT: It is required to have link:http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html[Oracle JDK 8] installed.
+           The _JRE_ is *NOT* sufficient.
+
+TIP: To edit _OpenNMS_ configuration files on _Microsoft Windows_ the tool link:https://notepad-plus-plus.org/[Notepad++] can deal with the formatting of _.property_ and _.xml_ files.
+
+The setup process is described in the following steps:
+
+. Installation of _PostgreSQL_ database service
+. Download and install the graphical _OpenNMS_ installer
+. First start of the _OpenNMS_ application
+
+[[gi-install-opennms-deb-prepare-pg]]
+==== Install PostgreSQL
+
+_PostgreSQL_ is available for _Microsoft Windows_ and latest version can be downloaded from link:http://www.enterprisedb.com/products-services-training/pgdownload#windows[Download PostgreSQL] page.
+Follow the on-screen instructions of the graphical installer.
+
+NOTE: The placeholder `{PG-VERSION}` represents the _PostgreSQL_ version number.
+      A version of _9.1+_ is required for _OpenNMS_.
+
+The following information has to be provided:
+
+* Installation directory for _PostgreSQL_, e.g. `C:\Program Files\PostgreSQL\{PG-VERSION}`
+* Password for the database superuser (_postgres_), this password will be used during the _OpenNMS_ setup.
+* Port to listen for _PostgreSQL_ connections, default is `5432` and can normally be used.
+* Locale for the database, keep `[Default locale]`, if you change the locale, _OpenNMS_ may not be able to initialize the database.
+
+TIP: It is not required to install anything additional from the _PostgreSQL Stack Builder_.
+
+NOTE: The database data directory is automatically initialized during the setup and the _postgresql-x64-{PG-VERSION}_ is already added as service and automatically started at system boot.
+
+NOTE: It is not necessary to change the authentication method in `pg_hba.conf`, it is by default set to `md5` for localhost connections.
+
+[[gi-install-opennms-deb-repo]]
+==== Install OpenNMS with GUI installer
+
+For _Microsoft Windows_ environments download the _standalone-opennms-installer-{ONMS-VERSION}.zip_ file from the link:http://sourceforge.net/projects/opennms/files/OpenNMS/[OpenNMS SourceForge] repository.
+Extract the downloaded _ZIP_ file.
+
+NOTE: The `{ONMS-VERSION}` has to be replaced with the latest stable version.
+
+Start the graphical installer and follow the on screen instructions.
+The following information has to be provided:
+
+* Path to _Oracle JDK_, e.g. `C:\Program Files\Java\jdk1.8.0_51`
+* Installation path for _OpenNMS_, e.g. `C:\Program Files\OpenNMS`
+* Select packages which has to be installed, the minimum default selection is _Core_ and _Docs_
+* PostgreSQL Database connection
+** Host: Server with _PostgreSQL_ running, e.g. `localhost`
+** Name: Database name for _OpenNMS_, e.g. `opennms`
+** Port: _TCP_ port connecting to _PostgreSQL_ server, e.g. `5432`
+** Username (administrative superuser): _PostgreSQL_ superuser, e.g. `postgres`
+** Password (administrative superuser): Password given during _PostgreSQL_ setup for the superuser
+** Username (runtime user for opennms): Username to connect to the _OpenNMS_ database, e.g. `opennms`
+** Password (runtime user for opennms): Password to connect to the _OpenNMS_ database, e.g. `opennms`
+* Configure a discovery range for an initial node discovery.
+  If you don't want any discovery set begin and end to the same unreachable address.
+
+IMPORTANT: Choose secure passwords for all database users and don't use the example passwords above in production.
+
+WARNING: There is currently an open issue in the installer link:http://issues.opennms.org/browse/NMS-7831[NMS-7831].
+         Username and password are not written to the `opennms-datasources.xml` file and has to be changed manually.
+         The initialize of the database will fail with an authentication error.
+
+.Configuration for database authentication in _OpenNMS_
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<1>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><2>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<3>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><4>
+----
+
+<1> Set the user name to access the _OpenNMS_ database table
+<2> Set the password to access the _OpenNMS_ database table
+<3> Set the _postgres_ user for administrative access to PostgreSQL
+<4> Set the password for administrative changes of the _OpenNMS_ database table
+
+After setting the username and passwords in `opennms-datasources.xml` re-run the graphical installer and also initialize the database.
+_OpenNMS_ can be started and stopped with the `start.bat` and `stop.bat` script located in `%OPENNMS_HOME%\bin` directory.
+
+After starting _OpenNMS_ with the `start.bat` file the web application can be accessed on http://<ip-or-fqdn-of-your-server>:8980/opennms.
+The default login user is _admin_ and the password is initialized to _admin_.
+
+IMPORTANT: Change the default admin password to a secure password immediately.
+
+TIP: The Wiki article link:http://www.opennms.org/wiki/Configuring_openNMS_as_Windows_Service[Configuring OpenNMS as Windows Service] describes how to create a _Windows Service_ from the `start.bat` files.
+     There is also a link:http://yajsw.sourceforge.net/#mozTocId527639[Java Wrapper] which allows to install _Java_ applications as _Windows Service_.

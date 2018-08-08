@@ -52,7 +52,11 @@ import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
 import org.opennms.test.system.api.utils.SshClient;
 
-public class KafkaProducerIT extends BaseKafkaPersisterIT {
+public class KafkaProducerIT {
+
+    private static TestEnvironment m_testEnvironment;
+    private static RestClient restClient;
+    private InetSocketAddress opennmsKarafSshAddr;
 
     @ClassRule
     public static final TestEnvironment getTestEnvironment() {
@@ -89,12 +93,6 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
             pipe.println("config:edit org.opennms.features.kafka.producer.client");
             pipe.println("config:property-set bootstrap.servers " + kafkaHost + ":9092");
             pipe.println("config:update");
-            pipe.println("config:edit org.opennms.features.kafka.producer");
-            // not needed for this test but since we load persister from activator, 
-            // configuration needs to be on the first install.
-            pipe.println("config:property-set forward.metrics true");
-            pipe.println("config:property-set metricTopic  metrics");
-            pipe.println("config:update");
             pipe.println("feature:install opennms-kafka-producer");
             pipe.println("logout");
             await().atMost(1, MINUTES).until(sshClient.isShellClosedCallable());
@@ -103,7 +101,6 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         await().atMost(2, MINUTES).pollInterval(15, SECONDS)
                 .until(this::triggerAlarmAndListReductionKeysInKtable, containsString("uei.opennms.org/alarms/trigger:::kafka-producer-test"));
     }
-    
 
     private String triggerAlarmAndListReductionKeysInKtable() throws Exception {
         // On every call, send another event to trigger the alarm
@@ -128,12 +125,5 @@ public class KafkaProducerIT extends BaseKafkaPersisterIT {
         }
         return shellOutput;
     }
-    
-    /** Most of the test code is common with KafkaPersisterIT, runKafkaPersisterIT has all the test code **/
-    @Test
-    public void testKafkaPersisterForMetrics() throws Exception {
-        runKafkaPeristerTest();
-    }
-
 
 }

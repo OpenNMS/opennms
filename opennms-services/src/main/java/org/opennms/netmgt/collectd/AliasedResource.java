@@ -207,7 +207,7 @@ public class AliasedResource extends SnmpCollectionResource {
 
     @Override
     public ResourcePath getParent() {
-        return getCollectionAgent().getStorageResourcePath();
+        return null; //For node and interface type resources, use the default parent
     }
 
     /**

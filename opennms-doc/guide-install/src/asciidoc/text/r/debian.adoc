@@ -1,0 +1,16 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-install-r-debian]]
+=== Debian
+
+This section describes how to install _R_ on a _Debian_-based system.
+
+NOTE: This description was built on _Debian 8_ and _Ubuntu 14.04 LTS_.
+
+.Install R
+[source, bash]
+----
+sudo apt-get install r-recommended
+----
