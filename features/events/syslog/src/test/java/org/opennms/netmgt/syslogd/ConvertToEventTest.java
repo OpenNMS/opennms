@@ -42,6 +42,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -220,10 +222,10 @@ public class ConvertToEventTest {
                 return;
             }
 
-            // Replace the "\u0000" tokens with null characters. This allows us to store the 
+            // Replace the "\u0000" tokens with null characters. This allows us to store the
             // syslogMessages.txt file as text instead of binary in git.
             syslog = syslog.replaceAll("\\\\u0000", "\u0000");
-            // Similarly, replace the "\uFEFF" tokens with UTF-16 byte order marker characters. 
+            // Similarly, replace the "\uFEFF" tokens with UTF-16 byte order marker characters.
             syslog = syslog.replaceAll("\\\\uFEFF", "\uFEFF");
 
             final Event[] events = new Event[5];
@@ -304,14 +306,19 @@ public class ConvertToEventTest {
     }
 
     private static Event parseSyslog(final String name, final SyslogdConfig config, final String syslog) {
+        return parseSyslog(name, config, syslog, null);
+    }
+
+    private static Event parseSyslog(final String name, final SyslogdConfig config, final String syslog, Date receivedTimestamp) {
         try {
             ConvertToEvent convert = new ConvertToEvent(
-                DistPollerDao.DEFAULT_DIST_POLLER_ID,
-                MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
-                InetAddressUtils.ONE_TWENTY_SEVEN,
-                9999,
-                SyslogdTestUtils.toByteBuffer(syslog),
-                config
+                    DistPollerDao.DEFAULT_DIST_POLLER_ID,
+                    MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+                    InetAddressUtils.ONE_TWENTY_SEVEN,
+                    9999,
+                    SyslogdTestUtils.toByteBuffer(syslog),
+                    receivedTimestamp,
+                    config
             );
             Event event = convert.getEvent();
             LOG.info("Generated event ({}): {}", name, event.toString());
@@ -389,7 +396,7 @@ public class ConvertToEventTest {
 
     /**
      * Make sure that a syslog message with no host provided uses the source
-     * address of the message log and that the node is is correctly populated as a result.
+     * address of the message log and that the node is correctly populated as a result.
      */
     @Test
     public void testNoHostNameProvided() {
@@ -412,7 +419,6 @@ public class ConvertToEventTest {
         // Stop using the mock cache so we don't interfere with other tests
         AbstractInterfaceToNodeCache.setInstance(originalCache);
 
-        assertNotNull(eventHostname);
         assertEquals(localHostIP, InetAddressUtils.addr(eventHostname));
         assertEquals(nodeId.intValue(), event.getNodeid().intValue());
     }
@@ -428,7 +434,49 @@ public class ConvertToEventTest {
 
         Event event = parseSyslog("testHostNameProvided", radixConfig, syslogMessage);
         String eventHostname = event.getParm("hostname").getValue().getContent();
-        assertNotNull(eventHostname);
         assertEquals(hostname, eventHostname);
+    }
+
+    /**
+     * Make sure we use the received timestamp if there is no timestamp included in the syslog message.
+     */
+    @Test
+    public void testNoTimestampInMessage() {
+        RadixTreeParser oldRadixParser = RadixTreeSyslogParser.getRadixParser();
+
+        // Create a custom radix tree parser that can handle our message that contains no timestamp
+        RadixTreeParser radixParser = new RadixTreeParser();
+        radixParser.teach(GrokParserStageSequenceBuilder.parseGrok("%{STRING:message}").toArray(new ParserStage[0]));
+        RadixTreeSyslogParser.setRadixParser(radixParser);
+
+        String syslogMessage = "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet5/9 " +
+                "(75), with switch.fqdn.com GigabitEthernet2/4/21 (2)";
+        Date now = new Date();
+        Event event = parseSyslog("testNoTimestampInMessage", radixConfig, syslogMessage, now);
+        RadixTreeSyslogParser.setRadixParser(oldRadixParser);
+
+        Date eventTime = event.getTime();
+        assertEquals(now, eventTime);
+    }
+
+    /**
+     * Make sure that we use the timestamp in the message if provided.
+     */
+    @Test
+    public void testTimestampInMessage() {
+        String dateString = "2018-01-01";
+        Date messageTime = null;
+
+        try {
+            messageTime = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
+        } catch (ParseException e) {
+            LOG.error("Time parsing failed ({})", dateString);
+        }
+
+        String syslogMessage = "<11> " + dateString + " localhost test message";
+        Event event = parseSyslog("testNoTimestampInMessage", radixConfig, syslogMessage, new Date());
+
+        Date eventTime = event.getTime();
+        assertEquals(messageTime, eventTime);
     }
 }
