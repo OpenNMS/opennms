@@ -811,6 +811,12 @@
       <type>pom</type>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.situation-feedback</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
       <artifactId>bundle-refresher</artifactId>
       <version>${project.version}</version>

@@ -121,6 +121,10 @@ public class SituationFeedbackrestServiceIT {
         AlarmFeedback falsePositive = new AlarmFeedback(situation.getReductionKey(), "fingerprint", linkDownAlarmOnR1.getReductionKey(),
                                                         FeedbackType.FALSE_POSITVE, "not related", "user", System.currentTimeMillis());
         List<AlarmFeedback> feedback = Collections.singletonList(falsePositive);
+
+        OnmsAlarm prior = alarmDao.findByReductionKey(situation.getReductionKey());
+        assertThat(prior.getRelatedAlarms().size(), is(2));
+
         sut.setFeedback(feedback);
 
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
