@@ -145,21 +145,8 @@ public class LdapMonitor extends ParameterSubstitutingMonitor {
         // thus tying
         // up the thread
         Double responseTime = null;
-        Socket socket = null;
+
         try {
-
-            socket = new Socket();
-            socket.connect(new InetSocketAddress(svc.getAddress(), ldapPort), tracker.getConnectionTimeout());
-            socket.setSoTimeout(tracker.getSoTimeout());
-            LOG.debug("LdapMonitor: connected to host: {} on port: {}", address, ldapPort);
-
-            // We're connected, so upgrade status to unresponsive
-            serviceStatus = PollStatus.SERVICE_UNRESPONSIVE;
-        
-
-            if (socket != null)
-                socket.close();
-
             // lets detect the service
             LDAPConnection lc = new LDAPConnection(new TimeoutLDAPSocket(tracker.getSoTimeout()));
 
@@ -247,15 +234,6 @@ public class LdapMonitor extends ParameterSubstitutingMonitor {
                     LOG.debug(e.getMessage());
                 }
             }
-        } catch (ConnectException e) {
-		LOG.debug("connection refused to host {}", address, e);
-        	reason = "connection refused to host " + address;
-        } catch (NoRouteToHostException e) {
-		LOG.debug("No route to host {}", address, e);
-        	reason = "No route to host " + address;
-        } catch (InterruptedIOException e) {
-		LOG.debug("did not connect to host with {}", tracker);
-        	reason = "did not connect to host with "+tracker;
         } catch (Throwable t) {
 		LOG.debug("An undeclared throwable exception caught contacting host {}", address, t);
         	reason = "An undeclared throwable exception caught contacting host " + address;
