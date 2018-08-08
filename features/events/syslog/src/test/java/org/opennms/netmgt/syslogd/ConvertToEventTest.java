@@ -42,7 +42,11 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.BeforeClass;
@@ -396,6 +400,7 @@ public class ConvertToEventTest {
         Integer nodeId = 1;
 
         // Mock the cache hit for the IP Address to Node ID lookup
+        InterfaceToNodeCache originalCache = AbstractInterfaceToNodeCache.getInstance();
         InterfaceToNodeCache mockCache = Mockito.mock(InterfaceToNodeCache.class);
         AbstractInterfaceToNodeCache.setInstance(mockCache);
         when(mockCache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
@@ -403,9 +408,12 @@ public class ConvertToEventTest {
 
         Event event = parseSyslog("testNoHostNameProvided", radixConfig, syslogMessage);
         String eventHostname = event.getParm("hostname").getValue().getContent();
+
+        // Stop using the mock cache so we don't interfere with other tests
+        AbstractInterfaceToNodeCache.setInstance(originalCache);
+
         assertNotNull(eventHostname);
-        assertEquals(localHostIP,
-                InetAddressUtils.addr(eventHostname));
+        assertEquals(localHostIP, InetAddressUtils.addr(eventHostname));
         assertEquals(nodeId.intValue(), event.getNodeid().intValue());
     }
 
