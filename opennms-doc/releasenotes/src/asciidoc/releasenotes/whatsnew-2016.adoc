@@ -141,6 +141,102 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
+[releasenotes-changelog-Meridian-2016.1.14]
+
+==== Release Meridian-2016.1.15
+
+Release 2016.1.15 is an update to 2016.1.14 that FIXME
+
+The codename for 2016.1.15 is _FIXME_.
+
+===== Breaking Changes
+
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
+Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
+
+.Before
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+ <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+   <!-- ... -->
+   <beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>
+   <!-- ... -->
+ </beans:bean>
+</beans:beans>
+----
+
+.After
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+<beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+  <!-- ... -->
+  <beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/>
+  <!-- ... -->
+</beans:bean>
+</beans:beans>
+----
+
+Supported values for `authTypeClass` are:
+
+* net.jradius.client.auth.TunnelAuthenticator
+* net.jradius.client.auth.PAPAuthenticator
+* net.jradius.client.auth.EAPMSCHAPv2Authenticator
+* net.jradius.client.auth.MSCHAPv2Authenticator
+* net.jradius.client.auth.EAPMD5Authenticator
+* net.jradius.client.auth.CHAPAuthenticator
+* net.jradius.client.auth.MSCHAPv1Authenticator
+* net.jradius.client.auth.RadiusAuthenticator
+* net.jradius.client.auth.EAPAuthenticator
+
+If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
+
+
+==== Release Meridian-2016.1.14
+
+Release 2016.1.14 is an update to 2016.1.13 that makes a few small documentation changes, and a fix to the Top 25 event report.
+
+The codename for 2016.1.14 is _Boggs eumorphic_.
+
+===== Bug
+
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* Event-Analysis Report shows incorrect numbers for big values in Top25 Events (Issue http://issues.opennms.org/browse/NMS-9202[NMS-9202])
+
+===== Enhancement
+
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+
+[releasenotes-changelog-Meridian-2016.1.13]
+
+==== Release Meridian-2016.1.13
+
+Release 2016.1.13 is an update to 2016.1.12 that provides a few small bug fixes and an update to support Newts cache priming.
+
+The codename for 2016.1.13 is _HEALPix_.
+
+===== Bug
+
+* Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
+* foreign-id with space (%20) at end causes issues with Newts (Issue http://issues.opennms.org/browse/NMS-9961[NMS-9961])
+* Backport intermittent SNMPv3 failures to foundation-2016 (Issue http://issues.opennms.org/browse/NMS-10153[NMS-10153])
+
+===== Enhancement
+
+* Improve performance of newts.indexing to avoid overwhelm Cassandra cluster (Issue http://issues.opennms.org/browse/NMS-9959[NMS-9959])
+
 [releasenotes-changelog-Meridian-2016.1.12]
 
 ==== Release Meridian-2016.1.12
