@@ -811,10 +811,10 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.situation-feedback</groupId>
-      <artifactId>org.opennms.features.situation-feedback.elastic</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.situation-feedback</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.situation-feedback.rest</groupId>
