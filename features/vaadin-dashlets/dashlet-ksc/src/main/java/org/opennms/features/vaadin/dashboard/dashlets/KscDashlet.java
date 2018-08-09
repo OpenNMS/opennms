@@ -74,8 +74,8 @@ public class KscDashlet extends AbstractDashlet {
     private NodeDao m_nodeDao;
     private ResourceDao m_resourceDao;
     private TransactionOperations m_transactionOperations;
-    private DashletComponent wallboardComponent;
-    private DashletComponent dashboardComponent;
+    private DashletComponent m_wallboardComponent;
+    private DashletComponent m_dashboardComponent;
     private static final int DEFAULT_GRAPH_WIDTH_PX = 400;
 
     private final TimeformatService m_timeformatService;
@@ -102,8 +102,8 @@ public class KscDashlet extends AbstractDashlet {
 
     @Override
     public DashletComponent getWallboardComponent() {
-        if (wallboardComponent == null) {
-            wallboardComponent = new AbstractDashletComponent() {
+        if (m_wallboardComponent == null) {
+            m_wallboardComponent = new AbstractDashletComponent() {
                 private GridLayout m_gridLayout = new GridLayout();
 
                 {
@@ -265,13 +265,13 @@ public class KscDashlet extends AbstractDashlet {
             };
         }
 
-        return wallboardComponent;
+        return m_wallboardComponent;
     }
 
     @Override
     public DashletComponent getDashboardComponent() {
-        if (dashboardComponent == null) {
-            dashboardComponent = new AbstractDashletComponent() {
+        if (m_dashboardComponent == null) {
+            m_dashboardComponent = new AbstractDashletComponent() {
                 private VerticalLayout m_verticalLayout = new VerticalLayout();
 
                 {
@@ -397,7 +397,7 @@ public class KscDashlet extends AbstractDashlet {
             };
         }
 
-        return dashboardComponent;
+        return m_dashboardComponent;
     }
 
     /**
