@@ -51,9 +51,9 @@
         <span>Trend</span>
     </div>
     <div class="alert-box card-body">
-        <div class="row gutter-10">
+        <div class="row">
             <c:forEach var="trendDefinition" items="${trendDefinitions}">
-                <div class="col-xs-<%= colClass %>">
+                <div class="col-sm-<%= colClass %>">
                     <jsp:include page="/trend/trend.htm" flush="false">
                         <jsp:param name="name" value="${trendDefinition.name}"/>
                     </jsp:include>
