@@ -74,6 +74,10 @@
 
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
+    <bean id="indexStrategy" class="org.opennms.plugins.elasticsearch.rest.index.IndexStrategyFactory" factory-method="createIndexStrategy">
+        <argument value="${elasticIndexStrategy}"/>
+    </bean>
+
     <bean id="indexSettings" class="org.opennms.plugins.elasticsearch.rest.template.IndexSettings">
         <property name="numberOfShards" value="${settings.index.number_of_shards}"/>
         <property name="numberOfReplicas" value="${settings.index.number_of_replicas}"/>
@@ -89,7 +93,9 @@
 	
     <bean id="elasticFeedbackRepository" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepository">
 		<argument ref="jestClient" />
-        <argument ref="elasticFeedbackRepositoryInitializer" />
+		<argument ref="indexStrategy"/>
+		<argument value="${bulkRetryCount}" />
+		<argument ref="elasticFeedbackRepositoryInitializer" />
     </bean>
     <service interface="org.opennms.features.situationfeedback.api.FeedbackRepository" ref="elasticFeedbackRepository" />
 

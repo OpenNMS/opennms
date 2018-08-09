@@ -48,6 +48,7 @@ import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
 import org.opennms.plugins.elasticsearch.rest.RestClientFactory;
+import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.opennms.plugins.elasticsearch.rest.template.IndexSettings;
 
 import io.searchbox.client.JestClient;
@@ -68,7 +69,7 @@ public class ElasticFeedbackRepositoryIT {
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         final IndexSettings settings = new IndexSettings();
         final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
-        feedbackRepository = new ElasticFeedbackRepository(client, initializer);
+        feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 2, initializer);
 
         // initialize the repository manually
         initializer.initialize();
@@ -102,7 +103,6 @@ public class ElasticFeedbackRepositoryIT {
 
         Collection<AlarmFeedback> retrievedFeedback = feedbackRepository.getFeedback("situationKey1");
         assertThat(retrievedFeedback, hasSize(1));
-
     }
 
     @Test

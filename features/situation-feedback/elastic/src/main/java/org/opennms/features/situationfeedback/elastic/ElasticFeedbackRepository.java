@@ -60,14 +60,14 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private final JestClient client;
 
-    // TODO - make configurable
-    private final int bulkRetryCount = 2;
+    private final int bulkRetryCount;
 
-    // TODO - make configurable
-    private IndexStrategy indexStrindexStrategyategy = IndexStrategy.MONTHLY;;
+    private IndexStrategy indexStrategy;
 
-    public ElasticFeedbackRepository(JestClient jestClient, ElasticFeedbackRepositoryInitializer initializer) {
+    public ElasticFeedbackRepository(JestClient jestClient, IndexStrategy indexStrategy, int bulkRetryCount, ElasticFeedbackRepositoryInitializer initializer) {
         this.client = jestClient;
+        this.indexStrategy = indexStrategy;
+        this.bulkRetryCount = bulkRetryCount;
         this.initializer = initializer;
     }
 
@@ -84,7 +84,7 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         BulkRequest<FeedbackDocument> bulkRequest = new BulkRequest<>(client, feedbackDocuments, (documents) -> {
             final Bulk.Builder bulkBuilder = new Bulk.Builder();
             for (FeedbackDocument document : documents) {
-                final String index = indexStrindexStrategyategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
+                final String index = indexStrategy.getIndex(TYPE, Instant.ofEpochMilli(document.getTimestamp()));
                 final Index.Builder indexBuilder = new Index.Builder(document).index(index).type(TYPE);
                 bulkBuilder.addAction(indexBuilder.build());
             }
@@ -94,36 +94,24 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
         try {
             bulkRequest.execute();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("Failed to persist feedback [{}]: {}", feedback, e.getMessage());
+            throw new FeedbackException("Failed to persist feedback", e);
         }
     }
 
     @Override
     public Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException {
         String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": \"" + situationKey + "\" } }\n" + "}";
-        try {
-            return search(query);
-        } catch (IOException e) {
-            throw new FeedbackException("Failed to get feedback for " + situationKey, e);
-        }
+        return search(query);
     }
 
-    @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey, String situationFingerprint) throws FeedbackException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey, Collection<String> alarmKeys) throws FeedbackException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    private Collection<AlarmFeedback> search(String query) throws IOException, FeedbackException {
+    private Collection<AlarmFeedback> search(String query) throws FeedbackException {
         Search.Builder builder = new Search.Builder(query).addType(TYPE);
-        return execute(builder.build());
+        try {
+            return execute(builder.build());
+        } catch (IOException e) {
+            throw new FeedbackException("Failed to get feedback for query: " + query, e);
+        }
     }
 
     private Collection<AlarmFeedback> execute(Search search) throws IOException, FeedbackException {
