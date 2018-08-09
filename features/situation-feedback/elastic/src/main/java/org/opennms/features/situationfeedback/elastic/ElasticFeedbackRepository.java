@@ -43,6 +43,8 @@ import org.opennms.plugins.elasticsearch.rest.index.IndexStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+
 import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.Index;
@@ -101,7 +103,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     @Override
     public Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException {
-        String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": \"" + situationKey + "\" } }\n" + "}";
+        Gson gson = new Gson();
+        String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": " + gson.toJson(situationKey) + " } }\n" + "}";
         return search(query);
     }
 
