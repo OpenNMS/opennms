@@ -80,11 +80,15 @@
           </div>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <i class="fa fa-search"></i>
+                </div>
+
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="resourceFilter"></input>
             </div>
+
             <table class="table table-striped table-sm table-hover">
               <thead>
                 <tr>
@@ -92,8 +96,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr ng-click="goTo(resource.id)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-                  <td>{{ resource.label }}</td>
+                <tr ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>
+                    <a ng-click="goTo(resource.id)" href>{{ resource.label }}</a>
+                  </td>
                 </tr>
              </tbody>
             </table>
