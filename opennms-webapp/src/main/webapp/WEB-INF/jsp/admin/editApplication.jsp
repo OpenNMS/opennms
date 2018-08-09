@@ -43,8 +43,6 @@
 	<jsp:param name="breadcrumb" value="Show" />
 </jsp:include>
 
-<div class="row">
-  <div class="col-md-8">
     <div class="card">
       <div class="card-header">
         <span>Edit application ${fn:escapeXml(model.application.name)}</span>
@@ -54,8 +52,7 @@
         Application '${fn:escapeXml(model.application.name)}' has ${fn:length(model.sortedMemberServices)} services
         </p>
 
-        <div class="row">
-        <form role="form" action="admin/applications.htm" method="get">
+        <form class="form-row" role="form" action="admin/applications.htm" method="get">
           <input type="hidden" name="applicationid" value="${model.application.id}"/>
           <input type="hidden" name="edit" value="edit"/>
 
@@ -68,7 +65,7 @@
             </select>
           </div>
 
-          <div class="form-group col-md-2 text-center">
+          <div class="form-group col-md-2 text-center mb-auto mt-auto">
             <input type="submit" class="btn btn-secondary" name="action" value="Add &#155;&#155;"/>
             <input type="submit" class="btn btn-secondary" name="action" value="&#139;&#139; Remove"/>
           </div>
@@ -82,10 +79,7 @@
             </select>
           </div>
         </form>
-        </div> <!-- row -->
       </div> <!-- card-body -->
     </div> <!-- panel -->
-  </div> <!-- column -->
-</div> <!-- row -->
 
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="false"/>
