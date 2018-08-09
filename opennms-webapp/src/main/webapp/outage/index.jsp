@@ -68,12 +68,16 @@ function validateId() {
             </ul>
           </div> <!-- column -->
           <div class="col-md-6 col-xs-6">
-            <form role="form" class="form-inline text-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
+            <form role="form" class="form pull-right" name="outageIdForm" method="get" action="outage/detail.htm" onsubmit="return validateId();">
               <div class="form-group">
-                <label for="input_id">Outage ID:</label>
-                <input type="text" class="form-control" id="input_id" name="id" />
+                <label for="input_id">Outage ID</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" id="input_id" name="id" />
+                  <div class="input-group-append">
+                    <button type="submit" class="btn btn-secondary"><i class="fa fa-search"></i></button>
+                  </div>
+                </div>
               </div>
-              <button type="submit" class="btn btn-secondary">Get details</button>
             </form>
           </div> <!-- column -->
         </div> <!-- row -->
