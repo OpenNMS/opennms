@@ -174,6 +174,122 @@ This reduces the complexity of the UI code and will make it easier for developer
 * Fix startup on systems without any IPv6 support.
 * Reverse lookups in provisioning now handle IPs without a corresponding A record.
 
+[releasenotes-changelog-Meridian-2017.1.10]
+
+==== Release Meridian-2017.1.10
+
+Release 2017.1.10 is a small update to OpenNMS Meridian 2017.1.9.
+It contains FIXME
+
+The codename for 2017.1.10 is _FIXME_.
+
+===== Breaking Changes
+
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
+Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
+
+.Before
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+ xmlns:beans="http://www.springframework.org/schema/beans"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+             http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+ <beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+   <!-- ... -->
+   <beans:property name="authTypeClass"><beans:bean class="net.jradius.client.auth.PAPAuthenticator"/></beans:property>
+   <!-- ... -->
+ </beans:bean>
+</beans:beans>
+----
+
+.After
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:beans="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+<beans:bean id="externalAuthenticationProvider" class="org.opennms.protocols.radius.springsecurity.RadiusAuthenticationProvider">
+  <!-- ... -->
+  <beans:property name="authTypeClass" value="net.jradius.client.auth.PAPAuthenticator"/>
+  <!-- ... -->
+</beans:bean>
+</beans:beans>
+----
+
+Supported values for `authTypeClass` are:
+
+* net.jradius.client.auth.TunnelAuthenticator
+* net.jradius.client.auth.PAPAuthenticator
+* net.jradius.client.auth.EAPMSCHAPv2Authenticator
+* net.jradius.client.auth.MSCHAPv2Authenticator
+* net.jradius.client.auth.EAPMD5Authenticator
+* net.jradius.client.auth.CHAPAuthenticator
+* net.jradius.client.auth.MSCHAPv1Authenticator
+* net.jradius.client.auth.RadiusAuthenticator
+* net.jradius.client.auth.EAPAuthenticator
+
+If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
+
+
+[releasenotes-changelog-Meridian-2017.1.9]
+
+==== Release Meridian-2017.1.9
+
+Release 2017.1.9 is a small update to OpenNMS Meridian 2017.1.8.
+It contains a few bug fixes and documentation updates.
+
+The codename for 2017.1.9 is _Antwerp meridian_.
+
+===== Bug
+
+* Entering new destination path in GUI with near identical name overwrites the current one (Issue http://issues.opennms.org/browse/NMS-3994[NMS-3994])
+* Just opening a foreign-source in the web UI causes it to be written to disk (Issue http://issues.opennms.org/browse/NMS-4720[NMS-4720])
+* Surveillance category membership of deleted nodes "leaks" in filters to interfaces of successor nodes (Issue http://issues.opennms.org/browse/NMS-4876[NMS-4876])
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
+* MBean "TasksCompleted" for Collectd and Pollerd returns wrong counters (Issue http://issues.opennms.org/browse/NMS-9741[NMS-9741])
+* The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
+
+===== Enhancement
+
+* Link to privacy policy from Data Choices UI elements (Issue http://issues.opennms.org/browse/NMS-10169[NMS-10169])
+
+[releasenotes-changelog-Meridian-2017.1.8]
+
+==== Release Meridian-2017.1.8
+
+Release 2017.1.8 is a small update to OpenNMS Meridian 2017.1.7.
+It contains a few bug fixes and an update to support Newts cache priming.
+
+The codename for 2017.1.8 is _IERS Reference Meridian_.
+
+===== Bug
+
+* ONMS starts with broken threshold configuration file (Issue http://issues.opennms.org/browse/NMS-9064[NMS-9064])
+* Interface delete from a node does not work (Issue http://issues.opennms.org/browse/NMS-9506[NMS-9506])
+* Topology map node icons vanish (IE10, IE11 only) when alarm status unchecked (Issue http://issues.opennms.org/browse/NMS-9614[NMS-9614])
+* Access Denied With Surveillance View In Ops Board (Issue http://issues.opennms.org/browse/NMS-9678[NMS-9678])
+* Enlinkd startup fails due to NPE in BroadcastDomain class (Issue http://issues.opennms.org/browse/NMS-9852[NMS-9852])
+* Value of ${nodeLabel} for PSM services apparently not eagerly updated (Issue http://issues.opennms.org/browse/NMS-9900[NMS-9900])
+* Wrong initial message displayed on AngularJS based tables. (Issue http://issues.opennms.org/browse/NMS-9932[NMS-9932])
+* Alarm favorite link URL does not have AddRefreshHeader-30 applied (Issue http://issues.opennms.org/browse/NMS-9938[NMS-9938])
+* Cannot see StrafePing graphs when using Backshift. (Issue http://issues.opennms.org/browse/NMS-9946[NMS-9946])
+* foreign-id with space (%20) at end causes issues with Newts (Issue http://issues.opennms.org/browse/NMS-9961[NMS-9961])
+* perfdata-receiver doesn't compile (Issue http://issues.opennms.org/browse/NMS-9967[NMS-9967])
+* Home Page Map does not display node details (Issue http://issues.opennms.org/browse/NMS-10008[NMS-10008])
+* Backport intermittent SNMPv3 failures to foundation-2016 (Issue http://issues.opennms.org/browse/NMS-10153[NMS-10153])
+
+===== Enhancement
+
+* Improve performance of newts.indexing to avoid overwhelm Cassandra cluster (Issue http://issues.opennms.org/browse/NMS-9959[NMS-9959])
+
 [releasenotes-changelog-Meridian-2017.1.7]
 
 ==== Release Meridian-2017.1.7
