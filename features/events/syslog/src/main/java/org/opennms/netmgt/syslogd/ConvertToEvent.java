@@ -241,6 +241,12 @@ public class ConvertToEvent {
             LOG.trace("got syslog message {}", SyslogParser.fromByteBuffer(buffer));
         }
 
+        // If no host name was provided we will use the source IP address
+        if(message.getHostName() == null)
+        {
+            message.setHostName(addr.getHostAddress());
+        }
+
         final String priorityTxt = message.getSeverity().toString();
         final String facilityTxt = message.getFacility().toString();
 
