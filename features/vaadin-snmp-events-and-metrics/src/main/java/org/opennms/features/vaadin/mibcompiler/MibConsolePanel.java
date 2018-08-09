@@ -29,17 +29,12 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import java.time.Instant;
-import java.time.ZoneId;
 
-import java.util.Optional;
-
-import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
