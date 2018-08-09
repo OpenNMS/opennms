@@ -82,7 +82,17 @@ public abstract class AbstractFlowIT {
         }
         try {
             final TestEnvironmentBuilder builder = TestEnvironment.builder();
+
+            // Enable Flow-Listeners
+            builder.withMinionEnvironment()
+                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg")
+                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50001.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50001.cfg")
+                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50002.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50002.cfg")
+                .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50003.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50003.cfg")
+            ;
+
             customizeTestEnvironment(builder);
+
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
@@ -100,7 +110,10 @@ public abstract class AbstractFlowIT {
         // Determine endpoints
         final InetSocketAddress elasticRestAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.ELASTICSEARCH_6, 9200, "tcp");
         final InetSocketAddress sentinelSshAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.SENTINEL, 8301);
-        final InetSocketAddress minionNetflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW5_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionNetflow5ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW5_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionNetflow9ListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.NETFLOW9_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionIpfixListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.IPFIX_LISTENER_UDP_PORT, "udp");
+        final InetSocketAddress minionSflowListenerAddress = testEnvironment.getServiceAddress(NewTestEnvironment.ContainerAlias.MINION, FlowStackIT.SFLOW_LISTENER_UDP_PORT, "udp");
         final String elasticRestUrl = String.format("http://%s:%d", elasticRestAddress.getHostString(), elasticRestAddress.getPort());
 
         waitForSentinelStartup(sentinelSshAddress);
@@ -108,7 +121,6 @@ public abstract class AbstractFlowIT {
         // Build the Elastic Rest Client
         final JestClientFactory factory = new JestClientFactory();
         factory.setHttpClientConfig(new HttpClientConfig.Builder(elasticRestUrl).multiThreaded(true).build());
-
         try (final JestClient client = factory.getObject()) {
             // Verify that at this point no flows are persisted
             verify(() -> {
@@ -117,7 +129,10 @@ public abstract class AbstractFlowIT {
             });
 
             // Send flow packet to minion
-            sendNetflowPacket(minionNetflowListenerAddress, "/flows/netflow5.dat");
+            sendNetflowPacket(minionNetflow5ListenerAddress, "/flows/netflow5.dat"); // 2 records
+            sendNetflowPacket(minionNetflow9ListenerAddress, "/flows/netflow9.dat"); // 7 records
+            sendNetflowPacket(minionIpfixListenerAddress, "/flows/ipfix.dat"); // 6 records
+            sendNetflowPacket(minionSflowListenerAddress, "/flows/sflow.dat"); // 1 record
 
             // Ensure that the template has been created
             verify(() -> {
@@ -125,10 +140,10 @@ public abstract class AbstractFlowIT {
                 return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
             });
 
-            // Verify that the flow has been created
+            // Verify directly at elastic that the flows have been created
             verify(() -> {
                 final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
-                return response.isSucceeded() && response.getTotal() == 2L;
+                return response.isSucceeded() && response.getTotal() == 16L;
             });
         }
     }

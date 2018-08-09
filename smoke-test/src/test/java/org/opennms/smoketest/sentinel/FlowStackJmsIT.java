@@ -44,10 +44,6 @@ public class FlowStackJmsIT extends AbstractFlowIT {
             // Enable Netflow 5 Adapter
             builder.withSentinelEnvironment()
                     .addFile(getClass().getResource("/sentinel/features-jms.xml"), "deploy/features.xml");
-
-            // Enable Netflow 5 Listener
-            builder.withMinionEnvironment()
-                    .addFile(getClass().getResource("/sentinel/org.opennms.features.telemetry.listeners-udp-50000.cfg"), "etc/org.opennms.features.telemetry.listeners-udp-50000.cfg");
     }
 
     @Override
