@@ -172,8 +172,7 @@
   <c:if test="${param.vaadinEmbeddedStyles == 'true'}">
     <!-- embedded Vaadin app, fix container to leave room for headers -->
     <style type="text/css">
-      div#footer { position:absolute; bottom:0; width:100%; }
-      div#content { position:absolute; top:50px; left:0px; right:0px; bottom:90px; }
+      footer#footer { position:absolute; bottom:0; width:100%; }
     </style>
   </c:if>
 

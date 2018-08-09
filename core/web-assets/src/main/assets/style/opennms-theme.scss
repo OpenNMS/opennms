@@ -286,7 +286,7 @@ Bootstrap Theme Specific Stylesheet
   background-image: -moz-linear-gradient(top, rgba(255,255,255,0.35) 0%, rgba(170,170,170,0.15) 66%, rgba(0,0,0,0.05) 100%);
   background-image: -webkit-linear-gradient(top, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
   background-image: linear-gradient(to bottom, rgba(255,255,255,0.35) 0%,rgba(170,170,170,0.15) 66%,rgba(0,0,0,0.05) 100%);
-  color:$color_opennms_dark;
+  //color:$color_opennms_dark;
   font-size: 17px;
   line-height: 30px;
   border-bottom:1px solid #ccc;
@@ -880,10 +880,10 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 .resource-graphs-sidebar .nav>.active>a,
 .resource-graphs-sidebar .nav>li>a:hover,
 .resource-graphs-sidebar .nav>li>a:focus {
-  color: $color_opennms;
+  //color: $color_opennms;
   text-decoration: none;
   background-color: transparent;
-  border-left-color: $color_opennms;
+  //border-left-color: $color_opennms;
 }
 /* all active links */
 .resource-graphs-sidebar .nav>.active>a,
