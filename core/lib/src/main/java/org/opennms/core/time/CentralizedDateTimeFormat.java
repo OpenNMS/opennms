@@ -94,10 +94,6 @@ public class CentralizedDateTimeFormat {
                 .appendOffsetId().toFormatter();
     }
 
-    public String format(Instant instant) {
-        return format(instant, ZoneId.systemDefault());
-    }
-
     public String format(Instant instant, ZoneId timeZoneId) {
         if(instant == null){
             return null;
@@ -108,12 +104,6 @@ public class CentralizedDateTimeFormat {
         return formatter.withZone(timeZoneId).format(instant);
     }
 
-    @Deprecated // please use format(Instant) instead
-    public String format(Date date) {
-        return format(date, ZoneId.systemDefault());
-    }
-
-    @Deprecated // please use format(Instant) instead
     public String format(Date date, ZoneId timeZoneId) {
         if (date == null) {
             return null;

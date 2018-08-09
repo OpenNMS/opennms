@@ -40,23 +40,11 @@ public class DefaultTimeformatService implements TimeformatService {
     private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
 
     @Override
-    public String format(Instant instant) {
-        return format.format(instant);
-    }
-
-    @Override
-    @Deprecated // Please use format(Instant instant) where possible
-    public String format(Date date) {
-        return format.format(date);
-    }
-
-    @Override
     public String format(Instant instant, ZoneId zoneId) {
         return  format.format(instant, zoneId);
     }
 
     @Override
-    @Deprecated // Please use format(Instant instant) where possible
     public String format(Date date, ZoneId zoneId) {
         return format.format(date, zoneId);
     }

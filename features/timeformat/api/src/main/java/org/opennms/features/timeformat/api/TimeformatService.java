@@ -34,14 +34,8 @@ import java.util.Date;
 
 public interface TimeformatService {
 
-    String format(Instant instant);
-
-    @Deprecated // please try to use the new Java Date API when possible: format(Instant instant)
-    String format(Date date);
-
     String format(Instant instant, ZoneId zoneId);
 
-    @Deprecated // please try to use the new Java Date API when possible: format(Instant instant)
     String format(Date date, ZoneId zoneId);
 
 }
