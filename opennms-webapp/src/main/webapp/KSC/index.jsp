@@ -75,9 +75,11 @@
           <p>Choose the custom report title to view or modify from the list below. There are {{ reports.length }} custom reports to select from.</p>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <span class="fa fa-search"></span>
+                </div>
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Reports" ng-model="reportFilter"></input>
             </div>
             <table class="table table-sm table-hover" name="reports">
@@ -87,7 +89,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr name="report:{{ report.label }}" ng-class="{success: report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
+                <tr name="report:{{ report.label }}" ng-class="{'table-info': report.id == reportSelected.id}" ng-click="selectReport(report)" ng-repeat="report in filteredReports | startFrom:(kscCurrentPage-1)*kscPageSize | limitTo:kscPageSize">
                   <td>{{ report.label }}</td>
                 </tr>
              </tbody>
@@ -135,9 +137,11 @@
           <p>Select resource for desired performance report</p>
           <div class="table-responsive">
             <div class="input-group">
-              <span class="input-group-addon">
-                <span class="glyphicon glyphicon-search"></span>
-              </span>
+              <div class="input-group-prepend">
+                <div class="input-group-text">
+                  <span class="fa fa-search"></span>
+                </div>
+              </div>
               <input class="form-control" type="text" placeholder="Search/Filter Resources" ng-model="domainFilter"></input>
             </div>
             <table class="table table-sm" name="resources">
@@ -147,8 +151,10 @@
                 </tr>
               </thead>
               <tbody>
-                <tr name="resource:{{ resource.label }}" ng-click="selectResource(resource)" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
-                  <td>{{ resource.label }}</td>
+                <tr name="resource:{{ resource.label }}" ng-repeat="resource in filteredResources | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
+                  <td>
+                    <a href ng-click="selectResource(resource)">{{ resource.label }}</a>
+                  </td>
                 </tr>
              </tbody>
             </table>

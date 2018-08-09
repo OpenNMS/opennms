@@ -94,14 +94,12 @@
     <span>Customized Report Configuration</span>
   </div>
   <div class="card-body">
-    <form class="form-horizontal" name="customize_form" method="get" action="<%= baseHref %>KSC/formProcReport.htm">
+    <form class="" name="customize_form" method="get" action="<%= baseHref %>KSC/formProcReport.htm">
       <input type="hidden" name="<%=FormProcReportController.Parameters.action%>" value="none"/>
       <input type="hidden" name="<%=FormProcReportController.Parameters.graph_index%>" value="-1"/>
       <div class="form-group">
-        <div class="col-md-6 col-md-offset-3">
-          <label class="label-control">Title:</label>
-          <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
-        </div>
+        <label class="label-control">Title</label>
+        <input class="form-control" type="text" name="<%=FormProcReportController.Parameters.report_title%>" value="${title}" size="80" maxlength="80"/>
       </div>
       <table class="table table-sm">
         <c:if test="${fn:length(resultSets) > 0}">
@@ -109,9 +107,11 @@
             <c:set var="resultSet" value="${resultSets[graphNum]}"/>
             <tr>
               <td class="col-md-1">
-                <div class="btn-group-vertical" role="group">
-                  <button class="btn btn-secondary" onclick="modifyGraph(${graphNum})">Modify</button>
-                  <button class="btn btn-secondary" onclick="deleteGraph(${graphNum})">Delete</button>
+                <div class="btn-toolbar" role="toolbar">
+                  <div class="btn-group" role="group">
+                    <button class="btn btn-secondary" onclick="modifyGraph(${graphNum})">Modify</button>
+                    <button class="btn btn-secondary" onclick="deleteGraph(${graphNum})">Delete</button>
+                  </div>
                 </div>
               </td>
               <td align="right" class="col-md-3">
@@ -183,7 +183,7 @@
             <div class="form-group">
               <div class="col-md-2">
               <label>Number of graphs to show per line in the report.</label>
-              <select class="form-control" name="<%=FormProcReportController.Parameters.graphs_per_line%>">
+              <select class="form-control custom-select" name="<%=FormProcReportController.Parameters.graphs_per_line%>">
                 <c:choose>
                   <c:when test="${graphsPerLine == 0}">
                     <option selected value="0">default</option>

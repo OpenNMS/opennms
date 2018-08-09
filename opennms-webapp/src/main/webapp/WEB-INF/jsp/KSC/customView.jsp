@@ -169,7 +169,7 @@
             <div class="form-group">
               <label class="col-md-2 label-control">Override Graph Timespan</label>
               <div class="col-md-4">
-                <select class="form-control" name="timespan">
+                <select class="form-control custom-select" name="timespan">
                   <c:forEach var="option" items="${timeSpans}">
                     <c:choose>
                       <c:when test="${timeSpan == option.key}">
@@ -191,7 +191,7 @@
             <div class="form-group">
               <label class="col-md-2 label-control">Override Graph Type</label>
               <div class="col-md-4">
-                <select class="form-control" name="graphtype">
+                <select class="form-control custom-select" name="graphtype">
                   <c:forEach var="option" items="${graphTypes}">
                     <c:choose>
                       <c:when test="${graphType == option.key}">
