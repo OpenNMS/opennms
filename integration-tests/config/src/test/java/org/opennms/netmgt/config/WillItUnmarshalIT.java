@@ -254,7 +254,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, false, null);
-        addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfiguration.class, true, null);
+        // addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfiguration.class, true, null);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, true, null);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
         addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
