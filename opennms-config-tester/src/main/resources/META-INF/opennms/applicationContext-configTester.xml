@@ -90,7 +90,7 @@
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
-        <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
+        <!-- <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/> -->
         <entry key="threshd-configuration.xml" value="threshdConfigFactory"/>
         <entry key="thresholds.xml" value="thresholdingConfigFactory"/>
         <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
