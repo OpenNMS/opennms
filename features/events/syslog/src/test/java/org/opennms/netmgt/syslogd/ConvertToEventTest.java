@@ -32,6 +32,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,14 +46,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.Mockito;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.SyslogdConfig;
 import org.opennms.netmgt.config.SyslogdConfigFactory;
+import org.opennms.netmgt.dao.api.AbstractInterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.DistPollerDao;
+import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.hibernate.InterfaceToNodeCacheDaoImpl;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
@@ -68,6 +74,17 @@ import org.slf4j.LoggerFactory;
 public class ConvertToEventTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConvertToEventTest.class);
+    private static final SyslogConfigBean radixConfig = new SyslogConfigBean();
+
+    /**
+     * Set up before any tests are executed.
+     */
+    @BeforeClass
+    public static void setup() {
+        // This is shared be a few tests in this class
+        radixConfig.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
+        radixConfig.setDiscardUei("DISCARD-MATCHING-MESSAGES");
+    }
 
     /**
      * Test method which calls the ConvertToEvent constructor.
@@ -130,7 +147,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                SyslogdTestUtils.toByteBuffer("<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet"), 
+                SyslogdTestUtils.toByteBuffer("<190>Mar 11 08:35:17 aaa_host 30128311: Mar 11 08:35:16.844 CST: %SEC-6-IPACCESSLOGP: list in110 denied tcp 192.168.10.100(63923) -> 192.168.11.128(1521), 1 packet"),
                 config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
@@ -152,7 +169,7 @@ public class ConvertToEventTest {
                 MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
                 InetAddressUtils.ONE_TWENTY_SEVEN,
                 9999,
-                SyslogdTestUtils.toByteBuffer("<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!"), 
+                SyslogdTestUtils.toByteBuffer("<11>Jul 19 15:55:21 otrs-test OTRS-CGI-76[14364]: [Error][Kernel::System::ImportExport::ObjectBackend::CI2CILink::ImportDataSave][Line:468]: CILink: Could not create link between CIs!"),
                 config
             );
             LOG.info("Generated event: {}", convertToEvent.getEvent().toString());
@@ -167,7 +184,7 @@ public class ConvertToEventTest {
      * executes a variety of syslog messages against all of the parsers.
      * Successful parses are compared against one another to determine if
      * fields are parsed properly.
-     * 
+     *
      * @throws IOException
      */
     @Test
@@ -193,10 +210,6 @@ public class ConvertToEventTest {
         SyslogConfigBean syslogNgConfig = new SyslogConfigBean();
         syslogNgConfig.setParser("org.opennms.netmgt.syslogd.SyslogNGParser");
         syslogNgConfig.setDiscardUei("DISCARD-MATCHING-MESSAGES");
-
-        SyslogConfigBean radixConfig = new SyslogConfigBean();
-        radixConfig.setParser("org.opennms.netmgt.syslogd.RadixTreeSyslogParser");
-        radixConfig.setDiscardUei("DISCARD-MATCHING-MESSAGES");
 
         final List<String> results = new ArrayList<>();
         final Path resource = ConfigurationTestUtils.getFileForResource(this, "/syslogMessages.txt").toPath();
@@ -372,5 +385,50 @@ public class ConvertToEventTest {
         assertEquals(0, middleByteTrimmed.position());
         assertEquals(3, middleByteTrimmed.limit());
         assertEquals(3, middleByteTrimmed.remaining());
+    }
+
+    /**
+     * Make sure that a syslog message with no host provided uses the source
+     * address of the message log and that the node is is correctly populated as a result.
+     */
+    @Test
+    public void testNoHostNameProvided() {
+        String syslogMessage = "<14> Mar 29 2004 09:57:04: %PIX-5-304001: 192.168.0.2 Accessed URL " +
+                "212.227.109.224:/scriptlib/ClientStdScripts.js";
+
+        InetAddress localHostIP = InetAddressUtils.ONE_TWENTY_SEVEN;
+        Integer nodeId = 1;
+
+        // Mock the cache hit for the IP Address to Node ID lookup
+        InterfaceToNodeCache originalCache = AbstractInterfaceToNodeCache.getInstance();
+        InterfaceToNodeCache mockCache = Mockito.mock(InterfaceToNodeCache.class);
+        AbstractInterfaceToNodeCache.setInstance(mockCache);
+        when(mockCache.getFirstNodeId(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID,
+                localHostIP)).thenReturn(Optional.of(nodeId));
+
+        Event event = parseSyslog("testNoHostNameProvided", radixConfig, syslogMessage);
+        String eventHostname = event.getParm("hostname").getValue().getContent();
+
+        // Stop using the mock cache so we don't interfere with other tests
+        AbstractInterfaceToNodeCache.setInstance(originalCache);
+
+        assertNotNull(eventHostname);
+        assertEquals(localHostIP, InetAddressUtils.addr(eventHostname));
+        assertEquals(nodeId.intValue(), event.getNodeid().intValue());
+    }
+
+    /**
+     * Make sure the host name parameter is not overwritten by the source IP
+     * address.
+     */
+    @Test
+    public void testHostNameProvided() {
+        String hostname = "testhost";
+        String syslogMessage = "<11>Mar 22 14:24:49 " + hostname + " last message repeated 30 times";
+
+        Event event = parseSyslog("testHostNameProvided", radixConfig, syslogMessage);
+        String eventHostname = event.getParm("hostname").getValue().getContent();
+        assertNotNull(eventHostname);
+        assertEquals(hostname, eventHostname);
     }
 }
