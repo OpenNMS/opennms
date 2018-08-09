@@ -36,10 +36,11 @@ import org.opennms.core.time.CentralizedDateTimeFormat;
 import com.vaadin.server.VaadinSession;
 
 public final class UserTimeZoneExtractor {
-    public static Optional<ZoneId> extractUserTimeZoneId(){
+
+    public static ZoneId extractUserTimeZoneIdOrNull(){
         if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
-            return Optional.ofNullable((ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID));
+            return (ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
         }
-        return Optional.empty();
+        return null;
     }
 }

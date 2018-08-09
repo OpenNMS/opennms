@@ -57,16 +57,12 @@ public class TimeColumnGenerator  implements Table.ColumnGenerator {
         }
         String formattedValue;
         if(property.getType().equals(Instant.class)){
-            formattedValue = timeformatService.format((Instant) property.getValue(), extractUserTimeZoneId());
+            formattedValue = timeformatService.format((Instant) property.getValue(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull());
         } else if(property.getType().equals(Date.class)){
-            formattedValue = timeformatService.format((Date) property.getValue(), extractUserTimeZoneId());
+            formattedValue = timeformatService.format((Date) property.getValue(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull());
         } else {
             formattedValue = property.toString();
         }
         return formattedValue;
-    }
-
-    private static ZoneId extractUserTimeZoneId(){
-        return UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
     }
 }

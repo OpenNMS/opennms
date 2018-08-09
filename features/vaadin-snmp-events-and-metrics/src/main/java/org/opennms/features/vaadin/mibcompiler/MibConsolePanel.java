@@ -35,6 +35,7 @@ import java.util.Optional;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.features.timeformat.api.TimeformatService;
+import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.slf4j.LoggerFactory;
 import org.opennms.features.vaadin.api.Logger;
 
@@ -110,19 +111,11 @@ public class MibConsolePanel extends Panel implements Logger {
      * @param message the message
      */
     private void logMsg(String level, String message) {
-        String msg = timeformatService.format(Instant.now(), extractUserTimeZoneId().orElse(null)) + level + message;
+        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull()) + level + message;
         Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();
         LOG.info(message);
-    }
-
-    private Optional<ZoneId> extractUserTimeZoneId(){
-        // TODO: replace with UserTimeZoneExtractor => need to sort out dependencies
-        if(VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() !=null){
-            return Optional.ofNullable((ZoneId) VaadinSession.getCurrent().getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID));
-        }
-        return Optional.empty();
     }
 
     /**

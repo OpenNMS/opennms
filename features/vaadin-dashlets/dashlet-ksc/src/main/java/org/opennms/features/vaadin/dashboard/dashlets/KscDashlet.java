@@ -97,7 +97,7 @@ public class KscDashlet extends AbstractDashlet {
         m_resourceDao = resourceDao;
         m_transactionOperations = transactionOperations;
         m_timeformatService = timeformatService;
-        m_userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneId().orElse(null);
+        m_userTimezoneId = UserTimeZoneExtractor.extractUserTimeZoneIdOrNull();
     }
 
     @Override
