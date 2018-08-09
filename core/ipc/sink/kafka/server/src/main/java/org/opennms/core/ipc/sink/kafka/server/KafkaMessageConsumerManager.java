@@ -44,6 +44,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.errors.WakeupException;
+import org.apache.kafka.common.serialization.ByteArrayDeserializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.opennms.core.camel.JmsQueueNameFactory;
 import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.MessageConsumerManager;
@@ -161,7 +163,11 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
     @Override
     public void afterPropertiesSet() throws Exception {
         kafkaConfig.clear();
-        kafkaConfig.putAll(configProvider.getProperties());
+        kafkaConfig.put("enable.auto.commit", "true");
+        kafkaConfig.put("key.deserializer", StringDeserializer.class.getCanonicalName());
+        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
+        kafkaConfig.put("auto.commit.interval.ms", "1000");
+        kafkaConfig.putAll(configProvider.getProperties()); // e.g. groupId, and such
         LOG.info("KafkaMessageConsumerManager: consuming from Kafka using: {}", kafkaConfig);
     }
 }

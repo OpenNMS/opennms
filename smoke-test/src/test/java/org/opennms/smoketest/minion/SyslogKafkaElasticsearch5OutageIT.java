@@ -39,7 +39,6 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
@@ -66,7 +65,6 @@ import com.spotify.docker.client.messages.ContainerInfo;
  * 
  * @author Seth
  */
-@Ignore
 public class SyslogKafkaElasticsearch5OutageIT extends AbstractSyslogTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5OutageIT.class);

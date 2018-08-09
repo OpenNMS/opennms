@@ -31,7 +31,6 @@ package org.opennms.core.ipc.sink.kafka.server.config;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
 import org.opennms.core.utils.SystemInfoUtils;
 
@@ -41,10 +40,6 @@ public class OnmsKafkaConfigProvider implements KafkaConfigProvider {
     public Properties getProperties() {
         final Properties kafkaConfig = new Properties();
         kafkaConfig.put("group.id", SystemInfoUtils.getInstanceId());
-        kafkaConfig.put("enable.auto.commit", "false");
-        kafkaConfig.put("auto.offset.reset", "latest");
-        kafkaConfig.put("key.deserializer", ByteArrayDeserializer.class.getCanonicalName());
-        kafkaConfig.put("value.deserializer", ByteArrayDeserializer.class.getCanonicalName());
 
         // Find all of the system properties that start with
         // 'org.opennms.core.ipc.sink.kafka.'

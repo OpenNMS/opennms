@@ -34,7 +34,6 @@ import static org.hamcrest.Matchers.is;
 import java.net.InetSocketAddress;
 import java.util.Date;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.hibernate.MinionDaoHibernate;
@@ -54,7 +53,6 @@ import com.google.common.util.concurrent.RateLimiter;
  * 
  * @author Seth
  */
-@Ignore
 public class SyslogKafkaElasticsearch5IT extends AbstractSyslogTestCase {
 
     private static final Logger LOG = LoggerFactory.getLogger(SyslogKafkaElasticsearch5IT.class);
