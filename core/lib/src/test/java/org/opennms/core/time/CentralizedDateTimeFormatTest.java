@@ -48,8 +48,8 @@ public class CentralizedDateTimeFormatTest {
 
     @Test
     public void shouldBeResilientAgainstNull() throws IOException {
-        assertNull(new CentralizedDateTimeFormat().format((Instant)null));
-        assertNull(new CentralizedDateTimeFormat().format((Date)null));
+        assertNull(new CentralizedDateTimeFormat().format((Instant)null, null));
+        assertNull(new CentralizedDateTimeFormat().format((Date)null, null));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class CentralizedDateTimeFormatTest {
 
     public void test(String expectedPattern, Instant time) {
 
-        String output = new CentralizedDateTimeFormat().format(time);
+        String output = new CentralizedDateTimeFormat().format(time, ZoneId.systemDefault());
         assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
     }
 }
