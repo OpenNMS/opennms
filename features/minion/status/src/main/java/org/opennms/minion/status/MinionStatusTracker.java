@@ -94,7 +94,9 @@ public class MinionStatusTracker implements InitializingBean {
     private Integer m_rpcServiceId = null;
 
     // by default, minions are updated every 30 seconds
-    private long m_period = TimeUnit.SECONDS.toMillis(30);
+    private long m_period = TimeUnit.SECONDS.toMillis(60);
+
+    private long m_refresh = TimeUnit.MINUTES.toMillis(5);
 
     Map<Integer,OnmsMinion> m_minionNodes = new ConcurrentHashMap<>();
     Map<String,OnmsMinion> m_minions = new ConcurrentHashMap<>();
@@ -117,8 +119,8 @@ public class MinionStatusTracker implements InitializingBean {
                     }
                 }
             };
-            // sanity check every 10xPERIOD (5 minutes on the default period of 30 seconds)
-            m_executor.scheduleAtFixedRate(command, 0, 10 * m_period, TimeUnit.MILLISECONDS);
+            // sanity check every 5 minutes by default
+            m_executor.scheduleAtFixedRate(command, 0, m_refresh, TimeUnit.MILLISECONDS);
         }
     }
 
@@ -128,6 +130,14 @@ public class MinionStatusTracker implements InitializingBean {
 
     public void setPeriod(final long period) {
         m_period = period;
+    }
+
+    public long getRefresh() {
+        return m_refresh;
+    }
+
+    public void setRefresh(final long refresh) {
+        m_refresh = refresh;
     }
 
     @EventHandler(uei=EventConstants.MONITORING_SYSTEM_ADDED_UEI)
@@ -318,7 +328,7 @@ public class MinionStatusTracker implements InitializingBean {
             final List<OnmsMinion> dbMinions = m_minionDao.findAll();
 
             if (dbMinions.size() == 0) {
-                LOG.info("No minions found in the database.  Skipping processing.");
+                LOG.info("No minions found in the database.  Skipping processing.  Next refresh in {} milliseconds.", m_refresh);
                 return;
             }
 
@@ -403,7 +413,7 @@ public class MinionStatusTracker implements InitializingBean {
             m_minionNodes = minionNodes;
             m_initialized = true;
 
-            LOG.info("Minion status updated from the outages database.  Next refresh in {} milliseconds.", m_period);
+            LOG.info("Minion status updated from the outages database.  Next refresh in {} milliseconds.", m_refresh);
         }
     }
 
@@ -474,7 +484,7 @@ public class MinionStatusTracker implements InitializingBean {
         m_state.put(minionId, current);
 
         final String currentMinionStatus = minion.getStatus();
-        final String newMinionStatus = current.isUp(2 * m_period)? "up":"down";
+        final String newMinionStatus = current.isUp(m_period)? "up":"down";
 
         if (newMinionStatus.equals(currentMinionStatus)) {
             LOG.trace("Minion {} status did not change: {}", minionId, currentMinionStatus);
