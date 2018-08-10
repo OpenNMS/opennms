@@ -29,6 +29,7 @@
 package org.opennms.features.vaadin.mibcompiler;
 
 import org.opennms.features.mibcompiler.api.MibParser;
+import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.netmgt.config.api.DataCollectionConfigDao;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.events.api.EventProxy;
@@ -55,6 +56,8 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
     /** The MIB parser. */
     private MibParser mibParser;
 
+    private TimeformatService timeformatService;
+
     /* (non-Javadoc)
      * @see org.opennms.vaadin.extender.AbstractApplicationFactory#getUI()
      */
@@ -73,6 +76,7 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
         app.setEventConfDao(eventConfDao);
         app.setDataCollectionDao(dataCollectionDao);
         app.setMibParser(mibParser);
+        app.setTimeformatService(timeformatService);
         return app;
     }
 
@@ -118,6 +122,10 @@ public class MibCompilerApplicationFactory extends AbstractApplicationFactory {
      */
     public void setDataCollectionDao(DataCollectionConfigDao dataCollectionDao) {
         this.dataCollectionDao = dataCollectionDao;
+    }
+
+    public void setTimeformatService(TimeformatService timeformatService){
+        this.timeformatService = timeformatService;
     }
 
 }
