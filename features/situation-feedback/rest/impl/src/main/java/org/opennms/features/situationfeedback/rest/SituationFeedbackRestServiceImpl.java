@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.ws.rs.WebApplicationException;
 
@@ -39,6 +40,7 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
 import org.opennms.netmgt.dao.api.AlarmDao;
+import org.opennms.netmgt.dao.api.AlarmEntityNotifier;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +54,15 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
 
     private final AlarmDao alarmDao;
 
+    private final AlarmEntityNotifier alarmEntityNotifier;
+
     private final FeedbackRepository repository;
 
     private final TransactionOperations transactionTemplate;
 
-    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
+    public SituationFeedbackRestServiceImpl(AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier, FeedbackRepository feedbackRepository, TransactionOperations transactionOperations) {
         this.alarmDao = Objects.requireNonNull(alarmDao);
+        this.alarmEntityNotifier = Objects.requireNonNull(alarmEntityNotifier);
         this.repository = Objects.requireNonNull(feedbackRepository);
         this.transactionTemplate = Objects.requireNonNull(transactionOperations);
     }
@@ -77,8 +82,8 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     public void setFeedback(List<AlarmFeedback> feedback) {
         runInTransaction(status -> {
             // Update Situation in case of false_neg and false_pos
-            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao));
-            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao));
+            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao, alarmEntityNotifier));
+            feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao, alarmEntityNotifier));
             try {
                 repository.persist(feedback);
             } catch (Exception e) {
@@ -88,29 +93,34 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         });
     }
 
-    protected static void removeCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
+    protected static void removeCorrelation(AlarmFeedback feedback, AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier) {
         OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
         OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
         if (situation == null || alarm == null) {
             return;
         }
+        Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
         Log.debug("removing alarm {} from situation {}.", alarm, situation);
         situation.getRelatedAlarms().remove(alarm);
         alarmDao.saveOrUpdate(situation);
         Log.debug("removed alarm {} from situation {}.", alarm, situation);
-
-        // FIXME - must update AlarmChangeNotifier
-
+        // Update AlarmChangeNotifier
+        alarmEntityNotifier.didUpdateRelatedAlarms(situation, previousRelatedAlarms);
     }
 
-    protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao) {
+    protected static void addCorrelation(AlarmFeedback feedback, AlarmDao alarmDao, AlarmEntityNotifier alarmEntityNotifier) {
         OnmsAlarm situation = alarmDao.findByReductionKey(feedback.getSituationKey());
         OnmsAlarm alarm = alarmDao.findByReductionKey(feedback.getAlarmKey());
         if (situation == null || alarm == null) {
             return;
         }
+        Set<OnmsAlarm> previousRelatedAlarms = situation.getRelatedAlarms();
+        Log.debug("adding alarm {} to situation {}.", alarm, situation);
         situation.getRelatedAlarms().add(alarm);
         alarmDao.saveOrUpdate(situation);
+        Log.debug("added alarm {} to situation {}.", alarm, situation);
+        // Update AlarmChangeNotifier
+        alarmEntityNotifier.didUpdateRelatedAlarms(situation, previousRelatedAlarms);
     }
 
     private <T> T runInTransaction(TransactionCallback<T> callback) {

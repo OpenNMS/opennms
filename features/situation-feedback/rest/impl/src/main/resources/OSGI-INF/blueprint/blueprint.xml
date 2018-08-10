@@ -10,11 +10,13 @@
 ">
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
+    <reference id="alarmEntityNotifier" interface="org.opennms.netmgt.dao.api.AlarmEntityNotifier " availability="mandatory"/>
     <reference id="feedbackRepository" interface="org.opennms.features.situationfeedback.api.FeedbackRepository" availability="mandatory"/>
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
 
     <bean id="situationFeedbackRestService" class="org.opennms.features.situationfeedback.rest.SituationFeedbackRestServiceImpl">
         <argument ref="alarmDao" />
+        <argument ref="alarmEntityNotifier" />
         <argument ref="feedbackRepository" />
         <argument ref="transactionOperations"/>
     </bean>
