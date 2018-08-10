@@ -79,7 +79,7 @@ import org.springframework.web.context.WebApplicationContext;
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-svclayer.xml",
         "file:../../../opennms-webapp-rest/src/main/webapp/WEB-INF/applicationContext-cxf-common.xml",
-		"classpath:/applicationContext-rest-test.xml"
+		"classpath:/application-context-timeformat.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
