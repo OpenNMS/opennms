@@ -117,10 +117,10 @@ public class AdapterManager implements ManagedServiceFactory {
             consumersById.put(pid, consumer);
 
             // At this point the consumer should be up and running, so we mark the underlying health check as success
-            healthCheck.setSuccess();
+            healthCheck.markSucess();
         } catch (Exception e) {
             // In case of error, we mark the health check as failure as well
-            healthCheck.setError(e);
+            healthCheck.markError(e);
             LOG.error("Failed to create {}", TelemetryMessageConsumer.class, e);
         }
     }

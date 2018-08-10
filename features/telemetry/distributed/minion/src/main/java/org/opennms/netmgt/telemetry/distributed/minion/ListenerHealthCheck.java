@@ -26,18 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.distributed.sentinel;
+package org.opennms.netmgt.telemetry.distributed.minion;
 
 import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.config.api.Adapter;
+import org.opennms.netmgt.telemetry.listeners.api.ListenerDefinition;
 
-public class AdapterHealthCheck extends SimpleHealthCheck {
+public class ListenerHealthCheck extends SimpleHealthCheck {
 
-    public AdapterHealthCheck(Adapter adapterDef) {
-        this(adapterDef.getName(), adapterDef.getClassName());
-    }
-
-    private AdapterHealthCheck(final String adapterName, final String adapterType) {
-        super(() -> "Verifying Adapter " + adapterName + " (" + adapterType + ")");
+    public ListenerHealthCheck(ListenerDefinition listenerDefinition) {
+        super(() -> "Verifying Listener " + listenerDefinition.getName() + " (" + listenerDefinition.getClassName() + ")");
     }
 }
+
+

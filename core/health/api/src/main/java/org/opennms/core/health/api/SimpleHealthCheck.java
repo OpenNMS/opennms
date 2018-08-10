@@ -26,18 +26,41 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.distributed.sentinel;
+package org.opennms.core.health.api;
 
-import org.opennms.core.health.api.SimpleHealthCheck;
-import org.opennms.netmgt.telemetry.config.api.Adapter;
+import java.util.Objects;
+import java.util.function.Supplier;
 
-public class AdapterHealthCheck extends SimpleHealthCheck {
+/**
+ * A very simple {@link HealthCheck} implementation, which may be used
+ * if the health is okay, if a certain command ran sucessfully, e.g. instantiating an object, or similar.
+ *
+ * @author mvrueden
+ */
+public class SimpleHealthCheck implements HealthCheck {
 
-    public AdapterHealthCheck(Adapter adapterDef) {
-        this(adapterDef.getName(), adapterDef.getClassName());
+    private final Supplier<String> descriptionSupplier;
+    private Response response = new Response(Status.Starting);
+
+    public SimpleHealthCheck(Supplier<String> descriptionSupplier) {
+        this.descriptionSupplier = Objects.requireNonNull(descriptionSupplier);
     }
 
-    private AdapterHealthCheck(final String adapterName, final String adapterType) {
-        super(() -> "Verifying Adapter " + adapterName + " (" + adapterType + ")");
+    @Override
+    public String getDescription() {
+        return descriptionSupplier.get();
+    }
+
+    @Override
+    public Response perform() throws Exception {
+        return response;
+    }
+
+    public void markSucess() {
+        response = new Response(Status.Success);
+    }
+
+    public void markError(Exception e) {
+        response = new Response(e);
     }
 }
