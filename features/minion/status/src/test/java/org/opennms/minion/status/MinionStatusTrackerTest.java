@@ -241,7 +241,7 @@ public class MinionStatusTrackerTest {
         when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
-        generateOutage(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, node, MINION_RPC, new Date());
+        generateOutage(EventConstants.OUTAGE_CREATED_EVENT_UEI, node, MINION_RPC, new Date());
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
