@@ -26,43 +26,16 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.time;
+package org.opennms.features.timeformat.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import org.junit.Test;
+public interface TimeformatService {
 
-public class CentralizedDateTimeFormatTest {
+    String format(Instant instant, ZoneId zoneId);
 
-    @Test
-    public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
-    }
+    String format(Date date, ZoneId zoneId);
 
-    @Test
-    public void shouldBeResilientAgainstNull() throws IOException {
-        assertNull(new CentralizedDateTimeFormat().format((Instant)null, null));
-        assertNull(new CentralizedDateTimeFormat().format((Date)null, null));
-    }
-
-    @Test
-    public void shouldHonorSystemSettings() throws IOException {
-        String format = "yyy-MM-dd";
-        System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
-        test(format, Instant.now());
-        System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
-    }
-
-    public void test(String expectedPattern, Instant time) {
-
-        String output = new CentralizedDateTimeFormat().format(time, ZoneId.systemDefault());
-        assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
-    }
 }

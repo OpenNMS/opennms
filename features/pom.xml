@@ -121,6 +121,7 @@
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
+    <module>timeformat</module>
     <module>timeseries-evaluate</module>
 
     <!-- Business Service Monitor -->

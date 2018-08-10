@@ -26,43 +26,26 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.time;
+package org.opennms.features.timeformat.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import java.io.IOException;
 import java.time.Instant;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import org.junit.Test;
+import org.opennms.core.time.CentralizedDateTimeFormat;
+import org.opennms.features.timeformat.api.TimeformatService;
 
-public class CentralizedDateTimeFormatTest {
+public class DefaultTimeformatService implements TimeformatService {
 
-    @Test
-    public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+    private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
+
+    @Override
+    public String format(Instant instant, ZoneId zoneId) {
+        return  format.format(instant, zoneId);
     }
 
-    @Test
-    public void shouldBeResilientAgainstNull() throws IOException {
-        assertNull(new CentralizedDateTimeFormat().format((Instant)null, null));
-        assertNull(new CentralizedDateTimeFormat().format((Date)null, null));
-    }
-
-    @Test
-    public void shouldHonorSystemSettings() throws IOException {
-        String format = "yyy-MM-dd";
-        System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
-        test(format, Instant.now());
-        System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
-    }
-
-    public void test(String expectedPattern, Instant time) {
-
-        String output = new CentralizedDateTimeFormat().format(time, ZoneId.systemDefault());
-        assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
+    @Override
+    public String format(Date date, ZoneId zoneId) {
+        return format.format(date, zoneId);
     }
 }
