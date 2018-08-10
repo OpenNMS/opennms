@@ -28,6 +28,9 @@
 
 package org.opennms.web.svclayer.support;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,12 +113,20 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
         return report;
     }
 
-    private static ResourceId getResourceIdForGraph(Graph graph) {
+    private static ResourceId getResourceIdForGraph(Graph graph)  {
         Assert.notNull(graph, "graph argument cannot be null");
 
-        ResourceId resourceId;
+        ResourceId resourceId = null;
         if (graph.getResourceId().isPresent()) {
-            resourceId = ResourceId.fromString(graph.getResourceId().get());
+            // Legacy code has encoded resourceId, decode always as there is no easy to way to determine if it is encoded string.
+            // If resourceId is not an encoded one, decode will always yield the original.
+            // See issue NMS-10309
+            try {
+                String decodedResourceId = URLDecoder.decode(graph.getResourceId().get(), StandardCharsets.UTF_8.name());
+                resourceId = ResourceId.fromString(decodedResourceId);
+            } catch (UnsupportedEncodingException e) {
+                LOG.error("Error while decoding resourceId", e);
+            }
         } else {
             String parentResourceTypeName;
             String parentResourceName;
@@ -188,7 +199,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /**
      * <p>getResourceService</p>
      *
-     * @return a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @return a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public ResourceService getResourceService() {
         return m_resourceService;
@@ -197,7 +208,7 @@ public class DefaultKscReportService implements KscReportService, InitializingBe
     /**
      * <p>setResourceService</p>
      *
-     * @param resourceService a {@link org.opennms.web.svclayer.ResourceService} object.
+     * @param resourceService a {@link org.opennms.web.svclayer.api.ResourceService} object.
      */
     public void setResourceService(ResourceService resourceService) {
         m_resourceService = resourceService;
