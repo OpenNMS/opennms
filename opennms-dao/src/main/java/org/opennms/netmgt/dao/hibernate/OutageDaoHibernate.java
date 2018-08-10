@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -43,7 +44,6 @@ import java.util.stream.Stream;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.hibernate.transform.ResultTransformer;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -58,10 +58,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
+    private static final Comparator<Date> NULLS_LAST = Comparator.nullsLast(Comparator.naturalOrder());
     private static final Comparator<OnmsOutage> OUTAGE_COMPARATOR = Comparator
-            .nullsLast(Comparator
-                       .comparing(OnmsOutage::getIfLostService)
-                       .thenComparing(OnmsOutage::getIfRegainedService));
+                       .comparing(OnmsOutage::getIfLostService, NULLS_LAST)
+                       .thenComparing(OnmsOutage::getIfRegainedService, NULLS_LAST);
 
     @Autowired
     private FilterDao m_filterDao;
@@ -118,12 +118,11 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     private Stream<OnmsOutage> initializeOutage(Stream<OnmsOutage> outages) {
         return outages
                 .map(outage -> {
-                    Hibernate.initialize(outage.getForeignId());
                     Hibernate.initialize(outage.getMonitoredService());
                     Hibernate.initialize(outage.getMonitoredService().getIpInterface());
                     Hibernate.initialize(outage.getMonitoredService().getIpInterface().getNode());
-                    Hibernate.initialize(outage.getMonitoredService().getIpInterface().getNode());
                     Hibernate.initialize(outage.getMonitoredService().getServiceType());
+                    Hibernate.initialize(outage.getForeignId());
                     return outage;
                 })
                 .sorted(OUTAGE_COMPARATOR);
@@ -132,27 +131,13 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     /** {@inheritDoc} */
     @Override
     public Collection<OnmsOutage> matchingOutages(final ServiceSelector selector) {
-        return getHibernateTemplate().execute(new HibernateCallback<List<OnmsOutage>>() {
-            @Override
-            public List<OnmsOutage> doInHibernate(Session session) throws HibernateException, SQLException {
-                Transaction tx = null;
-                try {
-                    tx = session.beginTransaction();
-                    final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getIPAddressList(selector.getFilterRule()));
-                    @SuppressWarnings("unchecked")
-                    final Collection<OnmsOutage> outages = (Collection<OnmsOutage>)session.createQuery("FROM OnmsOutage AS o WHERE o.monitoredService.serviceType.name IN (:services)").setParameterList("services", selector.getServiceNames()).list();
-
-                    return initializeOutage(
-                                            outages.parallelStream()
-                                            .filter(outage -> matchingAddrs.contains(outage.getMonitoredService().getIpAddress()))
-                            ).collect(Collectors.toList());
-                } finally {
-                    if (tx != null) {
-                        tx.commit();
-                    }
-                }
-            }
-        });
+        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getIPAddressList(selector.getFilterRule()));
+        @SuppressWarnings("unchecked")
+        final Collection<OnmsOutage> outages = (Collection<OnmsOutage>)getHibernateTemplate().findByNamedParam("FROM OnmsOutage AS o WHERE o.monitoredService.serviceType.name IN (:services)","services", selector.getServiceNames());
+        return initializeOutage(
+                                outages.parallelStream()
+                                .filter(outage -> matchingAddrs.contains(outage.getMonitoredService().getIpAddress()))
+                ).collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */
@@ -184,9 +169,10 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                 .join("monitoredService.serviceType", "serviceType")
                 .in("serviceType.name", selector.getServiceNames());
         }
-        return findMatching(builder.toCriteria()).stream().filter(outage -> {
-            return matchingAddrs.contains(InetAddressUtils.str(outage.getIpAddress()));
-        }).collect(Collectors.toList());
+        return initializeOutage(findMatching(builder.toCriteria()).stream())
+                .filter(outage -> {
+                    return matchingAddrs.contains(InetAddressUtils.str(outage.getIpAddress()));
+                }).collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */

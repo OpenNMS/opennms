@@ -74,6 +74,9 @@ import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.xml.event.Event;
+import org.springframework.transaction.TransactionException;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionOperations;
 public class MinionStatusTrackerTest {
     private static final String FOREIGN_SOURCE = "Test";
     private static final String MINION_HEARTBEAT = MinionStatusTracker.MINION_HEARTBEAT;
@@ -104,6 +107,13 @@ public class MinionStatusTrackerTest {
         m_tracker.m_minionDao = m_minionDao;
         m_tracker.m_serviceTypeDao = m_serviceTypeDao;
         m_tracker.m_outageDao = m_outageDao;
+
+        m_tracker.m_transactionOperations = new TransactionOperations() {
+            @Override
+            public <T> T execute(final TransactionCallback<T> action) throws TransactionException {
+                return action.doInTransaction(null);
+            }
+        };
 
         // we don't call afterPropertiesSet() here because
         // we don't want to start the executor
@@ -231,11 +241,7 @@ public class MinionStatusTrackerTest {
         when(m_nodeDao.get(Integer.valueOf(1))).thenReturn(node);
         when(m_minionDao.findById(foreignId)).thenReturn(minion);
 
-        Event e = new EventBuilder(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, FOREIGN_SOURCE)
-                .setNodeid(1)
-                .setService(MINION_RPC)
-                .getEvent();
-        m_tracker.onNodeLostService(e);
+        generateOutage(EventConstants.NODE_LOST_SERVICE_EVENT_UEI, node, MINION_RPC, new Date());
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());

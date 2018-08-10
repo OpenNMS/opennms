@@ -63,7 +63,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.util.Assert;
 
 @EventListener(name="minionStatusTracker", logPrefix=MinionStatusTracker.LOG_PREFIX)
@@ -73,6 +75,11 @@ public class MinionStatusTracker implements InitializingBean {
     ScheduledExecutorService m_executor = Executors.newSingleThreadScheduledExecutor();
 
     public static final String LOG_PREFIX = "minion";
+
+    private static final String NODE_REGAINED_SERVICE_EVENT_UEI = EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI;
+    private static final String OUTAGE_RESOLVED_EVENT_UEI = EventConstants.OUTAGE_RESOLVED_EVENT_UEI;
+    private static final String NODE_LOST_SERVICE_EVENT_UEI = EventConstants.NODE_LOST_SERVICE_EVENT_UEI;
+    private static final String OUTAGE_CREATED_EVENT_UEI = EventConstants.OUTAGE_CREATED_EVENT_UEI;
 
     static final String MINION_HEARTBEAT = "Minion-Heartbeat";
     static final String MINION_RPC = "Minion-RPC";
@@ -88,6 +95,9 @@ public class MinionStatusTracker implements InitializingBean {
 
     @Autowired
     OutageDao m_outageDao;
+
+    @Autowired
+    TransactionOperations m_transactionOperations;
 
     private boolean m_initialized = false;
     private Integer m_heartbeatServiceId = null;
@@ -110,6 +120,7 @@ public class MinionStatusTracker implements InitializingBean {
             Assert.notNull(m_minionDao);
             Assert.notNull(m_serviceTypeDao);
             Assert.notNull(m_outageDao);
+            Assert.notNull(m_transactionOperations);
             final Runnable command = new Runnable() {
                 @Override public void run() {
                     try {
@@ -140,22 +151,32 @@ public class MinionStatusTracker implements InitializingBean {
         m_refresh = refresh;
     }
 
+    public Collection<OnmsMinion> getMinions() {
+        return m_minions.values();
+    }
+
+    public MinionStatus getStatus(final String foreignId) {
+        return m_state.get(foreignId);
+    }
+
+    public MinionStatus getStatus(final OnmsMinion minion) {
+        return m_state.get(minion.getId());
+    }
+
     @EventHandler(uei=EventConstants.MONITORING_SYSTEM_ADDED_UEI)
-    @Transactional
     public void onMonitoringSystemAdded(final Event e) {
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+        runInLoggingTransaction(() -> {
             final String id = e.getParm(EventConstants.PARAM_MONITORING_SYSTEM_ID).toString();
             LOG.debug("Monitoring system added: {}", id);
             if (id != null) {
                 m_state.put(id, AggregateMinionStatus.up());
             }
-        }
+        });
     }
 
     @EventHandler(uei=EventConstants.MONITORING_SYSTEM_DELETED_UEI)
-    @Transactional
     public void onMonitoringSystemDeleted(final Event e) {
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+        runInLoggingTransaction(() -> {
             final String id = e.getParm(EventConstants.PARAM_MONITORING_SYSTEM_ID).toString();
             if (id != null) {
                 LOG.debug("Monitoring system removed: {}", id);
@@ -175,17 +196,16 @@ public class MinionStatusTracker implements InitializingBean {
             } else {
                 LOG.warn("Monitoring system removed event received, but unable to determine ID: {}", e);
             }
-        }
+        });
     }
 
     @EventHandler(uei=EventConstants.NODE_GAINED_SERVICE_EVENT_UEI)
-    @Transactional
     public void onNodeGainedService(final Event e) {
         if (!MINION_HEARTBEAT.equals(e.getService()) && !MINION_RPC.equals(e.getService())) {
             return;
         }
 
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+        runInLoggingTransaction(() -> {
             assertHasNodeId(e);
 
             final Integer nodeId = e.getNodeid().intValue();
@@ -211,48 +231,12 @@ public class MinionStatusTracker implements InitializingBean {
                 state = state.rpcUp(e.getTime());
             }
             updateStateIfChanged(minion, state, m_state.get(minionId));
-        }
-    }
-
-    @EventHandler(uei=EventConstants.NODE_LOST_SERVICE_EVENT_UEI)
-    @Transactional
-    public void onNodeLostService(final Event e) {
-        if (!MINION_HEARTBEAT.equals(e.getService()) && !MINION_RPC.equals(e.getService())) {
-            return;
-        }
-
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
-            assertHasNodeId(e);
-
-            final Integer nodeId = e.getNodeid().intValue();
-            final OnmsMinion minion = getMinionForNodeId(nodeId);
-            if (minion == null) {
-                LOG.debug("No minion found for node ID {}", nodeId);
-                return;
-            }
-
-            LOG.debug("Node {}({}) lost a Minion service: {}", nodeId, minion.getId(), e.getService());
-
-            final String minionId = minion.getId();
-            AggregateMinionStatus state = m_state.get(minionId);
-            if (state == null) {
-                LOG.debug("Found new Minion node: {}", minionId);
-                state = "down".equals(minion.getStatus())? AggregateMinionStatus.down() : AggregateMinionStatus.up();
-            }
-
-            if (MINION_HEARTBEAT.equals(e.getService())) {
-                state = state.heartbeatDown(e.getTime());
-            } else if (MINION_RPC.equals(e.getService())) {
-                state = state.rpcDown(e.getTime());
-            }
-            updateStateIfChanged(minion, state, m_state.get(minionId));
-        }
+        });
     }
 
     @EventHandler(uei=EventConstants.NODE_DELETED_EVENT_UEI)
-    @Transactional
     public void onNodeDeleted(final Event e) {
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+        runInLoggingTransaction(() -> {
             assertHasNodeId(e);
             final Integer nodeId = e.getNodeid().intValue();
             OnmsMinion minion = getMinionForNodeId(nodeId);
@@ -264,26 +248,27 @@ public class MinionStatusTracker implements InitializingBean {
                 m_minions.remove(minionId);
                 m_state.remove(minionId);
             }
-        }
+        });
     }
 
     @EventHandler(ueis= {
-            EventConstants.OUTAGE_CREATED_EVENT_UEI,
-            EventConstants.OUTAGE_RESOLVED_EVENT_UEI
+            OUTAGE_CREATED_EVENT_UEI,
+            OUTAGE_RESOLVED_EVENT_UEI,
+            NODE_LOST_SERVICE_EVENT_UEI,
+            NODE_REGAINED_SERVICE_EVENT_UEI
     })
-    @Transactional
     public void onOutageEvent(final Event e) {
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
-            final boolean isHeartbeat = MINION_HEARTBEAT.equals(e.getService());
-            final boolean isRpc = MINION_RPC.equals(e.getService());
+        final boolean isHeartbeat = MINION_HEARTBEAT.equals(e.getService());
+        final boolean isRpc = MINION_RPC.equals(e.getService());
 
-            if (!isHeartbeat && !isRpc) {
-                return;
-            }
+        if (!isHeartbeat && !isRpc) {
+            return;
+        }
+
+        runInLoggingTransaction(() -> {
+            LOG.trace("Minion {} service event received for node {}: {}", isHeartbeat? "heartbeat":"rpc", e.getNodeid(), e);
 
             assertHasNodeId(e);
-
-            LOG.trace("Minion {} outage event received for node {}: {}", isHeartbeat? "heartbeat":"rpc", e.getNodeid(), e);
 
             final OnmsMinion minion = getMinionForNodeId(e.getNodeid().intValue());
             final String minionId = minion.getId();
@@ -295,17 +280,17 @@ public class MinionStatusTracker implements InitializingBean {
 
             final String uei = e.getUei();
             if (MINION_HEARTBEAT.equalsIgnoreCase(e.getService())) {
-                if (EventConstants.OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
+                if (OUTAGE_CREATED_EVENT_UEI.equals(uei) || NODE_LOST_SERVICE_EVENT_UEI.equals(uei)) {
                     status = status.heartbeatDown(e.getTime());
-                } else if (EventConstants.OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
+                } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei) || NODE_REGAINED_SERVICE_EVENT_UEI.equals(uei)) {
                     status = status.heartbeatUp(e.getTime());
                 }
                 final MinionServiceStatus heartbeatStatus = status.getHeartbeatStatus();
                 LOG.debug("{} heartbeat is {} as of {}", minionId, heartbeatStatus.getState(), heartbeatStatus.lastSeen());
             } else if (MINION_RPC.equalsIgnoreCase(e.getService())) {
-                if (EventConstants.OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
+                if (OUTAGE_CREATED_EVENT_UEI.equals(uei) || NODE_LOST_SERVICE_EVENT_UEI.equals(uei)) {
                     status = status.rpcDown(e.getTime());
-                } else if (EventConstants.OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
+                } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei) || NODE_REGAINED_SERVICE_EVENT_UEI.equals(uei)) {
                     status = status.rpcUp(e.getTime());
                 }
                 final MinionServiceStatus rpcStatus = status.getRpcStatus();
@@ -313,12 +298,11 @@ public class MinionStatusTracker implements InitializingBean {
             }
 
             updateStateIfChanged(minion, status, m_state.get(minionId));
-        }
+        });
     }
 
-    @Transactional
     public void refresh() {
-        try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+        runInLoggingTransaction(() -> {
             LOG.info("Refreshing minion status from the outages database.");
 
             final Map<String,OnmsMinion> minions = new ConcurrentHashMap<>();
@@ -356,6 +340,9 @@ public class MinionStatusTracker implements InitializingBean {
                     .distinct()
                     .toCriteria();
             final List<OnmsNode> nodes = m_nodeDao.findMatching(c);
+            for (final OnmsNode node : nodes) {
+                m_nodeDao.initialize(node.getLocation());
+            }
             LOG.debug("Mapping {} node IDs to minions.", nodes.size());
             if (LOG.isTraceEnabled()) {
                 LOG.trace("Processing nodes: {}", nodes.stream().map(OnmsNode::getId).collect(Collectors.toList()));
@@ -414,7 +401,7 @@ public class MinionStatusTracker implements InitializingBean {
             m_initialized = true;
 
             LOG.info("Minion status updated from the outages database.  Next refresh in {} milliseconds.", m_refresh);
-        }
+        });
     }
 
     private AggregateMinionStatus transformStatus(final AggregateMinionStatus currentStatus, final Integer outageServiceId, final Date ifRegainedService, final Date ifLostService) {
@@ -441,18 +428,6 @@ public class MinionStatusTracker implements InitializingBean {
             }
         }
         return newStatus;
-    }
-
-    public Collection<OnmsMinion> getMinions() {
-        return m_minions.values();
-    }
-
-    public MinionStatus getStatus(final String foreignId) {
-        return m_state.get(foreignId);
-    }
-
-    public MinionStatus getStatus(final OnmsMinion minion) {
-        return m_state.get(minion.getId());
     }
 
     private Integer getHeartbeatServiceId() {
@@ -493,7 +468,7 @@ public class MinionStatusTracker implements InitializingBean {
 
         minion.setStatus(newMinionStatus);
         m_minionDao.saveOrUpdate(minion);
-        LOG.debug("Minion {} status has changed: Heartbeat: {} -> {}, RPC: {} -> {}", minionId, (previous == null? "Unknown" : previous.getHeartbeatStatus()), current.getHeartbeatStatus(), (previous == null? "Unknown" : previous.getRpcStatus()), current.getRpcStatus());
+        LOG.debug("Minion {} status processed: Heartbeat: {} -> {}, RPC: {} -> {}", minionId, (previous == null? "Unknown" : previous.getHeartbeatStatus()), current.getHeartbeatStatus(), (previous == null? "Unknown" : previous.getRpcStatus()), current.getRpcStatus());
     }
 
     private OnmsMinion getMinionForNodeId(final Integer nodeId) {
@@ -506,6 +481,7 @@ public class MinionStatusTracker implements InitializingBean {
             LOG.warn(ex.getMessage());
             throw ex;
         }
+        m_nodeDao.initialize(node.getLocation());
         final String minionId = node.getForeignId();
         final OnmsMinion minion = m_minionDao.findById(minionId);
         m_minionNodes.put(nodeId, minion);
@@ -519,5 +495,17 @@ public class MinionStatusTracker implements InitializingBean {
             LOG.warn(ex.getMessage() + " {}", e, ex);
             throw ex;
         }
+    }
+
+    private void runInLoggingTransaction(final Runnable runnable) {
+        m_transactionOperations.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(final TransactionStatus status) {
+                try (MDCCloseable mdc = Logging.withPrefixCloseable(LOG_PREFIX)) {
+                    runnable.run();
+                    m_minionDao.flush();
+                }
+            }
+        });
     }
 }
