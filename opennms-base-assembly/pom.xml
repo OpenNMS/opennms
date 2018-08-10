@@ -714,6 +714,16 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.timeformat</groupId>
+      <artifactId>org.opennms.features.timeformat.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.timeformat</groupId>
+      <artifactId>org.opennms.features.timeformat.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.newts</artifactId>
       <version>${project.version}</version>
