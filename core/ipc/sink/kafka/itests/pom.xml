@@ -26,6 +26,12 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
+	<dependency>
+	  <groupId>org.opennms.features.events</groupId>
+  	  <artifactId>org.opennms.features.events.daemon</artifactId>
+      <version>${project.version}</version>
+	  <scope>test</scope>
+	</dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
