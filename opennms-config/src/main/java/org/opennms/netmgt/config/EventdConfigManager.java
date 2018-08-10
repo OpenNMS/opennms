@@ -248,9 +248,9 @@ public class EventdConfigManager implements EventdConfig {
         getReadLock().lock();
         try {
             if (m_config.getNumThreads() <= 0) {
-                return m_config.getNumThreads();
-            } else {
                 return Runtime.getRuntime().availableProcessors() * 2;
+            } else {
+                return m_config.getNumThreads();
             }
         } finally {
             getReadLock().unlock();
