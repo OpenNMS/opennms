@@ -27,7 +27,7 @@
  *******************************************************************************/
 package org.opennms.features.situationfeedback.elastic;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.hasSize;
 
 import java.net.MalformedURLException;
@@ -60,24 +60,6 @@ public class ElasticFeedbackRepositoryIT {
 
     private FeedbackRepository feedbackRepository;
 
-    @Before
-    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
-        MockLogAppender.setupLogging(true, "DEBUG");
-        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT, null, null);
-        final JestClient client = restClientFactory.createClient();
-        final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
-        mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
-        final IndexSettings settings = new IndexSettings();
-        final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
-        feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 2, initializer);
-
-        // initialize the repository manually
-        initializer.initialize();
-
-        // The repository should be empty
-//        assertThat(feedbackRepository.getFeedback("Situation1"), equalTo(0L));
-    }
-
     @Rule
     public ElasticSearchRule elasticServerRule = new ElasticSearchRule(
             new ElasticSearchServerConfig()
@@ -90,6 +72,22 @@ public class ElasticFeedbackRepositoryIT {
                     // .withPlugins(DriftPlugin.class)
     );
 
+    @Before
+    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
+        MockLogAppender.setupLogging(true, "DEBUG");
+        final RestClientFactory restClientFactory = new RestClientFactory("http://localhost:" + HTTP_PORT, null, null);
+        final JestClient client = restClientFactory.createClient();
+        final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
+        mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
+        final IndexSettings settings = new IndexSettings();
+        final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
+        feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 5, initializer);
+
+        // initialize the repository manually
+        initializer.initialize();
+
+    }
+
     @Test
     public void canPersistFeedback() throws FeedbackException {
         AlarmFeedback feedback1 = new AlarmFeedback("situationKey1", "fingerprint1", "alarmKey1", FeedbackType.FALSE_POSITVE, "reason", "user",
@@ -101,8 +99,7 @@ public class ElasticFeedbackRepositoryIT {
         final Collection<AlarmFeedback> feedback = Arrays.asList(feedback1, feedback2, feedback3);
         feedbackRepository.persist(feedback);
 
-        Collection<AlarmFeedback> retrievedFeedback = feedbackRepository.getFeedback("situationKey1");
-        assertThat(retrievedFeedback, hasSize(1));
+        await().until(() -> feedbackRepository.getFeedback("situationKey1"), hasSize(1));
     }
 
     @Test
