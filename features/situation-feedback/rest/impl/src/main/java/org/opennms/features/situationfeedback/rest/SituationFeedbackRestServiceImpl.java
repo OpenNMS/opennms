@@ -67,8 +67,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         try {
             return repository.getFeedback(situationKey);
         } catch (FeedbackException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Log.error("Error retrieving alarm correlation feedback for [{}]: {}", situationKey, e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -82,7 +81,6 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
             feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_POSITVE)).forEach(c -> removeCorrelation(c, alarmDao));
             try {
                 repository.persist(feedback);
-                // } catch (FeedbackException e) {
             } catch (Exception e) {
                 throw new WebApplicationException("Failed to execute query: " + e.getMessage(), e);
             }
@@ -98,10 +96,8 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         }
         Log.debug("removing alarm {} from situation {}.", alarm, situation);
         situation.getRelatedAlarms().remove(alarm);
-        // FIXME - session error:
         alarmDao.saveOrUpdate(situation);
         Log.debug("removed alarm {} from situation {}.", alarm, situation);
-        // TODO - require any logging?
 
         // FIXME - must update AlarmChangeNotifier
 

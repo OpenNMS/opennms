@@ -43,9 +43,6 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 @Path("situation-feedback")
 public interface SituationFeedbackRestService {
 
-    // POST feedback
-    // Situation, List
-
     @GET
     @Path("/{situationKey}")
     @Produces(MediaType.APPLICATION_JSON)

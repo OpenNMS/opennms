@@ -69,7 +69,6 @@ public class ElasticFeedbackRepositoryIT {
                     .withSetting("http.type", "netty4")
                     .withSetting("transport.type", "netty4")
                     .withSetting("transport.tcp.port", HTTP_TRANSPORT_PORT)
-                    // .withPlugins(DriftPlugin.class)
     );
 
     @Before
@@ -82,10 +81,8 @@ public class ElasticFeedbackRepositoryIT {
         final IndexSettings settings = new IndexSettings();
         final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
         feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 5, initializer);
-
         // initialize the repository manually
         initializer.initialize();
-
     }
 
     @Test
@@ -100,10 +97,6 @@ public class ElasticFeedbackRepositoryIT {
         feedbackRepository.persist(feedback);
 
         await().until(() -> feedbackRepository.getFeedback("situationKey1"), hasSize(1));
-    }
-
-    @Test
-    public void canGetFeedback() {
     }
 
 }
