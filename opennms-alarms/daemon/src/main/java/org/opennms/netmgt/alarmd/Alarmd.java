@@ -28,8 +28,12 @@
 
 package org.opennms.netmgt.alarmd;
 
+import java.util.List;
+
 import org.opennms.netmgt.alarmd.drools.DroolsAlarmContext;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.ThreadAwareEventListener;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
@@ -37,6 +41,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
 /**
  * Alarm management Daemon
@@ -87,6 +93,11 @@ public class Alarmd extends AbstractServiceDaemon implements ThreadAwareEventLis
     private synchronized void handleReloadEvent(Event e) {
         LOG.info("Received reload configuration event: {}", e);
         m_northbounderManager.handleReloadEvent(e);
+        DaemonTools.handleReloadEvent(e, Alarmd.NAME, (event) -> onAlarmReload());
+    }
+
+    private void onAlarmReload() {
+        m_droolsAlarmContext.reload();
     }
 
 	/**

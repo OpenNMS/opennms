@@ -1,0 +1,38 @@
+
+
+When you are ready to upgrade _{opennms-product-name}_, unhold them and upgrade, then hold them again:
+
+.Remoe hold to perform upgrade
+[source, shell]
+----
+apt-mark unhold libopennms-java \
+                libopennmsdeps-java \
+                opennms-common \
+                opennms-db
+----
+
+.Upgrade {opennms-product-name} packages and merge configuration files
+[source, shell]
+----
+apt-get upgrade opennms
+----
+
+.Set them back on hold to prevent future upgrades
+[source, shell]
+----
+apt-mark hold libopennms-java \
+              libopennmsdeps-java \
+              opennms-common \
+              opennms-db
+----
+
+When you are ready to upgrade {opennms-product-name}, call yum with the `--enablerepo` option to turn the 2 repositories defined in this file back on.
+For example, if you installed the stable repository _RPM_ on a _CentOS_ or _RHEL 7_ system, you would run:
+
+[source, shell]
+----
+yum -y --enablerepo=opennms-repo-stable-common \
+  --enablerepo=opennms-repo-stable-rhel7 \
+  upgrade opennms
+----
+

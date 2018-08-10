@@ -80,6 +80,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
+import org.opennms.features.kafka.producer.model.CollectionSetProtos;
 import org.opennms.features.kafka.producer.datasync.KafkaAlarmDataSync;
 import org.opennms.features.kafka.producer.model.OpennmsModelProtos;
 import org.opennms.netmgt.alarmd.AlarmLifecycleListenerManager;
@@ -126,6 +127,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
     private static final String EVENT_TOPIC_NAME = "events";
     private static final String ALARM_TOPIC_NAME = "test-alarms";
     private static final String NODE_TOPIC_NAME = "test-nodes";
+    private static final String METRIC_TOPIC_NAME = "test-metrics";
 
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -344,13 +346,14 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                 .collect(Collectors.toSet());
     }
 
-    private static class KafkaMessageConsumerRunner implements Runnable {
+    public static class KafkaMessageConsumerRunner implements Runnable {
         private final AtomicBoolean closed = new AtomicBoolean(false);
         private KafkaConsumer<String, byte[]> consumer;
         private String kafkaConnectString;
         private List<OpennmsModelProtos.Event> events = new ArrayList<>();
         private List<OpennmsModelProtos.Node> nodes = new ArrayList<>();
         private List<OpennmsModelProtos.Alarm> alarms = new ArrayList<>();
+        private CollectionSetProtos.CollectionSet collectionSet = null;
         private Map<String, OpennmsModelProtos.Alarm> alarmsByReductionKey = new LinkedHashMap<>();
         private AtomicInteger numRecordsConsumed = new AtomicInteger(0);
 
@@ -370,7 +373,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
             props.put(ConsumerConfig.METADATA_MAX_AGE_CONFIG, "1000");
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
             consumer = new KafkaConsumer<>(props);
-            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME));
+            consumer.subscribe(Arrays.asList(EVENT_TOPIC_NAME, NODE_TOPIC_NAME, ALARM_TOPIC_NAME, METRIC_TOPIC_NAME));
 
             while (!closed.get()) {
                 ConsumerRecords<String, byte[]> records = consumer.poll(1000);
@@ -389,6 +392,9 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
                                         OpennmsModelProtos.Alarm.parseFrom(record.value()) : null;
                                 alarms.add(alarm);
                                 alarmsByReductionKey.put(record.key(), alarm);
+                                break;
+                            case METRIC_TOPIC_NAME :
+                                collectionSet = CollectionSetProtos.CollectionSet.parseFrom(record.value());
                                 break;
                         }
                         numRecordsConsumed.incrementAndGet();
@@ -427,6 +433,11 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
         public void shutdown() {
             closed.set(true);
         }
+
+        public CollectionSetProtos.CollectionSet getCollectionSet() {
+            return collectionSet;
+        }
+
     }
 
     private OnmsHwEntity getHwEntityChassis(OnmsNode node) {

@@ -109,7 +109,7 @@ public class DetectorsOnMinionIT {
         requisitionInterface.setSnmpPrimary(PrimaryType.PRIMARY);
         interfaces.add(requisitionInterface);
         RequisitionNode node = new RequisitionNode();
-        node.setNodeLabel("label");
+        node.setNodeLabel(ipAddress);
         node.setLocation(location);
         node.setInterfaces(interfaces);
         node.setForeignId("foreignId");

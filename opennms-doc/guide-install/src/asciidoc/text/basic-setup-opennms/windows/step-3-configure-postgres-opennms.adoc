@@ -1,0 +1,32 @@
+
+==== Step 3: Configure PostgreSQL access for {opennms-product-name}
+
+.Set credentials to access the PostgreSQL database
+[source, xml]
+----
+<jdbc-data-source name="opennms"
+                    database-name="opennms"<1>
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/opennms"
+                    user-name="** YOUR-OPENNMS-USERNAME **"<2>
+                    password="** YOUR-OPENNMS-PASSWORD **" /><3>
+
+<jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="postgres"<4>
+                    password="** YOUR-POSTGRES-PASSWORD **" /><5>
+----
+
+<1> Set the database name _{opennms-product-name}_ should use
+<2> Set the user name to access the _opennms_ database table
+<3> Set the password to access the _opennms_ database table
+<4> Set the _postgres_ user for administrative access to PostgreSQL
+<5> Set the password for administrative access to PostgreSQL
+
+After setting the username and passwords in `opennms-datasources.xml` re-run the graphical installer and also initialize the database.
+_OpenNMS_ can be started and stopped with the `start.bat` and `stop.bat` script located in `%OPENNMS_HOME%\bin` directory.
+
+TIP: The Wiki article link:http://www.opennms.org/wiki/Configuring_openNMS_as_Windows_Service[Configuring OpenNMS as Windows Service] describes how to create a _Windows Service_ from the `start.bat` files.
+     There is also a link:http://yajsw.sourceforge.net/#mozTocId527639[Java Wrapper] which allows to install _Java_ applications as _Windows Service_.

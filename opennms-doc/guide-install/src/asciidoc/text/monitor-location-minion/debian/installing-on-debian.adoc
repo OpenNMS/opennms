@@ -1,0 +1,11 @@
+
+=== Installing on Debian
+
+. Setup _{opennms-product-name}_ to allow _Minion_ communication
+. Installation of the `opennms-minion` meta package which handles all dependencies
+. Starting _Minion_ and access the _Karaf_ console over _SSH_
+. Configure _Minion_ to communicate with _{opennms-product-name}_
+. Verify the connectivity between _Minion_ and _{opennms-product-name}_
+
+All commands on the command line interface need to be executed with _root_ permissions.
+

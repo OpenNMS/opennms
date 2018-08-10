@@ -1,0 +1,54 @@
+
+// Allow GitHub image rendering
+:imagesdir: ../../images
+
+[[gi-set-up-opennms]]
+== Setting up a basic {opennms-product-name}
+
+The _{opennms-product-name}_ platform can be installed on multiple OS families.
+This guide provides instructions for installing the platform on _Red Hat Enterprise Linux (RHEL)_-based, _Debian_-based, and _Microsoft Windows_ operating systems.
+
+=== Objectives
+
+* Installing _{opennms-product-name}_ components on a single node using the built-in _JRobin_ as time series storage
+* Setup _{opennms-product-name}_ on recommended operating systems
+* Login the Web User Interface and change the default admin password
+
+=== Before you begin
+
+The following abbreviations will be used to refer to their respective entry through this documentation.
+
+.Operating Systems
+[width="100%", cols="1,4"]
+|===
+| _RHEL_              | Red Hat Enterprise Linux 7 or higher, CentOS 7 or higher
+| _Debian_            | Debian 9 or higher, Ubuntu 16.04 LTS or higher
+| _Windows_           | Microsoft Windows Server 2012, Windows 10
+|===
+
+It is recommended to meet the following requirements:
+
+.Installation Requirements
+[width="100%", cols="1,4"]
+|===
+| _Minimal Hardware_ | 2 CPU, 2 GB RAM, 20 GB disk
+| _Operating System_ | _RHEL_ or _Debian_ in a current version is recommended.
+                       Please be aware _{opennms-product-name}_ is developed and mostly operated on Linux systems.
+                       Community support is limited when you run on _Microsoft Windows_ platform.
+                       On _Microsoft Windows_ the _R_ integration for statistical computation on time series data is not supported.
+| _Internet_         | Access to _{yum,debian}.opennms.org_ or _SourceForge_ for Microsoft Windows via _https_.
+| _DNS Setup_        | Please make sure your DNS settings for the OpenNMS server are correct and the localhost name can be resolved.
+                       If there is an incorrect or missing _A Resource Record_ for the server hostname, OpenNMS might not start correctly.
+                       The Java security manager might not initialize and an _RMI class loader disabled_ exception will be shown.
+|===
+
+Depending on the installed operating system, the path for _{opennms-product-name}_ is different.
+If the instruction refers to `${OPENNMS_HOME}`, the path is resolved to the following directories:
+
+.Directory Structure
+[width="100%", cols="1,4"]
+|===
+| _RHEL_              | `/opt/opennms`
+| _Debian_            | `/usr/share/opennms`
+| _Windows_           | `C:\Program Files\opennms`
+|===

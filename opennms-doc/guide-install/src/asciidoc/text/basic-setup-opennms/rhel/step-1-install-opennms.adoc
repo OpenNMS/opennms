@@ -1,0 +1,52 @@
+
+==== Step 1: Install {opennms-product-name}
+
+.Add yum repository and import GPG key
+[source, shell]
+----
+yum -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel7.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+----
+
+.Installation of with all built-in dependencies
+[source, shell]
+----
+yum -y install opennms
+----
+
+The following packages will be automatically installed:
+
+* _jicmp6_ and _jicmp_: _Java_ bridge to allow sending _ICMP messages_ from _{opennms-product-name}_ repository.
+* _opennms-core_: _{opennms-product-name}_ core services, e.g. _Provisiond_, _Pollerd_ and _Collectd_ from _{opennms-product-name}_ repository.
+* _opennms-webapp-jetty_: _{opennms-product-name}_ web application from _{opennms-product-name}_ repository
+* _jdk1.8_: _Oracle Java SE Development Kit 8_ environment from _{opennms-product-name}_ respository
+* _postgresql_: _PostgreSQL_ database server from distribution repository
+* _postgresql-libs_: _PostgreSQL_ database from distribution repository
+
+With the successful installed packages the _{opennms-product-name}_ is installed in the following directory structure:
+
+[source, shell]
+----
+[root@localhost /opt/opennms]# tree -L 1
+.
+└── opennms
+   ├── bin
+   ├── contrib
+   ├── data
+   ├── deploy
+   ├── etc
+   ├── jetty-webapps
+   ├── lib
+   ├── logs -> /var/log/opennms
+   ├── share -> /var/opennms
+   └── system
+----
+
+TIP: We recommend disabling the {opennms-product-name} apt repository after installation to prevent upgrades while it is running.
+     _{opennms-product-name}_ requires some manual steps upon upgrade to make sure the database and configuration are consistent in the new version, and on systems with many nodes or lots of events, this can take hours.
+     For this reason, it is recommended to exclude the {opennms-product-name} packages from update except when you are planning on performing an upgrade.
+
+[source, shell]
+----
+yum-config-manager --disable opennms-repo-stable-common,opennms-repo-stable-rhel7
+----

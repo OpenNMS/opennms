@@ -1129,6 +1129,7 @@
     <feature name="opennms-kafka-producer" description="OpenNMS :: Kafka :: Producer" version="${project.version}">
       <feature version="${guavaVersion}">guava</feature>
       <feature version="${kafkaStreamsVersion}">kafka-streams</feature>
+      <feature>opennms-collection-api</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobuf3Version}</bundle>
       <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
