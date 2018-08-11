@@ -13,6 +13,7 @@
 	<reference id="geolocationService" interface="org.opennms.features.geolocation.api.GeolocationService" availability="mandatory" />
 	<reference id="geolocationConfiguration" interface="org.opennms.features.geolocation.api.GeolocationConfiguration" availability="mandatory" />
 	<reference id="onmsHeaderProvider" interface="org.opennms.web.api.OnmsHeaderProvider" availability="optional" />
+	<reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" />
 
 	<bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
 	<bean id="selectionCheckboxGenerator" class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
@@ -29,6 +30,10 @@
 	</bean>
 	<bean id="serviceTypeGenerator" class="org.opennms.features.topology.plugins.browsers.OnmsServiceTypeGenerator" />
 	<bean id="inetAddressGenerator" class="org.opennms.features.topology.plugins.browsers.InetAddressGenerator" />
+
+	<bean id="timeColumnGenerator" class="org.opennms.features.topology.plugins.browsers.TimeColumnGenerator">
+		<argument ref="timeformatService" />
+	</bean>
 
 	<!-- Wrap the DAO in a Vaadin container -->
 	<bean id="alarmDaoContainer" class="org.opennms.features.topology.plugins.browsers.AlarmDaoContainer" scope="prototype">
@@ -55,6 +60,7 @@
 				<entry key="severity" value-ref="severityGenerator" />
 				<entry key="nodeLabel" value-ref="nodeIdSelectionLinkGenerator" />
 				<entry key="id" value-ref="alarmIdColumnLinkGenerator" />
+				<entry key="lastEventTime" value-ref="timeColumnGenerator" />
 				<!--
 				<entry key="serviceType" value-ref="serviceTypeGenerator" />
 				<entry key="ipAddr" value-ref="inetAddressGenerator" />
@@ -124,6 +130,7 @@
 				<entry key="id" value-ref="nodeTableSelectionLinkGenerator" />
 				<entry key="label" value-ref="nodeTableSelectionLinkGenerator" />
 				<entry key="primaryInterface" value-ref="ipInterfaceGenerator" />
+				<entry key="lastCapsdPoll" value-ref="timeColumnGenerator" />
 			</map>
 		</property>
 		<property name="visibleColumns">
