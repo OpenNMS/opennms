@@ -121,6 +121,7 @@ public class SyslogSinkConsumer implements MessageConsumer<SyslogConnection, Sys
                         messageLog.getSourceAddress(),
                         messageLog.getSourcePort(),
                         message.getBytes(),
+                        message.getTimestamp(),
                         syslogdConfig
                     );
                 events.addEvent(re.getEvent());
