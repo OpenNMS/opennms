@@ -139,15 +139,27 @@ public class RadixTreeSyslogParser extends SyslogParser {
 					retval.setMessage(newMessage == null ? null : newMessage);
 				}
 			}
-			// set timezone if not set
-			ZoneId timeZone = retval.getZoneId();
-			if(timeZone == null && getConfig().getTimeZone() == null){
-				retval.setZoneId(ZoneId.systemDefault());
-			} else if (timeZone == null && getConfig().getTimeZone() != null){
-				retval.setZoneId(getConfig().getTimeZone().toZoneId());
-			}
+			setTimezoneIfNeeded(retval);
 		}
 
 		return retval;
+	}
+
+	private void setTimezoneIfNeeded(SyslogMessage message){
+        boolean hasTimeinformation = // to no break logic in ConvertToEvent
+		        message.getYear() != null ||
+				message.getMonth() != null ||
+				message.getDayOfMonth() != null ||
+				message.getHourOfDay() != null ||
+				message.getMinute() != null ||
+				message.getSecond() != null ||
+				message.getMillisecond() != null;
+
+		ZoneId timeZone = message.getZoneId();
+		if(timeZone == null && hasTimeinformation && getConfig().getTimeZone() == null){
+			message.setZoneId(ZoneId.systemDefault());
+		} else if (timeZone == null && hasTimeinformation && getConfig().getTimeZone() != null){
+			message.setZoneId(getConfig().getTimeZone().toZoneId());
+		}
 	}
 }
