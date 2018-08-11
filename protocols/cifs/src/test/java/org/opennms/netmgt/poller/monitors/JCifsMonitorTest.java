@@ -283,4 +283,25 @@ public class JCifsMonitorTest {
         assertEquals(PollStatus.down(), pollStatus);
         assertTrue(pollStatus.getReason().matches(".*192\\.168\\.0\\.123.*"));
     }
+
+    @Test
+    public void testParamSub() throws UnknownHostException {
+
+        MonitoredService svc = MonitorTestUtils.getMonitoredService(99, InetAddress.getByName("10.123.123.123"), "JCIFS");
+
+        Map<String, Object> m = Collections.synchronizedMap(new TreeMap<String, Object>());
+
+        JCifsMonitor jCifsMonitor = new JCifsMonitor();
+
+        m.put("username", "{ipAddr}");
+        m.put("password", "{nodeLabel}");
+        m.put("domain", "{nodeId}");
+        m.put("mode", "PATH_EXIST");
+        m.put("path", "/validPath");
+
+        Map<String, Object> subbedParams = jCifsMonitor.getRuntimeAttributes(svc, m);
+        assertTrue(subbedParams.get("subbed-username").equals("10.123.123.123"));
+        assertTrue(subbedParams.get("subbed-password").equals("10.123.123.123"));
+        assertTrue(subbedParams.get("subbed-domain").equals("99"));
+    }
 }

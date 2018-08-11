@@ -33,10 +33,11 @@ import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFilenameFilter;
 
+import org.opennms.core.utils.ParameterMap;
 import org.opennms.core.utils.TimeoutTracker;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
-import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +53,7 @@ import java.util.Map;
  * @author <a mailto:christian.pape@informatik.hs-fulda.de>Christian Pape</a>
  * @version 1.10.9
  */
-public class JCifsMonitor extends AbstractServiceMonitor {
+public class JCifsMonitor extends ParameterSubstitutingMonitor {
 
     /*
     * default retries
@@ -91,9 +92,9 @@ public class JCifsMonitor extends AbstractServiceMonitor {
     @Override
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
 
-        final String domain = parameters.containsKey("domain") ? (String) parameters.get("domain") : "";
-        final String username = parameters.containsKey("username") ? (String) parameters.get("username") : "";
-        final String password = parameters.containsKey("password") ? (String) parameters.get("password") : "";
+        final String domain = resolveKeyedString(parameters, "domain", "");
+        final String username = resolveKeyedString(parameters, "username", "");
+        final String password = resolveKeyedString(parameters, "password", "");
         String mode = parameters.containsKey("mode") ? ((String) parameters.get("mode")).toUpperCase() : "PATH_EXIST";
         String path = parameters.containsKey("path") ? (String) parameters.get("path") : "";
         String smbHost = parameters.containsKey("smbHost") ? (String) parameters.get("smbHost") : "";
