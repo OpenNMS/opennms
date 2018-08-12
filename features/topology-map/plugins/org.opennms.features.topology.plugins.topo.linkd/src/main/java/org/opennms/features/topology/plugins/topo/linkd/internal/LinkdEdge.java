@@ -56,16 +56,8 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         SimpleConnector target = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetV.getId()+"-"+id+"-connector", targetV);
 
         LinkdEdge edge = new LinkdEdge(id, source, target,discoveredBy);
-        try {
-            edge.setSourceNodeid(Integer.parseInt(sourceV.getId()));
-        } catch (NumberFormatException e) {
-            
-        }
-        try {
-            edge.setTargetNodeid(Integer.parseInt(targetV.getId()));
-        } catch (NumberFormatException e) {
-            
-        }
+        edge.setSourceNodeid(sourceV.getNodeID());
+        edge.setTargetNodeid(targetV.getNodeID());
         edge.setSourceLabel(sourceV.getLabel());
         edge.setTargetLabel(targetV.getLabel());
         

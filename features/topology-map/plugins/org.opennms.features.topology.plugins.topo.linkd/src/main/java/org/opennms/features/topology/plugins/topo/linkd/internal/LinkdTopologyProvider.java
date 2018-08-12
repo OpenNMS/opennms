@@ -80,7 +80,6 @@ import org.opennms.netmgt.model.topology.BroadcastDomain;
 import org.opennms.netmgt.model.topology.SharedSegment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionOperations;
 
 import com.codahale.metrics.MetricRegistry;
@@ -134,11 +133,11 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private BridgeTopologyDao m_bridgeTopologyDao;
     private IpNetToMediaDao m_ipNetToMediaDao;
 
-    private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap;
-    private Map<Integer, Map<Integer,OnmsSnmpInterface>> m_nodeToOnmsSnmpMap;
-    private Map<String, Integer> m_macToNodeidMap;
-    private Map<String, OnmsIpInterface> m_macToOnmsIpMap;
-    private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap;
+    private Map<Integer, OnmsIpInterface> m_nodeToOnmsIpPrimaryMap =new HashMap<>();
+    private Map<Integer, Map<Integer,OnmsSnmpInterface>> m_nodeToOnmsSnmpMap = new HashMap<>();
+    private Map<String, Integer> m_macToNodeidMap = new HashMap<>();
+    private Map<String, OnmsIpInterface> m_macToOnmsIpMap = new HashMap<>();
+    private Map<String, OnmsSnmpInterface> m_macToOnmsSnmpMap = new HashMap<>();
 
     private final Timer m_loadFullTimer;
     private final Timer m_loadIpInterfacesTimer;
@@ -327,16 +326,20 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 if (!sourceLink.getLldpRemChassisId().equals(targetchassisId)) {
                     continue;
                 }
-                boolean bool1 = sourceLink.getLldpRemPortId().equals(link.getLldpPortId()) && link.getLldpRemPortId().equals(sourceLink.getLldpPortId());
-                boolean bool3 = sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType() && link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType();
-
-                if (bool1 && bool3) {
-                    targetLink=link;
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("getLldpLinks: lldp: {} target: {}", targetchassisId, link.printTopology());
-                    }
-                    break;
+                // no match if source Rem Port is not 'link' Local Port
+                if (!(sourceLink.getLldpRemPortId().equals(link.getLldpPortId())) || !(sourceLink.getLldpRemPortIdSubType() == link.getLldpPortIdSubType())) {
+                    continue;
                 }
+                // no match if source Local Port is not 'link Remote Port
+                if (!(link.getLldpRemPortId().equals(sourceLink.getLldpPortId()))|| !(link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType())) {
+                    continue;
+                }
+                // biderection link found 
+                targetLink=link;
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: lldp: {} target: {}", targetchassisId, link.printTopology());
+                }
+                break;
             }
 
             if (targetLink == null) {
@@ -792,18 +795,16 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                 });
     }
     
-    @Transactional
     private void doRefresh() {        
         Timer.Context vcontext = m_loadIpInterfacesTimer.time();
         Map<InetAddress, OnmsIpInterface>  ipToOnmsIpMap = new HashMap<InetAddress, OnmsIpInterface>();
         Set<InetAddress> duplicated = new HashSet<InetAddress>();
         try {
             for (OnmsIpInterface ip: m_ipInterfaceDao.findAll()) {
-                if (!m_nodeToOnmsIpPrimaryMap.containsKey(ip.getNode().getId())) {
-                    m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
-                }
                 if (ip.getIsSnmpPrimary().equals(PrimaryType.PRIMARY)) {
                     m_nodeToOnmsIpPrimaryMap.put(ip.getNode().getId(), ip);
+                } else {
+                    m_nodeToOnmsIpPrimaryMap.putIfAbsent(ip.getNode().getId(), ip);
                 }
 
                 if (!ipToOnmsIpMap.containsKey(ip.getIpAddress())) {
@@ -912,11 +913,11 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
         final Timer.Context context = m_loadFullTimer.time();
         try {
             resetContainer();
-            m_nodeToOnmsSnmpMap = new HashMap<Integer, Map<Integer,OnmsSnmpInterface>>();
-            m_nodeToOnmsIpPrimaryMap = new HashMap<Integer, OnmsIpInterface>();
-            m_macToNodeidMap = new HashMap<String, Integer>();
-            m_macToOnmsIpMap = new HashMap<String, OnmsIpInterface>();
-            m_macToOnmsSnmpMap = new HashMap<String, OnmsSnmpInterface>();
+            m_nodeToOnmsSnmpMap.clear();
+            m_nodeToOnmsIpPrimaryMap.clear();
+            m_macToNodeidMap.clear();
+            m_macToOnmsIpMap.clear();
+            m_macToOnmsSnmpMap.clear();
             doRefresh();
         } finally {
             context.stop();

@@ -32,7 +32,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
@@ -52,22 +51,8 @@ public class LinkdHopCriteria extends VertexHopCriteria {
 
     private final String m_nodeId;
 	
-    public static class LinkdVertex extends AbstractVertex {
-
-    public LinkdVertex(String namespace, String id, String label) {
-        super(namespace, id, label);
-    }
-
-    @Override
-        public boolean isGroup() {
-            return false;
-        }
-
-    }
-
     private LinkdHopCriteria(String nodeId, String nodeLabel) {
-        super(nodeLabel);
-        setId(nodeId);
+        super(nodeId,nodeLabel);
         m_nodeId = nodeId;
     }
     

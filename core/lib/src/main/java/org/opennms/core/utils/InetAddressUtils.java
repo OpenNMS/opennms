@@ -59,11 +59,11 @@ public abstract class InetAddressUtils {
      * Always print at least one digit after the decimal point,
      * and at most three digits after the decimal point.
      */
-    protected static final DecimalFormat s_oneDigitAfterDecimal = new DecimalFormat("0.0##");
+    protected static final DecimalFormat NO_DIGITS_AFTER_DECIMAL = new DecimalFormat("0.0##");
     /**
      * Print no digits after the decimal point (heh, nor a decimal point).
      */
-    protected static final DecimalFormat s_noDigitsAfterDecimal = new DecimalFormat("0");
+    protected static final DecimalFormat ONE_DIGIT_AFTER_DECIMAL = new DecimalFormat("0");
 
     public static final String INVALID_BRIDGE_ADDRESS = "000000000000";
     public static final String INVALID_STP_BRIDGE_ID  = "0000000000000000";
@@ -573,30 +573,30 @@ public abstract class InetAddressUtils {
 
         if (ifSpeed >= 1000000000L) {
             if ((ifSpeed % 1000000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
+                formatter = NO_DIGITS_AFTER_DECIMAL;
             } else {
-                formatter = s_oneDigitAfterDecimal;
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
             }
             displaySpeed = ((double) ifSpeed) / 1000000000.0;
             units = "Gbps";
         } else if (ifSpeed >= 1000000L) {
             if ((ifSpeed % 1000000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
+                formatter = NO_DIGITS_AFTER_DECIMAL;
             } else {
-                formatter = s_oneDigitAfterDecimal;
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
             }
             displaySpeed = ((double) ifSpeed) / 1000000.0;
             units = "Mbps";
         } else if (ifSpeed >= 1000L) {
             if ((ifSpeed % 1000L) == 0) {
-                formatter = s_noDigitsAfterDecimal;
+                formatter = NO_DIGITS_AFTER_DECIMAL;
             } else {
-                formatter = s_oneDigitAfterDecimal;
+                formatter = ONE_DIGIT_AFTER_DECIMAL;
             }
             displaySpeed = ((double) ifSpeed) / 1000.0;
             units = "kbps";
         } else {
-            formatter = s_noDigitsAfterDecimal;
+            formatter = NO_DIGITS_AFTER_DECIMAL;
             displaySpeed = (double) ifSpeed;
             units = "bps";
         }
