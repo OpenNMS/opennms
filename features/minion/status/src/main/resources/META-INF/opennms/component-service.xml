@@ -19,8 +19,6 @@
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
         <property name="properties">
             <props>
-                <!-- how old an "up" response can be before being considered "down", defaults to 2 x poll-interval -->
-                <prop key="org.opennms.minion.status.period">60000</prop>
                 <!-- how often to check the outages database for current status in case of missed events -->
                 <prop key="org.opennms.minion.status.refresh">300000</prop>
             </props>
@@ -28,7 +26,6 @@
     </bean>
 
     <bean id="minionStatusTracker" class="org.opennms.minion.status.MinionStatusTracker">
-        <property name="period" value="${org.opennms.minion.status.period}" />
         <property name="refresh" value="${org.opennms.minion.status.refresh}" />
     </bean>
 

@@ -82,8 +82,6 @@ public class MinionStatusTrackerTest {
     private static final String MINION_HEARTBEAT = MinionStatusTracker.MINION_HEARTBEAT;
     private static final String MINION_RPC = MinionStatusTracker.MINION_RPC;
 
-    private static final long PERIOD = 2 * 30 * 1000;
-
     private MinionStatusTracker m_tracker;
     private NodeDao m_nodeDao;
     private MinionDao m_minionDao;
@@ -164,7 +162,7 @@ public class MinionStatusTrackerTest {
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
         final MinionStatus status = m_tracker.getStatus(foreignId);
         assertNotNull("we should get a default status for the minion", status);
-        assertTrue("the default status for a minion with no status in the database should be up", status.isUp(PERIOD));
+        assertTrue("the default status for a minion with no status in the database should be up", status.isUp());
         assertEquals("the status in the minion object should be up", "up", minion.getStatus());
         verify(m_minionDao, times(1)).findById(foreignId);
     }
@@ -185,7 +183,7 @@ public class MinionStatusTrackerTest {
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
         final MinionStatus status = m_tracker.getStatus(foreignId);
         assertNotNull("we should get a default status for the minion", status);
-        assertFalse("the status for a newly indexed minion with 'down' in the database is down", status.isUp(PERIOD));
+        assertFalse("the status for a newly indexed minion with 'down' in the database is down", status.isUp());
         verify(m_minionDao, times(1)).saveOrUpdate(minion);
     }
 
@@ -226,7 +224,7 @@ public class MinionStatusTrackerTest {
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
         final MinionStatus status = m_tracker.getStatus(foreignId);
         assertNotNull("we should get a status for the minion", status);
-        assertTrue("the status should be up", status.isUp(PERIOD));
+        assertTrue("the status should be up", status.isUp());
         verify(m_minionDao, times(1)).findById(foreignId);
     }
 
@@ -247,7 +245,7 @@ public class MinionStatusTrackerTest {
         assertEquals("it should match our minion", foreignId, m_tracker.getMinions().iterator().next().getId());
         final MinionStatus status = m_tracker.getStatus(foreignId);
         assertNotNull("we should get a status for the minion", status);
-        assertFalse("the status should be down", status.isUp(PERIOD));
+        assertFalse("the status should be down", status.isUp());
         verify(m_minionDao, times(1)).saveOrUpdate(minion);
     }
 
@@ -283,7 +281,7 @@ public class MinionStatusTrackerTest {
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
         final MinionStatus status = m_tracker.getStatus(minion);
-        assertTrue("we should get an up status for the minion", status.isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", status.isUp());
         verify(m_minionDao, times(0)).saveOrUpdate(minion);
     }
 
@@ -299,11 +297,11 @@ public class MinionStatusTrackerTest {
         m_tracker.m_state.put(foreignId, AggregateMinionStatus.create(MinionServiceStatus.up(), MinionServiceStatus.up()));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
-        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp());
 
         generateOutage(EventConstants.OUTAGE_CREATED_EVENT_UEI, node, "WontYouTakeMeToFunkyTown", new Date());
 
-        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp());
     }
 
     @Test
@@ -317,11 +315,11 @@ public class MinionStatusTrackerTest {
         m_tracker.m_state.put(foreignId, AggregateMinionStatus.create(MinionServiceStatus.up(), MinionServiceStatus.up()));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
-        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp());
 
         generateOutage(EventConstants.OUTAGE_CREATED_EVENT_UEI, node, MINION_HEARTBEAT, new Date());
 
-        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp());
         verify(m_minionDao, times(1)).saveOrUpdate(minion);
     }
 
@@ -336,11 +334,11 @@ public class MinionStatusTrackerTest {
         m_tracker.m_state.put(foreignId, AggregateMinionStatus.create(MinionServiceStatus.up(), MinionServiceStatus.up()));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
-        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp());
 
         generateOutage(EventConstants.OUTAGE_CREATED_EVENT_UEI, node, MINION_RPC, new Date());
 
-        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp());
         verify(m_minionDao, times(1)).saveOrUpdate(minion);
     }
 
@@ -355,13 +353,13 @@ public class MinionStatusTrackerTest {
         m_tracker.m_state.put(foreignId, AggregateMinionStatus.create(MinionServiceStatus.down(), MinionServiceStatus.down()));
 
         assertEquals("there should be one minion", 1, m_tracker.getMinions().size());
-        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertFalse("we should get a down status for the minion", m_tracker.getStatus(minion).isUp());
 
         generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, node, MINION_HEARTBEAT, new Date());
-        assertFalse("we should still be down", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertFalse("we should still be down", m_tracker.getStatus(minion).isUp());
 
         generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, node, MINION_RPC, new Date());
-        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp(PERIOD));
+        assertTrue("we should get an up status for the minion", m_tracker.getStatus(minion).isUp());
 
         verify(m_minionDao, times(2)).saveOrUpdate(minion);
     }
@@ -393,13 +391,13 @@ public class MinionStatusTrackerTest {
         final OnmsNode nodeD = getNode(4, FOREIGN_SOURCE, foreignIdD, "MinionLocD");
         final OnmsMinion minionD = getMinion(nodeD);
 
-        final Date now = new Date(System.currentTimeMillis() - (PERIOD/2));
-        final Date tooOld = new Date(1);
+        final Date now = new Date(System.currentTimeMillis());
+        final Date old = new Date(1);
         final List<OnmsOutage> outages = Arrays.asList(
                                                        createOutage(now, now, nodeC, MINION_RPC), // nodeC RPC up
                                                        createOutage(now, now, nodeC, MINION_HEARTBEAT), // nodeC heartbeat up
                                                        createOutage(now, now, nodeB, MINION_RPC), // nodeB RPC up
-                                                       createOutage(tooOld, tooOld, nodeB, MINION_HEARTBEAT), // nodeB heartbeat too old
+                                                       createOutage(old, old, nodeB, MINION_HEARTBEAT), // nodeB heartbeat old but up
                                                        createOutage(now, null, nodeA, MINION_RPC), // nodeA RPC down
                                                        createOutage(now, null, nodeA, MINION_HEARTBEAT) // nodeA heartbeat down
                 );
@@ -408,45 +406,39 @@ public class MinionStatusTrackerTest {
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA, nodeB, nodeC, nodeD));
         when(m_outageDao.matchingLatestOutages(any(ServiceSelector.class))).thenReturn(outages);
 
-        System.err.println("tooOld=" + tooOld);
+        System.err.println("old=" + old);
         System.err.println("now=" + now);
 
         m_tracker.refresh();
 
         assertEquals("there should be 4 minions", 4, m_tracker.getMinions().size());
-        assertFalse("we should get a down status for minion A (both services down)", m_tracker.getStatus(foreignIdA).isUp(PERIOD));
-        assertFalse("we should get a down status for minion B (heartbeat out of date)", m_tracker.getStatus(foreignIdB).isUp(PERIOD));
-        assertTrue("we should get an up status for minion C", m_tracker.getStatus(foreignIdC).isUp(PERIOD));
-        assertTrue("we should get an up status for minion D", m_tracker.getStatus(foreignIdD).isUp(PERIOD));
+        assertFalse("we should get a down status for minion A (both services down)", m_tracker.getStatus(foreignIdA).isUp());
+        assertTrue("we should get an up status for minion B", m_tracker.getStatus(foreignIdB).isUp());
+        assertTrue("we should get an up status for minion C", m_tracker.getStatus(foreignIdC).isUp());
+        assertTrue("we should get an up status for minion D", m_tracker.getStatus(foreignIdD).isUp());
 
         final AggregateMinionStatus statusA = (AggregateMinionStatus)m_tracker.getStatus(foreignIdA);
-        assertEquals("node A heartbeat state should be down", MinionStatus.DOWN, statusA.getHeartbeatStatus().getState());
-        assertFalse("node A heartbeat status should be down", statusA.getHeartbeatStatus().isUp(PERIOD));
-        assertEquals("node A RPC state should be down", MinionStatus.DOWN, statusA.getRpcStatus().getState());
-        assertFalse("node A RPC status should be down", statusA.getRpcStatus().isUp(PERIOD));
+        assertFalse("node A heartbeat status should be down", statusA.getHeartbeatStatus().isUp());
+        assertFalse("node A RPC status should be down", statusA.getRpcStatus().isUp());
 
         AggregateMinionStatus statusB = (AggregateMinionStatus)m_tracker.getStatus(foreignIdB);
-        assertEquals("node B heartbeat state should be up", MinionStatus.UP, statusB.getHeartbeatStatus().getState());
-        assertFalse("node B heartbeat status should be down", statusB.getHeartbeatStatus().isUp(PERIOD));
-        assertEquals("node B RPC state should be up", MinionStatus.UP, statusB.getRpcStatus().getState());
-        assertTrue("node B RPC status should be up", statusB.getRpcStatus().isUp(PERIOD));
+        assertTrue("node B heartbeat status should be up", statusB.getHeartbeatStatus().isUp());
+        assertTrue("node B RPC status should be up", statusB.getRpcStatus().isUp());
 
         AggregateMinionStatus statusC = (AggregateMinionStatus)m_tracker.getStatus(foreignIdC);
-        assertEquals("node C heartbeat state should be up", MinionStatus.UP, statusC.getHeartbeatStatus().getState());
-        assertTrue("node C heartbeat status should be up", statusC.getHeartbeatStatus().isUp(PERIOD));
-        assertEquals("node C RPC state should be up", MinionStatus.UP, statusC.getRpcStatus().getState());
-        assertTrue("node C RPC status should be up", statusC.getRpcStatus().isUp(PERIOD));
+        assertTrue("node C heartbeat status should be up", statusC.getHeartbeatStatus().isUp());
+        assertTrue("node C RPC status should be up", statusC.getRpcStatus().isUp());
 
         AggregateMinionStatus statusD = (AggregateMinionStatus)m_tracker.getStatus(foreignIdD);
-        assertEquals("node D heartbeat state should be up", MinionStatus.UP, statusD.getHeartbeatStatus().getState());
-        assertTrue("node D heartbeat status should be up", statusD.getHeartbeatStatus().isUp(PERIOD));
-        assertEquals("node D RPC state should be up", MinionStatus.UP, statusD.getRpcStatus().getState());
-        assertTrue("node D RPC status should be up", statusD.getRpcStatus().isUp(PERIOD));
+        assertTrue("node D heartbeat status should be up", statusD.getHeartbeatStatus().isUp());
+        assertTrue("node D RPC status should be up", statusD.getRpcStatus().isUp());
 
-        generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeB, MINION_HEARTBEAT, now);
-        assertTrue("node B should now be up", m_tracker.getStatus(foreignIdB).isUp(PERIOD));
+        generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeA, MINION_HEARTBEAT, now);
+        assertFalse("node A should still be down", m_tracker.getStatus(foreignIdA).isUp());
+        generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeA, MINION_RPC, now);
+        assertTrue("node A should now be up", m_tracker.getStatus(foreignIdA).isUp());
 
-        verify(m_minionDao, times(2)).saveOrUpdate(minionB);
+        verify(m_minionDao, times(2)).saveOrUpdate(minionA);
     }
 
     @Test
@@ -470,13 +462,13 @@ public class MinionStatusTrackerTest {
         generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeA, MINION_HEARTBEAT, heartbeatUpDate);
 
         assertEquals("there should be 1 minion", 1, m_tracker.getMinions().size());
-        assertFalse("it should be down", m_tracker.getStatus(foreignIdA).isUp(PERIOD));
+        assertFalse("it should be down", m_tracker.getStatus(foreignIdA).isUp());
 
         final Date rpcUpDate = new Date(System.currentTimeMillis() - 50);
         generateOutage(EventConstants.OUTAGE_RESOLVED_EVENT_UEI, nodeA, MINION_RPC, rpcUpDate);
 
         assertEquals("there should still be 1 minion", 1, m_tracker.getMinions().size());
-        assertTrue("it should be up", m_tracker.getStatus(foreignIdA).isUp(PERIOD));
+        assertTrue("it should be up", m_tracker.getStatus(foreignIdA).isUp());
 
         // refresh() query
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
@@ -486,13 +478,11 @@ public class MinionStatusTrackerTest {
         m_tracker.refresh();
 
         assertEquals("there should still be 1 minion", 1, m_tracker.getMinions().size());
-        assertTrue("it should still be up", m_tracker.getStatus(foreignIdA).isUp(PERIOD));
+        assertTrue("it should still be up", m_tracker.getStatus(foreignIdA).isUp());
 
         final AggregateMinionStatus statusA = (AggregateMinionStatus)m_tracker.getStatus(foreignIdA);
-        assertEquals("node A heartbeat state should be up", MinionStatus.UP, statusA.getHeartbeatStatus().getState());
-        assertTrue("node A heartbeat status should be up", statusA.getHeartbeatStatus().isUp(PERIOD));
-        assertEquals("node A RPC state should be up", MinionStatus.UP, statusA.getRpcStatus().getState());
-        assertTrue("node A RPC status should be up", statusA.getRpcStatus().isUp(PERIOD));
+        assertTrue("node A heartbeat status should be up", statusA.getHeartbeatStatus().isUp());
+        assertTrue("node A RPC status should be up", statusA.getRpcStatus().isUp());
 
         verify(m_minionDao, times(2)).saveOrUpdate(any(OnmsMinion.class));
     }
@@ -516,7 +506,7 @@ public class MinionStatusTrackerTest {
         m_tracker.refresh();
 
         assertEquals("there should be 1 minion restored from the database", 1, m_tracker.getMinions().size());
-        assertTrue("it should be up because refresh always checks for outages", m_tracker.getStatus(foreignIdA).isUp(PERIOD));
+        assertTrue("it should be up because refresh always checks for outages", m_tracker.getStatus(foreignIdA).isUp());
 
         verify(m_minionDao, times(1)).findAll();
     }

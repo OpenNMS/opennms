@@ -97,12 +97,8 @@ public class MinionStatusTracker implements InitializingBean {
     @Autowired
     TransactionOperations m_transactionOperations;
 
-    private boolean m_initialized = false;
     private Integer m_heartbeatServiceId = null;
     private Integer m_rpcServiceId = null;
-
-    // by default, minions are updated every 30 seconds
-    private long m_period = TimeUnit.SECONDS.toMillis(60);
 
     private long m_refresh = TimeUnit.MINUTES.toMillis(5);
 
@@ -131,14 +127,6 @@ public class MinionStatusTracker implements InitializingBean {
             // sanity check every 5 minutes by default
             m_executor.scheduleAtFixedRate(command, 0, m_refresh, TimeUnit.MILLISECONDS);
         }
-    }
-
-    public long getPeriod() {
-        return m_period;
-    }
-
-    public void setPeriod(final long period) {
-        m_period = period;
     }
 
     public long getRefresh() {
@@ -224,9 +212,9 @@ public class MinionStatusTracker implements InitializingBean {
             }
 
             if (MINION_HEARTBEAT.equals(e.getService())) {
-                state = state.heartbeatUp(e.getTime());
+                state = state.heartbeatUp();
             } else if (MINION_RPC.equals(e.getService())) {
-                state = state.rpcUp(e.getTime());
+                state = state.rpcUp();
             }
             updateStateIfChanged(minion, state, m_state.get(minionId));
         });
@@ -277,20 +265,20 @@ public class MinionStatusTracker implements InitializingBean {
             final String uei = e.getUei();
             if (MINION_HEARTBEAT.equalsIgnoreCase(e.getService())) {
                 if (OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
-                    status = status.heartbeatDown(e.getTime());
+                    status = status.heartbeatDown();
                 } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
-                    status = status.heartbeatUp(e.getTime());
+                    status = status.heartbeatUp();
                 }
                 final MinionServiceStatus heartbeatStatus = status.getHeartbeatStatus();
-                LOG.debug("{} heartbeat is {} as of {}", minionId, heartbeatStatus.getState(), heartbeatStatus.lastSeen());
+                LOG.debug("{} heartbeat is {}", minionId, heartbeatStatus.getState());
             } else if (MINION_RPC.equalsIgnoreCase(e.getService())) {
                 if (OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
-                    status = status.rpcDown(e.getTime());
+                    status = status.rpcDown();
                 } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
-                    status = status.rpcUp(e.getTime());
+                    status = status.rpcUp();
                 }
                 final MinionServiceStatus rpcStatus = status.getRpcStatus();
-                LOG.debug("{} RPC is {} as of {}", minionId, rpcStatus.getState(), rpcStatus.lastSeen());
+                LOG.debug("{} RPC is {}", minionId, rpcStatus.getState());
             }
 
             updateStateIfChanged(minion, status, m_state.get(minionId));
@@ -322,15 +310,9 @@ public class MinionStatusTracker implements InitializingBean {
                 final String minionId = minion.getId();
                 minions.put(minionId, minion);
                 final AggregateMinionStatus status;
-                if (m_initialized) {
-                    // if we've initialized already, get the last status from the DB and start with that
-                    if ("down".equals(minion.getStatus())) {
-                        status = AggregateMinionStatus.down(minion.getLastUpdated());
-                    } else {
-                        status = AggregateMinionStatus.up(minion.getLastUpdated());
-                    }
+                if ("down".equals(minion.getStatus())) {
+                    status = AggregateMinionStatus.down();
                 } else {
-                    // otherwise, if this is the first launch, start with "up" and let the outages table reset state
                     status = AggregateMinionStatus.up();
                 }
                 state.put(minionId, status);
@@ -356,9 +338,6 @@ public class MinionStatusTracker implements InitializingBean {
                 }
             });
 
-            final Integer heartbeatServiceId = getHeartbeatServiceId();
-            final Integer rpcServiceId = getRpcServiceId();
-
             final ServiceSelector selector = new ServiceSelector("IPADDR != '0.0.0.0'", Arrays.asList(MINION_HEARTBEAT, MINION_RPC));
             final Collection<OnmsOutage> outages = m_outageDao.matchingLatestOutages(selector);
 
@@ -370,23 +349,14 @@ public class MinionStatusTracker implements InitializingBean {
                     final AggregateMinionStatus currentStatus = state.get(foreignId);
                     final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getServiceId(), outage.getIfRegainedService(), outage.getIfLostService());
 
-                    if (!m_initialized) {
-                        // If we have never initialized before, log the initial state and store the new status.
-                        if (outage.getServiceId().equals(heartbeatServiceId)) {
-                            final MinionServiceStatus heartbeatStatus = newStatus.getHeartbeatStatus();
-                            LOG.debug("{} heartbeat is {} as of {}", foreignId, heartbeatStatus.getState(), heartbeatStatus.lastSeen());
-                        } else if (outage.getServiceId().equals(rpcServiceId)) {
-                            final MinionServiceStatus rpcStatus = newStatus.getRpcStatus();
-                            LOG.debug("{} RPC is {} as of {}", foreignId, rpcStatus.getState(), rpcStatus.lastSeen());
-                        }
-                        state.put(foreignId, newStatus);
+                    // If this is a refresh, and the "in-memory" tracking is more up-to-date than the outage records, keep it. Otherwise update with outage records.
+                    final AggregateMinionStatus existingStatus = m_state.get(foreignId);
+                    if (newStatus.equals(existingStatus)) {
+                        LOG.trace("{} status {} is unchanged.", foreignId, newStatus);
                     } else {
-                        // If this is a refresh, and the "in-memory" tracking is more up-to-date than the outage records, keep it. Otherwise update with outage records.
-                        final AggregateMinionStatus existingStatus = m_state.get(foreignId);
-                        if (existingStatus == null || !newStatus.getState().equals(existingStatus.getState()) || newStatus.lastSeen().after(existingStatus.lastSeen())) {
-                            LOG.trace("{} existing status {} is newer than {}", foreignId, existingStatus, newStatus);
-                            state.put(foreignId, newStatus);
-                        }
+                        // if there is no existing status, or the new status is changed, update the state
+                        LOG.trace("{} status {} is different than {}, using it instead.", foreignId, newStatus, existingStatus);
+                        state.put(foreignId, newStatus);
                     }
                 });
             } else {
@@ -403,7 +373,6 @@ public class MinionStatusTracker implements InitializingBean {
             m_state = state;
             m_minions = minions;
             m_minionNodes = minionNodes;
-            m_initialized = true;
 
             LOG.info("Minion status updated from the outages database.  Next refresh in {} milliseconds.", m_refresh);
         });
@@ -415,18 +384,18 @@ public class MinionStatusTracker implements InitializingBean {
         final Integer rpcId = getRpcServiceId();
         if (ifRegainedService != null) {
             if (heartbeatId == outageServiceId) {
-                newStatus = currentStatus.heartbeatUp(ifRegainedService);
+                newStatus = currentStatus.heartbeatUp();
             } else if (rpcId == outageServiceId) {
-                newStatus = currentStatus.rpcUp(ifRegainedService);
+                newStatus = currentStatus.rpcUp();
             } else {
                 LOG.warn("Unhandled 'up' outage record: ifservice={}, lost={}, regained={}", outageServiceId, ifLostService, ifRegainedService);
                 newStatus = currentStatus;
             }
         } else {
             if (heartbeatId == outageServiceId) {
-                newStatus = currentStatus.heartbeatDown(ifLostService);
+                newStatus = currentStatus.heartbeatDown();
             } else if (rpcId == outageServiceId) {
-                newStatus = currentStatus.rpcDown(ifLostService);
+                newStatus = currentStatus.rpcDown();
             } else {
                 LOG.warn("Unhandled 'down' outage record: ifservice={}, lost={}, regained={}", outageServiceId, ifLostService, ifRegainedService);
                 newStatus = currentStatus;
@@ -464,10 +433,10 @@ public class MinionStatusTracker implements InitializingBean {
         m_state.put(minionId, current);
 
         final String currentMinionStatus = minion.getStatus();
-        final String newMinionStatus = current.isUp(m_period)? "up":"down";
+        final String newMinionStatus = current.isUp()? "up":"down";
 
         if (newMinionStatus.equals(currentMinionStatus)) {
-            LOG.trace("Minion {} status did not change: {}", minionId, currentMinionStatus);
+            LOG.trace("Minion {} status did not change: {} = {}", minionId, currentMinionStatus, newMinionStatus);
             return;
         }
 

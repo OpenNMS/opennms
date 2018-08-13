@@ -30,41 +30,25 @@ package org.opennms.minion.status;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Objects;
 
 public class MinionServiceStatus implements MinionStatus, Comparable<MinionServiceStatus>, Serializable {
-    private static final Comparator<MinionServiceStatus> COMPARATOR = Comparator.comparing(MinionServiceStatus::getState).thenComparing(MinionServiceStatus::lastSeen);
+    private static final Comparator<MinionServiceStatus> COMPARATOR = Comparator.comparing(MinionServiceStatus::getState);
 
     private static final long serialVersionUID = 1L;
 
-    private Date m_lastSeen;
     private State m_state;
 
-    MinionServiceStatus(final Date lastSeen, final MinionStatus.State state) {
-        m_lastSeen = lastSeen;
+    MinionServiceStatus(final MinionStatus.State state) {
         m_state = state;
     }
 
     public static MinionServiceStatus up() {
-        return new MinionServiceStatus(new Date(), State.UP);
-    }
-
-    public static MinionServiceStatus up(final Date lastSeen) {
-        return new MinionServiceStatus(lastSeen == null? new Date() : lastSeen, State.UP);
+        return new MinionServiceStatus(State.UP);
     }
 
     public static MinionServiceStatus down() {
-        return new MinionServiceStatus(new Date(), State.DOWN);
-    }
-
-    public static MinionServiceStatus down(final Date lastSeen) {
-        return new MinionServiceStatus(lastSeen == null? new Date() : lastSeen, State.DOWN);
-    }
-
-    @Override
-    public Date lastSeen() {
-        return m_lastSeen;
+        return new MinionServiceStatus(State.DOWN);
     }
 
     @Override
@@ -73,12 +57,8 @@ public class MinionServiceStatus implements MinionStatus, Comparable<MinionServi
     }
 
     @Override
-    public boolean isUp(final long timeoutPeriod) {
-        if (m_state == MinionStatus.UP) {
-            final long lastSeen = System.currentTimeMillis() - m_lastSeen.getTime();
-            return lastSeen <= timeoutPeriod;
-        }
-        return false;
+    public boolean isUp() {
+        return m_state == MinionStatus.UP;
     }
 
     @Override
@@ -95,8 +75,7 @@ public class MinionServiceStatus implements MinionStatus, Comparable<MinionServi
     public boolean equals(final Object o) {
         if (o != null && o instanceof MinionServiceStatus) {
             final MinionServiceStatus status = (MinionServiceStatus)o;
-            return Objects.equals(m_lastSeen, status.m_lastSeen)
-                    && Objects.equals(m_state, status.m_state);
+            return Objects.equals(m_state, status.m_state);
         }
         return false;
     }

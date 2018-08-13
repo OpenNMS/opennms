@@ -30,7 +30,6 @@ package org.opennms.minion.status;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Objects;
 
 public class AggregateMinionStatus implements MinionStatus, Comparable<AggregateMinionStatus>, Serializable {
@@ -65,27 +64,11 @@ public class AggregateMinionStatus implements MinionStatus, Comparable<Aggregate
     }
 
     /**
-     * Create a new aggregate down status the given date as last seen.
-     * @return a down aggregate status
-     */
-    public static AggregateMinionStatus down(final Date lastSeen) {
-        return new AggregateMinionStatus(MinionServiceStatus.down(lastSeen), MinionServiceStatus.down(lastSeen));
-    }
-
-    /**
      * Create a new aggregate status assumed to be up.
      * @return an up aggregate status
      */
     public static AggregateMinionStatus up() {
         return new AggregateMinionStatus(MinionServiceStatus.up(), MinionServiceStatus.up());
-    }
-
-    /**
-     * Create a new aggregate up status the given date as last seen.
-     * @return a down aggregate status
-     */
-    public static AggregateMinionStatus up(final Date lastSeen) {
-        return new AggregateMinionStatus(MinionServiceStatus.up(lastSeen), MinionServiceStatus.up(lastSeen));
     }
 
     public MinionServiceStatus getHeartbeatStatus() {
@@ -97,36 +80,29 @@ public class AggregateMinionStatus implements MinionStatus, Comparable<Aggregate
     }
 
     @Override
-    public Date lastSeen() {
-        final Date heartbeatSeen = m_heartbeatStatus.lastSeen();
-        final Date rpcSeen = m_rpcStatus.lastSeen();
-        return heartbeatSeen.compareTo(rpcSeen) < 1? heartbeatSeen : rpcSeen;
-    }
-
-    @Override
     public State getState() {
         return m_heartbeatStatus.getState() == UP && m_rpcStatus.getState() == UP? UP : DOWN;
     }
 
     @Override
-    public boolean isUp(final long timeoutPeriod) {
-        return m_heartbeatStatus.isUp(timeoutPeriod) && m_rpcStatus.isUp(timeoutPeriod);
+    public boolean isUp() {
+        return m_heartbeatStatus.isUp() && m_rpcStatus.isUp();
     }
 
-    public AggregateMinionStatus heartbeatDown(final Date lastSeen) {
-        return new AggregateMinionStatus(MinionServiceStatus.down(lastSeen), m_rpcStatus);
+    public AggregateMinionStatus heartbeatDown() {
+        return new AggregateMinionStatus(MinionServiceStatus.down(), m_rpcStatus);
     }
 
-    public AggregateMinionStatus heartbeatUp(final Date lastSeen) {
-        return new AggregateMinionStatus(MinionServiceStatus.up(lastSeen), m_rpcStatus);
+    public AggregateMinionStatus heartbeatUp() {
+        return new AggregateMinionStatus(MinionServiceStatus.up(), m_rpcStatus);
     }
 
-    public AggregateMinionStatus rpcDown(final Date lastSeen) {
-        return new AggregateMinionStatus(m_heartbeatStatus, MinionServiceStatus.down(lastSeen));
+    public AggregateMinionStatus rpcDown() {
+        return new AggregateMinionStatus(m_heartbeatStatus, MinionServiceStatus.down());
     }
 
-    public AggregateMinionStatus rpcUp(final Date lastSeen) {
-        return new AggregateMinionStatus(m_heartbeatStatus, MinionServiceStatus.up(lastSeen));
+    public AggregateMinionStatus rpcUp() {
+        return new AggregateMinionStatus(m_heartbeatStatus, MinionServiceStatus.up());
     }
 
     @Override

@@ -28,8 +28,6 @@
 
 package org.opennms.minion.status;
 
-import java.util.Date;
-
 public interface MinionStatus {
     public enum State {
         DOWN,
@@ -39,8 +37,7 @@ public interface MinionStatus {
     public static State DOWN = State.DOWN;
     public static State UP = State.UP;
 
-    Date lastSeen();
     State getState();
-    boolean isUp(long timeoutPeriod);
+    boolean isUp();
 
 }

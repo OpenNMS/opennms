@@ -31,60 +31,35 @@ package org.opennms.minion.status;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Test;
 import org.opennms.minion.status.MinionStatus.State;
 
 public class MinionStatusTest {
-    private static final int PERIOD = 2 * 30 * 1000;
-
     @Test
     public void testServiceUp() {
-        assertTrue("'now' up status should be up", MinionServiceStatus.up().isUp(PERIOD));
-        assertTrue("recent up status should be up", MinionServiceStatus.up(new Date(System.currentTimeMillis() - 50)).isUp(PERIOD));
-        assertFalse("barely old up status should be down", MinionServiceStatus.up(new Date(System.currentTimeMillis() - PERIOD - 10)).isUp(PERIOD));
-        assertFalse("old up status should be down", MinionServiceStatus.up(new Date(1)).isUp(PERIOD));
+        assertTrue("'now' up status should be up", MinionServiceStatus.up().isUp());
     }
 
     @Test
     public void testServiceDown() {
-        assertFalse("'now' down status should be down", MinionServiceStatus.down().isUp(PERIOD));
-        assertFalse("recent down status should be down", MinionServiceStatus.down(new Date(System.currentTimeMillis() - 50)).isUp(PERIOD));
-        assertFalse("old down status should be down", MinionServiceStatus.down(new Date(1)).isUp(PERIOD));
+        assertFalse("'now' down status should be down", MinionServiceStatus.down().isUp());
     }
 
     @Test
     public void testAggregate() {
-        final long now = System.currentTimeMillis();
-        final long diff = now - 100;
-
-        final long[] dateCombinations = new long[] {
-                now,
-                diff,
-                diff - PERIOD,
-                1
-        };
-
         for (final State heartbeat : State.values()) {
             for (final State rpc : State.values()) {
-                for (final long heartbeatDate : dateCombinations) {
-                    for (final long rpcDate : dateCombinations) {
-                        final MinionServiceStatus heartbeatStatus = new MinionServiceStatus(new Date(heartbeatDate), heartbeat);
-                        final MinionServiceStatus rpcStatus = new MinionServiceStatus(new Date(rpcDate), rpc);
+                final MinionServiceStatus heartbeatStatus = new MinionServiceStatus(heartbeat);
+                final MinionServiceStatus rpcStatus = new MinionServiceStatus(rpc);
 
-                        final String message = "heartbeat=" + heartbeat + ", heartbeatDate=" + new Date(heartbeatDate) + ", rpc=" + rpc + ", rpcDate=" + new Date(rpcDate);
-                        final AggregateMinionStatus aggregateStatus = AggregateMinionStatus.create(heartbeatStatus, rpcStatus);
+                final String message = "heartbeat=" + heartbeat + ", rpc=" + rpc;
+                final AggregateMinionStatus aggregateStatus = AggregateMinionStatus.create(heartbeatStatus, rpcStatus);
 
-                        if (heartbeat == State.UP
-                                && rpc == State.UP
-                                && ( heartbeatDate == now || heartbeatDate == diff )
-                                && ( rpcDate == now || rpcDate == diff) ) {
-                            assertTrue(message, aggregateStatus.isUp(PERIOD));
-                        } else {
-                            assertFalse(message, aggregateStatus.isUp(PERIOD));
-                        }
-                    }
+                if (heartbeat == State.UP
+                        && rpc == State.UP) {
+                    assertTrue(message, aggregateStatus.isUp());
+                } else {
+                    assertFalse(message, aggregateStatus.isUp());
                 }
             }
         }
