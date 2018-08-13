@@ -44,7 +44,7 @@ import com.google.common.collect.Sets;
 import com.google.gwt.thirdparty.guava.common.base.Function;
 import com.google.gwt.thirdparty.guava.common.collect.Collections2;
 
-public class EnhancedLinkdSelectionAware implements SelectionAware {
+public class LinkdSelectionAware implements SelectionAware {
     @Override
     public SelectionChangedListener.Selection getSelection(List<VertexRef> selectedVertices, ContentType type) {
         List<Integer> nodeIds = extractNodeIds(selectedVertices);
