@@ -33,9 +33,9 @@ public enum DaemonReloadEnum {
     EVENTD("Eventd"),
     NOTIFD("Notifd"),
     POLLERD("Pollerd"),
-    SYSLOGD("syslogd"),
+    SYSLOGD("Syslogd"),
     TELEMETRYD("Telemetryd"),
-    TRAPD("trapd");
+    TRAPD("Trapd");
 
     private String daemonName;
 
