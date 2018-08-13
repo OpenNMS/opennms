@@ -64,7 +64,7 @@
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
-    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+    <bean id="enLinkdTopologyProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <constructor-arg ref="metricRegistry"/>
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
         <property name="cdpLinkDao" ref="cdpLinkDao" />

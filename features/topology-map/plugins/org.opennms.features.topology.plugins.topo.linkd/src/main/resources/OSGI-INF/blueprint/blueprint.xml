@@ -10,22 +10,22 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 
     <reference id="transactionOperations" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory" />
 
-    <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
-    <reference id="lldpElementDao" interface="org.opennms.netmgt.dao.api.LldpElementDao" availability="mandatory" />
-    <reference id="ospfLinkDao" interface="org.opennms.netmgt.dao.api.OspfLinkDao" availability="mandatory" />
-    <reference id="isisLinkDao" interface="org.opennms.netmgt.dao.api.IsIsLinkDao" availability="mandatory" />
-    <reference id="isisElementDao" interface="org.opennms.netmgt.dao.api.IsIsElementDao" availability="mandatory" />
-    <reference id="ospfElementDao" interface="org.opennms.netmgt.dao.api.OspfElementDao" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="snmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="mandatory" />
-    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
-    <reference id="topologyDao" interface="org.opennms.netmgt.dao.api.TopologyDao" availability="mandatory" />
-    <reference id="filterManager" interface="org.opennms.netmgt.model.FilterManager" availability="mandatory" />
-    <reference id="bridgeTopologyDao" interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" availability="mandatory" />
+    <reference id="lldpLinkDao" interface="org.opennms.netmgt.dao.api.LldpLinkDao" availability="mandatory" />
+    <reference id="lldpElementDao" interface="org.opennms.netmgt.dao.api.LldpElementDao" availability="mandatory" />
     <reference id="cdpLinkDao" interface="org.opennms.netmgt.dao.api.CdpLinkDao" availability="mandatory"/>
     <reference id="cdpElementDao" interface="org.opennms.netmgt.dao.api.CdpElementDao" availability="mandatory"/>
+    <reference id="ospfLinkDao" interface="org.opennms.netmgt.dao.api.OspfLinkDao" availability="mandatory" />
+    <reference id="ospfElementDao" interface="org.opennms.netmgt.dao.api.OspfElementDao" availability="mandatory" />
+    <reference id="isisLinkDao" interface="org.opennms.netmgt.dao.api.IsIsLinkDao" availability="mandatory" />
+    <reference id="isisElementDao" interface="org.opennms.netmgt.dao.api.IsIsElementDao" availability="mandatory" />
+    <reference id="bridgeTopologyDao" interface="org.opennms.netmgt.dao.api.BridgeTopologyDao" availability="mandatory" />
     <reference id="ipNetToMediaDao" interface="org.opennms.netmgt.dao.api.IpNetToMediaDao" availability="mandatory"/>
+    <reference id="topologyDao" interface="org.opennms.netmgt.dao.api.TopologyDao" availability="mandatory" />
+    <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
+    <reference id="filterManager" interface="org.opennms.netmgt.model.FilterManager" availability="mandatory" />
 
     <bean id="enlinkdTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
         <property name="name" value="Enhanced Linkd Topology Provider"/>
@@ -50,22 +50,13 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         init-method="start"
         destroy-method="stop" />
 
-    <!--Topology Provider Shared Components-->
-    <bean id="linkdHopCriteriaFactory" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdHopCriteriaFactory">
-        <argument ref="nodeDao"/>
-    </bean>
-    <!-- Shared Components end -->
-
-    <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.EnhancedLinkdTopologyProvider">
+    <bean id="topologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <argument ref="metricRegistry" />
         <property name="transactionOperations" ref="transactionOperations"/>
         <property name="nodeDao" ref="nodeDao" />
         <property name="snmpInterfaceDao" ref="snmpInterfaceDao" />
         <property name="ipInterfaceDao" ref="ipInterfaceDao" />
-        <property name="topologyDao" ref="topologyDao"/>
         <property name="filterManager" ref="filterManager" />
-        <property name="addNodeWithoutLink" value="true"/>
-        <property name="linkdHopCriteriaFactory" ref="linkdHopCriteriaFactory" />
         <property name="lldpElementDao" ref="lldpElementDao" />
         <property name="lldpLinkDao" ref="lldpLinkDao" />
         <property name="cdpLinkDao" ref="cdpLinkDao"/>
@@ -74,55 +65,49 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <property name="isisLinkDao" ref="isisLinkDao" />
         <property name="isisElementDao" ref="isisElementDao" />
         <property name="bridgeTopologyDao" ref="bridgeTopologyDao" />
-        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
         <property name="ipNetToMediaDao" ref="ipNetToMediaDao"/>
+        <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+        <property name="topologyDao" ref="topologyDao"/>
     </bean>
-
-    <!--
-      Wrap the Linkd provider in a provider that calculates SZL based on hop distance from a set of
-      focal vertices
-    -->
-    <reference id="enlinkd" interface="org.opennms.netmgt.model.ServiceDaemon" filter="(name=enlinkd)" availability="optional"/>
 
     <bean id="topologyHopProvider" class="org.opennms.features.topology.api.support.VertexHopGraphProvider">
         <argument ref="topologyProvider"/>
     </bean>
 
-    <bean id="topologyACLProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.NodeACLVertexProvider">
-        <argument ref="topologyHopProvider" />
-        <argument ref="nodeDao" />
+    <!-- Search topology provider -->
+    <bean id="linkdSearchProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdSearchProvider">
+        <argument ref="topologyProvider" />
     </bean>
+
+    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="linkdSearchProvider" />
 
     <!-- Meta topology provider -->
-    <bean id="enhancedLinkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
-        <argument ref="topologyACLProvider" />
+    <bean id="linkdMetaTopologyProvider" class="org.opennms.features.topology.api.topo.SimpleMetaTopologyProvider">
+        <argument ref="topologyHopProvider" />
     </bean>
 
-    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="enhancedLinkdMetaTopologyProvider">
+    <service interface="org.opennms.features.topology.api.topo.MetaTopologyProvider" ref="linkdMetaTopologyProvider">
         <service-properties>
             <entry key="label" value="Enhanced Linkd" />
         </service-properties>
     </service>
-
-    <service interface="org.opennms.features.topology.api.topo.SearchProvider" ref="topologyProvider" />
 
     <!-- EnhancedLinkd StatusProviders Service and CheckedOperation -->
     <bean id="linkdEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdEdgeStatusProvider">
         <property name="alarmDao" ref="alarmDao"/>
     </bean>
 
-	<bean id="enlinkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
-        <property name="enlinkdService" ref="enlinkd" />
+	<bean id="linkdWrappedEdgeStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdWrappedEdgeStatusProviders" init-method="init">
         <property name="edgeStatusProvider" ref="linkdEdgeStatusProvider"/>
     </bean>
 
-    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="enlinkdWrappedEdgeStatusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.EdgeStatusProvider" ref="linkdWrappedEdgeStatusProvider" />
 
     <!-- status provider -->
-    <bean id="statusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.AlarmStatusProvider">
+    <bean id="linkdStatusProvider" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdStatusProvider">
         <argument ref="alarmDao"/>
     </bean>
-    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="statusProvider" />
+    <service interface="org.opennms.features.topology.api.topo.StatusProvider" ref="linkdStatusProvider" />
 
     <!-- Icon definition -->
     <service>
