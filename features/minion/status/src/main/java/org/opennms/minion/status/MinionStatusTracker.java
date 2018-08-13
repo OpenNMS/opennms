@@ -250,7 +250,9 @@ public class MinionStatusTracker implements InitializingBean {
         }
 
         runInLoggingTransaction(() -> {
-            LOG.trace("Minion {} service event received for node {}: {}", isHeartbeat? "heartbeat":"rpc", e.getNodeid(), e);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Minion {} service event received for node {}: {}", isHeartbeat? "heartbeat":"rpc", e.getNodeid(), e);
+            }
 
             assertHasNodeId(e);
 
@@ -269,16 +271,12 @@ public class MinionStatusTracker implements InitializingBean {
                 } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
                     status = status.heartbeatUp();
                 }
-                final MinionServiceStatus heartbeatStatus = status.getHeartbeatStatus();
-                LOG.debug("{} heartbeat is {}", minionId, heartbeatStatus.getState());
             } else if (MINION_RPC.equalsIgnoreCase(e.getService())) {
                 if (OUTAGE_CREATED_EVENT_UEI.equals(uei)) {
                     status = status.rpcDown();
                 } else if (OUTAGE_RESOLVED_EVENT_UEI.equals(uei)) {
                     status = status.rpcUp();
                 }
-                final MinionServiceStatus rpcStatus = status.getRpcStatus();
-                LOG.debug("{} RPC is {}", minionId, rpcStatus.getState());
             }
 
             updateStateIfChanged(minion, status, m_state.get(minionId));
@@ -302,7 +300,7 @@ public class MinionStatusTracker implements InitializingBean {
 
             // populate the foreignId -> minion map
             LOG.debug("Populating minion state from the database.  Found {} minions.", dbMinions.size());
-            if (LOG.isTraceEnabled()) {
+            if (LOG.isDebugEnabled()) {
                 LOG.debug("Processing minions: {}", dbMinions.stream().map(OnmsMinion::getId).collect(Collectors.toList()));
             }
 
@@ -442,7 +440,10 @@ public class MinionStatusTracker implements InitializingBean {
 
         minion.setStatus(newMinionStatus);
         m_minionDao.saveOrUpdate(minion);
-        LOG.debug("Minion {} status processed: Heartbeat: {} -> {}, RPC: {} -> {}", minionId, (previous == null? "Unknown" : previous.getHeartbeatStatus()), current.getHeartbeatStatus(), (previous == null? "Unknown" : previous.getRpcStatus()), current.getRpcStatus());
+        LOG.info("Minion {} status changed: {} -> {}", minionId, (previous == null? "Unknown":previous.getState()), current.getState());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Minion {} status processed: Heartbeat: {} -> {}, RPC: {} -> {}", minionId, (previous == null? "Unknown" : previous.getHeartbeatStatus()), current.getHeartbeatStatus(), (previous == null? "Unknown" : previous.getRpcStatus()), current.getRpcStatus());
+        }
     }
 
     private OnmsMinion getMinionForNodeId(final Integer nodeId) {
