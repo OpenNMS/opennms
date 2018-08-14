@@ -115,6 +115,7 @@ public class DetectorsCommandIT {
             .put("WEB", "org.opennms.netmgt.provision.detector.web.WebDetector")
             .put("WMI", "org.opennms.netmgt.provision.detector.wmi.WmiDetector")
             .put("WS-Man", "org.opennms.netmgt.provision.detector.wsman.WsManDetector")
+            .put("WsManWQL", "org.opennms.netmgt.provision.detector.wsman.WsManWQLDetector")
             .put("Win32Service", "org.opennms.netmgt.provision.detector.snmp.Win32ServiceDetector").build();
 
     @ClassRule
