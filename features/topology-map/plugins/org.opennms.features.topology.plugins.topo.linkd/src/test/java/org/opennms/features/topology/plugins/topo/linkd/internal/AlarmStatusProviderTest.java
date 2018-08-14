@@ -54,13 +54,13 @@ import com.google.common.collect.Lists;
 public class AlarmStatusProviderTest {
 
     private AlarmDao m_alarmDao;
-    private AlarmStatusProvider m_statusProvider;
+    private LinkdStatusProvider m_statusProvider;
     private VertexProvider m_vertexProvider;
     
     @Before
     public void setUp() {
         m_alarmDao = EasyMock.createMock(AlarmDao.class);
-        m_statusProvider = new AlarmStatusProvider(m_alarmDao);
+        m_statusProvider = new LinkdStatusProvider(m_alarmDao);
 
         m_vertexProvider = EasyMock.createMock(VertexProvider.class);
         EasyMock.expect(m_vertexProvider.getChildren(EasyMock.<VertexRef>anyObject())).andReturn(new ArrayList<>());

@@ -39,7 +39,7 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 public class ComponentTest {
 	@Test
 	public void testComponentBeanProperties() throws Exception {
-		Collection<?> ids = new BeanItem<>(new AbstractVertex(AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
+		Collection<?> ids = new BeanItem<>(new AbstractVertex(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, "fakeId")).getItemPropertyIds();
 		for (Object id : ids) {
 			Assert.assertNotNull(id);
 		}

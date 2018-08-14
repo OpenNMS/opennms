@@ -31,6 +31,7 @@ package org.opennms.web.rest.v1;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.opennms.web.rest.v1.config.TicketerConfig;
+import org.opennms.web.rest.v1.config.DatetimeformatConfig;
 
 
 @XmlRootElement(name="info")
@@ -40,6 +41,15 @@ public class InfoDTO {
     private String packageName;
     private String packageDescription;
     private TicketerConfig ticketerConfig;
+    private DatetimeformatConfig datetimeformatConfig;
+
+    public DatetimeformatConfig getDatetimeformatConfig() {
+        return datetimeformatConfig;
+    }
+
+    public void setDatetimeformatConfig(DatetimeformatConfig datetimeformatConfig) {
+        this.datetimeformatConfig = datetimeformatConfig;
+    }
 
     public void setDisplayVersion(String displayVersion) {
         this.displayVersion = displayVersion;
