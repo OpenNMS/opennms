@@ -31,28 +31,24 @@ package org.opennms.netmgt.dao.hibernate;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.transform.ResultTransformer;
-import org.opennms.core.criteria.CriteriaBuilder;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
+import org.opennms.netmgt.model.outage.OutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
@@ -115,64 +111,74 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         });
     }
 
-    private Stream<OnmsOutage> initializeOutage(Stream<OnmsOutage> outages) {
-        return outages
-                .map(outage -> {
-                    Hibernate.initialize(outage.getMonitoredService());
-                    Hibernate.initialize(outage.getMonitoredService().getIpInterface());
-                    Hibernate.initialize(outage.getMonitoredService().getIpInterface().getNode());
-                    Hibernate.initialize(outage.getMonitoredService().getServiceType());
-                    Hibernate.initialize(outage.getForeignId());
-                    return outage;
-                })
-                .sorted(OUTAGE_COMPARATOR);
-    }
-
     /** {@inheritDoc} */
     @Override
-    public Collection<OnmsOutage> matchingOutages(final ServiceSelector selector) {
-        final Set<InetAddress> matchingAddrs = new HashSet<InetAddress>(m_filterDao.getIPAddressList(selector.getFilterRule()));
-        @SuppressWarnings("unchecked")
-        final Collection<OnmsOutage> outages = (Collection<OnmsOutage>)getHibernateTemplate().findByNamedParam("FROM OnmsOutage AS o WHERE o.monitoredService.serviceType.name IN (:services)","services", selector.getServiceNames());
-        return initializeOutage(
-                                outages.parallelStream()
-                                .filter(outage -> matchingAddrs.contains(outage.getMonitoredService().getIpAddress()))
-                ).collect(Collectors.toList());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public Collection<OnmsOutage> matchingLatestOutages(final ServiceSelector selector) {
-        final Set<String> matchingAddrs = m_filterDao.getIPAddressList(selector.getFilterRule()).stream().map(InetAddressUtils::str).collect(Collectors.toSet());
-        final List<Integer> outageIds = getHibernateTemplate().execute(new HibernateCallback<List<Integer>>() {
+    public Collection<OutageDetails> newestOutages(final List<String> serviceNames) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<OutageDetails>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<Integer> doInHibernate(Session session) throws HibernateException, SQLException {
-                return (List<Integer>) session.createSQLQuery(
-                    "SELECT DISTINCT MAX(outageID) AS outageID\n" +
-                    "  FROM outages\n" +
-                    "  GROUP BY ifServiceID\n"
-                ).list();
+            public List<OutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
+                final StringBuilder query = new StringBuilder()
+                        .append("SELECT DISTINCT\n")
+                        .append("        outages.outageId,\n")
+                        .append("        outages.ifServiceId AS monitoredServiceId,\n")
+                        .append("        service.serviceName AS serviceName,\n")
+                        .append("        outages.ifLostService,\n")
+                        .append("        outages.ifRegainedService,\n")
+                        .append("        node.nodeId,\n")
+                        .append("        node.foreignSource,\n")
+                        .append("        node.foreignId,\n")
+                        .append("        node.location\n")
+                        .append("FROM outages\n")
+                        .append("        LEFT JOIN ifServices ON outages.ifServiceId = ifServices.id\n")
+                        .append("        LEFT JOIN service ON ifServices.serviceId = service.serviceId\n")
+                        .append("        LEFT JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id\n")
+                        .append("        LEFT JOIN node ON ipInterface.nodeId = node.nodeId\n")
+                        .append("        LEFT JOIN (\n")
+                        .append("                SELECT DISTINCT\n")
+                        .append("                        MAX(outageId) AS outageId,\n")
+                        .append("                        ifServiceId\n")
+                        .append("                FROM outages\n")
+                        .append("                GROUP BY ifServiceId\n")
+                        .append("        ) AS latestO ON outages.outageId = latestO.outageId\n")
+                        .append("WHERE\n")
+                        .append("        latestO.ifServiceId IS NOT NULL\n");
+                if (serviceNames.size() > 0) {
+                    query.append("        AND service.serviceName IN ( :serviceNames )\n");
+                }
+                query.append("ORDER BY outages.outageId\n")
+                .append(";\n");
+
+                Query sqlQuery = session.createSQLQuery( query.toString() );
+                if (serviceNames.size() > 0) {
+                    sqlQuery = sqlQuery.setParameterList("serviceNames", serviceNames);
+                }
+
+                return (List<OutageDetails>) sqlQuery.setResultTransformer(new ResultTransformer() {
+                            private static final long serialVersionUID = 1L;
+
+                            @Override
+                            public Object transformTuple(Object[] tuple, String[] aliases) {
+                                return new OutageDetails(
+                                                         (Integer)tuple[0],
+                                                         (Integer)tuple[1],
+                                                         (String)tuple[2],
+                                                         (Date)tuple[3],
+                                                         (Date)tuple[4],
+                                                         (Integer)tuple[5],
+                                                         (String)tuple[6],
+                                                         (String)tuple[7],
+                                                         (String)tuple[8]);
+                            }
+
+                            @SuppressWarnings("rawtypes")
+                            @Override
+                            public List transformList(List collection) {
+                                return collection;
+                            }
+                        }).list();
             }
         });
-
-        if (outageIds.size() == 0) {
-            return Collections.emptyList();
-        }
-
-        final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class)
-                .join("monitoredService.ipInterface", "iface")
-                .in("id", outageIds)
-                .orderBy("id");
-        if (selector.getServiceNames().size() > 0) {
-            builder
-                .join("monitoredService.serviceType", "serviceType")
-                .in("serviceType.name", selector.getServiceNames());
-        }
-        return initializeOutage(findMatching(builder.toCriteria()).stream())
-                .filter(outage -> {
-                    return matchingAddrs.contains(InetAddressUtils.str(outage.getIpAddress()));
-                }).collect(Collectors.toList());
     }
 
     /** {@inheritDoc} */

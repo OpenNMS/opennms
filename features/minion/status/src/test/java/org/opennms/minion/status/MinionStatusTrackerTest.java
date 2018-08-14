@@ -35,6 +35,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -65,14 +66,13 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
-import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.PrimaryType;
-import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
+import org.opennms.netmgt.model.outage.OutageDetails;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionCallback;
@@ -393,7 +393,7 @@ public class MinionStatusTrackerTest {
 
         final Date now = new Date(System.currentTimeMillis());
         final Date old = new Date(1);
-        final List<OnmsOutage> outages = Arrays.asList(
+        final List<OutageDetails> outages = Arrays.asList(
                                                        createOutage(now, now, nodeC, MINION_RPC), // nodeC RPC up
                                                        createOutage(now, now, nodeC, MINION_HEARTBEAT), // nodeC heartbeat up
                                                        createOutage(now, now, nodeB, MINION_RPC), // nodeB RPC up
@@ -404,7 +404,7 @@ public class MinionStatusTrackerTest {
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA, minionB, minionC, minionD));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA, nodeB, nodeC, nodeD));
-        when(m_outageDao.matchingLatestOutages(any(ServiceSelector.class))).thenReturn(outages);
+        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(outages);
 
         System.err.println("old=" + old);
         System.err.println("now=" + now);
@@ -473,7 +473,7 @@ public class MinionStatusTrackerTest {
         // refresh() query
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.matchingLatestOutages(any(ServiceSelector.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 
@@ -501,7 +501,7 @@ public class MinionStatusTrackerTest {
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.matchingLatestOutages(any(ServiceSelector.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 
@@ -520,8 +520,8 @@ public class MinionStatusTrackerTest {
     private Integer lastOutageId = 0;
     private Integer lastLastOctet = 0;
 
-    private OnmsOutage generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
-        final OnmsOutage outage = createOutage(time, null, node, service);
+    private OutageDetails generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
+        final OutageDetails outage = createOutage(time, null, node, service);
         final Event e = new EventBuilder(uei, "MinionStatusTrackerTest")
                 .setNodeid(node.getId())
                 .setService(service)
@@ -531,13 +531,9 @@ public class MinionStatusTrackerTest {
         return outage;
     }
 
-    private OnmsOutage createOutage(final Date lostService, final Date regainedService, final OnmsNode node, final String serviceType) {
-        final OnmsIpInterface iface = node.getPrimaryInterface();
-        final OnmsMonitoredService svc = iface.getMonitoredServiceByServiceType(serviceType);
-        final OnmsOutage outage = new OnmsOutage(lostService, svc);
-        outage.setIfRegainedService(regainedService);
-        outage.setId(++lastOutageId);
-        return outage;
+    private OutageDetails createOutage(final Date lostService, final Date regainedService, final OnmsNode node, final String serviceType) {
+        final OnmsServiceType svcType = getServiceType(serviceType);
+        return new OutageDetails(++lastOutageId, svcType.getId(), serviceType, lostService, regainedService, node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation().getLocationName());
     }
 
     private OnmsMinion getMinion(final OnmsNode node) {

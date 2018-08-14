@@ -54,10 +54,9 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.model.ServiceSelector;
 import org.opennms.netmgt.model.minion.OnmsMinion;
+import org.opennms.netmgt.model.outage.OutageDetails;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -336,16 +335,15 @@ public class MinionStatusTracker implements InitializingBean {
                 }
             });
 
-            final ServiceSelector selector = new ServiceSelector("IPADDR != '0.0.0.0'", Arrays.asList(MINION_HEARTBEAT, MINION_RPC));
-            final Collection<OnmsOutage> outages = m_outageDao.matchingLatestOutages(selector);
+            final Collection<OutageDetails> outages = m_outageDao.newestOutages(Arrays.asList(MINION_HEARTBEAT, MINION_RPC));
 
             if (outages != null && outages.size() > 0) {
                 LOG.debug("Processing {} outage records.", outages.size());
-                outages.stream().sorted(Comparator.comparing(OnmsOutage::getId).reversed()).forEach(outage -> {
+                outages.stream().sorted(Comparator.comparing(OutageDetails::getOutageId).reversed()).forEach(outage -> {
                     final String foreignId = outage.getForeignId();
 
                     final AggregateMinionStatus currentStatus = state.get(foreignId);
-                    final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getServiceId(), outage.getIfRegainedService(), outage.getIfLostService());
+                    final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getMonitoredServiceId(), outage.getIfRegainedService(), outage.getIfLostService());
 
                     // If this is a refresh, and the "in-memory" tracking is more up-to-date than the outage records, keep it. Otherwise update with outage records.
                     final AggregateMinionStatus existingStatus = m_state.get(foreignId);
