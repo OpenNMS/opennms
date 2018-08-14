@@ -1,0 +1,7 @@
+. Setup _{opennms-product-name}_ to allow _Sentinel_ communication
+. Installation of the `opennms-sentinel` meta package which handles all dependencies
+. Starting _Sentinel_ and access the _Karaf_ console over _SSH_
+. Configure _Sentinel_ to communicate with _{opennms-product-name}_
+. Verify the connectivity between _Sentinel_ and _{opennms-product-name}_
+
+All commands on the command line interface need to be executed with _root_ permissions.
