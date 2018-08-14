@@ -51,7 +51,7 @@ import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.springframework.beans.factory.annotation.Autowired;
 

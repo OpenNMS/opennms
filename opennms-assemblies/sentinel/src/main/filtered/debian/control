@@ -1,0 +1,18 @@
+Source: opennms-sentinel
+Maintainer: Benjamin Reed <ranger@opennms.org>
+Section: contrib/net
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), oracle-java8-installer | openjdk-8-jdk | java8-jdk, rsync
+
+Package: opennms-sentinel
+Architecture: all
+Depends: oracle-java8-installer | openjdk-8-jre | java8-runtime | java8-runtime-headless, adduser, openssh-client, uuid-runtime, sudo
+Recommends: jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Description: horizontal scaling for OpenNMS
+ OpenNMS Sentinel is a container for running a subset of OpenNMS
+ services in a standalone container, suitable for horizontally
+ scaling some subsystems, like flow telemetry processing.
+ .
+ http://www.opennms.org/wiki/Sentinel
+

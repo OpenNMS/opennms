@@ -53,14 +53,12 @@ public class SFlowTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
 
     @Override
     public Adapter createAdapter(Protocol protocol, Map<String, String> properties) {
+        // This may not be an ideal use-case
         final SFlowTelemetryAdapter adapter = new SFlowTelemetryAdapter();
         adapter.setProtocol(protocol);
-        adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setInterfaceToNodeCache(getInterfaceToNodeCache());
-        adapter.setNodeDao(getNodeDao());
-        adapter.setTransactionTemplate(getTransactionTemplate());
+        adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setFilterDao(getFilterDao());
-        adapter.setPersisterFactory(getPersisterFactory());
         adapter.setBundleContext(getBundleContext());
 
         final BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(adapter);

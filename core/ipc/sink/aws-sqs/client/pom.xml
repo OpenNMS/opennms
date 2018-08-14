@@ -40,6 +40,11 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
       <artifactId>org.opennms.core.ipc.sink.aws.sqs.common</artifactId>
       <version>${project.version}</version>

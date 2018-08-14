@@ -1,0 +1,44 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.5.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
+">
+
+    <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <reference id="messageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
+    <reference id="telemetryAdapterRegistry" interface="org.opennms.features.telemetry.adapters.registry.api.TelemetryAdapterRegistry" />
+    <reference id="transactionManager" interface="org.springframework.transaction.PlatformTransactionManager" />
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" />
+
+    <bean id="adapterManager" class="org.opennms.netmgt.telemetry.distributed.sentinel.AdapterManager" init-method="init" destroy-method="destroy">
+        <property name="distPollerDao" ref="distPollerDao"/>
+        <property name="messageConsumerManager" ref="messageConsumerManager" />
+        <property name="telemetryAdapterRegistry" ref="telemetryAdapterRegistry" />
+        <property name="bundleContext" ref="blueprintBundleContext" />
+    </bean>
+    <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="adapterManager">
+        <service-properties>
+            <entry key="service.pid" value="org.opennms.features.telemetry.adapters"/>
+        </service-properties>
+    </service>
+
+    <!--
+        Usually the CollectionAgentFactory is exposed via opennms-services, as we don't have that in Sentinel
+        a DefaultCollectionAgentFactory is exposed instead
+    -->
+    <bean id="collectionAgentFactory" class="org.opennms.netmgt.collection.core.DefaultCollectionAgentFactory">
+        <property name="platformTransactionManager" ref="transactionManager" />
+        <property name="nodeDao" ref="nodeDao" />
+        <property name="ipInterfaceDao" ref="ipInterfaceDao" />
+    </bean>
+    <service ref="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
+
+</blueprint>

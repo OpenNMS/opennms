@@ -116,6 +116,31 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependency</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/deploy-artifacts</outputDirectory>
+              <stripVersion>true</stripVersion>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms.features.distributed</groupId>
+                  <artifactId>org.opennms.features.distributed.dao-test</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <dependencyManagement>
@@ -307,6 +332,12 @@
     <dependency>
       <groupId>org.opennms.features.flows.rest</groupId>
       <artifactId>org.opennms.features.flows.rest.api</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-test</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

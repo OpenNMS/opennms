@@ -66,7 +66,7 @@ import org.opennms.core.rpc.echo.EchoResponse;
 import org.opennms.core.rpc.echo.EchoRpcModule;
 import org.opennms.core.rpc.echo.MyEchoException;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 public class RpcKafkaIT {

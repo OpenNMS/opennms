@@ -215,13 +215,13 @@ function main()
         echo "=== Creating a tar.gz Archive of the Source in $WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE ==="
         run tar zcf "$WORKDIR/SOURCES/${PACKAGE_NAME}-source-$VERSION-$RELEASE.tar.gz" -C "$WORKDIR/tmp" "${PACKAGE_NAME}-$VERSION-$RELEASE"
 
-        SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec"
+        SPECS="tools/packages/opennms/opennms.spec tools/packages/minion/minion.spec tools/packages/sentinel/sentinel.spec"
         if [ "$PACKAGE_NAME" = "opennms" ]; then
                 run tar zcf "$WORKDIR/SOURCES/centric-troubleticketer.tar.gz" -C "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/opennms-tools" "centric-troubleticketer"
                 SPECS="$SPECS opennms-tools/centric-troubleticketer/src/main/rpm/opennms-plugin-ticketer-centric.spec"
         fi
 
-        #SPECS="tools/packages/minion/minion.spec"
+        #SPECS="tools/packages/sentinel/sentinel.spec"
         echo "=== Building RPMs ==="
         for spec in $SPECS
         do

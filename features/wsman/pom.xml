@@ -72,6 +72,12 @@
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.poller.monitors</groupId>
+      <artifactId>org.opennms.features.poller.monitors.core</artifactId>
+      <type>jar</type>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-api</artifactId>
     </dependency>

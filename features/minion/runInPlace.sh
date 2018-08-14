@@ -1,10 +1,11 @@
 #!/bin/bash -e
-test -d container || (echo "This command must be ran from the features/minion directory" && exit 1)
+test -d repository || (echo "This command must be ran from the features/minion directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
 MYDIR=$(cd "$MYDIR"; pwd)
 export PATH="$MYDIR/../../bin:$MYDIR/../../maven/bin:$PATH"
+export CONTAINERDIR="${MYDIR}/../container/minion"
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -16,7 +17,7 @@ cleanup_and_build() {
 
   # Kill off any existing instances
   did_kill_at_least_one_pid=0
-  for pid_file in $(find container/karaf/target -name karaf.pid); do
+  for pid_file in $(find "${CONTAINERDIR}/target" -name karaf.pid); do
     pid=$(cat "$pid_file")
     if [[ ! -z $pid ]]; then
       $cmd_prefix kill -9 "$pid" 2>/dev/null && did_kill_at_least_one_pid=1
@@ -29,10 +30,11 @@ cleanup_and_build() {
   fi
 
   # Delete files owned by root
-  $cmd_prefix rm -rf container/karaf/target/minion-karaf-*
+  $cmd_prefix rm -rf "${CONTAINERDIR}"/target/minion-karaf-*
 
   # Rebuild - we've already verified that we're in the right folder
-  mvn clean install
+  mvn clean install && \
+    (cd "${CONTAINERDIR}"; mvn clean install)
 }
 
 set_instance_specific_configuration() {
@@ -73,19 +75,19 @@ set_instance_specific_configuration() {
   export JAVA_DEBUG_PORT
 
   # Jetty
-  #sed -i "s|org.osgi.service.http.port.*|org.osgi.service.http.port = $JETTY_PORT|g" "$MINION_HOME/etc/org.ops4j.pax.web.cfg"
+  #perl -pi -e "s|org.osgi.service.http.port.*|org.osgi.service.http.port = $JETTY_PORT|g" "$MINION_HOME/etc/org.ops4j.pax.web.cfg"
   echo "org.osgi.service.http.port = $JETTY_PORT" > "$MINION_HOME/etc/org.ops4j.pax.web.cfg"
 
   # RMI
-  sed -i "s|rmiRegistryPort.*|rmiRegistryPort = $RMI_REGISTRY_PORT|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
-  sed -i "s|rmiServerPort.*|rmiServerPort = $RMI_SERVER_PORT|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
-  sed -i "s|serviceUrl.*|serviceUrl = service:jmx:rmi://127.0.0.1:$RMI_SERVER_PORT/jndi/rmi://127.0.0.1:$RMI_REGISTRY_PORT/karaf-minion|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
+  perl -pi -e "s|rmiRegistryPort.*|rmiRegistryPort = $RMI_REGISTRY_PORT|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
+  perl -pi -e "s|rmiServerPort.*|rmiServerPort = $RMI_SERVER_PORT|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
+  perl -pi -e "s|serviceUrl.*|serviceUrl = service:jmx:rmi://127.0.0.1:$RMI_SERVER_PORT/jndi/rmi://127.0.0.1:$RMI_REGISTRY_PORT/karaf-minion|g" "$MINION_HOME/etc/org.apache.karaf.management.cfg"
 
   # SNMP Traps
   echo "trapd.listen.port = $SNMP_TRAP_PORT" > "$MINION_HOME/etc/org.opennms.netmgt.trapd.cfg"
 
   # SSH
-  sed -i "s|sshPort.*|sshPort = $SSH_PORT|g" "$MINION_HOME/etc/org.apache.karaf.shell.cfg"
+  perl -pi -e "s|sshPort.*|sshPort = $SSH_PORT|g" "$MINION_HOME/etc/org.apache.karaf.shell.cfg"
 
   # Syslog
   echo "syslog.listen.port = $SYSLOG_PORT" > "$MINION_HOME/etc/org.opennms.netmgt.syslogd.cfg"
@@ -108,13 +110,13 @@ spawn_minion() {
   idx=$1
   detached=$2
   should_use_sudo=$3
-  MINION_HOME="$(pwd)/container/karaf/target/minion-karaf-$idx"
+  MINION_HOME="${CONTAINERDIR}/target/minion-karaf-$idx"
 
   echo "Extracting container for Minion #$idx..."
   # Extract the container
-  pushd container/karaf/target > /dev/null
+  pushd "${CONTAINERDIR}"/target > /dev/null
   mkdir -p "$MINION_HOME"
-  tar zxvf karaf-*.tar.gz -C "$MINION_HOME" --strip-components 1 > /dev/null
+  tar zxvf minion-*.tar.gz -C "$MINION_HOME" --strip-components 1 > /dev/null
   popd > /dev/null
 
   # Extract the core repository

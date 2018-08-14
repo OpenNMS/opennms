@@ -12,11 +12,8 @@
     <name>OpenNMS :: Features :: Minion :: Core</name>
 
     <modules>
-        <module>api</module>
-        <module>features</module>
         <module>impl</module>
-        <module>jms</module>
+        <module>features</module>
         <module>repository</module>
-        <module>shell</module>
     </modules>
 </project>
