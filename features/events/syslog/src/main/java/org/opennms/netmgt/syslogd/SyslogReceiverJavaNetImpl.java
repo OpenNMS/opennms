@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -241,5 +241,11 @@ public class SyslogReceiverJavaNetImpl extends SinkDispatchingSyslogReceiver {
         } // end while status OK
 
         LOG.debug("Thread context exiting");
+    }
+
+    @Override
+    public void reload() throws IOException {
+        m_config.reload();
+        m_stop = false;
     }
 }

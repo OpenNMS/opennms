@@ -107,6 +107,14 @@ public class RadixTreeSyslogParser extends SyslogParser {
 		super(config, syslogString);
 	}
 
+	public static RadixTreeParser getRadixParser() {
+		return radixParser;
+	}
+
+	public static void setRadixParser(RadixTreeParser radixParser) {
+		RadixTreeSyslogParser.radixParser = radixParser;
+	}
+
 	/**
 	 * Since this parser does not rely on a regex expression match for its initial
 	 * parsing, always return true.

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.syslogd;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
@@ -184,5 +185,10 @@ public final class SyslogConfigBean implements SyslogdConfig {
 
 	public void setBatchIntervalMs(int batchIntervalMs) {
         m_batchIntervalMs = batchIntervalMs;
+    }
+
+    @Override
+    public void reload() throws IOException {
+      // pass
     }
 }

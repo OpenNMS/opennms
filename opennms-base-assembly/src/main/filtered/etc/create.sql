@@ -2474,7 +2474,7 @@ CREATE VIEW node_outage_status AS
           max(events.eventseverity) AS severity
          FROM events
            JOIN outages ON outages.svclosteventid = events.eventid
-        WHERE outages.svcregainedeventid IS NULL
+        WHERE outages.ifregainedservice IS NULL
         GROUP BY events.nodeid) tmp
  RIGHT JOIN node ON tmp.nodeid = node.nodeid;
 

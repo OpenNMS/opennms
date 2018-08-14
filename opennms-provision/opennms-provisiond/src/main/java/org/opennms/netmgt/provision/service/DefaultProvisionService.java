@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2008-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2008-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -567,6 +567,9 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     break;
                 case "A":
                     // we can ignore active statuses
+                    break;
+                case "N":
+                    // we can ignore not-polled statuses
                     break;
                 default:
                     LOG.warn("Unhandled state: {}", dbObj.getStatus());

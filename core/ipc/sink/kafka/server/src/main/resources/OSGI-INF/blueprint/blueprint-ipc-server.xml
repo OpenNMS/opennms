@@ -11,9 +11,28 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-    <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" init-method="afterPropertiesSet"/>
+    <cm:property-placeholder id="kafkaConsumerProperties" persistent-id="org.opennms.core.ipc.sink.kafka.consumer" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="group.id" value="OpenNMS"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="configurationAdmin" interface="org.osgi.service.cm.ConfigurationAdmin" availability="mandatory" />
+
+    <!-- Config Provider -->
+    <bean id="kafkaConfigProvider" class="org.opennms.core.ipc.sink.kafka.server.config.OsgiKafkaConfigProvider" >
+        <argument value="[[group.id]]"/>
+        <argument ref="configurationAdmin" />
+    </bean>
+
+    <!-- ConsumerManager -->
+    <bean id="kafkaMessageConsumerManager" class="org.opennms.core.ipc.sink.kafka.server.KafkaMessageConsumerManager" init-method="afterPropertiesSet">
+        <argument ref="kafkaConfigProvider" />
+    </bean>
     <service ref="kafkaMessageConsumerManager" interface="org.opennms.core.ipc.sink.api.MessageConsumerManager" />
 
-    <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.offset.KafkaOffsetProvider"
-          init-method="start" destroy-method="stop" />
+    <!-- Offset Provider (Consumer) -->
+    <bean id="kafkaOffsetProvider" class="org.opennms.core.ipc.sink.kafka.server.offset.KafkaOffsetProvider" init-method="start" destroy-method="stop" >
+        <argument ref="kafkaConfigProvider"/>
+    </bean>
 </blueprint>

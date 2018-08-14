@@ -47,7 +47,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.activemq.ActiveMQBroker;
 import org.opennms.core.test.camel.CamelBlueprintTest;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,11 @@ public class LocationAwarePingSweepClientIT extends CamelBlueprintTest {
             @Override
             public String getLocation() {
                 return REMOTE_LOCATION_NAME;
+            }
+
+            @Override
+            public String getType() {
+                return SystemType.Minion.name();
             }
         }, new Properties()));
 

@@ -32,17 +32,17 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.camel.server.CamelMessageConsumerManager;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.codahale.metrics.JmxReporter;
 
 /**
  * Message producer that dispatches the messages directly the consumers.
  *
  * @author jwhite
  */
-public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
+public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean, DisposableBean {
 
     @Autowired
     private CamelMessageConsumerManager messageConsumerManager;
@@ -53,10 +53,22 @@ public class CamelLocalMessageDispatcherFactory extends AbstractMessageDispatche
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
-        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
-                .inDomain(CamelLocalMessageDispatcherFactory.class.getPackage().getName())
-                .build();
-        reporter.start();
+    public String getMetricDomain() {
+        return CamelLocalMessageDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
+        onInit();
+    }
+
+    @Override
+    public void destroy() {
+        onDestroy();
     }
 }

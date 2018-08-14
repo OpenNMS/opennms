@@ -28,8 +28,15 @@
 
 package org.opennms.netmgt.trapd;
 
+import java.io.IOException;
+
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
+import org.opennms.netmgt.daemon.DaemonTools;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.annotations.EventHandler;
+import org.opennms.netmgt.events.api.annotations.EventListener;
+import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +65,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author <A HREF="mailto:tarus@opennms.org">Tarus Balog </A>
  * @author <A HREF="http://www.opennms.org">OpenNMS.org </A>
  */
+@EventListener(name=Trapd.NAME, logPrefix=Trapd.LOG4J_CATEGORY)
 public class Trapd extends AbstractServiceDaemon {
     
     private static final Logger LOG = LoggerFactory.getLogger(Trapd.class);
+
+    public static final String NAME = "Trapd";
 
     public static final String LOG4J_CATEGORY = "trapd";
     
@@ -86,7 +96,7 @@ public class Trapd extends AbstractServiceDaemon {
      * @see org.opennms.protocols.snmp.SnmpTrapSession
      */
     public Trapd() {
-        super(LOG4J_CATEGORY);
+        super(NAME);
     }
 
 
@@ -184,6 +194,21 @@ public class Trapd extends AbstractServiceDaemon {
     @Override
     public synchronized int getStatus() {
         return m_status;
+    }
+
+    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
+    public void handleReloadEvent(Event e) {
+        DaemonTools.handleReloadEvent(e, Trapd.NAME, (event) -> handleConfigurationChanged());
+    }
+
+    private void handleConfigurationChanged() {
+        stop();
+        try {
+            m_trapListener.reload();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        start();
     }
 
     public static String getLoggingCategory() {
