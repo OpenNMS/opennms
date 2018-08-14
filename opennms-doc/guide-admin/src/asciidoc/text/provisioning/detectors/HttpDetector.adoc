@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== SNMP Detector
+==== HTTP Detector
 
 This detector is used to find and assigns services based on _HTTP_.
 
