@@ -65,6 +65,11 @@
       <groupId>org.opennms.features.collection</groupId>
       <artifactId>org.opennms.features.collection.api</artifactId>
     </dependency>
+    <dependency>
+	  <groupId>org.opennms.features.events</groupId>
+  	  <artifactId>org.opennms.features.events.daemon</artifactId>
+	  <scope>test</scope>
+	</dependency>
     <!-- Kafka -->
     <dependency>
       <groupId>org.apache.kafka</groupId>
