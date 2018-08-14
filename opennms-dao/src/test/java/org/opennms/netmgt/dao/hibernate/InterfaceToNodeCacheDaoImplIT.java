@@ -50,6 +50,7 @@ import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
+import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,6 +84,9 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
 
     @Autowired
     TransactionOperations transactionOperations;
+
+    @Autowired
+    MonitoringLocationDao m_monitoringLocationDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -198,5 +202,41 @@ public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
         // Now try retrieving that same node using null for the location
         nodeId = m_cache.getFirstNodeId(null, ipAddr).get();
         Assert.assertEquals(expectedNodeId, nodeId);
+    }
+
+    @Test
+    @Transactional
+    public void testDuplicate() throws Exception {
+        final OnmsMonitoringLocation defaultLocation = m_monitoringLocationDao.getDefaultLocation();
+
+        final InetAddress theAddress = InetAddress.getByName("1.2.3.4");
+
+        Assert.assertNotNull(m_cache);
+
+        final OnmsNode node1 = new OnmsNode(defaultLocation,"node1");
+        final OnmsIpInterface iface1 = new OnmsIpInterface();
+        iface1.setIpAddress(theAddress);
+        iface1.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node1.addIpInterface(iface1);
+        final int nodeId1 = m_databasePopulator.getNodeDao().save(node1);
+
+        m_cache.setNodeId(defaultLocation.getLocationName(), iface1.getIpAddress(), node1.getId());
+
+        Assert.assertEquals(nodeId1, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
+
+        final OnmsNode node2 = new OnmsNode(defaultLocation,"node2");
+        final OnmsIpInterface iface2 = new OnmsIpInterface();
+        iface2.setIpAddress(theAddress);
+        iface2.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        node2.addIpInterface(iface2);
+        final int nodeId2 = m_databasePopulator.getNodeDao().save(node2);
+
+        m_cache.setNodeId(defaultLocation.getLocationName(), iface2.getIpAddress(), node2.getId());
+
+        Assert.assertEquals(nodeId1, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
+
+        m_cache.removeNodeId(defaultLocation.getLocationName(), theAddress, nodeId1);
+
+        Assert.assertEquals(nodeId2, (int) m_cache.getFirstNodeId(defaultLocation.getLocationName(), theAddress).get());
     }
 }

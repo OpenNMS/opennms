@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-persistence" version="${project.version}" start-level="100" install="auto">
+        <feature>sentinel-persistence</feature>
+    </feature>
+</features>

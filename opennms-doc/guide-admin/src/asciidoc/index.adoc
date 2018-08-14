@@ -304,6 +304,10 @@ include::text/minion/kafka.adoc[]
 include::text/minion/aws-sqs.adoc[]
 endif::opennms-prime[]
 
+[[ga-sentinel]]
+== Sentinel
+include::text/sentinel/sentinel.adoc[]
+
 [[ga-opennms-plugin-manager]]
 == Plugin Manager
 include::text/plugin-manager/introduction.adoc[]

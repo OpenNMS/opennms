@@ -1,0 +1,293 @@
+
+
+WARNING: The sentinel feature is still in development and this is only a very rough documentation, not covering all aspects.
+
+The goal of _Sentinel_ is to scale out and distribute individual components from _{opennms-product-name}_.
+
+NOTE: At the moment only flows can be distributed using _Sentinel_. In the future more components will follow.
+
+=== Installation
+
+TODO MVR provide installation guide.
+
+==== Manual
+For now manually download a file `opennms-sentinel-\*-noarch.rpm` from https://bamboo.opennms.org/browse/OPENNMS-ONMS2177/latest/artifact/shared/RPMs/
+Afterwards install the rpm manually using `rpm -i opennms-sentinel-\*-noarch.rpm`, which should install _Sentinel_ to `/opt/sentinel`.
+
+==== Repository
+Use `http://yum.opennms.org/branches/features-sentinel`.
+
+
+=== Starting
+Ensure that `JAVA_HOME` is set correctly and start sentinel:
+
+[source, bash]
+----
+cd /opt/sentinel
+./bin/sentinel
+----
+
+==== Clean Start
+We clear the cache on every start by setting `karaf.clean.cache = true`.
+In order to start features automatically, see chapter "Configuration" for more details.
+
+==== Karaf Extender
+The Karaf Extender was developed to make it easier to manage and extend the container using existing packaging tools.
+It allows packages to register Maven Repositories, Karaf Feature Repositories and Karaf Features to Boot by overlaying additional files, avoiding modifying any of the existing files.
+
+WARNING:    As the `karaf-extender` is at the moment used, it may be removed while developing sentinel further.
+
+=== Configuration
+This chapter describes the steps necessary to configure {opennms-product-name} with one _Sentinel_ and one _Minion_ to have the _Sentinel_ process flows.
+
+==== Sentinel
+It is assumed, that the _Sentinel_ container is running on a different system than the {opennms-product-name} and _Minion_.
+Therefore at least the following configurations are necessary:
+
+ - Configure the datasource to connect to the Postgres database
+ - Configure the controller (identity and connection to communicate with OpenNMS - same as for _Minion_)
+ - Configure the communication layer (for now either JMS or Kafka)
+ - Install features
+
+===== Health Check / Troubleshooting
+
+The `health:check` command allows to verify the health of the _Sentinel_ container.
+It performs various health checks depending on the installed features to calculate the overall container health.
+For more information please try `health:check --help`.
+
+NOTE: This is also available in _Minion_ Containers and will replace the now deprecated command `minion:ping`.
+
+===== Configure the datasource
+
+```
+config:edit org.opennms.netmgt.distributed.datasource
+config:property-set datasource.url jdbc:postgresql://<db-host>:<db-port>/<db-name>
+config:property-set datasource.username <db-user>
+config:property-set datasource.password <db-password>
+config:property-set datasource.databaseName <db-name>
+config:update
+```
+
+NOTE:   TODO MVR provide a full list of supported properties, but for now
+        everything located in `features/distributed/datasource/src/main/resources/OSGI-INF/blueprint/blueprint.xml`
+        may be used for reference.
+
+==== Configure the controller
+
+```
+config:edit org.opennms.sentinel.controller
+config:property-set location SENTINEL <1>
+config:property-set id 00000000-0000-0000-0000-000000ddba11 <2>
+config:property-set http-url http://127.0.0.1:8980/opennms <3>
+config:property-set broker-url failover:tcp://127.0.0.1:61616 <4>
+config:update
+```
+<1> Not used at the moment
+<2> Must be unique overall _Sentinel_ and _Minion_ containers.
+<3> url which points to {opennms-product-name}
+<4> url which points to the {opennms-product-name} Active MQ Broker (for now this is always required)
+
+NOTE:   TODO MVR provide a full list of supported properties, but for now
+        everything located in `opennms/features/sentinel/core/src/main/resources/OSGI-INF/blueprint/blueprint.xml`
+        may be used for reference
+
+NOTE:   Basically the same properties as for the _Minion Controller_ are supported, but must be placed in a different file name.
+        `org.opennms.sentinel.controller.cfg` vs `org.opennms.minion.controller.cfg`.
+
+
+===== Install features
+
+The following features may be installed manually:
+
+[options="header"]
+|====
+| Feature                      | Required                                         | Description
+
+| scv
+| true
+| TODO MVR
+
+| opennms-spring-extender
+| true
+| Responsible for reading `Spring-Context` entries in `MANIFEST.MF` files to support loading Spring Application Context definitions
+  inside _Apache Karaf_.
+
+| sentinel-core
+| true
+| Exposes the identity to the container and loads some other required services.
+
+| sentinel-persistence
+| false
+| Required for flow processing, as this exposes some DAOs required to classify the flows.
+  Also exposes the DistributionDao.
+
+| sentinel-jms
+| false
+| required when `opennms-core-ipc-sink-camel-server` is used
+
+| opennms-core-ipc-sink-camel-server
+| false
+| If ActiveMQ should be used for communication, this must be installed.
+
+| opennms-core-ipc-sink-kafka-server
+| false
+| If Kafka should be used for communication, this must be installed.
+
+| sentinel-telemetry
+| false
+| Requirement for flow procession.
+  Basically allows to start adapters.
+
+| senntinel-flow
+| false
+| Flow procession
+
+|====
+
+
+WARNING:    TODO MVR add more documentation here
+
+NOTE:       Features `scv` `opennms-spring-extender` and `sentinel-core` must ALWAYS be installed before installing any other feature.
+
+===== Auto install
+Copy a `features.xml` like the following one to `/opt/sentinel/deploy`.
+This can be done even if the container is running.
+This will install all features with `install=auto` automatically.
+
+.JMS
+[source, xml]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+    <!-- Install bootstrap feature to start all required features automatically -->
+    <feature name="autostart-sentinel-bootstrap-modules" version="${project.version}" start-level="100" install="auto">
+        <config name="org.opennms.sentinel.controller">
+            location = SENTINEL
+            id = 00000000-0000-0000-0000-000000ddba11
+            http-url = http://127.0.0.1:8980/opennms
+            broker-url = failover:tcp://127.0.0.1:61616
+        </config>
+        <feature>scv</feature>
+        <feature>opennms-spring-extender</feature>
+    </feature>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
+        <!-- Configure datasource connection -->
+        <config name="org.opennms.netmgt.distributed.datasource">
+            datasource.url = jdbc:postgresql://localhost:5432/opennms
+            datasource.username = postgres
+            datasource.password = postgres
+            datasource.databaseName = opennms
+        </config>
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
+        <config name="org.opennms.features.telemetry.adapters-netflow5">
+            name = Netflow-5
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <feature>sentinel-core</feature>
+        <feature>sentinel-persistence</feature>
+        <feature>sentinel-jms</feature>
+        <feature>opennms-core-ipc-sink-camel-server</feature>
+        <feature>sentinel-telemetry</feature>
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>
+-----
+
+.Kafka
+[source, xml]
+-----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-${project.version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0"
+>
+
+    <!-- Install bootstrap feature to start all required features automatically -->
+    <feature name="autostart-sentinel-bootstrap-modules" version="${project.version}" start-level="100" install="auto">
+        <config name="org.opennms.sentinel.controller">
+            location = SENTINEL
+            id = 00000000-0000-0000-0000-000000ddba11
+            http-url = http://127.0.0.1:8980/opennms
+            broker-url = failover:tcp://127.0.0.1:61616
+        </config>
+        <feature>scv</feature>
+        <feature>opennms-spring-extender</feature>
+    </feature>
+
+    <!-- Install bootstrap feature to start all flow related features automatically -->
+    <feature name="autostart-sentinel-telemetry-flows" version="${project.version}" start-level="200" install="auto">
+        <!-- Configure datasource connection -->
+        <config name="org.opennms.netmgt.distributed.datasource">
+            datasource.url = jdbc:postgresql://localhost:5432/opennms
+            datasource.username = postgres
+            datasource.password = postgres
+            datasource.databaseName = opennms
+        </config>
+        <!--
+            Starts the Netflow5Adapter to process Netflow5 Messages.
+            Be aware, that this requires a Listener with name "Netflow-5" on the Minion-side to have messages
+            processed properly.
+        -->
+        <config name="org.opennms.features.telemetry.adapters-netflow5">
+            name = Netflow-5
+            class-name = org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5Adapter
+        </config>
+        <!-- Point sentinel to the correct elastic endpoint -->
+        <config name="org.opennms.features.flows.persistence.elastic">
+            elasticUrl = http://elasticsearch:9200
+        </config>
+        <!--
+            Configure Kafka Consumer.
+            All properties desribed at https://kafka.apache.org/0100/documentation.html#newconsumerconfigs are supported.
+        -->
+        <config name="org.opennms.core.ipc.sink.kafka.consumer">
+            group.id = OpenNMS
+            bootstrap.servers = localhost:9092
+        </config>
+        <feature>sentinel-core</feature>
+        <feature>sentinel-persistence</feature>
+        <feature>opennms-core-ipc-sink-kafka-server</feature>
+        <feature>sentinel-telemetry</feature>
+        <feature>sentinel-flows</feature>
+    </feature>
+</features>
+-----
+
+==== Minion
+At the moment it is not possible to use _Sentinel_ without _Minion_.
+Therefore a _Minion_ must be configured in the usual manner.
+In addition it must listen to incoming flow packages, like so:
+
+```
+$ ssh -p 8201 admin@localhost
+...
+admin@minion()> config:edit org.opennms.features.telemetry.listeners-udp-8877
+admin@minion()> config:property-set name Netflow-5
+admin@minion()> config:property-set class-name org.opennms.netmgt.telemetry.listeners.udp.UdpListener
+admin@minion()> config:property-set listener.port 8877
+admin@minion()> config:update
+```
+
+NOTE:   The name of the listener, in this case `Netflow-5` must match with the name of the adapter
+        configuration in the _Sentinel_ container.
+
+==== OpenNMS
+{opennms-product-name} must expose its ActiveMQ broker to have a _Minion_ and _Sentinel_ connect to it.
+This can be done in `$OPENNMS_HOME/etc/opennms-activemq.xml`

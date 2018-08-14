@@ -39,7 +39,7 @@ import org.opennms.core.rpc.api.RpcResponse;
 import org.opennms.core.rpc.camel.CamelRpcConstants;
 import org.opennms.core.rpc.camel.CamelRpcServerProcessor;
 import org.opennms.core.rpc.camel.CamelRpcServerRouteManager;
-import org.opennms.minion.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.MinionIdentity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

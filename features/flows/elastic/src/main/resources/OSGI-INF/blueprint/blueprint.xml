@@ -146,4 +146,11 @@
     </bean>
     <service interface="org.opennms.netmgt.flows.api.FlowRepository" ref="initializingElasticFlowRepository" />
 
+    <!-- Health Check -->
+    <service interface="org.opennms.core.health.api.HealthCheck">
+        <bean class="org.opennms.netmgt.flows.elastic.health.ElasticHealthCheck" >
+            <argument ref="jestClient"/>
+        </bean>
+    </service>
+
 </blueprint>
