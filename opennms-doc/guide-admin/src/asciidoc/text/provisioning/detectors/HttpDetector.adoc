@@ -32,6 +32,8 @@ This detector is used to find and assigns services based on _HTTP_.
 | `timeout`      | Timeout in milliseconds to wait for a response.                                           | optional | 2000
 |===
 
+_Please note:_ The Http Detector makes only one http request and doesn't follow redirects.
+
 ===== Example Configuration
 
 [source,xml]
