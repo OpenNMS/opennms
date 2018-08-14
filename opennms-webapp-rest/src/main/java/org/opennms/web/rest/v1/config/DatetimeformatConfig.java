@@ -26,31 +26,27 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.features.timeformat.impl;
+package org.opennms.web.rest.v1.config;
 
-import java.time.Instant;
 import java.time.ZoneId;
-import java.util.Date;
 
-import org.opennms.core.time.CentralizedDateTimeFormat;
-import org.opennms.features.timeformat.api.TimeformatService;
+public class DatetimeformatConfig {
+    private String zoneId;
+    private String datetimeformat;
 
-public class DefaultTimeformatService implements TimeformatService {
-
-    private CentralizedDateTimeFormat format = new CentralizedDateTimeFormat();
-
-    @Override
-    public String format(Instant instant, ZoneId zoneId) {
-        return  format.format(instant, zoneId);
+    public String getZoneId() {
+        return zoneId;
     }
 
-    @Override
-    public String format(Date date, ZoneId zoneId) {
-        return format.format(date, zoneId);
+    public void setZoneId(ZoneId zoneId) {
+        this.zoneId = zoneId.getId();
     }
 
-    @Override
-    public String getFormatPattern() {
-        return format.getFormatPattern();
+    public String getDatetimeformat() {
+        return datetimeformat;
+    }
+
+    public void setDatetimeformat(String datetimeformat) {
+        this.datetimeformat = datetimeformat;
     }
 }

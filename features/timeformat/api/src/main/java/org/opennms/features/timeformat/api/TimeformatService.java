@@ -38,4 +38,5 @@ public interface TimeformatService {
 
     String format(Date date, ZoneId zoneId);
 
+    String getFormatPattern();
 }
