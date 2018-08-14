@@ -35,7 +35,7 @@ import org.apache.karaf.shell.api.console.CommandLine;
 import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
-import org.opennms.netmgt.events.api.DaemonReloadEnum;
+import org.opennms.netmgt.daemon.DaemonReloadEnum;
 
 
 @Service
