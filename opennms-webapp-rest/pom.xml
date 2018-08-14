@@ -239,6 +239,20 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.timeformat</groupId>
+      <artifactId>org.opennms.features.timeformat.api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.timeformat</groupId>
+      <artifactId>org.opennms.features.timeformat.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
     <!-- CORS support -->
     <dependency>
       <groupId>org.ebaysf.web</groupId>

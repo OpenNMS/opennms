@@ -173,6 +173,12 @@
       <artifactId>opennms-dao-mock</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.timeformat</groupId>
+      <artifactId>org.opennms.features.timeformat.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     </dependencies>
   
   <repositories>
