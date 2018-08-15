@@ -31,7 +31,6 @@ package org.opennms.netmgt.dao.hibernate;
 import java.net.InetAddress;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -48,17 +47,12 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageDetails;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer> implements OutageDao {
-    private static final Comparator<Date> NULLS_LAST = Comparator.nullsLast(Comparator.naturalOrder());
-    private static final Comparator<OnmsOutage> OUTAGE_COMPARATOR = Comparator
-                       .comparing(OnmsOutage::getIfLostService, NULLS_LAST)
-                       .thenComparing(OnmsOutage::getIfRegainedService, NULLS_LAST);
-
     @Autowired
     private FilterDao m_filterDao;
 
@@ -113,18 +107,17 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
     /** {@inheritDoc} */
     @Override
-    public Collection<OutageDetails> newestOutages(final List<String> serviceNames) {
-        return getHibernateTemplate().execute(new HibernateCallback<List<OutageDetails>>() {
+    public Collection<CurrentOutageDetails> newestCurrentOutages(final List<String> serviceNames) {
+        return getHibernateTemplate().execute(new HibernateCallback<List<CurrentOutageDetails>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<OutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
                 final StringBuilder query = new StringBuilder()
                         .append("SELECT DISTINCT\n")
                         .append("        outages.outageId,\n")
                         .append("        outages.ifServiceId AS monitoredServiceId,\n")
                         .append("        service.serviceName AS serviceName,\n")
                         .append("        outages.ifLostService,\n")
-                        .append("        outages.ifRegainedService,\n")
                         .append("        node.nodeId,\n")
                         .append("        node.foreignSource,\n")
                         .append("        node.foreignId,\n")
@@ -134,15 +127,8 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         .append("        LEFT JOIN service ON ifServices.serviceId = service.serviceId\n")
                         .append("        LEFT JOIN ipInterface ON ifServices.ipInterfaceId = ipInterface.id\n")
                         .append("        LEFT JOIN node ON ipInterface.nodeId = node.nodeId\n")
-                        .append("        LEFT JOIN (\n")
-                        .append("                SELECT DISTINCT\n")
-                        .append("                        MAX(outageId) AS outageId,\n")
-                        .append("                        ifServiceId\n")
-                        .append("                FROM outages\n")
-                        .append("                GROUP BY ifServiceId\n")
-                        .append("        ) AS latestO ON outages.outageId = latestO.outageId\n")
                         .append("WHERE\n")
-                        .append("        latestO.ifServiceId IS NOT NULL\n");
+                        .append("        outages.ifRegainedService IS NULL\n");
                 if (serviceNames.size() > 0) {
                     query.append("        AND service.serviceName IN ( :serviceNames )\n");
                 }
@@ -154,21 +140,20 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                     sqlQuery = sqlQuery.setParameterList("serviceNames", serviceNames);
                 }
 
-                return (List<OutageDetails>) sqlQuery.setResultTransformer(new ResultTransformer() {
+                return (List<CurrentOutageDetails>) sqlQuery.setResultTransformer(new ResultTransformer() {
                             private static final long serialVersionUID = 1L;
 
                             @Override
                             public Object transformTuple(Object[] tuple, String[] aliases) {
-                                return new OutageDetails(
+                                return new CurrentOutageDetails(
                                                          (Integer)tuple[0],
                                                          (Integer)tuple[1],
                                                          (String)tuple[2],
                                                          (Date)tuple[3],
-                                                         (Date)tuple[4],
-                                                         (Integer)tuple[5],
+                                                         (Integer)tuple[4],
+                                                         (String)tuple[5],
                                                          (String)tuple[6],
-                                                         (String)tuple[7],
-                                                         (String)tuple[8]);
+                                                         (String)tuple[7]);
                             }
 
                             @SuppressWarnings("rawtypes")

@@ -37,7 +37,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageDetails;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 
 public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implements OutageDao {
@@ -82,7 +82,7 @@ public class MockOutageDao extends AbstractMockDao<OnmsOutage, Integer> implemen
     }
 
     @Override
-    public Collection<OutageDetails> newestOutages(final List<String> serviceNames) {
+    public Collection<CurrentOutageDetails> newestCurrentOutages(final List<String> serviceNames) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

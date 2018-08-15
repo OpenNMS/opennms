@@ -65,7 +65,7 @@ import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageDetails;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -319,11 +319,11 @@ public class OutageDaoIT implements InitializingBean {
 
         OnmsOutage h1 = new OnmsOutage(date1, date1, nodeHeartbeatService);
         OnmsOutage h2 = new OnmsOutage(date3, date3, nodeHeartbeatService);
-        OnmsOutage h3 = new OnmsOutage(date5, date5, nodeHeartbeatService);
+        OnmsOutage h3 = new OnmsOutage(date5, (Date)null, nodeHeartbeatService);
 
         OnmsOutage r1 = new OnmsOutage(date2, date2, nodeRpcService);
         OnmsOutage r2 = new OnmsOutage(date4, date4, nodeRpcService);
-        OnmsOutage r3 = new OnmsOutage(date6, date6, nodeRpcService);
+        OnmsOutage r3 = new OnmsOutage(date6, (Date)null, nodeRpcService);
 
         OnmsOutage i1 = new OnmsOutage(date1, date1, icmpService);
 
@@ -347,11 +347,11 @@ public class OutageDaoIT implements InitializingBean {
             @Override
             public void doInTransactionWithoutResult(final TransactionStatus status) {
                 final List<String> services = Arrays.asList("Minion-Heartbeat", "Minion-RPC");
-                Collection<OutageDetails> outages = m_outageDao.newestOutages(services);
+                Collection<CurrentOutageDetails> outages = m_outageDao.newestCurrentOutages(services);
                 assertEquals("we should have 2 outages", 2, outages.size());
 
-                Iterator<OutageDetails> it = outages.iterator();
-                OutageDetails outage = it.next();
+                Iterator<CurrentOutageDetails> it = outages.iterator();
+                CurrentOutageDetails outage = it.next();
                 assertEquals("the first outage should be a heartbeat outage", "Minion-Heartbeat", outage.getServiceName());
                 assertEquals("the first outage should be the *latest* heartbeat outage", date5, outage.getIfLostService());
 
@@ -360,8 +360,8 @@ public class OutageDaoIT implements InitializingBean {
                 assertEquals("the second outage should be the *latest* RPC outage", date6, outage.getIfLostService());
 
                 // also make sure it works when no services are specified
-                outages = m_outageDao.newestOutages(Collections.emptyList());
-                assertEquals("we should have 4 outages", 4, outages.size());
+                outages = m_outageDao.newestCurrentOutages(Collections.emptyList());
+                assertEquals("we should have 2 outages", 2, outages.size());
 
                 it = outages.iterator();
                 outage = it.next();
@@ -371,14 +371,6 @@ public class OutageDaoIT implements InitializingBean {
                 outage = it.next();
                 assertEquals("the second outage should be an RPC outage", "Minion-RPC", outage.getServiceName());
                 assertEquals("the second outage should be the *latest* RPC outage", date6, outage.getIfLostService());
-
-                outage = it.next();
-                assertEquals("the third outage should be an ICMP outage", "ICMP", outage.getServiceName());
-                assertEquals("the third outage should be the ipv4 ICMP outage", icmpService.getId(), outage.getMonitoredServiceId());
-
-                outage = it.next();
-                assertEquals("the fourth outage should be an ICMP outage", "ICMP", outage.getServiceName());
-                assertEquals("the fourth outage should be the ipv6 ICMP outage", v6IcmpService.getId(), outage.getMonitoredServiceId());
             }
         });
     }

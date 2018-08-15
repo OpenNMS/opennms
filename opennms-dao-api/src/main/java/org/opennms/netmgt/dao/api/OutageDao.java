@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.HeatMapElement;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.ServiceSelector;
-import org.opennms.netmgt.model.outage.OutageDetails;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 
 
@@ -65,12 +65,12 @@ public interface OutageDao extends LegacyOnmsDao<OnmsOutage, Integer> {
     OnmsOutage currentOutageForService(OnmsMonitoredService service);
 
     /**
-     * Finds the latest (resolved or unresolved) outages that match the given services.
+     * Finds the latest (unresolved) outages that match the given services.
      *
      * @param services a list of services
      * @return a {@link java.util.Collection} of outages
      */
-    Collection<OutageDetails> newestOutages(List<String> services);
+    Collection<CurrentOutageDetails> newestCurrentOutages(List<String> services);
 
     /**
      * Finds all current (unresolved) outages that match the given service selector.

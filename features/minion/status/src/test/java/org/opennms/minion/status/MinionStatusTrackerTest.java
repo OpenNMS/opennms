@@ -72,7 +72,7 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.model.outage.OutageDetails;
+import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.xml.event.Event;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.support.TransactionCallback;
@@ -393,18 +393,14 @@ public class MinionStatusTrackerTest {
 
         final Date now = new Date(System.currentTimeMillis());
         final Date old = new Date(1);
-        final List<OutageDetails> outages = Arrays.asList(
-                                                       createOutage(now, now, nodeC, MINION_RPC), // nodeC RPC up
-                                                       createOutage(now, now, nodeC, MINION_HEARTBEAT), // nodeC heartbeat up
-                                                       createOutage(now, now, nodeB, MINION_RPC), // nodeB RPC up
-                                                       createOutage(old, old, nodeB, MINION_HEARTBEAT), // nodeB heartbeat old but up
+        final List<CurrentOutageDetails> outages = Arrays.asList(
                                                        createOutage(now, null, nodeA, MINION_RPC), // nodeA RPC down
                                                        createOutage(now, null, nodeA, MINION_HEARTBEAT) // nodeA heartbeat down
                 );
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA, minionB, minionC, minionD));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA, nodeB, nodeC, nodeD));
-        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(outages);
+        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(outages);
 
         System.err.println("old=" + old);
         System.err.println("now=" + now);
@@ -473,7 +469,7 @@ public class MinionStatusTrackerTest {
         // refresh() query
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 
@@ -501,7 +497,7 @@ public class MinionStatusTrackerTest {
 
         when(m_minionDao.findAll()).thenReturn(Arrays.asList(minionA));
         when(m_nodeDao.findMatching(any(Criteria.class))).thenReturn(Arrays.asList(nodeA));
-        when(m_outageDao.newestOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
+        when(m_outageDao.newestCurrentOutages(anyListOf(String.class))).thenReturn(Collections.emptyList());
 
         m_tracker.refresh();
 
@@ -520,8 +516,8 @@ public class MinionStatusTrackerTest {
     private Integer lastOutageId = 0;
     private Integer lastLastOctet = 0;
 
-    private OutageDetails generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
-        final OutageDetails outage = createOutage(time, null, node, service);
+    private CurrentOutageDetails generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
+        final CurrentOutageDetails outage = createOutage(time, null, node, service);
         final Event e = new EventBuilder(uei, "MinionStatusTrackerTest")
                 .setNodeid(node.getId())
                 .setService(service)
@@ -531,9 +527,9 @@ public class MinionStatusTrackerTest {
         return outage;
     }
 
-    private OutageDetails createOutage(final Date lostService, final Date regainedService, final OnmsNode node, final String serviceType) {
+    private CurrentOutageDetails createOutage(final Date lostService, final Date regainedService, final OnmsNode node, final String serviceType) {
         final OnmsServiceType svcType = getServiceType(serviceType);
-        return new OutageDetails(++lastOutageId, svcType.getId(), serviceType, lostService, regainedService, node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation().getLocationName());
+        return new CurrentOutageDetails(++lastOutageId, svcType.getId(), serviceType, lostService, node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation().getLocationName());
     }
 
     private OnmsMinion getMinion(final OnmsNode node) {

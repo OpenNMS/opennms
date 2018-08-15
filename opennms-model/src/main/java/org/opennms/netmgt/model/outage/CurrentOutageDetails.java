@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name="outage-details")
 @XmlAccessorType(XmlAccessType.NONE)
-public class OutageDetails {
+public class CurrentOutageDetails {
     @XmlAttribute(name="id")
     private Integer m_outageId;
 
@@ -49,9 +49,6 @@ public class OutageDetails {
 
     @XmlAttribute(name="ifLostService")
     private Date m_ifLostService;
-
-    @XmlAttribute(name="ifRegainedService")
-    private Date m_ifRegainedService;
 
     @XmlAttribute(name="nodeId")
     private Integer m_nodeId;
@@ -65,13 +62,12 @@ public class OutageDetails {
     @XmlAttribute(name="location")
     private String m_location;
 
-    public OutageDetails() {}
-    public OutageDetails(final Integer outageId, final Integer monitoredServiceId, final String serviceName, final Date ifLostService, final Date ifRegainedService, final Integer nodeId, final String foreignSource, final String foreignId, final String location) {
+    public CurrentOutageDetails() {}
+    public CurrentOutageDetails(final Integer outageId, final Integer monitoredServiceId, final String serviceName, final Date ifLostService, final Integer nodeId, final String foreignSource, final String foreignId, final String location) {
         m_outageId = outageId;
         m_monitoredServiceId = monitoredServiceId;
         m_serviceName = serviceName;
         m_ifLostService = ifLostService;
-        m_ifRegainedService = ifRegainedService;
         m_nodeId = nodeId;
         m_foreignSource = foreignSource;
         m_foreignId = foreignId;
@@ -94,10 +90,6 @@ public class OutageDetails {
         return m_ifLostService;
     }
 
-    public Date getIfRegainedService() {
-        return m_ifRegainedService;
-    }
-
     public Integer getNodeId() {
         return m_nodeId;
     }
@@ -115,11 +107,10 @@ public class OutageDetails {
     }
     @Override
     public String toString() {
-        return "OutageDetails [outageId=" + m_outageId
+        return "CurrentOutageDetails [outageId=" + m_outageId
                 + ", monitoredServiceId=" + m_monitoredServiceId
                 + ", serviceName=" + m_serviceName
                 + ", ifLostService=" + m_ifLostService
-                + ", ifRegainedService=" + m_ifRegainedService
                 + ", nodeId=" + m_nodeId
                 + ", foreignSource=" + m_foreignSource
                 + ", foreignId=" + m_foreignId
