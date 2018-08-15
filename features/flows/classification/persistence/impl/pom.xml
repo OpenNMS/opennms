@@ -9,7 +9,7 @@
   <groupId>org.opennms.features.flows.classification.persistence</groupId>
   <artifactId>org.opennms.features.flows.classification.persistence.impl</artifactId>
   <name>OpenNMS :: Features :: Flows :: Classification :: Persistence :: Impl.</name>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <dependencies>
       <dependency>
           <groupId>org.opennms.features.flows.classification.persistence</groupId>

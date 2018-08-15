@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2006-2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -41,7 +41,6 @@ import java.util.HashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.jsp.PageContext;
 
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -50,7 +49,6 @@ import org.opennms.web.api.OnmsHeaderProvider;
 import org.opennms.web.navigate.DisplayStatus;
 import org.opennms.web.navigate.NavBarEntry;
 import org.opennms.web.navigate.NavBarModel;
-import org.opennms.web.tags.DateTimeTag;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
@@ -72,8 +70,8 @@ import freemarker.template.TemplateModelException;
  */
 public class NavBarController extends AbstractController implements InitializingBean, OnmsHeaderProvider {
     private List<NavBarEntry> m_navBarItems;
-    private FreemarkerView m_view;
     private CentralizedDateTimeFormat dateTimeFormat;
+    private Configuration cfg;
 
     /**
      * <p>afterPropertiesSet</p>
@@ -83,21 +81,19 @@ public class NavBarController extends AbstractController implements Initializing
     public void afterPropertiesSet() throws IOException {
         Assert.state(m_navBarItems != null, "navBarItems property has not been set");
 
-        // Initialize the Freemarker engine and fetch our template
-        Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
-        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
-        cfg.setClassForTemplateLoading(NavBarController.class, "");
-        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-        Template template = cfg.getTemplate("navbar.ftl");
-
-        m_view = new FreemarkerView(template);
         dateTimeFormat = new CentralizedDateTimeFormat();
+
+        // Initialize the Freemarker engine
+        cfg = new Configuration(Configuration.VERSION_2_3_21);
+        cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
+        cfg.setServletContextForTemplateLoading(getServletContext(), "WEB-INF/templates");
+        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
     }
 
     /** {@inheritDoc} */
     @Override
     protected ModelAndView handleRequestInternal(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-        return new ModelAndView(m_view, createModel(request));
+        return new ModelAndView(createView(), createModel(request));
     }
 
     private Map<String, Object> createModel(final HttpServletRequest request) {
@@ -139,6 +135,12 @@ public class NavBarController extends AbstractController implements Initializing
         return timeZoneId;
     }
 
+    private FreemarkerView createView() throws IOException { // Fetches the template using the Freemarker Engine. It is not instatiated by default, as otherwise it is never reloaded if changed
+        final Template template = cfg.getTemplate("navbar.ftl");
+        final FreemarkerView view = new FreemarkerView(template);
+        return view;
+    }
+
     /**
      * <p>getNavBarItems</p>
      *
@@ -159,7 +161,7 @@ public class NavBarController extends AbstractController implements Initializing
 
     @Override
     public String getHeaderHtml(HttpServletRequest request) throws Exception {
-        return m_view.renderMergedOutputModel(createModel(request), request);
+        return createView().renderMergedOutputModel(createModel(request), request);
     }
 
     /**

@@ -1,0 +1,8 @@
+opennms-sentinel: codeless-jar usr/share/sentinel/system/org/apache/aries/blueprint/org.apache.aries.blueprint.core.compatibility/1.0.0/org.apache.aries.blueprint.core.compatibility-1.0.0.jar
+opennms-sentinel: debian-revision-not-well-formed
+opennms-sentinel: debian-revision-should-not-be-zero
+opennms-sentinel: empty-binary-package
+opennms-sentinel: executable-not-elf-or-script usr/share/sentinel/bin/contrib/karaf-*
+opennms-sentinel: misplaced-extra-member-in-deb
+opennms-sentinel: package-has-long-file-name
+opennms-sentinel: unknown-java-class-version

@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.ByteBuffer;
+import java.time.ZoneId;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -128,8 +129,8 @@ public class RadixTreeSyslogParser extends SyslogParser {
 	public SyslogMessage parse() {
 		SyslogMessage retval = radixParser.parse(getText()).join();
 
-		// Trim off the RFC 5424 structured data to emulate the behavior of the legacy parser (for now)
 		if (retval != null) {
+			// Trim off the RFC 5424 structured data to emulate the behavior of the legacy parser (for now)
 			String message = retval.getMessage();
 			if (message != null && message.startsWith("[")) {
 				Matcher matcher = STRUCTURED_DATA.matcher(message);
@@ -138,8 +139,27 @@ public class RadixTreeSyslogParser extends SyslogParser {
 					retval.setMessage(newMessage == null ? null : newMessage);
 				}
 			}
+			setTimezoneIfNeeded(retval);
 		}
 
 		return retval;
+	}
+
+	private void setTimezoneIfNeeded(SyslogMessage message){
+        boolean hasTimeinformation = // to no break logic in ConvertToEvent
+		        message.getYear() != null ||
+				message.getMonth() != null ||
+				message.getDayOfMonth() != null ||
+				message.getHourOfDay() != null ||
+				message.getMinute() != null ||
+				message.getSecond() != null ||
+				message.getMillisecond() != null;
+
+		ZoneId timeZone = message.getZoneId();
+		if(timeZone == null && hasTimeinformation && getConfig().getTimeZone() == null){
+			message.setZoneId(ZoneId.systemDefault());
+		} else if (timeZone == null && hasTimeinformation && getConfig().getTimeZone() != null){
+			message.setZoneId(getConfig().getTimeZone().toZoneId());
+		}
 	}
 }

@@ -28,7 +28,6 @@
 
 package org.opennms.smoketest.flow;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -37,7 +36,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
@@ -55,7 +53,6 @@ import org.opennms.smoketest.utils.RestClient;
 import org.opennms.test.system.api.NewTestEnvironment;
 import org.opennms.test.system.api.TestEnvironment;
 import org.opennms.test.system.api.TestEnvironmentBuilder;
-import org.opennms.test.system.api.utils.SshClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,12 +70,12 @@ public class FlowStackIT {
 
     private static Logger LOG = LoggerFactory.getLogger(FlowStackIT.class);
 
-    private static int NETFLOW5_LISTENER_UDP_PORT = 50000;
-    private static int NETFLOW9_LISTENER_UDP_PORT = 50001;
-    private static int IPFIX_LISTENER_UDP_PORT = 50002;
-    private static int SFLOW_LISTENER_UDP_PORT = 50003;
+    public static int NETFLOW5_LISTENER_UDP_PORT = 50000;
+    public static int NETFLOW9_LISTENER_UDP_PORT = 50001;
+    public static int IPFIX_LISTENER_UDP_PORT = 50002;
+    public static int SFLOW_LISTENER_UDP_PORT = 50003;
 
-    private static final String TEMPLATE_NAME = "netflow";
+    public static final String TEMPLATE_NAME = "netflow";
 
     @Rule
     public TestEnvironment testEnvironment = getTestEnvironment();
@@ -96,7 +93,7 @@ public class FlowStackIT {
             final TestEnvironmentBuilder builder = TestEnvironment.builder().opennms().es5();
             // Enable flow adapter
             builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/telemetryd-configuration.xml"), "etc/telemetryd-configuration.xml");
-
+            builder.withOpenNMSEnvironment().addFile(getClass().getResource("/flows/org.opennms.features.flows.persistence.elastic.cfg"), "etc/org.opennms.features.flows.persistence.elastic.cfg");
             OpenNMSSeleniumTestCase.configureTestEnvironment(builder);
             return builder.build();
         } catch (final Throwable t) {
@@ -126,9 +123,6 @@ public class FlowStackIT {
         // Proxy the REST service
         restClient = new RestClient(opennmsWebAddress);
 
-        // Configure OpenNMS
-        setupOnmsContainer(opennmsSshAddress);
-
         // No flows should be present
         assertEquals(Long.valueOf(0L), restClient.getFlowCount(0L, System.currentTimeMillis()));
 
@@ -143,14 +137,14 @@ public class FlowStackIT {
             sendNetflowPacket(opennmsSflowAdapterAddress, "/flows/sflow.dat");
 
             // Ensure that the template has been created
-            verify(client, (jestClient) -> {
-                JestResult result = jestClient.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
+            verify(() -> {
+                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
                 return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
             });
 
             // Verify directly at elastic that the flows have been created
-            verify(client, jestClient -> {
-                SearchResult response = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
+            verify(() -> {
+                final SearchResult response = client.execute(new Search.Builder("").addIndex("netflow-*").build());
                 LOG.info("Response: {} {} ", response.isSucceeded() ? "Success" : "Failure", response.getTotal());
                 return response.isSucceeded() && response.getTotal() == 16;
             });
@@ -161,14 +155,14 @@ public class FlowStackIT {
         }
     }
 
-    private byte[] getNetflowPacketContent(final String filename) throws IOException {
-        try (final InputStream is = getClass().getResourceAsStream(filename)) {
+    private static byte[] getNetflowPacketContent(final String filename) throws IOException {
+        try (final InputStream is = FlowStackIT.class.getResourceAsStream(filename)) {
             return ByteStreams.toByteArray(is);
         }
     }
 
     // Sends a netflow Packet to the given destination address
-    private void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
+    public static void sendNetflowPacket(final InetSocketAddress destinationAddress, final String filename) throws IOException {
         final byte[] bytes = getNetflowPacketContent(filename);
         try (DatagramSocket serverSocket = new DatagramSocket(0)) { // opens any free port
             final DatagramPacket sendPacket = new DatagramPacket(bytes, bytes.length, destinationAddress.getAddress(), destinationAddress.getPort());
@@ -176,44 +170,19 @@ public class FlowStackIT {
         }
     }
 
-    // Configures the elastic bundle and also installs the flows feature to expose a NetflowRepository.
-    // This is required, otherwise persisting does not work, as no FlowRepository implementation exists.
-    private void setupOnmsContainer(InetSocketAddress opennmsSshAddress) throws Exception {
-        try (final SshClient sshClient = new SshClient(opennmsSshAddress, "admin", "admin")) {
-            PrintStream pipe = sshClient.openShell();
-
-            // Update feature configuration to point url to elastic container
-            pipe.println("config:edit org.opennms.features.flows.persistence.elastic");
-            pipe.println("config:property-set elasticUrl http://elasticsearch:9200");
-            pipe.println("config:update");
-
-            pipe.println("feature:list");
-            pipe.println("log:set INFO");
-            pipe.println("logout");
-
-            try {
-                await().atMost(2, MINUTES).until(sshClient.isShellClosedCallable());
-            } finally {
-                LOG.info("Karaf output:\n{}", sshClient.getStdout());
-            }
-        }
-    }
-
-    private interface Block {
-
-        boolean test(JestClient client) throws Exception;
+    public interface Block {
+        boolean test() throws Exception;
     }
 
     // Helper method to execute the defined block n-times or fail if not successful
-    private static void verify(JestClient jestClient, Block verifyCallback) {
-        Objects.requireNonNull(jestClient);
+    public static void verify(Block verifyCallback) {
         Objects.requireNonNull(verifyCallback);
 
         // Verify
         with().pollInterval(15, SECONDS).await().atMost(1, MINUTES).until(() -> {
             try {
                 LOG.info("Querying elastic search");
-                return verifyCallback.test(jestClient);
+                return verifyCallback.test();
             } catch (Exception e) {
                 LOG.error("Error while querying to elastic search", e);
             }

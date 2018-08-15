@@ -9,13 +9,10 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 	<reference id="flowRepository" interface="org.opennms.netmgt.flows.api.FlowRepository" availability="mandatory" />
-
-	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 	<reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" />
 	<reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" />
 	<reference id="filterDao" interface="org.opennms.netmgt.filter.api.FilterDao" />
-	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
-	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" />
+	<reference id="collectionAgentFactory" interface="org.opennms.netmgt.collection.api.CollectionAgentFactory" />
 
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.adapters.netflow.v5.Netflow5AdapterFactory">
@@ -67,12 +64,10 @@
 
 	<bean id="sflowTelemetryFactory" class="org.opennms.netmgt.telemetry.adapters.netflow.sflow.SFlowTelemetryAdapterFactory">
 		<argument ref="blueprintBundleContext" />
-		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="interfaceToNodeCache" ref="interfaceToNodeCache" />
+		<property name="collectionAgentFactory" ref="collectionAgentFactory" />
 		<property name="nodeDao" ref="nodeDao" />
-		<property name="transactionTemplate" ref="transactionTemplate" />
 		<property name="filterDao" ref="filterDao" />
-		<property name="persisterFactory" ref="persisterFactory" />
 	</bean>
 	<service ref="sflowTelemetryFactory" interface="org.opennms.netmgt.telemetry.adapters.api.AdapterFactory">
 		<service-properties>
@@ -83,6 +78,12 @@
 
 	<!-- Metrics -->
 	<bean id="flowAdapterMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+	<service ref="flowAdapterMetricRegistry" interface="com.codahale.metrics.MetricSet">
+		<service-properties>
+			<entry key="name" value="Flow" />
+			<entry key="description" value="Consolidated metrics for all telemetry adapters processing flows" />
+		</service-properties>
+	</service>
 	<bean id="flowAdapterMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
 		<argument ref="flowAdapterMetricRegistry"/>
 	</bean>

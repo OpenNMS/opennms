@@ -28,27 +28,13 @@
 
 package org.opennms.minion.core.impl;
 
-import java.util.Objects;
+import org.opennms.distributed.core.api.MinionIdentity;
+import org.opennms.distributed.core.api.SystemType;
+import org.opennms.distributed.core.impl.IdentityImpl;
 
-import org.opennms.minion.core.api.MinionIdentity;
-
-public class MinionIdentityImpl implements MinionIdentity {
-
-    private final String m_location;
-    private final String m_id;
+public class MinionIdentityImpl extends IdentityImpl implements MinionIdentity {
 
     public MinionIdentityImpl(String location, String id) {
-        m_location = Objects.requireNonNull(location);
-        m_id = Objects.requireNonNull(id);
-    }
-
-    @Override
-    public String getLocation() {
-        return m_location;
-    }
-
-    @Override
-    public String getId() {
-        return m_id;
+        super(id, location, SystemType.Minion);
     }
 }

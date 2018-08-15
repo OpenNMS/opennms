@@ -47,6 +47,7 @@ import org.opennms.features.topology.api.topo.AbstractEdge;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
 import org.opennms.features.topology.api.topo.Vertex;
+import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
 import org.opennms.netmgt.dao.api.BridgeTopologyDao;
 import org.opennms.netmgt.dao.api.CdpElementDao;
 import org.opennms.netmgt.dao.api.CdpLinkDao;
@@ -617,38 +618,38 @@ public class EnhancedLinkdMockDataPopulator {
         EasyMock.expect(mockVertex.getLabel()).andReturn(null).anyTimes();
         EasyMock.replay(mockVertex);
         AbstractEdge[] edgeidsforvertex1 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10018|10081", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10012|10021", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "10112|10121", mockVertex, mockVertex)
+                LinkdEdge.create("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
         };
         AbstractEdge[] edgeidsforvertex2 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10023|10032", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10012|10021", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE, "10112|10121", mockVertex, mockVertex)
+                LinkdEdge.create("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10012|10021", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10112|10121", mockVertex, mockVertex,ProtocolSupported.OSPF)
         };
         AbstractEdge[] edgeidsforvertex3 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10023|10032", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10034|10043", mockVertex, mockVertex)
+                LinkdEdge.create("10023|10032", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex4 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10045|10054", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10034|10043", mockVertex, mockVertex)
+                LinkdEdge.create("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10034|10043", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex5 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10045|10054", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10056|10065", mockVertex, mockVertex)
+                LinkdEdge.create("10045|10054", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex6 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10056|10065", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10067|10076", mockVertex, mockVertex)
+                LinkdEdge.create("10056|10065", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex7 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10078|10087", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10067|10076", mockVertex, mockVertex)
+                LinkdEdge.create("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10067|10076", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         AbstractEdge[] edgeidsforvertex8 = {
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10018|10081", mockVertex, mockVertex),
-                new AbstractEdge(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE, "10078|10087", mockVertex, mockVertex)
+                LinkdEdge.create("10018|10081", mockVertex, mockVertex,ProtocolSupported.LLDP),
+                LinkdEdge.create("10078|10087", mockVertex, mockVertex,ProtocolSupported.LLDP)
         };
         OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "1")), edgeidsforvertex1);
         OnmsAssert.assertArrayEqualsIgnoreOrder(topologyProvider.getEdgeIdsForVertex(new DefaultVertexRef(vertexNamespace, "2")), edgeidsforvertex2);

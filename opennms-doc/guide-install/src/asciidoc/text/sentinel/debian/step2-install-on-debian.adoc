@@ -1,0 +1,41 @@
+==== Step 2: Install the repository and Sentinel package
+
+.Add apt repository in /etc/apt/sources.list.d/opennms.list and add GPG key
+[source, shell]
+----
+echo 'deb https://debian.opennms.org stable main \
+      deb-src https://debian.opennms.org branches/features-sentinel main' > /etc/apt/sources.list.d/opennms.list
+wget -O - https://debian.opennms.org/OPENNMS-GPG-KEY | apt-key add -
+apt update
+----
+
+.Install the Sentinel package
+[source, bash]
+----
+apt -y install opennms-sentinel
+----
+
+The _Sentinel_ packages setup the following directory structure:
+
+[source, shell, subs="attributes"]
+----
+[root@localhost {sentinel-home}]# $ tree -L 1
+.
+|-- bin
+|-- COPYING
+|-- data
+|-- debian
+|-- deploy
+|-- etc
+|-- lib
+`-- system
+----
+
+Additionally, symbolic links are set up pointing to `/etc/sentinel` and `/var/log/sentinel` to match Debian's expected filesystem layout.
+
+The Minion's startup configuration can be changed by editing the `/etc/default/sentinel` file.
+It allows to override the defaults used at startup including:
+
+* Location of the JDK
+* Memory usage
+* User to run as
