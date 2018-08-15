@@ -410,6 +410,7 @@ public class ConfigTesterTest {
         testConfigFile("rws-configuration.xml");
     }
 
+    @Ignore
     @Test
     public void testTelemetrydConfiguration() {
         testConfigFile("telemetryd-configuration.xml");
