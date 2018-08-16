@@ -37,6 +37,8 @@
                 java.lang.StackTraceElement,
                 java.lang.StringBuilder"
  %>
+<%@ page import="org.opennms.web.utils.ExceptionUtils" %>
+<%@ page import="org.opennms.web.utils.UserUtils" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
@@ -91,7 +93,11 @@ function toggleDiv(divName) {
 <%
 final StringBuilder stBuilder = new StringBuilder();
 
-if (exception != null) {
+if (exception != null
+        && UserUtils.isAdminUser(request)
+        && !"true".equals(System.getProperty("org.opennms.ui.show_truncated_stacktrace_for_admin"))) {
+  stBuilder.append(ExceptionUtils.getFullStackTrace(exception));
+} else if (exception != null) {
   if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {
     exception = ((ServletException) exception).getRootCause();
   } else if (exception.getCause() != null) {

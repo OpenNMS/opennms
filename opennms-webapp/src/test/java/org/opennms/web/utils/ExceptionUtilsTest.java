@@ -29,6 +29,7 @@
 package org.opennms.web.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import javax.servlet.ServletException;
 
@@ -57,6 +58,25 @@ public class ExceptionUtilsTest {
 
         ServletException doubleNested = new ServletException(nested);
         assertEquals(ainfe, ExceptionUtils.getRootCause(doubleNested, AlarmIdNotFoundException.class));
+    }
+
+    @Test
+    public void willPrintFullStackTrace(){
+        Exception rootException = throwAndCatchException(new NullPointerException("root message"));
+        Exception wrapperException = throwAndCatchException(new IllegalArgumentException("wrapper message", rootException));
+        String stackTrace = ExceptionUtils.getFullStackTrace(wrapperException);
+        assertTrue(stackTrace.contains("root message"));
+        assertTrue(stackTrace.contains("wrapper message"));
+        assertTrue(stackTrace.contains("NullPointerException"));
+        assertTrue(stackTrace.contains("IllegalArgumentException"));
+    }
+
+    private <E extends Exception> E throwAndCatchException(E exception){
+        try{
+            throw exception;
+        } catch(Exception e){
+            return (E)e;
+        }
     }
 
 }
