@@ -7,14 +7,14 @@
 ==== Release 22.0.3
 
 Release 22.0.3 is the latest stable release of OpenNMS.
-It contains FIXME
+It contains a critical fix for RADIUS support, as well as a number of smaller bug fixes and enhancements.
 For a high-level overview of what's changed in OpenNMS 22, see link:http://docs.opennms.org/opennms/releases/22.0.3/releasenotes/releasenotes.html#releasenotes-22[What's New in OpenNMS 22].
 
 The codename for 22.0.3 is _link:http://marvelcinematicuniverse.wikia.com/wiki/Time_Stone[Time]_.
 
 ===== Breaking Changes
 
-A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212]).
 This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
 Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
 
@@ -66,6 +66,34 @@ Supported values for `authTypeClass` are:
 
 If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
 
+===== Bug
+
+* warnings and exceptions in telemetryd.log with sflow (Issue http://issues.opennms.org/browse/NMS-1329[NMS-1329])
+* Wrong descriptions for Quantile in Percentile and Outlier measurement filters (Issue http://issues.opennms.org/browse/NMS-1363[NMS-1363])
+* VMWare-Center-Monitoring make for every virtual machine a login/logout (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* LDAPMonitor causes Errors in ldap logfiles (Issue http://issues.opennms.org/browse/NMS-8891[NMS-8891])
+* Topology on Map is not properly displayed (Issue http://issues.opennms.org/browse/NMS-9288[NMS-9288])
+* Failed to run Jasper report local_Serial-Interface-Utilization-Summary: Key receive rate is duplicated in pie dataset (Issue http://issues.opennms.org/browse/NMS-9875[NMS-9875])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* Trapd does not validate config against XSD (Issue http://issues.opennms.org/browse/NMS-10242[NMS-10242])
+* Drools correlation engine do not always respond to targeted reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-10257[NMS-10257])
+* Change in JMS NBI Date Format (Issue http://issues.opennms.org/browse/NMS-10282[NMS-10282])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+* Doughnut chart shows certain closed outages as "current" (Issue http://issues.opennms.org/browse/NMS-10293[NMS-10293])
+* SNMP monitor doesn't take service down (Issue http://issues.opennms.org/browse/NMS-10308[NMS-10308])
+
+===== Enhancement
+
+* Make isUseDebugger() return false instead of true to fix flapping Camel Tests (e.g. HeartbeatBlueprintPerfIT) (Issue http://issues.opennms.org/browse/NMS-1361[NMS-1361])
+* Make hawtio available for OpenNMS as installable RPM/DEB (Issue http://issues.opennms.org/browse/NMS-9858[NMS-9858])
+* Support customizing the default time zone when parsing dates in syslog messages (Issue http://issues.opennms.org/browse/NMS-10164[NMS-10164])
+* Supporting flow records without direction field (ingress/egress) (Issue http://issues.opennms.org/browse/NMS-10221[NMS-10221])
+* use user defined time zone for date formatting (Issue http://issues.opennms.org/browse/NMS-10228[NMS-10228])
+* apply centralized datetime rendering to freemarker template(s) (Issue http://issues.opennms.org/browse/NMS-10239[NMS-10239])
+* Update log4j2.xml with kafka logging (Issue http://issues.opennms.org/browse/NMS-10269[NMS-10269])
+* Syslog messages should default to using the time at which they were received (Issue http://issues.opennms.org/browse/NMS-10271[NMS-10271])
+* Syslog messages should default to being associated with the hosts from which they were received (Issue http://issues.opennms.org/browse/NMS-10272[NMS-10272])
+* expose datetimeformat in InfoService REST Endpoint (Issue http://issues.opennms.org/browse/NMS-10301[NMS-10301])
 
 [[releasenotes-changelog-22.0.2]]
 
