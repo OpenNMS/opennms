@@ -179,9 +179,9 @@ This reduces the complexity of the UI code and will make it easier for developer
 ==== Release Meridian-2017.1.10
 
 Release 2017.1.10 is a small update to OpenNMS Meridian 2017.1.9.
-It contains FIXME
+It contains a critical RADIUS fix as well as a number of smaller enhancements.
 
-The codename for 2017.1.10 is _FIXME_.
+The codename for 2017.1.10 is _Capital meridian_.
 
 ===== Breaking Change: trapd-configuration.xml
 
@@ -264,6 +264,19 @@ Supported values for `authTypeClass` are:
 
 If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
 
+===== Bug
+
+* VMWare-Center-Monitoring make for every virtual machine a login/logout (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* LDAPMonitor causes Errors in ldap logfiles (Issue http://issues.opennms.org/browse/NMS-8891[NMS-8891])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* Trapd does not validate config against XSD (Issue http://issues.opennms.org/browse/NMS-10242[NMS-10242])
+* Drools correlation engine do not always respond to targeted reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-10257[NMS-10257])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+
+===== Enhancement
+
+* Failed to run Jasper report local_Serial-Interface-Utilization-Summary: Key receive rate is duplicated in pie dataset (Issue http://issues.opennms.org/browse/NMS-9875[NMS-9875])
 
 [releasenotes-changelog-Meridian-2017.1.9]
 
