@@ -58,6 +58,8 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     private static final String TYPE = "situation-feedback";
 
+    private final Gson gson = new Gson();
+
     private final ElasticFeedbackRepositoryInitializer initializer;
 
     private final JestClient client;
@@ -103,7 +105,6 @@ public class ElasticFeedbackRepository implements FeedbackRepository {
 
     @Override
     public Collection<AlarmFeedback> getFeedback(String situationKey) throws FeedbackException {
-        Gson gson = new Gson();
         String query = "{\n" + "  \"query\": { \"match\": { \"situation_key\": " + gson.toJson(situationKey) + " } }\n" + "}";
         return search(query);
     }

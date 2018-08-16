@@ -60,7 +60,7 @@
                     "norms": false
                 },
                 "reason": {
-                    "type": "keyword",
+                    "type": "text",
                     "norms": false
                 },
                 "user": {

@@ -104,7 +104,7 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
         situation.getRelatedAlarms().remove(alarm);
         alarmDao.saveOrUpdate(situation);
         Log.debug("removed alarm {} from situation {}.", alarm, situation);
-        // Update AlarmChangeNotifier
+        // Update AlarmEntityNotifier
         alarmEntityNotifier.didUpdateRelatedAlarms(situation, previousRelatedAlarms);
     }
 

@@ -12,14 +12,13 @@
 ">
 
     <!-- Configuration properties -->
-    <cm:property-placeholder id="elasticFlowRepositoryProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
+    <cm:property-placeholder id="elasticSituationFeedbackRepositoryProperties" persistent-id="org.opennms.features.situation-feedback.persistence.elastic" update-strategy="reload">
         <cm:default-properties>
             <!-- Elastic Connection Settings -->
             <cm:property name="elasticUrl" value="http://localhost:9200" />
             <cm:property name="globalElasticUser" value="" />
             <cm:property name="globalElasticPassword" value="" />
             <cm:property name="elasticIndexStrategy" value="monthly" />
-            <cm:property name="maxFlowDurationMs" value="120000" />
             <cm:property name="defaultMaxTotalConnectionPerRoute" value="-1" />
             <cm:property name="maxTotalConnection" value="-1" />
             <cm:property name="nodeDiscovery" value="false" />
@@ -29,10 +28,6 @@
             <cm:property name="connTimeout" value="5000" /> <!-- 5 second timeout for Elasticsearch operations -->
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
-            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeCache.maximumSize" value="1000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeCache.expireAfterWrite" value="300"/> <!-- in seconds. Set to 0 to never evict elements -->
-            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
 
             <!-- Bulk Action Retry settings -->
             <cm:property name="bulkRetryCount" value="5" /> <!-- Number of retries until a bulk operation is considered failed -->
