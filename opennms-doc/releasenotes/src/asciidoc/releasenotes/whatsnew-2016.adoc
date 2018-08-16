@@ -141,17 +141,17 @@ A number of internal libraries have been upgraded for bugfixes and new features.
 * The webapp schemas have all been updated to the Servlet 3.0 specification.
 * Jasper Reports has been upgraded from 5.6.1 to 6.1.1.
 
-[releasenotes-changelog-Meridian-2016.1.14]
+[releasenotes-changelog-Meridian-2016.1.15]
 
 ==== Release Meridian-2016.1.15
 
-Release 2016.1.15 is an update to 2016.1.14 that FIXME
+Release 2016.1.15 is an update to 2016.1.14 that includes a critical fix for RADIUS support and a few other small bug fixes.
 
-The codename for 2016.1.15 is _FIXME_.
+The codename for 2016.1.15 is _Peirce Quincuncial_.
 
 ===== Breaking Changes
 
-A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212]).
 This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
 Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
 
@@ -203,6 +203,15 @@ Supported values for `authTypeClass` are:
 
 If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
 
+===== Bug
+
+* VMWare-Center-Monitoring make for every virtual machine a login/logout (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* LDAPMonitor causes Errors in ldap logfiles (Issue http://issues.opennms.org/browse/NMS-8891[NMS-8891])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+
+[releasenotes-changelog-Meridian-2016.1.14]
 
 ==== Release Meridian-2016.1.14
 
