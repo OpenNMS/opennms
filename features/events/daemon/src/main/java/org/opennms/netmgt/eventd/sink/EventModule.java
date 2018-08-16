@@ -39,18 +39,17 @@ import org.opennms.core.ipc.sink.xml.AbstractXmlSinkModule;
 import org.opennms.netmgt.config.api.EventdConfig;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-public class EventsModule extends AbstractXmlSinkModule<Event, Log> {
+/**
+ * @author Malatesh Sudarshan
+ */
+public class EventModule extends AbstractXmlSinkModule<Event, Log> {
 
     public static final String MODULE_ID = "Events";
 
-    private static final Logger LOG = LoggerFactory.getLogger(EventsModule.class);
-
     private final EventdConfig m_config;
 
-    public EventsModule(EventdConfig config) {
+    public EventModule(EventdConfig config) {
         super(Log.class);
         this.m_config = config;
     }
