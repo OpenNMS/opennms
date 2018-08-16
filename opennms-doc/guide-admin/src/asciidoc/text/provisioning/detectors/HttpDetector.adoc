@@ -15,10 +15,6 @@ This detector is used to find and assigns services based on _HTTP_.
 
 ===== Configuration and Usage
 
-    private String m_url;
-    private int m_;
-    private boolean m_checkRetCode = false;
-
 .Parameters for the HTTP detector
 [options="header, autowidth"]
 |===
