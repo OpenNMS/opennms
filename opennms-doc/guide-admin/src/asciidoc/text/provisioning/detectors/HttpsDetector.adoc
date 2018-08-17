@@ -2,7 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
-==== HTTP Detector
+==== HTTPS Detector
 
 This detector is used to find and assigns services based on _HTTPS_.
 
@@ -16,6 +16,6 @@ This detector is used to find and assigns services based on _HTTPS_.
 ===== Configuration and Usage
 
 
-.Parameters for the HTTP detector
+.Parameters for the HTTPS detector
 
 _The parameters are the same as for the HTTP detector_
