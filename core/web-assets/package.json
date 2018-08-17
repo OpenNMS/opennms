@@ -102,8 +102,11 @@
         "jquery-ui": "^1.12.1",
         "jquery-ui-treemap": "https://github.com/RangerRick/jsTreemap#master",
         "jquery.flot.tooltip": "https://github.com/krzysu/flot.tooltip.git#0.8.5",
+        "js-joda": "1.8.2",
+        "js-joda-timezone": "2.0.0",
         "leaflet": "1.0.2",
         "leaflet.markercluster": "1.0.0",
+        "moment": "2.22.2",
         "underscore": "1.8.3"
     },
     "peerDependencies": {
