@@ -48,6 +48,12 @@ import org.opennms.netmgt.config.utils.ConfigUtils;
 public class EventdConfiguration implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    // Standard sink pattern constants.
+    private static final int NUM_THREADS = 0;
+    private static final int BATCH_SIZE = 1000;
+    private static final int BATCH_INTERVAL = 500;
+    private static final int QUEUE_SIZE = 10000;
+
     /**
      * The IP address on which eventd listens for TCP connections.
      *  If "" is specified, eventd will bind to all addresses. The default
@@ -194,7 +200,7 @@ public class EventdConfiguration implements Serializable {
     }
     
     public Integer getNumThreads() {
-    	return m_threads == null ? 0 : m_threads;
+    	return m_threads == null ? NUM_THREADS : m_threads;
     }
 
     public void setNumThreads(final Integer numThreads) {
@@ -250,7 +256,7 @@ public class EventdConfiguration implements Serializable {
     }
     
     public int getQueueSize() {
-        return m_queueSize == null ? 10000 : m_queueSize;
+        return m_queueSize == null ? QUEUE_SIZE : m_queueSize;
     }
 
     public void setQueueSize(int _queueSize) {
@@ -258,7 +264,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public int getBatchSize() {
-        return m_batchSize == null ? 1000: m_batchSize;
+        return m_batchSize == null ? BATCH_SIZE : m_batchSize;
     }
 
     public void setBatchSize(int _batchSize) {
@@ -266,7 +272,7 @@ public class EventdConfiguration implements Serializable {
     }
 
     public int getBatchInterval() {
-        return m_batchInterval == null ? 500 : m_batchInterval;
+        return m_batchInterval == null ? BATCH_INTERVAL : m_batchInterval;
     }
 
     public void setBatchInterval(int _batchInterval) {

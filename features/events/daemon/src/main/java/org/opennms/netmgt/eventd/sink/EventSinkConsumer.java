@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2018 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -52,19 +52,6 @@ public class EventSinkConsumer implements MessageConsumer<Event, Log> {
     @Autowired
     private EventdConfig m_config;
 
-    public void setconfig(EventdConfig m_config) {
-        this.m_config = m_config;
-    }
-
-    public void setMessageConsumerManager(
-            MessageConsumerManager messageConsumerManager) {
-        this.messageConsumerManager = messageConsumerManager;
-    }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
-
     @PostConstruct
     public void init() throws Exception {
         messageConsumerManager.registerConsumer(this);
@@ -87,5 +74,18 @@ public class EventSinkConsumer implements MessageConsumer<Event, Log> {
             eventForwarder.sendNowSync(eventLog);
         }
 
+    }
+
+    public void setconfig(EventdConfig m_config) {
+        this.m_config = m_config;
+    }
+
+    public void setMessageConsumerManager(
+            MessageConsumerManager messageConsumerManager) {
+        this.messageConsumerManager = messageConsumerManager;
+    }
+
+    public void setEventForwarder(EventForwarder eventForwarder) {
+        this.eventForwarder = eventForwarder;
     }
 }

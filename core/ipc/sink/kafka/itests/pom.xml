@@ -26,11 +26,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
-	<dependency>
-	  <groupId>org.opennms.features.events</groupId>
-  	  <artifactId>org.opennms.features.events.daemon</artifactId>
-	  <scope>test</scope>
-	</dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>camel-dependencies</artifactId>
@@ -150,27 +145,6 @@
       <artifactId>org.opennms.core.test-api.kafka</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
-    </dependency>
-     <!-- Kafka -->
-    <dependency>
-      <groupId>org.apache.kafka</groupId>
-      <artifactId>kafka-streams</artifactId>
-      <version>${kafkaStreamsVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.servicemix.bundles</groupId>
-      <artifactId>org.apache.servicemix.bundles.kafka-clients</artifactId>
-      <version>${kafkaStreamsBundleVersion}</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>log4j</artifactId>
-          <groupId>log4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
   </dependencies>
 </project>
