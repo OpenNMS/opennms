@@ -33,8 +33,12 @@ import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.
 import java.util.Map;
 
 import org.opennms.core.utils.ParameterMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpClientWrapperConfigHelper {
+
+    private final static Logger LOG = LoggerFactory.getLogger(HttpClientWrapperConfigHelper.class);
 
     public enum PARAMETER_KEYS {
         useSystemProxy("use-system-proxy");
@@ -53,6 +57,7 @@ public class HttpClientWrapperConfigHelper {
     public static void setUseSystemProxyIfDefined(HttpClientWrapper httpClientWrapper, Map<String, Object> keyedParameters) {
         if (ParameterMap.getKeyedBoolean(keyedParameters, useSystemProxy.getKey(), false)) {
             httpClientWrapper.useSystemProxySettings();
+            LOG.debug("setting useSystemProxySettings() on HttpClientWrapper");
         }
     }
 
