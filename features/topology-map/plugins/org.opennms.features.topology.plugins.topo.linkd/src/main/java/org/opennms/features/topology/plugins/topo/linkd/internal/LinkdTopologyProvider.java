@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.features.topology.api.browsers.ContentType;
 import org.opennms.features.topology.api.browsers.SelectionAware;
@@ -400,13 +401,40 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
     }
 
     private void getCdpLinks() {
+        List<CdpElement> cdpElements = m_cdpElementDao.findAll();
+        List<CdpLink> allLinks = m_cdpLinkDao.findAll();
+        List<Pair<CdpLink, CdpLink>> matchedCdpLinks = matchCdpLinks(cdpElements, allLinks);
+
+        for(Pair<CdpLink, CdpLink> pair : matchedCdpLinks) {
+            CdpLink sourceLink = pair.getLeft();
+            CdpLink targetLink = pair.getRight();
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.CDP);
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.CDP);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                source, target,
+                sourceSnmpInterface, targetSnmpInterface,
+                targetLink.getCdpCacheAddress(),
+                sourceLink.getCdpCacheAddress(),
+                ProtocolSupported.CDP);
+        }
+    }
+
+
+    @Deprecated
+    List<Pair<CdpLink, CdpLink>> matchCdpLinks(final List<CdpElement> cdpElements, final List<CdpLink> allLinks) {
+
         Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
-        for (CdpElement cdpelement: m_cdpElementDao.findAll()) {
+        for (CdpElement cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
 
-        List<CdpLink> allLinks = m_cdpLinkDao.findAll();
         Set<Integer> parsed = new HashSet<Integer>();
+
+        List<Pair<CdpLink, CdpLink>> results = new ArrayList<>();
 
         for (CdpLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) { 
@@ -443,21 +471,71 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            source.getProtocolSupported().add(ProtocolSupported.CDP);
-            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-            target.getProtocolSupported().add(ProtocolSupported.CDP);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getCdpCacheIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getCdpCacheIfIndex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            targetLink.getCdpCacheAddress(),
-                            sourceLink.getCdpCacheAddress(),
-                            ProtocolSupported.CDP);
+            results.add(Pair.of(sourceLink, targetLink));
         }
+        return results;
     }
-    
+
+    List<Pair<CdpLink, CdpLink>> matchCdpLinksNew(final List<CdpElement> cdpElements, final List<CdpLink> allLinks) {
+
+        // 1. create lookup maps:
+        Map<Integer, CdpElement> cdpelementmap = new HashMap<Integer, CdpElement>();
+        for (CdpElement cdpelement: cdpElements) {
+            cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
+        }
+        Map<String, CdpLink> targetLinkMap = new HashMap<>();
+        for (CdpLink link : allLinks) {
+            targetLinkMap.put(createCdpLinkCacheKey(link, cdpelementmap.get(link.getNode().getId())),link);
+        }
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // 2. iterate
+        List<Pair<CdpLink, CdpLink>> results = new ArrayList<>();
+        for (CdpLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: source: {} ", sourceLink.printTopology());
+            }
+            CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
+
+            CdpLink targetLink = targetLinkMap.get(createCdpLinkLookupKey(sourceLink, sourceCdpElement));
+
+            if (targetLink == null) {
+                LOG.debug("getCdpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getCdpLinks: cdp: {}, target: {} ", sourceLink.getCdpCacheDevicePort(), targetLink.printTopology());
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+    private String createCdpLinkCacheKey(CdpLink targetLink, CdpElement targetElement) {
+        return  targetLink.getCdpCacheDevicePort() + "$"
+                + targetLink.getCdpInterfaceName() + "$"
+                + targetElement.getCdpGlobalDeviceId() + "$"
+                + targetLink.getCdpCacheDeviceId();
+    }
+
+    private String createCdpLinkLookupKey(CdpLink sourceLink, CdpElement sourceElement) {
+        return sourceLink.getCdpInterfaceName() + "$"
+                + sourceLink.getCdpCacheDevicePort() + "$"
+                + sourceLink.getCdpCacheDeviceId()+ "$"
+                + sourceElement.getCdpGlobalDeviceId();
+    }
+
     private void getIsIsLinks(){
 
         Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
