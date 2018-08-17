@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Flows :: Elastic</name>
   <properties>
     <skipITs>true</skipITs>
+    <json-simpleVersion>1.1.1</json-simpleVersion>
   </properties>
   <build>
     <plugins>
@@ -48,6 +49,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.cache</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.api</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>
@@ -226,6 +232,12 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.json-simple</groupId>
+      <artifactId>json-simple</artifactId>
+      <version>${json-simpleVersion}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.config;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -148,4 +149,10 @@ public interface SyslogdConfig {
      * - if not set the system time zone will be used
      */
     TimeZone getTimeZone();
+
+    /**
+     * reload configuration
+     * @throws IOException
+     */
+    void reload() throws IOException;
 }

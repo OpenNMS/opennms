@@ -7,6 +7,7 @@
 This monitor allows to test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
 The availability is tested by sending an _AUTH_ packet to the _RADIUS server_.
 If a valid _ACCEPT_ response is received, the _RADIUS_ service is _up_ and considered as available.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 IMPORTANT: To use this monitor it is required to install the _RADIUS_ protocol for {opennms-product-name}.
 
@@ -44,22 +45,22 @@ rad_recv: Access-Accept packet from host 127.0.0.1 port 1812, id=49, length=37 <
 .Monitor specific parameters for the RadiusAuthMonitor
 [options="header, autowidth"]
 |===
-| Parameter        | Description                                                                                       | Required | Default value
-| `timeout`        | Time in milliseconds to wait for the _RADIUS_ service.                                            | optional | `5000`
-| `retry`          | This is a placeholder for the second optional monitor parameter description.                      | optional | `0`
-| `authport`       | _RADIUS_ authentication port.                                                                     | optional | `1812`
-| `acctport`       | _RADIUS_ accounting port.                                                                         | optional | `1813`
-| `user`           | Username to test the authentication                                                               | optional | `OpenNMS`
-| `password`       | Password to test the authentication                                                               | optional | `OpenNMS`
+| Parameter        | Description                                                                                       | Required | Default value | Placeholder substitution
+| `timeout`        | Time in milliseconds to wait for the _RADIUS_ service.                                            | optional | `5000` | No
+| `retry`          | This is a placeholder for the second optional monitor parameter description.                      | optional | `0` | No
+| `authport`       | _RADIUS_ authentication port.                                                                     | optional | `1812` | No
+| `acctport`       | _RADIUS_ accounting port.                                                                         | optional | `1813` | No
+| `user`           | Username to test the authentication                                                               | optional | `OpenNMS` | Yes
+| `password`       | Password to test the authentication                                                               | optional | `OpenNMS` | Yes
 | `secret`         | The _RADIUS_ shared secret used for communication between the _client/NAS_
-                     and the _RADIUS_ server.                                                                          | optional | `secret`
+                     and the _RADIUS_ server.                                                                          | optional | `secret` | Yes
 | `authtype`       | _RADIUS_ authentication type. The following authentication types are supported:
-                     `chap`, `pap`, `mschapv1`, `mschapv2`, `eapmd5`, `eapmschapv2`, `eapttls`                         | optional | `pap`
+                     `chap`, `pap`, `mschapv1`, `mschapv2`, `eapmd5`, `eapmschapv2`, `eapttls`                         | optional | `pap` | No
 | `nasid`          | The link:http://freeradius.org/rfc/rfc2865.html#NAS-Identifier[Network Access Server identifier]
-                     originating the _Access-Request_.                                                                 | optional | `opennms`
+                     originating the _Access-Request_.                                                                 | optional | `opennms` | Yes
 | `inner-protocol` | When using EAP-TTLS authentication, this property indicates the tunnelled authentication type.
-                     Only `pap` is currently supported.                                                                | optional | `pap`
-| `inner-user`     | Username for the tunnelled `pap` authentication when using EAP-TTLS.                              | optional | `Inner-OpenNMS`
+                     Only `pap` is currently supported.                                                                | optional | `pap` | No
+| `inner-user`     | Username for the tunnelled `pap` authentication when using EAP-TTLS.                              | optional | `Inner-OpenNMS` | Yes
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

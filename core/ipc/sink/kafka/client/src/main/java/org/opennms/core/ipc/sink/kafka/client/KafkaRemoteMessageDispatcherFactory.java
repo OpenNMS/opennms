@@ -48,11 +48,10 @@ import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
 import org.opennms.core.ipc.sink.kafka.common.KafkaSinkConstants;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.logging.Logging.MDCCloseable;
+import org.osgi.framework.BundleContext;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.codahale.metrics.JmxReporter;
 
 public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatcherFactory<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaRemoteMessageDispatcherFactory.class);
@@ -61,7 +60,7 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     private ConfigurationAdmin configAdmin;
 
-    private JmxReporter reporter;
+    private BundleContext bundleContext;
 
     private KafkaProducer<String,byte[]> producer;
 
@@ -91,8 +90,6 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
 
     public void init() throws IOException {
         try (MDCCloseable mdc = Logging.withPrefixCloseable(MessageConsumerManager.LOG_PREFIX)) {
-            registerJmxReporter();
-
             // Defaults
             kafkaConfig.clear();
             kafkaConfig.put("key.serializer", StringSerializer.class.getCanonicalName());
@@ -117,31 +114,34 @@ public class KafkaRemoteMessageDispatcherFactory extends AbstractMessageDispatch
             } finally {
                 Thread.currentThread().setContextClassLoader(currentClassLoader);
             }
-        }
-    }
 
-    private void registerJmxReporter() {
-        if (reporter == null) {
-            reporter = JmxReporter.forRegistry(getMetrics())
-                    .inDomain(KafkaLocalMessageDispatcherFactory.class.getPackage().getName())
-                    .build();
-            reporter.start();
+            onInit();
         }
     }
 
     public void destroy() {
-        if (reporter != null) {
-            reporter.close();
-            reporter = null;
-        }
-
+        onDestroy();
         if (producer != null) {
             producer.close();
             producer = null;
         }
     }
 
+    @Override
+    public String getMetricDomain() {
+        return KafkaLocalMessageDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
     public void setConfigAdmin(ConfigurationAdmin configAdmin) {
         this.configAdmin = configAdmin;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 }

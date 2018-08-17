@@ -144,9 +144,6 @@
             <!-- Jest Feature -->
             <repository>mvn:org.opennms.features.jest/opennms-jest/${project.version}/xml/features</repository>
 
-            <!-- Flow Integration -->
-            <repository>mvn:org.opennms.features/opennms-flows/${project.version}/xml/features</repository>
-
           </repositories>
 
           <!--
@@ -257,6 +254,7 @@
             <feature>opennms-dao</feature>
             <feature>opennms-events-api</feature>
             <feature>opennms-events-commands</feature>
+            <feature>opennms-health</feature>
             <feature>opennms-icmp-api</feature>
             <feature>opennms-icmp-jna</feature>
             <feature>opennms-icmp-jni</feature>
@@ -333,7 +331,6 @@
             <feature>datachoices</feature>
             <feature>eif-adapter</feature>
             <feature>opennms-telemetry-collection</feature>
-            <feature>opennms-telemetry-daemon</feature>
             <feature>opennms-telemetry-jti</feature>
             <feature>opennms-telemetry-nxos</feature>
 
@@ -403,6 +400,16 @@
                   <file>${project.build.outputDirectory}/features-minion.xml</file>
                   <type>xml</type>
                   <classifier>minion</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features-sentinel.xml</file>
+                  <type>xml</type>
+                  <classifier>sentinel</classifier>
+                </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/karaf-extensions.xml</file>
+                  <type>xml</type>
+                  <classifier>karaf-extensions</classifier>
                 </artifact>
                 <artifact>
                   <file>${project.build.outputDirectory}/karaf/standard.xml</file>
@@ -797,17 +804,25 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.minion</artifactId>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.common</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-flows</artifactId>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.minion</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.sentinel</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
@@ -831,6 +846,19 @@
       <groupId>org.opennms.features.kafka</groupId>
       <artifactId>org.opennms.features.kafka.producer</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>scv</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -39,6 +39,7 @@ import org.opennms.netmgt.poller.Distributable;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.support.AbstractServiceMonitor;
+import org.opennms.netmgt.poller.monitors.support.ParameterSubstitutingMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ExtendedResolver;
@@ -53,10 +54,10 @@ import org.xbill.DNS.Type;
 /**
  * DNSResolutionMonitor
  *
- * @author brozow, fooker
+ * @author brozow, fooker, schlazor
  */
 @Distributable
-public class DNSResolutionMonitor extends AbstractServiceMonitor {
+public class DNSResolutionMonitor extends ParameterSubstitutingMonitor {
     public static final Logger LOG = LoggerFactory.getLogger(DNSResolutionMonitor.class);
 
     public static final String PARM_RESOLUTION_TYPE = "resolution-type";
@@ -83,7 +84,7 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
     public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
         // Get the name to query for
         final Name name;
-        final String lookup = ParameterMap.getKeyedString(parameters, PARM_LOOKUP, svc.getNodeLabel());
+        final String lookup = resolveKeyedString(parameters, PARM_LOOKUP, svc.getNodeLabel());
         try {
             name = new Name(lookup);
 
@@ -119,7 +120,7 @@ public class DNSResolutionMonitor extends AbstractServiceMonitor {
         }
 
         // Build a resolver object used for lookups
-        final String nameserver = ParameterMap.getKeyedString(parameters, PARM_NAMESERVER, null);
+        final String nameserver = resolveKeyedString(parameters, PARM_NAMESERVER, null);
 
         final Resolver resolver;
         try {

@@ -123,6 +123,7 @@
     <module>datachoices</module>
 
     <!-- Other projects -->
+    <module>distributed</module>
     <module>geocoder</module>
     <module>geolocation</module>
     <module>instrumentationLogReader</module>
@@ -131,10 +132,17 @@
     <module>springframework-security</module>
     <module>status</module>
     <module>system-report</module>
+    <module>timeformat</module>
     <module>timeseries-evaluate</module>
 
     <!-- Business Service Monitor -->
     <module>bsm</module>
+
+    <!-- Standalone Karaf Containers -->
+    <module>container</module>
+
+    <!-- Sentinel -->
+    <module>sentinel</module>
 
     <!-- Minion -->
     <module>minion</module>

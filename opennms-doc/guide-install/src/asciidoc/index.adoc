@@ -97,6 +97,14 @@ include::text/monitor-location-minion/debian/step-5-verify-connectivity.adoc[]
 // Enable section numbers
 :sectnums:
 
+// Sentinel
+include::text/sentinel/setting-up-sentinel.adoc[]
+include::text/sentinel/rhel/rhel.adoc[]
+include::text/sentinel/debian/debian.adoc[]
+
+// Enable section numbers
+:sectnums:
+
 // Alternate ways of doing it
 include::text/install-opennms-versions.adoc[]
 include::text/minion-config-file.adoc[]

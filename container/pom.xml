@@ -16,5 +16,9 @@
     <module>servlet</module>
     <module>bridge</module>
     <module>jaas-login-module</module>
+    <module>extender</module>
+    <module>scv</module>
+    <module>spring-extender</module>
+    <module>shared</module>
   </modules>
 </project>

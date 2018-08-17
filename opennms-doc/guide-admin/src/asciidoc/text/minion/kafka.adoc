@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../images
 
+[[ga-minion-kafka]]
 === Using Kafka for Sink ( Traps and Syslog)
 
 By default, _{opennms-product-name}_ uses the embedded _ActiveMQ_ broker to communicate with _Minions_.
@@ -31,6 +32,7 @@ For example, you can customize the group ID using `org.opennms.core.ipc.sink.kaf
 
 A list of all the available options can be found here in link:https://kafka.apache.org/10/documentation.html#newconsumerconfigs[New Consumer Configs].
 
+[[ga-minion-kafka-producer-configuration]]
 ==== Producer Configuration
 
 Enable the _Kafka_ producer on _Minion_ using:

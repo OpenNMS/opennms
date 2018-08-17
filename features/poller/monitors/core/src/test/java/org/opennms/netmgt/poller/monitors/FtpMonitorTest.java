@@ -31,6 +31,7 @@ package org.opennms.netmgt.poller.monitors;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.UndeclaredThrowableException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -38,27 +39,44 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
+import org.junit.runner.RunWith;
+import org.junit.Test;
+import org.junit.Before;
+import org.junit.After;
+import org.junit.Ignore;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assume.assumeTrue;
 
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.test.MockLogAppender;
+import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.mock.MockMonitoredService;
+import org.springframework.test.context.ContextConfiguration;
 
-public class FtpMonitorTest extends TestCase {
+@RunWith(OpenNMSJUnit4ClassRunner.class)
+@ContextConfiguration(locations={
+    "classpath:/META-INF/opennms/emptyContext.xml"
+})
+public class FtpMonitorTest {
     private FtpMonitor m_monitor = new FtpMonitor();
     private ServerSocket m_serverSocket = null;
     private Thread m_serverThread = null;
     private static int TIMEOUT = 2000;
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-        
+    @Before
+    public void setUp() throws Exception {
         m_serverSocket = new ServerSocket();
         m_serverSocket.bind(null); // don't care what address, just gimme a port
+        MockLogAppender.setupLogging(true);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         if (m_serverSocket != null && !m_serverSocket.isClosed()) {
             m_serverSocket.close();
         }
@@ -66,22 +84,23 @@ public class FtpMonitorTest extends TestCase {
         if (m_serverThread != null) {
             m_serverThread.join(1500);
         }
-        
-        super.tearDown();
     }
 
+    @Ignore
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorOnOpennmsOrgFtpSuccess() throws Exception {
         PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("ftp.opennms.org"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
 
+    @Ignore
     // Let's not depend on external systems if we don't have to
     public void SKIPtestMonitorFailureOnRandomFtp() throws Exception {
         PollStatus status = m_monitor.poll(new MockMonitoredService(1, "Node One", InetAddressUtils.addr("1.1.1.1"), "FTP"), new HashMap<String,Object>());
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
 
+    @Test
     public void testMonitorSuccess() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
             @Override
@@ -107,6 +126,22 @@ public class FtpMonitorTest extends TestCase {
         assertTrue("status should be available (Up), but is: " + status, status.isAvailable());
     }
     
+    @Test
+    public void testParamSubstitution() throws Exception {
+        FtpMonitor mon = new FtpMonitor();
+        Map<String, Object> m = new HashMap<String, Object>();
+        m.put("port", m_serverSocket.getLocalPort());
+        m.put("retries", 0);
+        m.put("timeout", TIMEOUT);
+        m.put("userid", "{ipAddr}");
+        m.put("password", "{nodeLabel}");
+        MockMonitoredService svc = new MockMonitoredService(1, "Node One", InetAddress.getByName("127.0.0.1"), "FTP");
+        Map<String, Object> subbedParams = mon.getRuntimeAttributes(svc, m);
+        assertTrue(subbedParams.get("subbed-userid").equals("127.0.0.1"));
+        assertTrue(subbedParams.get("subbed-password").equals("Node One"));
+    }
+
+    @Test
     public void testMonitorFailureWithBogusResponse() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
             @Override
@@ -127,6 +162,7 @@ public class FtpMonitorTest extends TestCase {
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
     
+    @Test
     public void testMonitorFailureWithNoResponse() throws Exception {
         Thread m_serverThread = new Thread(new Runnable() {
             @Override
@@ -147,6 +183,7 @@ public class FtpMonitorTest extends TestCase {
         assertTrue("status should be unavailable (Down), but is: " + status, status.isUnavailable());
     }
     
+    @Test
     public void testMonitorFailureWithClosedPort() throws Exception {
         m_serverSocket.close();
         

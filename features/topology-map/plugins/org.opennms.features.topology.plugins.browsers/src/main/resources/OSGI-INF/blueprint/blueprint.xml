@@ -8,6 +8,10 @@ xsi:schemaLocation="
   <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory" />
   <reference id="alarmRepository" interface="org.opennms.netmgt.dao.api.AlarmRepository" availability="mandatory" />
   <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+  <reference id="timeformatService" interface="org.opennms.features.timeformat.api.TimeformatService" />
+  <bean id="timeColumnGenerator" class="org.opennms.features.topology.plugins.browsers.TimeColumnGenerator">
+    <argument ref="timeformatService" />
+  </bean>
 
   <bean id="alarmTableCellStyleGenerator" class="org.opennms.features.topology.plugins.browsers.AlarmTableCellStyleGenerator" />
   <bean id="selectionCheckboxGenerator" class="org.opennms.features.topology.plugins.browsers.CheckboxGenerator">
@@ -50,6 +54,7 @@ xsi:schemaLocation="
         <entry key="severity" value-ref="severityGenerator" />
         <entry key="nodeLabel" value-ref="nodeIdSelectionLinkGenerator" />
         <entry key="id" value-ref="alarmIdColumnLinkGenerator" />
+        <entry key="lastEventTime" value-ref="timeColumnGenerator" />
         <!--
         <entry key="serviceType" value-ref="serviceTypeGenerator" />
         <entry key="ipAddr" value-ref="inetAddressGenerator" />
@@ -133,6 +138,8 @@ xsi:schemaLocation="
         <entry key="id" value-ref="nodeTableSelectionLinkGenerator" />
         <entry key="label" value-ref="nodeTableSelectionLinkGenerator" />
         <entry key="primaryInterface" value-ref="ipInterfaceGenerator" />
+        <entry key="createTime" value-ref="timeColumnGenerator" />
+        <entry key="lastCapsdPoll" value-ref="timeColumnGenerator" />
       </map>
     </property>
     <property name="visibleColumns">

@@ -32,17 +32,17 @@ import org.opennms.core.ipc.sink.api.Message;
 import org.opennms.core.ipc.sink.api.SinkModule;
 import org.opennms.core.ipc.sink.aws.sqs.server.AmazonSQSMessageConsumerManager;
 import org.opennms.core.ipc.sink.common.AbstractMessageDispatcherFactory;
+import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import com.codahale.metrics.JmxReporter;
 
 /**
  * Dispatches the messages directly the consumers.
  *
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
  */
-public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean {
+public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispatcherFactory<Void> implements InitializingBean, DisposableBean {
 
     /** The message consumer manager. */
     @Autowired
@@ -59,10 +59,23 @@ public class AmazonSQSLocalMessageDispatcherFactory extends AbstractMessageDispa
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
      */
     @Override
-    public void afterPropertiesSet() throws Exception {
-        final JmxReporter reporter = JmxReporter.forRegistry(getMetrics())
-                .inDomain(AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName())
-                .build();
-        reporter.start();
+    public void afterPropertiesSet() {
+        onInit();
     }
+
+    @Override
+    public void destroy() {
+        onDestroy();
+    }
+
+    @Override
+    public String getMetricDomain() {
+        return AmazonSQSLocalMessageDispatcherFactory.class.getPackage().getName();
+    }
+
+    @Override
+    public BundleContext getBundleContext() {
+        return null;
+    }
+
 }

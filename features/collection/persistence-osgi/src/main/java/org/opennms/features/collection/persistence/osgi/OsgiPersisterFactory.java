@@ -30,6 +30,7 @@ package org.opennms.features.collection.persistence.osgi;
 
 import org.opennms.core.soa.lookup.ServiceLookup;
 import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
 import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.PersisterFactory;
@@ -42,7 +43,7 @@ public class OsgiPersisterFactory implements PersisterFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(OsgiPersisterFactory.class);
 
-    private final ServiceLookup serviceLookup;
+    private final ServiceLookup<Class<?>, String> serviceLookup;
 
     public OsgiPersisterFactory() {
         this(false);
@@ -50,11 +51,11 @@ public class OsgiPersisterFactory implements PersisterFactory {
 
     public OsgiPersisterFactory(boolean blocking) {
         if (blocking) {
-            serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            serviceLookup = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
                     .blocking()
                     .build();
         } else {
-            serviceLookup = new ServiceLookupBuilder(DefaultServiceRegistry.INSTANCE)
+            serviceLookup = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
                     .build();
         }
     }

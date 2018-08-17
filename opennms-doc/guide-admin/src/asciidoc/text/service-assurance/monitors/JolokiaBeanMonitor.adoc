@@ -12,6 +12,7 @@ To determine the status of the service the _JolokiaBeanMonitor_ relies on the ou
 If the banner is part of the output the status is interpreted as up.
 If the banner is not available in the output the status is determined as _down_.
 Banner matching supports regular expression and substring match.
+This monitor implements <<ga-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
 
 ===== Monitor facts
 
@@ -26,19 +27,19 @@ Banner matching supports regular expression and substring match.
 .Monitor specific parameters for the JolokiaBeanMonitor
 [options="header, autowidth"]
 |===
-| Parameter       | Description                                                                                         | Required                                          | Default value
-| `beanname`      | The bean name to query against.                                                                     | required                                          | `-`
-| `attrname`      | The name of the JMX attribute to scrape.                                                            | optional (`attrname` or `methodname` must be set) | `-`
-| `attrpath`      | The attribute path.                                                                                 | optional                                          | `-`
-| `auth-username` | The username to use for HTTP BASIC auth.                                                            | optional                                          | `-`
-| `auth-password` | The password to use for HTTP BASIC auth.                                                            | optional                                          | `-`
+| Parameter       | Description                                                                                         | Required                                          | Default value | Placeholder substitution
+| `beanname`      | The bean name to query against.                                                                     | required                                          | `-` | No
+| `attrname`      | The name of the JMX attribute to scrape.                                                            | optional (`attrname` or `methodname` must be set) | `-` | No
+| `attrpath`      | The attribute path.                                                                                 | optional                                          | `-` | No
+| `auth-username` | The username to use for HTTP BASIC auth.                                                            | optional                                          | `-` | Yes
+| `auth-password` | The password to use for HTTP BASIC auth.                                                            | optional                                          | `-` | Yes
 | `banner`        | A string that is match against the output of the system-call. If the output contains the banner,
-                    the service is determined as _up_. Specify a regex by starting with `~`.                            | optional                                          | `-`
-| `input1`        | Method input                                                                                        | optional                                          | `-`
-| `input2`        | Method input                                                                                        | optional                                          | `-`
-| `methodname`    | The name of the bean method to execute, output will be compared to banner.                          | optional (`attrname` or `methodname` must be set) | `-`
-| `port`          | The port of the jolokia agent.                                                                      | optional                                          | `8080`
-| `url`           | The jolokia agent url. Defaults to "http://<ipaddr>:<port>/jolokia"                                 | optional                                          | `-`
+                    the service is determined as _up_. Specify a regex by starting with `~`.                            | optional                                          | `-` | Yes
+| `input1`        | Method input                                                                                        | optional                                          | `-` | Yes
+| `input2`        | Method input                                                                                        | optional                                          | `-` | Yes
+| `methodname`    | The name of the bean method to execute, output will be compared to banner.                          | optional (`attrname` or `methodname` must be set) | `-` | Yes
+| `port`          | The port of the jolokia agent.                                                                      | optional                                          | `8080` | No
+| `url`           | The jolokia agent url. Defaults to "http://<ipaddr>:<port>/jolokia"                                 | optional                                          | `-` | Yes
 |===
 
 This monitor implements the <<ga-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.

@@ -44,3 +44,18 @@ The following parameters can be used to override this behavior and control *wher
 
 NOTE: When specifying a _System ID_ the location should also be set to the corresponding location for that system.
 
+[[ga-service-assurance-monitors-placeholder-substitution-parameters]]
+==== Using Placeholders in Parameters
+Some monitor parameters support placeholder substitution.
+You can reference some node, interface, and asset record properties by enclosing them in `{` and `}`.
+The supported properties are:
+
+* `nodeId`
+* `nodeLabel`
+* `foreignSource`
+* `foreignId`
+* `ipAddr` (or `ipAddress`)
+* all node asset record fields (e.g. `username`, `password`)
+
+Parameters that support placeholder substitution are marked 'Yes' in the 'Placeholder substitution' column of the *Configuaration and Usage* section of the monitor documentation.
+
