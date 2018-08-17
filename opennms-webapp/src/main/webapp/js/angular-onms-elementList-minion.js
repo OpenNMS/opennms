@@ -4,7 +4,7 @@
 	var MODULE_NAME = 'onms.elementList.minion';
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('minionListFilters', [ 'onmsListFilters' ])
+	angular.module('minionListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 	.filter('property', function() {
 		return function(input) {
 			switch (input) {
@@ -30,19 +30,19 @@
 			switch (property) {
 			case 'lastUpdated':
 				// Return the date in our preferred format
-				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+				return $filter('onmsDate')(input);
 			}
 			return input;
 		}
 	});
 
 	// Minion list module
-	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters' ])
+	angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionListFilters', 'onmsDateFormatter' ])
 
 	/**
 	 * Minion list controller
 	 */
-	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'minionFactory', function($scope, $location, $window, $log, $filter, minionFactory) {
+	.controller('MinionListCtrl', ['$scope', '$location', '$window', '$log', '$filter', 'DateFormatterService', 'minionFactory', function($scope, $location, $window, $log, $filter, DateFormatterService, minionFactory) {
 		$log.debug('MinionListCtrl initializing...');
 
 		// Set the default sort and set it on $scope.$parent.query
@@ -51,6 +51,7 @@
 
 		// Reload all resources via REST
 		$scope.$parent.refresh = function() {
+			DateFormatterService.formatter.finally(function() {
 			// Fetch all of the items
 			minionFactory.query(
 				{
@@ -87,6 +88,7 @@
 					// TODO: Handle 500 Server Error by executing an undo callback?
 				}
 			);
+			});
 		};
 
 		// Save an item by using $resource.$update
