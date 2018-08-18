@@ -30,6 +30,7 @@ package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import static org.junit.Assert.assertEquals;
 
+import java.net.InetAddress;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -45,10 +46,12 @@ import org.opennms.core.test.MockLogger;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OspfLink;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.net.InetAddresses;
 
 public class LinkdTopologyProviderTest {
 
@@ -59,23 +62,21 @@ public class LinkdTopologyProviderTest {
 
     private final static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProviderTest.class);
 
-    private List<OnmsNode> nodes;
-    private List<CdpElement> cdpElements;
-    private List<CdpLink> allLinks;
     private Random random;
 
     @Before
     public void createTestData() {
         random = new Random();
-        nodes = createNodes();
-        cdpElements = createCdpElements(nodes);
-        allLinks = createLinks(cdpElements);
         // We don't want the debug messages to take time:
         System.setProperty(MockLogger.LOG_KEY_PREFIX + LinkdTopologyProvider.class.getName(), "INFO");
     }
 
     @Test
-    public void newMethodShouldProvideSameOutputAsOldMethod() {
+    public void newCdpMappingShouldProvideSameOutputAsOldMethod() {
+        List<OnmsNode> nodes = createNodes();
+        List<CdpElement> cdpElements = createCdpElements(nodes);
+        List<CdpLink> allLinks = createCdpLinks(cdpElements);
+
         MetricRegistry registry = Mockito.mock(MetricRegistry.class);
         LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
 
@@ -94,6 +95,57 @@ public class LinkdTopologyProviderTest {
         matchesNew.sort(comparator);
         assertEquals(matchesOld, matchesNew);
     }
+
+    @Test
+    public void newOspfMappingShouldProvideSameOutputAsOldMethod() {
+        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
+        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
+
+        List<OspfLink> allLinks = createOspfLinks();
+
+        Instant start = Instant.now();
+        List<Pair<OspfLink, OspfLink>> matchesOld = provider.matchOspfLinks(allLinks);
+        LOG.info("Finished matchOspfLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
+
+        start = Instant.now();
+        List<Pair<OspfLink, OspfLink>> matchesNew = provider.matchOspfLinksNew(allLinks);
+        LOG.info("Finished matchOspfLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
+
+        // not a very elegant comparator but hey we are only an innocent little unit test
+        Comparator<Pair<OspfLink, OspfLink>> comparator = Comparator
+                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
+        matchesOld.sort(comparator);
+        matchesNew.sort(comparator);
+        assertEquals(matchesOld, matchesNew);
+    }
+
+    private List<OspfLink> createOspfLinks() {
+        List<OspfLink> links = new ArrayList<>();
+        List<InetAddress> addresses = createInetAddresses();
+        List<OnmsNode> nodes = createNodes();
+        for (int i = 0; i < AMOUNT_LINKS; i++) {
+            OspfLink link = new OspfLink();
+            link.setId(i);
+            link.setNode(getRandom(nodes));
+            // for odd AMOUNT_LINKS we have a link that points at itself but that shouldn't be a problem for the test:
+            link.setOspfIpAddr(addresses.get(i));
+            link.setOspfRemIpAddr(addresses.get(AMOUNT_LINKS -i-1));
+            links.add(link);
+        }
+        return links;
+    }
+
+    private List<InetAddress> createInetAddresses() {
+        List<InetAddress> addresses = new ArrayList<>();
+        InetAddress address = InetAddresses.forString("0.0.0.0");
+        addresses.add(address);
+        for (int i = 1; i < AMOUNT_LINKS; i++) {
+            address = InetAddresses.increment(address);
+            addresses.add(address);
+        }
+        return addresses;
+    }
+
 
     private List<OnmsNode> createNodes() {
         ArrayList<OnmsNode> nodes = new ArrayList<>();
@@ -116,17 +168,17 @@ public class LinkdTopologyProviderTest {
         return cdpElements;
     }
 
-    private List<CdpLink> createLinks(List<CdpElement> cdps) {
+    private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
         List<CdpLink> links = new ArrayList<>();
         for (int i = 0; i < AMOUNT_LINKS; i++) {
 
             CdpLink cdpLink = new CdpLink();
             cdpLink.setId(i);
             cdpLink.setCdpCacheDeviceId(getRandom(cdpElements).getCdpGlobalDeviceId());
-            // for even AMOUNT_LINKS we have a link that points at itself but that shouldn't be a problem for the test:
+            // for odd AMOUNT_LINKS we have a link that points at itself but that shouldn't be a problem for the test:
             cdpLink.setCdpInterfaceName(Integer.toString(AMOUNT_LINKS -i-1));
             cdpLink.setCdpCacheDevicePort(Integer.toString(i));
-            cdpLink.setNode(getRandom(cdps).getNode());
+            cdpLink.setNode(getRandom(cdpElements).getNode());
             cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
             links.add(cdpLink);
         }

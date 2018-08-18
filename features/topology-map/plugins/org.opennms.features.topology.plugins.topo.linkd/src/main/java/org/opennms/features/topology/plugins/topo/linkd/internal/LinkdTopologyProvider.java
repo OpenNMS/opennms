@@ -364,7 +364,32 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     }
 
     private void getOspfLinks() {
-        List<OspfLink> allLinks =  getOspfLinkDao().findAll();
+
+        List<OspfLink> allLinks = getOspfLinkDao().findAll();
+        List<Pair<OspfLink, OspfLink>> matchedLinks = matchOspfLinks(allLinks);
+
+        for (Pair<OspfLink, OspfLink> pair : matchedLinks) {
+            OspfLink sourceLink = pair.getLeft();
+            OspfLink targetLink = pair.getRight();
+
+            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.OSPF);
+            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.OSPF);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getOspfIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getOspfIfIndex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                    source,target,
+                    sourceSnmpInterface,targetSnmpInterface,
+                    InetAddressUtils.str(targetLink.getOspfRemIpAddr()),
+                    InetAddressUtils.str(sourceLink.getOspfRemIpAddr()),
+                    ProtocolSupported.OSPF);
+        }
+    }
+
+    @Deprecated
+    List<Pair<OspfLink, OspfLink>> matchOspfLinks(List<OspfLink> allLinks){
+        List<Pair<OspfLink, OspfLink>> results = new ArrayList<>();
         Set<Integer> parsed = new HashSet<Integer>();
 SOURCE:        for(OspfLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) {
@@ -379,26 +404,53 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                     continue;
                 }
                 if(sourceLink.getOspfRemIpAddr().equals(targetLink.getOspfIpAddr()) && targetLink.getOspfRemIpAddr().equals(sourceLink.getOspfIpAddr())) {
-                    LOG.info("getOspfLinks: target: {}", targetLink.printTopology());
+                    LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
                     parsed.add(targetLink.getId());
-                    LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-                    source.getProtocolSupported().add(ProtocolSupported.OSPF);
-                    LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-                    target.getProtocolSupported().add(ProtocolSupported.OSPF);
-                    OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getOspfIfIndex());
-                    OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getOspfIfIndex());
-                    connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                                    source,target,
-                                    sourceSnmpInterface,targetSnmpInterface,
-                                    InetAddressUtils.str(targetLink.getOspfRemIpAddr()),
-                                    InetAddressUtils.str(sourceLink.getOspfRemIpAddr()),
-                                    ProtocolSupported.OSPF);
-                    continue SOURCE;
+                    results.add(Pair.of(sourceLink, targetLink));
+                                        continue SOURCE;
                 }
             }
             LOG.debug("getOspfLinks: cannot found target for source: '{}'", sourceLink.getId());
         }
+        return results;
     }
+
+    List<Pair<OspfLink, OspfLink>> matchOspfLinksNew(List<OspfLink> allLinks){
+        List<Pair<OspfLink, OspfLink>> results = new ArrayList<>();
+        Set<Integer> parsed = new HashSet<Integer>();
+
+        // build mapping:
+        Map<String, OspfLink> targetLinks = new HashMap<>();
+        for(OspfLink targetLink : allLinks){
+            targetLinks.put(targetLink.getOspfIpAddr() + "$" + targetLink.getOspfRemIpAddr() , targetLink);
+        }
+
+        for(OspfLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            parsed.add(sourceLink.getId());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
+            }
+            OspfLink targetLink = targetLinks.get(sourceLink.getOspfRemIpAddr() + "$" +sourceLink.getOspfIpAddr());
+            if(targetLink == null) {
+                LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
+            }
+
+            if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
+                    continue;
+            }
+
+            LOG.debug("getOspfLinks: target: {}", targetLink.printTopology());
+            parsed.add(targetLink.getId());
+           results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
+
+
+
 
     private void getCdpLinks() {
         List<CdpElement> cdpElements = m_cdpElementDao.findAll();
