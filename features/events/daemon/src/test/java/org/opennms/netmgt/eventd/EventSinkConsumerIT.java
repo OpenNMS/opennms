@@ -123,9 +123,9 @@ public class EventSinkConsumerIT {
     }
 
     private Log getEventLog() throws UnknownHostException {
-        Log messageLog = new Log();
-        messageLog.addEvent(buildEvent());
-        return messageLog;
+        Log eventLog = new Log();
+        eventLog.addEvent(buildEvent());
+        return eventLog;
     }
 
     private Event buildEvent() throws UnknownHostException {
