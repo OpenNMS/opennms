@@ -588,17 +588,44 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                 + sourceElement.getCdpGlobalDeviceId();
     }
 
-    private void getIsIsLinks(){
+    private void getIsIsLinks() {
+
+        List<IsIsElement> elements = m_isisElementDao.findAll();
+        List<IsIsLink> allLinks = m_isisLinkDao.findAll();
+
+        List<Pair<IsIsLink, IsIsLink>> results = matchIsIsLinks(elements, allLinks);
+
+        for(Pair<IsIsLink, IsIsLink> pair : results) {
+            IsIsLink sourceLink = pair.getLeft();
+            IsIsLink targetLink = pair.getRight();
+            LinkdVertex source = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
+            source.getProtocolSupported().add(ProtocolSupported.ISIS);
+            LinkdVertex target = (LinkdVertex) getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
+            target.getProtocolSupported().add(ProtocolSupported.ISIS);
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getIsisCircIfIndex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getIsisCircIfIndex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                source, target,
+                sourceSnmpInterface, targetSnmpInterface,
+                targetLink.getIsisISAdjNeighSNPAAddress(),
+                sourceLink.getIsisISAdjNeighSNPAAddress(),
+                ProtocolSupported.ISIS);
+        }
+    }
+
+    @Deprecated
+    List<Pair<IsIsLink, IsIsLink>> matchIsIsLinks(final List<IsIsElement> elements, final List<IsIsLink> allLinks) {
 
         Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
-        for (IsIsElement element: m_isisElementDao.findAll()) {
+        for (IsIsElement element: elements) {
             elementmap.put(element.getNode().getId(), element);
         }
 
-        List<IsIsLink> isislinks = m_isisLinkDao.findAll();
         Set<Integer> parsed = new HashSet<Integer>();
 
-        for (IsIsLink sourceLink : isislinks) {
+        List<Pair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+
+        for (IsIsLink sourceLink : allLinks) {
             if (parsed.contains(sourceLink.getId())) { 
                 continue;
             }
@@ -607,7 +634,7 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
             IsIsLink targetLink = null;
-            for (IsIsLink link : isislinks) {
+            for (IsIsLink link : allLinks) {
                 if (sourceLink.getId().intValue() == link.getId().intValue()|| parsed.contains(link.getId())) {
                     continue;
                 }
@@ -624,6 +651,7 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                     if (LOG.isDebugEnabled()) {
                         LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
                     }
+                    results.add(Pair.of(sourceLink, targetLink));
                     break;
                 }
             }
@@ -635,22 +663,61 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
 
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, sourceLink.getNode().getNodeId());
-            source.getProtocolSupported().add(ProtocolSupported.ISIS);
-            LinkdVertex target = (LinkdVertex)getVertex(TOPOLOGY_NAMESPACE_LINKD, targetLink.getNode().getNodeId());
-            target.getProtocolSupported().add(ProtocolSupported.ISIS);
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getIsisCircIfIndex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getIsisCircIfIndex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            targetLink.getIsisISAdjNeighSNPAAddress(),
-                            sourceLink.getIsisISAdjNeighSNPAAddress(),
-                            ProtocolSupported.ISIS);
+
+
+        }
+        return results;
+    }
+
+    List<Pair<IsIsLink, IsIsLink>> matchIsIsLinksNew(final List<IsIsElement> elements, final List<IsIsLink> allLinks) {
+
+        // 1.) create lookupMaps
+        Map<Integer, IsIsElement> elementmap = new HashMap<Integer, IsIsElement>();
+        for (IsIsElement element: elements) {
+            elementmap.put(element.getNode().getId(), element);
         }
 
+        Map<String, IsIsLink> targetLinkMap = new HashMap<>();
+        for (IsIsLink targetLink : allLinks) {
+            IsIsElement targetElement = elementmap.get(targetLink.getNode().getId());
+            targetLinkMap.put(targetLink.getIsisISAdjIndex() + "$"
+                    + targetElement.getIsisSysID() + "$"
+                    + targetLink.getIsisISAdjNeighSysID(), targetLink);
+        }
+
+        // 2. iterate
+        Set<Integer> parsed = new HashSet<Integer>();
+        List<Pair<IsIsLink, IsIsLink>> results = new ArrayList<>();
+
+        for (IsIsLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
+            }
+            IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
+            IsIsLink targetLink = targetLinkMap.get(sourceLink.getIsisISAdjIndex()+"$"
+                    + sourceLink.getIsisISAdjNeighSysID()+"$"
+                    + sourceElement.getIsisSysID());
+
+            if (targetLink == null) {
+                LOG.debug("getIsIsLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+            if (sourceLink.getId().intValue() == targetLink.getId().intValue()|| parsed.contains(targetLink.getId())) {
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getIsIsLinks: target: {}", targetLink.printTopology());
+            }
+            results.add(Pair.of(sourceLink, targetLink));
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+        }
+        return results;
     }
-    
+
     private void getBridgeLinks() throws BridgeTopologyException {
         
         for (BroadcastDomain domain: m_bridgeTopologyDao.load()) {

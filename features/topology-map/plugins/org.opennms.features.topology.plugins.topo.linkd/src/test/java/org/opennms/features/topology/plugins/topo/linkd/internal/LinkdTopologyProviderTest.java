@@ -45,6 +45,8 @@ import org.mockito.Mockito;
 import org.opennms.core.test.MockLogger;
 import org.opennms.netmgt.model.CdpElement;
 import org.opennms.netmgt.model.CdpLink;
+import org.opennms.netmgt.model.IsIsElement;
+import org.opennms.netmgt.model.IsIsLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
 import org.slf4j.Logger;
@@ -65,10 +67,35 @@ public class LinkdTopologyProviderTest {
     private Random random;
 
     @Before
-    public void createTestData() {
+    public void setUp() {
         random = new Random();
         // We don't want the debug messages to take time:
         System.setProperty(MockLogger.LOG_KEY_PREFIX + LinkdTopologyProvider.class.getName(), "INFO");
+    }
+
+    @Test
+    public void newIsIsMappingShouldProvideSameOutputAsOldMethod() {
+        List<OnmsNode> nodes = createNodes();
+        List<IsIsElement> elements = createIsIsElements(nodes);
+        List<IsIsLink> allLinks = createIsIsLinks(elements);
+
+        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
+        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
+
+        Instant start = Instant.now();
+        List<Pair<IsIsLink, IsIsLink>> matchesOld = provider.matchIsIsLinks(elements, allLinks);
+        LOG.info("Finished matchIsIsLinksOld() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesOld.size());
+
+        start = Instant.now();
+        List<Pair<IsIsLink, IsIsLink>> matchesNew = provider.matchIsIsLinksNew(elements, allLinks);
+        LOG.info("Finished matchIsIsLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
+
+        // not a very elegant comparator but hey we are only an innocent little unit test
+        Comparator<Pair<IsIsLink, IsIsLink>> comparator = Comparator
+                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
+        matchesOld.sort(comparator);
+        matchesNew.sort(comparator);
+        assertEquals(matchesOld, matchesNew);
     }
 
     @Test
@@ -155,6 +182,33 @@ public class LinkdTopologyProviderTest {
             nodes.add(node);
         }
         return nodes;
+    }
+
+    private List<IsIsElement> createIsIsElements(List<OnmsNode> nodes) {
+        ArrayList<IsIsElement> elements = new ArrayList<>();
+        for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
+            IsIsElement element = new IsIsElement();
+            element.setNode(nodes.get(random.nextInt(nodes.size())));
+            element.setIsisSysID("Element"+i);
+            elements.add(element);
+        }
+        return elements;
+    }
+
+    private List<IsIsLink> createIsIsLinks(List<IsIsElement> elements) {
+        List<IsIsLink> links = new ArrayList<>();
+        for (int i = 0; i < AMOUNT_LINKS; i++) {
+            IsIsLink link = new IsIsLink();
+            link.setId(i);
+            link.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
+            link.setIsisISAdjState(IsIsLink.IsisISAdjState.up);
+            link.setIsisISAdjNeighSysID(getRandom(elements).getIsisSysID());
+            link.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.unknown);
+            link.setIsisISAdjIndex((i + 1)/2);
+            link.setNode(getRandom(elements).getNode());
+            links.add(link);
+        }
+        return links;
     }
 
     private List<CdpElement> createCdpElements(List<OnmsNode> nodes) {
