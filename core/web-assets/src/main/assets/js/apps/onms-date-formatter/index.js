@@ -100,10 +100,14 @@ OnmsDateFormatter.prototype.format = function format(date) {
 
 (function() {
 	'use strict';
-	var f = new OnmsDateFormatter();
-	f.init(function() {
-		window._onmsFormatter = f;
-	});
+	if (typeof jest === 'undefined') {
+		var f = new OnmsDateFormatter();
+		f.init(function() {
+			window._onmsFormatter = f;
+		});
+	} else {
+		console.log('Running in a test environment. Skipping automatic initialization.');
+	}
 })();
 
 (function() {
