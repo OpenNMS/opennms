@@ -276,6 +276,8 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
 
 
     private void getLldpLinks() {
+
+        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         // Index the LLDP elements by node id
         Map<Integer, LldpElement> nodelldpelementidMap = new HashMap<Integer, LldpElement>();
         Map<Integer, LinkdVertex> nodeVertexMap = new HashMap<Integer, LinkdVertex>();
@@ -287,9 +289,29 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             System.err.println(vertex.getId());
         }
 
+        List<Pair<LldpLink, LldpLink>> matchedLinks = matchLldpLinks(nodelldpelementidMap, allLinks);
+
+        for (Pair<LldpLink, LldpLink> pair : matchedLinks) {
+            LldpLink sourceLink = pair.getLeft();
+            LldpLink targetLink = pair.getRight();
+            LinkdVertex source = nodeVertexMap.get(sourceLink.getNode().getId());
+            LinkdVertex target = nodeVertexMap.get(targetLink.getNode().getId());
+            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getLldpPortIfindex());
+            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getLldpPortIfindex());
+            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
+                    source,target,
+                    sourceSnmpInterface,targetSnmpInterface,
+                    sourceLink.getLldpPortDescr(),targetLink.getLldpPortDescr(),
+                    ProtocolSupported.LLDP);
+        }
+    }
+
+    @Deprecated
+    List<Pair<LldpLink, LldpLink>> matchLldpLinks(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
+        List<Pair<LldpLink, LldpLink>> results = new ArrayList<>();
+
         // Pull all of the LLDP links and index them by remote chassis id
         Map<String, List<LldpLink>> lldpRemoteIdLinksMap = new HashMap<>();
-        List<LldpLink> allLinks = m_lldpLinkDao.findAll();
         for (LldpLink link : allLinks) {
             final String remoteChassisId = link.getLldpRemChassisId();
             if (!lldpRemoteIdLinksMap.containsKey(remoteChassisId)) {
@@ -335,7 +357,7 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
                 if (!(link.getLldpRemPortId().equals(sourceLink.getLldpPortId()))|| !(link.getLldpRemPortIdSubType() == sourceLink.getLldpPortIdSubType())) {
                     continue;
                 }
-                // biderection link found 
+                // biderection link found
                 targetLink=link;
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("getLldpLinks: lldp: {} target: {}", targetchassisId, link.printTopology());
@@ -349,18 +371,69 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
             }
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
-            LinkdVertex source = nodeVertexMap.get(sourceLink.getNode().getId());
-            LinkdVertex target = nodeVertexMap.get(targetLink.getNode().getId());
-            OnmsSnmpInterface sourceSnmpInterface = getSnmpInterface(sourceLink.getNode().getId(), sourceLink.getLldpPortIfindex());
-            OnmsSnmpInterface targetSnmpInterface = getSnmpInterface(targetLink.getNode().getId(), targetLink.getLldpPortIfindex());
-            connectVertices(getDefaultEdgeId(sourceLink.getId(), targetLink.getId()),
-                            source,target,
-                            sourceSnmpInterface,targetSnmpInterface,
-                            sourceLink.getLldpPortDescr(),targetLink.getLldpPortDescr(),
-                            ProtocolSupported.LLDP);
+            results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
+    }
 
+    List<Pair<LldpLink, LldpLink>> matchLldpLinksNew(Map<Integer, LldpElement> nodelldpelementidMap, List<LldpLink> allLinks) {
+        List<Pair<LldpLink, LldpLink>> results = new ArrayList<>();
+
+        // 1.) create mapping
+        Map<CompositeKey, LldpLink> targetLinkMap = new HashMap<>();
+        for(LldpLink targetLink : allLinks){
+
+            CompositeKey key = new CompositeKey(
+                    targetLink.getLldpRemChassisId(),
+                    nodelldpelementidMap.get(targetLink.getNode().getId()).getLldpChassisId(),
+                    targetLink.getLldpPortId(),
+                    targetLink.getLldpPortIdSubType(),
+                    targetLink.getLldpRemPortId(),
+                    targetLink.getLldpRemPortIdSubType());
+            targetLinkMap.put(key, targetLink);
         }
 
+        // 2.) iterate
+        Set<Integer> parsed = new HashSet<Integer>();
+        for (LldpLink sourceLink : allLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            String sourceLldpChassisId = nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId();
+            if (sourceLldpChassisId.equals(sourceLink.getLldpRemChassisId())) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("getLldpLinks: self link not adding source: {}",sourceLink.printTopology());
+                }
+                parsed.add(sourceLink.getId());
+                continue;
+            }
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getLldpLinks: source: {}",sourceLink.printTopology());
+            }
+
+            CompositeKey key = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNode().getId()).getLldpChassisId(),
+                    sourceLink.getLldpRemChassisId(),
+                    sourceLink.getLldpRemPortId(),
+                    sourceLink.getLldpRemPortIdSubType(),
+                    sourceLink.getLldpPortId(),
+                    sourceLink.getLldpPortIdSubType());
+            LldpLink targetLink = targetLinkMap.get(key);
+
+            if (targetLink == null) {
+                LOG.debug("getLldpLinks: cannot found target for source: '{}'", sourceLink.getId());
+                continue;
+            }
+
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("getLldpLinks: lldp: {} target: {}", sourceLink.getLldpRemChassisId(), targetLink.printTopology());
+            }
+
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(Pair.of(sourceLink, targetLink));
+        }
+        return results;
     }
 
     private void getOspfLinks() {
