@@ -166,6 +166,11 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
         onNewOrUpdatedAlarm(alarm);
     }
 
+    @Override
+    public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
+        onNewOrUpdatedAlarm(alarm);
+    }
+
     private void forEachListener(Consumer<AlarmLifecycleListener> callback) {
         for (AlarmLifecycleListener listener : listeners) {
             try {
@@ -195,4 +200,5 @@ public class AlarmLifecycleListenerManager implements AlarmEntityListener, Initi
     public void destroy() {
         stop();
     }
+
 }

@@ -270,6 +270,7 @@
             <feature>opennms-provisioning-shell</feature>
             <feature>opennms-rrd-api</feature>
             <feature>opennms-rrd-jrobin</feature>
+            <feature>opennms-situation-feedback</feature>
             <feature>opennms-snmp</feature>
             <feature>opennms-snmp-commands</feature>
             <feature>opennms-syslogd</feature>
@@ -823,6 +824,12 @@
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.situation-feedback</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-components</groupId>
