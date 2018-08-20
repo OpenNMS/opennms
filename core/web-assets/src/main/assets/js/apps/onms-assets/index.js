@@ -8,6 +8,7 @@
 const angular = require('vendor/angular-js');
 const bootbox = require('vendor/bootbox-js');
 require('lib/onms-http');
+require('../onms-date-formatter');
 
 const defaultConfig = require('./config.json');
 
