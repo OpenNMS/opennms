@@ -68,7 +68,7 @@ public class LinkdTopologyProviderTest {
 
     @Before
     public void setUp() {
-        random = new Random();
+        random = new Random(42);
         // We don't want the debug messages to take time:
         System.setProperty(MockLogger.LOG_KEY_PREFIX + LinkdTopologyProvider.class.getName(), "INFO");
     }

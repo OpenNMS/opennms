@@ -420,9 +420,9 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
         Set<Integer> parsed = new HashSet<Integer>();
 
         // build mapping:
-        Map<String, OspfLink> targetLinks = new HashMap<>();
+        Map<CompositeKey, OspfLink> targetLinks = new HashMap<>();
         for(OspfLink targetLink : allLinks){
-            targetLinks.put(targetLink.getOspfIpAddr() + "$" + targetLink.getOspfRemIpAddr() , targetLink);
+            targetLinks.put(new CompositeKey(targetLink.getOspfIpAddr(), targetLink.getOspfRemIpAddr()) , targetLink);
         }
 
         for(OspfLink sourceLink : allLinks) {
@@ -433,7 +433,7 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("getOspfLinks: source: {}", sourceLink.printTopology());
             }
-            OspfLink targetLink = targetLinks.get(sourceLink.getOspfRemIpAddr() + "$" +sourceLink.getOspfIpAddr());
+            OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
                 LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
             }
@@ -535,7 +535,7 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
         for (CdpElement cdpelement: cdpElements) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
-        Map<String, CdpLink> targetLinkMap = new HashMap<>();
+        Map<CompositeKey, CdpLink> targetLinkMap = new HashMap<>();
         for (CdpLink link : allLinks) {
             targetLinkMap.put(createCdpLinkCacheKey(link, cdpelementmap.get(link.getNode().getId())),link);
         }
@@ -574,18 +574,18 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
         return results;
     }
 
-    private String createCdpLinkCacheKey(CdpLink targetLink, CdpElement targetElement) {
-        return  targetLink.getCdpCacheDevicePort() + "$"
-                + targetLink.getCdpInterfaceName() + "$"
-                + targetElement.getCdpGlobalDeviceId() + "$"
-                + targetLink.getCdpCacheDeviceId();
+    private CompositeKey createCdpLinkCacheKey(CdpLink targetLink, CdpElement targetElement) {
+        return  new CompositeKey(targetLink.getCdpCacheDevicePort(),
+                  targetLink.getCdpInterfaceName(),
+                  targetElement.getCdpGlobalDeviceId(),
+                  targetLink.getCdpCacheDeviceId());
     }
 
-    private String createCdpLinkLookupKey(CdpLink sourceLink, CdpElement sourceElement) {
-        return sourceLink.getCdpInterfaceName() + "$"
-                + sourceLink.getCdpCacheDevicePort() + "$"
-                + sourceLink.getCdpCacheDeviceId()+ "$"
-                + sourceElement.getCdpGlobalDeviceId();
+    private CompositeKey createCdpLinkLookupKey(CdpLink sourceLink, CdpElement sourceElement) {
+        return new CompositeKey(sourceLink.getCdpInterfaceName(),
+                sourceLink.getCdpCacheDevicePort(),
+                sourceLink.getCdpCacheDeviceId(),
+                sourceElement.getCdpGlobalDeviceId());
     }
 
     private void getIsIsLinks() {
@@ -677,12 +677,12 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             elementmap.put(element.getNode().getId(), element);
         }
 
-        Map<String, IsIsLink> targetLinkMap = new HashMap<>();
+        Map<CompositeKey, IsIsLink> targetLinkMap = new HashMap<>();
         for (IsIsLink targetLink : allLinks) {
             IsIsElement targetElement = elementmap.get(targetLink.getNode().getId());
-            targetLinkMap.put(targetLink.getIsisISAdjIndex() + "$"
-                    + targetElement.getIsisSysID() + "$"
-                    + targetLink.getIsisISAdjNeighSysID(), targetLink);
+            targetLinkMap.put(new CompositeKey(targetLink.getIsisISAdjIndex(),
+                      targetElement.getIsisSysID(),
+                      targetLink.getIsisISAdjNeighSysID()), targetLink);
         }
 
         // 2. iterate
@@ -697,9 +697,9 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
                 LOG.debug("getIsIsLinks: source: {}", sourceLink.printTopology());
             }
             IsIsElement sourceElement = elementmap.get(sourceLink.getNode().getId());
-            IsIsLink targetLink = targetLinkMap.get(sourceLink.getIsisISAdjIndex()+"$"
-                    + sourceLink.getIsisISAdjNeighSysID()+"$"
-                    + sourceElement.getIsisSysID());
+            IsIsLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getIsisISAdjIndex(),
+                    sourceLink.getIsisISAdjNeighSysID(),
+                    sourceElement.getIsisSysID()));
 
             if (targetLink == null) {
                 LOG.debug("getIsIsLinks: cannot found target for source: '{}'", sourceLink.getId());
