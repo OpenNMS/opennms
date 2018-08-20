@@ -11,24 +11,34 @@ describe('Controller: RequisitionsController', function () {
 
   // Initialize testing environment
 
-  var controllerFactory, scope, $q, mockGrowl = {}, mockRequisitionsService = {}, requisitionsData = new RequisitionsData();
+  var controllerFactory, scope, $q, dateFormatterService, mockGrowl = {}, mockRequisitionsService = {}, requisitionsData = new RequisitionsData();
 
   function createController() {
     return controllerFactory('RequisitionsController', {
       $scope: scope,
+      DateFormatterService: dateFormatterService,
       RequisitionsService: mockRequisitionsService,
       growl: mockGrowl
     });
   }
 
+  beforeEach(function() {
+    window._onmsDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssxxx";
+    window._onmsZoneId = 'America/New_York';
+    window._onmsFormatter = new OnmsDateFormatter();
+  });
+
   beforeEach(module('onms-requisitions', function($provide) {
     $provide.value('$log', console);
   }));
 
-  beforeEach(inject(function($rootScope, $controller, _$q_) {
+  beforeEach(inject(function($rootScope, $controller, $interval, _$q_, DateFormatterService) {
     scope = $rootScope.$new();
     controllerFactory = $controller;
     $q = _$q_;
+
+    dateFormatterService = DateFormatterService;
+    $interval.flush(200);
   }));
 
   beforeEach(function() {
