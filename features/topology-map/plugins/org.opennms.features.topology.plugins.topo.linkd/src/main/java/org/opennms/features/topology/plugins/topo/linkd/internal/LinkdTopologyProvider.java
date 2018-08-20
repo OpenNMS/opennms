@@ -609,8 +609,12 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             cdpelementmap.put(cdpelement.getNode().getId(), cdpelement);
         }
         Map<CompositeKey, CdpLink> targetLinkMap = new HashMap<>();
-        for (CdpLink link : allLinks) {
-            targetLinkMap.put(createCdpLinkCacheKey(link, cdpelementmap.get(link.getNode().getId())),link);
+        for (CdpLink targetLink : allLinks) {
+            CompositeKey key = new CompositeKey(targetLink.getCdpCacheDevicePort(),
+                    targetLink.getCdpInterfaceName(),
+                    cdpelementmap.get(targetLink.getNode().getId()).getCdpGlobalDeviceId(),
+                    targetLink.getCdpCacheDeviceId());
+            targetLinkMap.put(key, targetLink);
         }
         Set<Integer> parsed = new HashSet<Integer>();
 
@@ -625,7 +629,10 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             }
             CdpElement sourceCdpElement = cdpelementmap.get(sourceLink.getNode().getId());
 
-            CdpLink targetLink = targetLinkMap.get(createCdpLinkLookupKey(sourceLink, sourceCdpElement));
+            CdpLink targetLink = targetLinkMap.get(new CompositeKey(sourceLink.getCdpInterfaceName(),
+                    sourceLink.getCdpCacheDevicePort(),
+                    sourceLink.getCdpCacheDeviceId(),
+                    sourceCdpElement.getCdpGlobalDeviceId()));
 
             if (targetLink == null) {
                 LOG.debug("getCdpLinks: cannot found target for source: '{}'", sourceLink.getId());
@@ -645,20 +652,6 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             results.add(Pair.of(sourceLink, targetLink));
         }
         return results;
-    }
-
-    private CompositeKey createCdpLinkCacheKey(CdpLink targetLink, CdpElement targetElement) {
-        return  new CompositeKey(targetLink.getCdpCacheDevicePort(),
-                  targetLink.getCdpInterfaceName(),
-                  targetElement.getCdpGlobalDeviceId(),
-                  targetLink.getCdpCacheDeviceId());
-    }
-
-    private CompositeKey createCdpLinkLookupKey(CdpLink sourceLink, CdpElement sourceElement) {
-        return new CompositeKey(sourceLink.getCdpInterfaceName(),
-                sourceLink.getCdpCacheDevicePort(),
-                sourceLink.getCdpCacheDeviceId(),
-                sourceElement.getCdpGlobalDeviceId());
     }
 
     private void getIsIsLinks() {
