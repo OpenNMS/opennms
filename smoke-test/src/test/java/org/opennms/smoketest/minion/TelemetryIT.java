@@ -61,6 +61,7 @@ import org.apache.http.util.EntityUtils;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -95,6 +96,7 @@ import org.opennms.test.system.api.TestEnvironmentBuilder;
  * @author cgorantla
  */
 
+@Ignore
 public class TelemetryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(TelemetryIT.class);

@@ -179,13 +179,40 @@ This reduces the complexity of the UI code and will make it easier for developer
 ==== Release Meridian-2017.1.10
 
 Release 2017.1.10 is a small update to OpenNMS Meridian 2017.1.9.
-It contains FIXME
+It contains a critical RADIUS fix as well as a number of smaller enhancements.
 
-The codename for 2017.1.10 is _FIXME_.
+The codename for 2017.1.10 is _Capital meridian_.
 
-===== Breaking Changes
+===== Breaking Change: trapd-configuration.xml
 
-A security issue in the `RadiusAuthenticatinProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+Meridian 2017.1.10 includes a https://issues.opennms.org/browse/NMS-10242[bug fix that introduces validation of the Trapd config file].
+In the process of testing this fix we found that the `trapd-configuration.xml` that shipped with Meridian 2017 had issues that could prevent proper configuration of the `snmp-trap-address`.
+
+To fix your `trapd-configuration.xml` file, make the following changes:
+
+* If your `trapd-configuration.xml` contains an attribute called `snmpv3-user-count`, delete it.
+* If your `trapd-configuration.xml` has `<snmp-trap-address>...</snmp-trap-address>`, delete that element and add an `snmp-trap-address="..."` attribute to the enclosing `<trapd-configuration />` tag instead.  (The only thing that should be inside the `<trapd-configuration>` tag is `<snmpv3-user>` elements.)
+
+.Before:
+----
+<trapd-configuration snmpv3-user-count="0" queue-size="10000"
+    include-raw-message="false" new-suspect-on-trap="false"
+    batch-interval="500" batch-size="1000" snmp-trap-port="162" threads="0">
+    <snmp-trap-address>*</snmp-trap-address>
+</trapd-configuration>
+----
+
+.After:
+----
+<trapd-configuration snmp-trap-address="*" queue-size="10000"
+    include-raw-message="false" new-suspect-on-trap="false"
+    batch-interval="500" batch-size="1000" snmp-trap-port="162" threads="0">
+</trapd-configuration>
+----
+
+===== Breaking Change: RADIUS Authentication Provider
+
+A security issue in the `RadiusAuthenticationProvider` has been fixed (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
 This requires changes to the `radius.xml` file located in `${OPENNMS_HOME}/jetty-webapps/opennms/WEB-INF/spring-security.d`.
 Now instead of providing a bean for the `authTypeClass` property, it is sufficient to just provide the class name:
 
@@ -237,6 +264,19 @@ Supported values for `authTypeClass` are:
 
 If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
 
+===== Bug
+
+* VMWare-Center-Monitoring make for every virtual machine a login/logout (Issue http://issues.opennms.org/browse/NMS-8204[NMS-8204])
+* LDAPMonitor causes Errors in ldap logfiles (Issue http://issues.opennms.org/browse/NMS-8891[NMS-8891])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
+* Trapd does not validate config against XSD (Issue http://issues.opennms.org/browse/NMS-10242[NMS-10242])
+* Drools correlation engine do not always respond to targeted reloadDaemonConfig events (Issue http://issues.opennms.org/browse/NMS-10257[NMS-10257])
+* DefaultProvisionService logs noisily for monitored service having state "N" (Issue http://issues.opennms.org/browse/NMS-10291[NMS-10291])
+
+===== Enhancement
+
+* Failed to run Jasper report local_Serial-Interface-Utilization-Summary: Key receive rate is duplicated in pie dataset (Issue http://issues.opennms.org/browse/NMS-9875[NMS-9875])
 
 [releasenotes-changelog-Meridian-2017.1.9]
 
@@ -256,6 +296,7 @@ The codename for 2017.1.9 is _Antwerp meridian_.
 * The ReST API used to return XMLs with namespace, and now it doesn't (Issue http://issues.opennms.org/browse/NMS-8524[NMS-8524])
 * MBean "TasksCompleted" for Collectd and Pollerd returns wrong counters (Issue http://issues.opennms.org/browse/NMS-9741[NMS-9741])
 * The auto-acknowledge-alarm tag with no content doesn't work on notifd-configuration.xml (Issue http://issues.opennms.org/browse/NMS-10085[NMS-10085])
+* The KSC Dashlet for the Ops-Board is not working (Issue http://issues.opennms.org/browse/NMS-10191[NMS-10191])
 
 ===== Enhancement
 
