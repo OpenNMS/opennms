@@ -5,8 +5,8 @@
 ==== Release Meridian-2015.1.10
 
 Release 2015.1.10 is the eleventh release of OpenNMS Meridian 2015.
-It contains FIXME.
-The codename for 2015.1.10 is _FIXME_.
+It contains a critical fix for RADIUS support as well as a couple of other smaller fixes.
+The codename for 2015.1.10 is _TAHT_ (it's a magical place).
 
 ===== Breaking Changes
 
@@ -62,6 +62,11 @@ Supported values for `authTypeClass` are:
 
 If no value is provided `net.jradius.client.auth.PAPAuthenticator` is used.
 
+===== Bug
+
+* ConcurrentModificationException in DefaultEventHandlerImpl (Issue http://issues.opennms.org/browse/NMS-8413[NMS-8413])
+* Java not found properly when building from Windows CMD proc (Issue http://issues.opennms.org/browse/NMS-9947[NMS-9947])
+* Radius Login Problem (Issue http://issues.opennms.org/browse/NMS-10212[NMS-10212])
 
 [releasenotes-changelog-Meridian-2015.1.9]
 ==== Release Meridian-2015.1.9
