@@ -32,6 +32,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -128,7 +129,9 @@ public class SituationFeedbackrestServiceIT {
         OnmsAlarm prior = alarmDao.findByReductionKey(situation.getReductionKey());
         assertThat(prior.getRelatedAlarms().size(), is(2));
 
-        sut.setFeedback(feedback);
+        int situationId = prior.getId();
+
+        sut.setFeedback(situationId, feedback);
 
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
         assertThat(restrieved.getRelatedAlarms().size(), is(1));

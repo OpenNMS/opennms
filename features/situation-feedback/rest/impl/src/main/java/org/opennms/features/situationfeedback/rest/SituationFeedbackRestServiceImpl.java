@@ -68,18 +68,25 @@ public class SituationFeedbackRestServiceImpl implements SituationFeedbackRestSe
     }
 
     @Override
-    public Collection<AlarmFeedback> getFeedback(String situationKey) {
+    public Collection<AlarmFeedback> getFeedback(int situationId) {
         try {
-            return repository.getFeedback(situationKey);
+            return repository.getFeedback(getReductionKey(situationId));
         } catch (FeedbackException e) {
-            Log.error("Error retrieving alarm correlation feedback for [{}]: {}", situationKey, e.getMessage());
+            Log.error("Error retrieving alarm correlation feedback for [{}]: {}", situationId, e.getMessage());
             return Collections.emptyList();
         }
     }
 
+    private String getReductionKey(int situationId) throws FeedbackException {
+        OnmsAlarm situation = alarmDao.get(situationId);
+        if (situation == null) {
+            throw new FeedbackException("No Situation found with ID " + situationId);
+        }
+        return situation.getReductionKey();
+    }
+
     @Override
-    @Transactional
-    public void setFeedback(List<AlarmFeedback> feedback) {
+    public void setFeedback(int situationId, List<AlarmFeedback> feedback) {
         runInTransaction(status -> {
             // Update Situation in case of false_neg and false_pos
             feedback.stream().filter(f -> (f.getFeedbackType() == FeedbackType.FALSE_NEGATIVE)).forEach(c -> addCorrelation(c, alarmDao, alarmEntityNotifier));
