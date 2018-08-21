@@ -13,7 +13,8 @@
     'ui.bootstrap',
     'angular-growl',
     'angular-loading-bar',
-    'ngSanitize'
+    'ngSanitize',
+    'onmsDateFormatter'
   ])
 
   .config(['$routeProvider', function ($routeProvider) {

@@ -7,26 +7,35 @@
 
 describe('Controller: AssetController', function () {
 
-  var scope, $q, controllerFactory, mockModalInstance, mockRequisitionsService = {}, asset = { key: 'admin', value: 'agalue' };
-
+  var scope, $q, controllerFactory, dateFormatterService, mockModalInstance, mockRequisitionsService = {}, asset = { key: 'admin', value: 'agalue' };
   function createController() {
     return controllerFactory('AssetController', {
       $scope: scope,
       $uibModalInstance: mockModalInstance,
+      DateFormatterService: dateFormatterService,
       RequisitionsService: mockRequisitionsService,
       asset: asset,
       assetsBlackList: []
     });
   }
 
+  beforeEach(function() {
+    window._onmsDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssxxx";
+    window._onmsZoneId = 'America/New_York';
+    window._onmsFormatter = new OnmsDateFormatter();
+  });
+
   beforeEach(module('onms-requisitions', function($provide) {
     $provide.value('$log', console);    
   }));
 
-  beforeEach(inject(function($rootScope, $controller, _$q_) {
+  beforeEach(inject(function($rootScope, $controller, $interval, _$q_, DateFormatterService) {
     scope = $rootScope.$new();
     controllerFactory = $controller;
     $q = _$q_;
+
+    dateFormatterService = DateFormatterService;
+    $interval.flush(200);
   }));
 
   beforeEach(function() {
