@@ -42,6 +42,10 @@
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-loading-bar/build/loading-bar.css" />' />
     <jsp:param name="link" value='<link rel="stylesheet" type="text/css" href="lib/angular-growl-v2/build/angular-growl.css" />' />
 
+    <jsp:param name="meta" value='<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>' />
+    <jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda/dist/js-joda.min.js"></script>' />
+    <jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda-timezone/dist/js-joda-timezone.min.js"></script>' />
+
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/angular-cookies/angular-cookies.js"></script>' />
@@ -54,6 +58,7 @@
     <jsp:param name="script" value='<script type="text/javascript" src="lib/ip-address/dist/ip-address-globals.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="lib/bootbox/bootbox.js"></script>' />
 
+    <jsp:param name="script" value='<script type="text/javascript" src="js/onms-date-formatter.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/app-requisitions.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionInterface.js"></script>' />
     <jsp:param name="script" value='<script type="text/javascript" src="js/onms-requisitions/scripts/model/RequisitionNode.js"></script>' />

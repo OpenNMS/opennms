@@ -247,7 +247,7 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.pageTime | isNotEmpty">
-							{{::item.pageTime | date:'MMM d, yyyy h:mm:ss a'}}
+							{{::item.pageTime | onmsDate}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'GE',value:item.pageTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'pageTime',operator:'LE',value:item.pageTime})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>
@@ -261,7 +261,7 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.respondTime | isNotEmpty">
-							{{::item.respondTime | date:'MMM d, yyyy h:mm:ss a'}}
+							{{::item.respondTime | onmsDate}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'GE',value:item.respondTime})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'respondTime',operator:'LE',value:item.respondTime})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>

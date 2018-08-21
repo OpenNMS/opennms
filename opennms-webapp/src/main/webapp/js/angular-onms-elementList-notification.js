@@ -13,7 +13,7 @@
 	}
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('notificationListFilters', [ 'onmsListFilters' ])
+	angular.module('notificationListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 	.filter('property', function() {
 		return function(input, searchProperties) {
 			var property = getSearchProperty(searchProperties, input);
@@ -29,7 +29,7 @@
 					return "null";
 				} else {
 					// Return the date in our preferred format
-					return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+					return $filter('onmsDate')(input);
 				}
 			}
 
