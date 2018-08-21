@@ -33,7 +33,7 @@ var variants = {
 };
 
 if (isProduction) {
-  variants.production = [ true, false, 'vaadin' ];
+  variants.production = [ true, false ];
 }
 
 console.log('=== running ' + (isProduction? 'production':'development') + ' build of OpenNMS ' + opennmsVersion + ' assets ===');
@@ -47,7 +47,6 @@ var staticroot = path.join(assetsroot, 'static');
 var styleEntries = {};
 var appEntries = {};
 var vendorEntries = {};
-var vaadinEntries = {};
 var allEntries = {};
 
 const checkEntry = (type, entry) => {
@@ -74,9 +73,6 @@ const scanUtils = (start, dirs, names) => {
         checkEntry('lib', entry);
         appEntries[entry] = entryPath;
       }
-      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
-        vaadinEntries[entry] = entryPath;
-      }
       allEntries[entry] = entryPath;
     }
   }
@@ -91,9 +87,6 @@ const scanApps = (start, dirs, names) => {
       const entry = path.basename(path.dirname(relative));
       const entryPath = path.join(start,file);
       checkEntry('app', entry);
-      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
-        vaadinEntries[entry] = entryPath;
-      }
       allEntries[entry] = entryPath;
       appEntries[entry] = entryPath;
     }
@@ -129,11 +122,11 @@ doWalk('apps', scanApps);
 /* scan standalone javascript libraries with one entrypoint ("index.js", 3rdparty-excluded) */
 doWalk('lib', scanApps);
 
-/* scan vendor roll-ups */
-doWalk('vendor', scanUtils);
+/* scan vaadin endpoints */
+doWalk('vaadin', scanUtils);
 
 /* scan vendor roll-ups */
-doWalk('vaadin', scanUtils);
+doWalk('vendor', scanUtils);
 
 const dotPrint = (entry) => {
   console.log('* ' + entry);
@@ -391,9 +384,6 @@ var config = {
 };
 
 function getExtension(options) {
-  if (options.production === 'vaadin') {
-    return '.vaadin.js';
-  }
   return options.production? '.min.js' : '.js';
 }
 
@@ -419,15 +409,6 @@ function createConfig(options) {
   var debug = Boolean(!options.production);
   var minify = Boolean(options.production);
   var assetJsonFile = 'assets' + (options.production? '.min' : '') + '.json';
-  if (options.production === 'vaadin') {
-    assetJsonFile = 'assets.vaadin.json';
-    myconf.entry = vaadinEntries;
-  } else {
-    // only do the vaadin files in the vaadin build
-    for (const key of Object.keys(vaadinEntries)) {
-      delete myconf.entry[key];
-    }
-  }
   //console.log('Production=' + options.production + ', entry=', myconf.entry);
 
   myconf.plugins.push(new webpack.DefinePlugin(defs));
@@ -436,50 +417,48 @@ function createConfig(options) {
     debug: debug
   }));
 
-  if (options.production !== 'vaadin') {
-    myconf.module.rules.unshift({
-      // run tslint on typescript files before rendering
-      enforce: 'pre',
-      test: /\.tsx?$/,
-      use: [
-        {
-          loader: 'tslint-loader',
-          options: {
-            typeCheck: true
-          }
+  myconf.module.rules.unshift({
+    // run tslint on typescript files before rendering
+    enforce: 'pre',
+    test: /\.tsx?$/,
+    use: [
+      {
+        loader: 'tslint-loader',
+        options: {
+          typeCheck: true
         }
-      ],
-      exclude: [/node_modules/]
-    });
+      }
+    ],
+    exclude: [/node_modules/]
+  });
 
-    myconf.optimization = {
-      runtimeChunk: {
-        name: 'vendor'
-      },
-      splitChunks: {
-        chunks: 'all',
-        minSize: 1,
-        minChunks: 1,
-        name: true,
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          runtime: false,
-          vendor: {
-            name: 'vendor',
-            enforce: true,
-            test: (module, chunks) => {
-              return module.context
-              && module.context.includes('node_modules')
-              && !module.context.includes('d3')
-              && !module.context.includes('holderjs')
-              && !module.context.includes('leaflet');
-            }
+  myconf.optimization = {
+    runtimeChunk: {
+      name: 'vendor'
+    },
+    splitChunks: {
+      chunks: 'all',
+      minSize: 1,
+      minChunks: 1,
+      name: true,
+      cacheGroups: {
+        default: false,
+        vendors: false,
+        runtime: false,
+        vendor: {
+          name: 'vendor',
+          enforce: true,
+          test: (module, chunks) => {
+            return module.context
+            && module.context.includes('node_modules')
+            && !module.context.includes('d3')
+            && !module.context.includes('holderjs')
+            && !module.context.includes('leaflet');
           }
         }
       }
-    };
-  }
+    }
+  };
   myconf.plugins.push(extractText);
 
   if (!myconf.optimization) {
