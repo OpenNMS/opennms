@@ -2,6 +2,7 @@
 // Allow GitHub image rendering
 :imagesdir: ../../../images
 
+[[ga-bsm-introcution]]
 While _{opennms-product-name}_ detects issues in your network by device, interface or service, the _Business Service Monitoring (BSM)_ takes it one step further.
 The _BSM_ components allows you to monitor and model high level _Business Services (BS)_ and helps quickly identify the most critical problems affecting these.
 With the _BSM_ feature it is possible to model a high level _BS_ context around the technical _Service Monitors_ provided in _{opennms-product-name}_.
@@ -20,7 +21,7 @@ A possible representation of the whole system hierarchy is shown in figure <<gu-
 image:bsm/01_bsm-example-scenario.png[]
 
 To be able to model this scenarios the _BSM_ functions can be used.
-_Business Service Monitoring (BSM)_ includes the following components:
+The _Business Service Monitoring (BSM)_ feature includes the following components:
 
 * _Business Service Monitoring Daemon (BSMD)_: Maintains and drives the state of all _BS_
 * _Business Service Editor_: Web application which allows you to create, update or delete _BS_
