@@ -44,13 +44,13 @@ import org.opennms.features.situationfeedback.api.AlarmFeedback;
 public interface SituationFeedbackRestService {
 
     @GET
-    @Path("/{situationKey}")
+    @Path("/{situationId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Collection<AlarmFeedback> getFeedback(@PathParam("situationKey") String situationKey);
+    public Collection<AlarmFeedback> getFeedback(@PathParam("situationId") int situationId);
 
     @POST
-    @Path("/{situationKey}")
+    @Path("/{situationId}")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public void setFeedback(List<AlarmFeedback> feedback);
+    public void setFeedback(@PathParam("situationId") int situationId, List<AlarmFeedback> feedback);
 }

@@ -128,7 +128,9 @@ public class SituationFeedbackrestServiceIT {
         OnmsAlarm prior = alarmDao.findByReductionKey(situation.getReductionKey());
         assertThat(prior.getRelatedAlarms().size(), is(2));
 
-        sut.setFeedback(feedback);
+        int situationId = prior.getId();
+
+        sut.setFeedback(situationId, feedback);
 
         OnmsAlarm restrieved = alarmDao.findByReductionKey(situation.getReductionKey());
         assertThat(restrieved.getRelatedAlarms().size(), is(1));
