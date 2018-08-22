@@ -80,8 +80,8 @@
         <tbody>
           <tr ng-class="{danger: requisition.isModified()}" ng-repeat="requisition in filteredRequisitions | startFrom:(currentPage-1)*pageSize | limitTo:pageSize">
             <td>{{ requisition.foreignSource }}</td>
-            <td>{{ requisition.dateStamp | date:'dd-MM-yy hh:mm:ss' }}</td>
-            <td>{{ (requisition.lastImport | date:'dd-MM-yy hh:mm:ss') || 'Never' }}</td>
+            <td>{{ requisition.dateStamp | onmsDate }}</td>
+            <td>{{ requisition.lastImport | onmsDate:'Never' }}</td>
             <td>{{ requisition.nodesDefined }}</td>
             <td>{{ requisition.nodesInDatabase }}</td>
             <td>
