@@ -47,8 +47,7 @@ public class SupportPageTest extends OpenNMSSeleniumTestCase {
     public void testAllLinksArePresent() throws InterruptedException {
         for (final String text : new String[] {
                 "About the OpenNMS Web Console",
-                "Release Notes",
-                "Online Documentation",
+                "Online Documentation and Release Notes",
                 "Generate a System Report",
                 "Open a Bug or Enhancement Request",
                 "Chat with Developers on IRC"
