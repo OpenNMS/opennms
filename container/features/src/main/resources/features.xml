@@ -749,6 +749,7 @@
       <feature>opennms-core</feature>
       <!-- TODO: This is a weak dependency inside EventConstants that needs to be removed -->
       <feature>opennms-snmp</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/${project.version}</bundle>
     </feature>
