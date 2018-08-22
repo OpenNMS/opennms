@@ -88,6 +88,8 @@ public class MinionStatusTrackerTest {
     private ServiceTypeDao m_serviceTypeDao;
     private OutageDao m_outageDao;
 
+    private Integer m_globalId = 0;
+
     @Before
     public void setUp() throws Exception {
         final Properties props = new Properties();
@@ -512,8 +514,6 @@ public class MinionStatusTrackerTest {
     private Map<Integer,OnmsMinion> m_minions = new HashMap<>();
     private Map<String,OnmsServiceType> m_serviceTypes = new HashMap<>();
 
-    private Integer lastServiceTypeId = 0;
-    private Integer lastOutageId = 0;
     private Integer lastLastOctet = 0;
 
     private CurrentOutageDetails generateOutage(final String uei, final OnmsNode node, final String service, final Date time) {
@@ -529,7 +529,7 @@ public class MinionStatusTrackerTest {
 
     private CurrentOutageDetails createOutage(final Date lostService, final Date regainedService, final OnmsNode node, final String serviceType) {
         final OnmsServiceType svcType = getServiceType(serviceType);
-        return new CurrentOutageDetails(++lastOutageId, svcType.getId(), serviceType, lostService, node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation().getLocationName());
+        return new CurrentOutageDetails(++m_globalId, svcType.getId(), serviceType, lostService, node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation().getLocationName());
     }
 
     private OnmsMinion getMinion(final OnmsNode node) {
@@ -570,7 +570,7 @@ public class MinionStatusTrackerTest {
 
     private OnmsServiceType getServiceType(final String serviceName) {
         if (!m_serviceTypes.containsKey(serviceName)) {
-            m_serviceTypes.put(serviceName, new OnmsServiceType(++lastServiceTypeId, serviceName));
+            m_serviceTypes.put(serviceName, new OnmsServiceType(++m_globalId, serviceName));
         }
         return m_serviceTypes.get(serviceName);
     }

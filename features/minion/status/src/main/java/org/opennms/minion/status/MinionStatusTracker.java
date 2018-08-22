@@ -54,7 +54,6 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.minion.OnmsMinion;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.xml.event.Event;
@@ -95,9 +94,6 @@ public class MinionStatusTracker implements InitializingBean {
 
     @Autowired
     TransactionOperations m_transactionOperations;
-
-    private Integer m_heartbeatServiceId = null;
-    private Integer m_rpcServiceId = null;
 
     private long m_refresh = TimeUnit.MINUTES.toMillis(5);
 
@@ -338,7 +334,7 @@ public class MinionStatusTracker implements InitializingBean {
                     final String foreignId = outage.getForeignId();
 
                     final AggregateMinionStatus currentStatus = state.get(foreignId);
-                    final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getMonitoredServiceId(), null, outage.getIfLostService());
+                    final AggregateMinionStatus newStatus = transformStatus(currentStatus, outage.getServiceName(), null, outage.getIfLostService());
 
                     // If this is a refresh, and the "in-memory" tracking is more up-to-date than the outage records, keep it. Otherwise update with outage records.
                     final AggregateMinionStatus existingStatus = m_state.get(foreignId);
@@ -369,54 +365,28 @@ public class MinionStatusTracker implements InitializingBean {
         });
     }
 
-    private AggregateMinionStatus transformStatus(final AggregateMinionStatus currentStatus, final Integer outageServiceId, final Date ifRegainedService, final Date ifLostService) {
+    private AggregateMinionStatus transformStatus(final AggregateMinionStatus currentStatus, final String serviceName, final Date ifRegainedService, final Date ifLostService) {
         final AggregateMinionStatus newStatus;
-        final Integer heartbeatId = getHeartbeatServiceId();
-        final Integer rpcId = getRpcServiceId();
         if (ifRegainedService != null) {
-            if (heartbeatId == outageServiceId) {
+            if (MINION_HEARTBEAT.equals(serviceName)) {
                 newStatus = currentStatus.heartbeatUp();
-            } else if (rpcId == outageServiceId) {
+            } else if (MINION_RPC.equals(serviceName)) {
                 newStatus = currentStatus.rpcUp();
             } else {
-                LOG.warn("Unhandled 'up' outage record: ifservice={}, lost={}, regained={}", outageServiceId, ifLostService, ifRegainedService);
+                LOG.warn("Unhandled 'up' outage record: service={}, lost={}, regained={}", serviceName, ifLostService, ifRegainedService);
                 newStatus = currentStatus;
             }
         } else {
-            if (heartbeatId == outageServiceId) {
+            if (MINION_HEARTBEAT.equals(serviceName)) {
                 newStatus = currentStatus.heartbeatDown();
-            } else if (rpcId == outageServiceId) {
+            } else if (MINION_RPC.equals(serviceName)) {
                 newStatus = currentStatus.rpcDown();
             } else {
-                LOG.warn("Unhandled 'down' outage record: ifservice={}, lost={}, regained={}", outageServiceId, ifLostService, ifRegainedService);
+                LOG.warn("Unhandled 'down' outage record: service={}, lost={}, regained={}", serviceName, ifLostService, ifRegainedService);
                 newStatus = currentStatus;
             }
         }
         return newStatus;
-    }
-
-    private Integer getHeartbeatServiceId() {
-        if (m_heartbeatServiceId == null) {
-            final OnmsServiceType heartbeatService = m_serviceTypeDao.findByName(MINION_HEARTBEAT);
-            if (heartbeatService != null) {
-                m_heartbeatServiceId = heartbeatService.getId();
-            } else {
-                LOG.warn("No " + MINION_HEARTBEAT + " service found.");
-            }
-        }
-        return m_heartbeatServiceId;
-    }
-
-    private Integer getRpcServiceId() {
-        if (m_rpcServiceId == null) {
-            final OnmsServiceType rpcService = m_serviceTypeDao.findByName(MINION_RPC);
-            if (rpcService != null) {
-                m_rpcServiceId = rpcService.getId();
-            } else {
-                LOG.warn("No " + MINION_RPC + " service found.");
-            }
-        }
-        return m_rpcServiceId;
     }
 
     private void updateStateIfChanged(final OnmsMinion minion, final AggregateMinionStatus current, final AggregateMinionStatus previous) {
