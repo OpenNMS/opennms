@@ -52,6 +52,12 @@
             <artifactId>opennms-dao</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.features.timeformat</groupId>
+            <artifactId>org.opennms.features.timeformat.api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

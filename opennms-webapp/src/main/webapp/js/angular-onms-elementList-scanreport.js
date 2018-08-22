@@ -4,7 +4,7 @@
 	var MODULE_NAME = 'onms.elementList.scanreport';
 
 	// $filters that can be used to create human-readable versions of filter values
-	angular.module('scanReportListFilters', [ 'onmsListFilters' ])
+	angular.module('scanReportListFilters', [ 'onmsListFilters', 'onmsDateFormatter' ])
 	.filter('property', function() {
 		return function(input) {
 			switch (input) {
@@ -26,7 +26,7 @@
 			switch (property) {
 			case 'timestamp':
 				// Return the date in our preferred format
-				return $filter('date')(input, 'MMM d, yyyy h:mm:ss a');
+				return $filter('onmsDate')(input);
 			}
 			return input;
 		}

@@ -49,7 +49,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.alarm.AlarmSummary;
 import org.slf4j.LoggerFactory;
 
-public class AlarmStatusProvider implements StatusProvider {
+public class LinkdStatusProvider implements StatusProvider {
 
     private static class AlarmStatus extends DefaultStatus {
         public AlarmStatus(String label, long count) {
@@ -59,7 +59,7 @@ public class AlarmStatusProvider implements StatusProvider {
 
     @Override
     public String getNamespace() {
-        return AbstractLinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
     }
 
     @Override
@@ -69,7 +69,7 @@ public class AlarmStatusProvider implements StatusProvider {
 
     private final AlarmDao m_alarmDao;
 
-    public AlarmStatusProvider(AlarmDao alarmDao) {
+    public LinkdStatusProvider(AlarmDao alarmDao) {
         m_alarmDao = alarmDao;
     }
 
@@ -142,7 +142,7 @@ public class AlarmStatusProvider implements StatusProvider {
                         vertexRefToNodeIdMap.put(nodeId, eachRef);
                     }
                 } catch (NumberFormatException nfe) {
-                    LoggerFactory.getLogger(AlarmStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
+                    LoggerFactory.getLogger(LinkdStatusProvider.class).warn("Could not parse id '{}' of vertex '{}' as integer.", eachRef.getId(), eachRef);
                 }
             }
         }

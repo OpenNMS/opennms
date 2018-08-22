@@ -32,12 +32,9 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.opennms.features.topology.api.support.VertexHopGraphProvider.VertexHopCriteria;
-import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.VertexRef;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
 
 /**
  * 
@@ -46,51 +43,23 @@ import org.opennms.netmgt.model.OnmsNode;
  *
  */
 public class LinkdHopCriteria extends VertexHopCriteria {
-
-	public static final String NAMESPACE = "nodes";
-	private final String m_nodeId;
-	
-	private NodeDao m_nodeDao;
-	
-
-	public static class LinkdVertex extends AbstractVertex {
-
-        public LinkdVertex(String namespace, String id, String label) {
-			super(namespace, id, label);
-		}
-
-		@Override
-		public boolean isGroup() {
-			return false;
-		}
-
+    
+    public synchronized static VertexHopCriteria createCriteria(String nodeId, String nodeLabel) {
+        VertexHopCriteria criterion = new LinkdHopCriteria(nodeId, nodeLabel);
+        return criterion;
     }
 
-    public LinkdHopCriteria(String nodeId, NodeDao dao) {
-    	super(nodeId);
+    private final String m_nodeId;
+	
+    private LinkdHopCriteria(String nodeId, String nodeLabel) {
+        super(nodeId,nodeLabel);
         m_nodeId = nodeId;
-        m_nodeDao = dao;
-    }
-
-    public LinkdHopCriteria(String nodeId, String nodeLabel, NodeDao dao) {
-        super(nodeLabel);
-        setId(nodeId);
-        m_nodeId = nodeId;
-        m_nodeDao = dao;
     }
     
-	public NodeDao getNodeDao() {
-		return m_nodeDao;
-	}
-
-	public void setNodeDao(NodeDao dao) {
-		this.m_nodeDao = dao;
-	}
-
-	@Override
-	public String getNamespace() {
-		return NAMESPACE;
-	}
+    @Override
+    public String getNamespace() {
+        return LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD;
+    }
 
     @Override
     public int hashCode() {
@@ -102,33 +71,24 @@ public class LinkdHopCriteria extends VertexHopCriteria {
         return result;
     }
 
-	@Override
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null) return false;
 
         if (obj instanceof LinkdHopCriteria) {
             LinkdHopCriteria ref = (LinkdHopCriteria)obj;
-			return ref.m_nodeId.equals(m_nodeId) && ref.getNamespace().equals(getNamespace());
+            return ref.m_nodeId.equals(m_nodeId) && ref.getNamespace().equals(getNamespace());
         }
         
         return false;
     }
 
-	@Override
-	public Set<VertexRef> getVertices() {
-		
-		Integer id = Integer.valueOf(m_nodeId);
-        OnmsNode node = m_nodeDao.get(id);
-		
-		Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
-
-        if(node != null) {
-            String label = node.getLabel();
-            vertices.add(new DefaultVertexRef("nodes", m_nodeId, label));
-        }
-		
-		return vertices;
-	}
+    @Override
+    public Set<VertexRef> getVertices() {
+	Set<VertexRef> vertices = new TreeSet<VertexRef>(new RefComparator());
+        vertices.add(new DefaultVertexRef("nodes", m_nodeId, getLabel()));
+        return vertices;
+    }
 	
 }

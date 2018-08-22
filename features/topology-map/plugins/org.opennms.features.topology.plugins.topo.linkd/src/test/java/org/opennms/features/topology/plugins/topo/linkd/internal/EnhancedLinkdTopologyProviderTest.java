@@ -53,6 +53,7 @@ import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexListener;
 import org.opennms.features.topology.api.topo.VertexProvider;
 import org.opennms.features.topology.api.topo.VertexRef;
+import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
 import org.opennms.netmgt.dao.api.LldpLinkDao;
 import org.opennms.netmgt.dao.api.OspfLinkDao;
 import org.opennms.netmgt.model.FilterManager;
@@ -69,11 +70,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 public class EnhancedLinkdTopologyProviderTest {
 
     @Autowired
-    private EnhancedLinkdTopologyProvider m_topologyProvider;
+    private LinkdTopologyProvider m_topologyProvider;
 
     @Autowired
     private EnhancedLinkdMockDataPopulator m_databasePopulator;
-    private String m_originalFilename;
 
 
     @Before
@@ -82,7 +82,6 @@ public class EnhancedLinkdTopologyProviderTest {
 
         m_databasePopulator.populateDatabase();
         m_databasePopulator.setUpMock();
-        m_topologyProvider.refresh();
     }
 
     @Test
@@ -98,15 +97,22 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testGetIcon() {
-        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode1().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode2().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode3().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode4().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode5().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode6().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode7().getSysObjectId())));
-        Assert.assertTrue("linkd.system".equals(EnhancedLinkdTopologyProvider.getIconName(m_databasePopulator.getNode8().getSysObjectId())));
-
+        LinkdVertex vertex1 = LinkdVertex.create(m_databasePopulator.getNode1(), null);
+        LinkdVertex vertex2 = LinkdVertex.create(m_databasePopulator.getNode2(), null);
+        LinkdVertex vertex3 = LinkdVertex.create(m_databasePopulator.getNode3(), null);
+        LinkdVertex vertex4 = LinkdVertex.create(m_databasePopulator.getNode4(), null);
+        LinkdVertex vertex5 = LinkdVertex.create(m_databasePopulator.getNode5(), null);
+        LinkdVertex vertex6 = LinkdVertex.create(m_databasePopulator.getNode6(), null);
+        LinkdVertex vertex7 = LinkdVertex.create(m_databasePopulator.getNode7(), null);
+        LinkdVertex vertex8 = LinkdVertex.create(m_databasePopulator.getNode8(), null);
+        Assert.assertTrue("linkd.system.snmp.1.3.6.1.4.1.5813.1.25".equals(vertex1.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex2.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex3.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex4.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex5.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex6.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex7.getIconKey()));
+        Assert.assertTrue("linkd.system".equals(vertex8.getIconKey()));
     }
 
     @Test
@@ -115,9 +121,9 @@ public class EnhancedLinkdTopologyProviderTest {
         Assert.assertEquals(true, m_topologyProvider.containsVertexId(parentId));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void test() throws Exception {
+        m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getVertices().size());
 
         // Add v0 vertex
@@ -225,15 +231,31 @@ public class EnhancedLinkdTopologyProviderTest {
 
     @Test
     public void testLoadSimpleGraph() throws Exception {
+        m_topologyProvider.refresh();
         assertEquals(8, m_topologyProvider.getVertices().size());
         assertEquals(9, m_topologyProvider.getEdges().size());
 
-        Vertex v1 = m_topologyProvider.getVertex("nodes", "1");
-        Vertex v2 = m_topologyProvider.getVertex("nodes", "2");
-        Vertex v3 = m_topologyProvider.getVertex("nodes", "3");
-        Vertex v4 = m_topologyProvider.getVertex("nodes", "4");
-        Vertex v5 = m_topologyProvider.getVertex("nodes", "5");
-        Vertex v6 = m_topologyProvider.getVertex("nodes", "6");
+        LinkdVertex v1 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "1");
+        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertEquals(true,v1.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertEquals(false,v1.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        LinkdVertex v2 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "2");
+        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertEquals(true,v2.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertEquals(false,v2.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        LinkdVertex v3 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "3");
+        assertEquals(true,v3.getProtocolSupported().contains(ProtocolSupported.LLDP));
+        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.OSPF));
+        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.CDP));
+        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.ISIS));
+        assertEquals(false,v3.getProtocolSupported().contains(ProtocolSupported.BRIDGE));
+        LinkdVertex v4 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "4");
+        LinkdVertex v5 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "5");
+        LinkdVertex v6 = (LinkdVertex)m_topologyProvider.getVertex("nodes", "6");
         assertEquals("node1", v1.getLabel());
         assertEquals("192.168.1.1", v1.getIpAddress());
         assertEquals(false, v1.isLocked());
@@ -263,15 +285,24 @@ public class EnhancedLinkdTopologyProviderTest {
 
         int countLLDP = 0;
         int countOSPF = 0;
+        int countCDP = 0;
+        int countISIS = 0;
+        int countBRIDGE = 0;
         for (Edge edge : m_topologyProvider.getEdges()) {
-            if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.LLDP_EDGE_NAMESPACE)) {
-                countLLDP++;
-            } else if (edge.getNamespace().equals(EnhancedLinkdTopologyProvider.OSPF_EDGE_NAMESPACE)) {
-                countOSPF++;
+            LinkdEdge linkdedge = (LinkdEdge) edge;
+            switch (linkdedge.getDiscoveredBy()) {
+                case LLDP: countLLDP++;break;
+                case OSPF: countOSPF++;break;
+                case CDP: countCDP++;break;
+                case ISIS: countISIS++;break;
+                case BRIDGE: countBRIDGE++;break;
             }
         }
         assertEquals(8, countLLDP);
         assertEquals(1, countOSPF);
+        assertEquals(0, countCDP);
+        assertEquals(0, countISIS);
+        assertEquals(0, countBRIDGE);
     }
 
     @Test

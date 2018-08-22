@@ -16,6 +16,9 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       // Third-party libraries
+      'src/main/webapp/lib/moment/moment.js',
+      'src/main/webapp/lib/js-joda/dist/js-joda.js',
+      'src/main/webapp/lib/js-joda-timezone/dist/js-joda-timezone.js',
       'src/main/webapp/lib/jquery/dist/jquery.js',
       'src/main/webapp/lib/underscore/underscore.js',
       'src/main/webapp/lib/bootstrap/dist/js/bootstrap.js',
@@ -39,7 +42,7 @@ module.exports = function(config) {
 
     // list of files / patterns to exclude
     exclude: [
-      'src/main/webapp/js/*.js'
+      'src/main/webapp/js/!(onms-date-formatter).js'
     ],
 
     // level of logging
