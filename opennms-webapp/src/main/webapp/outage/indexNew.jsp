@@ -35,11 +35,17 @@
 	<jsp:param name="title" value="Outages" />
 	<jsp:param name="headTitle" value="Outages" />
 	<jsp:param name="breadcrumb" value="Outages" />
+
+	<jsp:param name="meta" value='<script type="text/javascript" src="lib/moment/min/moment.min.js"></script>' />
+	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda/dist/js-joda.min.js"></script>' />
+	<jsp:param name="meta" value='<script type="text/javascript" src="lib/js-joda-timezone/dist/js-joda-timezone.min.js"></script>' />
+
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular/angular.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-resource/angular-resource.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-sanitize/angular-sanitize.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="lib/angular-bootstrap/ui-bootstrap-tpls.js"></script>' />
 
+	<jsp:param name="script" value='<script type="text/javascript" src="js/onms-date-formatter.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-restresources.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList.js"></script>' />
 	<jsp:param name="script" value='<script type="text/javascript" src="js/angular-onms-elementList-outage.js"></script>' />
