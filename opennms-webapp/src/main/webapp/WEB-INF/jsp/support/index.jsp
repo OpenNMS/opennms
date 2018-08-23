@@ -226,8 +226,6 @@ session="true"
     <ul class="list-unstyled">
       <li><a href="docs/guide-install/index.html">Installation Guide</a></li>
       <li><a href="docs/guide-user/index.html">Users Guide</a></li>
-      <li><a href="docs/guide-admin/index.html">Administrators Guide</a></li>
-      <li><a href="docs/guide-development/index.html">Developers Guide</a></li>
       <li><a href="https://www.opennms.org/wiki/">Online Wiki Documentation</a></li>
     </ul>
     </span>
