@@ -27,7 +27,7 @@
   * @requires SynchronizeService The synchronize service
   * @requires growl The growl plugin for instant notifications
   */
-  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'Configuration', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, Configuration, RequisitionsService, SynchronizeService, growl) {
+  .controller('RequisitionsController', ['$scope', '$filter', '$window', '$uibModal', 'Configuration', 'DateFormatterService', 'RequisitionsService', 'SynchronizeService', 'growl', function($scope, $filter, $window, $uibModal, Configuration, DateFormatterService, RequisitionsService, SynchronizeService, growl) {
 
     /**
     * @description The timing status.
@@ -447,16 +447,18 @@
     */
     $scope.initialize = function() {
       $scope.loaded = false;
-      RequisitionsService.getRequisitions().then(
-        function(data) { // success
-          $scope.requisitionsData = data;
-          $scope.filteredRequisitions = $scope.requisitionsData.requisitions;
-          $scope.updateFilteredRequisitions();
-          $scope.loaded = true;
-          growl.success('Loaded ' + $scope.requisitionsData.requisitions.length + ' requisitions...');
-        },
-        $scope.errorHandler
-      );
+      DateFormatterService.formatter.finally(function() {
+        RequisitionsService.getRequisitions().then(
+          function(data) { // success
+            $scope.requisitionsData = data;
+            $scope.filteredRequisitions = $scope.requisitionsData.requisitions;
+            $scope.updateFilteredRequisitions();
+            $scope.loaded = true;
+            growl.success('Loaded ' + $scope.requisitionsData.requisitions.length + ' requisitions...');
+          },
+          $scope.errorHandler
+        );
+      });
     };
 
     /**

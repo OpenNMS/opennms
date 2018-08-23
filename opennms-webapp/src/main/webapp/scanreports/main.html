@@ -237,7 +237,7 @@
 					</td>
 					<td class="text-nowrap" style="line-height:24px;">
 						<span ng-show="item.timestamp !== null">
-							{{item.timestamp | date:'MMM d, yyyy h:mm:ss a'}}
+							{{item.timestamp | onmsDate}}
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'GE',value:item.timestamp})"><i class="fa fa-toggle-left fa-lg"/></a>
 							<a style="text-decoration: none;" ng-click="addEpochTimestampSearchClause({property:'timestamp',operator:'LE',value:item.timestamp})"><i class="fa fa-toggle-right fa-lg"/></a>
 						</span>

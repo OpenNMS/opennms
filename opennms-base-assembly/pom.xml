@@ -429,6 +429,11 @@
       <artifactId>org.opennms.features.events.traps</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.minion</groupId>
+      <artifactId>org.opennms.features.minion.status</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.minion.heartbeat</groupId>
       <artifactId>org.opennms.features.minion.heartbeat.consumer</artifactId>
       <version>${project.version}</version>

@@ -7,7 +7,8 @@
 
 angular.module('onms-assets', [
   'ui.bootstrap',
-  'angular-growl'
+  'angular-growl',
+  'onmsDateFormatter'
 ])
 
 .config(['growlProvider', function(growlProvider) {
