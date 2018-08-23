@@ -56,6 +56,10 @@
                                 <feature>sentinel-jms</feature>
                                 <feature>sentinel-telemetry</feature>
                                 <feature>sentinel-flows</feature>
+                                <feature>sentinel-coordination-api</feature>
+                                <feature>sentinel-coordination-base-impl</feature>
+                                <feature>sentinel-coordination-zookeeper-impl</feature>
+                                <feature>sentinel-coordination-shell</feature>
 
                                 <!-- Other features -->
                                 <feature>hawtio-offline</feature>

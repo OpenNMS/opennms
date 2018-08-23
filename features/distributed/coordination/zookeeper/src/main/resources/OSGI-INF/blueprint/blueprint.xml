@@ -1,0 +1,20 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0">
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="zookeeperProperties"
+                             persistent-id="org.opennms.features.distributed.coordination.zookeeper"
+                             update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="connectString" value="127.0.0.1:2181"/>
+            <cm:property name="namespace" value="coordination"/>
+            <!--<cm:property name="auths" value=""/>-->
+        </cm:default-properties>
+    </cm:property-placeholder>
+    <service interface="org.opennms.features.distributed.coordination.api.DomainManagerFactory">
+        <bean class="org.opennms.features.distributed.coordination.zookeeper.AlwaysZookeeperDomainManagerFactory">
+            <property name="connectString" value="${connectString}"/>
+            <property name="namespace" value="${namespace}"/>
+            <!--<property name="auths" value="${auths}"/>-->
+        </bean>
+    </service>
+</blueprint>

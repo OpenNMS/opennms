@@ -109,4 +109,39 @@
         <bundle>mvn:org.opennms.features.telemetry.adapters/org.opennms.features.telemetry.adapters.netflow/${project.version}</bundle>
     </feature>
 
+    <!--Coordination-->
+    <feature name="sentinel-coordination-api" description="OpenNMS :: Features :: Distributed :: Coordination :: API"
+             version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/coordination-api/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-base-impl"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: BASE" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/base-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-zookeeper-impl"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: ZOOKEEPER" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <feature version="${project.version}">sentinel-coordination-base-impl</feature>
+        <feature version="${project.version}">zookeeper-dependencies</feature>
+        <bundle>mvn:org.opennms.features.distributed/zookeeper-impl/${project.version}</bundle>
+    </feature>
+
+    <feature name="sentinel-coordination-shell"
+             description="OpenNMS :: Features :: Distributed :: Coordination :: SHELL" version="${project.version}">
+        <feature version="${project.version}">sentinel-coordination-api</feature>
+        <bundle>mvn:org.opennms.features.distributed/coordination-shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="zookeeper-dependencies" version="${project.version}" description="ZooKeeper Dependencies">
+        <bundle dependency="true">mvn:org.apache.zookeeper/zookeeper/3.4.7</bundle>
+        <bundle dependency="true">mvn:com.google.guava/guava/16.0.1</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-core/2.9.6</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.core/jackson-databind/2.9.6</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-client/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-framework/2.9.1</bundle>
+        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/2.9.1</bundle>
+    </feature>
 </features>
