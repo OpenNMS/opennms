@@ -71,6 +71,11 @@ public class OnmsServiceType implements Serializable {
         m_name = servicename;
     }
 
+    public OnmsServiceType(Integer id, String servicename) {
+        m_id = id;
+        m_name = servicename;
+    }
+
     /**
      * default constructor
      */
