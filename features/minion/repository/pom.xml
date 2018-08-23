@@ -16,6 +16,7 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
+                <version>${karafVersion}</version>
                 <executions>
                     <execution>
                         <id>features-add-to-repository</id>
@@ -234,6 +235,16 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.telemetry.listeners</groupId>
+            <artifactId>org.opennms.features.telemetry.listeners.flow</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.listeners</groupId>
+            <artifactId>org.opennms.features.telemetry.listeners.sflow</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
             <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
             <version>${project.version}</version>
@@ -262,6 +273,11 @@
             <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
             <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-api</artifactId>
+	    <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.poller</groupId>

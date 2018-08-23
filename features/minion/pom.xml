@@ -16,6 +16,7 @@
         <module>heartbeat</module>
         <module>repository</module>
         <module>shell</module>
+        <module>status</module>
     </modules>
 
     <build>
