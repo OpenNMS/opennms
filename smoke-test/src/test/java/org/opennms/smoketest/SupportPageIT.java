@@ -58,8 +58,6 @@ public class SupportPageIT extends OpenNMSSeleniumTestCase {
                 // Online docs links
                 "Installation Guide",
                 "Users Guide",
-                "Administrators Guide",
-                "Developers Guide",
                 "Online Wiki Documentation",
                 // Offline docs links
                 "Installation Guide",
