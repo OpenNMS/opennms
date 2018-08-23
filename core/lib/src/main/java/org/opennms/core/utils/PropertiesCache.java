@@ -61,7 +61,7 @@ public class PropertiesCache {
 
     public static final String CHECK_LAST_MODIFY_STRING = "org.opennms.utils.propertiesCache.enableCheckFileModified";
     public static final String CACHE_TIMEOUT = "org.opennms.utils.propertiesCache.cacheTimeout";
-    public static final int DEFAULT_CACHE_TIMEOUT = 600;
+    public static final int DEFAULT_CACHE_TIMEOUT = 3600;
 
     protected static class PropertiesHolder {
         private Properties m_properties;
