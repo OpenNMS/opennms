@@ -71,8 +71,8 @@ public class PropertiesCache {
         private boolean m_checkLastModify = Boolean.getBoolean(CHECK_LAST_MODIFY_STRING);
 
         PropertiesHolder(final File file) {
-            this.m_file = file;
-            this.m_properties = null;
+            m_file = file;
+            m_properties = null;
         }
         
         private Properties read() throws IOException {
@@ -82,11 +82,11 @@ public class PropertiesCache {
 
             InputStream in = null;
             try {
-                in = new FileInputStream(this.m_file);
+                in = new FileInputStream(m_file);
                 Properties prop = new Properties();
                 prop.load(in);
-                if (this.m_checkLastModify) {
-                    this.m_lastModify = this.m_file.lastModified();
+                if (m_checkLastModify) {
+                    m_lastModify = m_file.lastModified();
                 }
                 return prop;
             } finally {
@@ -101,15 +101,15 @@ public class PropertiesCache {
         }
         
         private void write() throws IOException {
-            if(!this.m_file.getParentFile().mkdirs()) {
-            	if(!this.m_file.getParentFile().exists()) {
-            		LOG.warn("Could not make directory: {}", this.m_file.getParentFile().getPath());
+            if(!m_file.getParentFile().mkdirs()) {
+            	if(!m_file.getParentFile().exists()) {
+            		LOG.warn("Could not make directory: {}", m_file.getParentFile().getPath());
             	}
             }
             OutputStream out = null;
             try {
-                out = new FileOutputStream(this.m_file);
-                this.m_properties.store(out, null);
+                out = new FileOutputStream(m_file);
+                m_properties.store(out, null);
             } finally {
                 if (out != null) {
                     try {
@@ -122,50 +122,50 @@ public class PropertiesCache {
         }
 
         public Properties get() throws IOException {
-            this.lock.lock();
+            lock.lock();
             try {
-                if (this.m_properties == null) {
+                if (m_properties == null) {
                     readWithDefault(new Properties());
                 } else {
-                    if (this.m_checkLastModify && this.m_file.canRead() && this.m_lastModify != this.m_file.lastModified()) {
-                        this.m_properties = read();
+                    if (m_checkLastModify && m_file.canRead() && m_lastModify != m_file.lastModified()) {
+                        m_properties = read();
                     }
                 }
-                return this.m_properties;
+                return m_properties;
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
         }
 
         private void readWithDefault(final Properties deflt) throws IOException {
             // this is
-            if (deflt == null && !this.m_file.canRead()) {
+            if (deflt == null && !m_file.canRead()) {
                 // nothing to load so m_properties remains null no writing necessary
                 // just return to avoid getting the write lock
                 return;
             }
             
-            if (this.m_properties == null) {
-                this.m_properties = read();
-                if (this.m_properties == null) {
-                    this.m_properties = deflt;
+            if (m_properties == null) {
+                m_properties = read();
+                if (m_properties == null) {
+                    m_properties = deflt;
                 }
             }   
         }
         
         public void put(final Properties properties) throws IOException {
-            this.lock.lock();
+            lock.lock();
             try {
-                this.m_properties = properties;
+                m_properties = properties;
                 write();
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
         }
 
         public void update(final Map<String, String> props) throws IOException {
             if (props == null) return;
-            this.lock.lock();
+            lock.lock();
             try {
                 boolean save = false;
                 for(Entry<String, String> e : props.entrySet()) {
@@ -178,12 +178,12 @@ public class PropertiesCache {
                     write();
                 }
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
         }
         
         public void setProperty(final String key, final String value) throws IOException {
-            this.lock.lock();
+            lock.lock();
             try {
                 // first we do get to make sure the properties are loaded
                 get();
@@ -192,28 +192,28 @@ public class PropertiesCache {
                     write();
                 }
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
         }
 
         public Properties find() throws IOException {
-            this.lock.lock();
+            lock.lock();
             try {
-                if (this.m_properties == null) {
+                if (m_properties == null) {
                     readWithDefault(null);
                 }
-                return this.m_properties;
+                return m_properties;
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
         }
 
         public String getProperty(final String key) throws IOException {
-            this.lock.lock();
+            lock.lock();
             try {
                 return get().getProperty(key);
             } finally {
-                this.lock.unlock();
+                lock.unlock();
             }
             
         }
@@ -227,7 +227,7 @@ public class PropertiesCache {
 
 
     protected PropertiesCache(final CacheBuilder<Object, Object> cacheBuilder) {
-        this.m_cache = cacheBuilder
+        m_cache = cacheBuilder
                 .expireAfterAccess(Integer.getInteger(CACHE_TIMEOUT, DEFAULT_CACHE_TIMEOUT), TimeUnit.SECONDS)
                 .build();
     }
@@ -236,7 +236,7 @@ public class PropertiesCache {
         final String key = propFile.getCanonicalPath();
 
         try {
-            return this.m_cache.get(key, new Callable<PropertiesHolder>() {
+            return m_cache.get(key, new Callable<PropertiesHolder>() {
                 @Override
                 public PropertiesHolder call() throws Exception {
                     return new PropertiesHolder(propFile);
@@ -251,8 +251,8 @@ public class PropertiesCache {
      * <p>clear</p>
      */
     public void clear() {
-        synchronized (this.m_cache) {
-            this.m_cache.invalidateAll();
+        synchronized (m_cache) {
+            m_cache.invalidateAll();
         }
     }
 
