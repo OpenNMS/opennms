@@ -68,7 +68,7 @@ function toggleDiv(divName) {
 
 <div class="panel panel-default">
 <div class="panel-heading">
-  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
+  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error KKK</h3>
 </div>
 <div class="panel-body">
 
@@ -92,35 +92,11 @@ function toggleDiv(divName) {
 
 <%
 final StringBuilder stBuilder = new StringBuilder();
-
-if (exception != null
-        && UserUtils.isAdminUser(request)
-        && !"true".equals(System.getProperty("org.opennms.ui.show_truncated_stacktrace_for_admin"))) {
+boolean showStrackTrace = "true".equals(System.getProperty("org.opennms.ui.show_stacktrace"));
+if(showStrackTrace) {
   stBuilder.append(ExceptionUtils.getFullStackTrace(exception));
-} else if (exception != null) {
-  if (exception instanceof ServletException && ((ServletException)exception).getRootCause() != null) {
-    exception = ((ServletException) exception).getRootCause();
-  } else if (exception.getCause() != null) {
-    exception = exception.getCause();
-  }
-  stBuilder.append(exception.getClass().getName());
-  /*
-  NOTE: While this may look like a good idea, we want to omit the message
-  to avoid transmitting sensitive information like file paths and other internal
-  information on the error page. If the user needs more precise information,
-  they can look at the webapp logs for the complete stack trace.
-
-  String message = exception.getMessage();
-  if (message != null && message.length() > 0) {
-    stBuilder.append(": ").append(exception.getMessage());
-  }
-  */
-  stBuilder.append("\n");
-  for (StackTraceElement ste : exception.getStackTrace()) {
-    stBuilder.append("\tat ").append(ste.toString()).append("\n");
-  }
 } else {
-  stBuilder.append("No exception to see here, please move along.");
+  stBuilder.append("Print of stack trace is disabled");
 }
 
 String errorDetails = 
@@ -176,7 +152,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </p>
   </div> <!-- panel-body -->
 </div> <!-- panel -->
-
+<% if(showStrackTrace){ %>
 <div class="panel panel-default">
   <div class="panel-heading">
     <h3 class="panel-title">Exception Trace</h3>
@@ -185,6 +161,7 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     <pre id="exceptionTrace"><%=stBuilder.toString()%></pre>
   </div> <!-- panel-body -->
 </div> <!-- panel -->
+<% } %>
 
 <div class="panel panel-default">
   <div class="panel-heading">

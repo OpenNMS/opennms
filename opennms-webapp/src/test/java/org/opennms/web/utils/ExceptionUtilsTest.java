@@ -29,6 +29,7 @@
 package org.opennms.web.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.servlet.ServletException;
@@ -69,6 +70,12 @@ public class ExceptionUtilsTest {
         assertTrue(stackTrace.contains("wrapper message"));
         assertTrue(stackTrace.contains("NullPointerException"));
         assertTrue(stackTrace.contains("IllegalArgumentException"));
+    }
+
+    @Test
+    public void isTolerantAgainstNullException(){
+        String stackTrace = ExceptionUtils.getFullStackTrace(null);
+        assertNotNull(stackTrace);
     }
 
     private <E extends Exception> E throwAndCatchException(E exception){

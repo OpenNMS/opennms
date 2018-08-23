@@ -67,6 +67,9 @@ public class ExceptionUtils {
     }
 
     public static String getFullStackTrace(Throwable throwable){
+        if(throwable == null){
+            return "Throwable=null";
+        }
         StringWriter writer = new StringWriter();
         throwable.printStackTrace(new PrintWriter(writer));
         return writer.toString();
