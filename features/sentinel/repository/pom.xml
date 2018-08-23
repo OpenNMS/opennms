@@ -205,6 +205,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.container</groupId>
+            <artifactId>spring-extender</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.core.ipc.rpc</groupId>
             <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
             <version>${project.version}</version>
@@ -231,7 +246,27 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
+            <artifactId>org.opennms.core.ipc.sink.aws.sqs.client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.ipc.sink.aws.sqs</groupId>
             <artifactId>org.opennms.core.ipc.sink.aws.sqs.server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.flows</groupId>
+            <artifactId>org.opennms.features.flows.elastic</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.flows.classification.engine</groupId>
+            <artifactId>org.opennms.features.flows.classification.engine.impl</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -241,6 +276,16 @@
         <dependency>
             <groupId>org.opennms.features.poller.monitors</groupId>
             <artifactId>org.opennms.features.poller.monitors.core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.sentinel</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.telemetry.adapters</groupId>
+            <artifactId>org.opennms.features.telemetry.adapters.netflow</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

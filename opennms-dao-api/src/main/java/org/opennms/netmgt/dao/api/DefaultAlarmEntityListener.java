@@ -29,6 +29,7 @@
 package org.opennms.netmgt.dao.api;
 
 import java.util.Date;
+import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsMemo;
@@ -88,6 +89,11 @@ public class DefaultAlarmEntityListener implements AlarmEntityListener {
 
     @Override
     public void onLastAutomationTimeUpdated(OnmsAlarm alarm, Date previousLastAutomationTime) {
+
+    }
+
+    @Override
+    public void onRelatedAlarmsUpdated(OnmsAlarm alarm, Set<OnmsAlarm> previousRelatedAlarms) {
 
     }
 }

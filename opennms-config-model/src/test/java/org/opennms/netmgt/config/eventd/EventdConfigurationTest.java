@@ -51,7 +51,11 @@ public class EventdConfigurationTest extends XmlTestNoCastor<EventdConfiguration
         config.setGetNextEventID("SELECT nextval('eventsNxtId')");
         config.setSocketSoTimeoutRequired("yes");
         config.setSocketSoTimeoutPeriod(3000);
-
+        config.setNumThreads(0);
+        config.setBatchInterval(500);
+        config.setBatchSize(1000);
+        config.setQueueSize(10000);
+        
         return Arrays.asList(new Object[][] {
             {
                 config,
@@ -63,7 +67,11 @@ public class EventdConfigurationTest extends XmlTestNoCastor<EventdConfiguration
                         "        receivers=\"5\"\n" + 
                         "        getNextEventID=\"SELECT nextval('eventsNxtId')\"\n" + 
                         "        socketSoTimeoutRequired=\"yes\"\n" + 
-                        "        socketSoTimeoutPeriod=\"3000\">\n" + 
+                        "        socketSoTimeoutPeriod=\"3000\"\n"+
+                        "        sink-threads=\"0\"\n"+ 
+                        "        sink-queue-size=\"10000\"\n"+
+                        "        sink-batch-size=\"1000\"\n"+
+                        "        sink-batch-interval=\"500\"\n>"+
                         "</EventdConfiguration>"
             }
         });

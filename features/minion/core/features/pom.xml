@@ -81,5 +81,15 @@
             <artifactId>shell</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.impl</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.health</groupId>
+            <artifactId>org.opennms.core.health.shell</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

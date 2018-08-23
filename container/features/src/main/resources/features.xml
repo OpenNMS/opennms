@@ -749,6 +749,7 @@
       <feature>opennms-core</feature>
       <!-- TODO: This is a weak dependency inside EventConstants that needs to be removed -->
       <feature>opennms-snmp</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
 
       <bundle>mvn:org.opennms.features.events/org.opennms.features.events.api/${project.version}</bundle>
     </feature>
@@ -1142,6 +1143,15 @@
       <feature>opennms-poller-api</feature>
       -->
       <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-situation-feedback" description="OpenNMS :: Features :: Situation-Feedback" version="${project.version}">
+      <feature>opennms-osgi-core-rest</feature>
+      <feature>opennms-jest</feature>
+      <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.situation-feedback/org.opennms.features.situation-feedback.elastic/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.api/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.situation-feedback.rest/org.opennms.features.situation-feedback.rest.impl/${project.version}</bundle>
     </feature>
 
     <feature name="kafka-streams" description="Kafka Streams" version="${kafkaStreamsVersion}">

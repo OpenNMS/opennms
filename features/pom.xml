@@ -153,7 +153,10 @@
     
     <!-- ReST Elasticsearch Integration -->
     <module>opennms-es-rest</module>
-    
+
+    <!-- Correlation Feedback -->
+    <module>situation-feedback</module>
+
     <!-- Alarm Change Notifier -->
     <module>alarm-change-notifier</module>
     

@@ -1,3 +1,13 @@
+opennms (22.0.3-1) stable; urgency=high
+
+  * New stable release.  It contains a critical fix for RADIUS authentication,
+    as well as a number of smaller bug fixes and enhancements.
+    
+    For details on what has changed, see:
+    http://docs.opennms.org/opennms/releases/22.0.3/releasenotes/releasenotes.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Thu, 16 Aug 2018 10:11:00 -0500
+
 opennms (22.0.2-1) stable; urgency=low
 
   * New stable release.  It contains a number of bug fixes and enhancements,

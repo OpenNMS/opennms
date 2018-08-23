@@ -178,6 +178,7 @@ include::text/events/sources/rest.adoc[]
 include::text/events/sources/xml-tcp.adoc[]
 include::text/events/sources/eif-adapter.adoc[]
 include::text/events/sources/tl1.adoc[]
+include::text/events/sources/sink-api.adoc[]
 include::text/events/eventbus.adoc[]
 include::text/events/event-configuration.adoc[]
 
