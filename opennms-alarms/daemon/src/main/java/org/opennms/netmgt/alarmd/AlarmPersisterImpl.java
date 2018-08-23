@@ -126,11 +126,26 @@ public class AlarmPersisterImpl implements AlarmPersister {
         final String reductionKey = event.getAlarmData().getReductionKey();
         LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
+        
 
-        if (alarm == null) {
+        boolean newIfCleared = Boolean.getBoolean("opennms.alarmd.newIfClearedAlarmExists");
+        LOG.debug("addOrReduceEventAsAlarm: reduceClearedAlarms is {}.", newIfCleared);
+        
+        if (alarm == null || (alarm.getSeverity().compareTo(OnmsSeverity.CLEARED)==0 && newIfCleared)) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} not found, instantiating new alarm", reductionKey);
+                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{}, instantiating new alarm", reductionKey);
             }
+            
+            if (alarm != null) {
+                LOG.debug("addOrReduceEventAsAlarm: altering reductionKey of currently cleared Alarm for problem: {}; A new Alarm will be instantiated to manage problem.", reductionKey);
+                String uniqueReductionKey = alarm.getReductionKey() + ":ID:" + alarm.getId().toString();
+                LOG.debug("addOrReduceEventAsAlarm: "+uniqueReductionKey);
+                alarm.setReductionKey(uniqueReductionKey);
+                m_alarmDao.save(alarm);
+                m_alarmDao.flush();
+                alarm = null;
+            }
+            
             alarm = createNewAlarm(persistedEvent, event);
 
             // Trigger extensions, allowing them to mangle the alarm
