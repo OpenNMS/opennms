@@ -68,6 +68,7 @@ import com.google.common.util.concurrent.Striped;
  */
 public class AlarmPersisterImpl implements AlarmPersister {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmPersisterImpl.class);
+    private static boolean NEW_IF_CLEARED = Boolean.getBoolean("opennms.alarmd.newIfClearedAlarmExists");
 
     protected static final Integer NUM_STRIPE_LOCKS = Integer.getInteger("org.opennms.alarmd.stripe.locks", Alarmd.THREADS * 4);
 
@@ -124,24 +125,20 @@ public class AlarmPersisterImpl implements AlarmPersister {
         }
 
         final String reductionKey = event.getAlarmData().getReductionKey();
-        LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);
+        LOG.debug("addOrReduceEventAsAlarm: looking for existing reduction key: {}", reductionKey);           
+        
         OnmsAlarm alarm = m_alarmDao.findByReductionKey(reductionKey);
         
-
-        boolean newIfCleared = Boolean.getBoolean("opennms.alarmd.newIfClearedAlarmExists");
-        LOG.debug("addOrReduceEventAsAlarm: reduceClearedAlarms is {}.", newIfCleared);
-        
-        if (alarm == null || (alarm.getSeverity().compareTo(OnmsSeverity.CLEARED)==0 && newIfCleared)) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{}, instantiating new alarm", reductionKey);
-            }
+        if (alarm == null || (NEW_IF_CLEARED && alarm.getSeverity().compareTo(OnmsSeverity.CLEARED)==0)) {
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{}, instantiating new alarm", reductionKey);
             
             if (alarm != null) {
                 LOG.debug("addOrReduceEventAsAlarm: altering reductionKey of currently cleared Alarm for problem: {}; A new Alarm will be instantiated to manage problem.", reductionKey);
-                String uniqueReductionKey = alarm.getReductionKey() + ":ID:" + alarm.getId().toString();
-                LOG.debug("addOrReduceEventAsAlarm: created unique key for current Alarm: "+uniqueReductionKey);
+                
+                String uniqueReductionKey = alarm.getReductionKey() + ":ID: {}" + alarm.getId().toString();
+                LOG.debug("addOrReduceEventAsAlarm: created unique key for current Alarm: {}", uniqueReductionKey);
+                
                 alarm.setReductionKey(uniqueReductionKey);
-                //LOG.debug("addOrReduceEventAsAlarm: alarm's reductionKey: {}", alarm.getReductionKey());
                 m_alarmDao.save(alarm);
                 m_alarmDao.flush();
                 alarm = null;
@@ -162,9 +159,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
 
             m_alarmEntityNotifier.didCreateAlarm(alarm);
         } else {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
-            }
+            LOG.debug("addOrReduceEventAsAlarm: reductionKey:{} found, reducing event to existing alarm: {}", reductionKey, alarm.getIpAddr());
             reduceEvent(persistedEvent, alarm, event);
 
             // Trigger extensions, allowing them to mangle the alarm
