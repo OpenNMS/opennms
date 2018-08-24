@@ -290,8 +290,9 @@ public class JavaMailer {
                 BodyPart streamBodyPart = new MimeBodyPart();
                 streamBodyPart.setDataHandler(new DataHandler(new InputStreamDataSource(m_inputStreamName, m_inputStreamContentType, m_inputStream)));
                 streamBodyPart.setFileName(m_inputStreamName);
-                streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");  
-                streamBodyPart.setDisposition(Part.ATTACHMENT); 
+                streamBodyPart.setHeader("Content-Type", m_inputStreamContentType);
+                streamBodyPart.setHeader("Content-Transfer-Encoding", "base64");
+                streamBodyPart.setDisposition(Part.ATTACHMENT);
                 MimeMultipart mp = new MimeMultipart();
                 mp.addBodyPart(streamBodyPart);
                 message.setContent(mp);
