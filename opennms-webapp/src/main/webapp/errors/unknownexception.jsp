@@ -38,7 +38,6 @@
                 java.lang.StringBuilder"
  %>
 <%@ page import="org.opennms.web.utils.ExceptionUtils" %>
-<%@ page import="org.opennms.web.utils.UserUtils" %>
 
 <jsp:include page="/includes/bootstrap.jsp" flush="false" >
   <jsp:param name="title" value="Error" />
@@ -68,7 +67,7 @@ function toggleDiv(divName) {
 
 <div class="panel panel-default">
 <div class="panel-heading">
-  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error KKK</h3>
+  <h3 class="panel-title">The OpenNMS Web User Interface Has Experienced an Error</h3>
 </div>
 <div class="panel-body">
 
@@ -92,7 +91,7 @@ function toggleDiv(divName) {
 
 <%
 final StringBuilder stBuilder = new StringBuilder();
-boolean showStrackTrace = "true".equals(System.getProperty("org.opennms.ui.show_stacktrace"));
+boolean showStrackTrace = Boolean.getBoolean("org.opennms.ui.show_stacktrace");
 if(showStrackTrace) {
   stBuilder.append(ExceptionUtils.getFullStackTrace(exception));
 } else {
