@@ -138,6 +138,25 @@ public class MagicUsersMigratorOfflineIT {
     }
 
     /**
+     * Test upgrade with 2015 users.xml
+     *
+     * @throws Exception the exception
+     */
+    @Test
+    public void test2015UsersXmlUpgrade() throws Exception {
+        FileUtils.moveFile(new File("target/home/etc/magic-users.properties"), new File("target/home/etc/magic-users.properties.rpmsave"));
+        FileUtils.deleteQuietly(new File("target/home/etc/users.xml"));
+        FileUtils.moveFile(new File("target/home/etc/users-2015.xml"), new File("target/home/etc/users.xml"));
+
+        MagicUsersMigratorOffline migrator = new MagicUsersMigratorOffline();
+        migrator.preExecute();
+        migrator.execute();
+        migrator.postExecute();
+
+        validateMigration();
+    }
+
+    /**
      * Validate the Migration by checking the updated users.xml
      *
      * @throws Exception the exception
