@@ -81,7 +81,7 @@ public class DefaultAlarmService implements AlarmService {
 
     @Override
     @Transactional
-    public void unclearAlarm(OnmsAlarm alarm) {
+    public void unclearAlarm(OnmsAlarm alarm, Date now) {
         LOG.info("Un-clearing alarm with id: {} at: {}", alarm.getId(), alarm.getLastEventTime());
         final OnmsAlarm alarmInTrans = alarmDao.get(alarm.getId());
         if (alarmInTrans == null) {
@@ -90,6 +90,7 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(OnmsSeverity.get(alarmInTrans.getLastEvent().getEventSeverity()));
+        updateAutomationTime(alarmInTrans, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }
@@ -138,6 +139,7 @@ public class DefaultAlarmService implements AlarmService {
         }
         final OnmsSeverity previousSeverity = alarmInTrans.getSeverity();
         alarmInTrans.setSeverity(severity);
+        updateAutomationTime(alarm, now);
         alarmDao.update(alarmInTrans);
         alarmEntityNotifier.didUpdateAlarmSeverity(alarmInTrans, previousSeverity);
     }

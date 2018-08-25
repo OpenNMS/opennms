@@ -39,7 +39,7 @@ public interface AlarmService {
 
     void deleteAlarm(OnmsAlarm alarm);
 
-    void unclearAlarm(OnmsAlarm alarm);
+    void unclearAlarm(OnmsAlarm alarm, Date now);
 
     void escalateAlarm(OnmsAlarm alarm, Date now);
 
