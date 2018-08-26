@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
@@ -56,6 +58,7 @@ import org.opennms.netmgt.model.LldpElement;
 import org.opennms.netmgt.model.LldpLink;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OspfLink;
+import org.opennms.netmgt.model.topology.Topology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,22 +75,61 @@ public class LinkdTopologyProviderTest {
     private final static Logger LOG = LoggerFactory.getLogger(LinkdTopologyProviderTest.class);
 
     private Random random;
+    private LinkdTopologyProvider provider;
 
     @Before
     public void setUp() {
         random = new Random(42);
         // We don't want the debug messages to take time:
         System.setProperty(MockLogger.LOG_KEY_PREFIX + LinkdTopologyProvider.class.getName(), "INFO");
+        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
+        provider = new LinkdTopologyProvider(registry);
     }
 
     @Test
-    public void newIsIsMappingShouldProvideSameOutputAsOldMethod() {
+    public void isIsLinksShouldMatchCorrectly_NewMethod() {
+        matchisIsLinks(provider::matchIsIsLinksNew);
+    }
+
+    @Test
+    public void isIsLinksShouldMatchCorrectly_OldMethod() {
+        matchisIsLinks(provider::matchIsIsLinks);
+    }
+
+    private void matchisIsLinks(BiFunction<List<IsIsElement>, List<IsIsLink>, List<Pair<IsIsLink, IsIsLink>>> matchLinksFunction) {
+
+        // 1 and 3 will match
+        // 4 and 5 will match
+
+        List<OnmsNode> nodes = createNodes(6);
+        List<IsIsElement> elements = Arrays.asList(
+                createIsIsElement(nodes.get(0), "nomatch0"),
+                createIsIsElement(nodes.get(1), "1.3"),
+                createIsIsElement(nodes.get(2), "nomatch1"),
+                createIsIsElement(nodes.get(3), "1.2"),
+                createIsIsElement(nodes.get(4), "2.3"),
+                createIsIsElement(nodes.get(5), "2.2")
+            );
+
+        List<IsIsLink> allLinks = Arrays.asList(
+                createIsIsLink(0, "nomatch2", 100, nodes.get(0)),
+                createIsIsLink(1, "1.2", 11, nodes.get(1)),
+                createIsIsLink(2, "nomatch3", 101, nodes.get(2)),
+                createIsIsLink(3, "1.3", 11, nodes.get(3)),
+                createIsIsLink(4, "2.2", 22, nodes.get(4)),
+                createIsIsLink(5, "2.3", 22, nodes.get(5))
+        );
+
+        List<Pair<IsIsLink, IsIsLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+
+        assertMatching(allLinks, matchedLinks);
+    }
+
+    @Test
+    public void isIsMappingShouldProvideSameOutputAsOldMethod() {
         List<OnmsNode> nodes = createNodes();
         List<IsIsElement> elements = createIsIsElements(nodes);
         List<IsIsLink> allLinks = createIsIsLinks(elements);
-
-        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
-        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
 
         Instant start = Instant.now();
         List<Pair<IsIsLink, IsIsLink>> matchesOld = provider.matchIsIsLinks(elements, allLinks);
@@ -97,22 +139,54 @@ public class LinkdTopologyProviderTest {
         List<Pair<IsIsLink, IsIsLink>> matchesNew = provider.matchIsIsLinksNew(elements, allLinks);
         LOG.info("Finished matchIsIsLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
 
-        // not a very elegant comparator but hey we are only an innocent little unit test
-        Comparator<Pair<IsIsLink, IsIsLink>> comparator = Comparator
-                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
-        matchesOld.sort(comparator);
-        matchesNew.sort(comparator);
-        assertEquals(matchesOld, matchesNew);
+        sortAndAssertEquals(matchesOld, matchesNew);
     }
 
     @Test
-    public void newCdpMappingShouldProvideSameOutputAsOldMethod() {
+    public void cdpLinksShouldMatchCorrectly_NewMethod() {
+        matchCdpLinks(provider::matchCdpLinksNew);
+    }
+
+    @Test
+    public void cdpLinksShouldMatchCorrectly_OldMethod() {
+        matchCdpLinks(provider::matchCdpLinks);
+    }
+
+    private void matchCdpLinks(BiFunction<List<CdpElement>, List<CdpLink>, List<Pair<CdpLink, CdpLink>>> matchLinksFunction) {
+
+        // 1 and 3 will match
+        // 4 and 5 will match
+
+        List<OnmsNode> nodes = createNodes(6);
+        List<CdpElement> elements = Arrays.asList(
+                createCdpElement(nodes.get(0), "Element0"),
+                createCdpElement(nodes.get(1), "match1.4"),
+                createCdpElement(nodes.get(2), "Element2"),
+                createCdpElement(nodes.get(3), "match1.3"),
+                createCdpElement(nodes.get(4), "match2.4"),
+                createCdpElement(nodes.get(5), "match2.3")
+        );
+
+        List<CdpLink> allLinks = Arrays.asList(
+                createCdpLink(0, nodes.get(0), "nomatch1", "nomatch2", "nomatch3"),
+                createCdpLink(1, nodes.get(1), "match1.3", "match1.1", "match1.2"),
+                createCdpLink(2, nodes.get(2), "nomatch4", "nomatch5", "nomatch6"),
+                createCdpLink(3, nodes.get(3), "match1.4", "match1.2", "match1.1"),
+                createCdpLink(4, nodes.get(4), "match2.3", "match2.1", "match2.2"),
+                createCdpLink(5, nodes.get(5), "match2.4", "match2.2", "match2.1")
+        );
+
+        List<Pair<CdpLink, CdpLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+
+        assertMatching(allLinks, matchedLinks);
+
+    }
+
+    @Test
+    public void cdpMappingShouldProvideSameOutputAsOldMethod() {
         List<OnmsNode> nodes = createNodes();
         List<CdpElement> cdpElements = createCdpElements(nodes);
         List<CdpLink> allLinks = createCdpLinks(cdpElements);
-
-        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
-        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
 
         Instant start = Instant.now();
         List<Pair<CdpLink, CdpLink>> matchesOld = provider.matchCdpLinks(cdpElements, allLinks);
@@ -124,18 +198,42 @@ public class LinkdTopologyProviderTest {
         List<Pair<CdpLink, CdpLink>> matchesNew = provider.matchCdpLinksNew(cdpElements, allLinks);
         LOG.info("Finished matchCdpLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
 
-        // not a very elegant comparator but hey we are only an innocent little unit test
-        Comparator<Pair<CdpLink, CdpLink>> comparator = Comparator
-                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
-        matchesOld.sort(comparator);
-        matchesNew.sort(comparator);
-        assertEquals(matchesOld, matchesNew);
+        sortAndAssertEquals(matchesOld, matchesNew);
     }
 
     @Test
-    public void newOspfMappingShouldProvideSameOutputAsOldMethod() {
-        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
-        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
+    public void ospfLinksShouldMatchCorrectly_NewMethod() {
+        matchOspfLinks(provider::matchOspfLinksNew);
+    }
+
+    @Test
+    public void ospfLinksShouldMatchCorrectly_OldMethod() {
+        matchOspfLinks(provider::matchOspfLinks);
+    }
+
+    private void matchOspfLinks(Function<List<OspfLink>, List<Pair<OspfLink, OspfLink>>> matchLinksFunction) {
+
+        // 1 and 3 will match
+        // 4 and 5 will match
+
+        List<OnmsNode> nodes = createNodes(6);
+        List<InetAddress> addresses = createInetAddresses(6);
+
+        List<OspfLink> allLinks = Arrays.asList(
+                createOspfLink(0, nodes.get(0), addresses.get(0), addresses.get(5)),
+                createOspfLink(1, nodes.get(1), addresses.get(1), addresses.get(3)),
+                createOspfLink(2, nodes.get(2), addresses.get(2), addresses.get(3)),
+                createOspfLink(3, nodes.get(3), addresses.get(3), addresses.get(1)),
+                createOspfLink(4, nodes.get(4), addresses.get(4), addresses.get(5)),
+                createOspfLink(5, nodes.get(5), addresses.get(5), addresses.get(4))
+        );
+
+        List<Pair<OspfLink, OspfLink>> matchedLinks = matchLinksFunction.apply(allLinks);
+        assertMatching(allLinks, matchedLinks);
+    }
+
+    @Test
+    public void ospfMappingShouldProvideSameOutputAsOldMethod() {
 
         List<OspfLink> allLinks = createOspfLinks();
 
@@ -149,22 +247,50 @@ public class LinkdTopologyProviderTest {
         List<Pair<OspfLink, OspfLink>> matchesNew = provider.matchOspfLinksNew(allLinks);
         LOG.info("Finished matchOspfLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
 
-        // not a very elegant comparator but hey we are only an innocent little unit test
-        Comparator<Pair<OspfLink, OspfLink>> comparator = Comparator
-                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
-        matchesOld.sort(comparator);
-        matchesNew.sort(comparator);
-        assertEquals(matchesOld, matchesNew);
+        sortAndAssertEquals(matchesOld, matchesNew);
     }
 
     @Test
-    public void newLldpMappingShouldProvideSameOutputAsOldMethod() {
+    public void lldpLinksShouldMatchCorrectly_NewMethod() {
+        matchLldpLinks(provider::matchLldpLinksNew);
+    }
+
+    @Test
+    public void lldpLinksShouldMatchCorrectly_OldMethod() {
+        matchLldpLinks(provider::matchLldpLinks);
+    }
+
+    private void matchLldpLinks(BiFunction<Map<Integer, LldpElement>, List<LldpLink>, List<Pair<LldpLink, LldpLink>>> matchLinksFunction) {
+
+        // 1 and 3 will match
+        // 4 and 5 will match
+
+        List<OnmsNode> nodes = createNodes(6);
+        Map<Integer, LldpElement> elements = new HashMap<>();
+        elements.put(0, createLldpElement(nodes.get(0), "Element0"));
+        elements.put(1, createLldpElement(nodes.get(1), "match1.1"));
+        elements.put(2, createLldpElement(nodes.get(2), "Element2"));
+        elements.put(3, createLldpElement(nodes.get(3), "match1.2"));
+        elements.put(4, createLldpElement(nodes.get(4), "match2.1"));
+        elements.put(5, createLldpElement(nodes.get(5), "match2.2"));
+
+        List<LldpLink> allLinks = Arrays.asList(
+           createLldpLink(0, nodes.get(0), "nomatch1", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch2", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch3"),
+                createLldpLink(1, nodes.get(1), "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME,  "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS, "match1.2"),
+                createLldpLink(2, nodes.get(2), "nomatch4", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT,  "nomatch5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_PORTCOMPONENT, "nomatch6"),
+                createLldpLink(3, nodes.get(3), "match1.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS,  "match1.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, "match1.1"),
+                createLldpLink(4, nodes.get(4), "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID,  "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, "match2.2"),
+                createLldpLink(5, nodes.get(5), "match2.3", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS,  "match2.5", LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_AGENTCIRCUITID, "match2.1")
+        );
+        List<Pair<LldpLink, LldpLink>> matchedLinks = matchLinksFunction.apply(elements, allLinks);
+        assertMatching(allLinks, matchedLinks);
+    }
+
+    @Test
+    public void lldpMappingShouldProvideSameOutputAsOldMethod() {
         List<OnmsNode> nodes = createNodes();
         Map<Integer, LldpElement> elements = createLldpElements(nodes);
         List<LldpLink> allLinks = createLldpLinks(elements);
-
-        MetricRegistry registry = Mockito.mock(MetricRegistry.class);
-        LinkdTopologyProvider provider = new LinkdTopologyProvider(registry);
 
         Instant start = Instant.now();
         List<Pair<LldpLink, LldpLink>> matchesOld = provider.matchLldpLinks(elements, allLinks);
@@ -176,25 +302,42 @@ public class LinkdTopologyProviderTest {
         List<Pair<LldpLink, LldpLink>> matchesNew = provider.matchLldpLinksNew(elements, allLinks);
         LOG.info("Finished matchLldpLinksNew() in {} ms, found {} matches", Duration.between(start, Instant.now()).toMillis(), matchesNew.size());
 
-        // not a very elegant comparator but hey we are only an innocent little unit test
-        Comparator<Pair<LldpLink, LldpLink>> comparator = Comparator
-                .comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
-        matchesOld.sort(comparator);
-        matchesNew.sort(comparator);
+        sortAndAssertEquals(matchesOld, matchesNew);
+    }
+
+    private <E extends Topology> void sortAndAssertEquals(List<Pair<E, E>> matchesOld, List<Pair<E, E>> matchesNew){
+        Comparator<Pair<E, E>> comparator = Comparator.comparing(pair -> pair.getKey().printTopology() + pair.getRight().printTopology());
+        matchesOld.sort(comparator );
+        matchesNew.sort(comparator );
         assertEquals(matchesOld, matchesNew);
     }
 
+    private <Link extends Topology> void assertMatching(List<Link> allLinks, List<Pair<Link, Link>> matchedLinks){
+        // we expect:
+        // 1 and 3 will match
+        // 4 and 5 will match
+        assertEquals(2, matchedLinks.size());
+        assertEquals(allLinks.get(1), matchedLinks.get(0).getLeft());
+        assertEquals(allLinks.get(3), matchedLinks.get(0).getRight());
+        assertEquals(allLinks.get(4), matchedLinks.get(1).getLeft());
+        assertEquals(allLinks.get(5), matchedLinks.get(1).getRight());
+    }
 
     private Map<Integer, LldpElement> createLldpElements(List<OnmsNode> nodes) {
         Map<Integer, LldpElement> elements = new HashMap<>();
         for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            LldpElement element = new LldpElement();
-            element.setNode(nodes.get(random.nextInt(nodes.size())));
-            element.setLldpChassisId("Element"+i);
-            element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT);
+            LldpElement element = createLldpElement(getRandom(nodes), "Element"+i);
             elements.put(element.getNode().getId(), element);
         }
         return elements;
+    }
+
+    private LldpElement createLldpElement(OnmsNode node, String lLdpChassisId) {
+        LldpElement element = new LldpElement();
+        element.setNode(node);
+        element.setLldpChassisId(lLdpChassisId);
+        element.setLldpChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT);
+        return element;
     }
 
     private List<LldpLink> createLldpLinks(Map<Integer, LldpElement> elements) {
@@ -203,51 +346,68 @@ public class LinkdTopologyProviderTest {
 
         List<LldpLink> links = new ArrayList<>();
         for (int i = 0; i < AMOUNT_LINKS; i++) {
-            LldpLink link = new LldpLink();
-            link.setId(i);
-            link.setLldpPortId("port"+i);
-            link.setLldpPortIdSubType(getRandom(portSybtypes));
-            link.setLldpRemPortId("port"+(AMOUNT_LINKS-i));
-            link.setLldpRemPortIdSubType(getRandom(portSybtypes));
-            link.setLldpRemChassisId(getRandom(elementsList).getLldpChassisId());
-            link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
-            link.setNode(elements.get(random.nextInt(elements.size())).getNode());
+            LldpLink link =
+                    createLldpLink(i, getRandom(elementsList).getNode(), "port"+i, getRandom(portSybtypes) ,
+                            "port"+(AMOUNT_LINKS-i), getRandom(portSybtypes),
+                            getRandom(elementsList).getLldpChassisId());
             links.add(link);
         }
         return links;
     }
+
+    private LldpLink createLldpLink(int id, OnmsNode node, String portId, LldpUtils.LldpPortIdSubType portIdSubType
+            , String remotePortId, LldpUtils.LldpPortIdSubType remotePortIdSubType, String remoteChassisId) {
+          LldpLink link = new LldpLink();
+            link.setId(id);
+            link.setLldpPortId(portId);
+            link.setLldpPortIdSubType(portIdSubType);
+            link.setLldpRemPortId(remotePortId);
+            link.setLldpRemPortIdSubType(remotePortIdSubType);
+            link.setLldpRemChassisId(remoteChassisId);
+            link.setLldpRemChassisIdSubType(LldpUtils.LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_CHASSISCOMPONENT); // shouldn't be relevant for match => set it fixed
+            link.setNode(node);
+        return link;
+    }
+
 
     private List<OspfLink> createOspfLinks() {
         List<OspfLink> links = new ArrayList<>();
-        List<InetAddress> addresses = createInetAddresses();
+        List<InetAddress> addresses = createInetAddresses(AMOUNT_LINKS);
         List<OnmsNode> nodes = createNodes();
         for (int i = 0; i < AMOUNT_LINKS; i++) {
-            OspfLink link = new OspfLink();
-            link.setId(i);
-            link.setNode(getRandom(nodes));
-            // for odd AMOUNT_LINKS we have a link that points at itself but that shouldn't be a problem for the test:
-            link.setOspfIpAddr(addresses.get(i));
-            link.setOspfRemIpAddr(addresses.get(AMOUNT_LINKS -i-1));
+            OspfLink link = createOspfLink(i,getRandom(nodes), addresses.get(i), addresses.get(AMOUNT_LINKS -i-1));
             links.add(link);
         }
         return links;
     }
 
-    private List<InetAddress> createInetAddresses() {
+    private OspfLink createOspfLink(int id, OnmsNode node, InetAddress ipAddress, InetAddress remoteAddress) {
+        OspfLink link = new OspfLink();
+        link.setId(id);
+        link.setNode(node);
+        link.setOspfIpAddr(ipAddress);
+        link.setOspfRemIpAddr(remoteAddress);
+        return link;
+    }
+
+    private List<InetAddress> createInetAddresses(int amount) {
         List<InetAddress> addresses = new ArrayList<>();
         InetAddress address = InetAddresses.forString("0.0.0.0");
         addresses.add(address);
-        for (int i = 1; i < AMOUNT_LINKS; i++) {
+        for (int i = 1; i < amount; i++) {
             address = InetAddresses.increment(address);
             addresses.add(address);
         }
         return addresses;
     }
 
-
     private List<OnmsNode> createNodes() {
+        return createNodes(AMOUNT_NODES);
+    }
+
+    private List<OnmsNode> createNodes(int amount) {
         ArrayList<OnmsNode> nodes = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_NODES; i++) {
+        for (int i = 0; i < amount; i++) {
             OnmsNode node = new OnmsNode();
             node.setId(i);
             nodes.add(node);
@@ -258,56 +418,78 @@ public class LinkdTopologyProviderTest {
     private List<IsIsElement> createIsIsElements(List<OnmsNode> nodes) {
         ArrayList<IsIsElement> elements = new ArrayList<>();
         for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            IsIsElement element = new IsIsElement();
-            element.setNode(nodes.get(random.nextInt(nodes.size())));
-            element.setIsisSysID("Element"+i);
+            IsIsElement element = createIsIsElement(getRandom(nodes), "Element"+i);
             elements.add(element);
         }
         return elements;
     }
 
+    private IsIsElement createIsIsElement(OnmsNode node, String isisSysID) {
+        IsIsElement element = new IsIsElement();
+        element.setNode(node);
+        element.setIsisSysID(isisSysID);
+        return element;
+    }
+
     private List<IsIsLink> createIsIsLinks(List<IsIsElement> elements) {
         List<IsIsLink> links = new ArrayList<>();
-        for (int i = 0; i < AMOUNT_LINKS; i++) {
-            IsIsLink link = new IsIsLink();
-            link.setId(i);
-            link.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
-            link.setIsisISAdjState(IsIsLink.IsisISAdjState.up);
-            link.setIsisISAdjNeighSysID(getRandom(elements).getIsisSysID());
-            link.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.unknown);
-            link.setIsisISAdjIndex((i + 1)/2);
-            link.setNode(getRandom(elements).getNode());
+        for (int i = 1; i <= AMOUNT_LINKS; i++) {
+            IsIsLink link = createIsIsLink(i, getRandom(elements).getIsisSysID(), (i + 1)/2, getRandom(elements).getNode());
             links.add(link);
         }
         return links;
     }
 
+    private IsIsLink createIsIsLink(int id, String isisISAdjNeighSysID, int isisISAdjIndex, OnmsNode node) {
+        IsIsLink link = new IsIsLink();
+        link.setId(id);
+        link.setIsisCircAdminState(IsIsElement.IsisAdminState.off);
+        link.setIsisISAdjState(IsIsLink.IsisISAdjState.up);
+        link.setIsisISAdjNeighSysID(isisISAdjNeighSysID);
+        link.setIsisISAdjNeighSysType(IsIsLink.IsisISAdjNeighSysType.unknown);
+        link.setIsisISAdjIndex(isisISAdjIndex);
+        link.setNode(node);
+        return link;
+    }
+
     private List<CdpElement> createCdpElements(List<OnmsNode> nodes) {
         ArrayList<CdpElement> cdpElements = new ArrayList<>();
         for (int i = 0; i < AMOUNT_ELEMENTS; i++) {
-            CdpElement cdpElement = new CdpElement();
-            cdpElement.setNode(nodes.get(random.nextInt(nodes.size())));
-            cdpElement.setCdpGlobalDeviceId("CdpElement"+i);
-            cdpElements.add(cdpElement);
+            cdpElements.add(createCdpElement(getRandom(nodes), "CdpElement"+i));
         }
         return cdpElements;
+    }
+
+    private CdpElement createCdpElement(OnmsNode node, String globalDeviceId) {
+        CdpElement cdpElement = new CdpElement();
+        cdpElement.setNode(node);
+        cdpElement.setCdpGlobalDeviceId(globalDeviceId);
+        return cdpElement;
     }
 
     private List<CdpLink> createCdpLinks(List<CdpElement> cdpElements) {
         List<CdpLink> links = new ArrayList<>();
         for (int i = 0; i < AMOUNT_LINKS; i++) {
 
-            CdpLink cdpLink = new CdpLink();
-            cdpLink.setId(i);
-            cdpLink.setCdpCacheDeviceId(getRandom(cdpElements).getCdpGlobalDeviceId());
-            // for odd AMOUNT_LINKS we have a link that points at itself but that shouldn't be a problem for the test:
-            cdpLink.setCdpInterfaceName(Integer.toString(AMOUNT_LINKS -i-1));
-            cdpLink.setCdpCacheDevicePort(Integer.toString(i));
-            cdpLink.setNode(getRandom(cdpElements).getNode());
-            cdpLink.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
+            CdpLink cdpLink = createCdpLink(i,
+                    getRandom(cdpElements).getNode(),
+                    getRandom(cdpElements).getCdpGlobalDeviceId(),
+                    Integer.toString(AMOUNT_LINKS -i-1),
+                    Integer.toString(i));
             links.add(cdpLink);
         }
         return links;
+    }
+
+    private CdpLink createCdpLink(int id, OnmsNode node, String cdpCacheDeviceId, String cdpInterfaceName, String cdpCacheDevicePort) {
+        CdpLink link = new CdpLink();
+        link.setId(id);
+        link.setCdpCacheDeviceId(cdpCacheDeviceId);
+        link.setCdpInterfaceName(cdpInterfaceName);
+        link.setCdpCacheDevicePort(cdpCacheDevicePort);
+        link.setNode(node);
+        link.setCdpCacheAddressType(CdpLink.CiscoNetworkProtocolType.chaos);
+        return link;
     }
 
     private <E> E getRandom(List<E> list) {

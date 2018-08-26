@@ -509,6 +509,7 @@ SOURCE:        for(OspfLink sourceLink : allLinks) {
             OspfLink targetLink = targetLinks.get(new CompositeKey(sourceLink.getOspfRemIpAddr() , sourceLink.getOspfIpAddr()));
             if(targetLink == null) {
                 LOG.debug("getOspfLinks: cannot find target for source: '{}'", sourceLink.getId());
+                continue;
             }
 
             if (sourceLink.getId().equals(targetLink.getId()) || parsed.contains(targetLink.getId())) {
