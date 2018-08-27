@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -41,15 +42,17 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeBridgeLink")
-public class BridgeBridgeLink implements Topology {
+public class BridgeBridgeLink implements Serializable, Topology{
 
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 5224397770784854885L;
     private Integer m_id;
     private OnmsNode m_node;
     private Integer m_bridgePort;
@@ -193,47 +196,6 @@ public class BridgeBridgeLink implements Topology {
 
     @Override
     public String toString() {
-            Integer designatedNodeid = null;
-            if (m_designatedNode != null) {
-                    designatedNodeid = m_designatedNode.getId();
-            }
-            return new ToStringBuilder(this)
-                            .append("Nodeid", m_node.getId())
-                            .append("bridgePort", m_bridgePort)
-                            .append("bridgePortIfIndex", m_bridgePortIfIndex)
-                            .append("bridgePortIfName", m_bridgePortIfName)
-                            .append("vlan", m_vlan)
-            .append("Nodeid", designatedNodeid)
-                            .append("designatedPort", m_designatedPort)
-                            .append("designatedPortIfIndex", m_designatedPortIfIndex)
-                            .append("designatedPortIfName", m_designatedPortIfName)
-                            .append("designatedVlan", m_designatedVlan)
-                            .append("m_bridgeBridgeLinkCreateTime", m_bridgeBridgeLinkCreateTime)
-                            .append("m_bridgeBridgeLinkLastPollTime", m_bridgeBridgeLinkLastPollTime)
-                            .toString();
-    }
-
-    public void merge(BridgeBridgeLink element) {
-        if (element == null)
-                return;
-        
-        setBridgePortIfIndex(element.getBridgePortIfIndex());
-        setBridgePortIfName(element.getBridgePortIfName());
-        setVlan(element.getVlan());
-
-        setDesignatedNode(element.getDesignatedNode());
-        setDesignatedPort(element.getDesignatedPort());
-        setDesignatedPortIfIndex(element.getDesignatedPortIfIndex());
-        setDesignatedPortIfName(element.getDesignatedPortIfName());
-        setDesignatedVlan(element.getDesignatedVlan());
-        if (element.getBridgeBridgeLinkLastPollTime() == null)
-            setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
-        else
-           setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
-    }
-
-    @Transient
-    public String printTopology() {
         StringBuffer strbfr = new StringBuffer();
 
         strbfr.append("bridge link: nodeid:[");
@@ -255,6 +217,30 @@ public class BridgeBridgeLink implements Topology {
         strbfr.append("]");
 
         return strbfr.toString();
+    }
+
+    public void merge(BridgeBridgeLink element) {
+        if (element == null)
+                return;
+        
+        setBridgePortIfIndex(element.getBridgePortIfIndex());
+        setBridgePortIfName(element.getBridgePortIfName());
+        setVlan(element.getVlan());
+
+        setDesignatedNode(element.getDesignatedNode());
+        setDesignatedPort(element.getDesignatedPort());
+        setDesignatedPortIfIndex(element.getDesignatedPortIfIndex());
+        setDesignatedPortIfName(element.getDesignatedPortIfName());
+        setDesignatedVlan(element.getDesignatedVlan());
+        if (element.getBridgeBridgeLinkLastPollTime() == null)
+            setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkCreateTime());
+        else
+           setBridgeBridgeLinkLastPollTime(element.getBridgeBridgeLinkLastPollTime()); 
+    }
+
+    @Override
+    public String printTopology() {
+        return toString();
     }
 	
 }

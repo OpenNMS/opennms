@@ -43,16 +43,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.Topology;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
 @Entity
 @Table(name="ospfLink")
-public class OspfLink implements Serializable,Topology {
+public class OspfLink implements Serializable, Topology {
 	/**
 	 * 
 	 */
@@ -190,23 +188,6 @@ public class OspfLink implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("ospfIpAddr", str(m_ospfIpAddr))
-			.append("ospfAddressLessIndex", m_ospfAddressLessIndex)
-			.append("ospfIpMask", str(m_ospfIpMask))
-			.append("ospfIfIndex", m_ospfIfIndex)
-			.append("ospfRemRouterId", str(m_ospfRemRouterId))
-			.append("ospfRemIpAddr", str(m_ospfRemIpAddr))
-			.append("ospfRemAddressLessIndex", m_ospfRemAddressLessIndex)
-			.append("createTime", m_ospfLinkCreateTime)
-			.append("lastPollTime", m_ospfLinkLastPollTime)
-			.toString();
-	}
-	
-	
-        @Transient
-        public String printTopology() {
             StringBuffer strb = new StringBuffer();
             strb.append("ospflink: nodeid:[");
             strb.append(getNode().getId());
@@ -243,5 +224,10 @@ public class OspfLink implements Serializable,Topology {
 		
 		setOspfLinkLastPollTime(link.getOspfLinkCreateTime());
 	}
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 
 }

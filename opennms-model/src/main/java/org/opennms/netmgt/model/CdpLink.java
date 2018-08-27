@@ -44,15 +44,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="cdpLink")
-public class CdpLink implements Serializable,Topology {
+public class CdpLink implements Serializable, Topology {
 
 	/**
 	 * 
@@ -377,31 +375,6 @@ public class CdpLink implements Serializable,Topology {
      * @return a {@link java.lang.String} object.
      */
     public String toString() {
-    	Integer nodeid = null;
-    	if (m_node != null)
-    		nodeid = m_node.getId();
-    	String cdpCacheAddressTypeString = null;
-    	if (m_cdpCacheAddressType != null)
-    		cdpCacheAddressTypeString = 
-    		CiscoNetworkProtocolType.getTypeString(m_cdpCacheAddressType.getValue()); 
-        return new ToStringBuilder(this)
-        .append("NodeId", nodeid)
-        .append("cdpCacheIfIndex", m_cdpCacheIfIndex)
-        .append("cdpCacheDeviceIndex", m_cdpCacheDeviceIndex)
-        .append("cdpInterfaceName", m_cdpInterfaceName)
-        .append("cdpCacheAddressType", cdpCacheAddressTypeString)
-        .append("cdpCacheAddress", m_cdpCacheAddress)
-        .append("cdpCacheVersion", m_cdpCacheVersion)
-        .append("cdpCachedeviceId", m_cdpCacheDeviceId)
-        .append("cdpCachedevicePort", m_cdpCacheDevicePort)
-        .append("cdpCachedevicePlatform", m_cdpCacheDevicePlatform)
-        .append("createTime", m_cdpLinkCreateTime)
-        .append("lastPollTime", m_cdpLinkLastPollTime)
-        .toString();
-	}
-
-    @Transient
-    public String printTopology() {
         StringBuffer strb = new StringBuffer();
             strb.append("cdplink: nodeid:["); 
             strb.append(getNode().getId());
@@ -422,6 +395,11 @@ public class CdpLink implements Serializable,Topology {
            strb.append("]");
 
         return strb.toString();
+    }
+
+    @Override
+    public String printTopology() {
+        return toString();
     }
 
 

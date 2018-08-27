@@ -34,15 +34,16 @@ import org.opennms.features.topology.api.topo.AbstractVertex;
 import org.opennms.features.topology.api.topo.Edge;
 import org.opennms.features.topology.api.topo.SimpleConnector;
 import org.opennms.features.topology.api.topo.Vertex;
-import org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.topology.Topology;
+import org.opennms.netmgt.model.topology.Topology.ProtocolSupported;
 
 public class LinkdEdge extends AbstractEdge implements Edge {
 
     private static final String HTML_TOOLTIP_TAG_OPEN = "<p>";
     private static final String HTML_TOOLTIP_TAG_END  = "</p>";
     
-    public static LinkdEdge create(String id, Vertex sourceV, Vertex targetV, ProtocolSupported discoveredBy) {
+    public static LinkdEdge create(String id, Vertex sourceV, Vertex targetV, Topology.ProtocolSupported discoveredBy) {
         return new LinkdEdge(id, sourceV, targetV,discoveredBy);
     }
 
@@ -50,7 +51,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
             AbstractVertex sourceV, AbstractVertex targetV,  
             OnmsSnmpInterface sourceinterface, OnmsSnmpInterface targetInterface,
             String sourceAddr, String targetAddr,
-            ProtocolSupported discoveredBy) {
+            Topology.ProtocolSupported discoveredBy) {
         
         SimpleConnector source = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, sourceV.getId()+"-"+id+"-connector", sourceV);
         SimpleConnector target = new SimpleConnector(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, targetV.getId()+"-"+id+"-connector", targetV);
@@ -100,15 +101,15 @@ public class LinkdEdge extends AbstractEdge implements Edge {
     private Integer m_sourceIfIndex;
     private Integer m_targetIfIndex;
 
-    private final ProtocolSupported m_discoveredBy;
+    private final Topology.ProtocolSupported m_discoveredBy;
     
-    private LinkdEdge(String id, Vertex source, Vertex target, ProtocolSupported discoveredBy) {
+    private LinkdEdge(String id, Vertex source, Vertex target, Topology.ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_discoveredBy = discoveredBy;
     }
 
     private LinkdEdge(String id, SimpleConnector source,
-            SimpleConnector target, ProtocolSupported discoveredBy) {
+            SimpleConnector target, Topology.ProtocolSupported discoveredBy) {
         super(LinkdTopologyProvider.TOPOLOGY_NAMESPACE_LINKD, id, source, target);
         m_discoveredBy = discoveredBy;
     }
@@ -262,7 +263,7 @@ public class LinkdEdge extends AbstractEdge implements Edge {
         m_targetIfIndex = targetIfIndex;
     }
 
-    public ProtocolSupported getDiscoveredBy() {
+    public Topology.ProtocolSupported getDiscoveredBy() {
         return m_discoveredBy;
     }
 

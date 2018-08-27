@@ -44,15 +44,13 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="isisElement")
-public final class IsIsElement implements Serializable,Topology {
+public final class IsIsElement implements Serializable, Topology {
 
 	/**
 	 * 
@@ -206,17 +204,6 @@ public final class IsIsElement implements Serializable,Topology {
 	 * @return a {@link java.lang.String} object.
 	 */
 	public String toString() {
-		return new ToStringBuilder(this)
-			.append("NodeId", m_node.getId())
-			.append("isisSysAdminState", IsisAdminState.getTypeString(m_isisSysAdminState.getValue()))
-			.append("isisSysID", m_isisSysID)
-			.append("isisNodeCreateTime", m_isisNodeCreateTime)
-			.append("isisNodeLastPollTime", m_isisNodeLastPollTime)
-			.toString();
-	}
-	
-        @Transient
-        public String printTopology() {
             StringBuffer strb = new StringBuffer();
                 strb.append("isiselement: nodeid:["); 
                 strb.append(getNode().getId());
@@ -237,4 +224,9 @@ public final class IsIsElement implements Serializable,Topology {
 		
 		setIsisNodeLastPollTime(element.getIsisNodeCreateTime());
 	}
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 }

@@ -30,5 +30,13 @@ package org.opennms.netmgt.model.topology;
 
 public interface Topology {
 
+    public enum ProtocolSupported {
+        LLDP,
+        OSPF,
+        ISIS,
+        BRIDGE,
+        CDP
+    }
+
     String printTopology();
 }

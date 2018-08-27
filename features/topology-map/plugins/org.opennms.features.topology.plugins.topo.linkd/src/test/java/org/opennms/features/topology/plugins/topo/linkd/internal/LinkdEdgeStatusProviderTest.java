@@ -60,6 +60,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.OspfLink;
 import org.opennms.netmgt.model.topology.BridgePort;
+import org.opennms.netmgt.model.topology.Topology;
 
 import com.codahale.metrics.MetricRegistry;
 
@@ -137,7 +138,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         sourceinterfacenode1port48.setIfIndex(48);;
 
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode1port48), 
-                                     cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", ProtocolSupported.BRIDGE));
+                                     cloud, node1Vertex, null, sourceinterfacenode1port48, "cloud", "bp: 48", Topology.ProtocolSupported.BRIDGE));
 
         BridgePort bpnode2port24 = new BridgePort();
         bpnode2port24.setNodeId(m_node2.getId());
@@ -147,13 +148,13 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         sourceinterfacenode2port24.setNode(m_node2);
         sourceinterfacenode2port24.setIfIndex(24);;
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, bpnode2port24), 
-                                     cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, ProtocolSupported.BRIDGE));
+                                     cloud, node2Vertex, null, sourceinterfacenode2port24, null, null, Topology.ProtocolSupported.BRIDGE));
 
         String mac = "a8d0e5a0a467";
         m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getEdgeId(cloud, mac), 
                                      cloud, node3Vertex, 
                                      null, null, 
-                                     null, mac, ProtocolSupported.BRIDGE));
+                                     null, mac, Topology.ProtocolSupported.BRIDGE));
         
         // isis link
         IsIsLink link1 = createIsIsLink(m_node4, 599, 599, 1, 1, "001f12accbf1", "000110255062");
@@ -172,7 +173,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
                                      node4Vertex, node5Vertex, 
                                      node4port599, node5port578, 
                                      link2.getIsisISAdjNeighSNPAAddress(), link1.getIsisISAdjNeighSNPAAddress(), 
-                                    ProtocolSupported.ISIS));
+                                    Topology.ProtocolSupported.ISIS));
 
         // lldp link
         LldpLink link3 = new LldpLink(m_node4, 12, 1, "node4PortId", "node4PortDescr", LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,
@@ -192,7 +193,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         node5portPort2.setIfIndex(link4.getLldpPortIfindex());
          
          m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link3.getId(), link4.getId()), node4Vertex, node5Vertex, 
-                                      node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), ProtocolSupported.LLDP));
+                                      node4portPort1, node5portPort2, link3.getLldpPortDescr(), link4.getLldpPortDescr(), Topology.ProtocolSupported.LLDP));
         
         //ospf link
          OspfLink link5 = createOspfLink(m_node4, "192.168.100.246", "255.255.255.252", 0, 10101, "192.168.100.249", "192.168.100.245", 0);
@@ -210,10 +211,10 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
          m_edges.add(LinkdEdge.create(LinkdTopologyProvider.getDefaultEdgeId(link5.getId(), link6.getId()), node4Vertex, node5Vertex, 
                                       node4portPort10101, node5portPort10100, 
                                       InetAddressUtils.str(link6.getOspfRemIpAddr()), 
-                                      InetAddressUtils.str(link5.getOspfRemIpAddr()),  ProtocolSupported.OSPF));
+                                      InetAddressUtils.str(link5.getOspfRemIpAddr()),  Topology.ProtocolSupported.OSPF));
 
         //cdp link
-        LinkdEdge edgeG = LinkdEdge.create("504|505", node4Vertex, node5Vertex,ProtocolSupported.CDP );
+        LinkdEdge edgeG = LinkdEdge.create("504|505", node4Vertex, node5Vertex,Topology.ProtocolSupported.CDP );
         edgeG.setSourceNodeid(m_node4.getId());
         edgeG.setTargetNodeid(m_node5.getId());
         edgeG.setSourceIfIndex(101);
@@ -221,7 +222,7 @@ public class LinkdEdgeStatusProviderTest extends LinkdTopologyProvider {
         m_edges.add(edgeG);
 
         // another ospf link
-        LinkdEdge edgeChennaiTodehli = LinkdEdge.create("310|314", dehliVertex, chennaiVertex,ProtocolSupported.OSPF);
+        LinkdEdge edgeChennaiTodehli = LinkdEdge.create("310|314", dehliVertex, chennaiVertex,Topology.ProtocolSupported.OSPF);
         edgeChennaiTodehli.setSourceNodeid(m_nodeDehli.getId());
         edgeChennaiTodehli.setTargetNodeid(m_nodeChennai.getId());
         edgeChennaiTodehli.setSourceIfIndex(13);

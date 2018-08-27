@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,17 +44,20 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
 
-import org.apache.commons.lang.builder.ToStringBuilder;
 import org.hibernate.annotations.Type;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeMacLink")
-public class BridgeMacLink implements Topology {
+public class BridgeMacLink implements Serializable, Topology{
 
     
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 8100699538135896806L;
+
     public enum BridgeMacLinkType {
         BRIDGE_LINK(1), BRIDGE_FORWARDER(2);
 
@@ -222,45 +226,27 @@ public class BridgeMacLink implements Topology {
 	
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this)
-				.append("Nodeid", m_node.getId())
-				.append("bridgePort", m_bridgePort)
-				.append("bridgePortIfIndex", m_bridgePortIfIndex)
-				.append("bridgePortIfName", m_bridgePortIfName)
-				.append("vlan", m_vlan)
-                                .append("macAddress", m_macAddress)
-                                .append("linktype", BridgeMacLinkType.
-                                        getTypeString(
-                                                      getLinkType().
-                                                      getValue()))
-				.append("m_bridgeMacLinkCreateTime", m_bridgeMacLinkCreateTime)
-				.append("m_bridgeMacLinkLastPollTime", m_bridgeMacLinkLastPollTime)
-				.toString();
-	}
-	
-	@Transient
-        public String printTopology() {
-        StringBuffer strbfr = new StringBuffer();
-
-        strbfr.append("maclink: nodeid:["); 
-        strbfr.append(getNode().getId());
-        strbfr.append("], bridgeport:[");
-        strbfr.append(getBridgePort());
-        strbfr.append("], ifindex:[");
-        strbfr.append(getBridgePortIfIndex());
-        strbfr.append("], vlan:[");
-        strbfr.append(getVlan());
-        strbfr.append("],");
-        strbfr.append(getMacAddress());
-        strbfr.append(",");
-        strbfr.append(BridgeMacLinkType.
-                      getTypeString(
-                                    getLinkType().
-                                    getValue()));
-        strbfr.append("]");
+            StringBuffer strbfr = new StringBuffer();
+    
+            strbfr.append("maclink: nodeid:["); 
+            strbfr.append(getNode().getId());
+            strbfr.append("], bridgeport:[");
+            strbfr.append(getBridgePort());
+            strbfr.append("], ifindex:[");
+            strbfr.append(getBridgePortIfIndex());
+            strbfr.append("], vlan:[");
+            strbfr.append(getVlan());
+            strbfr.append("],");
+            strbfr.append(getMacAddress());
+            strbfr.append(",");
+            strbfr.append(BridgeMacLinkType.
+                          getTypeString(
+                                        getLinkType().
+                                        getValue()));
+            strbfr.append("]");
 
 	        return strbfr.toString();
-	        }
+        }
 
 	public void merge(BridgeMacLink element) {
 		if (element == null)
@@ -274,5 +260,11 @@ public class BridgeMacLink implements Topology {
 		else 
 		    setBridgeMacLinkLastPollTime(element.getBridgeMacLinkLastPollTime());
 	}
+
+
+    @Override
+    public String printTopology() {
+        return toString();
+    }
 	
 }
