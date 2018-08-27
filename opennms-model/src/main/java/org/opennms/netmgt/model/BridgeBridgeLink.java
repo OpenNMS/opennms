@@ -43,10 +43,16 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.Filter;
 import org.opennms.netmgt.model.topology.Topology;
 
 @Entity
 @Table(name="bridgeBridgeLink")
+//FIXME need to add Filtering for --> designatednodeId
+@Filter(name=FilterManager.AUTH_FILTER_NAME, condition=
+"exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = nodeid and cg.groupId in (:userGroups))"
++ " and "
++ "exists (select distinct x.nodeid from node x join category_node cn on x.nodeid = cn.nodeid join category_group cg on cn.categoryId = cg.categoryId where x.nodeid = designatednodeId and cg.groupId in (:userGroups))")
 public class BridgeBridgeLink implements Serializable, Topology{
 
     /**
